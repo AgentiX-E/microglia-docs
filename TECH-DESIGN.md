@@ -879,11 +879,12 @@ has no GPU path; embeddings, when enabled, run through an ONNX/WASM or WebGPU en
 
 | Items | Build | `recall` p50 | `recall` p95 | Heap delta | Pack tokens |
 |---|---|---|---|---|---|
-| 1,000 | 5 ms | 1.34 ms | **1.91 ms** | 1.6 MB | 259 |
-| 5,000 | 22 ms | 1.52 ms | **2.18 ms** | 7.1 MB | 259 |
-| 10,000 | 45 ms | 2.07 ms | **3.10 ms** | **13.9 MB** | 259 |
+| 1,000 | 5–6 ms | 1.3–1.4 ms | **1.9–4.2 ms** | 1.6–2.1 MB | 259 |
+| 5,000 | 22–28 ms | 1.5–1.6 ms | **2.2–4.4 ms** | 7.1–8.4 MB | 259 |
+| 10,000 | 45–61 ms | 1.8–2.1 ms | **2.6–3.1 ms** | **13.9–14.0 MB** | 259 |
 
-The scope scan is O(n), but at 10k items it is 3.1 ms p95 — well inside the 50 ms budget. The earlier
+The scope scan is O(n), but at 10k items it is 2.6–3.1 ms p95 across three runs — well inside the
+50 ms budget. The earlier
 claim that 10k would be the bottleneck was an inference, not a measurement; it is withdrawn. The next
 checkpoint is 100k, where the scan is expected to cross the budget and the SQLite index becomes the
 fix.
@@ -1133,11 +1134,12 @@ therefore an optional, confidence-gated channel (ADR-015).
 
 | Items | Build | p50 | p95 (A / B) | Heap (A / B) | Tokens |
 |---|---|---|---|---|---|
-| 1,000 | 5 / 6 ms | 1.34 / 1.40 ms | 1.91 / **3.10** ms | 1.6 / 2.1 MB | 259 |
-| 5,000 | 22 / 28 ms | 1.52 / 1.61 ms | 2.18 / **2.71** ms | 7.1 / 8.4 MB | 259 |
-| 10,000 | 45 / 56 ms | 2.07 / 1.82 ms | 3.10 / **2.63** ms | **13.9 / 14.0 MB** | 259 |
+| 1,000 | 5 / 6 / 5 ms | 1.34 / 1.40 / 1.5 ms | 1.91 / 3.10 / **4.17** ms | 1.6 / 2.1 / 1.8 MB | 259 |
+| 5,000 | 22 / 28 / 24 ms | 1.52 / 1.61 / 1.7 ms | 2.18 / 2.71 / **4.41** ms | 7.1 / 8.4 / 7.6 MB | 259 |
+| 10,000 | 45 / 56 / 61 ms | 2.07 / 1.82 / 1.9 ms | 3.10 / 2.63 / **2.98** ms | 13.9 / 14.0 / **14.0 MB** | 259 |
 
-**Conclusion.** The CPU budget holds at 10k items with a wide margin (p95 2.6–3.1 ms, 14 MB). The
+**Conclusion.** The CPU budget holds at 10k items with a wide margin (p95 2.6–3.1 ms across three
+runs; 1k shows 1.9–4.2 ms because the runner is shared). The
 O(n) scope scan is real but not the bottleneck at this scale; the SQLite index is deferred to the
 100k checkpoint. The earlier "10k is the limit" statement is withdrawn.
 
