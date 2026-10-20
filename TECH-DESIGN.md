@@ -1461,8 +1461,22 @@ accepts all four and repairs only what cannot change a valid document (§`packag
 This is a bias, not a nuisance: a quarter of the evidence never reached the pack, and which quarter was
 decided by formatting.
 
-**Consequence for the next measurement.** The corrected parser changes the knowledge, so the failure
-rate and the delta both need re-measuring; neither is claimed here. What is unchanged is the structural
+**Measured on the fix.** Two 40-question runs, same protocol, only the parser and the distillation
+prompt differ:
+
+| Stage | Corrections lost to a parse failure |
+|---|---|
+| before | 165 of 641 (25.7%) |
+| shapes accepted (array, single object, newline, trailing comma) | 4 of 40 (10.0%) |
+| plus "at most two candidates" and a 2,000-token budget | **2 of 40 (5.0%)** |
+
+The remaining two replies are still truncations of a valid array, so the last 5% needs a salvage pass
+rather than another format. The failure rate is now low enough that the knowledge is no longer built
+from three quarters of the evidence.
+
+**Consequence for the next measurement.** The corrected parser changes the knowledge, so the delta
+needs re-measuring; the accuracy numbers in §12.12–§12.13 predate the fix and are quoted as the
+pre-fix record. What is unchanged is the structural
 finding: on a benchmark whose gold encodes only what its schema already says, no amount of the right
 knowledge moves the model — and one injected statement of *non-inferable* knowledge (the oracle) moves
 it by 30pp.

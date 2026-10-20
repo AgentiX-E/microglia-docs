@@ -282,8 +282,10 @@ waiting for a bigger sample.
 | The distillation parser accepted one of the four shapes models actually return | recording the reply prefix after a 25.7% failure rate survived a larger token budget | `parseCandidates` accepts a wrapped object, a bare array, a single candidate, and repairs control characters and trailing commas without altering a valid document |
 | A coverage floor of 0.34 emptied every pack | gate V6 refused a run in which the control injected nothing | the floor was set from the measured distribution (0.01 = one shared word), and the guide now states the distribution instead of a guess |
 
-The parser fix changes the knowledge, so the failure rate and the delta need re-measuring; neither is
-claimed here.
+**Measured on the fix**, two 40-question runs with only the parser and the distillation prompt changed:
+25.7% of corrections lost → 10.0% (four shapes accepted) → **5.0%** (two candidates, 2,000 tokens).
+The last two failures are truncations, which need a salvage pass rather than another format. The delta
+still has to be re-measured with the corrected knowledge; the accuracy numbers above predate the fix.
 
 **Evidence.** `poc/results/poc-sota-bird.json`, `poc/results/poc-sota-attribution.json`, 410 tests,
 coverage 100 / 100 / 100 / 99.44, `pnpm audit:repo` ok.
