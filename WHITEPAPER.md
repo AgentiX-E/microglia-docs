@@ -615,7 +615,7 @@ S2 effect does not replicate.
 
 | Phase | Duration | Deliverable | Exit criterion |
 |---|---|---|---|
-| **P0 Mechanism** | done | 8 packages, 285 tests, 11 gates | `pnpm check` green |
+| **P0 Mechanism** | done | 8 packages, 370 tests, 9 arms, 15 gates, 3 micro-ablations | `pnpm check` green in `AgentiX-E/microglia` |
 | **P0.5 Live POC** | done | DeepSeek distillation, LLM reader (generic/house/poison), embedding retrieval, CPU scale | Artifacts in `poc/results/`; CI `poc-live` green |
 | **P1 Host shadow** | 4 weeks | nl2charts integration behind a flag; correction telemetry | S1 gate met, K2 measured |
 | **P2 Public eval** | 8 weeks | BIRD-Interact / nvBench / Text2Vis harnesses; preregistered reports | S2 gates met or honestly missed |

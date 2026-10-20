@@ -55,8 +55,8 @@ appears in the gap register (§15).
 | N3 | Deterministic replay | same seed → same ids and packs | tested |
 | N4 | Added latency on the request path | p95 ≤ 50ms | 0.02ms at 6 items (POC scale) |
 | N5 | Added prompt size | ≤ 300 tokens | 90 tokens (POC) |
-| N6 | Coverage | ≥95% lines/functions/statements | 98.60 / 98.24 / 98.60 |
-| N7 | Branch coverage | ≥95% | **94.37%** — release-bar gap of 0.63pp |
+| N6 | Coverage | ≥95% on every dimension | **100 / 99.53 / 100 / 100** (lines / branches / functions / statements) |
+| N7 | Branch coverage | ≥95% | **99.53%** — the bar is met; the seven remaining arms are named in §10.3 |
 | N8 | No network in tests | 0 calls | 0 |
 | N9 | No mocks of the system under test | ports only | fakes only for `Storage`/`LLM` |
 | N10 | ESM-only, tree-shakable | `sideEffects: false` | declared |
@@ -892,7 +892,7 @@ fix.
 | Other measurements | Value | Conditions |
 |---|---|---|
 | Mean pack size | **90–259 tokens** | 6 rules in the study; 10k pool, budget-bound |
-| Full mechanism study (6 arms × 6 rounds) | **0.44 s** | Single core, in-memory journal |
+| Full mechanism study (9 arms × 6 rounds, plus 3 micro-ablations) | **0.33 s** | Single core, in-memory journal |
 | LLM distill latency | **951–1,276 ms p50 / 1,265–1,562 ms p95** | DeepSeek, 24 calls, ~495 tokens, three runs |
 | LLM reader latency | **652–898 ms p50 / 959–1,199 ms p95** | DeepSeek, 70 calls, 461 tokens, three runs |
 
@@ -925,7 +925,7 @@ fix.
 | Unit | Pure functions, edge cases, error paths | diff round-trips, Wilson/McNemar boundaries, injection screen, scope matching |
 | Contract | Ports implemented by fakes behave per interface | JSONL reopen, corrupt line, schema mismatch, Cortex projection |
 | Integration | Capture → distill → recall → apply on a real JSONL journal | edit → rule → recall → credit, export shapes, doctor issues |
-| Study | Full ablation with statistical gates | 6 arms × 6 rounds, 11 gates |
+| Study | Full ablation with statistical gates | 9 arms × 6 rounds, 15 gates, 3 micro-ablations |
 
 - **No network.** The LLM port is exercised with a deterministic fixture; every other path is offline.
 - **No mocks of the system under test.** Fakes exist only for `Storage`/`LLM`, which are ports by design.
@@ -936,27 +936,43 @@ fix.
 
 | Dimension | Result | Threshold |
 |---|---|---|
-| Lines | **99.15%** | 95 |
-| Statements | **99.15%** | 95 |
-| Functions | **99.12%** | 95 |
-| Branches | **94.37%** | 85 (floor); 95 is the release bar |
+| Lines | **100%** | 95 |
+| Statements | **100%** | 95 |
+| Functions | **100%** | 95 |
+| Branches | **99.53%** | 95 |
 
-The branch gap is tracked as E1 in §15.2. The remaining misses are defensive guards (missing optional
-fields, unreachable enum arms, array-op guards) concentrated in `scenario.ts` and `study.ts`.
-Closing the last 0.63pp requires either tests for states the type system forbids or removing guards
-that protect against malformed registry data; both are changes to the contract, not just to the test
-file, so they are scheduled rather than rushed (E1).
+### 10.3 The seven uncovered branch arms, named
 
-### 10.3 Commands
+99.53% (1508/1515) with no ignore comment anywhere in the repository. Every remaining arm is listed
+below with the reason it cannot be taken; a reader can check the claim against the file.
+
+| File:line | The arm that never runs | Why it is unreachable |
+|---|---|---|
+| `core/src/diff.ts:113` | `key === undefined` when applying an op | the empty-path case returns earlier, so a non-empty path always has a last element |
+| `core/src/stats.ts:93` | `logSumExp` over an empty sample | `mcnemarExact` returns at `n === 0`, so the sum never sees zero terms |
+| `eval/src/ablations.ts:98` | `status: 'missing'` for the learned rule | the store has no delete, so the rule the function just learned is still there |
+| `eval/src/report.ts:84` | the `still injected` wording of the credit row | one run produces one ablation result; the other wording is covered by the failing-fixture test |
+| `eval/src/scenario.ts:321` | the confidence comparison in `outranks` | two rules that match a query differ in scope size or id first, so the third key is never consulted |
+| `memory/src/lexical-index.ts:38` | a token with no posting bucket during removal | `add` is the only writer and it creates a bucket before recording the token |
+| `memory/src/store.ts:162` | a candidate id that resolves to no knowledge item | the index and the map are written in the same call, so they cannot diverge |
+
+These are invariant guards, not untested behaviour: each protects against a state the type system
+cannot express, and deleting one would turn a future bug into silent data loss rather than an
+exception. The alternative — an `ignore` comment — would make the number look better and the code
+worse, so the number stays where it is and the list stays in the document.
+
+### 10.4 Commands
 
 ```bash
 pnpm install
 pnpm build       # tsc -b, project references
 pnpm typecheck   # same graph, no emit
-pnpm test        # vitest + v8 coverage
+pnpm test        # vitest + v8 coverage, thresholds at 95 on all four dimensions
+pnpm audit:repo  # source rules, manifests, published-dependency advisories
 pnpm bench       # build + mechanism study + gates
-pnpm check       # typecheck + test + bench
+pnpm check       # typecheck + test + audit + bench
 ```
+
 
 ---
 
@@ -1031,6 +1047,8 @@ from a run that cannot be reproduced by the command in the same row.
 | POC-3 | Does lexical retrieval survive paraphrase? | BM25 vs embedding-3 vs rank fusion | 96 | `pnpm poc:embedding` | `poc/results/poc-embedding.json` | BM25 best for light; dense +8.4pp for heavy |
 | POC-4 | Is CPU retrieval viable at 10k items? | Synthetic store, 100 queries | 3 sizes | `pnpm poc:scale` | `poc/results/poc-scale.json` | 2.6–3.1 ms p95, 14 MB |
 | POC-5 | Can a competitor's design be reproduced from source? | Source audit of 5 OSS projects + Cortex | — | §8.5 | this document | No OSS project models a correction as evidence |
+| POC-6 | Does a pack ever claim a rule it did not render? | Budget sweep 60…2400 chars over 40 rules | 64 budgets | `pnpm test packages/apply` | `budget.test.ts` | **No longer** — a bug, see §12.7 |
+| POC-7 | Does the adapter match the real cortex build? | Clone, build, then compare field sets | 1 item | `pnpm poc:cortex` | `cortex.yml` | 12 fields matched; the structural copy is correct |
 
 ### 12.1 POC-0 — mechanism study
 
@@ -1043,16 +1061,20 @@ domain (`ops`) receives **no feedback at all**. The generator is fixed; only the
 | full | 31.79% | **100.00%** | **+68.21pp** | <0.0001 | 100% |
 | noise (20%) | 31.79% | 100.00% | +68.21pp | <0.0001 | 100% |
 | poison | 31.79% | 100.00% | +68.21pp | <0.0001 | 100% |
-| unguarded | 31.79% | 85.71% | +53.93pp | <0.0001 | **64.71%** |
+| unguarded | 31.79% | 82.14% | +50.36pp | <0.0001 | **52.94%** |
 | no-generalization | 31.79% | 83.21% | +51.43pp | <0.0001 | 100% |
+| no-credit | 31.79% | 100.00% | +68.21pp | <0.0001 | 100% |
+| no-contradiction | 31.79% | 100.00% | +68.21pp | <0.0001 | 100% |
+| narrow-budget (400 chars) | 31.79% | 31.79% | **0.00pp** | 1.0 | — |
 
 | Held-out domain | baseline | full | no-generalization |
 |---|---|---|---|
 | `ops` (never fed back) | 32.86% | **100.00%** | **32.86%** |
 
 **Conclusion.** Scope generalisation is the mechanism that produces transfer; without it the unseen
-domain is untouched. The unguarded arm shows that active poison costs 14.28pp, so quarantine is
-load-bearing, not decorative. All 11 gates pass.
+domain is untouched. The unguarded arm shows that active poison costs **17.86pp**, so quarantine is
+load-bearing, not decorative. The two module arms that report no change are explained by the
+micro-ablations in §12.8 rather than left looking like null results. All 15 gates pass.
 
 ### 12.2 POC-1 — LLM distillation
 
@@ -1155,7 +1177,44 @@ Each POC changed the design. This table is the audit trail from evidence to deci
 | D4 | 10k items at 3.10 ms p95, 13.9 MB | SQLite index moved from P1 to the 100k checkpoint; performance claims replaced with measurements |
 | D5 | Poison effect ranged 0 to −8.33pp across three runs; −14.28pp in the deterministic unguarded arm | Quarantine stays; the claim is "structural defence", not "models resist poison" |
 
-### 12.7 What the results do not show
+### 12.7 The bug this round found
+
+The budget sweep was written to prove an invariant — "a pack never lists a rule it did not render" —
+and it failed on the first run. `makePack` returned the *candidate* items alongside the rendered ids,
+so a pack built with a 120-character budget reported `items: 6, ids: [], rendered: ''`. Every
+consumer that iterates `items` rather than reading the block would apply six rules the model never
+saw. The study's deterministic reader did exactly that, which is why the `narrow-budget` arm had been
+reporting 100% accuracy on an empty prompt.
+
+The fix (`items` is now filtered to the rendered ids) is four lines; the consequences were larger
+than the fix:
+
+| Before | After | Consequence |
+|---|---|---|
+| `narrow-budget` 100.00% | `narrow-budget` 31.79% | the pack layer's contribution is measurable (G15) |
+| budget appeared not to matter | 400 characters is the binding threshold | the default of 1,200 is justified by a measurement, not a guess |
+| `items.length ≠ ids.length` possible | equality is asserted | a host can trust either field |
+
+This is the second time an instrument bug was found by writing the invariant down as a test: the
+first was a redaction counter that counted structural changes and reported four redactions for an
+edit with no secret in it.
+
+### 12.8 Micro-ablations: the three modules an arm cannot measure
+
+A clean corpus has one rule per (intent, domain), so credit assignment, contradiction resolution, and
+diversification never bind. Running an arm with each disabled therefore reports zero — which looks
+like evidence that the module does not matter. Three targeted experiments replace that non-result:
+
+| Module | Workload | With | Without | Reading |
+|---|---|---|---|---|
+| Credit assignment | one rule, cited in 4 failing runs | **withdrawn** | still injected | counting applications is what stops a rule that is always wrong |
+| Contradiction resolution | two trusted claims, same scope | 1 active, 429 chars | 2 active, 717 chars | tolerance doubles the prompt cost and answers nothing |
+| Diversification | 12 paraphrases + 3 distinct claims, equal relevance | 4 distinct of 4 | 1 distinct | relevance alone fills the pack with one claim, four times |
+
+The `no-credit` and `no-contradiction` arms still appear in the study and still report 100%, and the
+report says so beside them: their contribution is measured by the micro-ablation, not by the arm.
+
+### 12.10 What the results do not show
 
 1. **No public benchmark was executed.** BIRD-Interact, nvBench 2.0, and Text2Vis are specified with
    sample sizes and power in §11/§17; they are the next phase (S1/S2), not this one.
@@ -1240,7 +1299,7 @@ phase's scope or are scheduled engineering work with a named trigger.
 
 | # | Item | Why it is not a phase gap | Trigger / plan |
 |---|---|---|---|
-| E1 | Branch coverage 94.37% vs the 95% release bar | Lines/statements/functions are ≥99.1%; the remaining branches are defensive guards, and the phase bar is "no red gates", which holds | Before `0.1.0` release: add guards tests or narrow the types |
+| E1 | Seven branch arms are unreachable | The bar (95%) is met at 99.53%; each is an invariant guard the type system cannot express, listed with its file, line, and reason in §10.3 | Close them only if a schema change makes them reachable |
 | E2 | Public benchmark execution (BIRD-Interact, nvBench, Text2Vis) | The phase delivers the evaluation plan, power analysis, and harness contract; execution is S1/S2 | After S1 shadow mode; preregister, then run |
 | E3 | Cortex conformance against the real package | Cortex is not published; depending on it is explicitly out of scope | When `@agentix-e/cortex-*` publishes: switch to `import type`, add a conformance test |
 | E4 | On-device embedding adapter (ONNX/WebGPU) | POC-3 validated the retrieval behaviour via API; the adapter is product work | P2; must pass N11 (CPU/WebGPU, no CUDA) |
@@ -1281,8 +1340,8 @@ cd microglia
 pnpm install
 pnpm check
 # typecheck → 8 projects
-# 285 tests, coverage 99.15 / 94.37 / 99.12 / 99.15
-# study: 6 arms × 6 rounds, 11 gates, artifacts in bench/results/
+# 370 tests, coverage 100 / 99.53 / 100 / 100
+# study: 9 arms × 6 rounds, 15 gates, 3 micro-ablations, artifacts in bench/results/
 ```
 
 ### 16.3 Schema examples (serialised form)
@@ -1406,8 +1465,8 @@ Delivered and verified in `AgentiX-E/microglia-docs`:
 | Product whitepaper | `WHITEPAPER.md`, 60+ citations, live-POC numbers, CPU/WebGPU constraint, competitor source audit |
 | Technical design | `TECH-DESIGN.md`, packages, API, algorithms, security, Cortex verdict, POC register, ADRs, acceptance criteria |
 | Monorepo | 8 packages, layered, import-on-demand; zero runtime deps in core/capture/apply/distill |
-| Tests | **285 passing**, coverage **99.15 / 94.37 / 99.12 / 99.15** |
-| Mechanism study | 6 arms, 11 gates, all green; artifacts committed |
+| Tests | **370 passing**, coverage **100 / 99.53 / 100 / 100** |
+| Mechanism study | 9 arms, 3 micro-ablations, 15 gates, all green; artifacts committed |
 | Live POCs | DeepSeek distillation, LLM reader (generic/house/poison), Zhipu embedding retrieval, CPU scale |
 | CI | `ci` and `poc-live` workflows, both verified on the private repository |
 
