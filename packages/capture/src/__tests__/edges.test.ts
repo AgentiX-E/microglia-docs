@@ -326,3 +326,39 @@ describe('optional text branches', () => {
     await mg.close();
   });
 });
+
+describe('run validation and missing knowledge', () => {
+  it('rejects an empty or over-long task', async () => {
+    const memory = await store();
+    const mg = await openMicroglia({ app: 'x', namespace: 'acme', store: memory });
+    expect(() => mg.begin({ task: '', input: {} })).toThrow(/MG_E_CONFIG/);
+    expect(() => mg.begin({ task: 'x'.repeat(121), input: {} })).toThrow(/MG_E_CONFIG/);
+    await mg.close();
+  });
+
+  it('honours an explicit session id', async () => {
+    const memory = await store();
+    const mg = await openMicroglia({ app: 'x', namespace: 'acme', store: memory });
+    const run = mg.begin({ task: 't', input: {}, sessionId: 's-9' });
+    expect(run.sessionId).toBe('s-9');
+    await mg.close();
+  });
+
+  it('credits a pack that cites knowledge missing from the store', async () => {
+    const memory = await store();
+    const mg = await openMicroglia({ app: 'x', namespace: 'acme', store: memory });
+    const pack = {
+      items: [],
+      ids: ['k_missing'],
+      rendered: '',
+      tokens: 0,
+      hash: 'h',
+      budget: 0,
+      truncated: 0,
+    };
+    const run = mg.begin({ task: 't', input: {}, pack });
+    await run.complete({ ok: true });
+    await expect(run.outcome(false)).resolves.toBeDefined();
+    await mg.close();
+  });
+});

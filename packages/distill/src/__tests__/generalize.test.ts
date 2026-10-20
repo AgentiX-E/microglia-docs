@@ -103,3 +103,21 @@ describe('generalisation predicate', () => {
     expect(duplicate.evidence).toHaveLength(1);
   });
 });
+
+describe('remaining generalisation branches', () => {
+  it('treats two absent payloads as equal and rejects a candidate without a domain', () => {
+    const left = { ...item('sales'), payload: undefined };
+    const right = { ...candidate('hr'), payload: undefined };
+    expect(payloadsEqual(left, right)).toBe(true);
+    expect(
+      canGeneralize(left, { ...candidate('hr'), scope: { task: 'chart.recommend', intent: 'trend' } }),
+    ).toBe(false);
+  });
+
+  it('deduplicates evidence that appears in two sibling items', () => {
+    const a = item('sales');
+    const b = { ...item('hr'), evidence: a.evidence };
+    const merged = mergeEvidence([a, b], candidate('ops'));
+    expect(merged.evidence).toHaveLength(2);
+  });
+});

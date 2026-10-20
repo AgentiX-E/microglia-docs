@@ -187,3 +187,28 @@ describe('schema validation', () => {
     });
   });
 });
+
+describe('deterministic tie ordering', () => {
+  it('orders knowledge with the same updatedAt by id', async () => {
+    const memory = await EmbeddedMemory.open(new MemoryJournal());
+    await memory.putKnowledge(item('b'));
+    await memory.putKnowledge(item('a'));
+    const rows = await memory.listKnowledge({ namespace: 'acme' });
+    expect(rows.map((entry) => entry.id)).toEqual(['a', 'b']);
+    await memory.close();
+  });
+
+  it('orders scope-only search hits by id when scores tie', async () => {
+    const memory = await EmbeddedMemory.open(new MemoryJournal());
+    await memory.putKnowledge(item('b'));
+    await memory.putKnowledge(item('a'));
+    const hits = await memory.search({
+      task: 'chart.recommend',
+      text: '',
+      namespace: 'acme',
+      scope: { domain: 'sales' },
+    });
+    expect(hits.map((hit) => hit.item.id)).toEqual(['a', 'b']);
+    await memory.close();
+  });
+});

@@ -221,3 +221,30 @@ describe('features and interpreter', () => {
     expect(out[0]?.kind).toBe('constraint');
   });
 });
+
+describe('cardinality ceiling', () => {
+  it('rejects a constraint whose maximum is exceeded', () => {
+    expect(
+      constraintMatches(
+        { when: { intent: 'composition', maxCategories: 5 }, then: { mark: 'pie' } },
+        { domain: 'sales', intent: 'composition', field: 'revenue', categoryCount: 8 },
+      ),
+    ).toBe(false);
+  });
+});
+
+describe('predicate mismatches', () => {
+  const features = { domain: 'sales', intent: 'trend', field: 'revenue', categoryCount: 4 } as const;
+
+  it('rejects a different intent, domain, or field when stated', () => {
+    expect(
+      constraintMatches({ when: { intent: 'comparison' }, then: { mark: 'bar' } }, features),
+    ).toBe(false);
+    expect(
+      constraintMatches({ when: { domain: 'finance' }, then: { mark: 'bar' } }, features),
+    ).toBe(false);
+    expect(
+      constraintMatches({ when: { field: 'units' }, then: { mark: 'bar' } }, features),
+    ).toBe(false);
+  });
+});

@@ -56,7 +56,7 @@ appears in the gap register (§15).
 | N4 | Added latency on the request path | p95 ≤ 50ms | 0.02ms at 6 items (POC scale) |
 | N5 | Added prompt size | ≤ 300 tokens | 90 tokens (POC) |
 | N6 | Coverage | ≥95% lines/functions/statements | 98.60 / 98.24 / 98.60 |
-| N7 | Branch coverage | ≥95% | **93.13%** — release-bar gap of 1.87pp |
+| N7 | Branch coverage | ≥95% | **94.37%** — release-bar gap of 0.63pp |
 | N8 | No network in tests | 0 calls | 0 |
 | N9 | No mocks of the system under test | ports only | fakes only for `Storage`/`LLM` |
 | N10 | ESM-only, tree-shakable | `sideEffects: false` | declared |
@@ -936,16 +936,16 @@ fix.
 
 | Dimension | Result | Threshold |
 |---|---|---|
-| Lines | **98.60%** | 95 |
-| Statements | **98.60%** | 95 |
-| Functions | **98.24%** | 95 |
-| Branches | **93.13%** | 85 (floor); 95 is the release bar |
+| Lines | **99.15%** | 95 |
+| Statements | **99.15%** | 95 |
+| Functions | **99.12%** | 95 |
+| Branches | **94.37%** | 85 (floor); 95 is the release bar |
 
 The branch gap is tracked as E1 in §15.2. The remaining misses are defensive guards (missing optional
-fields, unreachable enum arms, array-op guards) concentrated in `generalize.ts`, `scenario.ts`, and
-`store.ts`. Closing the last 1.87pp requires either tests for states the type system forbids or
-removing guards that protect against persisted data from an older schema; both are changes to the
-contract, not just to the test file, so they are scheduled rather than rushed (E1).
+fields, unreachable enum arms, array-op guards) concentrated in `scenario.ts` and `study.ts`.
+Closing the last 0.63pp requires either tests for states the type system forbids or removing guards
+that protect against malformed registry data; both are changes to the contract, not just to the test
+file, so they are scheduled rather than rushed (E1).
 
 ### 10.3 Commands
 
@@ -1240,7 +1240,7 @@ phase's scope or are scheduled engineering work with a named trigger.
 
 | # | Item | Why it is not a phase gap | Trigger / plan |
 |---|---|---|---|
-| E1 | Branch coverage 93.13% vs the 95% release bar | Lines/statements/functions are ≥98.6%; the remaining branches are defensive guards, and the phase bar is "no red gates", which holds | Before `0.1.0` release: add guards tests or narrow the types |
+| E1 | Branch coverage 94.37% vs the 95% release bar | Lines/statements/functions are ≥99.1%; the remaining branches are defensive guards, and the phase bar is "no red gates", which holds | Before `0.1.0` release: add guards tests or narrow the types |
 | E2 | Public benchmark execution (BIRD-Interact, nvBench, Text2Vis) | The phase delivers the evaluation plan, power analysis, and harness contract; execution is S1/S2 | After S1 shadow mode; preregister, then run |
 | E3 | Cortex conformance against the real package | Cortex is not published; depending on it is explicitly out of scope | When `@agentix-e/cortex-*` publishes: switch to `import type`, add a conformance test |
 | E4 | On-device embedding adapter (ONNX/WebGPU) | POC-3 validated the retrieval behaviour via API; the adapter is product work | P2; must pass N11 (CPU/WebGPU, no CUDA) |
@@ -1281,7 +1281,7 @@ cd microglia
 pnpm install
 pnpm check
 # typecheck → 8 projects
-# 267 tests, coverage 98.60 / 93.13 / 98.24 / 98.60
+# 285 tests, coverage 98.60 / 94.37 / 98.24 / 98.60
 # study: 6 arms × 6 rounds, 11 gates, artifacts in bench/results/
 ```
 
@@ -1406,7 +1406,7 @@ Delivered and verified in `AgentiX-E/microglia-docs`:
 | Product whitepaper | `WHITEPAPER.md`, 60+ citations, live-POC numbers, CPU/WebGPU constraint, competitor source audit |
 | Technical design | `TECH-DESIGN.md`, packages, API, algorithms, security, Cortex verdict, POC register, ADRs, acceptance criteria |
 | Monorepo | 8 packages, layered, import-on-demand; zero runtime deps in core/capture/apply/distill |
-| Tests | **267 passing**, coverage **98.60 / 93.13 / 98.24 / 98.60** |
+| Tests | **285 passing**, coverage **98.60 / 94.37 / 98.24 / 98.60** |
 | Mechanism study | 6 arms, 11 gates, all green; artifacts committed |
 | Live POCs | DeepSeek distillation, LLM reader (generic/house/poison), Zhipu embedding retrieval, CPU scale |
 | CI | `ci` and `poc-live` workflows, both verified on the private repository |

@@ -30,6 +30,8 @@ import {
   jaccardSimilarity as jaccardOf,
   bm25Score as bm25Of,
   mmrSelect as mmrOf,
+  opCount as opCountOf,
+  stddev as stddevOf,
 } from '../index.js';
 
 describe('diff edge cases', () => {
@@ -222,5 +224,27 @@ describe('lexical edge cases', () => {
 
   it('returns an empty MMR selection for an empty pool', () => {
     expect(mmrOf([], 3)).toEqual([]);
+  });
+});
+
+describe('remaining pure branches', () => {
+  it('counts operations and computes variance for a real sample', () => {
+    expect(opCountOf(diffJson({ a: 1 }, { a: 2 }))).toBe(1);
+    expect(varianceOf([1, 2, 3])).toBeCloseTo(1, 10);
+    expect(stddevOf([2, 4])).toBeCloseTo(Math.SQRT2, 10);
+  });
+
+  it('computes logGamma below one half', () => {
+    expect(logGammaOf(0.3)).toBeGreaterThan(0);
+  });
+
+  it('skips an array op whose key is a string', () => {
+    expect(applyOps([1, 2], [{ op: 'insert', path: ['x' as never], after: 3 }])).toEqual([1, 2]);
+  });
+
+  it('throws when an intermediate path element is a scalar', () => {
+    expect(() =>
+      applyOps({ a: 1 }, [{ op: 'set', path: ['a', 'b', 'c'], before: 1, after: 2 }]),
+    ).toThrow(TypeError);
   });
 });
