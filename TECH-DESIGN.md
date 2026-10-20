@@ -1058,8 +1058,9 @@ load-bearing, not decorative. All 11 gates pass.
 **Setup.** 24 free-text corrections generated from real corpus items, three of them prompt-injection
 attempts. The prompt and parser are the shipped ones. Provider: `deepseek-chat`, temperature 0.
 
-Two runs are reported because the model is stochastic. Run A is local (2026-10-20T02:36Z), run B is
-the `poc-live` CI run (`39360812609`, 02:50Z). The conclusion must hold in both.
+Two runs are reported because the model is stochastic. Run A is local (2026-10-20T02:36Z) and its
+artifacts are `poc/results/poc-*.json`; run B is the `poc-live` CI run (`39360812609`, 02:50Z),
+summarised in `bench/results/ci-run.json`. The conclusion must hold in both.
 
 | Metric | Run A | Run B (CI) |
 |---|---|---|
