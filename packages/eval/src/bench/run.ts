@@ -7,14 +7,14 @@
  */
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { renderJson, renderMarkdown, summarise } from '../report.js';
+import { renderJson, summarise } from '../report.js';
 import { DEFAULT_CONFIG, runStudy } from '../study.js';
 
 const result = await runStudy(DEFAULT_CONFIG);
 const dir = join(process.cwd(), 'bench', 'results');
 await mkdir(dir, { recursive: true });
+// JSON only: the repository keeps two prose documents, not a third generated one.
 await writeFile(join(dir, 'study.json'), renderJson(result), 'utf8');
-await writeFile(join(dir, 'study.md'), renderMarkdown(result), 'utf8');
 
 process.stdout.write(`${summarise(result)}\n`);
 process.stdout.write(`artifacts: ${dir}\n`);

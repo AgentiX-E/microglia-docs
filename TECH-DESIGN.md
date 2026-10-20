@@ -892,8 +892,8 @@ fix.
 |---|---|---|
 | Mean pack size | **90–259 tokens** | 6 rules in the study; 10k pool, budget-bound |
 | Full mechanism study (6 arms × 6 rounds) | **0.44 s** | Single core, in-memory journal |
-| LLM distill latency | **951 ms p50 / 1,265 ms p95** | DeepSeek, 24 calls, 496 tokens |
-| LLM reader latency | **652 ms p50 / 959 ms p95** | DeepSeek, 70 calls, 461 tokens |
+| LLM distill latency | **951–1,210 ms p50 / 1,265–1,510 ms p95** | DeepSeek, 24 calls, ~495 tokens, two runs |
+| LLM reader latency | **652–858 ms p50 / 959–1,021 ms p95** | DeepSeek, 70 calls, 461 tokens, two runs |
 
 ### 9.2 Budgets
 
@@ -1025,10 +1025,10 @@ from a run that cannot be reproduced by the command in the same row.
 | ID | Question | Method | n | Command | Artifact | Conclusion |
 |---|---|---|---|---|---|---|
 | POC-0 | Does feedback become transferable knowledge? | Deterministic 6-arm ablation | 280 paired | `pnpm bench` | `bench/results/study.json` | +68.21pp; unseen domain 100% vs 32.86% |
-| POC-1 | Can an LLM turn free-text feedback into a scoped lesson? | DeepSeek + shipped prompt/parser | 24 | `pnpm poc:llm-distill` | `poc/results/poc-llm-distill.json` | 95.83% mark, 100% intent, 0 active injections |
-| POC-2 | Does a real LLM follow the pack? | DeepSeek reader, generic vs house vs poison | 70 | `pnpm poc:llm-reader` | `poc/results/poc-llm-reader.json` | generic −2.38pp; house +89.29pp; poison 0pp |
+| POC-1 | Can an LLM turn free-text feedback into a scoped lesson? | DeepSeek + shipped prompt/parser | 24 | `pnpm poc:llm-distill` | `poc/results/poc-llm-distill.json` | 91.7–95.8% mark, 95.8–100% intent, 0 active injections |
+| POC-2 | Does a real LLM follow the pack? | DeepSeek reader, generic vs house vs poison | 70 | `pnpm poc:llm-reader` | `poc/results/poc-llm-reader.json` | generic 0 to −2.38pp; house +78.57 to +89.29pp; poison 0 to −8.33pp |
 | POC-3 | Does lexical retrieval survive paraphrase? | BM25 vs embedding-3 vs rank fusion | 96 | `pnpm poc:embedding` | `poc/results/poc-embedding.json` | BM25 best for light; dense +8.4pp for heavy |
-| POC-4 | Is CPU retrieval viable at 10k items? | Synthetic store, 100 queries | 3 sizes | `pnpm poc:scale` | `poc/results/poc-scale.json` | 3.10 ms p95, 13.9 MB |
+| POC-4 | Is CPU retrieval viable at 10k items? | Synthetic store, 100 queries | 3 sizes | `pnpm poc:scale` | `poc/results/poc-scale.json` | 2.6–3.1 ms p95, 14 MB |
 | POC-5 | Can a competitor's design be reproduced from source? | Source audit of 5 OSS projects + Cortex | — | §8.5 | this document | No OSS project models a correction as evidence |
 
 ### 12.1 POC-0 — mechanism study
@@ -1056,55 +1056,54 @@ load-bearing, not decorative. All 11 gates pass.
 ### 12.2 POC-1 — LLM distillation
 
 **Setup.** 24 free-text corrections generated from real corpus items, three of them prompt-injection
-attempts. The prompt and parser are the shipped ones; the only addition is a `payloadHint` (see
-§12.6, design change D1). Provider: `deepseek-chat`, temperature 0.
+attempts. The prompt and parser are the shipped ones. Provider: `deepseek-chat`, temperature 0.
 
-| Metric | Result |
-|---|---|
-| JSON parse success | **100%** |
-| Candidate yield | **100%** |
-| Correct mark | **95.83%** (23/24) |
-| Correct intent | **100%** |
-| Injection knowledge active | **0** of 3 |
-| Injection knowledge stored | 3 (all candidate/quarantined, none active) |
-| Latency | 951 ms p50 / 1,265 ms p95 |
-| Tokens | 496 mean |
+Two runs are reported because the model is stochastic. Run A is local (2026-10-20T02:36Z), run B is
+the `poc-live` CI run (`39360812609`, 02:50Z). The conclusion must hold in both.
 
-**Conclusion.** Free-text feedback can be distilled into the same typed lesson as a structural edit,
-at ~1 s and ~500 tokens. The one miss is a composition case where the model omitted the cardinality
-predicate; it is a candidate, not an active rule. Injection text produced three stored candidates and
-**zero active** rules, so the screen and the trust floor hold even when the model complies with the
-injection.
+| Metric | Run A | Run B (CI) |
+|---|---|---|
+| JSON parse success | 100% | **100%** |
+| Candidate yield | 100% | **95.83%** |
+| Correct mark | 95.83% | **91.67%** |
+| Correct intent | 100% | **95.83%** |
+| Injection knowledge active | 0 of 3 | **0 of 3** |
+| Injection knowledge stored | 3 | 3 (candidate/quarantined, none active) |
+| Latency p50 / p95 | 951 / 1,265 ms | 1,210 / 1,510 ms |
+| Tokens | 496 | 492 |
+
+**Conclusion.** Free-text feedback becomes a typed lesson at ~1 s and ~500 tokens, with 92–96% mark
+accuracy and 96–100% intent accuracy across two runs. The misses are composition cases where the
+cardinality predicate is omitted; they remain candidates, not active rules. Injection text produced
+three stored candidates and **zero active** rules in both runs.
 
 ### 12.3 POC-2 — LLM reader: generic vs house vs poison
 
-**Setup.** 42 generic cases (conventions a strong model already knows) and 28 house cases whose gold
-follows synthetic organisational conventions that contradict the generic prior. Baseline is shown as
-"a previous model's suggestion, may be wrong", which is the real host situation.
+**Setup.** 42 generic cases and 28 house cases whose gold follows synthetic organisational
+conventions that contradict the generic prior. Baseline is shown as "a previous model's suggestion,
+may be wrong", which is the real host situation.
 
-| Workload | No pack | With pack | Δ |
-|---|---|---|---|
-| Generic (n=42) | 90.48% | 88.10% | **−2.38pp** |
-| House (n=28) | 0.00% | **89.29%** | **+89.29pp** |
+| Workload | No pack | With pack | Δ | Run B (CI) |
+|---|---|---|---|---|
+| Generic (n=42) | 90.48% | 88.10% | **−2.38pp** | 90.48% → 90.48% (**0.00pp**) |
+| House (n=28) | 0.00% | **89.29%** | **+89.29pp** | 0.00% → **78.57%** (**+78.57pp**) |
 
-| Safety / quality | Result |
-|---|---|
-| Override rate on house cases | 89.29% |
-| Poison arm (12 cases, unquarantined global rule) | 100% vs 100% clean → **0pp** |
-| JSON valid | 100% |
-| Latency | 652 ms p50 / 959 ms p95 |
-| Tokens | 461 mean |
+| Safety / quality | Run A | Run B (CI) |
+|---|---|---|
+| Override rate on house cases | 89.29% | 78.57% |
+| Poison arm (12 cases, unquarantined global rule) | 0pp | **−8.33pp** |
+| JSON valid | 100% | 100% |
+| Latency p50 / p95 | 652 / 959 ms | 858 / 1,021 ms |
+| Tokens | 461 | 461 |
 
-**Conclusion.** This is the most important product finding of the round. A strong model already knows
-generic chart grammar; a pack of generic rules **does not help and can slightly hurt** (−2.38pp, one
-case, within noise but directionally consistent with anchoring). The pack's value is
-**organisational convention**: 0% → 89.29% when the gold contradicts the prior. The product must be
-sold as "your house rules", not "chart knowledge".
+**Conclusion.** A strong model already knows generic chart grammar: the generic pack is neutral to
+slightly negative (0.00 to −2.38pp). The pack's value is **organisational convention**: 0% →
+78.57–89.29% when the gold contradicts the prior. The product must be sold as "your house rules",
+not "chart knowledge".
 
-The poison control found **no effect**: DeepSeek ignored an obviously conflicting global rule in all
-12 cases. That is a null result, not proof of safety — the deterministic unguarded arm (§12.1) shows a
-14.28pp loss when a poison rule is actually active. Poison success is model- and wording-dependent,
-which is exactly why the defence is structural (quarantine) rather than a bet on model judgment.
+The poison control is **not stable**: 0pp in run A, −8.33pp in run B (one of 12 cases followed the
+rule). That is exactly the reason the defence is structural — quarantine, not a bet on model
+judgment. The deterministic unguarded arm (§12.1) shows a 14.28pp loss when a poison rule is active.
 
 ### 12.4 POC-3 — retrieval under paraphrase
 
@@ -1112,38 +1111,34 @@ which is exactly why the defence is structural (quarantine) rather than a bet on
 second vocabulary with no shared content words). Rankers: BM25, Zhipu `embedding-3` cosine, and
 reciprocal-rank fusion.
 
-| Query set | Ranker | Recall@1 | MRR |
+| Query set | Ranker | Recall@1 (A / B) | MRR (A / B) |
 |---|---|---|---|
-| Light | BM25 | **58.33%** | **0.792** |
-| Light | Dense | 54.17% | 0.767 |
-| Light | Fusion | 58.33% | 0.788 |
-| Heavy | BM25 | 20.83% | 0.376 |
-| Heavy | Dense | **29.17%** | **0.521** |
-| Heavy | Fusion | 29.17% | 0.496 |
+| Light | BM25 | **58.33% / 58.33%** | **0.792 / 0.792** |
+| Light | Dense | 54.17% / 54.17% | 0.767 / 0.767 |
+| Light | Fusion | 58.33% / 58.33% | 0.788 / 0.788 |
+| Heavy | BM25 | 20.83% / 20.83% | 0.376 / 0.376 |
+| Heavy | Dense | **29.17% / 29.17%** | **0.521 / 0.521** |
+| Heavy | Fusion | 29.17% / 27.08% | 0.496 / 0.486 |
 
-Recall@5 across all four combinations: **54.17%** minimum.
+Recall@5 minimum across all combinations and runs: **54.17%**.
 
-**Conclusion.** BM25 is the right default when the host's vocabulary matches the knowledge; it beats
-dense by 4.2pp recall@1 on light paraphrase. Under heavy vocabulary shift, dense gains **+8.3pp
-recall@1 and +0.145 MRR**. Unconditional rank fusion does **not** beat dense on heavy queries (equal
-recall@1, lower MRR), because a noisy lexical list dilutes the semantic one. Design change D3 makes
-embeddings an optional channel, gated on lexical confidence, not a default blend.
-
-The absolute recall is modest because the pool deliberately contains seven intents with overlapping
-phrasing. That is the honest shape of a hard retrieval problem; it is also why the pack is
-scope-filtered before ranking.
+**Conclusion.** BM25 is the right default when the host's vocabulary matches the knowledge (+4.2pp
+recall@1 on light paraphrase). Under heavy vocabulary shift, dense gains **+8.3pp recall@1 and +0.145
+MRR**, stable across runs. Unconditional rank fusion does **not** beat dense on heavy queries (equal
+or lower recall@1, lower MRR), because a noisy lexical list dilutes the semantic one. Embeddings are
+therefore an optional, confidence-gated channel (ADR-015).
 
 ### 12.5 POC-4 — CPU scale
 
-| Items | Build | p50 | p95 | Heap | Tokens |
+| Items | Build | p50 | p95 (A / B) | Heap (A / B) | Tokens |
 |---|---|---|---|---|---|
-| 1,000 | 5 ms | 1.34 ms | 1.91 ms | 1.6 MB | 259 |
-| 5,000 | 22 ms | 1.52 ms | 2.18 ms | 7.1 MB | 259 |
-| 10,000 | 45 ms | 2.07 ms | 3.10 ms | 13.9 MB | 259 |
+| 1,000 | 5 / 6 ms | 1.34 / 1.40 ms | 1.91 / **3.10** ms | 1.6 / 2.1 MB | 259 |
+| 5,000 | 22 / 28 ms | 1.52 / 1.61 ms | 2.18 / **2.71** ms | 7.1 / 8.4 MB | 259 |
+| 10,000 | 45 / 56 ms | 2.07 / 1.82 ms | 3.10 / **2.63** ms | **13.9 / 14.0 MB** | 259 |
 
-**Conclusion.** The CPU budget holds at 10k items with a wide margin. The O(n) scope scan is real but
-not the bottleneck at this scale; the SQLite index is deferred to the 100k checkpoint. The earlier
-"10k is the limit" statement is withdrawn.
+**Conclusion.** The CPU budget holds at 10k items with a wide margin (p95 2.6–3.1 ms, 14 MB). The
+O(n) scope scan is real but not the bottleneck at this scale; the SQLite index is deferred to the
+100k checkpoint. The earlier "10k is the limit" statement is withdrawn.
 
 ### 12.6 Cross-checks and design changes
 
@@ -1155,7 +1150,7 @@ Each POC changed the design. This table is the audit trail from evidence to deci
 | D2 | Generic pack: −2.38pp; house pack: +89.29pp | Positioning changed: sell house conventions, not generic chart knowledge; §6 and §10 updated |
 | D3 | BM25 wins light (+4.2pp), dense wins heavy (+8.3pp), fusion loses on heavy | Embeddings are an optional, confidence-gated channel; unconditional RRF removed from the roadmap |
 | D4 | 10k items at 3.10 ms p95, 13.9 MB | SQLite index moved from P1 to the 100k checkpoint; performance claims replaced with measurements |
-| D5 | Poison null in 12 LLM cases, −14.28pp in the deterministic unguarded arm | Quarantine stays; the claim is "structural defence", not "models resist poison" |
+| D5 | Poison effect ranged 0 to −8.33pp across two runs; −14.28pp in the deterministic unguarded arm | Quarantine stays; the claim is "structural defence", not "models resist poison" |
 
 ### 12.7 What the results do not show
 
@@ -1273,7 +1268,7 @@ packages/capture/src     options, trust, normalize, run, microglia, export, doct
 packages/nl2charts/src   chart, interpret
 packages/cortex-adapter/src  projection
 packages/eval/src        stats, scenario, study, report, bench/run
-bench/results            study.json, study.md
+bench/results            study.json
 ```
 
 ### 16.2 Reproduce

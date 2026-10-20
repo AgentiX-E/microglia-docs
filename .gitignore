@@ -5,6 +5,7 @@ coverage/
 .DS_Store
 .microglia/
 bench-artifacts/
+bench/results/*.md
 
 .env
 .env.*
