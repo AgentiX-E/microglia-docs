@@ -893,8 +893,8 @@ fix.
 |---|---|---|
 | Mean pack size | **90–259 tokens** | 6 rules in the study; 10k pool, budget-bound |
 | Full mechanism study (6 arms × 6 rounds) | **0.44 s** | Single core, in-memory journal |
-| LLM distill latency | **951–1,210 ms p50 / 1,265–1,510 ms p95** | DeepSeek, 24 calls, ~495 tokens, two runs |
-| LLM reader latency | **652–858 ms p50 / 959–1,021 ms p95** | DeepSeek, 70 calls, 461 tokens, two runs |
+| LLM distill latency | **951–1,276 ms p50 / 1,265–1,562 ms p95** | DeepSeek, 24 calls, ~495 tokens, three runs |
+| LLM reader latency | **652–898 ms p50 / 959–1,199 ms p95** | DeepSeek, 70 calls, 461 tokens, three runs |
 
 ### 9.2 Budgets
 
@@ -1027,7 +1027,7 @@ from a run that cannot be reproduced by the command in the same row.
 |---|---|---|---|---|---|---|
 | POC-0 | Does feedback become transferable knowledge? | Deterministic 6-arm ablation | 280 paired | `pnpm bench` | `bench/results/study.json` | +68.21pp; unseen domain 100% vs 32.86% |
 | POC-1 | Can an LLM turn free-text feedback into a scoped lesson? | DeepSeek + shipped prompt/parser | 24 | `pnpm poc:llm-distill` | `poc/results/poc-llm-distill.json` | 91.7–95.8% mark, 95.8–100% intent, 0 active injections |
-| POC-2 | Does a real LLM follow the pack? | DeepSeek reader, generic vs house vs poison | 70 | `pnpm poc:llm-reader` | `poc/results/poc-llm-reader.json` | generic 0 to −2.38pp; house +78.57 to +89.29pp; poison 0 to −8.33pp |
+| POC-2 | Does a real LLM follow the pack? | DeepSeek reader, generic vs house vs poison | 70 | `pnpm poc:llm-reader` | `poc/results/poc-llm-reader.json` | generic −2.38 to 0pp; house +75.00 to +89.29pp; poison 0 to −8.33pp |
 | POC-3 | Does lexical retrieval survive paraphrase? | BM25 vs embedding-3 vs rank fusion | 96 | `pnpm poc:embedding` | `poc/results/poc-embedding.json` | BM25 best for light; dense +8.4pp for heavy |
 | POC-4 | Is CPU retrieval viable at 10k items? | Synthetic store, 100 queries | 3 sizes | `pnpm poc:scale` | `poc/results/poc-scale.json` | 2.6–3.1 ms p95, 14 MB |
 | POC-5 | Can a competitor's design be reproduced from source? | Source audit of 5 OSS projects + Cortex | — | §8.5 | this document | No OSS project models a correction as evidence |
@@ -1059,23 +1059,24 @@ load-bearing, not decorative. All 11 gates pass.
 **Setup.** 24 free-text corrections generated from real corpus items, three of them prompt-injection
 attempts. The prompt and parser are the shipped ones. Provider: `deepseek-chat`, temperature 0.
 
-Two runs are reported because the model is stochastic. Run A is local (2026-10-20T02:36Z) and its
-artifacts are `poc/results/poc-*.json`; run B is the `poc-live` CI run (`39360812609`, 02:50Z),
-summarised in `bench/results/ci-run.json`. The conclusion must hold in both.
+Three runs are reported because the model is stochastic. Run A is local (2026-10-20T02:36Z) and its
+artifacts are `poc/results/poc-*.json`; runs B and C are `poc-live` CI runs `39360812609` (02:50Z)
+and `39362965052` (03:13Z), summarised in `bench/results/ci-runs.json`. A conclusion is only kept if
+it holds across all three.
 
-| Metric | Run A | Run B (CI) |
-|---|---|---|
-| JSON parse success | 100% | **100%** |
-| Candidate yield | 100% | **95.83%** |
-| Correct mark | 95.83% | **91.67%** |
-| Correct intent | 100% | **95.83%** |
-| Injection knowledge active | 0 of 3 | **0 of 3** |
-| Injection knowledge stored | 3 | 3 (candidate/quarantined, none active) |
-| Latency p50 / p95 | 951 / 1,265 ms | 1,210 / 1,510 ms |
-| Tokens | 496 | 492 |
+| Metric | Run A | Run B | Run C |
+|---|---|---|---|
+| JSON parse success | 100% | 100% | 100% |
+| Candidate yield | 100% | 95.83% | 95.83% |
+| Correct mark | 95.83% | 91.67% | **91.67%** |
+| Correct intent | 100% | 95.83% | 95.83% |
+| Injection knowledge active | 0 of 3 | 0 of 3 | **0 of 3** |
+| Injection knowledge stored | 3 | 3 | 3 (candidate/quarantined, none active) |
+| Latency p50 / p95 | 951 / 1,265 ms | 1,210 / 1,510 ms | 1,276 / 1,562 ms |
+| Tokens | 496 | 492 | 491 |
 
 **Conclusion.** Free-text feedback becomes a typed lesson at ~1 s and ~500 tokens, with 92–96% mark
-accuracy and 96–100% intent accuracy across two runs. The misses are composition cases where the
+accuracy and 96–100% intent accuracy across three runs. The misses are composition cases where the
 cardinality predicate is omitted; they remain candidates, not active rules. Injection text produced
 three stored candidates and **zero active** rules in both runs.
 
@@ -1085,26 +1086,25 @@ three stored candidates and **zero active** rules in both runs.
 conventions that contradict the generic prior. Baseline is shown as "a previous model's suggestion,
 may be wrong", which is the real host situation.
 
-| Workload | No pack | With pack | Δ | Run B (CI) |
-|---|---|---|---|---|
-| Generic (n=42) | 90.48% | 88.10% | **−2.38pp** | 90.48% → 90.48% (**0.00pp**) |
-| House (n=28) | 0.00% | **89.29%** | **+89.29pp** | 0.00% → **78.57%** (**+78.57pp**) |
+| Workload | No pack | With pack (A / B / C) | Δ range |
+|---|---|---|---|
+| Generic (n=42) | 90.48% | 88.10% / 90.48% / 88.10% | **−2.38 to 0.00pp** |
+| House (n=28) | 0.00% | **89.29% / 78.57% / 75.00%** | **+75.00 to +89.29pp** |
 
-| Safety / quality | Run A | Run B (CI) |
-|---|---|---|
-| Override rate on house cases | 89.29% | 78.57% |
-| Poison arm (12 cases, unquarantined global rule) | 0pp | **−8.33pp** |
-| JSON valid | 100% | 100% |
-| Latency p50 / p95 | 652 / 959 ms | 858 / 1,021 ms |
-| Tokens | 461 | 461 |
+| Safety / quality | Run A | Run B | Run C |
+|---|---|---|---|
+| Poison arm (12 cases, unquarantined global rule) | 0pp | **−8.33pp** | 0pp |
+| JSON valid | 100% | 100% | 100% |
+| Latency p50 / p95 | 652 / 959 ms | 858 / 1,021 ms | 898 / 1,199 ms |
+| Tokens | 461 | 461 | 461 |
 
 **Conclusion.** A strong model already knows generic chart grammar: the generic pack is neutral to
-slightly negative (0.00 to −2.38pp). The pack's value is **organisational convention**: 0% →
-78.57–89.29% when the gold contradicts the prior. The product must be sold as "your house rules",
+slightly negative (−2.38 to 0.00pp). The pack's value is **organisational convention**: 0% →
+**75.00–89.29%** when the gold contradicts the prior. The product must be sold as "your house rules",
 not "chart knowledge".
 
-The poison control is **not stable**: 0pp in run A, −8.33pp in run B (one of 12 cases followed the
-rule). That is exactly the reason the defence is structural — quarantine, not a bet on model
+The poison control is **not stable**: 0pp in runs A and C, −8.33pp in run B (one of 12 cases
+followed the rule). That is exactly the reason the defence is structural — quarantine, not a bet on model
 judgment. The deterministic unguarded arm (§12.1) shows a 14.28pp loss when a poison rule is active.
 
 ### 12.4 POC-3 — retrieval under paraphrase
@@ -1120,7 +1120,7 @@ reciprocal-rank fusion.
 | Light | Fusion | 58.33% / 58.33% | 0.788 / 0.788 |
 | Heavy | BM25 | 20.83% / 20.83% | 0.376 / 0.376 |
 | Heavy | Dense | **29.17% / 29.17%** | **0.521 / 0.521** |
-| Heavy | Fusion | 29.17% / 27.08% | 0.496 / 0.486 |
+| Heavy | Fusion | 29.17% / 27.08% / 25.00% | 0.496 / 0.486 / 0.475 |
 
 Recall@5 minimum across all combinations and runs: **54.17%**.
 
@@ -1136,7 +1136,7 @@ therefore an optional, confidence-gated channel (ADR-015).
 |---|---|---|---|---|---|
 | 1,000 | 5 / 6 / 5 ms | 1.34 / 1.40 / 1.5 ms | 1.91 / 3.10 / **4.17** ms | 1.6 / 2.1 / 1.8 MB | 259 |
 | 5,000 | 22 / 28 / 24 ms | 1.52 / 1.61 / 1.7 ms | 2.18 / 2.71 / **4.41** ms | 7.1 / 8.4 / 7.6 MB | 259 |
-| 10,000 | 45 / 56 / 61 ms | 2.07 / 1.82 / 1.9 ms | 3.10 / 2.63 / **2.98** ms | 13.9 / 14.0 / **14.0 MB** | 259 |
+| 10,000 | 45 / 56 / 73 ms | 2.07 / 1.82 / 1.9 ms | 3.10 / 2.63 / **3.10** ms | 13.9 / 14.0 / **14.0 MB** | 259 |
 
 **Conclusion.** The CPU budget holds at 10k items with a wide margin (p95 2.6–3.1 ms across three
 runs; 1k shows 1.9–4.2 ms because the runner is shared). The
@@ -1150,10 +1150,10 @@ Each POC changed the design. This table is the audit trail from evidence to deci
 | # | Evidence | Design change |
 |---|---|---|
 | D1 | LLM distillation produced the right intent but **0% correct mark** until the payload shape was specified | `buildDistillPrompt(..., payloadHint)` and `LlmInterpreterOptions.payloadHint` are part of the API; a pack must pass its payload example |
-| D2 | Generic pack: −2.38pp; house pack: +89.29pp | Positioning changed: sell house conventions, not generic chart knowledge; §6 and §10 updated |
+| D2 | Generic pack: −2.38 to 0pp; house pack: +75.00 to +89.29pp | Positioning changed: sell house conventions, not generic chart knowledge; §6 and §10 updated |
 | D3 | BM25 wins light (+4.2pp), dense wins heavy (+8.3pp), fusion loses on heavy | Embeddings are an optional, confidence-gated channel; unconditional RRF removed from the roadmap |
 | D4 | 10k items at 3.10 ms p95, 13.9 MB | SQLite index moved from P1 to the 100k checkpoint; performance claims replaced with measurements |
-| D5 | Poison effect ranged 0 to −8.33pp across two runs; −14.28pp in the deterministic unguarded arm | Quarantine stays; the claim is "structural defence", not "models resist poison" |
+| D5 | Poison effect ranged 0 to −8.33pp across three runs; −14.28pp in the deterministic unguarded arm | Quarantine stays; the claim is "structural defence", not "models resist poison" |
 
 ### 12.7 What the results do not show
 
@@ -1222,7 +1222,7 @@ readiness probe and the counts to a dashboard.
 | ADR-011 | Cortex as projection, not source of truth | Cortex as store | No derivation edge, no credit assignment, not on npm |
 | ADR-012 | ESM-only, zero runtime deps | CJS + deps | Browser-safe core; no supply-chain surface |
 | ADR-013 | CPU/WebGPU only; no GPU runtime, no fine-tuning | Local GPU inference; fine-tuned generator | Cost, privacy, edge deployment; the export path covers training |
-| ADR-014 | Sell house conventions, not generic knowledge | Generic chart rules | POC-2: generic −2.38pp; house +89.29pp |
+| ADR-014 | Sell house conventions, not generic knowledge | Generic chart rules | POC-2: generic −2.38 to 0pp; house +75.00 to +89.29pp |
 | ADR-015 | BM25 default; embeddings optional and confidence-gated | Unconditional hybrid | POC-3: BM25 wins light; dense wins heavy; fusion loses on heavy |
 | ADR-016 | `payloadHint` is part of the LLM interpreter contract | Let the model infer the payload | POC-1: 0% → 95.83% mark accuracy |
 

@@ -40,7 +40,7 @@ as a target. The POC is a **controlled mechanism study**, not a leaderboard entr
 
 POC 的受控实验（560 训练 / 280 留出，4 个 schema，6 类系统性缺陷，留出 `ops` 域完全不给反馈）测得：31.79% → 100.00%（+68.21pp，McNemar p<0.0001）；**在从未收到反馈的 `ops` 域上，允许作用域泛化的臂为 100.00%，禁止泛化的臂为 32.86%**——这是"越用越聪明"最干净的一次隔离验证。去掉信任上限后，投毒臂从 100.00% 掉到 85.71%，说明防护是承重的，不是装饰。
 
-这一轮又用真实 API 补了四个 POC（两次运行，结论须在两次都成立）：**通用图表知识不需要 microglia**——DeepSeek 在无 pack 时已达 90.48%，加 pack 为 90.48% 至 88.10%（0 至 −2.38pp）；**组织惯例才是价值所在**——当 gold 与模型先验冲突时，无 pack 为 0.00%，加 pack 为 **78.57%–89.29%**。LLM 蒸馏把自由文本纠错转成带 scope 的规则，mark 准确率 **91.67%–95.83%**、intent **95.83%–100%**、注入文本 **0 条激活**；Embedding 在重度改写下比 BM25 的 recall@1 稳定高 **8.3pp**，但轻度改写时 BM25 更强，因此 embedding 只能作为按置信度启用的可选通道。CPU 规模测试在 1k/5k/10k 条知识上 p95 为 **1.9–4.4ms**（10k 为 2.6–3.1ms）、堆增量 **14MB**——**不需要 GPU，也不需要服务端**。
+这一轮又用真实 API 补了四个 POC（三次运行，结论须在三次都成立）：**通用图表知识不需要 microglia**——DeepSeek 在无 pack 时已达 90.48%，加 pack 为 90.48% 至 88.10%（0 至 −2.38pp）；**组织惯例才是价值所在**——当 gold 与模型先验冲突时，无 pack 为 0.00%，加 pack 为 **75.00%–89.29%**。LLM 蒸馏把自由文本纠错转成带 scope 的规则，mark 准确率 **91.67%–95.83%**、intent **95.83%–100%**、注入文本 **0 条激活**；Embedding 在重度改写下比 BM25 的 recall@1 稳定高 **8.3pp**，但轻度改写时 BM25 更强，因此 embedding 只能作为按置信度启用的可选通道。CPU 规模测试在 1k/5k/10k 条知识上 p95 为 **1.9–4.4ms**（10k 为 2.6–3.1ms）、堆增量 **14MB**——**不需要 GPU，也不需要服务端**。
 
 必须说清楚的三个前提：纠错必须是**系统性**的（同一类错误会重复出现）；每条知识需要有**重复证据**（本 POC 每条规则约 12 次观测，均匀噪声因此被多数票吸收）；宿主必须传入**结构化 scope**（intent/domain），否则检索退化为纯文本匹配。产品约束同样明确：**只支持 CPU 或浏览器 WebGPU，不做 GPU 训练/推理，不做本地微调**。
 
@@ -282,7 +282,7 @@ decision before producing a single rule; a library produces one on the first edi
 
 **Positioning correction from the live POC.** Sell **house conventions**, not chart knowledge. In
 POC-2, a pack of generic chart rules left DeepSeek at 90.48% (one run) or moved it to 88.10% (the
-other), while a pack of organisational conventions moved the same model from 0% to **78.57–89.29%**.
+other), while a pack of organisational conventions moved the same model from 0% to **75.00–89.29%**.
 The product's promise is "your rules, applied consistently", not "the model learns charts".
 
 ### 6.2 Principles
@@ -518,7 +518,7 @@ Live POCs (this round, real APIs):
 |---|---|---|
 | LLM distillation | 91.7–95.8% mark, 95.8–100% intent, 0 active injections | Free text becomes typed knowledge |
 | LLM reader, generic | 90.48% → 90.48–88.10% | Generic rules are not the product |
-| LLM reader, house | 0.00% → 78.57–89.29% | Organisational convention is the product |
+| LLM reader, house | 0.00% → 75.00–89.29% | Organisational convention is the product |
 | Poison control | 0 to −8.33pp | Model-dependent; quarantine is the defence |
 | Embedding retrieval | heavy paraphrase +8.3pp recall@1 | Optional channel, not a default |
 | CPU scale (10k) | 2.6–3.1 ms p95, 14 MB (1.9–4.4 ms across sizes/runs) | No GPU, no server |
