@@ -1281,7 +1281,7 @@ cd microglia
 pnpm install
 pnpm check
 # typecheck → 8 projects
-# 285 tests, coverage 98.60 / 94.37 / 98.24 / 98.60
+# 285 tests, coverage 99.15 / 94.37 / 99.12 / 99.15
 # study: 6 arms × 6 rounds, 11 gates, artifacts in bench/results/
 ```
 
@@ -1406,7 +1406,7 @@ Delivered and verified in `AgentiX-E/microglia-docs`:
 | Product whitepaper | `WHITEPAPER.md`, 60+ citations, live-POC numbers, CPU/WebGPU constraint, competitor source audit |
 | Technical design | `TECH-DESIGN.md`, packages, API, algorithms, security, Cortex verdict, POC register, ADRs, acceptance criteria |
 | Monorepo | 8 packages, layered, import-on-demand; zero runtime deps in core/capture/apply/distill |
-| Tests | **285 passing**, coverage **98.60 / 94.37 / 98.24 / 98.60** |
+| Tests | **285 passing**, coverage **99.15 / 94.37 / 99.12 / 99.15** |
 | Mechanism study | 6 arms, 11 gates, all green; artifacts committed |
 | Live POCs | DeepSeek distillation, LLM reader (generic/house/poison), Zhipu embedding retrieval, CPU scale |
 | CI | `ci` and `poc-live` workflows, both verified on the private repository |
