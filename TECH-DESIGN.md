@@ -19,11 +19,11 @@ Version 1.0 · 2026-10-20 · Author: Lambertyan · Status: implementation-ready
 | §9–10 | Performance and testing |
 | §11 | The evaluation protocol for public benchmarks |
 | §12 | What the POC actually measured |
-| §13–14 | Operations, decisions, and the gap register |
+| §13–15 | Operations, decisions, and the gap register |
 
 Every number in §12 is produced by `pnpm check` in this repository. Every API in §5 exists in
 `packages/*/src`. Where the document describes something not yet built, it is marked **PLANNED** and
-appears in the gap register (§14).
+appears in the gap register (§15).
 
 ---
 
@@ -64,7 +64,7 @@ appears in the gap register (§14).
 | N12 | Memory at 10k items | ≤100 MB heap | **13.9 MB** measured |
 | N13 | `recall` p95 at 10k items | ≤50 ms | **3.10 ms** measured |
 
-N7 is deliberately reported as a miss rather than rounded up. §14 lists the remediation.
+N7 is deliberately reported as a miss rather than rounded up. §15.2 (E1) lists the remediation.
 
 ---
 
@@ -940,7 +940,7 @@ fix.
 | Functions | **98.24%** | 95 |
 | Branches | **93.13%** | 85 (floor); 95 is the release bar |
 
-The branch gap is the P0 item in §14. The remaining misses are defensive guards (missing optional
+The branch gap is tracked as E1 in §15.2. The remaining misses are defensive guards (missing optional
 fields, unreachable enum arms, array-op guards) concentrated in `generalize.ts`, `scenario.ts`, and
 `store.ts`. Closing the last 1.87pp requires either tests for states the type system forbids or
 removing guards that protect against persisted data from an older schema; both are changes to the
