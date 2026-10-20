@@ -92,7 +92,14 @@ Three attempts were needed to make the lane run at all, and the third one is the
 |---|---|---|
 | 1 | 404 on a hard-coded archive name | try known names in order |
 | 2 | 404 on both known names | ask the dataset API for its file list and try every archive it lists |
-| 3 | see CI | — |
+| 3 | the dataset API answered: the repository holds `.gitattributes`, `README.md`, and three sharded question files — **no databases** | accept a pinned archive (`BIRD_ARCHIVE_URL`) and say so plainly |
+
+The third run settled the question the first two raised. BIRD Mini-Dev's Hugging Face repository is a
+question bank; the SQLite databases are distributed separately. A lane that needs execution accuracy
+therefore needs one piece of setup — upload the complete package as a release asset and set the
+`BIRD_ARCHIVE_URL` variable — and until then the lane fails with the file list rather than a stack
+trace. That is the correct state: the harness is proven, the data is missing, and the message says
+which.
 
 What is proven today: the harness executes end to end, and a missing dataset produces a named error
 with the list of what the host actually offers, not an empty result. What is not proven: any accuracy

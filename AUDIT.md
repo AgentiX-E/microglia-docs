@@ -50,7 +50,7 @@ malformed domain instead of failing.
 
 | Item | Status | Why it is honest to leave it open |
 |---|---|---|
-| Public benchmark numbers | **harness built, run pending** | the SOTA lane downloads BIRD Mini-Dev at run time; the archive's location has moved twice, and the lane reports the attempt rather than a number it does not have |
+| Public benchmark numbers | **harness built, data blocked** | the Hugging Face repository for BIRD Mini-Dev holds `.gitattributes`, `README.md`, and three sharded question files only — **no databases and no archive** (observed in CI run `39372781755`). Execution accuracy needs the databases, which upstream distributes as a separate package. The lane reports that list instead of a number it does not have |
 | Host shadow results (S1) | not started | requires a real product and real users; no synthetic substitute would mean anything |
 | LLM-judge calibration (κ) | not started | needs 200 human labels; a judge validated against itself is not validated |
 | Successor models | not tested | one provider, three runs; the docs say so wherever a model number appears |
@@ -78,7 +78,7 @@ keys are absent rather than skipping. Their artefacts are committed under `poc/r
 | `ci` | every push and PR to `master` | **success** (`c75552a`) | build, 370 tests, coverage gates, repository audit, 15 study gates, CPU scale |
 | `poc-live` | push to `poc/**`, dispatch | **success** (`1e59e25`) | the live DeepSeek and Zhipu POCs run against the real APIs |
 | `cortex` | weekly, dispatch | **success** (`c75552a`) | the adapter matches a freshly built cortex, field by field |
-| `sota` | weekly, dispatch | **failure, diagnosed** | the lane runs end to end and reports the dataset is unreachable by the URL it tries; the harness contract is proven, the numbers are not |
+| `sota` | weekly, dispatch | **failure, diagnosed** | the lane runs end to end and prints the dataset's file list: questions only, no databases. The harness contract is proven; the numbers are blocked on data hosting |
 
 The `sota` failure is reported rather than hidden: it is the only lane whose result depends on a
 third-party host, and a green tick there would be a lie about data the run never saw.

@@ -95,6 +95,7 @@ These are tracked but do not block a stage; each has a trigger.
 | W1 | **Cortex release dependency** | `@agentix-e/cortex-*` publishes | **Highlighted action item.** Today the adapter carries a structural copy and the `cortex` workflow clones and builds cortex to check it. On release: depend normally, switch the copy back to `import type`, delete the clone lane. |
 | W2 | vitest 4 migration | vite 7 lands in the toolchain | Clears the four dev-only advisories; it changes coverage semantics, so it is a deliberate migration, not a bump |
 | W3 | SQLite index at 100k items | a host reports > 50k rules | The O(n) scope scan is fine at 10k (2.6–3.1 ms p95) |
+| W1b | **BIRD data hosting** | before S2 can run | **Highlighted.** The upstream repository holds questions only; execution accuracy needs the databases. Upload the complete Mini-Dev package as a release asset and set the `BIRD_ARCHIVE_URL` repository variable. The lane then runs unchanged. |
 | W4 | LLM-judge calibration | S2 begins | κ ≥ 0.7 against 200 human labels; until then the judge is a measured, uncalibrated model |
 | W5 | Per-user preference scope | S1 shows cross-user variance | Requires a cold-start policy, which is a product decision |
 | W6 | Multi-process writer | a host runs > 1 writer | Today: one writer per directory, documented |
