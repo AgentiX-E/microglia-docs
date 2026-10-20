@@ -9,8 +9,9 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 |---|---|---|
 | S0 Mechanism | **closed** | — |
 | S1 Host shadow (nl2charts) | not started | needs the private adjudicated set (n=1,300, κ≥0.7) |
-| S2 Public benchmarks | **two reads: no benefit** (−2.84pp, −1.14pp); controls show the pack is inert | the knowledge that transfers is convention, which this benchmark has none of |
-| S3 SOTA push | **stopped on BIRD**; resumes only with a benchmark that carries a learnable convention | — |
+| S2 Public benchmarks | **four reads: no benefit** (−2.84, −1.14, −0.57, −0.28pp); controls show the pack is inert | the knowledge that transfers is convention, which this benchmark has none of |
+| S2b Convention transfer | **next**; protocol preregistered in the roadmap | needs a lane that transforms the gold by a house convention |
+| S3 SOTA push | stopped on BIRD; starts only after S2b moves accuracy | — |
 
 ## Iteration log
 
@@ -252,18 +253,50 @@ larger token budget — the failure is not truncation. The next round records th
 **Evidence.** Run `39406533126`, artefact `poc/results/poc-sota-bird.json`, attribution
 `poc/results/poc-sota-attribution.json`, 396 tests, coverage 100 / 100 / 100 / 99.44.
 
+### 13 — A gate that removes nothing, and a parser bug that removed a quarter
+
+**Hypothesis.** If the pack is inert because it is injected whether or not it is relevant, a relevance
+floor is the repair. The coverage distribution supported it: the median pack covered 7.1% of its
+question's content words and 47% of packs covered none.
+
+**Result** (run `39436660082`, n=352, 1h56m, 3,475 calls):
+
+| Arm | Rules/question | Accuracy | Δ | p |
+|---|---|---|---|---|
+| none | 0 | 54.55% | — | — |
+| full | 2.27 | 53.98% | −0.57pp | 0.871 |
+| gated (≥1 shared word) | 2.06 | 54.26% | −0.28pp | 1.000 |
+| oracle | 1 | 84.38% | **+29.83pp** | <1e-4 |
+
+The floor removed almost nothing (2.27 → 2.06) because a pack whose first rule shares no word can still
+hold a second that does, so the delta did not move. Gating is not the lever.
+
+**Four reads of one hypothesis** now stand at −2.84, −1.14, −0.57, −0.28pp, every interval containing
+zero, while the instrument improved each time. That is a null effect measured better, not a result
+waiting for a bigger sample.
+
+**Two defects, both found by instruments rather than by inspection:**
+
+| Defect | How it surfaced | Fix |
+|---|---|---|
+| The distillation parser accepted one of the four shapes models actually return | recording the reply prefix after a 25.7% failure rate survived a larger token budget | `parseCandidates` accepts a wrapped object, a bare array, a single candidate, and repairs control characters and trailing commas without altering a valid document |
+| A coverage floor of 0.34 emptied every pack | gate V6 refused a run in which the control injected nothing | the floor was set from the measured distribution (0.01 = one shared word), and the guide now states the distribution instead of a guess |
+
+The parser fix changes the knowledge, so the failure rate and the delta need re-measuring; neither is
+claimed here.
+
+**Evidence.** `poc/results/poc-sota-bird.json`, `poc/results/poc-sota-attribution.json`, 410 tests,
+coverage 100 / 100 / 100 / 99.44, `pnpm audit:repo` ok.
+
 ## What is left, in order
 
-1. **Relevance gating** (iteration 13): if the pack is inert because it is injected whether or not it
-   is relevant, the repair is a floor on relevance, not a better distiller. `recall({ minRelevance })`
-   returns nothing rather than something weak, and the `gated` arm measures whether that recovers the
-   1–2pp.
-2. **Distillation parse failures**: 25.7% of corrections are dropped with `LLM response is not JSON`.
-   The reply prefix is now recorded, because the cause has to be seen rather than guessed.
-3. **S2 at power, on a benchmark with a convention**: Mini-Dev caps at 352 usable questions (4.2pp
-   resolution) and carries no learnable convention. BIRD dev (1,534 questions over the same 11
-   databases) fixes the sample, not the convention; a benchmark whose gold encodes house convention
-   is what S2 actually needs.
+1. **S2b, convention transfer** (roadmap §S2b, preregistered): transform the gold of single-number
+   questions by a house convention the schema cannot reveal, then measure whether the flywheel learns
+   it from corrections. Arms: none / full / stated / oracle. Gate: ≥10pp with p<0.05 and oracle ≥90%.
+2. **Re-measure the parser fix**: the corrected parser changes which corrections become rules, so the
+   failure rate and the delta both need one more read before either is quoted.
+3. **S2 at power, if needed**: Mini-Dev caps at 352 usable questions (4.9pp resolution); BIRD dev
+   (1,534 questions over the same 11 databases) fixes the sample, not the mechanism.
 4. **S1**: instrument nl2charts behind a flag, adjudicate 1,300 cases, run the three modes. Gate:
    +3pp top-1 (p<0.05), SQL regression ≤1pp, knowledge precision ≥85%.
 5. **Cortex release**: swap the clone lane for the published package (W1).

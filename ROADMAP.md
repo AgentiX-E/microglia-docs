@@ -112,8 +112,40 @@ The stop rule stays as written: **two benchmark failures end the SOTA path.** BI
 failed twice (read 2 and read 3), so the SOTA push is stopped on this benchmark; it resumes only with
 a suite whose gold contains a house convention.
 
-**Exit gate.** BIRD-Interact ≥ +5pp at n=600; nvBench ≥ +3pp overall and ≥ +5pp on the unnamed subset;
-no substrate regression on LongMemEval-S. **Stop rule:** two benchmark failures end the SOTA path.
+**Exit gate (revised 2026-10-20).** The original gate — BIRD-Interact ≥ +5pp at n=600 — was written
+before the mechanism had been measured on public data, and the four reads above show it tests the wrong
+thing: BIRD's gold contains no knowledge the model cannot infer, so the pack is inert there by
+construction. The gate is replaced by a protocol in which the knowledge is load-bearing by design.
+
+## S2b — convention transfer on a public benchmark (next)
+
+**Question.** Can the flywheel learn a house convention that the model cannot infer, and apply it to
+held-out questions about the same database?
+
+**Protocol (preregistered before the run).**
+
+1. **Subset.** Questions whose gold result is one row with one numeric column. The convention is
+   undefined for anything else, so the subset is chosen by a rule, not by looking at outcomes.
+2. **Convention.** The workspace reports those quantities in thousands, rounded to three decimals:
+   `reported = round(gold / 1000, 3)`, applied at evaluation time. The database is untouched, so the
+   model cannot read the convention from the schema — which is the property every successful
+   measurement in this document shares.
+3. **Arms.** `none`; `full` (convention learned only from corrections in the other folds); `stated`
+   (the convention written in the prompt from the start, an upper bound); `oracle` (the gold value).
+4. **Metric.** Execution accuracy under the transformed comparison, paired by question.
+5. **Sample.** Every qualifying question. The subset size is reported before the result is read; if it
+   is below 100, the run is reported as a direction and the gate is not applied.
+
+**Gate.** `full` beats `none` by **≥10pp with p<0.05**, and `oracle` is ≥90%. **Falsification:** if a
+convention that is stated once, corrected twice, and unreachable from the schema cannot be learned and
+applied, the flywheel fails at the one thing it claims, and S3 does not start.
+
+**Why this is the right next experiment.** It is the only protocol in this document where the
+knowledge is both non-inferable (so it can matter) and scored by execution (so it cannot be
+argued with). It also exercises the whole product path — capture, distill, admission, generalisation,
+recall, apply — on data nobody curated for us.
+
+**Cost.** Roughly 1,400 model calls for 5 folds at the current subset size, about 40 minutes.
 
 ## S3 — SOTA push (conditional)
 

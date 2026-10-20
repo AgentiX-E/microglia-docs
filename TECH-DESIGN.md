@@ -1058,6 +1058,13 @@ failure is reported as a named gate rather than as a low accuracy.
 | V3 parse rate ≥ 90% | yes | the comparison is measuring the parser, not the knowledge |
 | V4 gold executable ≥ 99% | yes | the dataset half-assembled, so "wrong" is not attributable to the model |
 | V5 resolution ≤ 6pp | no | the sample cannot support the effect it is asked about; the number is reported as a direction |
+| V6 controls inject | yes | a control arm rendered an empty block, so it was a second baseline wearing a control's name |
+| V7 channel | yes | the oracle arm (gold SQL as a convention) moved accuracy by less than 10pp, so the lane cannot see knowledge at all |
+
+V6 exists because the first version of the dilution control reported `0.00 rules per question` and
+looked like evidence that length does not matter; it had injected nothing. V7 exists because a negative
+result and a broken lane are indistinguishable without a positive control: in every run so far the
+oracle arm moves the same model by 31–43pp, which is what makes the other arms' nulls readable.
 
 The pack is also fingerprinted (SHA-256 over id, status, trust and statement of every stored item)
 before and after evaluation. A change aborts the run: a pack that grows while it is measured cannot
@@ -1404,20 +1411,61 @@ on a boundary condition: **knowledge must encode something the model cannot deri
 rules that could be retired — retiring all 34 would address at most 10% of injections — which rules out
 "the distiller writes wrong facts" as the explanation and reinforces "the facts are redundant".
 
+**What the packs actually contained.** The lane records, per case, the share of the question's content
+words that the pack's best rule mentions. Across 352 questions: median **7.1%**, p75 14.3%, p90 22.2%,
+maximum 33.3%, and **47% of packs mention none of the question's words at all** — they were retrieved by
+scope alone. That is the mechanism behind "inert": half the interventions were textually unrelated to
+the question, and the other half shared one or two words with it.
+
+It also fixes the only sensible value for a coverage floor. A first attempt used 0.34, which emptied
+every pack on every question; gate V6 refused the run, which is exactly what V6 was added for. A floor
+below the median is the only one that leaves anything to measure.
+
 **A defect this run did not fix.** 165 of 641 distillation calls (25.7%) returned non-JSON and were
 dropped, unchanged from 25.9% before the token budget was raised: the failure is not truncation. The
 pack is therefore built from three quarters of the corrections, and the next round records the reply
 prefix so the cause is visible instead of guessed.
 
-### 12.13 POC-11 — relevance gating: does the pack earn its tokens?
+### 12.13 POC-11 — relevance gating, and the parser bug that biased the pack
 
-If the pack is inert because it is injected whether or not it is relevant, the repair is a gate, not a
-better distiller. `recall({ minRelevance })` exposes the top hit's normalised lexical relevance and
-returns an empty pack below it, so a host can choose "no knowledge" over "weak knowledge".
+**Question.** If the pack is inert because it is injected whether or not it is relevant, a floor on
+relevance — not a better distiller — is the repair. The measured coverage distribution (§12.12) made
+the hypothesis concrete: 47% of packs shared no content word with their question.
 
-The `gated` arm measures the same stores with that floor in place. The prediction is specific: if the
-harm is generic to adding text, gating must recover the ~1–2pp; if the knowledge is useful but noisy,
-gating must beat both. Either outcome is decision-relevant, and neither requires a new benchmark.
+**Setup.** Same folds, same stores, n=352, run `39436660082`, 1h56m, 3,475 calls. The `gated` arm
+recalls with `minCoverage = 0.01`, which is "the best rule must mention at least one of the question's
+content words".
+
+| Arm | Rules/question | Accuracy | Δ vs none | 95% CI | p |
+|---|---|---|---|---|---|
+| none | 0 | **54.55%** | — | — | — |
+| full | 2.27 | 53.98% | −0.57pp | [−3.98, +2.84] | 0.871 |
+| gated (≥1 shared word) | 2.06 | 54.26% | −0.28pp | [−3.41, +2.84] | 1.000 |
+| oracle | 1 | **84.38%** | **+29.83pp** | [+25.00, +34.94] | <1e-4 |
+
+**Reading.** The floor removes almost nothing — 2.27 → 2.06 rules per question — because a pack whose
+*first* rule shares no word can still hold a second rule that does. With that little removed, the delta
+does not move (−0.57 → −0.28). Gating is therefore not the lever: the knowledge is either redundant or
+invisible, not merely badly addressed.
+
+The four reads of the same hypothesis now stand at −2.84, −1.14, −0.57 and −0.28pp, every interval
+containing zero. The instruments improved between them (half split → cross-fitting → controls →
+coverage floor), and the estimate did not move toward a benefit. That is what a null effect looks like
+when the measurement gets better.
+
+**A parser bug, found because the failure was recorded.** The lane had been dropping 25.7% of its
+corrections with `LLM response is not JSON`. Recording the reply prefix showed why: the replies were
+valid JSON in shapes the parser did not accept — a bare array, a single candidate object, an object
+with a literal newline inside a statement, an object with a trailing comma. `parseCandidates` now
+accepts all four and repairs only what cannot change a valid document (§`packages/distill/src/llm.ts`).
+This is a bias, not a nuisance: a quarter of the evidence never reached the pack, and which quarter was
+decided by formatting.
+
+**Consequence for the next measurement.** The corrected parser changes the knowledge, so the failure
+rate and the delta both need re-measuring; neither is claimed here. What is unchanged is the structural
+finding: on a benchmark whose gold encodes only what its schema already says, no amount of the right
+knowledge moves the model — and one injected statement of *non-inferable* knowledge (the oracle) moves
+it by 30pp.
 
 ## 13. Operations
 
