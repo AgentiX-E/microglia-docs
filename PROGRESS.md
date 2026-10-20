@@ -9,8 +9,8 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 |---|---|---|
 | S0 Mechanism | **closed** | — |
 | S1 Host shadow (nl2charts) | not started | needs the private adjudicated set (n=1,300, κ≥0.7) |
-| S2 Public benchmarks | harness ready, run pending | dataset hosting (see iteration 6) |
-| S3 SOTA push | conditional on S2 | — |
+| S2 Public benchmarks | **first full read: no benefit** (−2.84pp, n=352); diagnosis next | Mini-Dev caps at 352 usable questions; BIRD dev / Interact not wired |
+| S3 SOTA push | not reachable until S2 replicates | — |
 
 ## Iteration log
 
@@ -168,13 +168,60 @@ the trust table, the lifecycle diagram, failure modes, performance, and two exte
 `TODO` markers, coverage suppressions, `any`, skipped or focused tests, runtime dependencies in a
 package manifest, and workflow soft-failures.
 
+### 11 — Cross-fitting, a frozen pack, and a negative result
+
+The lane had produced a publishable-looking +3.33pp at n=30 from a half split. Three things were wrong
+with the instrument, and fixing them changed the sign of the answer.
+
+| Defect | Why it mattered | Fix |
+|---|---|---|
+| The learning pass compared result sets only | a generation that never executed was recorded as correct whenever gold returned zero rows — the worst failures taught nothing | correctness = executable ∧ equal multiset |
+| The evaluation arm recorded a correction per question | the store under measurement grew while it was measured | evaluation is read-only; the pack is fingerprinted before and after, and a change aborts the run |
+| The interval was a constant ±13pp | independent of n, so it could not be right at any n | 10,000-resample seeded bootstrap + minimum detectable difference from the observed discordance |
+
+The protocol also changed from one half split to **k-fold cross-fitting**: every usable question is
+evaluated exactly once, by a memory that learned from the other folds. That doubles the usable sample
+for the same number of model calls, and it removes file order as a confounder (the slice is now
+interleaved across databases rather than `slice(0, limit)` over a database-sorted file).
+
+Five instrument gates now precede accuracy (TECH-DESIGN §11.5): non-empty pack, exact fold partition,
+parse rate, gold executability, and resolution.
+
+**The measurement (run `39390556532`, 1h42m, 2,760 calls, n=352):**
+
+| Arm | Execution accuracy |
+|---|---|
+| no memory | 54.83% |
+| with memory | 51.99% |
+
+−2.84pp, 95% CI [−6.25, +0.57], p = 0.143, 24 lost against 14 gained, no fold positive, 2.25 rules
+injected per question, 216.8 active rules per fold. All five gates passed; resolution 4.91pp.
+
+The n=30 number is retracted as noise with a favourable sign. The honest reading is that distilled
+schema-level lessons do not help a strong model on this benchmark, and may cost ~3pp — consistent with
+POC-2, where generic chart knowledge was worth −2.38 to 0pp while organisation-specific convention was
+worth +75 to +89pp. BIRD has no organisation-specific convention to learn; its DDL is already in the
+prompt.
+
+**One defect the run exposed:** 166 of 642 distillation calls (25.9%) failed to parse, so the pack was
+built from a biased three quarters of the corrections. Under test in iteration 12.
+
+**Evidence.** `poc/results/poc-sota-bird.json` (per-case rows, per-fold table, gates, every stored
+rule), `sota` workflow `39390556532`; `packages/eval/src/protocol.ts` with 11 unit tests; coverage
+100 / 100 / 100 / 99.44 over 391 tests.
+
 ## What is left, in order
 
-1. **S1**: instrument nl2charts behind a flag, adjudicate 1,300 cases, run the three modes. Gate:
+1. **Diagnose the negative read** (iteration 12): full / narrow / wrong-scope / oracle-hint arms in one
+   protocol, plus the distillation parse failure. A negative delta has four explanations and they are
+   separable.
+2. **S2 at power**: Mini-Dev caps at 352 usable questions, so a 5pp effect is not resolvable there
+   (4.91pp measured). BIRD dev (1,534 questions over the same 11 databases) is the next source; the
+   harness needs one input for its question file.
+3. **S1**: instrument nl2charts behind a flag, adjudicate 1,300 cases, run the three modes. Gate:
    +3pp top-1 (p<0.05), SQL regression ≤1pp, knowledge precision ≥85%.
-2. **S2**: run the public suites at the power stated in the roadmap. Gate: BIRD-Interact ≥+5pp at n=600.
-3. **Cortex release**: swap the clone lane for the published package (W1).
-4. **vitest 4 migration** once vite 7 is the toolchain default (W2).
+4. **Cortex release**: swap the clone lane for the published package (W1).
+5. **vitest 4 migration** once vite 7 is the toolchain default (W2).
 
 Nothing on this list blocks the S0 result, and none of it is hidden behind the green build: each item
 is either an experiment that has not run or a dependency that has not shipped.

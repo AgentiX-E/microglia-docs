@@ -12,7 +12,7 @@ Status as of **2026-10-20**.
 |---|---|---|---|
 | **S0 Mechanism** | Does feedback become knowledge that transfers? | **done** | G1–G15 green in `AgentiX-E/microglia` |
 | **S1 Host shadow** | Does it help on one real product, offline? | next | +3pp chart top-1 on 1,300 adjudicated cases, κ ≥ 0.7; no SQL regression |
-| **S2 Public benchmarks** | Does it beat the same backbone on published data? | **first read at n=30** | BIRD-Interact +5pp at n=600; nvBench 2.0 +3pp; no memory-substrate regression |
+| **S2 Public benchmarks** | Does it beat the same backbone on published data? | **read at n=352: no benefit (−2.84pp)** | BIRD-Interact +5pp at n=600; nvBench 2.0 +3pp; no memory-substrate regression |
 | **S3 SOTA push** | Can it lead a named benchmark, not merely improve on a baseline? | conditional | preregistered result beating the published best under the same protocol |
 
 ## S0 — Mechanism (done)
@@ -77,11 +77,27 @@ friendlier number).
 | MemoryAgentBench | 2,071 | ~2pp |
 | LongMemEval-S | 500 | substrate regression check |
 
-**First read (2026-10-20).** BIRD Mini-Dev, held-out half, DeepSeek: 50.00% → **53.33%** execution
-accuracy, +3.33pp, n=30, 18 active rules, 0.5 rules injected per question, 100% parse and execution
-rates. Directionally positive and far from significant: at n=30 a difference below ~17pp cannot be
-distinguished from noise, and half a rule per question means the pack was thin. The lane is complete;
-only the sample is missing.
+**Read 1 (2026-10-20, superseded).** n=30, half split: 50.00% → 53.33%, +3.33pp. Reported as a
+direction, not a result: at n=30 nothing below ~17pp is distinguishable from noise, and the pack held
+half a rule per question. **Retracted** by the cross-fitted read below.
+
+**Read 2 (2026-10-20, cross-fitted).** Every usable Mini-Dev question (n=352, 11 databases), 5 folds,
+each question evaluated once by a memory that never saw it: **54.83% → 51.99%, −2.84pp, 95% CI
+[−6.25, +0.57], p = 0.143**, 24 questions lost against 14 gained, no fold positive, 2.25 rules per
+question, 216.8 active rules per fold. Resolution 4.91pp; all five instrument gates passed.
+
+This is a **negative result for the hypothesis as stated** ("distilled schema lessons help a strong
+model"), not a broken harness: POC-2 measured the same asymmetry on the other workload (generic
+knowledge −2.38 to 0pp, organisational convention +75 to +89pp), and BIRD has no organisational
+convention to learn — its schema is already in the prompt.
+
+**Consequence.** S2 does not advance on this lane. Before either declaring failure or changing the
+hypothesis, the next run separates the four explanations with one protocol: replication (full),
+dilution (narrow), content (wrong-scope pack, same token cost), and channel (oracle hint — if the gold
+SQL injected as a "convention" does not move accuracy, the lane itself is broken). A distillation parse
+failure rate of 25.9% is also under repair, because it biases which corrections became rules.
+
+The stop rule stays as written: **two benchmark failures end the SOTA path.** This is one.
 
 **Exit gate.** BIRD-Interact ≥ +5pp at n=600; nvBench ≥ +3pp overall and ≥ +5pp on the unnamed subset;
 no substrate regression on LongMemEval-S. **Stop rule:** two benchmark failures end the SOTA path.

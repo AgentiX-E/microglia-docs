@@ -983,12 +983,14 @@ pnpm check       # typecheck + test + audit + bench
 | Element | Choice | Reason |
 |---|---|---|
 | Unit | One question, both arms | Paired designs remove question difficulty |
+| Split | k-fold cross-fitting, balanced, order-independent | Every question is evaluated exactly once, by a memory that never saw it; one half split discards half the questions and lets file order choose |
 | Test | Exact McNemar | Binary outcomes, small discordant counts |
 | Interval | Bootstrap 10k over questions | No normal approximation at n<500 |
 | Preregistration | Hypothesis, endpoint, n, stop rule | Prevents post-hoc endpoint selection |
 | Runs | 4 interleaved per arm when stochastic | Time-of-day drift is 1.7–2.1pp in the cortex record |
 | Judge | Order-swapped, length-controlled, κ ≥ 0.7 | Position/verbosity/style bias is systematic |
 | Corrected subsets | ARCwise-Plat for BIRD | 52.8% annotation error rate reported |
+| Resolution | Report the minimum detectable difference with the delta | A result without its resolution invites reading noise as progress |
 
 ### 11.2 Power
 
@@ -1030,6 +1032,37 @@ and the runner must emit a JSON artifact containing: config, seed, model, prompt
 per-case rows, the paired comparison, and the gate verdicts. A report without the artifact is not a
 result.
 
+The BIRD lane (`poc/sota-bird.ts`) implements this as:
+
+| Artefact field | Content |
+|---|---|
+| `config` | folds, seed, limit, generalisation switch, bootstrap resamples, pack budget, task |
+| `model`, `prompt_version` | `deepseek-chat`, `sql-prompt/2` |
+| `n` | total questions, per-fold eval size, mean learn size, database count |
+| `per_case` | id, fold, question, gold SQL, predicted SQL, both arms' verdicts, parse/exec flags, pack ids, tokens, latency |
+| `paired` | n, gained, lost, discordance, exact McNemar p, delta and bootstrap interval, minimum detectable difference |
+| `gates` | V1–V5 with the observed value and whether the run may proceed |
+| `assertions` | the per-fold knowledge digests, proving the pack did not change during evaluation |
+| `items` | every stored rule per fold, with status and trust |
+
+### 11.5 Instrument validity, before accuracy
+
+A public-benchmark number is only worth reading if the instrument that produced it could have
+detected a problem. The lane therefore refuses to publish when any blocking condition fails, and the
+failure is reported as a named gate rather than as a low accuracy.
+
+| Gate | Blocking | What a failure means |
+|---|---|---|
+| V1 pack not empty | yes | the two arms were the same arm; any delta is run-to-run noise |
+| V2 fold partition | yes | a question was evaluated twice, or evaluated by a memory that had learned from it |
+| V3 parse rate ≥ 90% | yes | the comparison is measuring the parser, not the knowledge |
+| V4 gold executable ≥ 99% | yes | the dataset half-assembled, so "wrong" is not attributable to the model |
+| V5 resolution ≤ 6pp | no | the sample cannot support the effect it is asked about; the number is reported as a direction |
+
+The pack is also fingerprinted (SHA-256 over id, status, trust and statement of every stored item)
+before and after evaluation. A change aborts the run: a pack that grows while it is measured cannot
+support a claim about what it contributed.
+
 ---
 
 ## 12. POC results
@@ -1049,7 +1082,7 @@ from a run that cannot be reproduced by the command in the same row.
 | POC-5 | Can a competitor's design be reproduced from source? | Source audit of 5 OSS projects + Cortex | — | §8.5 | this document | No OSS project models a correction as evidence |
 | POC-6 | Does a pack ever claim a rule it did not render? | Budget sweep 60…2400 chars over 40 rules | 64 budgets | `pnpm test packages/apply` | `budget.test.ts` | **No longer** — a bug, see §12.7 |
 | POC-7 | Does the adapter match the real cortex build? | Clone, build, then compare field sets | 1 item | `pnpm poc:cortex` | `cortex.yml` | 12 fields matched; the structural copy is correct |
-| POC-9 | Does the loop help a real model on a public benchmark? | BIRD Mini-Dev, two arms, execution accuracy | 30 held-out | `pnpm poc:sota` / `sota.yml` | `poc/results/poc-sota-bird.json` | 50.00% → **53.33%** (+3.33pp); 18 active rules; 0.5 rules per question |
+| POC-9 | Does the loop help a real model on a public benchmark? | BIRD Mini-Dev, cross-fitted k=5, execution accuracy | 352 (every usable question) | `pnpm poc:sota` / `sota.yml` run `39390556532` | `poc/results/poc-sota-bird.json` | **54.83% → 51.99% (−2.84pp, 95% CI [−6.25, +0.57], p=0.143)**; 2.25 rules/question; no fold positive |
 | POC-8 | Would a competitor-shaped memory do the same job? | A similarity fact store on the same corrections, clean and poisoned | 280 paired | `pnpm bench` | `bench/results/study.json` | 56.07% clean, **19.64%** poisoned; the governed loop is +43.93pp |
 
 ### 12.1 POC-0 — mechanism study
@@ -1251,8 +1284,9 @@ report says so beside them: their contribution is measured by the micro-ablation
 
 ### 12.10 What the results do not show
 
-1. **No public benchmark was executed.** BIRD-Interact, nvBench 2.0, and Text2Vis are specified with
-   sample sizes and power in §11/§17; they are the next phase (S1/S2), not this one.
+1. **The public benchmark did not confirm the mechanism.** The cross-fitted read in §12.11 resolves a
+   4.9pp effect and finds no benefit (−2.84pp, CI spanning zero, no fold positive). BIRD-Interact,
+   nvBench 2.0, and Text2Vis remain unexecuted; they are S1/S2 work, not this one.
 2. **The house workload is synthetic.** It proves a mechanism (a pack can override a prior) but the
    conventions are not a real customer's.
 3. **The LLM reader is one model.** DeepSeek was chosen for cost; a weaker or smaller model may rely
@@ -1262,6 +1296,61 @@ report says so beside them: their contribution is measured by the micro-ablation
 5. **Retrieval is one paraphrase construction.** The heavy set is adversarial by design; real users
    sit somewhere between light and heavy.
 6. **No multi-user or long-horizon study.** The POC is single-tenant and six rounds.
+
+### 12.11 POC-9 — the public lane, cross-fitted (S2 read)
+
+**Setup.** BIRD Mini-Dev, 352 usable questions (every question that is not `simple`) across its 11
+SQLite databases, 5 folds, `deepseek-chat` at temperature 0, `sql-prompt/2`. Each fold learns only
+from failures of the other four folds, distils, freezes, and answers its held-out fold twice — with no
+memory and with the frozen pack. Execution accuracy is result-multiset equality against gold.
+
+**Run.** `sota` workflow `39390556532`, 2026-10-20, 1h42m, 2,760 model calls, 2.9M tokens, 6 retries.
+All five instrument gates passed: pack non-empty (2.25 rules per question), fold partition exact
+(352/352, 0 duplicates, 0 leaks), parse 100%, gold executable 100%, resolution 4.91pp.
+
+| Arm | Execution accuracy | n |
+|---|---|---|
+| no memory | **54.83%** | 352 |
+| with memory | 51.99% | 352 |
+
+Paired result: **−2.84pp**, 95% bootstrap CI **[−6.25, +0.57]**, exact McNemar **p = 0.143**,
+24 questions lost, 14 gained, discordance 10.8%.
+
+| Fold | active rules | no memory | with memory | Δ |
+|---|---|---|---|---|
+| 0 | 250 | 56.3% | 47.9% | −8.45pp |
+| 1 | 184 | 59.2% | 59.2% | 0.00pp |
+| 2 | 193 | 52.9% | 52.9% | 0.00pp |
+| 3 | 237 | 54.3% | 52.9% | −1.43pp |
+| 4 | 220 | 51.4% | 47.1% | −4.29pp |
+
+**What this retracts.** The n=30 read (+3.33pp) was reported as a direction and is now explained: at
+n=30 a difference below ~17pp cannot be distinguished from noise, and the cross-fitted measurement of
+the same hypothesis, at 11.7× the sample and with a resolution of 4.9pp, puts the point estimate
+*below* zero. The earlier number was noise with a favourable sign, which is exactly why the roadmap
+called it "a lane, not a result".
+
+**What it establishes.** At this scale the pack is not neutral. The direction is consistent (no fold
+positive, 24 lost against 14 gained) but not significant, so the defensible statement is: *distilled
+schema-level lessons do not help a strong model on BIRD Mini-Dev, and may cost ~3pp.*
+
+**Why this is a plausible mechanism rather than a broken harness.** POC-2 measured the same asymmetry
+from the other side: a pack of generic chart knowledge did not help (−2.38 to 0pp) while a pack of
+organisation-specific convention moved accuracy by +75 to +89pp. The DDL is already in the prompt;
+a lesson that restates a fact the model can read is at best redundant and at worst competes with it.
+The BIRD lane has no organisational convention to learn — only public schema facts.
+
+**Instrument cost of that conclusion.** 216.8 active rules per fold were built from 642 corrections,
+but 166 of those 642 distillation calls (25.9%) failed to parse, so the pack was assembled from a
+biased three quarters of the failures. That is a defect, not a result, and it is the first thing the
+next round fixes.
+
+**The three controls that separate the explanations.** A negative delta has four candidate causes, and
+the next run measures them in one protocol rather than arguing about them: full pack (replication),
+narrow pack (400 characters, 3 rules — dilution), wrong-scope pack (another database's rules, same
+token cost — content or length), and an oracle hint (the gold SQL as the only "convention" — does the
+injection channel work at all). A lane where the oracle moves nothing is a broken lane, not a
+negative result.
 
 ## 13. Operations
 
