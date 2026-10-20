@@ -1049,6 +1049,7 @@ from a run that cannot be reproduced by the command in the same row.
 | POC-5 | Can a competitor's design be reproduced from source? | Source audit of 5 OSS projects + Cortex | — | §8.5 | this document | No OSS project models a correction as evidence |
 | POC-6 | Does a pack ever claim a rule it did not render? | Budget sweep 60…2400 chars over 40 rules | 64 budgets | `pnpm test packages/apply` | `budget.test.ts` | **No longer** — a bug, see §12.7 |
 | POC-7 | Does the adapter match the real cortex build? | Clone, build, then compare field sets | 1 item | `pnpm poc:cortex` | `cortex.yml` | 12 fields matched; the structural copy is correct |
+| POC-8 | Would a competitor-shaped memory do the same job? | A similarity fact store on the same corrections, clean and poisoned | 280 paired | `pnpm bench` | `bench/results/study.json` | 56.07% clean, **19.64%** poisoned; the governed loop is +43.93pp |
 
 ### 12.1 POC-0 — mechanism study
 
@@ -1199,7 +1200,35 @@ This is the second time an instrument bug was found by writing the invariant dow
 first was a redaction counter that counted structural changes and reported four redactions for an
 edit with no secret in it.
 
-### 12.8 Micro-ablations: the three modules an arm cannot measure
+### 12.8 The competitor baseline: is the governance load-bearing?
+
+The claim "observability stops at a label, memory stops at recall" is cheap to assert and was, until
+this round, unmeasured. So the closest competitor shape was implemented and run on the *same*
+corrections: extract a fact, deduplicate it against similar memories, retrieve the most similar one,
+apply it. That is what an ADD/UPDATE/DELETE memory does, and it has no scope, no trust weight, no
+admission, no contradiction resolution, and no retirement.
+
+| Store | Accuracy | Δ vs no-memory | Facts | Untrusted facts ingested |
+|---|---|---|---|---|
+| no memory (`baseline`) | 31.79% | — | — | — |
+| fact store | 56.07% | **+24.29pp** (p = 2.5e-06) | 16 | 0 |
+| fact store, same poison | **19.64%** | **−12.14pp** | 16 | 8 |
+| **full (this library)** | **100.00%** | **+68.21pp** (p < 0.0001) | 6 active | 0 |
+
+Two conclusions, both new:
+
+1. **A memory does help** — 56.07% is well above no-memory, so the product is not competing with
+   nothing. The gap to our 100% is **+43.93pp**, and it comes from scope, admission, and the guard,
+   not from a better retriever.
+2. **Without a guard the same attack takes the store *below* no-memory**: 19.64% against a 31.79%
+   baseline. A store that remembers everything is worse than a store that remembers nothing, because
+   it is confidently wrong in the cases it was supposed to fix.
+
+The fact store is implemented generously on purpose — it dedupes at 0.8 Dice, retrieves only above a
+0.2 overlap floor, and applies the retrieved mark directly. Weakening it would have produced a larger
+number and a worthless comparison.
+
+### 12.9 Micro-ablations: the three modules an arm cannot measure
 
 A clean corpus has one rule per (intent, domain), so credit assignment, contradiction resolution, and
 diversification never bind. Running an arm with each disabled therefore reports zero — which looks

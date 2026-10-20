@@ -280,6 +280,17 @@ HITL surface (nl2charts has an editor, a chart picker, and SQL errors), the data
 process, and the value appears in the same session. A platform would have to earn a procurement
 decision before producing a single rule; a library produces one on the first edit.
 
+**Positioning, measured against a competitor shape.** The whitepaper's central distinction — a label
+on a trace is not knowledge, and a memory of sentences is not governance — was tested by implementing
+the competitor shape and running it on the same corrections. A similarity fact store (extract, dedupe,
+retrieve the closest sentence, apply it) reaches **56.07%** against no-memory's 31.79%, so memory does
+help. The governed loop reaches **100.00%**, a **+43.93pp** gap that comes from scope, admission, and
+the guard rather than from retrieval. Under the same poison the fact store falls to **19.64%** —
+**below** no-memory — while quarantine holds at 100%.
+
+> A store that remembers everything is worse than a store that remembers nothing: it is confidently
+> wrong exactly where it was supposed to help.
+
 **Positioning correction from the live POC.** Sell **house conventions**, not chart knowledge. In
 POC-2, a pack of generic chart rules left DeepSeek at 90.48% (one run) or moved it to 88.10% (the
 other), while a pack of organisational conventions moved the same model from 0% to **75.00–89.29%**.

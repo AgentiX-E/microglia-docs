@@ -106,7 +106,27 @@ with the list of what the host actually offers, not an empty result. What is not
 number. The lane is scheduled weekly and on demand, and it is deliberately not a merge gate — at n=60
 the 95% interval is roughly ±13pp, and a flaky gate is worse than no gate.
 
-### 7 — External documentation
+### 7 — A competitor baseline, measured on the same corrections
+
+The whitepaper claimed that memory products stop at recall. That claim was asserted, not measured, so
+the competitor shape was implemented: extract a fact, dedupe at 0.8 Dice, retrieve the closest
+sentence above a 0.2 overlap floor, apply its answer.
+
+| Store | Accuracy | Δ vs no-memory |
+|---|---|---|
+| no memory | 31.79% | — |
+| fact store | 56.07% | +24.29pp (p = 2.5e-06) |
+| fact store + same poison | 19.64% | −12.14pp |
+| **full (this library)** | **100.00%** | **+68.21pp** |
+
+Two findings, one of them uncomfortable for the competition and one useful for us: memory alone is
+worth +24.29pp, so the product competes with something real; and the guard is worth more than the
+retriever, because without it the same attack takes a store *below* having no memory at all.
+
+**Evidence.** `packages/eval/src/competitor.ts`, gates G16 (≥10pp over the fact store) and G17 (poison
+damages it), and a section in the rendered report.
+
+### 8 — External documentation
 
 `README.md`, `docs/USER-GUIDE.md`, `docs/ARCHITECTURE.md`, `docs/GLOSSARY.md` in English, written for
 someone who has never heard of the project: install, five-minute integration, every feedback kind,
