@@ -9,8 +9,8 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 |---|---|---|
 | S0 Mechanism | **closed** | — |
 | S1 Host shadow (nl2charts) | not started | needs the private adjudicated set (n=1,300, κ≥0.7) |
-| S2 Public benchmarks | **first full read: no benefit** (−2.84pp, n=352); diagnosis next | Mini-Dev caps at 352 usable questions; BIRD dev / Interact not wired |
-| S3 SOTA push | not reachable until S2 replicates | — |
+| S2 Public benchmarks | **two reads: no benefit** (−2.84pp, −1.14pp); controls show the pack is inert | the knowledge that transfers is convention, which this benchmark has none of |
+| S3 SOTA push | **stopped on BIRD**; resumes only with a benchmark that carries a learnable convention | — |
 
 ## Iteration log
 
@@ -210,18 +210,64 @@ built from a biased three quarters of the corrections. Under test in iteration 1
 rule), `sota` workflow `39390556532`; `packages/eval/src/protocol.ts` with 11 unit tests; coverage
 100 / 100 / 100 / 99.44 over 391 tests.
 
+### 12 — Controls: the pack is inert, not wrong
+
+A negative delta has four explanations and they imply different repairs. One run, five arms, one
+protocol (n=352, 5 folds, 3,813 calls, 1h59m, run `39406533126`).
+
+| Arm | Accuracy | Δ vs none | p | rules/question |
+|---|---|---|---|---|
+| none | 53.69% | — | — | 0 |
+| full | 52.56% | −1.14pp | 0.572 | 2.28 |
+| duplicate (same pack twice) | 51.42% | −2.27pp | 0.200 | 2.28 |
+| wrong-scope (another database's rules) | 52.27% | −1.42pp | 0.383 | 2.38 |
+| oracle (gold SQL as the only convention) | **84.66%** | **+30.97pp** | <1e-4 | 1 |
+
+Three findings, in order of how much they constrain the product:
+
+1. The channel works: one injected statement lifts the model by 31pp. The pack is read, not ignored.
+2. Content does not separate the arms: right rules, wrong rules and doubled rules are
+   indistinguishable. That is the signature of knowledge the model does not need.
+3. Length is not the driver: doubling the text moves the estimate by ~1pp, inside the interval.
+
+Per-rule attribution (`poc/results/poc-sota-attribution.json`): of 445 rules ever injected, 34 harmed,
+27 helped, **384 changed nothing**; 10.0% of injections belong to a harmful rule. Retiring every bad
+rule would touch a tenth of the injections, so "the distiller writes wrong facts" is not the story.
+
+The three measurements in this document now agree on one boundary condition: knowledge must encode
+something the model cannot derive from its prompt. Generic chart knowledge −2.38 to 0pp (POC-2),
+organisation-specific convention +75 to +89pp (POC-2), synthetic transfer +68.21pp (POC-0), public
+schema prose ~0pp (here).
+
+**Two defects this iteration found and fixed**, both of which had made a control lie:
+
+| Defect | Symptom | Fix |
+|---|---|---|
+| A control that rendered an empty block | the 400-character "narrow" arm reported 0.00 rules per question and looked like evidence of no dilution | the arm duplicates the pack instead, and gate V6 refuses a run in which any configured control injected nothing |
+| A gate that could not fail | the pack-freeze check was listed as a gate while being enforced by an exception | moved to `assertions`, where the digests are recorded |
+
+**Still open.** 165 of 641 distillation calls (25.7%) return non-JSON and are dropped, unchanged by a
+larger token budget — the failure is not truncation. The next round records the reply prefix.
+
+**Evidence.** Run `39406533126`, artefact `poc/results/poc-sota-bird.json`, attribution
+`poc/results/poc-sota-attribution.json`, 396 tests, coverage 100 / 100 / 100 / 99.44.
+
 ## What is left, in order
 
-1. **Diagnose the negative read** (iteration 12): full / narrow / wrong-scope / oracle-hint arms in one
-   protocol, plus the distillation parse failure. A negative delta has four explanations and they are
-   separable.
-2. **S2 at power**: Mini-Dev caps at 352 usable questions, so a 5pp effect is not resolvable there
-   (4.91pp measured). BIRD dev (1,534 questions over the same 11 databases) is the next source; the
-   harness needs one input for its question file.
-3. **S1**: instrument nl2charts behind a flag, adjudicate 1,300 cases, run the three modes. Gate:
+1. **Relevance gating** (iteration 13): if the pack is inert because it is injected whether or not it
+   is relevant, the repair is a floor on relevance, not a better distiller. `recall({ minRelevance })`
+   returns nothing rather than something weak, and the `gated` arm measures whether that recovers the
+   1–2pp.
+2. **Distillation parse failures**: 25.7% of corrections are dropped with `LLM response is not JSON`.
+   The reply prefix is now recorded, because the cause has to be seen rather than guessed.
+3. **S2 at power, on a benchmark with a convention**: Mini-Dev caps at 352 usable questions (4.2pp
+   resolution) and carries no learnable convention. BIRD dev (1,534 questions over the same 11
+   databases) fixes the sample, not the convention; a benchmark whose gold encodes house convention
+   is what S2 actually needs.
+4. **S1**: instrument nl2charts behind a flag, adjudicate 1,300 cases, run the three modes. Gate:
    +3pp top-1 (p<0.05), SQL regression ≤1pp, knowledge precision ≥85%.
-4. **Cortex release**: swap the clone lane for the published package (W1).
-5. **vitest 4 migration** once vite 7 is the toolchain default (W2).
+5. **Cortex release**: swap the clone lane for the published package (W1).
+6. **vitest 4 migration** once vite 7 is the toolchain default (W2).
 
 Nothing on this list blocks the S0 result, and none of it is hidden behind the green build: each item
 is either an experiment that has not run or a dependency that has not shipped.

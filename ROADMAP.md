@@ -97,7 +97,20 @@ dilution (narrow), content (wrong-scope pack, same token cost), and channel (ora
 SQL injected as a "convention" does not move accuracy, the lane itself is broken). A distillation parse
 failure rate of 25.9% is also under repair, because it biases which corrections became rules.
 
-The stop rule stays as written: **two benchmark failures end the SOTA path.** This is one.
+**Read 3 (controls, 2026-10-20).** The same folds with five arms (`39406533126`, n=352): full
+−1.14pp (p=0.572), duplicate −2.27pp (p=0.200), wrong-scope −1.42pp (p=0.383), oracle **+30.97pp**
+(p<1e-4). Right rules, wrong rules and doubled rules are indistinguishable; one injected statement
+moves the model by 31pp. The pack is read but not needed: 384 of 445 ever-injected rules changed
+nothing.
+
+**Consequence.** The hypothesis fails **as stated** ("distilled schema lessons help a strong model"),
+and it fails for a reason that constrains the product rather than the engineering: BIRD's gold encodes
+no convention the model cannot infer from the DDL. S2 does not advance here, and the next benchmark
+must carry a learnable convention — not merely more questions.
+
+The stop rule stays as written: **two benchmark failures end the SOTA path.** BIRD Mini-Dev has now
+failed twice (read 2 and read 3), so the SOTA push is stopped on this benchmark; it resumes only with
+a suite whose gold contains a house convention.
 
 **Exit gate.** BIRD-Interact ≥ +5pp at n=600; nvBench ≥ +3pp overall and ≥ +5pp on the unnamed subset;
 no substrate regression on LongMemEval-S. **Stop rule:** two benchmark failures end the SOTA path.

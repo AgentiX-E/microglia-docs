@@ -1352,6 +1352,73 @@ token cost — content or length), and an oracle hint (the gold SQL as the only 
 injection channel work at all). A lane where the oracle moves nothing is a broken lane, not a
 negative result.
 
+### 12.12 POC-10 — the controls: harmful, diluted, wrong, or ignored?
+
+**Question.** The negative read in §12.11 has four explanations, and they imply different repairs:
+the knowledge is wrong (fix distillation), it is too long (fix the budget), the content is irrelevant
+(fix retrieval), or the injection channel is inert (fix the prompt). One run separates them.
+
+**Setup.** Same folds, same learned stores, same questions, `deepseek-chat`, 5 folds, n=352,
+run `39406533126`, 1h59m, 3,813 calls.
+
+| Arm | What is injected | Accuracy | Δ vs none | 95% CI | p | rules/question |
+|---|---|---|---|---|---|---|
+| none | — | **53.69%** | — | — | — | 0 |
+| full | the learned pack | 52.56% | −1.14pp | [−3.98, +1.70] | 0.572 | 2.28 |
+| duplicate | the same pack twice | 51.42% | −2.27pp | [−5.09, +0.55] | 0.200 | 2.28 |
+| wrong-scope | another database's rules | 52.27% | −1.42pp | [−4.37, +1.53] | 0.383 | 2.38 |
+| oracle | the gold SQL as the only "convention" | **84.66%** | **+30.97pp** | [+24.7, +37.2] | <1e-4 | 1 |
+
+All seven instrument gates passed, including V6 (every control injected: 2.28 / 2.38 rules per
+question) and V7 (the channel moves +31pp). Resolution 4.21pp.
+
+**Reading.** Three facts, in order of how much they constrain the product:
+
+1. **The channel works.** A single injected statement — the gold SQL — lifts the same model from 53.69%
+   to 84.66%. Nothing about the prompt format, the position, or the model's willingness to follow a
+   "workspace convention" is broken. Whatever the pack fails to do, it is not failing to be read.
+2. **Content is not what separates the arms.** Our rules (−1.14pp), another database's rules
+   (−1.42pp), and our rules twice (−2.27pp) are statistically indistinguishable from each other and
+   from zero. A pack of *wrong* knowledge does no worse than a pack of right knowledge, which is the
+   signature of a pack that is not being used as knowledge at all.
+3. **Length is not the driver either.** Doubling the same text moves the estimate by ~1pp, well inside
+   the interval.
+
+**Conclusion.** On this benchmark the distilled schema prose is **inert**: the model already has the
+DDL, and a lesson that restates an inferable fact neither helps nor reliably hurts. The small negative
+point estimate is shared by every arm that adds ~1k characters of instruction, including a wrong-scope
+pack, so it is a property of the intervention's *form*, not of the knowledge's *content*.
+
+This is consistent with the two other measurements in this document: generic chart knowledge was worth
+−2.38 to 0pp (POC-2) while organisation-specific convention was worth +75 to +89pp, and the mechanism
+study's transfer came from conventions a generator could not infer (POC-0). The three results now agree
+on a boundary condition: **knowledge must encode something the model cannot derive from its prompt.**
+
+**Per-rule attribution** (`poc/results/poc-sota-attribution.json`, computed from the per-case rows):
+
+| Rules ever injected | Harmful (net < 0) | Helpful (net > 0) | Neutral | Share of injections belonging to a harmful rule |
+|---|---|---|---|---|
+| 445 of 1,110 | 34 | 27 | 384 | 10.0% |
+
+86% of the rules that were ever injected changed nothing. The damage is not concentrated in a few bad
+rules that could be retired — retiring all 34 would address at most 10% of injections — which rules out
+"the distiller writes wrong facts" as the explanation and reinforces "the facts are redundant".
+
+**A defect this run did not fix.** 165 of 641 distillation calls (25.7%) returned non-JSON and were
+dropped, unchanged from 25.9% before the token budget was raised: the failure is not truncation. The
+pack is therefore built from three quarters of the corrections, and the next round records the reply
+prefix so the cause is visible instead of guessed.
+
+### 12.13 POC-11 — relevance gating: does the pack earn its tokens?
+
+If the pack is inert because it is injected whether or not it is relevant, the repair is a gate, not a
+better distiller. `recall({ minRelevance })` exposes the top hit's normalised lexical relevance and
+returns an empty pack below it, so a host can choose "no knowledge" over "weak knowledge".
+
+The `gated` arm measures the same stores with that floor in place. The prediction is specific: if the
+harm is generic to adding text, gating must recover the ~1–2pp; if the knowledge is useful but noisy,
+gating must beat both. Either outcome is decision-relevant, and neither requires a new benchmark.
+
 ## 13. Operations
 
 ### 13.1 Runtime topology
