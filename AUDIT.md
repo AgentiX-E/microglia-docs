@@ -27,6 +27,7 @@ Audit date: **2026-10-20**. Repository under audit: `AgentiX-E/microglia` at `ma
 | C14 | CPU retrieval is viable at 10k rules | scale POC, 3 sizes × 100 queries, 3 runs | **yes**: p95 2.6–3.1 ms, heap 14 MB | 100k, where the O(n) scan is expected to cross the budget |
 | C15 | The adapter matches cortex's real `MemoryValue` | clone + build + field-by-field comparison in CI | **yes**: 12 fields matched | cortex's runtime behaviour; only the projection shape is checked |
 | C16 | No knowledge crosses a namespace | study probe with a foreign namespace | **yes**: 0 hits over 50 questions | cleverer leaks through shared ids; ids are namespaced by construction |
+| C19 | The loop helps a real model on a public benchmark | BIRD Mini-Dev, held-out half, DeepSeek, execution accuracy | **first read**: 50.00% → 53.33% (+3.33pp, n=30, 18 active rules, 0.5 rules injected per question) | significance; n=30 is underpowered for anything below ~17pp |
 | C18 | The governance layer, not the retriever, produces the lift | competitor-shaped fact store on the same corrections, clean and poisoned | **yes**: 56.07% vs 100.00% (+43.93pp), and 19.64% under poison | other competitor designs; one shape was replicated |
 | C17 | Every published number is reproducible | `pnpm bench` writes the artefact; the report is rendered from it | **yes** | numbers quoted from a different commit than the one under audit |
 
@@ -51,7 +52,7 @@ malformed domain instead of failing.
 
 | Item | Status | Why it is honest to leave it open |
 |---|---|---|
-| Public benchmark numbers | **harness built, data blocked** | the Hugging Face repository for BIRD Mini-Dev holds `.gitattributes`, `README.md`, and three sharded question files only — **no databases and no archive** (observed in CI run `39372781755`). Execution accuracy needs the databases, which upstream distributes as a separate package. The lane reports that list instead of a number it does not have |
+| Public benchmark numbers at S2 power | **first read only, n=30** | the lane runs end to end; the sample is 5% of what the power analysis asks for, so the +3.33pp is a direction, not a result |
 | Host shadow results (S1) | not started | requires a real product and real users; no synthetic substitute would mean anything |
 | LLM-judge calibration (κ) | not started | needs 200 human labels; a judge validated against itself is not validated |
 | Successor models | not tested | one provider, three runs; the docs say so wherever a model number appears |
@@ -79,7 +80,7 @@ keys are absent rather than skipping. Their artefacts are committed under `poc/r
 | `ci` | every push and PR to `master` | **success** (`c75552a`) | build, 370 tests, coverage gates, repository audit, 15 study gates, CPU scale |
 | `poc-live` | push to `poc/**`, dispatch | **success** (`1e59e25`) | the live DeepSeek and Zhipu POCs run against the real APIs |
 | `cortex` | weekly, dispatch | **success** (`c75552a`) | the adapter matches a freshly built cortex, field by field |
-| `sota` | weekly, dispatch | **failure, diagnosed** | the lane runs end to end and prints the dataset's file list: questions only, no databases. The harness contract is proven; the numbers are blocked on data hosting |
+| `sota` | weekly, dispatch | **success** | the lane assembles BIRD from two datasets, runs both arms, and publishes execution accuracy; the first read is +3.33pp at n=30 |
 
 The `sota` failure is reported rather than hidden: it is the only lane whose result depends on a
 third-party host, and a green tick there would be a lie about data the run never saw.

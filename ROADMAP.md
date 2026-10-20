@@ -12,7 +12,7 @@ Status as of **2026-10-20**.
 |---|---|---|---|
 | **S0 Mechanism** | Does feedback become knowledge that transfers? | **done** | G1–G15 green in `AgentiX-E/microglia` |
 | **S1 Host shadow** | Does it help on one real product, offline? | next | +3pp chart top-1 on 1,300 adjudicated cases, κ ≥ 0.7; no SQL regression |
-| **S2 Public benchmarks** | Does it beat the same backbone on published data? | planned | BIRD-Interact +5pp at n=600; nvBench 2.0 +3pp; no memory-substrate regression |
+| **S2 Public benchmarks** | Does it beat the same backbone on published data? | **first read at n=30** | BIRD-Interact +5pp at n=600; nvBench 2.0 +3pp; no memory-substrate regression |
 | **S3 SOTA push** | Can it lead a named benchmark, not merely improve on a baseline? | conditional | preregistered result beating the published best under the same protocol |
 
 ## S0 — Mechanism (done)
@@ -76,6 +76,12 @@ friendlier number).
 | Text2Vis | 1,985 | ~2pp |
 | MemoryAgentBench | 2,071 | ~2pp |
 | LongMemEval-S | 500 | substrate regression check |
+
+**First read (2026-10-20).** BIRD Mini-Dev, held-out half, DeepSeek: 50.00% → **53.33%** execution
+accuracy, +3.33pp, n=30, 18 active rules, 0.5 rules injected per question, 100% parse and execution
+rates. Directionally positive and far from significant: at n=30 a difference below ~17pp cannot be
+distinguished from noise, and half a rule per question means the pack was thin. The lane is complete;
+only the sample is missing.
 
 **Exit gate.** BIRD-Interact ≥ +5pp at n=600; nvBench ≥ +3pp overall and ≥ +5pp on the unnamed subset;
 no substrate regression on LongMemEval-S. **Stop rule:** two benchmark failures end the SOTA path.

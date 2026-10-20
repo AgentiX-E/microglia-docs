@@ -126,7 +126,39 @@ retriever, because without it the same attack takes a store *below* having no me
 **Evidence.** `packages/eval/src/competitor.ts`, gates G16 (≥10pp over the fact store) and G17 (poison
 damages it), and a section in the rendered report.
 
-### 8 — External documentation
+### 8 — The public-benchmark lane runs, and finds two of its own bugs
+
+Assembling BIRD from the two repositories that hold its halves worked on the third attempt: questions
+from `bird_mini_dev`, the eleven SQLite databases from `bird-critic` (as `<db>_template.sqlite`), 102
+model calls, 100% parse and execution rates. Two defects surfaced only because the lane actually ran:
+
+| Defect | Symptom | Fix |
+|---|---|---|
+| The distiller aborted on one bad model response | `MG_E_INVALID_SIGNAL: LLM response is not JSON` killed a batch of thirty lessons | `DistillReport.failed` counts the event and continues; `strict: true` restores fail-fast |
+| A model-derived claim was pinned to the model floor | 27 lessons distilled, **0 active**, empty pack — yet the arm reported **+6.67pp** | a claim inherits the trust of the event behind it (0.95 for an execution-verified correction), and the lane refuses to report a delta when the memory arm injected nothing |
+
+The second one is the important one: the lane had produced a publishable number that measured
+run-to-run noise. An instrument that cannot tell "the memory did nothing" from "the memory helped"
+is worse than no instrument.
+
+### 9 — First public-benchmark read (n = 30)
+
+With the fixes in place the memory arm is real: 18 active rules, 0.5 rules injected per question.
+
+| Arm | Execution accuracy | n |
+|---|---|---|
+| no memory | 50.00% | 30 |
+| with memory | **53.33%** | 30 |
+
+**+3.33pp**, parse rate 100%, execution rate 100%, 102 calls, 1.4 s p50 per question.
+
+What this is: the first evidence that the loop helps a real model on a public benchmark, on held-out
+questions of the same databases. What it is not: a result. At n=30 the 95% interval on a difference is
+roughly ±17pp, and the pack carried half a rule per question because thirty corrections can only teach
+a few general lessons. S2 needs n=600 for a 5.8pp effect — the power analysis is in the roadmap, and
+the lane is one input away.
+
+### 10 — External documentation
 
 `README.md`, `docs/USER-GUIDE.md`, `docs/ARCHITECTURE.md`, `docs/GLOSSARY.md` in English, written for
 someone who has never heard of the project: install, five-minute integration, every feedback kind,

@@ -1049,6 +1049,7 @@ from a run that cannot be reproduced by the command in the same row.
 | POC-5 | Can a competitor's design be reproduced from source? | Source audit of 5 OSS projects + Cortex | — | §8.5 | this document | No OSS project models a correction as evidence |
 | POC-6 | Does a pack ever claim a rule it did not render? | Budget sweep 60…2400 chars over 40 rules | 64 budgets | `pnpm test packages/apply` | `budget.test.ts` | **No longer** — a bug, see §12.7 |
 | POC-7 | Does the adapter match the real cortex build? | Clone, build, then compare field sets | 1 item | `pnpm poc:cortex` | `cortex.yml` | 12 fields matched; the structural copy is correct |
+| POC-9 | Does the loop help a real model on a public benchmark? | BIRD Mini-Dev, two arms, execution accuracy | 30 held-out | `pnpm poc:sota` / `sota.yml` | `poc/results/poc-sota-bird.json` | 50.00% → **53.33%** (+3.33pp); 18 active rules; 0.5 rules per question |
 | POC-8 | Would a competitor-shaped memory do the same job? | A similarity fact store on the same corrections, clean and poisoned | 280 paired | `pnpm bench` | `bench/results/study.json` | 56.07% clean, **19.64%** poisoned; the governed loop is +43.93pp |
 
 ### 12.1 POC-0 — mechanism study
