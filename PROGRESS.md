@@ -397,3 +397,34 @@ the stable number, not the effect.
 
 **Evidence.** Run `39548548865`, artefact `poc/results/poc-sota-bird.json`, gates V1–V7 with the V6 fix
 in `f5b53b4`.
+
+### 16 — Design phase: the pipeline, stage by stage
+
+The question this iteration answers is not "does it work" (that is §12) but "what exactly happens, what
+does it cost, and how would anyone know it worked". The answer is §17 of the technical design: eight
+pipeline stages (P0 ingest → P8 serve), each with a data contract, an algorithm, the failure modes it
+must survive, a metric table with thresholds, and the POC that settles whatever number we do not have.
+
+**What changed in the design, and why.**
+
+| Decision | Evidence that forced it |
+|---|---|
+| A **task instance** (taskId, taskType, attempt, parentRunId, terminal status) replaces session-only grouping | The distiller can only see adjacent edits today, which is why the convention lane recovers 2–5pp of an 11–12pp ceiling |
+| Feedback carries a **typed, redacted, capped context** | Without it a correction cannot say "in which workflow and under what conditions" |
+| Distillation gains **pair contrast** (first wrong vs accepted) | ExpeL: insights from success/failure pairs transfer (FEVER 63→70) where single-trajectory insights do not |
+| Contradiction becomes a **validity interval** | Graphiti's source: `valid_at` / `invalid_at` / `expired_at`, invalidation by interval geometry, no similarity threshold; status-only demotion cannot answer "what was true then" |
+| A **curation** stage with per-item utility counters and delta updates | ACE: itemized bullets with helpful/harmful counters, periodic curator, context collapse as the measured failure mode |
+| Retrieval gains taskType/stage scoping, an over-fetch of `max(4k,60)` and an `explain[]` | 47% of our packs shared no word with the question; mem0 ships `max(limit*4,60)` |
+
+**Competitor source, read rather than summarised.** mem0 `main.py`: a top-10 semantic candidate set,
+MD5 exact dedupe, entity cosine 0.95, identity keys stripped from caller metadata, search threshold 0.1.
+Graphiti `edge_operations.py`: hybrid RRF recall, LLM dedupe over paired endpoints, temporal
+invalidation, no hardcoded similarity threshold. Both are cited in §17.5–§17.7 and §17.14, with the
+alternatives we rejected and why.
+
+**What is frozen.** `AgentiX-E/microglia` is untouched by this iteration; §17 describes mechanisms that
+do not exist yet, and says so at the top. The fourteen POCs (POC-13…POC-26) are specified but not run:
+running them against a design would measure the design's absence.
+
+**Evidence.** `TECH-DESIGN.md` §17–§19; `ROADMAP.md` design-phase entry; competitor sources and papers
+named inline.

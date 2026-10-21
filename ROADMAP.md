@@ -169,6 +169,15 @@ more useful: a convention is transferred from corrections alone, at a quarter to
 stating it is worth, and the gap is the retrieval-versus-distillation question the next run must
 separate.
 
+## Design phase (2026-10-21 — closed)
+
+The pipeline contract is written and frozen for implementation: eight stages (P0–P8), a metric table per
+stage, and fourteen POCs with gates. It is §17 of the technical design; the three decisions that change
+the data model are the task instance, the validity interval, and per-item utility counters.
+
+Implementation waits for an explicit signal. The six questions the design still carries are all
+evidence questions with a named POC and a number (§17.15); none is a requirement ambiguity.
+
 ## S3 — SOTA push (conditional)
 
 Only if S2 replicates. Requires a preregistration (frozen protocol, frozen prompts, frozen sample)

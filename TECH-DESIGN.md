@@ -2,7 +2,7 @@
 
 **Headless feedback flywheel for agentic workflows**
 
-Version 1.0 · 2026-10-20 · Author: Lambertyan · Status: implementation-ready
+Version 1.1 · 2026-10-21 · Author: Lambertyan · Status: design complete, implementation frozen
 
 ---
 
@@ -20,6 +20,8 @@ Version 1.0 · 2026-10-20 · Author: Lambertyan · Status: implementation-ready
 | §11 | The evaluation protocol for public benchmarks |
 | §12 | What the POC actually measured |
 | §13–15 | Operations, decisions, and the gap register |
+| §17 | The feedback → knowledge → re-feed pipeline, stage by stage, with metrics and gates |
+| §18–19 | Stage acceptance criteria, and the phase's termination record |
 
 Every number in §12 is produced by `pnpm check` in this repository. Every API in §5 exists in
 `packages/*/src`. Where the document describes something not yet built, it is marked **PLANNED** and
@@ -1761,7 +1763,348 @@ This is the only place where the in-memory and serialised forms differ.
 
 ---
 
-## 17. Acceptance criteria, per stage
+## 17. Feedback → knowledge → re-feed: implementation contract v2
+
+This section is the **design-phase deliverable** for the pipeline questions raised after the first
+convention read. It is normative: each stage has a data contract, an algorithm, the failure modes it
+must survive, the metrics that decide whether it works, and the gate that blocks a release. Every
+claim here is tied to one of: our own artefacts (§12), a competitor's published source or paper, or a
+POC in §17.13.
+
+Nothing in this section has been implemented in `AgentiX-E/microglia`; the repository is frozen for the
+design phase. Where a decision needs data we do not yet have, it is marked **POC** with the number that
+will settle it.
+
+### 17.1 The contract, in one paragraph
+
+> A **task instance** accumulates attempts. Each attempt is a run with a prompt, an output, and the
+> knowledge it was given. Feedback attaches to an attempt and carries the host's context. The pipeline
+> turns evidence into **scoped claims with a validity interval**, admits them on a lower confidence
+> bound, keeps per-claim **utility counters**, and serves them back as a bounded, explained pack — or
+> through a tool the agent calls itself — at the granularity of the task type that asked.
+
+Two properties follow from the measurements already in hand and constrain everything below:
+
+1. **Knowledge is only worth what it cannot be inferred.** Four reads on unmodified BIRD were null
+   (§12.11–§12.13); the convention lane moved (+4.79pp, then +2.05pp) while stating the same rule moved
+   +10.96/+11.64pp. The pipeline's job is to close that gap, not to produce more rules.
+2. **The pack is read but not used unless it is addressed.** 47% of packs shared no content word with
+   their question and the median coverage was 7.1% (§12.12); retrieval, not distillation, is the
+   binding constraint until proven otherwise.
+
+### 17.2 The eight stages
+
+```
+P0 ingest ─► P1 normalise ─► P2 interpret ─► P3 consolidate ─► P4 curate
+                                                                    │
+P8 serve ◄─ P7 attribute ◄─ P6 render ◄─ P5 retrieve ◄──────────────┘
+```
+
+| Stage | Input | Output | Owned by |
+|---|---|---|---|
+| P0 ingest | task, attempt, output, feedback, context | `TaskRecord`, `RunRecord`, `FeedbackEvent` | `core/capture` |
+| P1 normalise | event | redacted event, trust, structural diff | `core/kernel` (diff/guard) |
+| P2 interpret | event + run + context | `DistillCandidate[]` | `core/distill` |
+| P3 consolidate | candidates | `KnowledgeItem` with evidence, validity, status | `core/kernel` + `core/memory` |
+| P4 curate | active set | merged/pruned set, utility counters | `core/distill` (new) |
+| P5 retrieve | query + taskType + context | ranked candidates | `core/apply` |
+| P6 render | selected items + budget | `KnowledgePack` | `core/apply` |
+| P7 attribute | run + feedback + pack ids | credit, utility deltas, retirement | `core/capture` (new) |
+| P8 serve | everything above | HTTP / tool / webhook | `node` / `browser` |
+
+### 17.3 P0 — Ingest: the task instance
+
+**Mechanism.** A host opens a task, then begins attempts under it. The task is the unit of *intent*;
+the attempt is the unit of *generation*. Feedback always names an attempt, and a terminal decision
+names the task.
+
+```ts
+type TaskOpen = {
+  taskId: string;            // host-assigned, stable across attempts
+  taskType: string;          // the workflow step, in the host's vocabulary
+  sessionId?: string;        // conversation, when one exists
+  context?: JsonObject;      // host-defined, redacted, capped (16 KiB)
+};
+
+type AttemptStart = {
+  attempt: number;           // 1-based, monotonic within the task
+  parentRunId?: string;      // the attempt this one revises
+  input: JsonObject;
+  pack?: KnowledgePack;
+  model?: string; promptVersion?: string; appVersion?: string;
+};
+
+task.complete({ status: 'accepted' | 'abandoned' | 'escalated', finalRunId?, reasonCode?: string, context? });
+```
+
+**Why this shape.** `sessionId` alone cannot express "the third rewrite of attempt 2 of task 7 was
+accepted"; without that, the distiller can only diff adjacent edits and never learns what the task
+finally required. The cost of not having it is visible in our own data: the convention lane learned
+from single corrections and recovered 2.05–4.79pp of a 10.96–11.64pp ceiling.
+
+**Failure modes.** Attempt numbers reused after a retry (host bug) → reject with
+`MG_E_TASK_CONFLICT`; feedback on an uncommitted run (already rejected, `MG_E_NO_OUTPUT`); task
+completed twice (idempotent, second is a no-op returning the first decision).
+
+| Metric | Definition | Gate |
+|---|---|---|
+| Task linkage completeness | tasks with ≥1 terminal decision ÷ tasks opened | ≥ 0.95 at integration |
+| Attempt-chain integrity | attempts whose `parentRunId` resolves within the task | 1.00 (blocking) |
+| Context admission rate | contexts accepted ÷ submitted (size/entropy checks) | ≥ 0.99 |
+| Ingest p95 latency (local journal) | append + fsync + index insert | ≤ 5 ms at 10k events |
+
+**Alternatives rejected.** (a) *One run per task, mutated in place* — loses the history a correction
+cites; (b) *sessionId only* — cannot group a workflow that spans sessions; (c) *host-side grouping with
+no library notion* — then distillation cannot see the accepted final state, which is the whole signal.
+
+### 17.4 P1 — Normalise: trust, redaction, structure
+
+Unchanged in mechanism, extended in scope: context is redacted with the same guards as payloads, and
+its keys are validated against a host-declared allowlist for indexing (`indexedKeys`), everything else
+stored opaque.
+
+| Metric | Definition | Gate |
+|---|---|---|
+| Redaction recall | secret spans removed ÷ spans planted (200-case corpus, POC-13) | ≥ 0.99 |
+| Redaction precision | spans removed that were secret ÷ spans removed | ≥ 0.95 |
+| Schema validity | events passing schema check ÷ accepted | 1.00 |
+| Trust calibration | mean predicted trust − observed acceptance rate, per signal kind | ≤ 0.10 absolute |
+
+### 17.5 P2 — Interpret: pairwise contrast, not adjacent diffs
+
+**Mechanism.** Three interpreters, composed in this order and all producing the same candidate type:
+
+1. `ruleInterpreter` — structural deltas (no model).
+2. `pairContrastInterpreter` (new) — given `(firstWrongRun, acceptedRun)` of one task, ask the model
+   for the *difference that mattered*: one claim, one scope, no narrative. This is ExpeL's
+   success/failure contrast, applied to a task instance instead of a training set.
+3. `modelInterpreter` — free-text feedback (existing).
+
+The pair is chosen by P0's task chain: earliest non-accepted attempt vs the accepted one. Adjacent
+edits remain the fallback when a task has no terminal decision.
+
+**Why.** ExpeL measured that insights extracted from success/failure pairs transfer (FEVER 63 → 70
+with adaptation) while insights from single trajectories do not. Our own lane shows the weaker version
+of the same effect: single-correction lessons raised accuracy by 2–5pp against a 11–12pp stated
+ceiling. **POC-14** tests whether pair contrast closes part of that gap.
+
+| Metric | Definition | Gate |
+|---|---|---|
+| Candidate yield | corrections producing ≥1 candidate ÷ corrections with a gold answer | ≥ 0.90 |
+| JSON validity | replies parsing as a candidate ÷ replies | ≥ 0.99 (currently 0.95 after the §12.13 fix) |
+| Statement precision (human) | accepted statements ÷ sampled statements (100, two raters, κ≥0.7) | ≥ 0.85 |
+| Scope precision | candidates whose scope matches the correction's actual scope | ≥ 0.90 |
+| Claim specificity | statements naming a condition + an action (heuristic + audit) | ≥ 0.80 |
+
+**Alternatives.** *LLM-only* (mem0's additive extraction: one call over a top-10 candidate set, no
+explicit thresholds — measured in their source at `top_k=10`, MD5 exact dedupe, entity cosine 0.95)
+loses the deterministic path we need for structured edits; *rule-only* cannot read free text. Both are
+kept, composed, with pair contrast added.
+
+### 17.6 P3 — Consolidate: validity intervals and admission
+
+**Mechanism (changed).** Each item gains an explicit validity interval and a supersession pointer:
+
+```ts
+type Validity = { validFrom: number; validTo?: number; supersededBy?: string; reason?: string };
+```
+
+A contradiction does not simply demote the loser: it **closes** the loser's interval at the winner's
+`validFrom`, keeping it retrievable for questions about the past (Graphiti's bi-temporal model,
+verified in `edge_operations.py`: `valid_at` / `invalid_at` / `expired_at`, invalidation by interval
+geometry, no similarity threshold). Admission stays a Wilson lower bound on evidence, with the
+distinct-task count entering support.
+
+| Metric | Definition | Gate |
+|---|---|---|
+| Duplicate rate | items sharing a dedupe key ÷ items created | ≤ 0.02 |
+| Merge precision | merged pairs a human agrees are the same claim (100 pairs) | ≥ 0.95 |
+| Contradiction F1 | on a labelled set of 150 claim pairs (POC-15) | ≥ 0.90 |
+| Retirement latency | events between "claim falsified" and "not injected" | ≤ 3 events or 1 curation round |
+| Admission precision | active items a host expert accepts (100-item audit) | ≥ 0.85 |
+| Quarantine ratio | quarantined ÷ stored, steady state | 0.02–0.15 (alarm outside) |
+
+**Alternatives.** *Status-only demotion* (current): cannot answer "what was true in March"; *delete on
+contradiction*: destroys the audit trail a correction is supposed to provide; *no contradiction model*
+(mem0's additive pipeline): the store accumulates both sides and retrieval picks arbitrarily.
+
+### 17.7 P4 — Curate: delta updates, counters, budget
+
+**Mechanism (new stage).** Curation runs on a schedule (`curatorFrequency`, default: every 50 events or
+5 minutes, whichever first) and applies **deltas only** — add, merge, prune, never a full rewrite. Each
+item carries utility counters:
+
+```ts
+type Utility = { injected: number; used: number; flippedUp: number; flippedDown: number; votes: number };
+```
+
+Merge policy: near-duplicate (dice ≥ 0.85 on statements, same scope) survivors inherit the sum of
+counters. Prune policy: `flippedDown ≥ 3 ∧ flippedDown > flippedUp` or `injected ≥ 20 ∧ flippedUp = 0`.
+Budget policy: cap items per task type (default 2 000) by pruning the lowest utility density first.
+
+**Why this shape.** ACE names the two failure modes of every self-improving context — brevity bias and
+context collapse (an 18k-token playbook collapsing to 122 tokens in one rewrite) — and answers them
+with itemized bullets, helpful/harmful counters, delta updates and a periodic curator; it reports
++10.6% on AppWorld and −83.6% tokens against GEPA. Our current pipeline rewrites nothing, but it also
+has no counters and no pruning, which is why 384 of 445 injected rules changed nothing (§12.12).
+
+| Metric | Definition | Gate |
+|---|---|---|
+| Counter integrity | items whose counters equal the replayed event log | 1.00 (blocking) |
+| Prune precision | pruned items a human agrees were useless (50 samples) | ≥ 0.90 |
+| Store growth | items per 1 000 events, steady state | ≤ 120 |
+| Retention under curation | rules with ≥3 helpful uses still active after 10 rounds | ≥ 0.95 (anti-collapse) |
+| Curation cost | model tokens per curation round | ≤ 2 000 |
+
+**Alternatives.** *Rewrite-on-every-event* (ACE's rejected baseline): context collapse; *no pruning*
+(current): 189.6 active rules per fold and 2.08 injected per question is a retrieval problem created
+by an unpruned store; *embedding-only merge*: misses contradictions, which are the point.
+
+### 17.8 P5–P6 — Retrieve and render: address the question
+
+**Mechanism (changed).** Scope gains `taskType` and `stage` (hard filters); `context` enters as a soft
+boost; the coverage floor applies per item (already implemented); over-fetch scales with limit
+(`max(4×limit, 60)`, mem0's measured choice, vs our current `max(3×limit, 12)` — POC-17); every pack
+reports `explain[]`: for each item, the reason it was selected (scope hit, lexical score, coverage,
+utility) and the reason the next-best was not.
+
+**Why.** Half of our packs shared no content word with the question; the median coverage was 7.1%.
+Retrieval is the constraint, and an unexplained pack cannot be debugged in a host.
+
+| Metric | Definition | Gate |
+|---|---|---|
+| Recall@5 (labelled) | relevant rules in top 5 ÷ all relevant (POC-17) | ≥ 0.90 |
+| nDCG@10 | graded relevance, 200 queries | ≥ 0.85 |
+| Zero-hit rate | questions with an empty pack, where a relevant rule exists | ≤ 0.05 |
+| Stale-hit rate | packs containing a closed-interval rule for a present-tense question | ≤ 0.02 |
+| Retrieval p95 @10k / @100k | CPU, single process | ≤ 5 ms / ≤ 20 ms |
+| Pack adherence | generated outputs following an injected rule on a probe set | ≥ 0.90 |
+| Budget compliance | rendered chars ≤ budget, always | 1.00 |
+
+### 17.9 P7 — Attribute: credit, utility, retirement
+
+**Mechanism (changed).** Attribution runs at two levels:
+
+- **Attempt level (existing):** the first feedback on a run adjusts the confidence of the ids it cited.
+- **Task level (new):** `task.complete({status})` distributes credit across every attempt's cited ids
+  with decay `0.5^(acceptedRunIndex − runIndex)`, so the attempt that produced the accepted output
+  counts most and earlier attempts count but not equally.
+- **Utility (new):** `injected` is recorded at render time; `flippedUp/flippedDown` at evaluation or
+  task-completion time; `used` when the host reports which ids it actually relied on.
+
+**Why.** Without the denominator, credit is a numerator with no base: we could not distinguish "rule
+never retrieved" from "retrieved and ignored". That distinction is exactly the 44%-of-ceiling gap.
+
+| Metric | Definition | Gate |
+|---|---|---|
+| Attribution accuracy | replayed runs where credit lands on the truly-relevant rule (200 runs, POC-16) | ≥ 0.90 |
+| Utility calibration | mean predicted flip rate − observed, per decile | ≤ 0.10 |
+| Retirement correctness | retired rules that stayed useless over the next 100 events | ≥ 0.95 |
+| Double-count rate | runs crediting one item twice | 0.00 |
+
+### 17.10 P8 — Serve: three delivery modes
+
+| Mode | Shape | When | Status |
+|---|---|---|---|
+| Pull | `GET /v1/recall` | request-time prompt assembly | implemented |
+| Push | `POST /v1/subscriptions` + webhook on knowledge change | long-running workflows, human-in-the-loop dashboards | **POC-19** |
+| Tool | `microglia_recall` / `microglia_feedback` as MCP tools | agents that decide when to ask (BIRD-Interact shape) | **POC-20** |
+
+| Metric | Definition | Gate |
+|---|---|---|
+| Idempotency | duplicate keys producing one event | 1.00 |
+| Delivery latency p95 | feedback accepted → recallable | ≤ 2 s (local), ≤ 60 s (push) |
+| Auth isolation | cross-namespace recall attempts rejected | 1.00 |
+| Tool-call utility | tasks where the agent's self-initiated recall preceded a correct answer | ≥ 0.60 on BIRD-Interact Lite |
+
+### 17.11 Metric definitions, once
+
+| Metric | Formula | Data source |
+|---|---|---|
+| Task linkage completeness | `tasks_with_terminal / tasks_opened` | event log |
+| Redaction recall / precision | span-level | POC-13 corpus |
+| Candidate yield | `events_with_candidate / events_with_gold` | lane artefact |
+| Statement precision | `accepted / sampled`, two raters, κ≥0.7 | 100-item audit |
+| Contradiction F1 | harmonic mean on labelled pairs | POC-15 |
+| Admission precision | `useful_active / active_sampled` | 100-item audit |
+| Recall@5 / nDCG@10 | standard IR definitions over labelled queries | POC-17 |
+| Zero-hit rate | `empty_pack_with_relevant / queries_with_relevant` | POC-17 |
+| Pack adherence | `outputs_following_rule / outputs_with_rule` | probe set |
+| Attribution accuracy | `correct_credit / replayed_runs` | POC-16 |
+| Utility calibration | decile-wise absolute error | replay |
+| Recovery ratio | `Δlearned / Δstated` | convention lane |
+| Resolution | McNemar inversion at 80% power | lane artefact |
+
+### 17.12 Benchmarks: what we compare, and what we refuse to compare
+
+| Question | Benchmark | Metric | Competitor number (their own protocol) |
+|---|---|---|---|
+| Is a rule extracted correctly? | **BIRD-CRITIC-SQLite** (500 tasks, 2026-03) | fix rate on held-out issues, weak model + memory | O3-mini 38.87% on PG / 33.33% multi-dialect |
+| Is a taught rule applied? | **MemoryAgentBench TTL** (banking/clinic/nlu/trec) | classification accuracy after teaching | TTL baselines reported per dataset |
+| Is a contradiction handled? | **MemoryAgentBench CR** (FactConsolidation) | latest-fact exact match | single-hop ~60%, multi-hop ≤7% |
+| Is a preference re-fed? | **LongMemEval** single-session-preference | accuracy | Zep 20.0% → 56.7% (gpt-4o) |
+| Does a convention transfer? | **our convention lane** | execution accuracy, paired | — (no public equivalent) |
+| Is retrieval sound? | LongMemEval / LOCOMO as sanity baselines | recall / judge | Mem0 +26% judge, −91% p95; Zep DMR 94.8% |
+
+**Refused comparisons.** LOCOMO head-to-head against Mem0 as a *product* claim: they store facts about
+a user, we store rules about a task; the objects differ. We report it as a sanity check and compete on
+TTL/CR and BIRD-CRITIC, where the object is the same.
+
+### 17.13 POC register v2
+
+| ID | Question | Method | n | Gate | Artifact |
+|---|---|---|---|---|---|
+| POC-13 | Is context redaction complete? | 200 contexts with planted secrets across 6 shapes | 200 | recall ≥0.99, precision ≥0.95 | `poc/results/poc-context-redaction.json` |
+| POC-14 | Does pair contrast beat adjacent diff? | Same lane, distill from (first-wrong, accepted) | 146 | recovery ratio ≥ 0.6 (vs 0.2–0.44 today) | `poc/results/poc-pair-contrast.json` |
+| POC-15 | Does bi-temporal contradiction beat demotion? | 150 labelled pairs, replay 3 conflict patterns | 150 | F1 ≥ 0.90, stale-hit ≤ 0.02 | `poc/results/poc-validity.json` |
+| POC-16 | Can credit be attributed correctly? | 200 replayed runs with known relevant rule | 200 | accuracy ≥ 0.90 | `poc/results/poc-attribution.json` |
+| POC-17 | What over-fetch and gate settings maximise Recall@5? | 200 queries × {12, 24, 60} × coverage {0, .01, .15} | 1 800 | Recall@5 ≥ 0.90 at p95 ≤ 5 ms | `poc/results/poc-retrieval.json` |
+| POC-18 | Does taskType/stage scoping help? | Same queries with/without taskType in scope | 200 | nDCG@10 +0.05 | `poc/results/poc-tasktype.json` |
+| POC-19 | Is push delivery worth a new surface? | Webhook on knowledge change, 50 long tasks | 50 | delivery p95 ≤ 60 s, no missed update | `poc/results/poc-push.json` |
+| POC-20 | Does tool-initiated recall beat pull? | BIRD-Interact Lite, agent decides when to recall | 300 | task success +3pp over pull | `poc/results/poc-tool.json` |
+| POC-21 | Does the flywheel raise a weak model's fix rate? | BIRD-CRITIC-SQLite, memory on/off | 500 | +5pp fix rate, p<0.05 | `poc/results/poc-bird-critic.json` |
+| POC-22 | Does a taught rule apply on MemoryAgentBench TTL? | 4 ICL datasets, teach → classify | full | ≥ baseline +3pp | `poc/results/poc-ttl.json` |
+| POC-23 | Does conflict resolution beat the reported ceiling? | FactConsolidation SH/MH | full | SH ≥ 70% (vs ~60%), MH ≥ 15% (vs ≤7%) | `poc/results/poc-cr.json` |
+| POC-24 | Does a preference lane match Zep's preference gain? | LongMemEval preference subset | 30 | ≥ +20pp | `poc/results/poc-preference.json` |
+| POC-25 | Where does the scope index break? | 100k items, 1 000 queries | 100k | p95 ≤ 20 ms | `poc/results/poc-scale-100k.json` |
+| POC-26 | Is the idempotency store durable? | Restart under load, 1 000 duplicates | 1 000 | 0 duplicates recorded | `poc/results/poc-idempotency.json` |
+
+### 17.14 Alternatives, and why each was not chosen
+
+| Decision | Chosen | Alternatives | Reason |
+|---|---|---|---|
+| Dedupe | deterministic key + dice merge | mem0-style MD5 exact (`hashlib.md5`, no fuzzy); embedding threshold | exact hash misses paraphrase; embedding-only merge cannot explain itself |
+| Contradiction | bi-temporal interval + evidence | Graphiti-style LLM dedupe over hybrid recall; status demotion | LLM dedupe costs a call per edge; demotion cannot answer "what was true then" |
+| Admission | Wilson lower bound | Bayesian posterior; LLM vote | Wilson is auditable and needs no prior; measured in the study |
+| Curation | periodic delta | per-event rewrite (ACE's rejected baseline); never | collapsing context is a measured failure mode |
+| Retrieval | BM25 + scope index + coverage | dense embeddings; hybrid + RRF | BM25 won on light paraphrase and 10k CPU latency (§12.4); embeddings add a provider and a POC (POC-17) |
+| Delivery | pull now; push/tool via POC | pull-only | agents that cannot ask will not use knowledge mid-task |
+| Storage | JSONL + in-memory index | SQLite; graph DB | 10k in 2.6–3.1 ms p95; the next order of magnitude is POC-25 |
+
+### 17.15 Open questions this design still carries
+
+Each is closed by a named POC; none is a requirement ambiguity.
+
+1. Does pair contrast close the gap to the stated ceiling? (**POC-14**)
+2. Does a validity interval change retrieval behaviour enough to justify the model change? (**POC-15**)
+3. Is utility density a better prune criterion than raw counts? (**POC-16**)
+4. Does taskType scoping help or starve cold task types? (**POC-18**)
+5. Does push/tool delivery earn its surface area? (**POC-19**, **POC-20**)
+6. Does the mechanism survive a benchmark whose gold is a *fix* rather than an answer? (**POC-21**)
+
+### 17.16 Out of scope (not gaps)
+
+Fine-tuning, GPU runtimes, a hosted service, UI, multi-tenant billing, and leaderboard submissions are
+excluded by the product definition (§2). The domain pack stays with the host. Cortex remains a
+projection target, not a dependency, until it is published (W1).
+
+---
+
+## 18. Acceptance criteria, per stage
+
+This chapter lists the **project** stages (S0–S3). The **pipeline** stages introduced in §17 are
+numbered P0–P8 so the two never collide: a project stage is a phase of the roadmap, a pipeline stage is
+a step in one request.
 
 A stage is "done" only when every row passes **and** the artifact is committed. A missed target is
 reported as missed; it is never rounded, re-sliced, or moved to a footnote.
@@ -1792,30 +2135,53 @@ proceed to S3. A safety gate failure (G4/G7/G11) blocks release regardless of ac
 
 ---
 
-## 18. Termination signal
+## 19. Termination signal
 
-**STOP — this phase is complete; awaiting the next instruction.**
+**STOP — the design phase is complete. `AgentiX-E/microglia` is untouched and awaits an explicit
+implementation signal.**
 
-Delivered and verified in `AgentiX-E/microglia-docs`:
+### 19.1 What this phase delivered
 
-| Item | Evidence |
+| Item | Where | Cross-checked against |
+|---|---|---|
+| The pipeline contract: eight stages, data shapes, failure modes | §17.1–§17.10 | The code that exists today (§5, §6) and the measurements in §12 |
+| A metric per stage, with formula and threshold | §17.3–§17.11 | Our artefacts where they exist; a named POC where they do not |
+| Fourteen POCs that close every open question | §17.13, §17.15 | Each gate states n, method and the artefact it must produce |
+| Competitor mechanisms, from source | §17.5–§17.7, §17.14 | mem0 `main.py` (top-10 candidate set, MD5 dedupe, entity cosine 0.95, over-fetch `max(4k,60)`), Graphiti `edge_operations.py` (hybrid RRF recall, LLM dedupe, `valid_at`/`invalid_at`/`expired_at` invalidation by interval geometry) |
+| The literature the design borrows from | §17.5, §17.7 | ACE (itemized bullets with helpful/harmful counters, delta updates, curator frequency, context collapse), ExpeL (success/failure contrast, insight voting), MemoryAgentBench (TTL/CR), BIRD-CRITIC (fix-rate), Zep/Mem0 numbers for the preference and recall baselines |
+| Benchmark plan with refused comparisons | §17.12 | Competitor protocols and our own null results |
+
+### 19.2 What is deliberately not delivered, and why
+
+| Not delivered | Reason | Where it is tracked |
+|---|---|---|
+| Code for any §17 stage | The phase excludes product code by instruction; the repository is frozen | §17, per-stage data contracts, ready to implement |
+| The fourteen POCs | They need the implementation they measure; running them against a design would measure nothing | §17.13, each with n, gate, artefact path |
+| A SOTA claim | The convention lane is 2–5pp against an 11–12pp ceiling; claiming SOTA on that would be false | §12.14, ROADMAP §S2b |
+
+### 19.3 The six questions this design still carries
+
+They are design-complete (a mechanism, a metric and a POC each) but **not evidence-complete**, and the
+difference is stated rather than hidden:
+
+1. Pair contrast vs adjacent diff — **POC-14**, gate: recovery ratio ≥ 0.6.
+2. Bi-temporal validity vs demotion — **POC-15**, gate: F1 ≥ 0.90, stale-hit ≤ 0.02.
+3. Utility-based retirement — **POC-16**, gate: attribution accuracy ≥ 0.90.
+4. Task-type scoping — **POC-18**, gate: nDCG@10 +0.05.
+5. Push and tool delivery — **POC-19/20**, gates: delivery p95 ≤ 60 s; +3pp task success.
+6. Fix-shaped benchmarks — **POC-21/22/23**, gates: +5pp fix rate; +3pp TTL; CR SH ≥ 70%.
+
+None of these is a requirement ambiguity. Each has a number, a sample and a stopping condition, so the
+implementation phase can begin without another design round.
+
+### 19.4 Final state of this repository
+
+| Document | State |
 |---|---|
-| Product whitepaper | `WHITEPAPER.md`, 60+ citations, live-POC numbers, CPU/WebGPU constraint, competitor source audit |
-| Technical design | `TECH-DESIGN.md`, packages, API, algorithms, security, Cortex verdict, POC register, ADRs, acceptance criteria |
-| Monorepo | 8 packages, layered, import-on-demand; zero runtime deps in core/capture/apply/distill |
-| Tests | **370 passing**, coverage **100 / 99.53 / 100 / 100** |
-| Mechanism study | 9 arms, 3 micro-ablations, 15 gates, all green; artifacts committed |
-| Live POCs | DeepSeek distillation, LLM reader (generic/house/poison), Zhipu embedding retrieval, CPU scale |
-| CI | `ci` and `poc-live` workflows, both verified on the private repository |
+| `WHITEPAPER.md` | Product thesis, evidence, competitors, constraints |
+| `TECH-DESIGN.md` | §1–§16 as before, plus §17 (pipeline contract) and §18–§19 (acceptance and this record) |
+| `ROADMAP.md` | Stages S0–S3 with reads recorded, including the negative ones |
+| `PROGRESS.md` | Fifteen iterations, each with its evidence and its defects |
+| `AUDIT.md` | Claim-by-claim verification |
 
-**In-scope gaps: none.** The eight scheduled engineering items in §15.2 are explicitly outside this
-phase (public benchmark execution, published-Cortex conformance, on-device encoder, 100k scale,
-multi-user, judge calibration); none blocks the design or the POC.
-
-The next action is a decision, not a task: approve S1 (shadow mode on nl2charts), or redirect the
-positioning. No further code will be written until that decision is given.
-
----
-
-*The implementation in `packages/` is the normative version of §5 and §6; where prose and code
-disagree, the code wins and the prose is a bug.*
+**End of design phase.**
