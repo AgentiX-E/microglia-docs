@@ -654,3 +654,33 @@ separate, because a wrong merge loses a rule while a missed merge costs a duplic
 
 **Evidence.** 474 tests, coverage **99.79 / 98.15 / 100 / 99.79**, `curate.ts` at 100/97.26/100/100,
 `pnpm audit:repo` ok, study unchanged (31.79 → 100.00, 17/17 gates).
+
+### 23 — The promotion gate: prose is evidence, not authority
+
+D15/D16 in one mechanism. Every candidate now carries a **provenance tier** derived from the event kind
+(`edit` → `structured-edit`, `outcome` → `outcome`, everything else → `user-text`), and the tier decides
+whether a lesson may steer output:
+
+| Tier | Activates alone | Why |
+|---|---|---|
+| `user-text` | **no** | a rating, a clarification, a preference, an abstention — the tier an articulate user can write |
+| `structured-edit` | yes | a whole corrected artefact, re-executable |
+| `outcome` | yes | a measurement of one |
+
+A `user-text` item stays a `candidate` with `statusReason: needs-corroboration` until a **second distinct
+task** endorses the same claim, or evidence of a stronger tier lands on it — at which point the item's tier
+promotes to the strongest evidence it holds. Two consequences worth stating: the store still *learns* from
+prose (it is stored, counted and visible), and an item written before the field existed has no tier and
+keeps the old behaviour, so a persisted store does not silently lose its rules on upgrade.
+
+**Why this and not a trust threshold.** A threshold would have to be arbitrary — 0.7 for a comment, 0.8 for
+a clarification — and would still let one determined user through. The gate asks a structural question
+instead: has anything other than one person's words endorsed this? That is the question MINJA's 98.2%
+query-only injection and AgentPoison's 0.1%-poison backdoor exploit, and no constant answers it.
+
+**What is deliberately not in this iteration.** Two of G3's four invariants: generalisation may not widen
+beyond the scopes of its endorsing tasks, and curation must be replayable under a shuffled event log. Both
+need the replay harness (POC-28) that comes with the integrity lane.
+
+**Evidence.** 484 tests, coverage **99.79 / 98.13 / 100 / 99.79**, `provenance.ts` 100/100/100/100,
+study unchanged (31.79 → 100.00, 17/17 gates).

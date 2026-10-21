@@ -222,8 +222,12 @@ Iteration 22 lands the curator (D4/D5/D30) and the utility denominator (P7). The
 removed rather than deferred: truth for a chart recommendation is a policy, not a vote, so L0 derives gold
 from the policy and keeps a 100-case human audit as calibration only.
 
-Next by the plan: provenance tiers and the promotion gate (D15/D16), the abstention kind (D18), then the
-lanes that need them (L0 adjudication, L2b pair contrast, L8 integrity).
+Iteration 23 lands the promotion gate (D15/D16): prose is stored and counted but cannot activate a rule
+until a second distinct task, or a stronger tier, endorses it. Two of G3's four invariants remain for the
+integrity lane: scope-widening bounds and replay under a shuffled log.
+
+Next by the plan: the abstention kind (D18) with its own render block, then the lanes that need them
+(L0 rule-derived adjudication, L2b pair contrast, L8 integrity).
 
 ## S3 — SOTA push (conditional)
 

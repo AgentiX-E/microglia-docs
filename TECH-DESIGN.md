@@ -2184,8 +2184,8 @@ Status vocabulary, used everywhere below:
 | D12 | `taskType`/`stage` are **hard filters** in scope | deferred (default: soft boost) | Hard filters may starve a cold task type; no data | POC-18: nDCG@10 +0.05 **and** cold-start recall not lower |
 | D13 | Curator trigger: explicit `curate()` plus auto at `pendingEvents ≥ 50`; **no timers inside the library** | decided | An embeddable library cannot own a wall clock (browser tab, serverless) | — |
 | D14 | Clock: order by `(occurredAt, seq)`; `occurredAt` clamped to `recordedAt ± 5 min`; validity computed on `occurredAt` | decided | Out-of-order feedback is normal (offline outbox); intervals on ingest time would be wrong | POC-28: order invariance |
-| D15 | Provenance tier on every item (`user-text` < `structured-edit` < `outcome` < `host-asserted`) and the tier caps injectable trust | decided | MINJA 98.2% injection success with no write access; AgentPoison >80% at <0.1% poison; OWASP ASI06 | POC-29 |
-| D16 | Promotion gate ≠ write gate: untrusted text may be stored, only endorsed evidence may be injected | decided | Same sources; storing is cheap, *using* is the privileged step | POC-29 |
+| D15 | Provenance tier on every item (`user-text` < `structured-edit` < `outcome` < `host-asserted`) and the tier caps injectable trust | **implemented** (iteration 23) | MINJA 98.2% injection success with no write access; AgentPoison >80% at <0.1% poison; OWASP ASI06 | unit + end-to-end tests: one clarification stays a candidate, a second task promotes it |
+| D16 | Promotion gate ≠ write gate: untrusted text may be stored, only endorsed evidence may be injected | **implemented** (iteration 23) | Same sources; storing is cheap, *using* is the privileged step | `user-text` activates only with a second distinct task or a stronger tier; unclassified legacy items are exempt |
 | D17 | Generalisation may never widen beyond the union of its endorsing tasks' scopes, and needs 3 distinct tasks to widen at all | decided | MemForm's **scope** route: real records, inflated applicability; and our own historical bug widened onto candidate items | POC-29 |
 | D18 | Knowledge kinds: `constraint`, `convention`, `preference`, `abstention` | decided | `abstain` feedback must produce something; MobileMem: stronger memory scores *worse* on unanswerable questions | POC-30 |
 | D19 | `preference` feeds both a rule and a DPO row | decided | It is simultaneously a convention and a pair; exporting one and not the other wastes the signal | POC-24 |
@@ -2219,7 +2219,14 @@ for `(taskType, domain)` does not delete old items; it **excludes them from inje
 retrievable only with `asOf`. *Metric:* stale-schema injection rate = 0 (blocking).
 
 **G3 — Memory-formation integrity.** The previous revision screened injection at render (P6) only, which
-assumes the store is trustworthy. MemForm (2026) shows five routes that never plant a false record:
+assumes the store is trustworthy.
+
+> **Partially implemented (iteration 23).** The **promotion gate** ships: every candidate carries a
+> provenance tier derived from the event kind (`kernel/provenance.ts`), and a `user-text` item cannot
+> activate on one task's word — it stays a candidate with `needs-corroboration` until a second distinct task
+> or a stronger tier endorses the same claim (`decideStatus`). Two invariants remain for the next
+> iteration: generalisation may not widen beyond its endorsers' scopes, and curation must be replayable
+> under a shuffled log. MemForm (2026) shows five routes that never plant a false record:
 content, **evidence** (swap part of a real history for fake support), **scope** (real records, wider
 applicability), **selection** (same candidates, different subset kept), **path** (same experiences, merged
 in a different order). Its strongest defence cut attack success by only 8.2 points. *Closure:* four
@@ -2966,7 +2973,7 @@ is a requirement ambiguity.
 | 4 | Extensible and faster than competitors | §17.25 (subpaths), §17.26 (footprint and latency budgets), §17.28 (rival mechanisms adopted or rejected on evidence), the poison baseline (19.64% vs 100.00%) | POC-21/32 showing a rival recovers more of the ceiling |
 | 5 | Complete benchmarks, executable plan, SOTA path | §17.27 (L1–L8 with n, power, cost, order), SOTA ladder R1–R5 with stop rules, preregistration and artefact rules | a lane without a resolution, or a claim without an artefact |
 | 6 | Competitor source study | §17.28 register: **five systems read at source** (mem0, Graphiti, A-MEM, HippoRAG 2 — partial file, LangMem) plus cortex field-by-field; papers for ACE/ExpeL/τ-bench; secondary only for ALTK-Evolve, MemForm, MINJA and the Cognee/MemoryOS/Memori group, each labelled | a class-R number used as a product claim; a class-S finding contradicted by the next read |
-| 7 | Every claim cross-checked | `AUDIT.md` C1–C27 with an evidence class per claim; class-R numbers confined to targets and design inputs; the n=30 read retracted rather than kept | a claim whose instrument is not named |
+| 7 | Every claim cross-checked | `AUDIT.md` C1–C30 with an evidence class per claim; class-R numbers confined to targets and design inputs; the n=30 read retracted rather than kept | a claim whose instrument is not named |
 | 8 | No ambiguous requirement or feature | §17.29 (twelve values), §19.3 (nine open questions, none about requirements), §17.30 (no POC without a conclusion or a reason) | two documents stating different thresholds |
 | 9 | Every POC topic and conclusion recorded | §17.30 (index with conclusions and "not run" reasons), §17.23 (status per POC) | a POC referenced but absent from the index |
 | 10 | Pipeline steps complete, options decided or deferred, metrics and evaluation complete | §17.2–§17.24: stages, decision register, twelve gap closures, end-to-end metrics, delivery contracts, competitor register v2, POC register v3 | a step whose option set is a single candidate with no comparison |
@@ -2988,6 +2995,6 @@ is a requirement ambiguity.
 | `TECH-DESIGN.md` | §1–§16 (mechanism), §17 (pipeline: stages, decisions, gaps, metrics, contracts, competitors, POCs, package mapping, performance, evaluation plan, source register, disambiguation, POC index, statistical discipline, dataset manifest, versioning), §18 (stage and release gates), §19 (this record) |
 | `ROADMAP.md` | S0–S3 with every read, including four null and two positive |
 | `PROGRESS.md` | Twenty iterations with evidence and defects |
-| `AUDIT.md` | C1–C27 with evidence classes, nine defects (B1–B9), and two retractions |
+| `AUDIT.md` | C1–C30 with evidence classes, nine defects (B1–B9), and two retractions |
 
 **End of design phase.** Awaiting the implementation signal.
