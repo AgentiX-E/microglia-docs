@@ -211,6 +211,16 @@ is blocked on.
 
 Implementation waits for an explicit signal. None of the remaining questions is a requirement ambiguity.
 
+## Implementation (2026-10-22 — started)
+
+Iteration 21 implements the two P0 items in evidence order: per-task evidence grouping (the defect §17.34.2
+proved) and the task instance that makes correlated evidence visible to begin with. Both are covered by
+tests that pin the property rather than the implementation, and the study is unchanged (31.79 → 100.00,
+17/17 gates), which is the regression check that matters.
+
+Next by the plan: curator counters and coalescing (D4/D30), provenance tiers and the promotion gate
+(D15/D16), the abstention kind (D18), then the lanes that need them (L2b pair contrast, L8 integrity).
+
 ## S3 — SOTA push (conditional)
 
 Only if S2 replicates. Requires a preregistration (frozen protocol, frozen prompts, frozen sample)

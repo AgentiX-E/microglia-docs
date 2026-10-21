@@ -581,3 +581,42 @@ loop). Each names its blocker in §19.3.
 
 **Evidence.** `TECH-DESIGN.md` §17.34 (closures with numbers), §19.3 (three closed / one conditional / five
 open), `AUDIT.md` C25 rewritten, C27 added, B9 added. `AgentiX-E/microglia` untouched at `c55cff1`.
+
+### 21 — Implementation begins: evidence independence, then the task instance
+
+The first implementation iteration took the two P0 items in the order their evidence demanded: the defect
+the arithmetic proved, then the structure that makes the defect impossible to reintroduce.
+
+**1. Evidence is counted per task, not per event** (`kernel/knowledge.ts`).
+
+`scoreKnowledge` now groups evidence by `taskId` (falling back to `runId`), keeps the **strongest**
+observation per task, and sums across tasks. Six attempts of one task move the score by zero; six tasks
+move it by more than 0.05; callers that never opened a task are byte-for-byte unchanged, which is why the
+study's nine arms still report 31.79 → 100.00 and all 17 gates pass.
+
+Deliberate deviation from the design: §17.34.2's arithmetic was a Wilson bound, while the shipped score is
+a log-odds fusion. Swapping the formula would invalidate the calibration the 17 gates rest on, so the
+**mechanism** was fixed instead — same property, no recalibration. This is recorded in §17.3 and §17.34.2
+rather than left as a silent difference.
+
+**2. Task instance** (`capture/task.ts`, ~200 lines).
+
+```ts
+const task = mg.openTask({ taskId, taskType, sessionId? });
+const a1 = task.begin({ attempt: 1, input });          // RunHandle
+const a2 = task.begin({ attempt: 2, parentRunId: a1.id, input });
+await task.complete({ status: 'accepted', finalRunId: a2.id });
+```
+
+`RunRecord` and `FeedbackEvent` gained `taskId`, `attempt`, `parentRunId`; distilled candidates carry
+`taskId` into their evidence, so the grouping above applies end to end rather than only in tests.
+
+Two deviations from the design paragraph, both on the side of refusing rather than guessing: a **skipped**
+attempt number is rejected (a gap hides a generation), and a second `complete()` throws
+`MG_E_TASK_CLOSED` instead of returning the previous decision (a silent no-op is how a host stops knowing
+whether its decision landed).
+
+**Evidence.** 460 tests (was 448), coverage **99.78 / 98.17 / 100 / 99.78** (statements / branches /
+functions / lines), `task.ts` at 100/97.14/100/100, `pnpm audit:repo` ok, `pnpm bench` unchanged with
+`blocking-gates=PASS`. New error codes `MG_E_TASK_CONFLICT` and `MG_E_TASK_CLOSED`, mapped to HTTP 409 in
+the server.

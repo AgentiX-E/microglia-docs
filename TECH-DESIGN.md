@@ -1854,6 +1854,13 @@ from single corrections and recovered 2.05–4.79pp of a 10.96–11.64pp ceiling
 `MG_E_TASK_CONFLICT`; feedback on an uncommitted run (already rejected, `MG_E_NO_OUTPUT`); task
 completed twice (idempotent, second is a no-op returning the first decision).
 
+> **Implemented (iteration 21, `capture/task.ts`).** `openMicroglia().openTask()` returns a `TaskHandle`
+> with `begin` / `complete` / `record` / `attemptCount`; `RunRecord` and `FeedbackEvent` carry
+> `taskId`, `attempt` and `parentRunId`. Two deviations from this paragraph, both deliberate: a **skipped**
+> attempt number is refused as well as a reused one (a gap hides a generation), and a second `complete()`
+> **throws** `MG_E_TASK_CLOSED` instead of returning the first decision — a silent no-op is how a host
+> loses track of whether its decision landed. `reasonCode` is preserved on the emitted outcome event.
+
 | Metric | Definition | Gate |
 |---|---|---|
 | Task linkage completeness | tasks with ≥1 terminal decision ÷ tasks opened | ≥ 0.95 at integration |
@@ -2154,8 +2161,8 @@ Status vocabulary, used everywhere below:
 | D3 | **Validity interval** (`validFrom`/`validTo`/`supersededBy`) instead of status demotion | deferred (default: demotion; interval behind `validityIntervals: true`) | Graphiti source: invalidation by interval geometry, no similarity threshold | POC-15: contradiction F1 ≥0.90 **and** stale-hit ≤0.02 |
 | D4 | Curator stage with per-item counters | decided | ACE: counters + delta updates are the answer to context collapse | POC-16 verifies counter integrity only |
 | D5 | Prune rule `flippedDown≥3 ∧ flippedDown>flippedUp`, or `injected≥20 ∧ flippedUp=0` | deferred (default: off; `pruneEnabled: false`) | No data yet on our own utility distribution | POC-16: prune precision ≥0.90, no retained-rule loss |
-| D6 | Admission support counted over **distinct tasks**, not events | decided | ALTK-Evolve: guidelines kept only from ≥3 distinct tasks beat a larger rule set on airline pass^4 (45.0 vs 40.0) | POC-27: inflation ratio ≤1.15 |
-| D7 | `minTaskSupport` = 2 for constraints, 3 for widened scopes | deferred (default 1 = today's behaviour) | Same ALTK evidence; our own store admits on 1 event by default | POC-27 |
+| D6 | Admission support counted over **distinct tasks**, not events | **implemented** (iteration 21) | ALTK-Evolve: guidelines kept only from ≥3 distinct tasks beat a larger rule set on airline pass^4 (45.0 vs 40.0), and the closed-form check in §17.34.2 gave a 2.95× inflation | C27 + unit test: six attempts of one task move the score by zero |
+| D7 | `minTaskSupport` = 2 for constraints, 3 for widened scopes | deferred (default 1 = today's behaviour) | Same ALTK evidence; the per-task grouping already removes the correlated-evidence path, and a hard floor is a separate trade against cold start | L2b: does a floor of 2 cost a first-session benefit? |
 | D8 | Item carries a `lexicalAlias` built from the originating question | **rejected**, with a reopening trigger | The premise was a misattributed number: zero-overlap packs are **3.1%**, not 47% (§17.34.3), and 99.7% of questions already have an active rule sharing a term. BM25 already scores those terms, so an alias re-weights an existing signal instead of adding one. Reopens only if a lane shows zero-hit >5% **and** load-bearing knowledge | POC-33 **closed** by the same measurement |
 | D9 | Retrieval = scope index + BM25 + alias + coverage floor; no dense channel by default | deferred (dense channel behind a provider, off) | BM25 won on light paraphrase at 10k on CPU (§12.4); embeddings add a provider and a latency budget | POC-17b: dense adds ≥3pp Recall@5 at p95 ≤5 ms, else rejected |
 | D10 | 1-hop expansion over supersession/contradiction edges (HippoRAG-2 style PPR) | **rejected for the default path**, kept behind a provider flag | Source read: HippoRAG 2 runs an **LLM filter per query** (`rerank_facts` → `DSPyFilter`) and falls back to dense retrieval when no fact survives. Our default path makes zero model calls per query, so the mechanism cannot ship as a default | POC-17b may reopen it only where the host already calls a model at query time |
@@ -2738,6 +2745,14 @@ Two conclusions, both decisive without a run:
 
 POC-27 is therefore **closed**, and its gate becomes a unit test at implementation: `trust(6 events, 1 task)`
 must not reach activation, `trust(6 distinct tasks)` must.
+
+> **Implemented differently, on purpose.** The shipped score is a log-odds fusion, not this Wilson bound:
+> the arithmetic above models the *design's* counting rule, and the fusion is what the 17 study gates were
+> calibrated against. Changing the formula to a Wilson bound would invalidate that calibration for no gain,
+> so the defect is fixed at the mechanism instead — evidence is grouped by task before fusion, keeping the
+> **strongest** observation per task and summing across tasks (`kernel/knowledge.ts`). Under log-odds the
+> inflation was larger than 2.95×, because each event added a full term. The unit test pins the property the
+> arithmetic argued for: six attempts of one task move the score by zero.
 
 #### 17.34.3 Closure 2 and a retraction — the alias premise was a misattributed number
 
