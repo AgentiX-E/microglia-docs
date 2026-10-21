@@ -10,7 +10,7 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | S0 Mechanism | **closed** | — |
 | S1 Host shadow (nl2charts) | not started | needs the private adjudicated set (n=1,300, κ≥0.7) |
 | S2 Public benchmarks | **four reads: no benefit** (−2.84, −1.14, −0.57, −0.28pp); controls show the pack is inert | the knowledge that transfers is convention, which this benchmark has none of |
-| S2b Convention transfer | **instrument failed its own channel gate** (n=49, oracle +0pp) | the convention must be a quantity, not a count; per-arm SQL must be recorded |
+| S2b Convention transfer | **first positive read**: +4.79pp (p=0.0156) on a rule the schema cannot reveal | replication; 44% of the stated ceiling is the gap to close |
 | S3 SOTA push | stopped on BIRD; starts only after S2b moves accuracy | — |
 
 ## Iteration log
@@ -292,9 +292,9 @@ coverage 100 / 100 / 100 / 99.44, `pnpm audit:repo` ok.
 
 ## What is left, in order
 
-1. **S2b, convention transfer** — fix the instrument first: restrict the subset to quantities a
-   thousand-fold scaling is meaningful for, and record each arm's SQL so a failed oracle can be read
-   rather than guessed. Then rerun: none / full / stated / oracle, gate ≥10pp with p<0.05.
+1. **S2b, convention transfer** — replicate the +4.79pp read, then close the gap to the stated ceiling
+   (+10.96pp): the learned pack carries 2.08 rules per question and 189.6 are active, so the question
+   is whether retrieval finds the one that applies.
 2. **Re-measure the parser fix**: the corrected parser changes which corrections become rules, so the
    failure rate and the delta both need one more read before either is quoted.
 3. **S2 at power, if needed**: Mini-Dev caps at 352 usable questions (4.9pp resolution); BIRD dev
@@ -356,3 +356,42 @@ injected the expected value and moved accuracy by 0pp, so V7 refused the run. Th
 counts divided by 1,000 (7 → 0.007), which is a convention the model will not infer from a hint of
 "0.007", and the harness records no per-arm SQL to explain the refusal. The protocol is not ready;
 the gate that caught it is working as designed.
+
+### 15 — A convention the schema cannot reveal: the first positive read
+
+The four previous reads said the same thing: on knowledge the model can infer, the pack is inert. This
+one gives the loop something it cannot infer — the workspace reports every numeric answer rounded to
+the nearest ten — and the loop moves.
+
+| Arm | Accuracy | Δ vs none | 95% CI | p |
+|---|---|---|---|---|
+| none | 6.85% | — | — | — |
+| **full (learned)** | **11.64%** | **+4.79pp** | [+1.37, +8.90] | **0.0156** |
+| stated (rule in prompt) | 17.81% | +10.96pp | [+6.16, +16.44] | 0.0001 |
+| oracle (value in prompt) | 9.59% | +2.74pp | [+0.68, +5.48] | 0.125 |
+
+n=146 (of 352 questions with a single numeric answer), 5 folds, 1,715 calls, 42 minutes, 189.6 active
+rules per fold, 2.08 rules per question. **7 questions gained, 0 lost.**
+
+**Three readings.**
+
+1. The loop transfers a convention it was never told: +4.79pp on held-out questions, no losses.
+2. It recovers **44%** of what stating the rule is worth (+4.79 of +10.96pp). The gap is the measure of
+   what distillation loses, and the number to attack next.
+3. **Rules are followed, values are not.** The accepted answer written into the prompt moved accuracy
+   by 2.74pp, not significantly; the rule moved it by 10.96pp. A lesson has to be a rule about how to
+   answer, not an answer.
+
+**Two instrument bugs this run found.** V6 asked the `stated` arm for rules-per-question when that arm
+injects a sentence and no pack, so it failed a sound run; it now covers only the controls that
+retrieve. And the first convention — thousands — produced expected answers like `0.007` for counts,
+which is not a convention any model can act on; the lane now carries two conventions and picks the
+subset by a rule (`|value| ≥ 1000` for thousands, everything for `round10`).
+
+**Caveat, stated rather than buried.** 4.79pp sits just under the sample's resolution (5.08pp). The
+paired test is significant because every discordant pair went one way, but a near-resolution effect
+needs replication before the magnitude is quoted. A second run of the same protocol is recorded with
+this iteration.
+
+**Evidence.** Run `39548548865`, artefact `poc/results/poc-sota-bird.json`, gates V1–V7 with the V6 fix
+in `f5b53b4`.

@@ -117,7 +117,7 @@ before the mechanism had been measured on public data, and the four reads above 
 thing: BIRD's gold contains no knowledge the model cannot infer, so the pack is inert there by
 construction. The gate is replaced by a protocol in which the knowledge is load-bearing by design.
 
-## S2b — convention transfer on a public benchmark (next)
+## S2b — convention transfer on a public benchmark (in progress)
 
 **Question.** Can the flywheel learn a house convention that the model cannot infer, and apply it to
 held-out questions about the same database?
@@ -146,6 +146,24 @@ argued with). It also exercises the whole product path — capture, distill, adm
 recall, apply — on data nobody curated for us.
 
 **Cost.** Roughly 1,400 model calls for 5 folds at the current subset size, about 40 minutes.
+
+**Read 1 (2026-10-21, run `39548548865`).** Two amendments were forced by measurement: the convention
+is *round to the nearest ten* (thousands turned counts into expected answers of `0.007`), and the
+channel control is the stated *rule*, because a stated value is ignored by the same model.
+
+| Arm | Accuracy | Δ | p |
+|---|---|---|---|
+| none | 6.85% | — | — |
+| full (learned) | **11.64%** | **+4.79pp** [+1.37, +8.90] | **0.0156** |
+| stated rule | 17.81% | +10.96pp [+6.16, +16.44] | 0.0001 |
+| stated value | 9.59% | +2.74pp [+0.68, +5.48] | 0.125 |
+
+n=146, 5 folds, 7 gained and 0 lost. The loop recovers **44%** of the stated ceiling.
+
+**Status.** Positive and, for the first time, significant — at the edge of the sample's resolution
+(5.08pp), so the magnitude is provisional until the replication of the same protocol lands. The
+gate for S2b (≥10pp) is **not** met by the learned arm; what is met is the weaker, more informative
+claim that a convention is transferred from corrections alone.
 
 ## S3 — SOTA push (conditional)
 

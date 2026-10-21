@@ -1493,6 +1493,61 @@ finding: on a benchmark whose gold encodes only what its schema already says, no
 knowledge moves the model — and one injected statement of *non-inferable* knowledge (the oracle) moves
 it by 30pp.
 
+### 12.14 POC-12 — convention transfer: the first positive read
+
+**Question.** Everything above measures the loop on knowledge the model does not need. This measures it
+on knowledge the model cannot infer: a house convention.
+
+**Protocol** (preregistered in the roadmap §S2b, with two amendments forced by measurement).
+
+1. **Subset by rule, not by outcome.** A question qualifies when its gold returns one row with one
+   numeric column. 146 of 352 Mini-Dev questions do.
+2. **Convention.** The workspace reports every numeric answer rounded to the nearest ten. The database
+   is untouched, so nothing in the schema reveals it. `round = round(value / 10) * 10`.
+3. **Learning.** The model answers without a pack; the correction it receives is the same query
+   reported the way the workspace reports. The memory sees only that correction.
+4. **Arms.** `none`; `full` (learned from the other folds); `stated` (the rule written once in the
+   prompt — the ceiling); `oracle` (the accepted value written in the prompt — a channel probe).
+5. **Judgement.** The prediction is executed; one numeric answer, compared at the convention's
+   precision.
+
+**Result.** Run `39548548865`, n=146, 5 folds, 1,715 calls, 42 minutes, 189.6 active rules per fold,
+2.08 rules injected per question.
+
+| Arm | Accuracy | Δ vs none | 95% CI | p |
+|---|---|---|---|---|
+| none | 6.85% | — | — | — |
+| **full (learned)** | **11.64%** | **+4.79pp** | **[+1.37, +8.90]** | **0.0156** |
+| stated (rule in prompt) | 17.81% | +10.96pp | [+6.16, +16.44] | 0.0001 |
+| oracle (value in prompt) | 9.59% | +2.74pp | [+0.68, +5.48] | 0.125 |
+
+McNemar: **7 questions gained, 0 lost.** Minimum detectable difference 5.08pp. All instrument gates
+passed except V6, which asked the `stated` arm for rules-per-question when that arm injects a sentence
+and no pack — a gate bug, fixed in `f5b53b4`, not a result.
+
+**What it establishes.**
+
+1. **The loop transfers a convention it was never told.** +4.79pp with no losses, from corrections
+   alone, on held-out questions. After four null reads on knowledge the model could infer, this is the
+   first statistically significant positive effect on public data.
+2. **It recovers 44% of the ceiling.** Stating the rule is worth +10.96pp; learning it from feedback is
+   worth +4.79pp. The gap is the honest measure of what distillation loses — and the number to improve.
+3. **Rules are followed; values are not.** Telling the model *the accepted answer* moved accuracy by
+   2.74pp and not significantly (p=0.125); telling it *the rule* moved it by 10.96pp (p=0.0001). The
+   prompt frames the block as reference data, and a model that treats data as data will copy a
+   convention but not an answer. This is a constraint on lesson design, not a defect: a lesson has to
+   be a rule about how to answer, not an answer.
+
+**What it does not establish.** The effect (4.79pp) sits just under the sample's stated resolution
+(5.08pp); the paired test is significant because the discordance is one-sided (7-0), but a
+near-resolution effect needs replication before it is quoted as a magnitude. A second run of the same
+protocol follows.
+
+**Why this answers the earlier nulls.** On unmodified BIRD the pack was inert because there was nothing
+to learn that the schema did not already say; here the knowledge is unreachable from the schema, and
+the same machinery moves accuracy. The boundary is now measured from both sides: **the flywheel is
+worth what the convention is worth, and nothing more.**
+
 ## 13. Operations
 
 ### 13.1 Runtime topology
