@@ -388,10 +388,12 @@ retrieve. And the first convention — thousands — produced expected answers l
 which is not a convention any model can act on; the lane now carries two conventions and picks the
 subset by a rule (`|value| ≥ 1000` for thousands, everything for `round10`).
 
-**Caveat, stated rather than buried.** 4.79pp sits just under the sample's resolution (5.08pp). The
-paired test is significant because every discordant pair went one way, but a near-resolution effect
-needs replication before the magnitude is quoted. A second run of the same protocol is recorded with
-this iteration.
+**Replication, and what it changes.** A second run of the same protocol (n=146, same folds) gave
+**+2.05pp [0.00, 4.79], p=0.250**, with 3 gained and 0 lost; the stated ceiling reproduced at
++11.64pp and the value arm at +2.74pp. Across both runs: **10 questions gained, 0 lost**, pooled
++3.42pp. The direction is stable; the magnitude is not. The honest summary is that the loop recovers
+**roughly a quarter to a half of what stating the rule is worth**, and that the ceiling (11–12pp) is
+the stable number, not the effect.
 
 **Evidence.** Run `39548548865`, artefact `poc/results/poc-sota-bird.json`, gates V1–V7 with the V6 fix
 in `f5b53b4`.

@@ -1538,10 +1538,27 @@ and no pack — a gate bug, fixed in `f5b53b4`, not a result.
    convention but not an answer. This is a constraint on lesson design, not a defect: a lesson has to
    be a rule about how to answer, not an answer.
 
-**What it does not establish.** The effect (4.79pp) sits just under the sample's stated resolution
-(5.08pp); the paired test is significant because the discordance is one-sided (7-0), but a
-near-resolution effect needs replication before it is quoted as a magnitude. A second run of the same
-protocol follows.
+**Replication (run `39608497021`, same protocol).** 6.85% → 8.90%: **+2.05pp, CI [0.00, 4.79],
+p = 0.250**, three gained and none lost; the stated ceiling reproduced at **+11.64pp (p = 0.0001)** and
+the value arm at +2.74pp (p = 0.125).
+
+| Run | full Δ | p | gained : lost | stated Δ |
+|---|---|---|---|---|
+| 1 | +4.79pp | 0.016 | 7 : 0 | +10.96pp |
+| 2 | +2.05pp | 0.250 | 3 : 0 | +11.64pp |
+| pooled | **+3.42pp** | — | **10 : 0** over 292 question-evaluations | — |
+
+**What it does not establish — revised by the replication.** The effect is real in direction (ten
+questions gained, none lost, across two runs) but **not stable in magnitude**: 4.79pp in one run,
+2.05pp in the next, against a stated ceiling that barely moved (10.96 → 11.64). The two runs share
+their questions, so the pooled 10:0 ratio is not an independent sample and its p-value would be
+optimistic; the defensible statement is that the loop recovers **roughly a quarter to a half of the
+stated ceiling**, and that the ceiling itself is the stable quantity.
+
+That gap is the next target: 189.6 active rules per fold, 2.08 injected per question, and only 10
+questions moved across two runs. Either retrieval is not finding the rule that applies, or the
+distilled rule is weaker than the stated one. The per-case `packIdList` and `armSql` fields exist to
+answer which.
 
 **Why this answers the earlier nulls.** On unmodified BIRD the pack was inert because there was nothing
 to learn that the schema did not already say; here the knowledge is unreachable from the schema, and

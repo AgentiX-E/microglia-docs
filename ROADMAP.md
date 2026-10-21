@@ -160,10 +160,14 @@ channel control is the stated *rule*, because a stated value is ignored by the s
 
 n=146, 5 folds, 7 gained and 0 lost. The loop recovers **44%** of the stated ceiling.
 
-**Status.** Positive and, for the first time, significant — at the edge of the sample's resolution
-(5.08pp), so the magnitude is provisional until the replication of the same protocol lands. The
-gate for S2b (≥10pp) is **not** met by the learned arm; what is met is the weaker, more informative
-claim that a convention is transferred from corrections alone.
+**Read 2 (replication, run `39608497021`).** +2.05pp [0.00, 4.79], p=0.250, 3 gained and 0 lost;
+stated +11.64pp, value +2.74pp. Across both runs 10 gained and 0 lost.
+
+**Status.** The direction replicates, the magnitude does not: 4.79pp then 2.05pp, against a stable
+stated ceiling of 11–12pp. The S2b gate (≥10pp) is **not** met. What is now measured is narrower and
+more useful: a convention is transferred from corrections alone, at a quarter to a half of what
+stating it is worth, and the gap is the retrieval-versus-distillation question the next run must
+separate.
 
 ## S3 — SOTA push (conditional)
 
