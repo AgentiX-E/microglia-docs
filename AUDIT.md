@@ -78,8 +78,23 @@ Design inputs, never claims. Each names the POC that would make it ours.
 | H1 | Rules distilled from an agent's own successes and failures lift τ²-retail pass^4 from 57.5% to 67.5%, and ≥3 distinct tasks beats a larger rule set on airline | **R** (IBM report, via secondary coverage) | not reproduced | POC-32, same split, our own arms |
 | H2 | A rule-forming memory is poisoned through content, evidence, scope, selection and path; the best known defence recovers only 8.2pp | **R** (2026 paper, via secondary coverage) | not reproduced | POC-29, five routes × six defences |
 | H3 | Query-only interaction injects a memory record at ~98% success and steers later answers at ~77% | **R** (NeurIPS 2025, via secondary coverage) | not reproduced | POC-29's content and evidence routes |
-| H4 | Per-item keywords/tags are why one memory architecture beats naive retrieval on distractor-heavy sets | **R** | partially adopted as the alias (D8) | POC-33 |
-| H5 | A one-hop walk over typed edges buys ~7% on associative recall | **R** (ICML 2025) | deferred (D10) | POC-17b |
+| H4 | Per-item keywords/tags are why one memory architecture beats naive retrieval on distractor-heavy sets | **R → refuted at source** | A-MEM's `search()` scores dense distance on `content` and never reads `keywords`; the field is produced by `analyze_content`, which `add_note` does not call. The alias (D8) therefore stands on our own C25, not on this hypothesis | POC-33 |
+| H5 | A one-hop walk over typed edges buys ~7% on associative recall | **R** (ICML 2025); mechanism confirmed at source | **rejected for the default path** (D10): `rerank_facts` makes an LLM call per query and graph search is skipped when no fact survives, which a CPU-only zero-call default cannot afford | POC-17b, host-funded only |
+
+## 3.1 Corrections forced by reading source
+
+Two things this report previously asserted on secondary evidence did not survive the source, and both were
+doing design work. They are recorded here rather than silently edited, because a register whose errors are
+invisible is a register nobody should trust.
+
+| Was asserted | What the code does | Correction |
+|---|---|---|
+| A-MEM's retrieval edge comes from per-item keywords/tags | `AgenticMemorySystem.search()` returns ChromaDB distances over `content`; `keywords` is in the result payload but not in the scoring path, and `analyze_content` is not called by `add_note` | the alias decision (D8) keeps its mechanism but loses its citation; the rationale is our own 47%-zero-coverage measurement (C25) |
+| Graph expansion (PPR) is a cheap deferred option | `HippoRAG.retrieve()` calls `rerank_facts` (an LLM filter) per query and falls back to dense retrieval when no fact survives | D10 moves from *deferred* to *rejected for the default path*; it may only return where the host already pays for a per-query model call |
+
+A third finding was not a correction but a confirmation: LangMem's `enable_deletes = False` default matches
+our decision to ship with pruning off (D5), and its `ReflectionExecutor(after_seconds)` debounce is the shape
+D30 adopts.
 
 ## 4. What is *not* verified, and why
 

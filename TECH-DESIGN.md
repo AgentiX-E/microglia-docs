@@ -20,7 +20,7 @@ Version 1.2 · 2026-10-21 · Author: Lambertyan · Status: design complete after
 | §11 | The evaluation protocol for public benchmarks |
 | §12 | What the POC actually measured |
 | §13–15 | Operations, decisions, and the gap register |
-| §17 | The feedback → knowledge → re-feed pipeline: stages; the **decision register** (§17.18); twelve gaps closed (§17.19); end-to-end metrics and cost (§17.20); delivery contracts (§17.21); competitors v2 (§17.22); POC register v3 (§17.23); package mapping and signatures (§17.25); footprint budgets (§17.26); lane plan and SOTA ladder (§17.27); source register (§17.28); disambiguation (§17.29); POC conclusions (§17.30) |
+| §17 | The feedback → knowledge → re-feed pipeline: stages; the **decision register** (§17.18); twelve gaps closed (§17.19); end-to-end metrics and cost (§17.20); delivery contracts (§17.21); competitors v2 (§17.22); POC register v3 (§17.23); package mapping and signatures (§17.25); footprint budgets (§17.26); lane plan and SOTA ladder (§17.27); source register (§17.28); disambiguation (§17.29); POC conclusions (§17.30); statistical discipline (§17.31); dataset manifest (§17.32); versioning and migration (§17.33) |
 | §18 | Stage acceptance criteria and the eight release gates |
 | §19 | The termination record: three audit passes and the requirement-by-requirement discharge |
 
@@ -2147,9 +2147,9 @@ Status vocabulary, used everywhere below:
 | D5 | Prune rule `flippedDown≥3 ∧ flippedDown>flippedUp`, or `injected≥20 ∧ flippedUp=0` | deferred (default: off; `pruneEnabled: false`) | No data yet on our own utility distribution | POC-16: prune precision ≥0.90, no retained-rule loss |
 | D6 | Admission support counted over **distinct tasks**, not events | decided | ALTK-Evolve: guidelines kept only from ≥3 distinct tasks beat a larger rule set on airline pass^4 (45.0 vs 40.0) | POC-27: inflation ratio ≤1.15 |
 | D7 | `minTaskSupport` = 2 for constraints, 3 for widened scopes | deferred (default 1 = today's behaviour) | Same ALTK evidence; our own store admits on 1 event by default | POC-27 |
-| D8 | Item carries `lexicalAlias`: the content terms of the question that produced the correction | decided | 47% of our packs shared **no** content word with their question; A-MEM's advantage over NaiveRAG on distractor-heavy sets is attributed to extra keywords/tags per item | POC-33: zero-hit rate ≤0.05 |
+| D8 | Item carries `lexicalAlias`: the content terms of the question that produced the correction | decided | 47% of our packs shared **no** content word with their question (C25). The rationale is **our own measurement**, not a borrowed one: A-MEM scores documents by dense distance only and never reads its own keywords field (§17.28), so the earlier attribution to A-MEM is **withdrawn** | POC-33: zero-hit ≤0.05, Recall@5 +0.10 |
 | D9 | Retrieval = scope index + BM25 + alias + coverage floor; no dense channel by default | deferred (dense channel behind a provider, off) | BM25 won on light paraphrase at 10k on CPU (§12.4); embeddings add a provider and a latency budget | POC-17b: dense adds ≥3pp Recall@5 at p95 ≤5 ms, else rejected |
-| D10 | 1-hop expansion over supersession/contradiction edges (HippoRAG-2 style PPR) | deferred (off) | HippoRAG 2 reports +7% on associative tasks; our edges already exist but are unused at retrieval | POC-17b: nDCG@10 +0.05 |
+| D10 | 1-hop expansion over supersession/contradiction edges (HippoRAG-2 style PPR) | **rejected for the default path**, kept behind a provider flag | Source read: HippoRAG 2 runs an **LLM filter per query** (`rerank_facts` → `DSPyFilter`) and falls back to dense retrieval when no fact survives. Our default path makes zero model calls per query, so the mechanism cannot ship as a default | POC-17b may reopen it only where the host already calls a model at query time |
 | D11 | Over-fetch `max(4×limit, 60)` | deferred (default `max(3×limit, 12)`) | mem0 ships it; our index is lexical and smaller | POC-17: Recall@5 ≥0.90 |
 | D12 | `taskType`/`stage` are **hard filters** in scope | deferred (default: soft boost) | Hard filters may starve a cold task type; no data | POC-18: nDCG@10 +0.05 **and** cold-start recall not lower |
 | D13 | Curator trigger: explicit `curate()` plus auto at `pendingEvents ≥ 50`; **no timers inside the library** | decided | An embeddable library cannot own a wall clock (browser tab, serverless) | — |
@@ -2168,6 +2168,8 @@ Status vocabulary, used everywhere below:
 | D26 | No GPU, no fine-tuning, no server-side rewrite of knowledge | rejected | Product constraint; ACE measures context collapse as the failure mode of rewriting | — |
 | D27 | LLM-only distillation | rejected | Loses the deterministic path structured edits need; 7.0% of calls fail to parse | — |
 | D28 | Delete-on-contradiction | rejected | Destroys the audit trail a correction exists to provide | — |
+| D29 | Batch distillation: several corrections of one task in **one** parallel multi-tool call | deferred (default: one call per correction) | LangMem's `_MEMORY_INSTRUCTIONS` does exactly this with `max_steps = 1`; our per-correction call costs 1 call each | POC-31b: candidate yield per 1,000 tokens must not fall more than 10% while calls per 1,000 corrections fall below 200 |
+| D30 | Curation coalesces a burst into one round; the host may debounce as LangMem's `ReflectionExecutor(after_seconds)` does | decided | Two rounds over one burst double the model spend for the same store state | counter replay must be identical with and without coalescing |
 
 ### 17.19 Twelve gaps this pass found, and how each is closed
 
@@ -2226,10 +2228,11 @@ is model calls, not CPU. *Closure:* §17.20, measured from the artefacts we alre
 unchanged after compaction; the audit log keeps hashes, not content.
 
 **G11 — Retrieval options were underexplored.** The previous revision considered only "BM25 vs dense". Two
-cheaper options are better supported by the literature read this pass: an item-level **lexical alias**
-(A-MEM's measured advantage on distractor-heavy sets comes from per-item keywords/tags) and **1-hop
-expansion** over edges we already store (HippoRAG 2, +7% associative at one LLM filter step per query).
-*Closure:* D8 decided, D9/D10/D11 deferred with gates. *POC-33, POC-17b.*
+cheaper options are better supported by measurement: an item-level **lexical alias**, which stands on our own
+coverage data and *not* on A-MEM (whose source shows keywords are metadata it never scores), and **1-hop
+expansion** over edges we already store, which the source shows needs an LLM call per query and is therefore
+rejected for a zero-model-call default (D10).
+*Closure:* D8 decided, D9/D11 deferred, D10 rejected. *POC-33, POC-17b.*
 
 **G12 — Benchmarks did not include the one that measures policy following.** Our convention lane is
 bespoke; τ-bench measures whether an agent follows a written policy across turns, scored by final database
@@ -2304,10 +2307,10 @@ block with a latency tax.
 | **ALTK-Evolve** (IBM, 2026) | Distils an agent's own successes and failures into short behavioural rules, appends them as a markdown block after the domain policy, no weight updates | τ²-retail pass^4 **57.5% → 67.5%**; τ²-airline 35.0 → 45.0 (`sup3`), 40.0 (lossless) | **The direct target.** Same mechanism, public benchmark, credible number. Its own caveat: 40 retail / 20 airline held-out tasks, not independently verified, so one task = 5pp |
 | **ACE** (2025) | Itemized playbook, helpful/harmful counters, delta updates, periodic curator | AppWorld +10.6%, finance +8.6%, tokens −83.6% vs GEPA | Adopted (D4, D5) |
 | **ExpeL** (AAAI 2024) | Success/failure contrast → insights, then add/edit/vote refinement | FEVER 63 → 70 with adaptation | Adopted as P2's pair contrast (D2, POC-14) |
-| **LangMem** (LangChain) | Hot-path tools + background manager; semantic/episodic/**procedural** stores | — | Confirms procedural memory as first-class (our `convention`), and the tool surface (§17.21) |
+| **LangMem** (LangChain) | Source: `_MEMORY_INSTRUCTIONS` runs three phases (extract → compare/update → synthesise) in **one parallel multi-tool call**; `max_steps = 1`, `query_limit = 5`, `enable_deletes = False` by default; ids are `uuid5(namespace, key)`; background work goes through `ReflectionExecutor(..., after_seconds=…)` for debounce | — | Procedural memory as first-class confirms our `convention` kind; `enable_deletes = False` corroborates shipping with prune **off** (D5); the debounced executor refines D13; the single batched call becomes D29 |
 | **Cognee** | Six-stage `cognify`, `memify` post-processor: prune stale nodes, reweight by usage, derive facts; MCP server | — | Same shape as our curator; confirms the stage exists in shipping products |
-| **A-MEM** (NeurIPS 2025) | Atomic notes with description/keywords/tags; an LLM links a new note to related ones and updates their attributes | Best or near-best on MobileMem with HippoRAG 2, attributed to per-item keywords aiding discrimination | **Adopted in cheap form** (D8: alias from the originating question, no extra model call) |
-| **HippoRAG 2** (ICML 2025) | Passages and concepts as nodes; query seeds Personalized PageRank, one LLM filter step | +7% on associative memory over the strongest dense baseline | Deferred (D10, POC-17b) |
+| **A-MEM** (NeurIPS 2025) | Source: `MemoryNote{content, keywords, tags, context, category, links, retrieval_count, evolution_history}`; `find_related_memories(content, k=5)` selects neighbours by **dense distance on content only**; an LLM then returns `should_evolve`, `strengthen`, `update_neighbor`; `update_neighbor` **overwrites the neighbours' own tags and context**; consolidation every `evo_threshold = 100` notes; **retrieval scores ChromaDB distance only and never reads keywords** | — | Two lessons: a keyword field that is never scored buys nothing, so our alias must be an *index* field (D8, on our own rationale); and silently rewriting existing notes is exactly the *path* route MemForm names, which D16/D17 forbid |
+| **HippoRAG 2** (ICML 2025) | Source (partial: file truncated, `BaseConfig` defaults not visible): `retrieve()` = fact retrieval → `rerank_facts` (Recognition Memory, a per-query `DSPyFilter` LLM call) → dense passage scoring → PPR re-rank with `linking_top_k` and `passage_node_weight`; **if no fact survives the filter it falls back to dense retrieval** | +7% on associative memory (paper) | Rejected for the default path (D10): a model call per query is incompatible with a CPU-only, zero-call default |
 | **MemoryOS** / **Memori** | Three-tier hierarchy with FIFO transitions; SQL-native storage | — | Alternatives for D24, tested at POC-25 |
 
 **Different object, so reported as sanity only.** Mem0, Zep/Graphiti, Letta/MemGPT store facts about a
@@ -2352,6 +2355,7 @@ Statuses: **run** (artefact exists), **specified** (needs the frozen implementat
 | **POC-29** | How much can a poisoned correction do? | MemForm's five routes, 100 attempts per route, six defences | 500 | attack success ≤10% | specified |
 | **POC-30** | Does an abstention kind reduce confident wrong answers? | 100 unanswerable questions, with/without abstention items | 100 | accuracy loss ≤2pp on answerable, ≥+10pp on unanswerable | specified |
 | **POC-31** | What does the pipeline cost? | Derived from recorded artefacts (calls, tokens, pack size) | 730 evaluations | ≤15% token overhead, ≤1 call/correction, ≤1% loss | **run** (§17.20) |
+| **POC-31b** | Does batching several corrections into one call keep the yield? | Batch 5 corrections per call vs one per call, same 1,000 corrections | 1,000 | calls <200/1,000 and candidate yield within 10% of per-correction | specified |
 | **POC-32** | Does the loop move τ-bench pass^k? | τ²-retail + τ²-airline, rules learned from training tasks, 4 trials | 40 + 20 held-out | pass^4 ≥ +5pp over the same-model baseline, and ≥ ALTK-Evolve's reported number on the same split | specified |
 | **POC-33** | Does a lexical alias fix the zero-coverage packs? | Same lane, items with/without alias | 352 | zero-hit ≤0.05, Recall@5 +0.10 | specified |
 
@@ -2523,13 +2527,22 @@ What was actually read, how, and what it changed. **Evidence class** is delibera
 | **cortex** | cloned, built, 12 fields compared in CI | memory projection shape | C15; W1 action item stays | **S** |
 | **ACE** | paper | itemized bullets, helpful/harmful counters, delta updates, curator frequency, context collapse | D4, D5 | **P** |
 | **ExpeL** | paper (AAAI 2024) | success/failure contrast → insight, add/edit/vote | D2 | **P** |
-| **A-MEM** | paper (NeurIPS 2025) + independent evaluation | atomic note with keywords/tags; per-item keywords are the measured reason it beats NaiveRAG on distractor-heavy sets | D8 (alias) | **R** |
-| **HippoRAG 2** | paper (ICML 2025) + secondary | passages as nodes, Personalized PageRank, +7% associative, one LLM filter step | D10 deferred | **R** |
+| **A-MEM** | `agentic_memory/memory_system.py`, `agentic_memory/retrievers.py` | `MemoryNote{content, keywords, tags, context, category, links, retrieval_count, evolution_history}`; `find_related_memories(content, k=5)` dense-only; LLM returns `should_evolve` / `strengthen` / `update_neighbor`; `update_neighbor` rewrites neighbours' tags and context; `evo_threshold = 100`; **retrieval scores distance only, keywords are never read** | D8 (own rationale), D16/D17 | **S** |
+| **HippoRAG 2** | `src/hipporag/HippoRAG.py` (partial — file truncated before `graph_search_with_fact_entities`; `BaseConfig` defaults not visible) | `retrieve()` = facts → `rerank_facts` (per-query `DSPyFilter` LLM call) → dense scoring → PPR with `linking_top_k`, `passage_node_weight`; dense fallback when no fact survives | D10 **rejected for the default** | **S (partial)** |
+| **LangMem** | `src/langmem/knowledge/extraction.py` | three-phase `_MEMORY_INSTRUCTIONS` (extract / compare-update / synthesise) in one parallel multi-tool call; `max_steps = 1`; `query_limit = 5`; `enable_deletes = False`; `_stable_id` = `uuid5(namespace, key)`; `ReflectionExecutor(after_seconds)` | D5 cross-check, D13, D29, D30 | **S** |
 | **ALTK-Evolve** | IBM report via secondary coverage | distill own successes/failures → prompt-appended rules; ≥3 distinct tasks beats lossless on airline pass^4 (45.0 vs 40.0); retail 57.5 → 67.5 | D6, D7, POC-32, L4 | **R** — not verified at source |
 | **MemForm** | 2026 paper via secondary coverage | five formation routes (content, evidence, scope, selection, path); best of five defences −8.2pp | G3 invariants, POC-29 | **R** |
 | **MINJA / AgentPoison** | arXiv abstracts via secondary coverage | 98.2% injection success with query-only access; >80% attack at <0.1% poison | D15, D16 | **R** |
-| **Cognee / LangMem / MemoryOS / Memori** | product documentation via secondary | curator post-processor; hot-path tools + background manager; three-tier hierarchy; SQL-native storage | D13, D25, D24 | **R** |
+| **Cognee / MemoryOS / Memori** | product documentation via secondary | curator post-processor (`memify`); three-tier hierarchy; SQL-native storage | D24, D25 | **R** |
 | **τ-bench / τ²-bench** | paper (arXiv 2406.12045) and leaderboard coverage | final DB-state scoring, `pass^k`, policy documents in context | L4 | **P** |
+
+**Corrections this pass produced.** Reading the source overturned two things the register had been asserting
+on secondary evidence, and both are recorded rather than quietly rewritten:
+
+| Was | Source says | Now |
+|---|---|---|
+| A-MEM's advantage on distractor-heavy sets is due to per-item keywords | `search()` scores ChromaDB distance on `content` and never reads `keywords`; the keyword field is generated by a separate method that `add_note` does not even call | the alias (D8) stands on **our own** C25 measurement; the A-MEM attribution is withdrawn |
+| PPR expansion is a deferred option | `rerank_facts` makes an **LLM call per query**, and the graph search is skipped entirely when no fact survives | D10 becomes **rejected for the default path**; a CPU-only, zero-call default cannot host it |
 
 **A rule this register exists to enforce.** No number from class **R** may appear in a product claim. It
 may appear as a *target* (L4's "≥ ALTK-Evolve on the same split") and as a *design input* (the five
@@ -2576,10 +2589,95 @@ the ones that do not, and why.
 | POC-12 | Convention transfer | +4.79pp (p=0.016) then +2.05pp (p=0.250), 10:0 pooled | §12.14, C23 |
 | POC-12b | Parser loss | 25.7% → 5.0% in probe → **7.0% at full scale** | §12.14, C24 |
 | POC-31 | Cost model | 2,383 tokens/evaluation; pack = 26% of median question | §17.20, C25 |
+| POC-31b | Batched distillation | **not run** — one call per correction ships until it is | §17.23 |
 | POC-13…30, 32, 33 | Pipeline stages, integrity, abstention, τ-bench | **not run** — they measure an implementation that does not exist | §17.23 |
 
 The two rows that changed a claim rather than decorating one are POC-8 (a published number retracted) and
 POC-12b (a probe that under-counted a loss by 40%).
+
+---
+
+### 17.31 Statistical discipline (requirement 3, applied to our own record)
+
+The pipeline's history contains a methodological problem that no gate caught, and it is in our own data:
+the BIRD hypothesis was tested **four times** (−2.84, −1.14, −0.57, −0.28pp) and the convention hypothesis
+**twice** (+4.79, then +2.05pp). Reporting the best p-value from a sequence of looks is optional stopping,
+and it inflates the false-positive rate. Four lanes × three arms multiplies the problem.
+
+Six rules, applied to every lane from now on, and applied retrospectively to what is already published:
+
+| Rule | Statement |
+|---|---|
+| S1 | **One primary endpoint per lane**, named in the artefact before the run. Secondary endpoints are reported as exploratory, without p-values |
+| S2 | **Every look is recorded.** An artefact carries `looks` (how many times this hypothesis has been run on this data) and `run_index`. A lane re-run for a fix is a new look, not a fresh test |
+| S3 | **No pooling of discordant pairs across looks.** "10 gained, 0 lost across two runs" is a description, not a test: the runs share questions, and a p-value computed on the sum would be optimistic. It is reported as `10:0 over 292 question-evaluations, no test` |
+| S4 | **Multiplicity within a family.** When k arms are compared to one control, Holm–Bonferroni at family α = 0.05: the smallest p must be < 0.05/k, the next < 0.05/(k−1), and so on. L2's three comparisons therefore need 0.0167, 0.025, 0.05 |
+| S5 | **Effect first.** Every claim is `Δ [CI], n, discordant pairs, looks`. A p-value without those four is not reportable |
+| S6 | **Negative results get the same table.** A null lane is published in the same format as a positive one; the four null reads exist because of this rule |
+
+**Applied to what is already published.** The convention lane's first read (p = 0.0156) was the first look;
+under S4 it needs p < 0.0167 for a three-arm family and **passes, narrowly**. The second read (p = 0.250) is
+a second look at the same questions: with two looks, a Bonferroni-on-looks adjustment makes the first read
+p ≈ 0.031, still under 0.05, and the second remains null. The honest summary is unchanged — direction
+stable, magnitude not — but the arithmetic behind it is now stated instead of implied.
+
+**What this changes in the artefacts.** Three fields (`looks`, `primary_endpoint`, `family_size`) and one
+derived value (`p_adjusted`) join every lane result. A run without them is reported as "not a result",
+which is the same rule already applied to a missing artefact.
+
+### 17.32 Dataset manifest (requirement 5, executability)
+
+A plan that names a benchmark but not where to get it is not executable — this repository already learned
+that when the BIRD Mini-Dev repository turned out to hold questions without databases, and the lane had to
+assemble two datasets to run at all.
+
+| Dataset | Source | Size used | Use | If it is unavailable or changed |
+|---|---|---|---|---|
+| BIRD Mini-Dev — questions | Hugging Face `birdsql/bird_mini_dev` | 500 (352 usable) | L2 | lane reported as **blocked**; no substitute |
+| BIRD — SQLite databases | Hugging Face `birdsql/bird-critic-1.0-sqlite` (`<db>_template.sqlite`) | 11 databases | L2, L3 | same |
+| BIRD-CRITIC | SQLite split, 500 tasks | 500 | L3 | lane blocked; the PG split is **not** a substitute (different dialect) |
+| τ²-bench | retail (40 held-out) + airline (20 held-out) | 240 runs | L4 | blocked; τ-bench v1 is a different board and is not merged |
+| MemoryAgentBench | TTL sets (ICL banking/clinic/nlu/trec) + FactConsolidation | full | L5, L6 | blocked |
+| LongMemEval | preference subset | 30 | L7 | blocked |
+| Convention lane | derived from BIRD Mini-Dev, gold transformed at evaluation time | 146 | L2 | inherits BIRD's availability; the transformation is versioned with the artefact |
+| Integrity harness | authored here, MemForm's five routes | 500 attempts | L8 | always available (no third-party data) |
+
+**Pinning.** Each dataset is recorded in the artefact by a digest of the exact files used, plus the retrieval
+date. A change of digest invalidates comparison with earlier runs, and the artefact says so rather than
+silently producing a new baseline. Licences are recorded at fetch time from the dataset card and carried in
+`datasets.lock.json`; the plan does not assert a licence it has not read.
+
+**Assembly is documented, not assumed.** The BIRD lane's two-repository assembly, the `<db>_template.sqlite`
+naming, and the JSON/JSONL tolerance in the row parser are part of the harness and are covered by the
+lane's own gate (V5: gold queries must execute).
+
+### 17.33 Versioning, migration and the published contract (requirements 1 and 2)
+
+An embedded SDK that stores a host's corrections owes that host a migration path. Three contracts:
+
+**Knowledge record.** `microglia.knowledge/1` is the current schema. The library **reads N−1 and writes N**;
+a store written by a newer major is refused with `MG_E_SCHEMA_VERSION` rather than partially understood. A
+migration is a **replay that writes a new journal** containing a `schema.migrated` event — never an in-place
+rewrite, so the audit trail of what a rule was derived from survives the upgrade.
+
+```ts
+// design contract, not implemented
+migrate(from: 1, to: 2): { events: number; items: number; journal: string };
+```
+
+Gate: a fixture journal at v1 migrates to v2 with the same item ids, the same evidence counts, and a store
+digest that differs only by the migration event. A v3 journal opened by a v2 reader raises
+`MG_E_SCHEMA_VERSION` and leaves the file untouched.
+
+**Packages.** `core`, `node` and `browser` share one version and are released together: a host that pins
+`core@0.3` and `node@0.2` would be running two contracts. `eval` is private and never published. Subpath
+exports are part of the public contract — adding one is a minor change, removing or renaming one is a major
+change even though the entry point is unchanged.
+
+**Deprecation.** A deprecated symbol keeps working for one minor and is reported by `doctor()` with the
+replacement, because a silent removal in a 0.x package is indistinguishable from a bug to the host that
+depended on it. The three new surfaces of §17.25 (`openTask`, `curate`, `forget`) enter at `0.3.0` as
+additive; `recall`'s `budgetRatio` (D23) enters additive with the absolute cap as the default.
 
 ---
 
@@ -2635,7 +2733,7 @@ null public reads exists because that rule was applied to our own result.
 
 ## 19. Termination signal
 
-**STOP — the design phase is complete after three audit passes. `AgentiX-E/microglia` is untouched and
+**STOP — the design phase is complete after four audit passes. `AgentiX-E/microglia` is untouched and
 awaits an explicit implementation signal.**
 
 ### 19.1 Three passes, and what each one caught
@@ -2645,6 +2743,7 @@ awaits an explicit implementation signal.**
 | 1 | Is every pipeline stage specified? | Eight stages (P0–P8) with contracts, metrics, failure modes; fourteen POCs |
 | 2 | Could an implementer still guess? | Three failed claims, twelve gaps, a decision register with defaults; two sources (MemForm, ALTK-Evolve) changed the design |
 | 3 | Do the *documents as a set* satisfy the ten requirements? | Three stale records, a contradiction between two chapters, and four requirement-level omissions |
+| 4 | Is requirement 6 actually met — are the leaders read, or only reported? | Three systems moved from secondary reports to source reads; two design rationales were **overturned** by what the code does; statistical discipline, a dataset manifest and a versioning contract were missing entirely |
 
 Pass 3 found defects that no amount of re-reading §17 would have found, because they were *between*
 documents rather than inside one:
@@ -2660,17 +2759,29 @@ documents rather than inside one:
 | Requirement 8 left twelve values open | "Wilson over task count", "every 50 events", "budgetRatio", decay floor | §17.29 fixes each to one value |
 | Requirement 9 had topics but no conclusions | POC register listed work, not outcomes | §17.30 indexes every POC's conclusion or its explicit "not run, because" |
 
+Pass 4 found a different class of defect: statements that were **honestly labelled** as secondary yet still
+did design work, and two of them were wrong.
+
+| Defect | What the source showed | Fix |
+|---|---|---|
+| The alias was justified by A-MEM's "per-item keywords" | `A-MEM.search()` scores dense distance on `content` and **never reads `keywords`**; the keyword field is produced by a method `add_note` does not call | D8 keeps its decision but not its citation: the rationale is our own C25 (47% zero-overlap packs) |
+| PPR expansion was "deferred" as if cheap | `rerank_facts` is an **LLM call per query**, and graph search is skipped when no fact survives | D10 becomes **rejected for the default path**; a CPU-only default cannot make per-query calls |
+| No rule against optional stopping | our own history has four looks at one BIRD hypothesis and two at the convention | §17.31: `looks`, one primary endpoint, Holm within a family, no pooling of discordant pairs across looks |
+| The lane plan named datasets but not their provenance | BIRD Mini-Dev once lacked databases and had to be assembled from two repositories | §17.32: source, size, licence-at-fetch, pinning digest, and "blocked" rather than a silent substitute |
+| A published SDK had no migration story | — | §17.33: schema N reads N−1, migrations replay into a new journal, subpaths are contract, deprecation lasts one minor |
+
 ### 19.2 Decided, deferred, rejected
 
 | Status | Count | Where |
 |---|---|---|
-| Decided (mechanism ships) | **15** | §17.18 |
+| Decided (mechanism ships) | **16** | §17.18 |
 | Deferred, each with a shipped default and the ablation that can overturn it | **10** | §17.18 |
-| Rejected, with the reason | **3** | §17.18 |
+| Rejected, with the reason | **4** | §17.18 |
 
 The ten defaults that ship before any ablation runs: demotion (not intervals), adjacent diff (not pair
-contrast), prune off, `minTaskSupport = 1`, plain BM25 (no dense channel), no 1-hop expansion,
-`max(3×limit, 12)`, soft `taskType` boost, JSONL, pull only.
+contrast), prune off, `minTaskSupport = 1`, plain BM25 (no dense channel), `max(3×limit, 12)`, soft
+`taskType` boost, JSONL, pull only, and one distillation call per correction. 1-hop expansion is no longer
+a default question at all: the source makes it a per-query model call, which this product does not make.
 
 ### 19.3 The nine questions that remain evidence-open
 
@@ -2681,7 +2792,7 @@ requirement ambiguity.**
 |---|---|---|---|
 | 1 | Does pair contrast close the ceiling gap? | POC-14 | recovery ≥0.60 at n=146 (resolves 5.08pp) |
 | 2 | Is a validity interval worth the model change? | POC-15 | F1 ≥0.90 **and** stale-hit ≤0.02 |
-| 3 | Which retriever wins on our own queries? | POC-17, 17b, 33 | Recall@5 ≥0.90; alias zero-hit ≤0.05 |
+| 3 | Which retriever wins on our own queries? | POC-17, 17b, 33 | Recall@5 ≥0.90; alias zero-hit ≤0.05 (PPR only where the host already calls a model per query) |
 | 4 | Does task-type scoping starve? | POC-18 | nDCG@10 +0.05, cold-start recall not lower |
 | 5 | Do push and tool delivery earn their surface? | POC-19, 20 | p95 ≤60 s; +3pp, ≤2 calls/task |
 | 6 | Does task-level support stop inflation? | POC-27 | ratio ≤1.15 |
@@ -2698,7 +2809,7 @@ requirement ambiguity.**
 | 3 | Scientific tests, strict acceptance | §17.19 (per-stage metrics with failure modes), §17.20 (E1–E6), §18.2 (RG1–RG8, none advisory), power stated per lane | a gate that passes on a rounded number |
 | 4 | Extensible and faster than competitors | §17.25 (subpaths), §17.26 (footprint and latency budgets), §17.28 (rival mechanisms adopted or rejected on evidence), the poison baseline (19.64% vs 100.00%) | POC-21/32 showing a rival recovers more of the ceiling |
 | 5 | Complete benchmarks, executable plan, SOTA path | §17.27 (L1–L8 with n, power, cost, order), SOTA ladder R1–R5 with stop rules, preregistration and artefact rules | a lane without a resolution, or a claim without an artefact |
-| 6 | Competitor source study | §17.28 register: mem0 and Graphiti read at source (class **S**), cortex compared field-by-field, papers for ACE/ExpeL/τ-bench, secondary for ALTK/MemForm/MINJA/A-MEM (class **R**, and labelled) | a class-R number used as a product claim |
+| 6 | Competitor source study | §17.28 register: **five systems read at source** (mem0, Graphiti, A-MEM, HippoRAG 2 — partial file, LangMem) plus cortex field-by-field; papers for ACE/ExpeL/τ-bench; secondary only for ALTK-Evolve, MemForm, MINJA and the Cognee/MemoryOS/Memori group, each labelled | a class-R number used as a product claim; a class-S finding contradicted by the next read |
 | 7 | Every claim cross-checked | `AUDIT.md` C1–C26 with an evidence class per claim; class-R numbers confined to targets and design inputs; the n=30 read retracted rather than kept | a claim whose instrument is not named |
 | 8 | No ambiguous requirement or feature | §17.29 (twelve values), §19.3 (nine open questions, none about requirements), §17.30 (no POC without a conclusion or a reason) | two documents stating different thresholds |
 | 9 | Every POC topic and conclusion recorded | §17.30 (index with conclusions and "not run" reasons), §17.23 (status per POC) | a POC referenced but absent from the index |
@@ -2718,9 +2829,9 @@ requirement ambiguity.**
 | Document | State |
 |---|---|
 | `WHITEPAPER.md` | Product thesis, evidence, competitors, constraints |
-| `TECH-DESIGN.md` | §1–§16 (mechanism), §17 (pipeline: stages, decisions, gaps, metrics, contracts, competitors, POCs, package mapping, performance, evaluation plan, source register, disambiguation, POC index), §18 (stage and release gates), §19 (this record) |
+| `TECH-DESIGN.md` | §1–§16 (mechanism), §17 (pipeline: stages, decisions, gaps, metrics, contracts, competitors, POCs, package mapping, performance, evaluation plan, source register, disambiguation, POC index, statistical discipline, dataset manifest, versioning), §18 (stage and release gates), §19 (this record) |
 | `ROADMAP.md` | S0–S3 with every read, including four null and two positive |
-| `PROGRESS.md` | Eighteen iterations with evidence and defects |
+| `PROGRESS.md` | Nineteen iterations with evidence and defects |
 | `AUDIT.md` | C1–C26 with evidence classes, defects found, and the retraction |
 
 **End of design phase.** Awaiting the implementation signal.

@@ -191,6 +191,14 @@ on BIRD with S2b as its replacement lane, and the old BIRD-Interact gate has mov
 belongs. The remaining requirement-level omissions (package mapping, footprint budgets, an executable lane
 plan, a source register, twelve disambiguated values, a POC conclusion index) are §17.25–§17.30.
 
+**Audit pass 4 (same day).** Requirement 6 was not met and the register said so: only two systems had been
+read at source. Reading A-MEM, HippoRAG 2 and LangMem overturned two design rationales — A-MEM never scores
+its own keywords, so the alias loses its citation and keeps its decision; HippoRAG filters with an LLM per
+query, so 1-hop expansion moves from *deferred* to *rejected for a CPU-only default*. The same read
+corroborated two choices (prune off; debounced curation) and produced one new deferred option (batched
+distillation). Statistical discipline (§17.31), a dataset manifest (§17.32) and a versioning contract
+(§17.33) closed the last three requirement-level omissions.
+
 Implementation waits for an explicit signal. The nine questions the design carries are all evidence
 questions with a named POC and a number (§19.3); none is a requirement ambiguity.
 

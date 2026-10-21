@@ -496,3 +496,38 @@ running the lane.
 now says four null reads instead of one underpowered read.
 
 **`TECH-DESIGN.md` is 2,720 lines** across §1–§19. `AgentiX-E/microglia` untouched at `c55cff1`.
+
+### 19 — Audit pass 4: requirement 6 was not met, and two citations were wrong
+
+The register in §17.28 was honest about evidence classes and that honesty exposed the problem: only mem0 and
+Graphiti had been read at source. Requirement 6 asks for the leaders' source, and the systems whose
+mechanisms we were deferring are open source, so "secondary report" was a description of our own gap, not a
+limit of the field.
+
+**Read this pass.** `A-MEM/agentic_memory/memory_system.py` + `retrievers.py`, `HippoRAG/src/hipporag/HippoRAG.py`
+(truncated file, defaults not visible), and `langmem/src/langmem/knowledge/extraction.py`.
+
+| Was asserted | Source says | Now |
+|---|---|---|
+| A-MEM's edge on distractor-heavy sets comes from per-item keywords | `search()` scores ChromaDB distance over `content`; `keywords` never enters the scoring path, and `analyze_content` is not even called by `add_note` | D8 keeps the alias but loses the citation: the rationale is our own 47%-zero-coverage measurement |
+| PPR expansion is a cheap deferred option | `retrieve()` calls `rerank_facts` — an **LLM filter per query** — and skips graph search entirely when no fact survives | D10 becomes **rejected for the default path**: a CPU-only default makes zero calls per query |
+| Pruning is a normal operation | LangMem ships `enable_deletes = False` | D5's "prune off by default" is corroborated by the most-adopted SDK |
+| Curation is threshold-only | LangMem debounces with `ReflectionExecutor(after_seconds=…)` | D30: coalesce a burst into one round, host may debounce |
+| One call per correction is the only shape | LangMem batches a whole session into one parallel multi-tool call (`max_steps = 1`) | D29: batch distillation deferred to POC-31b, gate "calls <200 per 1,000 corrections, yield within 10%" |
+
+**Three omissions this pass closed.**
+
+1. **§17.31 statistical discipline.** Our own record has four looks at one BIRD hypothesis and two at the
+   convention hypothesis, and we quoted the best p-value. That is optional stopping. Now: one primary
+   endpoint, `looks` in every artefact, Holm within an arm family, and no pooling of discordant pairs across
+   looks. Applied retrospectively, the convention lane's p = 0.0156 becomes ≈0.031 with two looks — still
+   under 0.05 — and the 10:0 sum is described, never tested.
+2. **§17.32 dataset manifest.** Every lane now names its source, size, licence-at-fetch, pinning digest and
+   fallback, and a missing dataset is reported as **blocked** rather than silently substituted. This exists
+   because BIRD Mini-Dev once arrived without databases and the lane had to assemble two repositories.
+3. **§17.33 versioning and migration.** A published SDK that stores a host's corrections owes it a migration
+   path: read N−1, write N, migrate by replaying into a **new** journal with a `schema.migrated` event, refuse
+   a newer major, keep subpaths in the contract, deprecate for one minor.
+
+**Decision register:** 30 rows — **16 decided, 10 deferred, 4 rejected**. `AgentiX-E/microglia` untouched at
+`c55cff1`; `TECH-DESIGN.md` is 2,837 lines.
