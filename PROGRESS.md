@@ -428,3 +428,44 @@ running them against a design would measure the design's absence.
 
 **Evidence.** `TECH-DESIGN.md` §17–§19; `ROADMAP.md` design-phase entry; competitor sources and papers
 named inline.
+
+### 17 — Audit pass 2: what pass 1 got wrong, and the twelve gaps it hid
+
+The question was not "is the design good" but "would an implementer have to guess anywhere". Reading §17
+against that standard, three claims failed (§17.17 of the technical design): metric tables existed per
+stage but there was **no end-to-end number and no token budget**; the alternatives table mixed *rejected*
+with *still open*; and three open questions had no POC at all.
+
+**Two sources read this pass changed the design, not just the prose.**
+
+| Source | What it forced |
+|---|---|
+| **MemForm** (2026) | A memory that *forms rules from experience* has five attack routes — content, evidence, **scope**, selection, path — none of which is "store a false record". The best of five defences cut attack success by only 8.2 points. Our pipeline had one screen, at render time, which assumes the store is trustworthy |
+| **ALTK-Evolve** (IBM, 2026) | The closest published implementation of this mechanism: τ²-retail pass^4 **57.5% → 67.5%**, no weight updates, rules appended to the prompt. Its ablation also shows guidelines kept from **≥3 distinct tasks** beat a larger rule set on airline pass^4 (45.0 vs 40.0) |
+
+That second row settles a question the design had been treating as bookkeeping: whether evidence from
+many attempts of one task counts like evidence from many tasks. It does not — and the fix (count support
+over distinct tasks) is what makes a single stubborn user unable to admit a rule alone.
+
+**Twelve gaps closed** (§17.19), each with a metric and a gate: correlated evidence inflating trust;
+schema drift leaving rules that name a column that no longer exists; integrity of rule *formation*;
+abstention having no kind of its own; preference being a dataset row instead of knowledge; no clock
+contract for validity; a curator with an implicit timer; no cost model; delivery with no payload; no
+erasure; retrieval options underexplored; and no policy-following benchmark.
+
+**What the cost model says, measured rather than assumed** (POC-31, from the recorded artefact):
+
+| Quantity | Measured | Consequence |
+|---|---|---|
+| Tokens per answered question | p50 1,133 / p95 2,706 / mean 1,342 | — |
+| Pack at the 1,200-char cap | ≈300 tokens = **26% of the median question** | budget becomes a ratio (≤15%), not a constant |
+| Distillation loss at full scale | **7.0%** (71 of 1,009) vs 5.0% in a 40-question probe | the probe under-estimated it; quote full-scale numbers only |
+| Calls per arm-evaluation | 2.35, ~2,383 tokens | ≤1 call per correction remains the target |
+
+**Decision register** (§17.18): 28 rows — **15 decided, 10 deferred, 3 rejected**. Every deferral names the
+behaviour that ships **before** the ablation runs, so no open question blocks implementation: demotion,
+adjacent diff, prune-off, `minTaskSupport = 1`, plain BM25, no expansion, `max(3×limit,12)`, soft boost,
+JSONL, pull-only.
+
+**Evidence.** `TECH-DESIGN.md` §17.17–§17.24 and §19; POC register v3 (21 POCs, one run, twenty
+specified); `AgentiX-E/microglia` untouched at `c55cff1`.

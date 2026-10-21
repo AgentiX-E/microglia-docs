@@ -175,8 +175,17 @@ The pipeline contract is written and frozen for implementation: eight stages (P0
 stage, and fourteen POCs with gates. It is §17 of the technical design; the three decisions that change
 the data model are the task instance, the validity interval, and per-item utility counters.
 
-Implementation waits for an explicit signal. The six questions the design still carries are all
-evidence questions with a named POC and a number (§17.15); none is a requirement ambiguity.
+**Audit pass 2 (same day).** Three claims from pass 1 did not survive: no end-to-end metric, an
+alternatives table that mixed rejected with open, and three open questions with no POC. Twelve gaps are
+closed with a metric and a gate each, and 29 decisions are now registered as decided / deferred / rejected —
+every deferral naming the default that ships before its ablation runs.
+
+The two sources that changed the design: **MemForm** (rule-forming memories are poisoned through content,
+evidence, scope, selection and path; the best of five defences gained only 8.2 points) and **ALTK-Evolve**
+(τ²-retail pass^4 57.5% → 67.5% from prompt-appended learned rules; ≥3 distinct tasks beats a larger set).
+
+Implementation waits for an explicit signal. The nine questions the design carries are all evidence
+questions with a named POC and a number (§19.3); none is a requirement ambiguity.
 
 ## S3 — SOTA push (conditional)
 

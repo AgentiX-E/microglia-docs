@@ -2,7 +2,7 @@
 
 **Headless feedback flywheel for agentic workflows**
 
-Version 1.1 · 2026-10-21 · Author: Lambertyan · Status: design complete, implementation frozen
+Version 1.2 · 2026-10-21 · Author: Lambertyan · Status: design complete after audit pass 2, implementation frozen
 
 ---
 
@@ -20,7 +20,7 @@ Version 1.1 · 2026-10-21 · Author: Lambertyan · Status: design complete, impl
 | §11 | The evaluation protocol for public benchmarks |
 | §12 | What the POC actually measured |
 | §13–15 | Operations, decisions, and the gap register |
-| §17 | The feedback → knowledge → re-feed pipeline, stage by stage, with metrics and gates |
+| §17 | The feedback → knowledge → re-feed pipeline: stages, the **decision register** (§17.18), the twelve gaps closed (§17.19), end-to-end metrics and cost (§17.20), delivery contracts (§17.21), competitors v2 (§17.22), POC register v3 (§17.23) |
 | §18–19 | Stage acceptance criteria, and the phase's termination record |
 
 Every number in §12 is produced by `pnpm check` in this repository. Every API in §5 exists in
@@ -2050,7 +2050,11 @@ never retrieved" from "retrieved and ignored". That distinction is exactly the 4
 a user, we store rules about a task; the objects differ. We report it as a sanity check and compete on
 TTL/CR and BIRD-CRITIC, where the object is the same.
 
-### 17.13 POC register v2
+### 17.13 POC register v2 (superseded by §17.23)
+
+> Kept for the record. **§17.23 is authoritative**: it adds five POCs, states the status of every row,
+> and carries the power amendment to POC-14. Any disagreement between the two tables resolves in favour
+> of §17.23.
 
 | ID | Question | Method | n | Gate | Artifact |
 |---|---|---|---|---|---|
@@ -2069,7 +2073,10 @@ TTL/CR and BIRD-CRITIC, where the object is the same.
 | POC-25 | Where does the scope index break? | 100k items, 1 000 queries | 100k | p95 ≤ 20 ms | `poc/results/poc-scale-100k.json` |
 | POC-26 | Is the idempotency store durable? | Restart under load, 1 000 duplicates | 1 000 | 0 duplicates recorded | `poc/results/poc-idempotency.json` |
 
-### 17.14 Alternatives, and why each was not chosen
+### 17.14 Alternatives, and why each was not chosen (extended by §17.18)
+
+> This table records mechanism choices. **§17.18 is the authoritative decision register** because it
+> distinguishes *decided* from *deferred*, and a deferral without a default is an ambiguity.
 
 | Decision | Chosen | Alternatives | Reason |
 |---|---|---|---|
@@ -2081,7 +2088,10 @@ TTL/CR and BIRD-CRITIC, where the object is the same.
 | Delivery | pull now; push/tool via POC | pull-only | agents that cannot ask will not use knowledge mid-task |
 | Storage | JSONL + in-memory index | SQLite; graph DB | 10k in 2.6–3.1 ms p95; the next order of magnitude is POC-25 |
 
-### 17.15 Open questions this design still carries
+### 17.15 Open questions this design still carries (superseded by §19.3)
+
+> Six questions when this section was written; **nine now**, after §17.19 added evidence independence,
+> integrity and abstention. §19.3 is the authoritative list.
 
 Each is closed by a named POC; none is a requirement ambiguity.
 
@@ -2097,6 +2107,267 @@ Each is closed by a named POC; none is a requirement ambiguity.
 Fine-tuning, GPU runtimes, a hosted service, UI, multi-tenant billing, and leaderboard submissions are
 excluded by the product definition (§2). The domain pack stays with the host. Cortex remains a
 projection target, not a dependency, until it is published (W1).
+
+---
+
+### 17.17 Audit verdict: three claims that did not survive this pass
+
+The previous revision claimed the pipeline was design-complete. Re-reading it against the requirement —
+*every step has a decidable design option, every option is either chosen on evidence or explicitly
+deferred to an ablation, every step has a metric and a gate* — three claims fail:
+
+| Claim | Why it fails | Where it is repaired |
+|---|---|---|
+| "Every stage has a metric table" | True per stage, but there is **no end-to-end number and no cost budget**. A pipeline can pass all nine stage gates and still be worthless (inert) or unaffordable (2.4k tokens per evaluation). | §17.20 |
+| "Alternatives are recorded" | The table mixed *rejected* with *still open*, so an implementer could not tell which decisions were free. Retrieval-index and integrity options were not listed at all. | §17.18, §17.22 |
+| "Fourteen POCs close every open question" | Three questions had **no POC at all** (evidence independence, memory-formation integrity, abstention), and POC-14's gate carried no power statement. | §17.23 |
+
+Two of the three gaps were found by reading sources this pass had not read: **MemForm** (2026), which
+shows that a memory that *forms rules from experience* can be poisoned through five routes that are not
+"plant a false record" — content, evidence, **scope**, selection, path — and **ALTK-Evolve** (IBM, 2026),
+which is the closest published implementation of this product's mechanism and reports what a support
+threshold is worth.
+
+### 17.18 Decision register: what is decided, what is deferred, and by what
+
+Status vocabulary, used everywhere below:
+
+- **decided** — the mechanism ships; evidence in hand or an invariant forces it.
+- **deferred** — implementation ships the **named default** and the named ablation changes it. A deferral
+  is never "we will see"; it is a default plus the experiment that can overturn it.
+- **rejected** — ships never, with the reason.
+
+| ID | Decision | Status | Basis | Settled / overturned by |
+|---|---|---|---|---|
+| D1 | Task instance (`taskId`, `taskType`, `attempt`, `parentRunId`, terminal status) | decided | Our own gap: single-correction lessons recover 0.19–0.44 of a stated ceiling; adjacent diffs cannot see what the task finally required | POC-14 (mechanism), no revert path |
+| D2 | Pair-contrast interpreter (first rejected attempt vs accepted) as the **primary** interpreter when a terminal decision exists | deferred (default: adjacent diff) | ExpeL: success/failure contrast transfers where single-trajectory insight does not | POC-14: recovery ratio ≥0.60 |
+| D3 | **Validity interval** (`validFrom`/`validTo`/`supersededBy`) instead of status demotion | deferred (default: demotion; interval behind `validityIntervals: true`) | Graphiti source: invalidation by interval geometry, no similarity threshold | POC-15: contradiction F1 ≥0.90 **and** stale-hit ≤0.02 |
+| D4 | Curator stage with per-item counters | decided | ACE: counters + delta updates are the answer to context collapse | POC-16 verifies counter integrity only |
+| D5 | Prune rule `flippedDown≥3 ∧ flippedDown>flippedUp`, or `injected≥20 ∧ flippedUp=0` | deferred (default: off; `pruneEnabled: false`) | No data yet on our own utility distribution | POC-16: prune precision ≥0.90, no retained-rule loss |
+| D6 | Admission support counted over **distinct tasks**, not events | decided | ALTK-Evolve: guidelines kept only from ≥3 distinct tasks beat a larger rule set on airline pass^4 (45.0 vs 40.0) | POC-27: inflation ratio ≤1.15 |
+| D7 | `minTaskSupport` = 2 for constraints, 3 for widened scopes | deferred (default 1 = today's behaviour) | Same ALTK evidence; our own store admits on 1 event by default | POC-27 |
+| D8 | Item carries `lexicalAlias`: the content terms of the question that produced the correction | decided | 47% of our packs shared **no** content word with their question; A-MEM's advantage over NaiveRAG on distractor-heavy sets is attributed to extra keywords/tags per item | POC-33: zero-hit rate ≤0.05 |
+| D9 | Retrieval = scope index + BM25 + alias + coverage floor; no dense channel by default | deferred (dense channel behind a provider, off) | BM25 won on light paraphrase at 10k on CPU (§12.4); embeddings add a provider and a latency budget | POC-17b: dense adds ≥3pp Recall@5 at p95 ≤5 ms, else rejected |
+| D10 | 1-hop expansion over supersession/contradiction edges (HippoRAG-2 style PPR) | deferred (off) | HippoRAG 2 reports +7% on associative tasks; our edges already exist but are unused at retrieval | POC-17b: nDCG@10 +0.05 |
+| D11 | Over-fetch `max(4×limit, 60)` | deferred (default `max(3×limit, 12)`) | mem0 ships it; our index is lexical and smaller | POC-17: Recall@5 ≥0.90 |
+| D12 | `taskType`/`stage` are **hard filters** in scope | deferred (default: soft boost) | Hard filters may starve a cold task type; no data | POC-18: nDCG@10 +0.05 **and** cold-start recall not lower |
+| D13 | Curator trigger: explicit `curate()` plus auto at `pendingEvents ≥ 50`; **no timers inside the library** | decided | An embeddable library cannot own a wall clock (browser tab, serverless) | — |
+| D14 | Clock: order by `(occurredAt, seq)`; `occurredAt` clamped to `recordedAt ± 5 min`; validity computed on `occurredAt` | decided | Out-of-order feedback is normal (offline outbox); intervals on ingest time would be wrong | POC-28: order invariance |
+| D15 | Provenance tier on every item (`user-text` < `structured-edit` < `outcome` < `host-asserted`) and the tier caps injectable trust | decided | MINJA 98.2% injection success with no write access; AgentPoison >80% at <0.1% poison; OWASP ASI06 | POC-29 |
+| D16 | Promotion gate ≠ write gate: untrusted text may be stored, only endorsed evidence may be injected | decided | Same sources; storing is cheap, *using* is the privileged step | POC-29 |
+| D17 | Generalisation may never widen beyond the union of its endorsing tasks' scopes, and needs 3 distinct tasks to widen at all | decided | MemForm's **scope** route: real records, inflated applicability; and our own historical bug widened onto candidate items | POC-29 |
+| D18 | Knowledge kinds: `constraint`, `convention`, `preference`, `abstention` | decided | `abstain` feedback must produce something; MobileMem: stronger memory scores *worse* on unanswerable questions | POC-30 |
+| D19 | `preference` feeds both a rule and a DPO row | decided | It is simultaneously a convention and a pair; exporting one and not the other wastes the signal | POC-24 |
+| D20 | Erasure: `forget({ ids / taskId / actor })` writes a tombstone, compacts the journal, rebuilds the index | decided | A store of user corrections without deletion is not shippable to a host with deletion obligations | POC-28b: post-erasure recall = 0 |
+| D21 | Namespace is mandatory; no cross-namespace retrieval, ever | decided | Already enforced; ASI06 lists tenant isolation as a control | existing tests |
+| D22 | Distillation budget: ≤1 model call per correction, ≤2,000 completion tokens, 2 candidates | decided | Measured: 7.0% loss at 3 candidates/1,400 tokens; 5.0% at 2/2,000 | POC-31 |
+| D23 | Prompt budget is a **ratio** (≤15% of the host prompt's tokens) with a 1,200-char absolute cap | decided | Measured: 1,200 chars ≈ 300 tokens against a 1,133-token median question = 26% | POC-31 |
+| D24 | Storage: JSONL append + in-memory index; SQLite/Memori-style behind the same port | deferred (default JSONL) | 10k items in 2.6–3.1 ms p95; the next order of magnitude is untested | POC-25: p95 ≤20 ms at 100k |
+| D25 | Delivery: pull now; push (webhook) and tool (MCP) behind POCs | deferred | LangMem ships hot-path tools and a background manager; Cognee ships an MCP server; we ship neither yet | POC-19, POC-20 |
+| D26 | No GPU, no fine-tuning, no server-side rewrite of knowledge | rejected | Product constraint; ACE measures context collapse as the failure mode of rewriting | — |
+| D27 | LLM-only distillation | rejected | Loses the deterministic path structured edits need; 7.0% of calls fail to parse | — |
+| D28 | Delete-on-contradiction | rejected | Destroys the audit trail a correction exists to provide | — |
+
+### 17.19 Twelve gaps this pass found, and how each is closed
+
+Each gap is a place where the previous revision would have let an implementer guess.
+
+**G1 — Correlated evidence manufactured confidence.** Eight attempts of one task were eight independent
+evidence items, so a single stubborn user could admit a rule alone. *Closure:* support is counted over
+distinct tasks; each task contributes at most one endorsement (its terminal decision, or the satisfaction
+of its final attempt); Wilson lower bound applies to that task-level count; attempts beyond 8 are ignored.
+*Metric:* inflation ratio = trust after *k* correlated events ÷ trust after *k* independent ones, gate
+≤1.15. *Cross-check:* ALTK-Evolve's `sup3` (guidelines from ≥3 distinct tasks) beat its lossless set on
+τ²-airline pass^4, 45.0 vs 40.0 — a support threshold is not bookkeeping, it changes reliability.
+
+**G2 — Schema drift.** `scope.schemaDigest` existed and nothing invalidated on it. A rule naming a column
+that has been renamed is not stale knowledge, it is a fabrication with a citation. *Closure:* a new digest
+for `(taskType, domain)` does not delete old items; it **excludes them from injection** and keeps them
+retrievable only with `asOf`. *Metric:* stale-schema injection rate = 0 (blocking).
+
+**G3 — Memory-formation integrity.** The previous revision screened injection at render (P6) only, which
+assumes the store is trustworthy. MemForm (2026) shows five routes that never plant a false record:
+content, **evidence** (swap part of a real history for fake support), **scope** (real records, wider
+applicability), **selection** (same candidates, different subset kept), **path** (same experiences, merged
+in a different order). Its strongest defence cut attack success by only 8.2 points. *Closure:* four
+invariants, one per route — evidence items must carry distinct event ids (evidence), widening needs three
+distinct endorsing tasks (scope), curation is a deterministic function of the event log (selection), and
+merge is order-invariant (path). Plus provenance tiers (D15) and a promotion gate (D16) and a periodic
+standing recheck that re-validates active items against current evidence. *Metric:* attack success ≤10%
+on a MemForm-shaped harness; order invariance and replay determinism = 1.00 (blocking). *POC-29.*
+
+**G4 — Abstention had no home.** `abstain` feedback produced a candidate of kind `constraint` with a
+negation in prose, which retrieval cannot distinguish from a positive rule. MobileMem's most
+counter-intuitive finding is that the *strongest* memory systems score worst on unanswerable questions,
+because they retrieve a plausible distractor and become more confident. *Closure:* `kind: 'abstention'`
+rendered in its own block with its own instruction; retrieval may return one abstention instead of a pack.
+*Metric:* unanswerable-subset accuracy not worse than the no-memory arm by >2pp; abstention precision
+≥0.85. *POC-30.*
+
+**G5 — Preference was a dataset row, not knowledge.** A preference is both: a convention ("this workspace
+prefers bars for trend questions") and a DPO pair. *Closure:* D19, two consumers from one event.
+*Metric:* preference-follow rate, POC-24 gate ≥+20pp on the LongMemEval preference subset.
+
+**G6 — No clock contract.** Validity intervals need a time, and there are three candidates: host event
+time, library ingest time, and model time. Out-of-order arrival is normal — the browser outbox replays
+after a reload. *Closure:* D14. *Metric:* shuffling 1,000 events produces an identical store digest.
+
+**G7 — The curator had an implicit timer.** "Every 50 events or 5 minutes" is unimplementable in a tab and
+ambiguous in a serverless function. *Closure:* D13 — the library counts, the host schedules.
+*Metric:* curation lag ≤ threshold events; server-side scheduler is the host's code.
+
+**G8 — No cost model.** §17 had latency targets but no token budget, and the dominant cost of this product
+is model calls, not CPU. *Closure:* §17.20, measured from the artefacts we already have.
+
+**G9 — Delivery had no contract.** "Push" and "tool" were named without a payload. *Closure:* §17.21.
+
+**G10 — Erasure was unaddressed.** *Closure:* D20. *Metric:* post-erasure recall 0; other items' counts
+unchanged after compaction; the audit log keeps hashes, not content.
+
+**G11 — Retrieval options were underexplored.** The previous revision considered only "BM25 vs dense". Two
+cheaper options are better supported by the literature read this pass: an item-level **lexical alias**
+(A-MEM's measured advantage on distractor-heavy sets comes from per-item keywords/tags) and **1-hop
+expansion** over edges we already store (HippoRAG 2, +7% associative at one LLM filter step per query).
+*Closure:* D8 decided, D9/D10/D11 deferred with gates. *POC-33, POC-17b.*
+
+**G12 — Benchmarks did not include the one that measures policy following.** Our convention lane is
+bespoke; τ-bench measures whether an agent follows a written policy across turns, scored by final database
+state, with `pass^k` for consistency — and the closest published mechanism to ours (ALTK-Evolve) reports
+67.5% pass^4 on τ²-retail against a 57.5% baseline, no weight updates, rules appended to the prompt.
+*Closure:* §17.22 adds it as the primary SOTA lane for the "rules are followed" claim.
+
+### 17.20 What the pipeline is judged by, end to end
+
+A stage gate protects a stage; these six numbers decide whether the product works. All are measured on
+every lane run and reported with the artefact.
+
+| # | Metric | Definition | Measured today | Target |
+|---|---|---|---|---|
+| E1 | Loop utility | accuracy(with memory) − accuracy(no memory), paired | −2.84 / −1.14 / −0.57 / −0.28pp on unmodified BIRD; **+4.79 / +2.05pp** on the convention lane | ≥ +3pp on a convention-bearing lane, ≥ 0 on unmodified data |
+| E2 | Recovery ratio | Δlearned ÷ Δstated | **0.19–0.44** | ≥ 0.60 |
+| E3 | Token overhead | pack tokens ÷ host prompt tokens | **≈26%** at the 1,200-char cap against a 1,133-token median question | ≤ 15% (D23) |
+| E4 | Distillation loss | failed ÷ (created + failed) | **7.0%** (71 of 1,009) at full scale; 5.0% in a 40-question probe | ≤ 1% |
+| E5 | Cost per corrected task | model calls + tokens, distill only | ≤1 call, ~2.4k tokens per arm-evaluation | ≤1 call, ≤2k tokens |
+| E6 | Integrity | attack success / order invariance / replay determinism | not measured | ≤10% / 1.00 / 1.00 |
+
+Two readings from E3 and E4 that change the design rather than decorating it:
+
+- **The pack is a quarter of the prompt, not a garnish.** A constant character budget cannot be right for
+  both a 300-token question and a 3,000-token one, so the budget becomes a ratio with an absolute cap
+  (D23). This also re-frames the convention result: the learned arm paid 26% more prompt for +2–5pp.
+- **7.0% at full scale, 5.0% in a probe.** The probe under-estimated the loss because a 40-question slice
+  has fewer long replies. Every future claim about the parser is quoted at full scale.
+
+### 17.21 Delivery contracts
+
+Pull is implemented; these are the two surfaces the POCs will judge.
+
+**Push (webhook).** `POST {host}/microglia/events`, one JSON body per change, `X-Microglia-Signature:
+sha256=<hmac>` over the raw body with the subscription secret, at-least-once with `id` for de-duplication:
+
+```json
+{ "id": "evt_01H...", "type": "knowledge.admitted",
+  "namespace": "acme", "taskType": "chart.recommend",
+  "item": { "id": "k_1a2b", "kind": "convention", "statement": "…", "trust": 0.81 },
+  "reason": "3 distinct tasks endorsed this", "at": 1761091200000 }
+```
+
+Types: `knowledge.admitted`, `knowledge.superseded`, `knowledge.retired`, `task.completed`. Ordered per
+`(taskType, seq)`; a host that misses one resyncs with `GET /v1/knowledge?since=`.
+
+**Tool (MCP).** Two tools, deliberately small, because an agent that can ask will ask too often:
+
+```json
+{"name": "microglia_recall",
+ "description": "Look up workspace conventions learned from earlier corrections before answering.",
+ "inputSchema": {"type": "object", "required": ["taskType", "question"],
+   "properties": {"taskType": {"type": "string"}, "question": {"type": "string"},
+                  "domain": {"type": "string"}, "budget": {"type": "integer"}}}}
+{"name": "microglia_feedback",
+ "description": "Record that the answer was wrong and what the correct one is.",
+ "inputSchema": {"type": "object", "required": ["taskId", "kind"],
+   "properties": {"taskId": {"type": "string"}, "kind": {"enum": ["edit", "rating", "abstain"]},
+                  "after": {"type": "object"}, "note": {"type": "string"}}}}
+```
+
+Gate for the tool surface: tool-call utility ≥0.60 (share of tasks where a self-initiated recall preceded
+a correct answer) and call rate ≤2 per task; an agent that recalls on every turn has replaced a prompt
+block with a latency tax.
+
+### 17.22 Competitor and benchmark register v2
+
+**Same object, therefore comparable.** These store *rules or policies about a task*, which is what we store.
+
+| System | Mechanism, from source or paper | Reported number | Our stance |
+|---|---|---|---|
+| **ALTK-Evolve** (IBM, 2026) | Distils an agent's own successes and failures into short behavioural rules, appends them as a markdown block after the domain policy, no weight updates | τ²-retail pass^4 **57.5% → 67.5%**; τ²-airline 35.0 → 45.0 (`sup3`), 40.0 (lossless) | **The direct target.** Same mechanism, public benchmark, credible number. Its own caveat: 40 retail / 20 airline held-out tasks, not independently verified, so one task = 5pp |
+| **ACE** (2025) | Itemized playbook, helpful/harmful counters, delta updates, periodic curator | AppWorld +10.6%, finance +8.6%, tokens −83.6% vs GEPA | Adopted (D4, D5) |
+| **ExpeL** (AAAI 2024) | Success/failure contrast → insights, then add/edit/vote refinement | FEVER 63 → 70 with adaptation | Adopted as P2's pair contrast (D2, POC-14) |
+| **LangMem** (LangChain) | Hot-path tools + background manager; semantic/episodic/**procedural** stores | — | Confirms procedural memory as first-class (our `convention`), and the tool surface (§17.21) |
+| **Cognee** | Six-stage `cognify`, `memify` post-processor: prune stale nodes, reweight by usage, derive facts; MCP server | — | Same shape as our curator; confirms the stage exists in shipping products |
+| **A-MEM** (NeurIPS 2025) | Atomic notes with description/keywords/tags; an LLM links a new note to related ones and updates their attributes | Best or near-best on MobileMem with HippoRAG 2, attributed to per-item keywords aiding discrimination | **Adopted in cheap form** (D8: alias from the originating question, no extra model call) |
+| **HippoRAG 2** (ICML 2025) | Passages and concepts as nodes; query seeds Personalized PageRank, one LLM filter step | +7% on associative memory over the strongest dense baseline | Deferred (D10, POC-17b) |
+| **MemoryOS** / **Memori** | Three-tier hierarchy with FIFO transitions; SQL-native storage | — | Alternatives for D24, tested at POC-25 |
+
+**Different object, so reported as sanity only.** Mem0, Zep/Graphiti, Letta/MemGPT store facts about a
+user; LOCOMO and DMR measure recall of those facts. We report them, we do not claim a win there.
+
+| Benchmark | What it measures | Why it is on the list |
+|---|---|---|
+| **τ-bench / τ²-bench** | policy adherence over multi-turn dialogue, scored by final DB state; `pass^k` | The "rules are followed" claim, with a published competitor number |
+| **BIRD-CRITIC-SQLite** (500) | repair a broken query from a user complaint | rule quality where gold is a *fix* |
+| **MemoryAgentBench** TTL / CR | teaching a rule without weight updates; fact consolidation | extraction and contradiction, and its **unanswerable subset** for G4 |
+| **LongMemEval** preference subset | preference following | the only public preference number (Zep 20.0 → 56.7) |
+| **our convention lane** | transfer of an unreachable convention | no public equivalent; the only lane where our mechanism is load-bearing by construction |
+| **MemForm-shaped integrity harness** | attack success of the five formation routes | the pipeline is a rule-forming memory; this is its threat model |
+
+**Refused:** leaderboard placement on LOCOMO/DMR as a product claim; any comparison that requires GPU;
+any closed-source competitor's internals (per instruction, none is chased).
+
+### 17.23 POC register v3
+
+Statuses: **run** (artefact exists), **specified** (needs the frozen implementation), **deferred**
+(blocked on an external dependency). Every row names n, the gate, and the artefact it must produce.
+
+| ID | Question | Method | n | Gate | Status |
+|---|---|---|---|---|---|
+| POC-13 | Is context redaction complete? | 200 contexts, 6 secret shapes | 200 | recall ≥0.99, precision ≥0.95 | specified |
+| POC-14 | Does pair contrast close the ceiling gap? | Same lane, distill from (first-rejected, accepted); paired against adjacent-diff | 146 × 5 folds | recovery ratio ≥0.60, p<0.05 | specified |
+| POC-15 | Is a validity interval worth the model change? | 150 labelled pairs × 3 conflict patterns | 150 | F1 ≥0.90, stale-hit ≤0.02 | specified |
+| POC-16 | Can utility support retirement? | 200 replayed runs with a known relevant rule | 200 | attribution ≥0.90; no retained-rule loss | specified |
+| POC-17 | Which over-fetch and coverage settings maximise Recall@5? | 200 queries × {12,24,60} × coverage {0,.01,.15} | 1,800 | Recall@5 ≥0.90 at p95 ≤5 ms | specified |
+| POC-17b | Does a dense channel or 1-hop expansion beat BM25+alias? | Same 200 labelled queries, three retrievers | 600 | +3pp Recall@5 or +0.05 nDCG@10, else rejected | specified |
+| POC-18 | Does taskType scoping help or starve? | Same queries, hard filter vs soft boost | 200 | nDCG@10 +0.05, cold-start recall not lower | specified |
+| POC-19 | Is push delivery worth a surface? | Webhook on change, 50 long tasks | 50 | p95 ≤60 s, no missed update | specified |
+| POC-20 | Does tool-initiated recall beat pull? | BIRD-Interact Lite, agent decides | 300 | task success +3pp, ≤2 calls/task | specified |
+| POC-21 | Does the loop raise a weak model's fix rate? | BIRD-CRITIC-SQLite, memory on/off | 500 | +5pp, p<0.05 | specified |
+| POC-22 | Does a taught rule apply on TTL? | 4 ICL datasets | full | ≥ baseline +3pp | specified |
+| POC-23 | Does conflict resolution beat the reported ceiling? | FactConsolidation SH/MH | full | SH ≥70%, MH ≥15% | specified |
+| POC-24 | Does a preference lane match the published gain? | LongMemEval preference subset | 30 | ≥ +20pp | specified |
+| POC-25 | Where does the scope index break? | 100k items, 1,000 queries | 100k | p95 ≤20 ms | specified |
+| POC-26 | Is the idempotency store durable? | Restart under load, 1,000 duplicates | 1,000 | 0 duplicates recorded | specified |
+| **POC-27** | Does task-level support stop correlated evidence inflating trust? | 1 task × 8 attempts vs 8 tasks × 1, same claim | 2 × 8 | inflation ratio ≤1.15; admission unchanged on independent evidence | specified |
+| **POC-28** | Do the four invariants hold? | Shuffle + replay 1,000 events; rename a column mid-stream; erase 10 items | 1,000 | order invariance 1.00, stale-schema injection 0, post-erasure recall 0 | specified |
+| **POC-29** | How much can a poisoned correction do? | MemForm's five routes, 100 attempts per route, six defences | 500 | attack success ≤10% | specified |
+| **POC-30** | Does an abstention kind reduce confident wrong answers? | 100 unanswerable questions, with/without abstention items | 100 | accuracy loss ≤2pp on answerable, ≥+10pp on unanswerable | specified |
+| **POC-31** | What does the pipeline cost? | Derived from recorded artefacts (calls, tokens, pack size) | 730 evaluations | ≤15% token overhead, ≤1 call/correction, ≤1% loss | **run** (§17.20) |
+| **POC-32** | Does the loop move τ-bench pass^k? | τ²-retail + τ²-airline, rules learned from training tasks, 4 trials | 40 + 20 held-out | pass^4 ≥ +5pp over the same-model baseline, and ≥ ALTK-Evolve's reported number on the same split | specified |
+| **POC-33** | Does a lexical alias fix the zero-coverage packs? | Same lane, items with/without alias | 352 | zero-hit ≤0.05, Recall@5 +0.10 | specified |
+
+**Amendments to earlier POCs, from this pass.** POC-14's gate now states power: a paired design at n=146
+resolves 5.08pp, so a 0.60 recovery ratio (≈6.5pp) is resolvable but a 0.50 ratio is not — the gate is
+therefore on the ratio *and* on the discordant-pair direction being uniform. POC-21's +5pp sits inside a
+500-task sample's resolution and is stated as the minimum detectable effect, not a hope.
+
+### 17.24 What this pass changed in production intent (nothing else)
+
+| Change | Consequence for the host |
+|---|---|
+| Budget becomes a ratio (D23) | `recall({ budgetRatio: 0.15 })` may render less than today; a host that wants the old behaviour passes the absolute cap |
+| Alias index (D8) | The store grows by roughly the item's originating question's terms; no extra model call, no schema change |
+| Provenance tiers (D15/D16) | A host may store anything and inject only what evidence endorses; `trustCeiling` becomes a function of provenance rather than a constant |
+| Erasure (D20) | One new call, `forget`, with a compaction step at the host's schedule |
+| Six headline metrics (§17.20) | Every lane run must report them; a run without them is not a result |
 
 ---
 
@@ -2137,51 +2408,72 @@ proceed to S3. A safety gate failure (G4/G7/G11) blocks release regardless of ac
 
 ## 19. Termination signal
 
-**STOP — the design phase is complete. `AgentiX-E/microglia` is untouched and awaits an explicit
-implementation signal.**
+**STOP — the design phase is complete after two audit passes. `AgentiX-E/microglia` is untouched and
+awaits an explicit implementation signal.**
 
-### 19.1 What this phase delivered
+### 19.1 What pass 2 added, and why pass 1 was not enough
 
-| Item | Where | Cross-checked against |
+Pass 1 delivered eight stages with a contract, a metric table and a POC each. Read against the standard
+"no step may leave an implementer guessing", it failed in three places (§17.17), and reading two sources
+it had not read exposed what it had missed:
+
+| Source read this pass | What it changed |
+|---|---|
+| **MemForm** (2026), *Poisoning how memories are formed* | A rule-forming memory has five attack routes — content, evidence, **scope**, selection, path — and the best of five defences cut attack success by only 8.2pp. Our pipeline had one screen, at render. Now: four invariants, provenance tiers, a promotion gate, and POC-29 |
+| **ALTK-Evolve** (IBM, 2026) | The closest published implementation of this mechanism reports τ²-retail pass^4 57.5% → 67.5% and shows that guidelines from **≥3 distinct tasks** beat a larger rule set on reliability. Both the support threshold (D6/D7) and the primary SOTA lane (τ-bench) came from this |
+| **A-MEM** (NeurIPS 2025) + MobileMem evaluation | Per-item keywords/tags are why A-MEM beats NaiveRAG on distractor-heavy sets — and our measured failure is exactly lexical: 47% of packs shared no word with the question. Adopted as a zero-cost lexical alias (D8) |
+| **HippoRAG 2** (ICML 2025) | +7% on associative tasks from a 1-hop walk over edges we already store. Deferred with a gate (D10) |
+| **MINJA / AgentPoison / OWASP ASI06** | 98.2% injection success with no write access; memory poisoning turns prompt injection into a stateful attack. Justifies the write/promote split (D15/D16) |
+| **MobileMem unanswerable subset** | Stronger memory scores *worse* on questions with no answer, because it retrieves a plausible distractor. Justifies `abstention` as a kind (G4/POC-30) |
+
+### 19.2 What is now decided, and what is deferred
+
+| Status | Count | Where |
 |---|---|---|
-| The pipeline contract: eight stages, data shapes, failure modes | §17.1–§17.10 | The code that exists today (§5, §6) and the measurements in §12 |
-| A metric per stage, with formula and threshold | §17.3–§17.11 | Our artefacts where they exist; a named POC where they do not |
-| Fourteen POCs that close every open question | §17.13, §17.15 | Each gate states n, method and the artefact it must produce |
-| Competitor mechanisms, from source | §17.5–§17.7, §17.14 | mem0 `main.py` (top-10 candidate set, MD5 dedupe, entity cosine 0.95, over-fetch `max(4k,60)`), Graphiti `edge_operations.py` (hybrid RRF recall, LLM dedupe, `valid_at`/`invalid_at`/`expired_at` invalidation by interval geometry) |
-| The literature the design borrows from | §17.5, §17.7 | ACE (itemized bullets with helpful/harmful counters, delta updates, curator frequency, context collapse), ExpeL (success/failure contrast, insight voting), MemoryAgentBench (TTL/CR), BIRD-CRITIC (fix-rate), Zep/Mem0 numbers for the preference and recall baselines |
-| Benchmark plan with refused comparisons | §17.12 | Competitor protocols and our own null results |
+| Decided (mechanism ships) | **15** | §17.18 |
+| Deferred, each with a shipped default and the ablation that can overturn it | **10** | §17.18 |
+| Rejected, with the reason | **3** | §17.18 |
 
-### 19.2 What is deliberately not delivered, and why
+Every deferral names the behaviour that ships **before** the ablation runs, so the implementation is not
+blocked by an open question. The ten defaults that ship: **demotion** (not intervals), **adjacent diff**
+(not pair contrast), **prune off**, **`minTaskSupport = 1`** (not 2/3), **plain BM25** (no dense channel),
+**no 1-hop expansion**, **`max(3×limit, 12)`** (not 60), **soft `taskType` boost** (not a hard filter),
+**JSONL** (not SQLite), **pull only** (no push, no MCP tool).
 
-| Not delivered | Reason | Where it is tracked |
+### 19.3 The nine questions that remain evidence-open
+
+All are design-complete and evidence-empty, each with a number, a sample and a stopping condition. None is
+a requirement ambiguity.
+
+| # | Question | POC | Gate |
+|---|---|---|---|
+| 1 | Does pair contrast close the ceiling gap? | POC-14 | recovery ratio ≥0.60 at n=146 (resolves 5.08pp) |
+| 2 | Is a validity interval worth the model change? | POC-15 | F1 ≥0.90 **and** stale-hit ≤0.02 |
+| 3 | Which retriever wins on our own queries? | POC-17, 17b, 33 | Recall@5 ≥0.90; alias fixes zero-hit ≤0.05 |
+| 4 | Does task-type scoping starve? | POC-18 | nDCG@10 +0.05, cold-start recall not lower |
+| 5 | Do push and tool delivery earn their surface? | POC-19, 20 | p95 ≤60 s; +3pp task success, ≤2 calls/task |
+| 6 | Does task-level support stop inflation? | POC-27 | ratio ≤1.15 |
+| 7 | Do the integrity invariants hold? | POC-28, 29 | attack success ≤10%; invariance = 1.00 |
+| 8 | Does an abstention kind help? | POC-30 | ≥+10pp on unanswerable, ≤2pp cost on answerable |
+| 9 | Does the loop move a *policy* benchmark? | POC-32 | τ² pass^4 ≥ +5pp, and ≥ ALTK-Evolve on the same split |
+
+### 19.4 What is deliberately still not delivered
+
+| Not delivered | Reason | Tracked |
 |---|---|---|
-| Code for any §17 stage | The phase excludes product code by instruction; the repository is frozen | §17, per-stage data contracts, ready to implement |
-| The fourteen POCs | They need the implementation they measure; running them against a design would measure nothing | §17.13, each with n, gate, artefact path |
-| A SOTA claim | The convention lane is 2–5pp against an 11–12pp ceiling; claiming SOTA on that would be false | §12.14, ROADMAP §S2b |
+| Code for any §17 stage | Excluded by instruction; the product repository is frozen at `c55cff1` | §17 contracts |
+| POC-13…POC-33 minus POC-31 | They measure an implementation that does not exist; running them against a design measures the design's absence | §17.23 |
+| An SOTA claim | Recovery ratio is 0.19–0.44 against a 0.60 target, and no τ-bench run exists | §17.20, §17.22 |
+| A cost guarantee at 100k items | Measured to 10k only | POC-25 |
 
-### 19.3 The six questions this design still carries
-
-They are design-complete (a mechanism, a metric and a POC each) but **not evidence-complete**, and the
-difference is stated rather than hidden:
-
-1. Pair contrast vs adjacent diff — **POC-14**, gate: recovery ratio ≥ 0.6.
-2. Bi-temporal validity vs demotion — **POC-15**, gate: F1 ≥ 0.90, stale-hit ≤ 0.02.
-3. Utility-based retirement — **POC-16**, gate: attribution accuracy ≥ 0.90.
-4. Task-type scoping — **POC-18**, gate: nDCG@10 +0.05.
-5. Push and tool delivery — **POC-19/20**, gates: delivery p95 ≤ 60 s; +3pp task success.
-6. Fix-shaped benchmarks — **POC-21/22/23**, gates: +5pp fix rate; +3pp TTL; CR SH ≥ 70%.
-
-None of these is a requirement ambiguity. Each has a number, a sample and a stopping condition, so the
-implementation phase can begin without another design round.
-
-### 19.4 Final state of this repository
+### 19.5 Final state
 
 | Document | State |
 |---|---|
 | `WHITEPAPER.md` | Product thesis, evidence, competitors, constraints |
-| `TECH-DESIGN.md` | §1–§16 as before, plus §17 (pipeline contract) and §18–§19 (acceptance and this record) |
-| `ROADMAP.md` | Stages S0–S3 with reads recorded, including the negative ones |
-| `PROGRESS.md` | Fifteen iterations, each with its evidence and its defects |
+| `TECH-DESIGN.md` | §1–§16, §17 (pipeline contract + decision register + gap closures + end-to-end metrics + delivery contracts + competitor register v2 + POC register v3), §18–§19 |
+| `ROADMAP.md` | S0–S3 with every read recorded, including the four null and the two positive ones |
+| `PROGRESS.md` | Seventeen iterations, each with evidence and defects |
 | `AUDIT.md` | Claim-by-claim verification |
 
-**End of design phase.**
+**End of design phase.** Awaiting the implementation signal.
