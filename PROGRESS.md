@@ -10,7 +10,7 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | S0 Mechanism | **closed** | — |
 | S1 Host shadow (nl2charts) | not started | needs the private adjudicated set (n=1,300, κ≥0.7) |
 | S2 Public benchmarks | **four reads: no benefit** (−2.84, −1.14, −0.57, −0.28pp); controls show the pack is inert | the knowledge that transfers is convention, which this benchmark has none of |
-| S2b Convention transfer | **next**; protocol preregistered in the roadmap | needs a lane that transforms the gold by a house convention |
+| S2b Convention transfer | **instrument failed its own channel gate** (n=49, oracle +0pp) | the convention must be a quantity, not a count; per-arm SQL must be recorded |
 | S3 SOTA push | stopped on BIRD; starts only after S2b moves accuracy | — |
 
 ## Iteration log
@@ -292,9 +292,9 @@ coverage 100 / 100 / 100 / 99.44, `pnpm audit:repo` ok.
 
 ## What is left, in order
 
-1. **S2b, convention transfer** (roadmap §S2b, preregistered): transform the gold of single-number
-   questions by a house convention the schema cannot reveal, then measure whether the flywheel learns
-   it from corrections. Arms: none / full / stated / oracle. Gate: ≥10pp with p<0.05 and oracle ≥90%.
+1. **S2b, convention transfer** — fix the instrument first: restrict the subset to quantities a
+   thousand-fold scaling is meaningful for, and record each arm's SQL so a failed oracle can be read
+   rather than guessed. Then rerun: none / full / stated / oracle, gate ≥10pp with p<0.05.
 2. **Re-measure the parser fix**: the corrected parser changes which corrections become rules, so the
    failure rate and the delta both need one more read before either is quoted.
 3. **S2 at power, if needed**: Mini-Dev caps at 352 usable questions (4.9pp resolution); BIRD dev
@@ -306,3 +306,53 @@ coverage 100 / 100 / 100 / 99.44, `pnpm audit:repo` ok.
 
 Nothing on this list blocks the S0 result, and none of it is hidden behind the green build: each item
 is either an experiment that has not run or a dependency that has not shipped.
+
+### 14 — Three packages: library, server, client
+
+The capability split (`core → memory → distill → apply → capture`) was a chain with one consumer per
+link. Every host installed all five; every release carried five manifests and five tsconfigs; and no
+boundary was ever exercised by a second implementation. It is now split by **deployment**:
+
+| Package | Contents | Runtime deps |
+|---|---|---|
+| `core` | kernel, memory, distill, apply, capture, providers — with subpath exports | **none** |
+| `node` | Hono routes, server bootstrap, DeepSeek and Zhipu providers, cortex projection | `hono` |
+| `browser` | recall and feedback client, outbox that survives a reload | **none** |
+| `eval` | the benchmark instrument; private, never published | none |
+
+**Decisions taken with the owner:** the domain pack leaves the product (the host owns its domain; the
+chart pack the benchmark scores moved to `eval/src/workload`), `eval` stays a private workspace, and
+`node` may depend on a router as the single named exception.
+
+**What the exception costs.** `scripts/audit.mjs` used to forbid every external runtime dependency.
+It now carries an allowlist with exactly one entry: `packages/node/package.json` may depend on `hono`
+and `@hono/node-server`, and nothing else, anywhere. A second dependency is a line of code in the
+audit rather than a surprise in a lockfile.
+
+**What was added, not just moved:**
+
+- `core/providers` — `LlmProvider` and `EmbeddingProvider` (one method each) plus a registry that
+  resolves an instance, then a registered factory, then a named error. No default provider: a library
+  that silently reads an environment variable produces a stack trace three layers from the mistake.
+- `node` — five endpoints (`/v1/feedback`, `/v1/recall`, `/v1/distill`, `/v1/knowledge`, `/v1/health`),
+  bearer auth, an idempotency key whose map is honestly documented as per-process, and a status for
+  every named library failure.
+- `browser` — the outbox. A correction is queued before it is sent, because the one thing a tab must
+  not lose is the correction the user just made. Storage failures degrade to memory instead of
+  throwing; recall is never queued, because stale knowledge is worse than none.
+
+**Evidence.** 448 tests (was 410), coverage **99.77 / 99.77 / 100 / 98.42**, `pnpm audit:repo` ok,
+`ci` green on `e8f495b`, `poc-live` green, and an end-to-end test that runs the real browser client
+against the real Hono server over a socket — including the offline-then-flush path and a retried
+idempotency key.
+
+**Kept, deliberately.** The cortex projection moved into `node` rather than disappearing: it is the
+only check that the projection still matches cortex's shape. The W1 action item is unchanged and
+still highlighted — when `@agentix-e/cortex-*` publishes, the structural copy becomes `import type`
+and the clone-and-build lane becomes a normal dependency.
+
+**S2b status, honestly.** The convention lane ran at n=49 and failed its channel gate: the oracle arm
+injected the expected value and moved accuracy by 0pp, so V7 refused the run. The subset was mostly
+counts divided by 1,000 (7 → 0.007), which is a convention the model will not infer from a hint of
+"0.007", and the harness records no per-arm SQL to explain the refusal. The protocol is not ready;
+the gate that caught it is working as designed.

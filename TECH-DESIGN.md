@@ -139,37 +139,49 @@ flowchart LR
 
 ### 3.2 Packages and dependency rules
 
+Three packages, split by **deployment**, not by capability:
+
 ```
 packages/
-  core/            contracts, pure algorithms, zero I/O, browser-safe
-  memory/          journal, lexical index, EmbeddedMemory, MemoryPort
-  distill/         interpreters, merge, generalisation, admission
-  apply/           retrieval pack, renderer, budget
-  capture/         Microglia, RunHandle, trust, redaction, export, doctor
-  nl2charts/       domain pack: chart taxonomy, validation, edit semantics
-  cortex-adapter/  projection into a Cortex-compatible store
-  eval/            corpus, paired statistics, study, report, gates
+  core/      src/{kernel,memory,distill,apply,capture,providers}
+  node/      src/{app,server,providers/*,store/cortex}
+  browser/   src/{client,outbox}
+  eval/      the benchmark instrument (private, never published)
 ```
 
 | Package | Depends on | Runtime deps | Browser | Why it exists |
 |---|---|---|---|---|
-| `core` | — | 0 | ✅ | Contracts and algorithms shared by everything |
-| `memory` | core | 0 (`node:fs` only in `jsonl.ts`) | partial | Storage and retrieval; the journal is Node-only |
-| `distill` | core, memory | 0 | ✅ | Domain-blind learning pipeline |
-| `apply` | core, memory | 0 | ✅ | What reaches the prompt |
-| `capture` | core, memory, distill, apply | 0 | ✅ | The host-facing SDK |
-| `nl2charts` | core | 0 | ✅ | Reference domain pack |
-| `cortex-adapter` | core | 0 | ✅ | Optional projection |
-| `eval` | all | 0 | ❌ (Node) | Measurement and gates |
+| `core` | — | **0** | ✅ | The whole mechanism: contracts, store, distillation, pack, facade, provider contracts |
+| `node` | core | `hono`, `@hono/node-server` | ❌ | An HTTP boundary, the journal, vendor providers, the cortex projection |
+| `browser` | core | **0** | ✅ | Recall and feedback from a tab, with an outbox that survives a reload |
+| `eval` | core | 0 | ❌ | Measurement, gates, the study; a benchmark has to own its workload |
 
-**Rules enforced by review (and by `tsc -b` project references):**
+`core` exposes five module subpaths (`core/memory`, `core/distill`, `core/apply`, `core/capture`,
+`core/kernel`, `core/providers`). **One install does not have to mean one bundle**: a host that only
+retrieves imports `core/apply` and `core/memory`, and the distiller never enters its graph.
 
-1. `core` imports nothing outside itself. No `node:*`, no provider SDK.
-2. Dependencies point downward only: `capture → {distill, apply, memory} → core`.
-3. A domain pack depends on `core` only. It receives `{event, run}` structurally and returns
-   `DistillCandidate[]`; it never imports the pipeline.
+**Rules, enforced by `tsc -b` and by the repository audit:**
+
+1. `kernel` imports nothing outside itself. No `node:*`, no vendor SDK, no schema library.
+2. Dependencies point downward only: `capture → {distill, apply, memory} → kernel`.
+3. `node` and `browser` are outside the library's graph: `core` never imports either, and `browser`
+   never imports `node`.
 4. `eval` is a leaf. No product package imports it, so the harness cannot become part of the product.
-5. `cortex-adapter` is optional and one-way: the product never requires Cortex to function.
+5. **Exactly one package may have an external runtime dependency**, and the allowlist in
+   `scripts/audit.mjs` names it (`node`: `hono`, `@hono/node-server`). A second dependency is a
+   decision written in the audit, not a surprise in a lockfile.
+6. The domain pack is not a package. A domain belongs to the host that has it; the chart pack the
+   benchmark scores lives in `packages/eval/src/workload`.
+
+**Why the capability packages were folded.** `memory → distill → apply → capture` was a chain with one
+consumer each: every host installed all five, every release carried five manifests and five
+tsconfigs, and the boundaries were never exercised by a second implementation. The boundaries that
+matter — no I/O in the domain model, no store in the renderer, no model in the library — are module
+boundaries, and they are still enforced, without five publish surfaces.
+
+**What the split buys.** The server owns the credentials and the journal; the browser owns the
+correction the user just typed; the library owns neither. That is also the reason `node` may take a
+router: a server that cannot speak HTTP is not a server, and `core` pays nothing for it.
 
 ### 3.3 Dependency policy: adopt, or build?
 
@@ -1575,15 +1587,16 @@ phase's scope or are scheduled engineering work with a named trigger.
 ### 16.1 File map
 
 ```
-packages/core/src        types, errors, ids, clock, hash, diff, similarity, stats, guard, policy, knowledge
-packages/memory/src      port, journal (memory + JSONL), lexical-index, store
-packages/distill/src     types, distiller, generalize, rules, llm
-packages/apply/src       render, pack
-packages/capture/src     options, trust, normalize, run, microglia, export, doctor
-packages/nl2charts/src   chart, interpret
-packages/cortex-adapter/src  projection
-packages/eval/src        stats, scenario, study, report, bench/run
-bench/results            study.json
+packages/core/src/kernel     types, errors, ids, clock, hash, diff, similarity, stats, guard, policy, knowledge
+packages/core/src/memory     port, journal (memory + JSONL), lexical-index, store
+packages/core/src/distill    distiller, generalize, rules, llm
+packages/core/src/apply      render, pack
+packages/core/src/capture    options, trust, normalize, run, microglia, export, doctor
+packages/core/src/providers  contracts, registry
+packages/node/src            app (Hono routes), server, providers/{deepseek,zhipu}, store/cortex
+packages/browser/src         client, outbox
+packages/eval/src            stats, protocol, attribution, scenario, study, report, workload/, bench/run
+bench/results                study.json
 ```
 
 ### 16.2 Reproduce
@@ -1592,7 +1605,7 @@ bench/results            study.json
 cd microglia
 pnpm install
 pnpm check
-# typecheck → 8 projects
+# typecheck → 4 projects
 # 370 tests, coverage 100 / 99.53 / 100 / 100
 # study: 9 arms × 6 rounds, 15 gates, 3 micro-ablations, artifacts in bench/results/
 ```
