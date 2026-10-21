@@ -218,8 +218,12 @@ proved) and the task instance that makes correlated evidence visible to begin wi
 tests that pin the property rather than the implementation, and the study is unchanged (31.79 → 100.00,
 17/17 gates), which is the regression check that matters.
 
-Next by the plan: curator counters and coalescing (D4/D30), provenance tiers and the promotion gate
-(D15/D16), the abstention kind (D18), then the lanes that need them (L2b pair contrast, L8 integrity).
+Iteration 22 lands the curator (D4/D5/D30) and the utility denominator (P7). The S1 annotation blocker is
+removed rather than deferred: truth for a chart recommendation is a policy, not a vote, so L0 derives gold
+from the policy and keeps a 100-case human audit as calibration only.
+
+Next by the plan: provenance tiers and the promotion gate (D15/D16), the abstention kind (D18), then the
+lanes that need them (L0 adjudication, L2b pair contrast, L8 integrity).
 
 ## S3 — SOTA push (conditional)
 

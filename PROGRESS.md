@@ -620,3 +620,37 @@ whether its decision landed).
 functions / lines), `task.ts` at 100/97.14/100/100, `pnpm audit:repo` ok, `pnpm bench` unchanged with
 `blocking-gates=PASS`. New error codes `MG_E_TASK_CONFLICT` and `MG_E_TASK_CLOSED`, mapped to HTTP 409 in
 the server.
+
+### 22 — Curation, the utility denominator, and the end of the annotation blocker
+
+**Answer to "is human labelling required?" — no, and not because we would synthesise labels.** The reason S1
+was blocked is that its gate was written as *human-adjudicated* labels at κ≥0.7. That is one way to define
+truth for a chart recommendation, and it is the weakest one available to us: a chart is correct because a
+policy says so, not because two people agreed. So the gate is replaced by **L0: rule-derived adjudication** —
+1,300 cases whose gold answer is computed from a stated policy over data shape, intent and field, with no
+opinion anywhere in the loop. A 100-case human audit stays as *calibration* (does the policy read the way a
+person would?), not as the gate. Nothing on the critical path needs your input any more; the host shadow
+resumes when you have real users, and that is a milestone, not a blocker.
+
+**Implemented this iteration — P4 curation and the P7 denominator.**
+
+`mg.curate({ dryRun, prune, maxItemsPerTask, mergeThreshold })`:
+
+| Behaviour | Rule |
+|---|---|
+| Merge | same namespace, kind and scope, statement dice ≥0.85; survivor keeps the union of evidence and the sum of counters |
+| Close | loser becomes `retired` with `statusReason: merged:<id>` and `validUntil` set — never deleted, so a past-tense query still finds it |
+| Prune | off by default; when on, rank by `(flippedUp+1)/(injected+2)` and retire from the bottom |
+| Determinism | sorted keys and ids; a second pass over a curated store reports `merged: 0` |
+
+`applyOutcome` now maintains `utility: { injected, flippedUp, flippedDown }`. `injected` counts **outcomes
+observed on runs citing the item**, not renders: incrementing it during `recall` would mutate the store while
+an evaluation measures it, and gate V2 exists to refuse exactly that.
+
+**Two design details that came out of writing it.** The merge decision lives in `capture`, not `distill`,
+because it needs the store and `distill` must stay store-free — a deviation from §17.25, recorded there. And
+the merge threshold is conservative on purpose: a plural-only variant at six tokens scores 0.83 and stays
+separate, because a wrong merge loses a rule while a missed merge costs a duplicate (a test pins both sides).
+
+**Evidence.** 474 tests, coverage **99.79 / 98.15 / 100 / 99.79**, `curate.ts` at 100/97.26/100/100,
+`pnpm audit:repo` ok, study unchanged (31.79 → 100.00, 17/17 gates).

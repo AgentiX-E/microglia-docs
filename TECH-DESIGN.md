@@ -1975,6 +1975,15 @@ has no counters and no pruning, which is why 384 of 445 injected rules changed n
 (current): 189.6 active rules per fold and 2.08 injected per question is a retrieval problem created
 by an unpruned store; *embedding-only merge*: misses contradictions, which are the point.
 
+> **Implemented (iteration 22, `capture/curate.ts`).** `mg.curate({ dryRun, prune, maxItemsPerTask,
+> mergeThreshold })` merges statements in the same kind and scope at dice ≥0.85, retires the loser with
+> `statusReason: merged:<id>` and a closed `validUntil`, and prunes by Laplace-smoothed density
+> `(flippedUp+1)/(injected+2)` only when `prune: true`. Three deviations: the pure merge decision lives in
+> `capture` rather than `distill` (it needs the store, and `distill` must stay store-free); the cap is
+> reported as `overCap` instead of pruning by default; and merging is **conservative** — a one-word variant
+> at six tokens scores 0.83 and stays separate, because a wrong merge loses a rule while a missed merge
+> costs a duplicate.
+
 ### 17.8 P5–P6 — Retrieve and render: address the question
 
 **Mechanism (changed).** Scope gains `taskType` and `stage` (hard filters); `context` enters as a soft
@@ -2011,6 +2020,11 @@ and an `explain[]` matter more than an alias would. An unexplained pack cannot b
 
 **Why.** Without the denominator, credit is a numerator with no base: we could not distinguish "rule
 never retrieved" from "retrieved and ignored". That distinction is exactly the 44%-of-ceiling gap.
+
+> **Implemented (iteration 22).** `applyOutcome` now maintains `utility: { injected, flippedUp,
+> flippedDown }` beside the existing `applied/succeeded` ledger, and `injected` counts **outcomes observed**
+> on runs citing the item, not renders — a render is not a measurement, and incrementing it during `recall`
+> would mutate the store while an evaluation is measuring it (gate V2 would refuse the run).
 
 | Metric | Definition | Gate |
 |---|---|---|
@@ -2159,8 +2173,8 @@ Status vocabulary, used everywhere below:
 | D1 | Task instance (`taskId`, `taskType`, `attempt`, `parentRunId`, terminal status) | decided | Our own gap: single-correction lessons recover 0.19–0.44 of a stated ceiling; adjacent diffs cannot see what the task finally required | POC-14 (mechanism), no revert path |
 | D2 | Pair-contrast interpreter (first rejected attempt vs accepted) as the **primary** interpreter when a terminal decision exists | deferred (default: adjacent diff) | ExpeL: success/failure contrast transfers where single-trajectory insight does not | POC-14: recovery ratio ≥0.60 |
 | D3 | **Validity interval** (`validFrom`/`validTo`/`supersededBy`) instead of status demotion | deferred (default: demotion; interval behind `validityIntervals: true`) | Graphiti source: invalidation by interval geometry, no similarity threshold | POC-15: contradiction F1 ≥0.90 **and** stale-hit ≤0.02 |
-| D4 | Curator stage with per-item counters | decided | ACE: counters + delta updates are the answer to context collapse | POC-16 verifies counter integrity only |
-| D5 | Prune rule `flippedDown≥3 ∧ flippedDown>flippedUp`, or `injected≥20 ∧ flippedUp=0` | deferred (default: off; `pruneEnabled: false`) | No data yet on our own utility distribution | POC-16: prune precision ≥0.90, no retained-rule loss |
+| D4 | Curator stage with per-item counters | **implemented** (iteration 22) | ACE: counters + delta updates are the answer to context collapse | determinism tests: two passes over one store decide the same merge |
+| D5 | Prune rule: density-ranked retirement above a per-task cap | **implemented as rank-by-density, disabled by default** (iteration 22) | No data yet on our own utility distribution, so the ordering is shipped and the act is not; the fixed `flippedDown≥3` thresholds were dropped because density subsumes them | L2b + POC-16: prune precision ≥0.90, no retained-rule loss |
 | D6 | Admission support counted over **distinct tasks**, not events | **implemented** (iteration 21) | ALTK-Evolve: guidelines kept only from ≥3 distinct tasks beat a larger rule set on airline pass^4 (45.0 vs 40.0), and the closed-form check in §17.34.2 gave a 2.95× inflation | C27 + unit test: six attempts of one task move the score by zero |
 | D7 | `minTaskSupport` = 2 for constraints, 3 for widened scopes | deferred (default 1 = today's behaviour) | Same ALTK evidence; the per-task grouping already removes the correlated-evidence path, and a hard floor is a separate trade against cold start | L2b: does a floor of 2 cost a first-session benefit? |
 | D8 | Item carries a `lexicalAlias` built from the originating question | **rejected**, with a reopening trigger | The premise was a misattributed number: zero-overlap packs are **3.1%**, not 47% (§17.34.3), and 99.7% of questions already have an active rule sharing a term. BM25 already scores those terms, so an alias re-weights an existing signal instead of adding one. Reopens only if a lane shows zero-hit >5% **and** load-bearing knowledge | POC-33 **closed** by the same measurement |
@@ -2185,7 +2199,7 @@ Status vocabulary, used everywhere below:
 | D27 | LLM-only distillation | rejected | Loses the deterministic path structured edits need; 7.0% of calls fail to parse | — |
 | D28 | Delete-on-contradiction | rejected | Destroys the audit trail a correction exists to provide | — |
 | D29 | Batch distillation: several corrections of one task in **one** parallel multi-tool call | deferred (default: one call per correction) | LangMem's `_MEMORY_INSTRUCTIONS` does exactly this with `max_steps = 1`; our per-correction call costs 1 call each | POC-31b: candidate yield per 1,000 tokens must not fall more than 10% while calls per 1,000 corrections fall below 200 |
-| D30 | Curation coalesces a burst into one round; the host may debounce as LangMem's `ReflectionExecutor(after_seconds)` does | decided | Two rounds over one burst double the model spend for the same store state | counter replay must be identical with and without coalescing |
+| D30 | Curation coalesces a burst into one round; the host may debounce | **implemented as idempotence** (iteration 22) | Two rounds over one burst double the model spend for the same store state; a second `curate()` over an already-curated store reports `merged: 0` | test: two consecutive passes, second is a no-op |
 
 ### 17.19 Twelve gaps this pass found, and how each is closed
 
@@ -2498,6 +2512,7 @@ artefact and a gate; the order is the order in which a failure stops the next la
 
 | Lane | Dataset | n | Primary metric | Resolution | Est. cost | Gate |
 |---|---|---|---|---|---|---|
+| L0 adjudication | **rule-derived chart workload**: gold is computed by a stated policy, not judged by a human | 1,300 | top-1 | 3pp | 0 (no model) | ≥ +3pp with policy-derived gold; a 100-case human audit is calibration, not a gate |
 | L1 mechanism | synthetic chart workload, 9 arms | 280 | paired McNemar | 4pp | 0 (no model) | already passed (S0) |
 | L2 convention | BIRD Mini-Dev single-number subset | 146 × 5 folds | paired Δ | 5.08pp | 1.7k calls / 42 min | Δ ≥ +3pp, p<0.05, recovery ≥0.60 |
 | L3 transfer (fix-shaped) | BIRD-CRITIC-SQLite | 500 | fix rate | ~4.4pp | ~1.2k calls / 40 min | +5pp, p<0.05 |
@@ -2815,7 +2830,7 @@ build must satisfy). The pipeline stages of §17 are P0–P8 and are not stages 
 | Stage | State | Criterion | Threshold | Evidence |
 |---|---|---|---|---|
 | S0 mechanism | **closed** | study lift, transfer, poison, LLM distillation, reader, CPU scale | as recorded | `bench/results/study.json`, §12.1–§12.7 |
-| S1 host shadow (nl2charts) | **blocked** | top-1 lift ≥+3pp (p<0.05), SQL regression ≤1pp, knowledge precision ≥85% | n=1,300 adjudicated, κ≥0.7 | needs the private adjudicated set; the adapter exists |
+| S1 host shadow (nl2charts) | **unblocked, replaced by L0** | top-1 lift ≥+3pp (p<0.05), SQL regression ≤1pp, knowledge precision ≥85% | n=1,300, gold **derived by policy** rather than adjudicated (§17.27 L0) | a 100-case human audit remains calibration, not a gate; the host shadow resumes when real users exist |
 | S2 public benchmarks | **closed on BIRD** | see below | — | §12.11–§12.13, `poc/results/poc-sota-bird.json` |
 | S2b convention transfer | **read twice, gate not met** | Δ ≥+3pp (p<0.05) **and** recovery ratio ≥0.60 | n=146, resolves 5.08pp; measured +4.79 then +2.05pp, recovery 0.19–0.44 | §12.14 |
 | S3 SOTA push | **conditional** | L3/L4 ladder (§17.27) | rung gates | not started |
