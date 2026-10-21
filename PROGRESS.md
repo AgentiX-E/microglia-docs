@@ -469,3 +469,30 @@ JSONL, pull-only.
 
 **Evidence.** `TECH-DESIGN.md` §17.17–§17.24 and §19; POC register v3 (21 POCs, one run, twenty
 specified); `AgentiX-E/microglia` untouched at `c55cff1`.
+
+### 18 — Audit pass 3: the documents contradicted each other
+
+Pass 3 asked a different question from pass 2: not "is §17 complete" but "does the document set satisfy the
+ten requirements". It found defects **between** documents, which re-reading §17 could not have surfaced.
+
+| Defect | Where | Fix |
+|---|---|---|
+| A retracted number still stood as verified | `AUDIT.md` C19 asserted +3.33pp at n=30, withdrawn in §12.11 | rewritten as the retraction, with its successor read |
+| Two chapters gave different S2 exit gates | §18 said "BIRD-Interact ≥+5pp at n=600"; ROADMAP had closed S2 on BIRD after four failures | §18.1 states S2 as closed and gives S2b's gate; the old gate becomes lane L4's sibling |
+| The pipeline's new capabilities had no home | §17 said "core/capture (new)" without saying which subpath exports what | §17.25: nine capabilities → modules and symbols, normative signatures, four new error codes, subpath bundle budgets |
+| Requirement 4 had no numbers | latency only | §17.26: ingest, curation, cold start, heap, bundle, token budgets; a competitor comparison that names what is *not* comparable |
+| Requirement 5 had no plan | benchmarks listed, not sequenced | §17.27: lanes L1–L8 with n, resolution, cost, artefact, gate, order; a five-rung SOTA ladder with stop rules |
+| Requirement 6 had citations but no register | sources quoted inline | §17.28: every source with evidence class **S** (source), **P** (paper), **R** (secondary), and a rule that class R may never appear in a product claim |
+| Requirement 8 left twelve values open | "Wilson over task count", "every 50 events", `budgetRatio`, decay floor | §17.29: one value each |
+| Requirement 9 had topics but no conclusions | the register listed work, not outcomes | §17.30: every POC's conclusion, or its explicit "not run, because" |
+
+**The evidence-class register changed what we may say.** mem0 and Graphiti were read at source; ACE, ExpeL
+and τ-bench at paper; **ALTK-Evolve, MemForm, MINJA, A-MEM and HippoRAG 2 only through secondary coverage**.
+Those five are now hypotheses H1–H5 in the audit report, not claims — and POC-32 exists to make H1 ours by
+running the lane.
+
+**AUDIT.md was rewritten** (97 → 138 lines): C1–C26 with an evidence class per claim, **eight** defects
+(B1–B8, including the parser and both gate bugs), five class-R hypotheses, and a "not verified" table that
+now says four null reads instead of one underpowered read.
+
+**`TECH-DESIGN.md` is 2,720 lines** across §1–§19. `AgentiX-E/microglia` untouched at `c55cff1`.

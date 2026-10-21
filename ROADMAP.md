@@ -184,6 +184,13 @@ The two sources that changed the design: **MemForm** (rule-forming memories are 
 evidence, scope, selection and path; the best of five defences gained only 8.2 points) and **ALTK-Evolve**
 (τ²-retail pass^4 57.5% → 67.5% from prompt-appended learned rules; ≥3 distinct tasks beats a larger set).
 
+**Audit pass 3 (same day).** The question changed from "is §17 complete" to "do the documents agree" —
+and they did not. `AUDIT.md` still carried the withdrawn +3.33pp as verified, and §18 still asserted the
+original S2 gate that the four null reads had already closed. Both are now fixed, S2 is recorded as closed
+on BIRD with S2b as its replacement lane, and the old BIRD-Interact gate has moved to lane L4 where it
+belongs. The remaining requirement-level omissions (package mapping, footprint budgets, an executable lane
+plan, a source register, twelve disambiguated values, a POC conclusion index) are §17.25–§17.30.
+
 Implementation waits for an explicit signal. The nine questions the design carries are all evidence
 questions with a named POC and a number (§19.3); none is a requirement ambiguity.
 

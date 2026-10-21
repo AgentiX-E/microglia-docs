@@ -20,8 +20,9 @@ Version 1.2 · 2026-10-21 · Author: Lambertyan · Status: design complete after
 | §11 | The evaluation protocol for public benchmarks |
 | §12 | What the POC actually measured |
 | §13–15 | Operations, decisions, and the gap register |
-| §17 | The feedback → knowledge → re-feed pipeline: stages, the **decision register** (§17.18), the twelve gaps closed (§17.19), end-to-end metrics and cost (§17.20), delivery contracts (§17.21), competitors v2 (§17.22), POC register v3 (§17.23) |
-| §18–19 | Stage acceptance criteria, and the phase's termination record |
+| §17 | The feedback → knowledge → re-feed pipeline: stages; the **decision register** (§17.18); twelve gaps closed (§17.19); end-to-end metrics and cost (§17.20); delivery contracts (§17.21); competitors v2 (§17.22); POC register v3 (§17.23); package mapping and signatures (§17.25); footprint budgets (§17.26); lane plan and SOTA ladder (§17.27); source register (§17.28); disambiguation (§17.29); POC conclusions (§17.30) |
+| §18 | Stage acceptance criteria and the eight release gates |
+| §19 | The termination record: three audit passes and the requirement-by-requirement discharge |
 
 Every number in §12 is produced by `pnpm check` in this repository. Every API in §5 exists in
 `packages/*/src`. Where the document describes something not yet built, it is marked **PLANNED** and
@@ -2371,62 +2372,295 @@ therefore on the ratio *and* on the discordant-pair direction being uniform. POC
 
 ---
 
-## 18. Acceptance criteria, per stage
+### 17.25 Package mapping and the public surface (requirements 1 and 2)
 
-This chapter lists the **project** stages (S0–S3). The **pipeline** stages introduced in §17 are
-numbered P0–P8 so the two never collide: a project stage is a phase of the roadmap, a pipeline stage is
-a step in one request.
+The pipeline of §17.2 adds seven capabilities. Each has exactly one home, and the home is the module
+whose *existing* invariant it obeys — the task instance is a capture concern, the curator is a distill
+concern, the alias is an index concern, the provenance guard is a kernel concern.
 
-A stage is "done" only when every row passes **and** the artifact is committed. A missed target is
-reported as missed; it is never rounded, re-sliced, or moved to a footnote.
+| Capability | Module (subpath) | Symbol | Why there |
+|---|---|---|---|
+| Task instance, attempts, terminal decision | `core/capture` | `openTask`, `TaskHandle` | It composes the run handle and the store; `kernel` must stay I/O-free |
+| Pair contrast | `core/distill` | `pairContrastInterpreter` | It is an interpreter, composed like the other two |
+| Validity interval, supersession | `core/kernel` + `core/memory` | `Validity`, interval in the record | Interval algebra is pure; storage is the store's job |
+| Curator (counters, merge, prune) | `core/distill/curate` | `curate()` | Same layer as distillation: it changes knowledge, not text |
+| Lexical alias, index field | `core/memory` + `core/apply` | `IndexEntry.alias`, `buildPack` | The index owns what is searchable; the pack owns what is chosen |
+| Provenance, promotion gate, injection screen | `core/kernel/guard` + `core/capture` | `Provenance`, `promote()` | Guard is pure; the gate is a policy applied at write and at render |
+| Attribution, utility, retirement | `core/capture` | `attribute()`, `Utility` | It needs the run, the feedback and the pack ids together |
+| Push webhook, MCP tools | `node` | `createWebhook`, `mcpRoutes` | A transport and a credential; never in `core` |
+| Offline outbox | `browser` | `persistedOutbox` | Already there |
 
-| Stage | Criterion | Threshold | n / power | Artifact |
+**Normative signatures for the additions.** Written out because a signature is the only part of a design
+that cannot be misread. Nothing here is implemented.
+
+```ts
+// core (capture)
+openTask(input: {
+  taskId: string; taskType: string; sessionId?: string;
+  context?: JsonObject;            // ≤16 KiB after redaction, else MG_E_CONTEXT_TOO_LARGE
+}): TaskHandle;
+
+interface TaskHandle {
+  readonly id: string;
+  begin(attempt: { attempt: number; parentRunId?: string; input: JsonObject;
+                   pack?: KnowledgePack; model?: string; promptVersion?: string }): RunHandle;
+  complete(decision: { status: 'accepted' | 'abandoned' | 'escalated';
+                       finalRunId?: string; reasonCode?: string }): Promise<TaskRecord>;
+  readonly record: TaskRecord | undefined;
+}
+
+// core (distill)
+curate(options?: { namespace?: string; dryRun?: boolean }): Promise<CurationReport>;
+
+// core (capture)
+forget(selector: { ids?: readonly string[]; taskId?: string; actor?: string }): Promise<ForgetReport>;
+
+// core (apply)
+explain(query: RecallQuery): Promise<readonly Explanation[]>;
+// { itemId, selected, reasons: ('scope'|'alias'|'lexical'|'coverage'|'utility'|'mmr'|'budget'|'provenance')[], score }
+```
+
+**Error codes these add.** The union grows by four, and each names a state a caller can act on:
+`MG_E_TASK_CONFLICT` (attempt number reused), `MG_E_TASK_CLOSED` (a write after a terminal decision),
+`MG_E_CONTEXT_TOO_LARGE`, `MG_E_FORGET_UNSCOPED` (a selector that names nothing is refused rather than
+silently doing nothing). Every existing code keeps its meaning.
+
+**Subpath budgets.** Requirement 1 is "import only what you need", which is only true if the subpaths are
+measurably small. These are targets, measured at implementation with `esbuild --bundle --metafile`, gzip:
+
+| Import | Budget | Contains |
+|---|---|---|
+| `core/kernel` | ≤ 12 KiB | contracts, policy, similarity, stats, guard, diff |
+| `core/kernel` + `/memory` + `/apply` | ≤ 28 KiB | retrieval-only host, no model call, no distiller |
+| that + `/distill` | ≤ 40 KiB | adds interpreters and the curator |
+| `core` (whole) | ≤ 52 KiB | adds the facade and task handle |
+| `browser` | ≤ 12 KiB | client + outbox |
+| `node` | not budgeted | server; never bundled into a tab |
+
+The gate is ±20% on each budget, and a host that only retrieves must be able to prove it did not pull the
+distiller: the test asserts the bundle's metafile contains no `distill/` module.
+
+### 17.26 Performance and footprint (requirement 4)
+
+Requirement 4 asks for superiority. Superiority has to be stated on axes where the numbers are
+comparable; a library that beats a platform on latency is measuring different work.
+
+| Operation | Measured today | Target | Axis that matters |
+|---|---|---|---|
+| Ingest (append + fsync + index) | not measured | p95 ≤5 ms at 10k events | a correction must not slow the host's response |
+| Recall, 1k / 10k items | 0.4–0.9 / 2.6–3.1 ms p95 | ≤1 / ≤5 ms | per request, CPU only |
+| Recall, 100k items | not measured (O(n) scan expected to cross) | ≤20 ms | POC-25 |
+| Pack size | 1,200 chars ≈ 300 tokens | ≤15% of host prompt | token overhead is the product's cost |
+| Distillation | 1 call, ~2k tokens | ≤1 call, ≤2k tokens | per correction, not per request |
+| Curation round | not measured | ≤2,000 tokens, ≤50 ms CPU excluding model | periodic |
+| Journal | ~1 KB per event (JSONL) | ≤1.5 KB | disk on a small host |
+| Heap, 10k items | 14 MB | ≤20 MB | embedded and browser |
+| Cold start, 10k | not measured | ≤300 ms | a tab that reloads |
+| Browser bundle | not measured | ≤12 KiB gzip | requirement 1 |
+
+**Competitor performance, stated honestly.** Mem0 reports p95 latency −91% and ~90% token savings
+against full-context on LOCOMO; Zep reports ~90% latency reduction against full-context on LongMemEval.
+Both baselines are *stuffing the whole history into the prompt*, not a governed store, so those numbers do
+not describe a head-to-head with this library and we do not claim one. The comparable axes are:
+**tokens per corrected task** (we: ~2.4k per evaluation, of which ≤300 is the pack) and **p95 recall on a
+CPU with no embedding service** (we: 2.6–3.1 ms at 10k). A host that already runs a vector database is
+not our customer for latency; it is our customer for governance.
+
+**What "surpass" means here, concretely.** Three claims, each with a lane: (a) more of the ceiling
+recovered than a competitor mechanism on the same data — POC-21/32; (b) fewer tokens per corrected task
+than appending the correction history — POC-31; (c) surviving poison where a fact store does not — the
+existing competitor baseline (56.07% clean → 19.64% poisoned, vs 100.00% for the governed store).
+
+### 17.27 Evaluation plan v2: lanes, power, cost, order (requirement 5)
+
+Eight lanes. Each is preregistered (config hash frozen before the run), has a resolution, a cost, an
+artefact and a gate; the order is the order in which a failure stops the next lane.
+
+| Lane | Dataset | n | Primary metric | Resolution | Est. cost | Gate |
+|---|---|---|---|---|---|---|
+| L1 mechanism | synthetic chart workload, 9 arms | 280 | paired McNemar | 4pp | 0 (no model) | already passed (S0) |
+| L2 convention | BIRD Mini-Dev single-number subset | 146 × 5 folds | paired Δ | 5.08pp | 1.7k calls / 42 min | Δ ≥ +3pp, p<0.05, recovery ≥0.60 |
+| L3 transfer (fix-shaped) | BIRD-CRITIC-SQLite | 500 | fix rate | ~4.4pp | ~1.2k calls / 40 min | +5pp, p<0.05 |
+| L4 policy following | τ²-retail (40) + τ²-airline (20), 4 trials | 240 runs × 2 arms | pass^4 | 5pp on retail | ~5k calls / 2h | ≥ +5pp and ≥ ALTK-Evolve on the same split |
+| L5 teaching | MemoryAgentBench TTL, 4 sets | full | accuracy | per set | ~2k calls / 45 min | ≥ +3pp |
+| L6 consolidation | MemoryAgentBench CR, SH + MH | full | exact match | per set | ~1k calls / 30 min | SH ≥70%, MH ≥15% |
+| L7 preference | LongMemEval preference subset | 30 | accuracy | ~9pp | ~600 calls / 20 min | ≥ +20pp |
+| L8 integrity | MemForm-shaped harness | 500 | attack success | 4pp | 0 (replay) | ≤10% |
+
+**Why this order.** L2 is the cheapest lane that can still falsify the product, so it runs first and its
+gate is the one that matters most. L3 and L4 answer "does it transfer" on gold that is a *fix* and on gold
+that is *policy compliance* — two different shapes of non-inferable knowledge. L5–L7 are competitor
+benchmarks, run only after L2–L4 pass, because running them first would spend two hours to learn nothing
+about the mechanism. L8 costs nothing (replay) and gates every release.
+
+**SOTA ladder, in order, with stop rules.**
+
+| Rung | Must pass | If it fails |
+|---|---|---|
+| R1 | L2 gate | the mechanism does not transfer a convention → stop the SOTA path, keep the product as a governance layer (this already happened once, on BIRD) |
+| R2 | L3 gate | knowledge does not help a model *repair* → the lesson form is wrong, not the pipeline; one redesign of P2, then stop |
+| R3 | L4 gate at ALTK-Evolve's level | we are behind a published mechanism on the same object → report the gap, do not claim SOTA |
+| R4 | L5–L7 at the published competitor numbers | mixed: report per-lane, never aggregate |
+| R5 | L8 with every rung | an integrity failure blocks release regardless of accuracy |
+
+**Reproducibility rules.** Every lane stores: config hash, model id and version, prompt version, dataset
+digest, seed, per-case rows, the paired test, and the gate verdicts. A number without its artefact is not
+a result; a lane whose artefact is missing from `poc/results/` is reported as "not run".
+
+### 17.28 Source-audit register (requirement 6, and the honesty requirement 7 needs)
+
+What was actually read, how, and what it changed. **Evidence class** is deliberately narrow:
+
+- **S** — primary source read (repository file, function names quoted).
+- **P** — the paper or report itself.
+- **R** — a secondary report *about* the work (aggregator, vendor blog, news). Sufficient to design
+  against a mechanism, insufficient to quote a number as fact.
+
+| System | What was inspected | Mechanism extracted | Decision | Class |
 |---|---|---|---|---|
-| S0 | Mechanism lift | ≥ +20pp, p<0.01 | 280 paired | `bench/results/study.json` (present) |
-| S0 | Transfer to unseen domain | ≥ +40pp over no-generalisation | 70 paired | same |
-| S0 | Poison activation | 0 | 12 injected edits | same |
-| S0 | LLM distillation | mark ≥90%, intent ≥95%, 0 active injections | 24 free-text events | `poc/results/poc-llm-distill.json` |
-| S0 | LLM reader, house conventions | ≥+50pp over no pack | 28 house cases | `poc/results/poc-llm-reader.json` |
-| S0 | Generic knowledge neutrality | no more than −5pp | 42 generic cases | same |
-| S0 | Retrieval under heavy paraphrase | dense ≥ BM25 +5pp recall@1 | 48 pairs | `poc/results/poc-embedding.json` |
-| S0 | CPU scale | p95 ≤50ms at 10k items | 100 queries × 3 sizes | `poc/results/poc-scale.json` |
-| S1 | Chart top-1 lift | ≥ +3pp, p<0.05 | 1300 adjudicated, κ≥0.7 | shadow report |
-| S1 | SQL regression | ≤ 1pp loss (non-inferiority) | 1300 | shadow report |
-| S1 | Knowledge precision | ≥ 85% on a 100-item audit | 100 sampled | audit sheet |
-| S2 | BIRD-Interact (full) | ≥ +5pp vs same-backbone | 600; detects ~5.8pp | preregistered report |
-| S2 | nvBench 2.0 | ≥ +3pp overall, ≥ +5pp on unnamed subset | 750 | report |
-| S2 | Text2Vis answer match | ≥ 33% (from 29.09%) | 1,985 | report |
-| S2 | MemoryAgentBench | ≥ 60% four-competency average | 2,071 | report |
-| S3 | BIRD-Interact Lite | ≥ 30% task success | 300 | report |
-| S3 | nvBench 2.0 F1@5 | ≥ 85 | 7,878 | report |
-| S3 | Judge calibration | κ ≥ 0.7 vs 200 human labels | 200 | calibration sheet |
+| **Mem0** | `mem0/memory/main.py` | top-10 semantic candidate set, MD5 exact dedupe, entity cosine 0.95, identity keys stripped, search threshold 0.1, over-fetch `max(4k,60)` | D11 deferred; dedupe rejected as too weak | **S** |
+| **Graphiti / Zep** | `graphiti_core/utils/maintenance/edge_operations.py` | hybrid RRF recall, LLM dedupe over paired endpoints, `valid_at`/`invalid_at`/`expired_at`, invalidation by interval geometry, no similarity threshold | D3 (validity) | **S** |
+| **cortex** | cloned, built, 12 fields compared in CI | memory projection shape | C15; W1 action item stays | **S** |
+| **ACE** | paper | itemized bullets, helpful/harmful counters, delta updates, curator frequency, context collapse | D4, D5 | **P** |
+| **ExpeL** | paper (AAAI 2024) | success/failure contrast → insight, add/edit/vote | D2 | **P** |
+| **A-MEM** | paper (NeurIPS 2025) + independent evaluation | atomic note with keywords/tags; per-item keywords are the measured reason it beats NaiveRAG on distractor-heavy sets | D8 (alias) | **R** |
+| **HippoRAG 2** | paper (ICML 2025) + secondary | passages as nodes, Personalized PageRank, +7% associative, one LLM filter step | D10 deferred | **R** |
+| **ALTK-Evolve** | IBM report via secondary coverage | distill own successes/failures → prompt-appended rules; ≥3 distinct tasks beats lossless on airline pass^4 (45.0 vs 40.0); retail 57.5 → 67.5 | D6, D7, POC-32, L4 | **R** — not verified at source |
+| **MemForm** | 2026 paper via secondary coverage | five formation routes (content, evidence, scope, selection, path); best of five defences −8.2pp | G3 invariants, POC-29 | **R** |
+| **MINJA / AgentPoison** | arXiv abstracts via secondary coverage | 98.2% injection success with query-only access; >80% attack at <0.1% poison | D15, D16 | **R** |
+| **Cognee / LangMem / MemoryOS / Memori** | product documentation via secondary | curator post-processor; hot-path tools + background manager; three-tier hierarchy; SQL-native storage | D13, D25, D24 | **R** |
+| **τ-bench / τ²-bench** | paper (arXiv 2406.12045) and leaderboard coverage | final DB-state scoring, `pass^k`, policy documents in context | L4 | **P** |
 
-**Stop rules.** S1 fails → invoke K1 (stop, do not pivot). S2 fails on two benchmarks → do not
-proceed to S3. A safety gate failure (G4/G7/G11) blocks release regardless of accuracy.
+**A rule this register exists to enforce.** No number from class **R** may appear in a product claim. It
+may appear as a *target* (L4's "≥ ALTK-Evolve on the same split") and as a *design input* (the five
+routes). Where a class-R number was quoted in §17.18–§17.19, it is marked as the source's report, not as
+our measurement. Closing that gap is POC-32's job: run the lane ourselves.
+
+### 17.29 Disambiguation ledger (requirement 8)
+
+Twelve places where a competent implementer could have built two different systems. Each is now one value.
+
+| # | Was ambiguous | Now |
+|---|---|---|
+| 1 | "Wilson lower bound over task-level count" | `n` = distinct endorsing tasks (cap 8 per task), `x` = endorsing tasks, `z = 1.96`, one-sided 95% lower bound; trust = `LB` |
+| 2 | What counts as a task's endorsement | `status = accepted` **or** its final attempt judged correct by the host's own judge; `abandoned` endorses nothing and subtracts nothing |
+| 3 | Task-level credit decay | `0.5^d`, `d = acceptedIndex − runIndex` capped at 6, floor `0.05`, applied to the ids that run cited |
+| 4 | "Every 50 events" — global or per namespace? | per namespace, counted since the last successful curation of that namespace |
+| 5 | `budgetRatio` denominator | estimated host prompt tokens = `ceil(promptChars / 4)`, or the provider's reported input tokens when available; pack tokens = `ceil(packChars / 4)` |
+| 6 | Unknown keys in `context` | stored opaque, never indexed; a declared `indexedKeys` entry holding a non-string is `MG_E_CONFIG` |
+| 7 | Provenance trust caps | `user-text` 0.60, `structured-edit` 0.90, `outcome` 0.95, `host-asserted` 1.00 (matches today's outcome weight) |
+| 8 | Clock skew | `occurredAt` clamped to `recordedAt ± 5 min`, `clamped: true` recorded; validity uses the clamped value |
+| 9 | Alias size and content | ≤12 terms, stopwords removed, deduplicated, from the question that produced the correction only |
+| 10 | When an abstention is rendered | only when no positive item reaches trust 0.60, at most one, in its own block |
+| 11 | Generalisation widening | union of the endorsing tasks' scopes; ≥3 distinct tasks; never introduces a key that no endorser had |
+| 12 | Idempotency of `begin` | `(namespace, taskId, attempt)` is unique; a repeat returns the existing run, a conflict is `MG_E_TASK_CONFLICT` |
+
+### 17.30 POC index: every topic, and its conclusion (requirement 9)
+
+Requirement 9 is "every POC topic **and conclusion** recorded". The conclusions that exist, and where;
+the ones that do not, and why.
+
+| POC | Topic | Conclusion | Section |
+|---|---|---|---|
+| POC-1 | Does the 9-arm study show a mechanism lift? | +68–100pp over baseline, gates 17/17, 0.33 s | §12.1, C1–C8 |
+| POC-2 | Generic vs house convention | generic −2.38–0pp, house +75–89pp | §12.2, C9–C10 |
+| POC-3 | Free-text distillation | mark 91.7–95.8%, intent 95.8–100% | §12.3, C11 |
+| POC-4 | Injection through feedback | 0 of 3 active | §12.4, C12 |
+| POC-5 | BM25 vs dense | light 58.3% vs 54.2%; heavy 20.8% vs 29.2% | §12.5, C13 |
+| POC-6 | CPU scale at 10k | p95 2.6–3.1 ms, heap 14 MB | §12.6, C14 |
+| POC-7 | Competitor-shaped fact store | 56.07% clean, **19.64% poisoned** | §12.7, C18 |
+| POC-8 | Public benchmark, first read | +3.33pp at n=30 — **retracted as noise** | §12.8, C19 |
+| POC-9 | Cross-fitted public read | **−2.84pp**, n=352, no fold positive | §12.11, C20 |
+| POC-10 | Four controls | full −1.14, duplicate −2.27, wrong-scope −1.42, oracle **+30.97** | §12.12, C21 |
+| POC-11 | Relevance floor | −0.28pp; floor removes 0.21 rules/question | §12.13, C22 |
+| POC-12 | Convention transfer | +4.79pp (p=0.016) then +2.05pp (p=0.250), 10:0 pooled | §12.14, C23 |
+| POC-12b | Parser loss | 25.7% → 5.0% in probe → **7.0% at full scale** | §12.14, C24 |
+| POC-31 | Cost model | 2,383 tokens/evaluation; pack = 26% of median question | §17.20, C25 |
+| POC-13…30, 32, 33 | Pipeline stages, integrity, abstention, τ-bench | **not run** — they measure an implementation that does not exist | §17.23 |
+
+The two rows that changed a claim rather than decorating one are POC-8 (a published number retracted) and
+POC-12b (a probe that under-counted a loss by 40%).
+
+---
+
+## 18. Acceptance criteria
+
+Two kinds of gate, kept apart: **project stages** (a phase of the roadmap) and **release gates** (what a
+build must satisfy). The pipeline stages of §17 are P0–P8 and are not stages of the project.
+
+### 18.1 Project stages
+
+| Stage | State | Criterion | Threshold | Evidence |
+|---|---|---|---|---|
+| S0 mechanism | **closed** | study lift, transfer, poison, LLM distillation, reader, CPU scale | as recorded | `bench/results/study.json`, §12.1–§12.7 |
+| S1 host shadow (nl2charts) | **blocked** | top-1 lift ≥+3pp (p<0.05), SQL regression ≤1pp, knowledge precision ≥85% | n=1,300 adjudicated, κ≥0.7 | needs the private adjudicated set; the adapter exists |
+| S2 public benchmarks | **closed on BIRD** | see below | — | §12.11–§12.13, `poc/results/poc-sota-bird.json` |
+| S2b convention transfer | **read twice, gate not met** | Δ ≥+3pp (p<0.05) **and** recovery ratio ≥0.60 | n=146, resolves 5.08pp; measured +4.79 then +2.05pp, recovery 0.19–0.44 | §12.14 |
+| S3 SOTA push | **conditional** | L3/L4 ladder (§17.27) | rung gates | not started |
+
+**Why S2 is closed rather than "still running".** Four reads of one hypothesis — −2.84, −1.14, −0.57,
+−0.28pp — every interval containing zero, while the instrument improved each time. The stop rule written
+before the runs was "two benchmark failures end the SOTA path on that benchmark"; this is four. The
+replacement lane is S2b, whose knowledge is unreachable from the schema, and it is the only lane where
+the mechanism is load-bearing by construction.
+
+**S2's original exit gate is superseded.** "BIRD-Interact ≥+5pp at n=600" measured a benchmark whose gold
+encodes only what the schema already says, which is exactly what the four null reads established. It now
+appears in §17.27 as lane L4's sibling (an interactive task-success lane) and is not a gate on S2.
+
+### 18.2 Release gates
+
+A build ships only if all eight pass. Each names its lane; none is advisory.
+
+| Gate | Criterion | Threshold | Lane |
+|---|---|---|---|
+| RG1 | Loop utility on a convention-bearing lane | Δ ≥ +3pp, p<0.05 | L2 |
+| RG2 | Recovery ratio against a stated ceiling | ≥ 0.60 | L2 |
+| RG3 | No regression on unmodified public data | Δ ≥ −1pp | L2 control |
+| RG4 | Token overhead of a pack | ≤ 15% of host prompt, ≤1,200 chars | POC-31 |
+| RG5 | Distillation loss | ≤ 1% of corrections | L2 |
+| RG6 | Integrity: attack success, order invariance, replay determinism | ≤10%, 1.00, 1.00 | L8 |
+| RG7 | Retrieval: Recall@5, zero-hit, p95 at 10k | ≥0.90, ≤0.05, ≤5 ms | POC-17/33 |
+| RG8 | Cost and footprint: ≤1 call/correction, ≤28 KiB retrieval bundle, ≤20 MB heap at 10k | as stated | POC-31, bundle metafile |
+
+**No build satisfies these gates today.** RG1 and RG2 are short: the convention lane measured +4.79pp then
++2.05pp against a +3pp gate that must hold at p<0.05 on a replication, and a recovery ratio of 0.19–0.44
+against 0.60. RG3–RG8 are unmeasured because they describe a pipeline that is designed and not built. The
+table is the specification of what a shippable build must show, not a description of the current one.
+
+**A failed gate is reported as failed.** No rounding, no re-slicing, no footnote. The record of the four
+null public reads exists because that rule was applied to our own result.
 
 ---
 
 ## 19. Termination signal
 
-**STOP — the design phase is complete after two audit passes. `AgentiX-E/microglia` is untouched and
+**STOP — the design phase is complete after three audit passes. `AgentiX-E/microglia` is untouched and
 awaits an explicit implementation signal.**
 
-### 19.1 What pass 2 added, and why pass 1 was not enough
+### 19.1 Three passes, and what each one caught
 
-Pass 1 delivered eight stages with a contract, a metric table and a POC each. Read against the standard
-"no step may leave an implementer guessing", it failed in three places (§17.17), and reading two sources
-it had not read exposed what it had missed:
+| Pass | Question asked | What it fixed |
+|---|---|---|
+| 1 | Is every pipeline stage specified? | Eight stages (P0–P8) with contracts, metrics, failure modes; fourteen POCs |
+| 2 | Could an implementer still guess? | Three failed claims, twelve gaps, a decision register with defaults; two sources (MemForm, ALTK-Evolve) changed the design |
+| 3 | Do the *documents as a set* satisfy the ten requirements? | Three stale records, a contradiction between two chapters, and four requirement-level omissions |
 
-| Source read this pass | What it changed |
-|---|---|
-| **MemForm** (2026), *Poisoning how memories are formed* | A rule-forming memory has five attack routes — content, evidence, **scope**, selection, path — and the best of five defences cut attack success by only 8.2pp. Our pipeline had one screen, at render. Now: four invariants, provenance tiers, a promotion gate, and POC-29 |
-| **ALTK-Evolve** (IBM, 2026) | The closest published implementation of this mechanism reports τ²-retail pass^4 57.5% → 67.5% and shows that guidelines from **≥3 distinct tasks** beat a larger rule set on reliability. Both the support threshold (D6/D7) and the primary SOTA lane (τ-bench) came from this |
-| **A-MEM** (NeurIPS 2025) + MobileMem evaluation | Per-item keywords/tags are why A-MEM beats NaiveRAG on distractor-heavy sets — and our measured failure is exactly lexical: 47% of packs shared no word with the question. Adopted as a zero-cost lexical alias (D8) |
-| **HippoRAG 2** (ICML 2025) | +7% on associative tasks from a 1-hop walk over edges we already store. Deferred with a gate (D10) |
-| **MINJA / AgentPoison / OWASP ASI06** | 98.2% injection success with no write access; memory poisoning turns prompt injection into a stateful attack. Justifies the write/promote split (D15/D16) |
-| **MobileMem unanswerable subset** | Stronger memory scores *worse* on questions with no answer, because it retrieves a plausible distractor. Justifies `abstention` as a kind (G4/POC-30) |
+Pass 3 found defects that no amount of re-reading §17 would have found, because they were *between*
+documents rather than inside one:
 
-### 19.2 What is now decided, and what is deferred
+| Defect | Where | Fix |
+|---|---|---|
+| A retracted number still stood as verified | `AUDIT.md` claim C19 asserted +3.33pp at n=30, withdrawn in §12.11 | rewritten: the retraction is the claim, with its successor read |
+| Two chapters gave different S2 exit gates | §18 said "BIRD-Interact ≥+5pp at n=600"; ROADMAP had closed S2 on BIRD after four failures | §18.1 now states S2 as closed, and S2b's gate; the old gate became lane L4's sibling |
+| The pipeline's new capabilities had no home | §17 named modules "core/capture (new)" and "core/distill (new)" without saying which subpath exports what | §17.25 maps nine capabilities to modules and symbols, with normative signatures and four new error codes |
+| Requirement 4 had no numbers | §17 had latency targets only | §17.26 adds ingest, curation, cold start, heap, bundle and token budgets, plus a competitor comparison that names what is and is not comparable |
+| Requirement 5 had no plan | Benchmarks were listed, not sequenced, powered or costed | §17.27: lanes L1–L8 with n, resolution, cost, artefact, gate, order, and a five-rung SOTA ladder with stop rules |
+| Requirement 6 had citations but no register | Sources were quoted inline | §17.28 registers every source with an evidence class (source / paper / secondary) and forbids class-R numbers in product claims |
+| Requirement 8 left twelve values open | "Wilson over task count", "every 50 events", "budgetRatio", decay floor | §17.29 fixes each to one value |
+| Requirement 9 had topics but no conclusions | POC register listed work, not outcomes | §17.30 indexes every POC's conclusion or its explicit "not run, because" |
+
+### 19.2 Decided, deferred, rejected
 
 | Status | Count | Where |
 |---|---|---|
@@ -2434,46 +2668,59 @@ it had not read exposed what it had missed:
 | Deferred, each with a shipped default and the ablation that can overturn it | **10** | §17.18 |
 | Rejected, with the reason | **3** | §17.18 |
 
-Every deferral names the behaviour that ships **before** the ablation runs, so the implementation is not
-blocked by an open question. The ten defaults that ship: **demotion** (not intervals), **adjacent diff**
-(not pair contrast), **prune off**, **`minTaskSupport = 1`** (not 2/3), **plain BM25** (no dense channel),
-**no 1-hop expansion**, **`max(3×limit, 12)`** (not 60), **soft `taskType` boost** (not a hard filter),
-**JSONL** (not SQLite), **pull only** (no push, no MCP tool).
+The ten defaults that ship before any ablation runs: demotion (not intervals), adjacent diff (not pair
+contrast), prune off, `minTaskSupport = 1`, plain BM25 (no dense channel), no 1-hop expansion,
+`max(3×limit, 12)`, soft `taskType` boost, JSONL, pull only.
 
 ### 19.3 The nine questions that remain evidence-open
 
-All are design-complete and evidence-empty, each with a number, a sample and a stopping condition. None is
-a requirement ambiguity.
+Design-complete, evidence-empty, each with a number, a sample and a stopping condition. **None is a
+requirement ambiguity.**
 
 | # | Question | POC | Gate |
 |---|---|---|---|
-| 1 | Does pair contrast close the ceiling gap? | POC-14 | recovery ratio ≥0.60 at n=146 (resolves 5.08pp) |
+| 1 | Does pair contrast close the ceiling gap? | POC-14 | recovery ≥0.60 at n=146 (resolves 5.08pp) |
 | 2 | Is a validity interval worth the model change? | POC-15 | F1 ≥0.90 **and** stale-hit ≤0.02 |
-| 3 | Which retriever wins on our own queries? | POC-17, 17b, 33 | Recall@5 ≥0.90; alias fixes zero-hit ≤0.05 |
+| 3 | Which retriever wins on our own queries? | POC-17, 17b, 33 | Recall@5 ≥0.90; alias zero-hit ≤0.05 |
 | 4 | Does task-type scoping starve? | POC-18 | nDCG@10 +0.05, cold-start recall not lower |
-| 5 | Do push and tool delivery earn their surface? | POC-19, 20 | p95 ≤60 s; +3pp task success, ≤2 calls/task |
+| 5 | Do push and tool delivery earn their surface? | POC-19, 20 | p95 ≤60 s; +3pp, ≤2 calls/task |
 | 6 | Does task-level support stop inflation? | POC-27 | ratio ≤1.15 |
-| 7 | Do the integrity invariants hold? | POC-28, 29 | attack success ≤10%; invariance = 1.00 |
-| 8 | Does an abstention kind help? | POC-30 | ≥+10pp on unanswerable, ≤2pp cost on answerable |
-| 9 | Does the loop move a *policy* benchmark? | POC-32 | τ² pass^4 ≥ +5pp, and ≥ ALTK-Evolve on the same split |
+| 7 | Do the integrity invariants hold? | POC-28, 29 | attack ≤10%; invariance 1.00 |
+| 8 | Does an abstention kind help? | POC-30 | +10pp unanswerable, ≤2pp cost |
+| 9 | Does the loop move a policy benchmark? | POC-32 | τ² pass^4 ≥+5pp and ≥ ALTK-Evolve |
 
-### 19.4 What is deliberately still not delivered
+### 19.4 Requirement-by-requirement discharge
 
-| Not delivered | Reason | Tracked |
-|---|---|---|
-| Code for any §17 stage | Excluded by instruction; the product repository is frozen at `c55cff1` | §17 contracts |
-| POC-13…POC-33 minus POC-31 | They measure an implementation that does not exist; running them against a design measures the design's absence | §17.23 |
-| An SOTA claim | Recovery ratio is 0.19–0.44 against a 0.60 target, and no τ-bench run exists | §17.20, §17.22 |
-| A cost guarantee at 100k items | Measured to 10k only | POC-25 |
+| # | Requirement | Where it is discharged | What would falsify the discharge |
+|---|---|---|---|
+| 1 | Monorepo, layered subpackages, import on demand | §3.2 (three packages, dependency rules), §17.25 (nine capabilities → modules, subpath bundle budgets, a test that a retrieval-only bundle contains no distiller) | a budget overrun at implementation; a cycle between `kernel` and `capture` |
+| 2 | Highest standard, no compromise | §17.2 (eight-stage contract), §17.18 (every decision named), §17.29 (one value per question), zero-dependency core, no default provider, empty pack renders nothing | any stage whose behaviour depends on an unstated constant |
+| 3 | Scientific tests, strict acceptance | §17.19 (per-stage metrics with failure modes), §17.20 (E1–E6), §18.2 (RG1–RG8, none advisory), power stated per lane | a gate that passes on a rounded number |
+| 4 | Extensible and faster than competitors | §17.25 (subpaths), §17.26 (footprint and latency budgets), §17.28 (rival mechanisms adopted or rejected on evidence), the poison baseline (19.64% vs 100.00%) | POC-21/32 showing a rival recovers more of the ceiling |
+| 5 | Complete benchmarks, executable plan, SOTA path | §17.27 (L1–L8 with n, power, cost, order), SOTA ladder R1–R5 with stop rules, preregistration and artefact rules | a lane without a resolution, or a claim without an artefact |
+| 6 | Competitor source study | §17.28 register: mem0 and Graphiti read at source (class **S**), cortex compared field-by-field, papers for ACE/ExpeL/τ-bench, secondary for ALTK/MemForm/MINJA/A-MEM (class **R**, and labelled) | a class-R number used as a product claim |
+| 7 | Every claim cross-checked | `AUDIT.md` C1–C26 with an evidence class per claim; class-R numbers confined to targets and design inputs; the n=30 read retracted rather than kept | a claim whose instrument is not named |
+| 8 | No ambiguous requirement or feature | §17.29 (twelve values), §19.3 (nine open questions, none about requirements), §17.30 (no POC without a conclusion or a reason) | two documents stating different thresholds |
+| 9 | Every POC topic and conclusion recorded | §17.30 (index with conclusions and "not run" reasons), §17.23 (status per POC) | a POC referenced but absent from the index |
+| 10 | Pipeline steps complete, options decided or deferred, metrics and evaluation complete | §17.2–§17.24: stages, decision register, twelve gap closures, end-to-end metrics, delivery contracts, competitor register v2, POC register v3 | a step whose option set is a single candidate with no comparison |
 
-### 19.5 Final state
+### 19.5 What is deliberately not delivered
+
+| Not delivered | Reason |
+|---|---|
+| Code for any §17 stage | Excluded by instruction; the product repository is frozen at `c55cff1` |
+| POC-13…POC-33 minus POC-31 | They measure an implementation that does not exist; running them against a design measures its absence |
+| An SOTA claim | Recovery ratio is 0.19–0.44 against a 0.60 target, and no τ-bench run exists |
+| A cost guarantee above 100k items | Measured to 10k only (POC-25) |
+
+### 19.6 Final state
 
 | Document | State |
 |---|---|
 | `WHITEPAPER.md` | Product thesis, evidence, competitors, constraints |
-| `TECH-DESIGN.md` | §1–§16, §17 (pipeline contract + decision register + gap closures + end-to-end metrics + delivery contracts + competitor register v2 + POC register v3), §18–§19 |
-| `ROADMAP.md` | S0–S3 with every read recorded, including the four null and the two positive ones |
-| `PROGRESS.md` | Seventeen iterations, each with evidence and defects |
-| `AUDIT.md` | Claim-by-claim verification |
+| `TECH-DESIGN.md` | §1–§16 (mechanism), §17 (pipeline: stages, decisions, gaps, metrics, contracts, competitors, POCs, package mapping, performance, evaluation plan, source register, disambiguation, POC index), §18 (stage and release gates), §19 (this record) |
+| `ROADMAP.md` | S0–S3 with every read, including four null and two positive |
+| `PROGRESS.md` | Eighteen iterations with evidence and defects |
+| `AUDIT.md` | C1–C26 with evidence classes, defects found, and the retraction |
 
 **End of design phase.** Awaiting the implementation signal.
