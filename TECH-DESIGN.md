@@ -1426,11 +1426,15 @@ on a boundary condition: **knowledge must encode something the model cannot deri
 rules that could be retired — retiring all 34 would address at most 10% of injections — which rules out
 "the distiller writes wrong facts" as the explanation and reinforces "the facts are redundant".
 
-**What the packs actually contained.** The lane records, per case, the share of the question's content
-words that the pack's best rule mentions. Across 352 questions: median **7.1%**, p75 14.3%, p90 22.2%,
-maximum 33.3%, and **47% of packs mention none of the question's words at all** — they were retrieved by
-scope alone. That is the mechanism behind "inert": half the interventions were textually unrelated to
-the question, and the other half shared one or two words with it.
+**What the packs actually contained** (corrected in §17.34.3). The lane records, per case, the share of the
+question's content words that the pack's best rule mentions. Across **352** questions: median **18.2%**,
+p75 25.0%, p90 35.3%, maximum 75.0%, and **3.1% of packs mention none** of the question's words.
+
+An earlier revision of this paragraph reported median 7.1% and 47% zero. Those are the distribution of the
+**40-question smoke run** with `minCoverage = 0.34`, which emptied most packs; they were published here as
+if they were the 352-question result. The correction matters: at 3.1% zero and 18.2% median, the packs were
+*not* textually unrelated to their questions, so "inert because it was unaddressed" is the wrong
+explanation — the right one is the one the oracle arm gives, that the knowledge was redundant.
 
 It also fixes the only sensible value for a coverage floor. A first attempt used 0.34, which emptied
 every pack on every question; gate V6 refused the run, which is exactly what V6 was added for. A floor
@@ -1444,8 +1448,9 @@ prefix so the cause is visible instead of guessed.
 ### 12.13 POC-11 — relevance gating, and the parser bug that biased the pack
 
 **Question.** If the pack is inert because it is injected whether or not it is relevant, a floor on
-relevance — not a better distiller — is the repair. The measured coverage distribution (§12.12) made
-the hypothesis concrete: 47% of packs shared no content word with their question.
+relevance — not a better distiller — is the repair. The hypothesis was built on a misread distribution
+(§17.34.3): it assumed 47% of packs shared no content word with their question, when the 352-question run
+shows 3.1%. The arm still ran, and its result is read accordingly.
 
 **Setup.** Same folds, same stores, n=352, run `39436660082`, 1h56m, 3,475 calls. The `gated` arm
 recalls with `minCoverage = 0.01`, which is "the best rule must mention at least one of the question's
@@ -1789,9 +1794,11 @@ Two properties follow from the measurements already in hand and constrain everyt
 1. **Knowledge is only worth what it cannot be inferred.** Four reads on unmodified BIRD were null
    (§12.11–§12.13); the convention lane moved (+4.79pp, then +2.05pp) while stating the same rule moved
    +10.96/+11.64pp. The pipeline's job is to close that gap, not to produce more rules.
-2. **The pack is read but not used unless it is addressed.** 47% of packs shared no content word with
-   their question and the median coverage was 7.1% (§12.12); retrieval, not distillation, is the
-   binding constraint until proven otherwise.
+2. **The pack is read, and it is addressed.** The corrected distribution (§17.34.3) shows a median of
+   18.2% of the question's content terms present in the best rule, only 3.1% of packs with none, and 99.7%
+   of questions having at least one active rule that shares a term. Retrieval **availability** is therefore
+   not the constraint — the earlier claim that it was rested on a 40-question probe's numbers — and the
+   binding constraint is **selection among ~186 active rules** plus the redundancy of what is selected.
 
 ### 17.2 The eight stages
 
@@ -1969,8 +1976,10 @@ boost; the coverage floor applies per item (already implemented); over-fetch sca
 reports `explain[]`: for each item, the reason it was selected (scope hit, lexical score, coverage,
 utility) and the reason the next-best was not.
 
-**Why.** Half of our packs shared no content word with the question; the median coverage was 7.1%.
-Retrieval is the constraint, and an unexplained pack cannot be debugged in a host.
+**Why.** Coverage is not the defect: the median best rule mentions 18.2% of the question's terms and only
+3.1% of packs mention none (§17.34.3). With ~186 active rules per fold and 99.7% of questions having a
+lexically overlapping rule, the problem is **choosing** among many plausible rules, which is why over-fetch
+and an `explain[]` matter more than an alias would. An unexplained pack cannot be debugged in a host.
 
 | Metric | Definition | Gate |
 |---|---|---|
@@ -2147,7 +2156,7 @@ Status vocabulary, used everywhere below:
 | D5 | Prune rule `flippedDown≥3 ∧ flippedDown>flippedUp`, or `injected≥20 ∧ flippedUp=0` | deferred (default: off; `pruneEnabled: false`) | No data yet on our own utility distribution | POC-16: prune precision ≥0.90, no retained-rule loss |
 | D6 | Admission support counted over **distinct tasks**, not events | decided | ALTK-Evolve: guidelines kept only from ≥3 distinct tasks beat a larger rule set on airline pass^4 (45.0 vs 40.0) | POC-27: inflation ratio ≤1.15 |
 | D7 | `minTaskSupport` = 2 for constraints, 3 for widened scopes | deferred (default 1 = today's behaviour) | Same ALTK evidence; our own store admits on 1 event by default | POC-27 |
-| D8 | Item carries `lexicalAlias`: the content terms of the question that produced the correction | decided | 47% of our packs shared **no** content word with their question (C25). The rationale is **our own measurement**, not a borrowed one: A-MEM scores documents by dense distance only and never reads its own keywords field (§17.28), so the earlier attribution to A-MEM is **withdrawn** | POC-33: zero-hit ≤0.05, Recall@5 +0.10 |
+| D8 | Item carries a `lexicalAlias` built from the originating question | **rejected**, with a reopening trigger | The premise was a misattributed number: zero-overlap packs are **3.1%**, not 47% (§17.34.3), and 99.7% of questions already have an active rule sharing a term. BM25 already scores those terms, so an alias re-weights an existing signal instead of adding one. Reopens only if a lane shows zero-hit >5% **and** load-bearing knowledge | POC-33 **closed** by the same measurement |
 | D9 | Retrieval = scope index + BM25 + alias + coverage floor; no dense channel by default | deferred (dense channel behind a provider, off) | BM25 won on light paraphrase at 10k on CPU (§12.4); embeddings add a provider and a latency budget | POC-17b: dense adds ≥3pp Recall@5 at p95 ≤5 ms, else rejected |
 | D10 | 1-hop expansion over supersession/contradiction edges (HippoRAG-2 style PPR) | **rejected for the default path**, kept behind a provider flag | Source read: HippoRAG 2 runs an **LLM filter per query** (`rerank_facts` → `DSPyFilter`) and falls back to dense retrieval when no fact survives. Our default path makes zero model calls per query, so the mechanism cannot ship as a default | POC-17b may reopen it only where the host already calls a model at query time |
 | D11 | Over-fetch `max(4×limit, 60)` | deferred (default `max(3×limit, 12)`) | mem0 ships it; our index is lexical and smaller | POC-17: Recall@5 ≥0.90 |
@@ -2227,12 +2236,12 @@ is model calls, not CPU. *Closure:* §17.20, measured from the artefacts we alre
 **G10 — Erasure was unaddressed.** *Closure:* D20. *Metric:* post-erasure recall 0; other items' counts
 unchanged after compaction; the audit log keeps hashes, not content.
 
-**G11 — Retrieval options were underexplored.** The previous revision considered only "BM25 vs dense". Two
-cheaper options are better supported by measurement: an item-level **lexical alias**, which stands on our own
-coverage data and *not* on A-MEM (whose source shows keywords are metadata it never scores), and **1-hop
-expansion** over edges we already store, which the source shows needs an LLM call per query and is therefore
-rejected for a zero-model-call default (D10).
-*Closure:* D8 decided, D9/D11 deferred, D10 rejected. *POC-33, POC-17b.*
+**G11 — Retrieval options were underexplored.** The previous revision considered only "BM25 vs dense".
+Measurement then removed one of the two replacements it had proposed: the item-level **alias** was invented
+for a zero-coverage rate that turned out to be 3.1%, not 47% (§17.34.3), so it is rejected with a reopening
+trigger; **1-hop expansion** needs an LLM call per query and is rejected for a zero-model-call default (D10).
+What survives is the ranking work: over-fetch and an `explain[]` over ~186 active rules.
+*Closure:* D8 and D10 rejected, D9/D11 deferred. *POC-17, POC-17b.*
 
 **G12 — Benchmarks did not include the one that measures policy following.** Our convention lane is
 bespoke; τ-bench measures whether an agent follows a written policy across turns, scored by final database
@@ -2309,7 +2318,7 @@ block with a latency tax.
 | **ExpeL** (AAAI 2024) | Success/failure contrast → insights, then add/edit/vote refinement | FEVER 63 → 70 with adaptation | Adopted as P2's pair contrast (D2, POC-14) |
 | **LangMem** (LangChain) | Source: `_MEMORY_INSTRUCTIONS` runs three phases (extract → compare/update → synthesise) in **one parallel multi-tool call**; `max_steps = 1`, `query_limit = 5`, `enable_deletes = False` by default; ids are `uuid5(namespace, key)`; background work goes through `ReflectionExecutor(..., after_seconds=…)` for debounce | — | Procedural memory as first-class confirms our `convention` kind; `enable_deletes = False` corroborates shipping with prune **off** (D5); the debounced executor refines D13; the single batched call becomes D29 |
 | **Cognee** | Six-stage `cognify`, `memify` post-processor: prune stale nodes, reweight by usage, derive facts; MCP server | — | Same shape as our curator; confirms the stage exists in shipping products |
-| **A-MEM** (NeurIPS 2025) | Source: `MemoryNote{content, keywords, tags, context, category, links, retrieval_count, evolution_history}`; `find_related_memories(content, k=5)` selects neighbours by **dense distance on content only**; an LLM then returns `should_evolve`, `strengthen`, `update_neighbor`; `update_neighbor` **overwrites the neighbours' own tags and context**; consolidation every `evo_threshold = 100` notes; **retrieval scores ChromaDB distance only and never reads keywords** | — | Two lessons: a keyword field that is never scored buys nothing, so our alias must be an *index* field (D8, on our own rationale); and silently rewriting existing notes is exactly the *path* route MemForm names, which D16/D17 forbid |
+| **A-MEM** (NeurIPS 2025) | Source: `MemoryNote{content, keywords, tags, context, category, links, retrieval_count, evolution_history}`; `find_related_memories(content, k=5)` selects neighbours by **dense distance on content only**; an LLM then returns `should_evolve`, `strengthen`, `update_neighbor`; `update_neighbor` **overwrites the neighbours' own tags and context**; consolidation every `evo_threshold = 100` notes; **retrieval scores ChromaDB distance only and never reads keywords** | — | A keyword field that is never scored buys nothing, which is why our alias was rejected rather than copied (D8, §17.34.3); and silently rewriting existing notes is exactly the *path* route MemForm names, which D16/D17 forbid |
 | **HippoRAG 2** (ICML 2025) | Source (partial: file truncated, `BaseConfig` defaults not visible): `retrieve()` = fact retrieval → `rerank_facts` (Recognition Memory, a per-query `DSPyFilter` LLM call) → dense passage scoring → PPR re-rank with `linking_top_k` and `passage_node_weight`; **if no fact survives the filter it falls back to dense retrieval** | +7% on associative memory (paper) | Rejected for the default path (D10): a model call per query is incompatible with a CPU-only, zero-call default |
 | **MemoryOS** / **Memori** | Three-tier hierarchy with FIFO transitions; SQL-native storage | — | Alternatives for D24, tested at POC-25 |
 
@@ -2341,7 +2350,7 @@ Statuses: **run** (artefact exists), **specified** (needs the frozen implementat
 | POC-16 | Can utility support retirement? | 200 replayed runs with a known relevant rule | 200 | attribution ≥0.90; no retained-rule loss | specified |
 | POC-17 | Which over-fetch and coverage settings maximise Recall@5? | 200 queries × {12,24,60} × coverage {0,.01,.15} | 1,800 | Recall@5 ≥0.90 at p95 ≤5 ms | specified |
 | POC-17b | Does a dense channel or 1-hop expansion beat BM25+alias? | Same 200 labelled queries, three retrievers | 600 | +3pp Recall@5 or +0.05 nDCG@10, else rejected | specified |
-| POC-18 | Does taskType scoping help or starve? | Same queries, hard filter vs soft boost | 200 | nDCG@10 +0.05, cold-start recall not lower | specified |
+| POC-18 | Does taskType scoping help or starve? | Same queries, hard filter vs soft boost | 200 | nDCG@10 +0.05, cold-start recall not lower | **closed by data** — every lane has one task type, so a filter is an identity (§17.34.3) |
 | POC-19 | Is push delivery worth a surface? | Webhook on change, 50 long tasks | 50 | p95 ≤60 s, no missed update | specified |
 | POC-20 | Does tool-initiated recall beat pull? | BIRD-Interact Lite, agent decides | 300 | task success +3pp, ≤2 calls/task | specified |
 | POC-21 | Does the loop raise a weak model's fix rate? | BIRD-CRITIC-SQLite, memory on/off | 500 | +5pp, p<0.05 | specified |
@@ -2350,14 +2359,14 @@ Statuses: **run** (artefact exists), **specified** (needs the frozen implementat
 | POC-24 | Does a preference lane match the published gain? | LongMemEval preference subset | 30 | ≥ +20pp | specified |
 | POC-25 | Where does the scope index break? | 100k items, 1,000 queries | 100k | p95 ≤20 ms | specified |
 | POC-26 | Is the idempotency store durable? | Restart under load, 1,000 duplicates | 1,000 | 0 duplicates recorded | specified |
-| **POC-27** | Does task-level support stop correlated evidence inflating trust? | 1 task × 8 attempts vs 8 tasks × 1, same claim | 2 × 8 | inflation ratio ≤1.15; admission unchanged on independent evidence | specified |
+| **POC-27** | Does task-level support stop correlated evidence inflating trust? | Closed-form: `wilsonLower` under both counting rules, k = 1…8 | 8 points | ratio ≤1.15 | **closed by arithmetic** — 2.95× at k=6, and one task's six attempts reach the 0.6 activation threshold (§17.34.2) |
 | **POC-28** | Do the four invariants hold? | Shuffle + replay 1,000 events; rename a column mid-stream; erase 10 items | 1,000 | order invariance 1.00, stale-schema injection 0, post-erasure recall 0 | specified |
 | **POC-29** | How much can a poisoned correction do? | MemForm's five routes, 100 attempts per route, six defences | 500 | attack success ≤10% | specified |
 | **POC-30** | Does an abstention kind reduce confident wrong answers? | 100 unanswerable questions, with/without abstention items | 100 | accuracy loss ≤2pp on answerable, ≥+10pp on unanswerable | specified |
 | **POC-31** | What does the pipeline cost? | Derived from recorded artefacts (calls, tokens, pack size) | 730 evaluations | ≤15% token overhead, ≤1 call/correction, ≤1% loss | **run** (§17.20) |
 | **POC-31b** | Does batching several corrections into one call keep the yield? | Batch 5 corrections per call vs one per call, same 1,000 corrections | 1,000 | calls <200/1,000 and candidate yield within 10% of per-correction | specified |
 | **POC-32** | Does the loop move τ-bench pass^k? | τ²-retail + τ²-airline, rules learned from training tasks, 4 trials | 40 + 20 held-out | pass^4 ≥ +5pp over the same-model baseline, and ≥ ALTK-Evolve's reported number on the same split | specified |
-| **POC-33** | Does a lexical alias fix the zero-coverage packs? | Same lane, items with/without alias | 352 | zero-hit ≤0.05, Recall@5 +0.10 | specified |
+| **POC-33** | Does a lexical alias fix the zero-coverage packs? | Replay of the committed artefact: zero-overlap rate and rule availability | 352 | zero-hit ≤0.05, Recall@5 +0.10 | **closed** — zero-hit is already 0.031 and 99.7% of questions have an overlapping rule, so the alias has nothing to fix (§17.34.3) |
 
 **Amendments to earlier POCs, from this pass.** POC-14's gate now states power: a paired design at n=146
 resolves 5.08pp, so a 0.60 recovery ratio (≈6.5pp) is resolvable but a 0.50 ratio is not — the gate is
@@ -2590,7 +2599,10 @@ the ones that do not, and why.
 | POC-12b | Parser loss | 25.7% → 5.0% in probe → **7.0% at full scale** | §12.14, C24 |
 | POC-31 | Cost model | 2,383 tokens/evaluation; pack = 26% of median question | §17.20, C25 |
 | POC-31b | Batched distillation | **not run** — one call per correction ships until it is | §17.23 |
-| POC-13…30, 32, 33 | Pipeline stages, integrity, abstention, τ-bench | **not run** — they measure an implementation that does not exist | §17.23 |
+| POC-18 | taskType scoping | **closed by data**: one task type in every lane makes the filter an identity | §17.34.3 |
+| POC-27 | Support counting | **closed by arithmetic**: 2.95× inflation at six events; six distinct tasks needed to activate | §17.34.2 |
+| POC-33 | Lexical alias | **closed**: the premise (47% zero-overlap) was a 40-question probe reported at full scale; the real rate is 3.1% | §17.34.3 |
+| POC-13…30, 32 | Pipeline stages, integrity, abstention, τ-bench | **not run** — they measure an implementation that does not exist | §17.23 |
 
 The two rows that changed a claim rather than decorating one are POC-8 (a published number retracted) and
 POC-12b (a probe that under-counted a loss by 40%).
@@ -2681,6 +2693,103 @@ additive; `recall`'s `budgetRatio` (D23) enters additive with the absolute cap a
 
 ---
 
+### 17.34 Closing what can be closed: three closures, one retraction, five deferrals
+
+The nine evidence-open questions were carried as if each needed the implementation. Three do not, and
+checking them exposed an error in our own record.
+
+#### 17.34.1 Triage
+
+| # | Question | Needs code? | Why | Status |
+|---|---|---|---|---|
+| 6 | Does task-level support stop inflation? | **no — arithmetic** | The Wilson bound is closed-form; both counting rules can be evaluated for every k | **closed**, and it exposed a live defect |
+| 3 | Which retriever wins? (alias / coverage) | **no — replay** | Availability is a property of the committed artefact, not of the code | **alias half closed** (premise refuted); **ranking half open** (§19.3 #2) |
+| 4 | Does task-type scoping starve? | **no — data inspection** | Every lane has exactly one task type, so a hard filter is an identity | **closed**: ships soft boost, reopen when a host has ≥2 types |
+| 2 | Is a validity interval worth it? | no — **conditional** | Interval semantics pay only for queries that refer to the past; no lane contains one | **conditional decision** with a recorded trigger |
+| 1 | Does pair contrast close the gap? | **yes** | No lane has a multi-attempt task: every question is one attempt, so a pair does not exist to distil from | open, blocked on L2b |
+| 5 | Do push and tool delivery earn their surface? | **yes** | There is no transport to measure and no agent to call a tool | open, blocked on §17.21 |
+| 7 | Do the integrity invariants hold? | **yes** | Order invariance, replay determinism and erasure are properties of a store that does not exist yet | open, blocked on P3/P4 |
+| 8 | Does an abstention kind help? | **yes** | Needs the kind, the renderer, and an unanswerable set that no current lane has | open, blocked on P2/P6 + dataset |
+| 9 | Does the loop move a policy benchmark? | **yes** (effect) | Dataset availability is now closed; the effect needs the loop | open, blocked on L4 |
+
+#### 17.34.2 Closure 1 — support counting is arithmetic, not an experiment
+
+`wilsonLower(x, n)` is closed-form, and the policy activates at `activationThreshold = 0.6`
+(`kernel/policy.ts`). Counting endorsements as **events** versus as **distinct tasks** gives:
+
+| Endorsements, all positive | Event-counted LB | Task-counted LB (one task) | Ratio |
+|---|---|---|---|
+| 1 | 0.207 | 0.207 | 1.00 |
+| 2 | 0.342 | 0.207 | 1.66 |
+| 3 | 0.438 | 0.207 | 2.12 |
+| 4 | 0.510 | 0.207 | 2.47 |
+| 5 | 0.566 | 0.207 | 2.74 |
+| **6** | **0.610** | 0.207 | **2.95** |
+| 8 | 0.676 | 0.207 | 3.27 |
+
+Two conclusions, both decisive without a run:
+
+1. **The gate is closed.** The inflation ratio is 2.95× at six endorsements against a 1.15 ceiling, so
+   event-counting is refuted by arithmetic. Six **distinct** tasks are what a 0.6 activation requires when
+   every endorsement is positive — which is what D6/D7 were trying to express, now with a number.
+2. **The shipped behaviour has a defect.** Counting events, **one task's six attempts admit a rule** — a
+   single persistent user can populate the workspace unopposed. This is the mechanism behind 186–192 active
+   rules per fold in the convention lane, and it is a live bug, not a design preference.
+
+POC-27 is therefore **closed**, and its gate becomes a unit test at implementation: `trust(6 events, 1 task)`
+must not reach activation, `trust(6 distinct tasks)` must.
+
+#### 17.34.3 Closure 2 and a retraction — the alias premise was a misattributed number
+
+The design carried "47% of packs share no content word with their question; the median coverage is 7.1%".
+Recomputing from the committed n=352 artefact (`poc/results`, run `39406533126`) gives a different picture:
+
+| Lane | n | Zero-overlap packs | Median coverage | Questions with ≥1 overlapping active rule | ≥2 terms |
+|---|---|---|---|---|---|
+| BIRD, unmodified | 352 | **3.1%** (recorded) / 2.8% (recomputed) | **18.2%** | 99.7% | 79.8% |
+| Convention subset | 146 | 3.4% | — | 100.0% | 85.6% |
+
+**Where the wrong number came from.** 7.1% median and 47% zero are the distribution of the **40-question
+smoke run** (`minCoverage = 0.34`, which emptied most packs), reported in §12.12 as if they were the
+352-question result. The error is exactly the class §17.31 now forbids: a probe's number quoted at full
+scale.
+
+**What this changes.**
+
+1. **"Retrieval coverage is the binding constraint" is withdrawn.** Coverage is respectable — a median of
+   18.2% of the question's content terms, with 99.7% of questions having at least one active rule that
+   shares a term. The pack was inert because the knowledge is redundant, which is what the oracle arm
+   already said. The two findings now agree instead of competing.
+2. **D8 (lexical alias) is rejected, with a reopening trigger.** It was invented to fix a zero-hit rate
+   that is already 3%, and BM25 already scores the same terms, so an alias would re-weight a signal that
+   exists rather than add one. It reopens only if a lane shows zero-hit > 5% **and** load-bearing knowledge.
+3. **POC-33 is closed** (the question is answered: alias cannot move a 3% zero-hit rate), and **POC-18 is
+   closed** (one task type in every lane makes scoping an identity; soft boost ships, reopening trigger
+   recorded).
+
+#### 17.34.4 Conditional closure — validity intervals
+
+A validity interval buys exactly one capability: answering *what was true then*. No lane in scope contains a
+past-referring query, and the host's workload is stated as current-state recommendation. So the question is
+not "does it help" but "is there anything for it to help". **Decision:** demotion ships (D3 unchanged);
+the interval implementation is deferred with a trigger — *the first host workload that queries a state as of
+a past time* — and POC-15 stays specified for that day. This is a decision, not an open question.
+
+#### 17.34.5 The five that genuinely need code, and the precondition each is waiting on
+
+| # | Blocked on | Not a deferral of convenience: |
+|---|---|---|
+| 1 | L2b, a lane whose tasks have **≥2 attempts** | today every question is one attempt, so `parentRunId` has nothing to point at; the pair does not exist |
+| 3b | the real index (POC-17, 17b) | ranking among 186 rules is exercised by the index; a replay cannot re-rank what it does not have |
+| 5 | §17.21 transports | a webhook and an MCP tool are code; no measurement can precede them |
+| 7 | P3/P4 stores | order invariance and replay determinism are properties of a store; today's store is the object under change |
+| 8 | P2/P6 + an unanswerable set | the kind has no renderer and the dataset is not in the manifest |
+| 9 | L4 | the effect needs the loop; the dataset and its licence are now confirmed available |
+
+Each is recorded in §17.27 with a lane, a gate and an order, so none is an unowned question.
+
+---
+
 ## 18. Acceptance criteria
 
 Two kinds of gate, kept apart: **project stages** (a phase of the roadmap) and **release gates** (what a
@@ -2718,7 +2827,7 @@ A build ships only if all eight pass. Each names its lane; none is advisory.
 | RG4 | Token overhead of a pack | ≤ 15% of host prompt, ≤1,200 chars | POC-31 |
 | RG5 | Distillation loss | ≤ 1% of corrections | L2 |
 | RG6 | Integrity: attack success, order invariance, replay determinism | ≤10%, 1.00, 1.00 | L8 |
-| RG7 | Retrieval: Recall@5, zero-hit, p95 at 10k | ≥0.90, ≤0.05, ≤5 ms | POC-17/33 |
+| RG7 | Retrieval: Recall@5, zero-hit, p95 at 10k | ≥0.90 (unmeasured), zero-hit ≤0.05 (**measured 0.031**), ≤5 ms | POC-17 |
 | RG8 | Cost and footprint: ≤1 call/correction, ≤28 KiB retrieval bundle, ≤20 MB heap at 10k | as stated | POC-31, bundle metafile |
 
 **No build satisfies these gates today.** RG1 and RG2 are short: the convention lane measured +4.79pp then
@@ -2733,10 +2842,10 @@ null public reads exists because that rule was applied to our own result.
 
 ## 19. Termination signal
 
-**STOP — the design phase is complete after four audit passes. `AgentiX-E/microglia` is untouched and
+**STOP — the design phase is complete after five audit passes. `AgentiX-E/microglia` is untouched and
 awaits an explicit implementation signal.**
 
-### 19.1 Three passes, and what each one caught
+### 19.1 Five passes, and what each one caught
 
 | Pass | Question asked | What it fixed |
 |---|---|---|
@@ -2744,6 +2853,7 @@ awaits an explicit implementation signal.**
 | 2 | Could an implementer still guess? | Three failed claims, twelve gaps, a decision register with defaults; two sources (MemForm, ALTK-Evolve) changed the design |
 | 3 | Do the *documents as a set* satisfy the ten requirements? | Three stale records, a contradiction between two chapters, and four requirement-level omissions |
 | 4 | Is requirement 6 actually met — are the leaders read, or only reported? | Three systems moved from secondary reports to source reads; two design rationales were **overturned** by what the code does; statistical discipline, a dataset manifest and a versioning contract were missing entirely |
+| 5 | Are the nine evidence questions really blocked on code? | **No.** Three were answerable by arithmetic, replay and data inspection; one is a conditional decision. Checking them also exposed a **misattributed number** that had been driving the design |
 
 Pass 3 found defects that no amount of re-reading §17 would have found, because they were *between*
 documents rather than inside one:
@@ -2774,31 +2884,47 @@ did design work, and two of them were wrong.
 
 | Status | Count | Where |
 |---|---|---|
-| Decided (mechanism ships) | **16** | §17.18 |
+| Decided (mechanism ships) | **15** | §17.18 |
 | Deferred, each with a shipped default and the ablation that can overturn it | **10** | §17.18 |
-| Rejected, with the reason | **4** | §17.18 |
+| Rejected, with the reason | **5** | §17.18 |
 
 The ten defaults that ship before any ablation runs: demotion (not intervals), adjacent diff (not pair
 contrast), prune off, `minTaskSupport = 1`, plain BM25 (no dense channel), `max(3×limit, 12)`, soft
-`taskType` boost, JSONL, pull only, and one distillation call per correction. 1-hop expansion is no longer
-a default question at all: the source makes it a per-query model call, which this product does not make.
+`taskType` boost, JSONL, pull only, and one distillation call per correction.
 
-### 19.3 The nine questions that remain evidence-open
+The five rejections, each with a reason rather than a preference: GPU and fine-tuning (product constraint);
+LLM-only distillation (loses the deterministic path for structured edits); delete-on-contradiction (destroys
+the audit trail); **1-hop PPR expansion** (an LLM call per query, §17.28); and the **lexical alias** (its
+premise was a misattributed number, §17.34.3).
 
-Design-complete, evidence-empty, each with a number, a sample and a stopping condition. **None is a
-requirement ambiguity.**
+### 19.3 What closed in the design phase, what is conditional, and what is open
 
-| # | Question | POC | Gate |
+**Closed without code — three.** Each was carried as "needs the implementation" and was not.
+
+| Was | Closing evidence | Consequence |
+|---|---|---|
+| Does task-level support stop inflation? (POC-27) | `wilsonLower` is closed-form: counting events gives a **2.95×** higher bound at six endorsements, and **one task's six attempts reach the 0.6 activation threshold** | the gate is closed and a **live defect** is identified: today a single persistent user can admit a rule. Six distinct tasks are what activation requires |
+| Does a lexical alias fix the zero-coverage packs? (POC-33) | Replay of the committed n=352 artefact: zero-overlap is **3.1%**, median coverage **18.2%**, and **99.7%** of questions already have an overlapping active rule | the alias is **rejected**; the earlier 47% was a 40-question probe published at full scale (§17.34.3) |
+| Does task-type scoping help or starve? (POC-18) | Every lane has exactly one task type, so a hard filter is an identity | soft boost ships; reopen when a host has ≥2 task types |
+
+**Conditional — one.** A validity interval buys exactly one capability: answering *what was true then*. No
+lane in scope contains a past-referring query, so demotion ships (D3) and the interval implementation waits
+on a recorded trigger: the first host workload that queries a state as of a past time.
+
+**Open — six.** The ninth question split in two when its alias half closed: what remains is ranking.
+So nine questions yield ten answers: three closed, one conditional, six open.
+
+| # | Question | Blocked on | Why no design-phase answer exists |
 |---|---|---|---|
-| 1 | Does pair contrast close the ceiling gap? | POC-14 | recovery ≥0.60 at n=146 (resolves 5.08pp) |
-| 2 | Is a validity interval worth the model change? | POC-15 | F1 ≥0.90 **and** stale-hit ≤0.02 |
-| 3 | Which retriever wins on our own queries? | POC-17, 17b, 33 | Recall@5 ≥0.90; alias zero-hit ≤0.05 (PPR only where the host already calls a model per query) |
-| 4 | Does task-type scoping starve? | POC-18 | nDCG@10 +0.05, cold-start recall not lower |
-| 5 | Do push and tool delivery earn their surface? | POC-19, 20 | p95 ≤60 s; +3pp, ≤2 calls/task |
-| 6 | Does task-level support stop inflation? | POC-27 | ratio ≤1.15 |
-| 7 | Do the integrity invariants hold? | POC-28, 29 | attack ≤10%; invariance 1.00 |
-| 8 | Does an abstention kind help? | POC-30 | +10pp unanswerable, ≤2pp cost |
-| 9 | Does the loop move a policy benchmark? | POC-32 | τ² pass^4 ≥+5pp and ≥ ALTK-Evolve |
+| 1 | Does pair contrast close the ceiling gap? | L2b with **≥2 attempts per task** | every question in every lane is one attempt, so there is no pair to distil from |
+| 2 | Which over-fetch and ranking settings maximise Recall@5? (POC-17, 17b) | the real index | ranking among ~186 active rules is a property of the index, not of the artefact |
+| 3 | Do push and tool delivery earn their surface? | §17.21 transports | no transport exists to measure, no agent exists to call a tool |
+| 4 | Do the integrity invariants hold? | P3/P4 stores | order invariance and replay determinism are properties of a store that is being changed |
+| 5 | Does an abstention kind reduce confident wrong answers? | P2/P6 + an unanswerable set | the kind has no renderer and the dataset is not in the manifest |
+| 6 | Does the loop move a policy benchmark? (τ-bench) | L4 | the effect needs the loop; dataset availability and licence are now confirmed |
+
+Each open question has a lane, a gate and an order in §17.27, and a POC identifier. None is unowned and none
+is a requirement ambiguity.
 
 ### 19.4 Requirement-by-requirement discharge
 
@@ -2810,7 +2936,7 @@ requirement ambiguity.**
 | 4 | Extensible and faster than competitors | §17.25 (subpaths), §17.26 (footprint and latency budgets), §17.28 (rival mechanisms adopted or rejected on evidence), the poison baseline (19.64% vs 100.00%) | POC-21/32 showing a rival recovers more of the ceiling |
 | 5 | Complete benchmarks, executable plan, SOTA path | §17.27 (L1–L8 with n, power, cost, order), SOTA ladder R1–R5 with stop rules, preregistration and artefact rules | a lane without a resolution, or a claim without an artefact |
 | 6 | Competitor source study | §17.28 register: **five systems read at source** (mem0, Graphiti, A-MEM, HippoRAG 2 — partial file, LangMem) plus cortex field-by-field; papers for ACE/ExpeL/τ-bench; secondary only for ALTK-Evolve, MemForm, MINJA and the Cognee/MemoryOS/Memori group, each labelled | a class-R number used as a product claim; a class-S finding contradicted by the next read |
-| 7 | Every claim cross-checked | `AUDIT.md` C1–C26 with an evidence class per claim; class-R numbers confined to targets and design inputs; the n=30 read retracted rather than kept | a claim whose instrument is not named |
+| 7 | Every claim cross-checked | `AUDIT.md` C1–C27 with an evidence class per claim; class-R numbers confined to targets and design inputs; the n=30 read retracted rather than kept | a claim whose instrument is not named |
 | 8 | No ambiguous requirement or feature | §17.29 (twelve values), §19.3 (nine open questions, none about requirements), §17.30 (no POC without a conclusion or a reason) | two documents stating different thresholds |
 | 9 | Every POC topic and conclusion recorded | §17.30 (index with conclusions and "not run" reasons), §17.23 (status per POC) | a POC referenced but absent from the index |
 | 10 | Pipeline steps complete, options decided or deferred, metrics and evaluation complete | §17.2–§17.24: stages, decision register, twelve gap closures, end-to-end metrics, delivery contracts, competitor register v2, POC register v3 | a step whose option set is a single candidate with no comparison |
@@ -2820,7 +2946,7 @@ requirement ambiguity.**
 | Not delivered | Reason |
 |---|---|
 | Code for any §17 stage | Excluded by instruction; the product repository is frozen at `c55cff1` |
-| POC-13…POC-33 minus POC-31 | They measure an implementation that does not exist; running them against a design measures its absence |
+| The five open POCs (14, 17, 17b, 19, 20, 28, 29, 30, 32, 31b) | each is blocked on something named in §19.3; running it against a design measures its absence |
 | An SOTA claim | Recovery ratio is 0.19–0.44 against a 0.60 target, and no τ-bench run exists |
 | A cost guarantee above 100k items | Measured to 10k only (POC-25) |
 
@@ -2831,7 +2957,7 @@ requirement ambiguity.**
 | `WHITEPAPER.md` | Product thesis, evidence, competitors, constraints |
 | `TECH-DESIGN.md` | §1–§16 (mechanism), §17 (pipeline: stages, decisions, gaps, metrics, contracts, competitors, POCs, package mapping, performance, evaluation plan, source register, disambiguation, POC index, statistical discipline, dataset manifest, versioning), §18 (stage and release gates), §19 (this record) |
 | `ROADMAP.md` | S0–S3 with every read, including four null and two positive |
-| `PROGRESS.md` | Nineteen iterations with evidence and defects |
-| `AUDIT.md` | C1–C26 with evidence classes, defects found, and the retraction |
+| `PROGRESS.md` | Twenty iterations with evidence and defects |
+| `AUDIT.md` | C1–C27 with evidence classes, nine defects (B1–B9), and two retractions |
 
 **End of design phase.** Awaiting the implementation signal.

@@ -46,13 +46,15 @@ our own artefact are not the same kind of thing:
 | C22 | A relevance floor does not recover the delta | `gated` arm at `minCoverage 0.01`: 2.27 → 2.06 rules/question, Δ −0.57 → −0.28pp | **yes** | stronger floors, which empty the pack — V6 refuses that run | M |
 | C23 | A convention the schema cannot reveal is transferred | BIRD single-number subset, round-to-ten, 5 folds, twice | **yes in direction, not in magnitude**: +4.79pp (p=0.016) then +2.05pp (p=0.250); **10 gained, 0 lost** pooled | a stable effect size; the runs share questions and the pooled ratio is not independent | M |
 | C24 | Distillation loss is 7.0% at full scale | reply prefix recorded on failure; three successive fixes measured | **yes**: 25.7% → 5.0% (probe) → **7.0%** (71 of 1,009, full run) | other models; the 40-question probe under-counted by 40% | M |
-| C25 | Packs are lexically unaddressed to their questions | per-case coverage recorded on 352 questions | **yes**: median **7.1%**, p90 22.2%, **47% share no content word** | whether a better lesson form fixes it; that is POC-33 | A |
+| C25 | Packs are lexically **addressed** to their questions, so coverage is not the constraint | per-case coverage recorded on 352 questions, recomputed from the same artefact | **yes**: median **18.2%**, p90 35.3%, **3.1% share no content word**; 99.7% of questions have an active rule sharing a term | that the *selected* rule is the right one; selection is the open question (POC-17) | A |
 | C26 | The pack, not the model, dominates token cost | cost model derived from the recorded artefact | **yes**: 2,383 tokens per arm-evaluation; a 1,200-char pack ≈300 tokens = **26%** of the median question's 1,133 | other hosts; the ratio depends on their prompt size | A |
+| C27 | Counting endorsements as events inflates admission against counting distinct tasks | closed-form `wilsonLower` under both rules, k = 1…8, against `activationThreshold = 0.6` | **yes**: 2.95× at six endorsements; one task's six attempts reach activation (0.610), one task alone bounds at 0.207, six distinct tasks are what an all-positive claim needs | that a host with many *honest* attempts behaves the same; the bound is about independence, not intent | **D** |
 
 ## 2. Defects found and fixed during these audits
 
-An audit that finds nothing is an audit that did not look. Eight defects were found by writing invariants
-down as tests, or by recording a failure's cause instead of its message.
+An audit that finds nothing is an audit that did not look. Nine defects were found by writing invariants
+down as tests, by recording a failure's cause instead of its message, or by recomputing a published number
+from the artefact it claimed to come from.
 
 | # | Defect | How it surfaced | Impact had it shipped | Fix |
 |---|---|---|---|---|
@@ -64,6 +66,7 @@ down as tests, or by recording a failure's cause instead of its message.
 | B6 | The distillation parser accepted one of the four shapes models actually return | recording the reply prefix after a 25.7% failure rate survived a larger token budget | a quarter of all corrections never reached the pack, and *which* quarter was decided by formatting | accept a wrapped object, a bare array, a single candidate; repair control characters and trailing commas |
 | B7 | A control arm injected nothing and looked like evidence | gate V6 refused a run whose `narrow` arm reported 0.00 rules per question | a second baseline wearing a control's name | duplicate the pack instead; V6 blocks any pack control with zero injections |
 | B8 | The channel gate asked a sentence-only arm for rules per question | V6 failed a run whose every other reading was sound | a sound positive result reported as a failed run | V6 covers only the controls that retrieve |
+| B9 | A 40-question probe's coverage distribution was published as the 352-question result (median 7.1%, 47% zero versus the real 18.2%, 3.1%) | recomputing from the committed artefact during a design audit | a false premise drove a design decision (the alias) and a false causal claim ("retrieval is the constraint") | numbers now carry their n and their run id; §17.31 forbids quoting a probe at full scale |
 
 Two more were found earlier and are recorded in the technical design: the payload-shape omission that made
 LLM distillation produce 0% correct payloads, and the corpus generator that silently skipped a malformed
@@ -91,6 +94,8 @@ invisible is a register nobody should trust.
 |---|---|---|
 | A-MEM's retrieval edge comes from per-item keywords/tags | `AgenticMemorySystem.search()` returns ChromaDB distances over `content`; `keywords` is in the result payload but not in the scoring path, and `analyze_content` is not called by `add_note` | the alias decision (D8) keeps its mechanism but loses its citation; the rationale is our own 47%-zero-coverage measurement (C25) |
 | Graph expansion (PPR) is a cheap deferred option | `HippoRAG.retrieve()` calls `rerank_facts` (an LLM filter) per query and falls back to dense retrieval when no fact survives | D10 moves from *deferred* to *rejected for the default path*; it may only return where the host already pays for a per-query model call |
+
+| A 47% zero-overlap rate made retrieval the binding constraint | replaying the artefact gives 3.1%; the 47% was the n=40 probe with `minCoverage = 0.34` | the causal claim is withdrawn, the alias is rejected, and the constraint is re-stated as *selection* among ~186 rules |
 
 A third finding was not a correction but a confirmation: LangMem's `enable_deletes = False` default matches
 our decision to ship with pruning off (D5), and its `ReflectionExecutor(after_seconds)` debounce is the shape
@@ -147,7 +152,8 @@ The freeze commit `c55cff1` adds the recorded artefacts of the replication run; 
    only defence against the next favourable read being believed.
 4. **The boundary is measured from both sides**: inert where the knowledge is inferable (C20–C22), positive
    where it is not (C23, 10 gained and 0 lost), with the ceiling stated (10.96–11.64pp).
-5. **Three defects were in the measurement, not the product** (B6–B8). Each was found by recording a cause
-   instead of a message, which is now a rule for every lane.
+5. **Four defects were in the measurement, not the product** (B6–B9). Three were found by recording a cause
+   instead of a message; the fourth by recomputing a published distribution from its own artefact. Both habits
+   are now rules for every lane.
 6. **Nine questions remain open** (§19.3 of the technical design). Each has a POC, a number and a stopping
    condition; none is a requirement ambiguity, and none is hidden behind a green build.

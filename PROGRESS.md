@@ -259,6 +259,10 @@ larger token budget — the failure is not truncation. The next round records th
 floor is the repair. The coverage distribution supported it: the median pack covered 7.1% of its
 question's content words and 47% of packs covered none.
 
+> **Correction (iteration 20).** Those two numbers are the **40-question smoke run's**, not the 352-question
+> run's. Recomputed from the committed artefact: median **18.2%**, zero-overlap **3.1%**. The hypothesis this
+> iteration acted on was therefore built on a misread distribution, and the alias it motivated is rejected.
+
 **Result** (run `39436660082`, n=352, 1h56m, 3,475 calls):
 
 | Arm | Rules/question | Accuracy | Δ | p |
@@ -414,7 +418,7 @@ must survive, a metric table with thresholds, and the POC that settles whatever 
 | Distillation gains **pair contrast** (first wrong vs accepted) | ExpeL: insights from success/failure pairs transfer (FEVER 63→70) where single-trajectory insights do not |
 | Contradiction becomes a **validity interval** | Graphiti's source: `valid_at` / `invalid_at` / `expired_at`, invalidation by interval geometry, no similarity threshold; status-only demotion cannot answer "what was true then" |
 | A **curation** stage with per-item utility counters and delta updates | ACE: itemized bullets with helpful/harmful counters, periodic curator, context collapse as the measured failure mode |
-| Retrieval gains taskType/stage scoping, an over-fetch of `max(4k,60)` and an `explain[]` | 47% of our packs shared no word with the question; mem0 ships `max(limit*4,60)` |
+| Retrieval gains taskType/stage scoping, an over-fetch of `max(4k,60)` and an `explain[]` | 47% of our packs shared no word with the question *(corrected in iteration 20: the real figure is 3.1%)*; mem0 ships `max(limit*4,60)` |
 
 **Competitor source, read rather than summarised.** mem0 `main.py`: a top-10 semantic candidate set,
 MD5 exact dedupe, entity cosine 0.95, identity keys stripped from caller metadata, search threshold 0.1.
@@ -509,7 +513,7 @@ limit of the field.
 
 | Was asserted | Source says | Now |
 |---|---|---|
-| A-MEM's edge on distractor-heavy sets comes from per-item keywords | `search()` scores ChromaDB distance over `content`; `keywords` never enters the scoring path, and `analyze_content` is not even called by `add_note` | D8 keeps the alias but loses the citation: the rationale is our own 47%-zero-coverage measurement |
+| A-MEM's edge on distractor-heavy sets comes from per-item keywords | `search()` scores ChromaDB distance over `content`; `keywords` never enters the scoring path, and `analyze_content` is not even called by `add_note` | the alias loses its citation — and in iteration 20 it loses its premise too (47% → 3.1%) and is rejected |
 | PPR expansion is a cheap deferred option | `retrieve()` calls `rerank_facts` — an **LLM filter per query** — and skips graph search entirely when no fact survives | D10 becomes **rejected for the default path**: a CPU-only default makes zero calls per query |
 | Pruning is a normal operation | LangMem ships `enable_deletes = False` | D5's "prune off by default" is corroborated by the most-adopted SDK |
 | Curation is threshold-only | LangMem debounces with `ReflectionExecutor(after_seconds=…)` | D30: coalesce a burst into one round, host may debounce |
@@ -531,3 +535,49 @@ limit of the field.
 
 **Decision register:** 30 rows — **16 decided, 10 deferred, 4 rejected**. `AgentiX-E/microglia` untouched at
 `c55cff1`; `TECH-DESIGN.md` is 2,837 lines.
+
+### 20 — The nine evidence gaps were not nine: three closed, one conditional, six open, one retraction
+
+The challenge was fair: a deferral is only honest if something actually blocks it. Re-reading the nine, three
+were answerable **without any code**, and checking them exposed a false number that had been steering the
+design.
+
+**Closure 1 — support counting is arithmetic (POC-27).** `wilsonLower` is closed-form and the policy
+activates at 0.6:
+
+| Endorsements (all positive) | Counted as events | Counted as tasks (one task) | Ratio |
+|---|---|---|---|
+| 4 | 0.510 | 0.207 | 2.47× |
+| 6 | **0.610** | 0.207 | **2.95×** |
+| 8 | 0.676 | 0.207 | 3.27× |
+
+Two results: the gate (≤1.15) is refuted by arithmetic, and **one task's six attempts reach activation today**
+— a single persistent user can admit a rule. Six distinct tasks is what activation actually requires. That is
+a live defect found by a five-line computation.
+
+**Closure 2 — the alias premise was a misattributed number (POC-33), and this is the pass's real finding.**
+"Median coverage 7.1%, 47% of packs share no word" turned out to be the **40-question smoke run's**
+distribution, published as the 352-question result. Recomputed from the same committed artefact:
+
+| Lane | n | Zero-overlap | Median coverage | ≥1 overlapping active rule |
+|---|---|---|---|---|
+| BIRD unmodified | 352 | **3.1%** | **18.2%** | 99.7% |
+| Convention subset | 146 | 3.4% | — | 100.0% |
+
+So the pack was never textually unaddressed; the "retrieval is the binding constraint" claim is withdrawn,
+and it is withdrawn in favour of the conclusion the oracle arm already gave — the knowledge is redundant. The
+alias (D8) is **rejected** rather than deferred, because BM25 already scores the same terms.
+
+**Closure 3 — task-type scoping (POC-18)** is an identity: every lane has one task type. Soft boost ships;
+reopen when a host has two.
+
+**Conditional — validity intervals.** Intervals buy exactly one capability: answering *what was true then*. No
+lane contains a past-referring query, so demotion ships and the trigger is recorded.
+
+**What is genuinely open is now six, not nine** (the ninth split when its alias half closed): pair contrast
+(no lane has a second attempt to pair with), ranking parameters (need the real index), push/tool (no
+transport), integrity (no store yet), abstention (no kind, no unanswerable set), policy benchmark (needs the
+loop). Each names its blocker in §19.3.
+
+**Evidence.** `TECH-DESIGN.md` §17.34 (closures with numbers), §19.3 (three closed / one conditional / five
+open), `AUDIT.md` C25 rewritten, C27 added, B9 added. `AgentiX-E/microglia` untouched at `c55cff1`.

@@ -199,8 +199,17 @@ corroborated two choices (prune off; debounced curation) and produced one new de
 distillation). Statistical discipline (§17.31), a dataset manifest (§17.32) and a versioning contract
 (§17.33) closed the last three requirement-level omissions.
 
-Implementation waits for an explicit signal. The nine questions the design carries are all evidence
-questions with a named POC and a number (§19.3); none is a requirement ambiguity.
+**Audit pass 5 (same day).** The nine "evidence-open" questions were re-examined on the principle that a
+deferral is only honest if something blocks it. Three closed without code: support counting is refuted by
+arithmetic (2.95× inflation at six endorsements, and one task's six attempts reach the 0.6 activation
+threshold — a live defect), task-type scoping is an identity with one task type, and the lexical alias lost
+its premise when the 47%-zero-coverage figure turned out to be a **40-question probe published at full
+scale** (the real rate is 3.1%, median coverage 18.2%). The "retrieval is the constraint" claim is therefore
+withdrawn in favour of the redundancy explanation the oracle arm already supported. One question became a
+conditional decision (validity intervals, trigger recorded). Five remain open, each naming the artefact it
+is blocked on.
+
+Implementation waits for an explicit signal. None of the remaining questions is a requirement ambiguity.
 
 ## S3 — SOTA push (conditional)
 
