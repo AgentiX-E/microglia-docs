@@ -967,3 +967,22 @@ and the driver exist the job is skipped, so the workflow stays honest *and* gree
 
 **Evidence.** 556 tests, coverage **99.84 / 97.66 / 100 / 99.84**; `passk.ts` 100 across; `audit:repo` ok;
 `ci` unchanged (the L4 job lives in `sota`, which is manual and variable-gated).
+
+### 33 — The repository boundary, stated and enforced
+
+Asked to migrate the POCs into this repository, I audited every lane against one rule the owner gave:
+**a workflow whose test target is microglia belongs in microglia**. All twelve `poc/` scripts, the three
+`scripts/`, the four workflows and their artefacts measure the library — replay invariants, attack
+surface, the study, the live probes, the public benchmark — so the rule puts them where they already are.
+Moving them would have separated each lane from the CI that runs it and needed a cross-repo credential for
+the product's own green build.
+
+One judgement call is recorded rather than hidden: `scripts/hf-inventory.mjs` measures a Hugging Face
+dataset, not the library, and stays because its only caller is the `sota` job, where it turns a failed
+benchmark run into a readable one.
+
+What was missing was the **rule in writing**, which is why the question could be asked at all. It is now
+§17.35 of the technical design and §11 of the external architecture, and it is enforced: `pnpm audit:repo`
+fails if any of the five internal documents appears in the product repository.
+
+**Evidence.** `audit:repo` ok with the new boundary check; 556 tests unchanged; CI green.

@@ -3005,3 +3005,31 @@ is a requirement ambiguity.
 | `AUDIT.md` | C1–C31 with evidence classes, nine defects (B1–B9), and two retractions |
 
 **End of design phase.** Awaiting the implementation signal.
+
+### 17.35 Repository boundary: the rule, and the audit behind it
+
+The deciding question is **what a file tests, not what it says**. If running it tells you something
+about *this library*, it belongs in `AgentiX-E/microglia`, even when the thing it measures is an
+external dataset or a third-party model. Everything that describes the project rather than the product
+belongs here.
+
+| Artefact | What it tests | Repo |
+|---|---|---|
+| `poc/llm-reader.ts`, `llm-distill.ts`, `embedding.ts` | whether the library's reader, distiller and retriever work against real providers | microglia |
+| `poc/scale.ts` | recall latency and heap of the embedded store | microglia |
+| `poc/attribute.ts` | which rules caused a flip | microglia |
+| `poc/sota-bird.ts` | the flywheel's effect on a public text-to-SQL benchmark | microglia |
+| `poc/integrity.ts`, `memform.ts` | the store's replay invariants and its attack surface | microglia |
+| `poc/l0.ts`, `l4.ts` | the adjudication and τ² lanes | microglia |
+| `scripts/audit.mjs`, `cortex-conformance.mjs` | the repository's source rules and the projection's fidelity | microglia |
+| `scripts/hf-inventory.mjs` | what a Hugging Face dataset contains — **judgement call**, kept because its only caller is the `sota` job, where it makes a failed benchmark explain itself | microglia |
+| `.github/workflows/{ci,sota,poc-live,cortex}.yml` | build, coverage, benchmark, live-API and conformance gates | microglia |
+| `poc/results/`, `bench/results/` | artefacts written by those gates, cited from here | microglia |
+| This document, the whitepaper, the roadmap, the audit, the progress log | the project | microglia-docs |
+
+Two consequences worth stating. First, **no POC migrates**: every one of them measures the library, so
+the rule the owner gave — *a workflow whose target is microglia belongs in microglia* — puts all of them
+where they already are, and moving them would have split each lane from the CI that runs it. Second, the
+boundary is now **enforced**: `pnpm audit:repo` fails if `WHITEPAPER.md`, `TECH-DESIGN.md`, `ROADMAP.md`,
+`AUDIT.md` or `PROGRESS.md` appears at the root or under `docs/` of the product repository. A document
+that drifts back is a red build, not a discovery two releases later.
