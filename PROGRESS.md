@@ -1081,3 +1081,44 @@ That is the same rule the lanes themselves follow, applied one level down — to
 **Evidence.** 568 tests, coverage **99.84 / 97.69 / 100 / 99.84**; `passk.ts`, `pairs.ts`,
 `conventions.ts` at 100 across all four dimensions; `audit:repo` ok with two new checks; CI green at
 `76363b7`.
+
+### 42 — L2b runs, and the number that says it cannot answer the question yet
+
+The lane exists. Two protocols teach the same corpus: `single` completes one attempt and corrects it,
+`pair` completes attempt one, records it as a failure (`wrong-mark`), opens attempt two from the same pack,
+completes and corrects that, with `parentRunId` linking the pair. One store per arm, one teaching pass,
+one distillation, the same eight holdout questions.
+
+The corpus needed a change before the lane could mean anything. With one question per `(domain, intent)`
+key, every evaluated case belongs to an untaught scope, `reachableShare` is 0 by construction, and the
+recovery denominator has no mass in it. So each key is now stated twice — a teaching question and a
+holdout question that read *different* category and measure columns from the same schema. The scope
+transfers; the field does not. That is what makes 75% of the holdout reachable and leaves the held-out
+domain's `comparison` question as the only wall.
+
+**The numbers.** 8 evaluated, 75% reachable, baseline 12.50%, both arms **87.50%**, recovery 0.857 for
+each, delta **0.00pp** against a 0.05 bar, `pairHelps: false`. The wall is 0.00 for both arms, which is
+what a wall is. The pair arm wrote 11 runs against 6, 5 corrections each, 6 stored items against 5, and
+one negative lesson; active constraints are 3 in both arms.
+
+**Why the zero is arithmetic, not evidence.** Two independent reasons, both measured rather than argued.
+First, `correctedWithCitation` is **0 of 5 on both arms**: the pass distils once, at the end, so every
+correction was answered from an empty pack and neither protocol had a cited rule to blame — the two arms
+saw identical evidence and could not have diverged. Second, what the pair arm adds is a lesson of kind
+`negative`, and the deterministic reader maps only `constraint` payloads to marks; a lesson the reader has
+no channel for cannot move accuracy. The lane reports both, marks the verdict `verdict_is_vacuous: 1`, and
+adds a **non-blocking** gate (`l2b-lever-exercised`) that fails today at 0/5. A blocking gate here would
+either turn a design limit into a red build or, worse, pass and imply the comparison happened.
+
+The other four gates pass and are the instrument's own claims: the corpus has headroom (no arm at the
+1.00 oracle), the wall is real (0.00 both arms), the split has both mass and a wall (75%), and the failure
+was recorded (1 negative lesson, 11 vs 6 runs).
+
+**What this does not say.** It does not say pair contrast fails. It says this protocol cannot distinguish
+the two, and it names the two changes that would: teach over rounds with a distillation between them so a
+correction can cite a rule it disagrees with, or read with an interpreter that consumes negative lessons.
+Until one of those exists, the delta stays 0 for reasons that have nothing to do with the mechanism.
+
+**Evidence.** 593 tests, coverage **99.85 / 97.75 / 100 / 99.85**; `lanes/pairs.ts` 100 across all four
+dimensions; `conventions.ts` 100 across; all four blocking gates pass, the lever gate reports 0/5 as
+designed; `audit:repo` ok; study unchanged (31.79 → 100.00, 17/17 gates); L0 unchanged (+67.88pp).

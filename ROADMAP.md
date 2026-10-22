@@ -273,11 +273,20 @@ Iteration 32 lands L4's metric layer and its workflow job, gated behind `vars.TA
 `TAU_DRIVER` module; with neither, the lane writes `not-run` rather than a zero. Remaining for L4 is the
 driver: the tool-calling environment and the two arms on a shared split.
 
-Next by the plan: **L2b** pair contrast. Its prerequisite is now explicit: the controlled chart corpus
-saturates (100% on holdout), so a pair-contrast recovery ratio needs a workload with headroom — a corpus
-whose conventions are per-domain, so the unseen domain cannot be recovered by widening, and the oracle's
-advantage over the loop is measurable. That workload is the next design task; it is not a rerun of the
-existing one. Then **L4** τ²-bench. L0 and L8 are closed; what remains is keeping them green.
+Iteration 42 runs L2b — the pair contrast — and reports a **null it can explain**. Each `(domain, intent)`
+key now carries a teaching question and a holdout question that read different columns, so 75% of the
+holdout is reachable and the held-out domain's `comparison` convention is the only wall. Both arms land at
+87.50% against a 12.50% baseline: delta **0.00pp**, `pairHelps: false`. The artefact marks the verdict
+**vacuous** and proves why: `correctedWithCitation` is 0 of 5 on both arms, because a single teaching pass
+distils once at the end, so every correction was answered from an empty pack and the two protocols saw
+identical evidence. The pair arm's only addition is a `negative` lesson, and the deterministic reader has
+no channel for one. Four blocking gates pass; a fifth, non-blocking, reports the unexercised lever rather
+than letting a zero read as an effect size.
+
+Next by the plan: **L4**'s driver (τ² run output parsing), then the **bundle-size gate** (esbuild, and a
+widened `scripts/audit.mjs` dependency allowlist), then **MCP/webhook delivery**, then the **SQLite index**.
+L2b stays open as a *mechanism* question with two named prerequisites — teaching over rounds with a
+distillation between them, or a reader that consumes negative lessons — and neither is a corpus problem.
 
 ## S3 — SOTA push (conditional)
 
