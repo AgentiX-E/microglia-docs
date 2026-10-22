@@ -853,3 +853,37 @@ more honest, and the product's own arm did not move.
 statements and functions (branch 83.9: four arms are generator invariants — `??` fallbacks and optional
 spreads the generator always fills — recorded here rather than covered by a fake scenario); `study` 17/17
 gates; `audit:repo` ok; all four attack gates pass.
+
+### 28 — L0: 1,300 cases, policy-derived gold, and a gate that had to be withdrawn
+
+The stage-1 gate used to require 1,300 human-adjudicated labels. Removing that blocker was decided in
+the design phase — the right chart for a question is a policy, not an opinion — and iteration 28 runs it:
+`goldMark` is the gold, 260 cases teach, **1,040 are evaluated**, none of them seen during teaching.
+
+| Reading | Value |
+|---|---|
+| baseline (no memory) | 32.12% |
+| full loop | **100.00%** |
+| paired delta | **+67.88pp** (95% CI 65.10–70.67), exact McNemar p = 5.9e-213 |
+| gained / lost | 706 / **0** |
+| unseen domain (`ops`, no feedback at all) | 100% |
+| detectable delta at this n and discordance | **7.16pp** |
+
+**The gate that had to be withdrawn.** L0 was specified at a 3pp resolution. At the observed 68%
+discordance, 80% power and n = 1,040 resolve 7.16pp; holding 3pp needs **5,922 evaluated cases**. The
+number was a guess about effect size that the arithmetic now refutes, so it is withdrawn rather than
+quietly kept as a line in a table that never binds. The replacement gate asks the question that *can* be
+answered — is the reported effect larger than the design's own noise floor — and passes at 9.5×.
+
+This is the second gate in the record to fail on measurement rather than on mechanism (the first was
+S2b's recovery ratio). Both are kept as failures: a gate that cannot fail for the right reason is not a
+gate, and a lane that lowers its bar silently is worse than one that reports a miss.
+
+**The preregistration is code, not prose.** `L0_CONFIG` sits in the package next to `DEFAULT_CONFIG` and
+a test pins it: 1,300 cases, and the two split sizes are the *only* fields that differ from the default
+study. A lane that changed the teaching budget and the sample at once could not say which one moved the
+number; the teaching budget is therefore identical (6 rounds × 12 corrections), so L0 measures precision
+rather than a better-trained loop.
+
+**Evidence.** 537 tests, coverage **99.82 / 97.70 / 100 / 99.82**; `study.ts` 100/99.52/100/100;
+`audit:repo` ok; study unchanged (31.79 → 100.00, 17/17 gates); L0's four gates pass.

@@ -251,9 +251,15 @@ Writing the attacks found three holes (borrowed evidence, payload-blind merging,
 siblings), all closed and tested. The quarantine floor turned out not to be the defence against low-trust
 content — fusion is — which corrects an assumption the design carried.
 
-Next by the plan: **L0** rule-derived adjudication (1,300 cases, policy-derived gold, top-1 ≥ +3pp), then
-**L2b** pair contrast (which needs a lane whose tasks have ≥2 attempts) and **L4** τ²-bench. L8 is closed;
-what remains there is keeping it green.
+Iteration 28 runs L0 — 1,300 cases, policy-derived gold, 1,040 evaluated — at +67.88pp (95% CI
+65.10–70.67, p = 5.9e-213, 706 gained / 0 lost). Its preregistered 3pp resolution is **withdrawn**: at the
+observed discordance it would need 5,922 evaluated cases, and the replacement gate (effect > the design's
+own noise floor) passes at 9.5×. S1's annotation blocker is now fully removed — nothing in the plan waits
+on a human label.
+
+Next by the plan: **L2b** pair contrast (needs a lane whose tasks have ≥2 attempts, recovery ≥0.60) and
+**L4** τ²-bench (pass^4 ≥+5pp and ≥ ALTK-Evolve on the same split). L0 and L8 are closed; what remains is
+keeping them green.
 
 ## S3 — SOTA push (conditional)
 
