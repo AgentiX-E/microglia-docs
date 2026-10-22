@@ -56,7 +56,7 @@ our own artefact are not the same kind of thing:
 
 ## 2. Defects found and fixed during these audits
 
-An audit that finds nothing is an audit that did not look. Nine defects were found by writing invariants
+An audit that finds nothing is an audit that did not look. Eleven defects were found by writing invariants
 down as tests, by recording a failure's cause instead of its message, or by recomputing a published number
 from the artefact it claimed to come from.
 
@@ -71,6 +71,9 @@ from the artefact it claimed to come from.
 | B7 | A control arm injected nothing and looked like evidence | gate V6 refused a run whose `narrow` arm reported 0.00 rules per question | a second baseline wearing a control's name | duplicate the pack instead; V6 blocks any pack control with zero injections |
 | B8 | The channel gate asked a sentence-only arm for rules per question | V6 failed a run whose every other reading was sound | a sound positive result reported as a failed run | V6 covers only the controls that retrieve |
 | B9 | A 40-question probe's coverage distribution was published as the 352-question result (median 7.1%, 47% zero versus the real 18.2%, 3.1%) | recomputing from the committed artefact during a design audit | a false premise drove a design decision (the alias) and a false causal claim ("retrieval is the constraint") | numbers now carry their n and their run id; §17.31 forbids quoting a probe at full scale |
+
+| B10 | Curation summed the two items' `support` when merging near-duplicates | writing the evidence invariant down as a test: two items citing one `feedbackId` merged to 1.8 support instead of 0.9 | one user's single correction paid for two rules and admitted their sum — the evidence route of MemForm, reached by arithmetic rather than by an attacker | support is the mass of *distinct* observations; the merged evidence array is ordered by `(at, feedbackId)` so arrival order cannot leak into the store |
+| B11 | `canGeneralize` compared task, intent and field but ignored `schemaDigest` and `reasonCode` | deriving the widening bound as the meet of the endorsing scopes instead of a list of field comparisons | a claim learned under one schema widened onto another, keeping the target's digest and absorbing evidence it never had — G2's fabrication with a citation, reintroduced through the widening path | the meet is computed, and a fixed dimension that only some endorsers constrain refuses the widening |
 
 Two more were found earlier and are recorded in the technical design: the payload-shape omission that made
 LLM distillation produce 0% correct payloads, and the corpus generator that silently skipped a malformed

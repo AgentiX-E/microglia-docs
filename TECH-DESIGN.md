@@ -2186,7 +2186,7 @@ Status vocabulary, used everywhere below:
 | D14 | Clock: order by `(occurredAt, seq)`; `occurredAt` clamped to `recordedAt ± 5 min`; validity computed on `occurredAt` | decided | Out-of-order feedback is normal (offline outbox); intervals on ingest time would be wrong | POC-28: order invariance |
 | D15 | Provenance tier on every item (`user-text` < `structured-edit` < `outcome` < `host-asserted`) and the tier caps injectable trust | **implemented** (iteration 23) | MINJA 98.2% injection success with no write access; AgentPoison >80% at <0.1% poison; OWASP ASI06 | unit + end-to-end tests: one clarification stays a candidate, a second task promotes it |
 | D16 | Promotion gate ≠ write gate: untrusted text may be stored, only endorsed evidence may be injected | **implemented** (iteration 23) | Same sources; storing is cheap, *using* is the privileged step | `user-text` activates only with a second distinct task or a stronger tier; unclassified legacy items are exempt |
-| D17 | Generalisation may never widen beyond the union of its endorsing tasks' scopes, and needs 3 distinct tasks to widen at all | decided | MemForm's **scope** route: real records, inflated applicability; and our own historical bug widened onto candidate items | POC-29 |
+| D17 | Generalisation may never widen beyond the union of its endorsing tasks' scopes, and needs 3 distinct tasks to widen at all | **implemented** (iteration 25) | MemForm's **scope** route: real records, inflated applicability; and our own historical bug widened onto candidate items | POC-28: the meet holds on 1,000 replayed events; a pair cannot widen (test), a third task can |
 | D18 | Knowledge kinds: `constraint`, `convention`, `preference`, `abstention` | **abstention implemented** (iteration 24); `preference` still a dataset row | `abstain` used to produce nothing at all; MobileMem: stronger memory scores *worse* on unanswerable questions | end-to-end test: two corroborating abstentions reach the pack, one does not; a confident rule silences it |
 | D19 | `preference` feeds both a rule and a DPO row | decided | It is simultaneously a convention and a pair; exporting one and not the other wastes the signal | POC-24 |
 | D20 | Erasure: `forget({ ids / taskId / actor })` writes a tombstone, compacts the journal, rebuilds the index | decided | A store of user corrections without deletion is not shippable to a host with deletion obligations | POC-28b: post-erasure recall = 0 |
@@ -2221,12 +2221,17 @@ retrievable only with `asOf`. *Metric:* stale-schema injection rate = 0 (blockin
 **G3 — Memory-formation integrity.** The previous revision screened injection at render (P6) only, which
 assumes the store is trustworthy.
 
-> **Partially implemented (iteration 23).** The **promotion gate** ships: every candidate carries a
+> **Implemented (iterations 23–25), four invariants and a gate.** (i) Every candidate carries a
 > provenance tier derived from the event kind (`kernel/provenance.ts`), and a `user-text` item cannot
-> activate on one task's word — it stays a candidate with `needs-corroboration` until a second distinct task
-> or a stronger tier endorses the same claim (`decideStatus`). Two invariants remain for the next
-> iteration: generalisation may not widen beyond its endorsers' scopes, and curation must be replayable
-> under a shuffled log. MemForm (2026) shows five routes that never plant a false record:
+> activate on one task's word — it stays a candidate with `needs-corroboration` until a second distinct
+> task or a stronger tier endorses it (`decideStatus`). (ii) Evidence identity: curation counts the mass of
+> *distinct* observations, so two near-duplicates citing one correction cannot pay for two rules (B10).
+> (iii) Scope: the widened scope is the **meet** of the endorsing scopes, only `domain` may be dropped, and
+> three distinct tasks must endorse the claim before the domain-scoped copies are retired (`generalize.ts`,
+> D17; B11). (iv) Selection and path: curation sorts before it decides and orders merged evidence by
+> `(at, feedbackId)`, so a replayed log rebuilds the same store. Measured by POC-28: order invariance 1.00,
+> replay determinism 1.00, stale-schema injection 0, with a mutation control that must disagree for the
+> other three to count. Erasure (D20) is the lane's remaining rung. MemForm (2026) shows five routes that never plant a false record:
 content, **evidence** (swap part of a real history for fake support), **scope** (real records, wider
 applicability), **selection** (same candidates, different subset kept), **path** (same experiences, merged
 in a different order). Its strongest defence cut attack success by only 8.2 points. *Closure:* four
@@ -2388,7 +2393,7 @@ Statuses: **run** (artefact exists), **specified** (needs the frozen implementat
 | POC-25 | Where does the scope index break? | 100k items, 1,000 queries | 100k | p95 ≤20 ms | specified |
 | POC-26 | Is the idempotency store durable? | Restart under load, 1,000 duplicates | 1,000 | 0 duplicates recorded | specified |
 | **POC-27** | Does task-level support stop correlated evidence inflating trust? | Closed-form: `wilsonLower` under both counting rules, k = 1…8 | 8 points | ratio ≤1.15 | **closed by arithmetic** — 2.95× at k=6, and one task's six attempts reach the 0.6 activation threshold (§17.34.2) |
-| **POC-28** | Do the four invariants hold? | Shuffle + replay 1,000 events; rename a column mid-stream; erase 10 items | 1,000 | order invariance 1.00, stale-schema injection 0, post-erasure recall 0 | specified |
+| **POC-28** | Do the four invariants hold? | Shuffle + replay 1,000 events; rename a column mid-stream; erase 10 items | 1,000 | order invariance 1.00, stale-schema injection 0, post-erasure recall 0 | **run (iteration 25)**: 1.00 / 1.00 / 0 stale / control 0.00; erasure not implemented, so the fourth metric is **not claimed** |
 | **POC-29** | How much can a poisoned correction do? | MemForm's five routes, 100 attempts per route, six defences | 500 | attack success ≤10% | specified |
 | **POC-30** | Does an abstention kind reduce confident wrong answers? | 100 unanswerable questions, with/without abstention items | 100 | accuracy loss ≤2pp on answerable, ≥+10pp on unanswerable | specified |
 | **POC-31** | What does the pipeline cost? | Derived from recorded artefacts (calls, tokens, pack size) | 730 evaluations | ≤15% token overhead, ≤1 call/correction, ≤1% loss | **run** (§17.20) |
@@ -2527,7 +2532,7 @@ artefact and a gate; the order is the order in which a failure stops the next la
 | L5 teaching | MemoryAgentBench TTL, 4 sets | full | accuracy | per set | ~2k calls / 45 min | ≥ +3pp |
 | L6 consolidation | MemoryAgentBench CR, SH + MH | full | exact match | per set | ~1k calls / 30 min | SH ≥70%, MH ≥15% |
 | L7 preference | LongMemEval preference subset | 30 | accuracy | ~9pp | ~600 calls / 20 min | ≥ +20pp |
-| L8 integrity | MemForm-shaped harness | 500 | attack success | 4pp | 0 (replay) | ≤10% |
+| L8 integrity | MemForm-shaped harness + replay | 500 (+1,000 replay events) | attack success; order invariance | 4pp | 0 (replay) | ≤10%; invariance and determinism = 1.00 |
 
 **Why this order.** L2 is the cheapest lane that can still falsify the product, so it runs first and its
 gate is the one that matters most. L3 and L4 answer "does it transfer" on gold that is a *fix* and on gold
@@ -2737,7 +2742,7 @@ checking them exposed an error in our own record.
 | 2 | Is a validity interval worth it? | no — **conditional** | Interval semantics pay only for queries that refer to the past; no lane contains one | **conditional decision** with a recorded trigger |
 | 1 | Does pair contrast close the gap? | **yes** | No lane has a multi-attempt task: every question is one attempt, so a pair does not exist to distil from | open, blocked on L2b |
 | 5 | Do push and tool delivery earn their surface? | **yes** | There is no transport to measure and no agent to call a tool | open, blocked on §17.21 |
-| 7 | Do the integrity invariants hold? | **yes** | Order invariance, replay determinism and erasure are properties of a store that does not exist yet | open, blocked on P3/P4 |
+| 7 | Do the integrity invariants hold? | **yes** | Order invariance, replay determinism and erasure are properties of a store that does not exist yet | **closed for three of four** (iteration 25: 1.00 / 1.00 / 0 stale, with a control that must disagree); **erasure still open**, blocked on D20 |
 | 8 | Does an abstention kind help? | **yes** | Needs the kind, the renderer, and an unanswerable set that no current lane has | open, blocked on P2/P6 + dataset |
 | 9 | Does the loop move a policy benchmark? | **yes** (effect) | Dataset availability is now closed; the effect needs the loop | open, blocked on L4 |
 
@@ -2863,13 +2868,14 @@ A build ships only if all eight pass. Each names its lane; none is advisory.
 | RG3 | No regression on unmodified public data | Δ ≥ −1pp | L2 control |
 | RG4 | Token overhead of a pack | ≤ 15% of host prompt, ≤1,200 chars | POC-31 |
 | RG5 | Distillation loss | ≤ 1% of corrections | L2 |
-| RG6 | Integrity: attack success, order invariance, replay determinism | ≤10%, 1.00, 1.00 | L8 |
+| RG6 | Integrity: attack success, order invariance, replay determinism | ≤10%, **1.00 / 1.00 measured**, attack success open | L8 |
 | RG7 | Retrieval: Recall@5, zero-hit, p95 at 10k | ≥0.90 (unmeasured), zero-hit ≤0.05 (**measured 0.031**), ≤5 ms | POC-17 |
 | RG8 | Cost and footprint: ≤1 call/correction, ≤28 KiB retrieval bundle, ≤20 MB heap at 10k | as stated | POC-31, bundle metafile |
 
 **No build satisfies these gates today.** RG1 and RG2 are short: the convention lane measured +4.79pp then
 +2.05pp against a +3pp gate that must hold at p<0.05 on a replication, and a recovery ratio of 0.19–0.44
-against 0.60. RG3–RG8 are unmeasured because they describe a pipeline that is designed and not built. The
+against 0.60. RG6 is half measured: the two replay invariants hold at 1.00 on 1,000 events, and the attack
+half needs the MemForm harness of POC-29. RG3–RG5 and RG7–RG8 are unmeasured. The
 table is the specification of what a shippable build must show, not a description of the current one.
 
 **A failed gate is reported as failed.** No rounding, no re-slicing, no footnote. The record of the four
@@ -2956,7 +2962,7 @@ So nine questions yield ten answers: three closed, one conditional, six open.
 | 1 | Does pair contrast close the ceiling gap? | L2b with **≥2 attempts per task** | every question in every lane is one attempt, so there is no pair to distil from |
 | 2 | Which over-fetch and ranking settings maximise Recall@5? (POC-17, 17b) | the real index | ranking among ~186 active rules is a property of the index, not of the artefact |
 | 3 | Do push and tool delivery earn their surface? | §17.21 transports | no transport exists to measure, no agent exists to call a tool |
-| 4 | Do the integrity invariants hold? | P3/P4 stores | order invariance and replay determinism are properties of a store that is being changed |
+| 4 | Do the integrity invariants hold? (erasure only) | the `forget` path (D20) | order invariance and replay determinism are **measured** (POC-28, 1.00/1.00); post-erasure recall needs a tombstone path that does not exist yet |
 | 5 | Does an abstention kind reduce confident wrong answers? | P2/P6 + an unanswerable set | the kind has no renderer and the dataset is not in the manifest |
 | 6 | Does the loop move a policy benchmark? (τ-bench) | L4 | the effect needs the loop; dataset availability and licence are now confirmed |
 

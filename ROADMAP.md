@@ -230,8 +230,18 @@ Iteration 24 lands the abstention kind (D18): learned from `abstain`, promoted l
 rendered in its own block that speaks only when nothing confident can. A unit test would have passed while
 the feature shipped dead — the end-to-end assertion is what caught the 0.4 trust floor.
 
-Next by the plan: the lanes that need what is now built — L0 rule-derived adjudication, L8 integrity
-(scope-widening bounds + replay under a shuffled log), then L2b pair contrast and L4 τ²-bench.
+Iteration 25 lands three of L8's four invariants and the instrument that measures them. The widening
+bound became a computation (the meet of the endorsing scopes) rather than a list of field comparisons,
+which exposed two shipped defects: curation double-counted an event two near-duplicates shared (B10),
+and the widening predicate ignored `schemaDigest` and `reasonCode` (B11). POC-28 measures 1.00 order
+invariance and 1.00 replay determinism on 1,000 events, with a mutation control that deliberately
+disagrees — without it, a harness that compares nothing would report the same 1.00. Erasure and the
+MemForm attack harness are the lane's remaining rungs; the artefact says "not claimed" rather than
+inheriting a gate it did not earn.
+
+Next by the plan: **L8b** (erasure, D20/POC-28b, and the POC-29 attack harness), then **L0**
+rule-derived adjudication on 1,300 cases, then **L2b** pair contrast (which needs a lane whose tasks have
+≥2 attempts) and **L4** τ²-bench.
 
 ## S3 — SOTA push (conditional)
 

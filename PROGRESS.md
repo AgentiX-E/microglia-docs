@@ -708,3 +708,56 @@ the path from `run.abstain()` to a rendered pack rather than the mapping table.
 
 **Evidence.** 491 tests, coverage **99.79 / 98.28 / 100 / 99.79**, `rules.ts` and `pack.ts` and `render.ts`
 at 100 across, study unchanged (31.79 → 100.00, 17/17 gates).
+
+### 25 — Integrity: the store is a function of the log
+
+`G3` had two invariants left after iteration 23, and both needed an instrument rather than a filter —
+they are the two of MemForm's five routes that a single write cannot show you. Deriving them exposed two
+defects that had shipped.
+
+| Defect | How it surfaced | What it would have cost |
+|---|---|---|
+| Curation summed both items' `support` when merging (B10) | writing "one event is one observation" down as a test: two items citing one `feedbackId` merged to 1.8 instead of 0.9 | one user's single correction pays for two rules and admits their sum — the evidence route, reached by arithmetic |
+| `canGeneralize` ignored `schemaDigest` and `reasonCode` (B11) | deriving the widening bound as the meet of the scopes instead of a list of field comparisons | a rule learned under one schema widens onto another and keeps the target's digest — G2's fabrication with a citation, re-entered through widening |
+
+**The bound, as a computation.** `widenedScopeOf(scopes)` keeps a dimension only when *every* endorser
+constrains it identically; `domain` is the only dimension that may disappear. Anything else that would
+have to disappear means the endorsers disagree about what the rule is about, and the honest answer is
+that they are two rules. That single function replaces three hand-written field comparisons and closes
+the drift class by construction.
+
+**The gate, as a count.** Widening *retires* the domain-scoped copies that were working, so it now needs
+three distinct endorsing tasks (`WIDENING_TASKS`). Two domains produce two rules; the third folds them.
+A pair is the evidence one persistent user can manufacture, and B5 had already shown what widening on
+insufficient evidence costs.
+
+**The sibling set is judged jointly.** `canGeneralize` is pairwise, so two siblings could each agree with
+the candidate and still disagree with each other; merging both attributed one sibling's evidence to a
+scope it never endorsed. The fold now keeps the running meet, and a sibling that would break it is
+excluded from the endorsement rather than silently carried.
+
+**POC-28, run.** 1,000 events, 60 task instances, five domains, digest renamed at event 600, no model
+calls, 1.3 s:
+
+| Metric | Reading |
+|---|---|
+| order invariance (5 shuffles) | **1.00** |
+| replay determinism | **1.00** |
+| control (events newest-first, sort bypassed) | **0.00 — the instrument is sensitive** |
+| stale-schema injection | **0** (old digest still retrievable: 4, so the probe sees a real store) |
+| items / active / candidate / retired | 70 / 28 / 13 / 15 |
+
+The control is the point. A replay harness that only ever prints 1.00 is indistinguishable from one that
+compares nothing, so the same run replays through a view that returns events newest-first. It must
+disagree, and the lane fails if it does not. It is the second instrument in the repository that can
+falsify itself, after the SOTA lane's gate on control arms that injected nothing (B7).
+
+**What is deliberately not claimed.** Erasure (`forget`, D20) is the fourth metric POC-28 was specified
+with, and it is not implemented; the artefact says "not claimed" rather than reporting a zero it never
+measured. POC-29's attack harness (five routes × 100 attempts, six defences) belongs to the same lane
+and is next.
+
+**Evidence.** 513 tests, coverage **99.80 / 98.30 / 100 / 99.80**; `generalize.ts` and `integrity.ts` at
+100 across all four dimensions, `curate.ts` at 100/96.25/100/100; `pnpm audit:repo` ok; study unchanged
+(31.79 → 100.00, 17/17 gates) — the regression check that matters, because the widening change touches
+the `no-generalization` arm directly and moved it by nothing.
