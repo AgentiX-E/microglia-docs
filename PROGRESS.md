@@ -1010,3 +1010,44 @@ would rewrite the audit trail. What changed is where the code lives and what it 
 
 **Evidence.** 556 tests, coverage **99.84 / 97.66 / 100 / 99.84**; `audit:repo` ok; all three lanes run
 from their new home and write `eval/results/`; CI green at `ce65d8a`.
+
+### 35–37 — The instruments land, and one blocking item dissolves
+
+Three small rounds, each closing an instrument rather than a claim.
+
+**35. `reachableShare`.** A recovery ratio divides by headroom, and headroom is only real where the
+knowledge can be learned from the training split. `reachableShare` reports the share of evaluated cases
+whose `(domain, intent)` key appeared while teaching; `reachableRecovery` refuses a ratio when nothing was
+reachable instead of dividing by an empty headroom. Both numbers travel together, because a single blended
+figure hides exactly the wall this exists to expose.
+
+**36. The convention corpus.** Each domain gets an exception to the policy for `comparison`; one domain's
+exception is never taught. Two controls are built in: a `trend` case per domain, which has no exception and
+therefore must be reachable (a failure there is a mechanism problem, not the corpus's wall), and
+`unreachableCases()` so a lane can state what it could not have won. Two compile failures caught on the
+way — `area` is not a `ChartMark`, and `goldMark` lives in `scenario.ts` — both before the push.
+
+**37. τ²-bench is a repository, not a wheel.** The install path is `git clone --depth 1 --branch v0.2.0`
+plus `uv sync`, cached by that ref, with three distinct exit codes: clone 21, sync 22, data 23. An install
+that fails must not be read as a score that disappointed.
+
+### W4 revised: the 200 human labels were never the only option
+
+The blocking item said 200 human labels at κ ≥ 0.7 before any judge could be trusted. Public labelled
+data exists, and the numbers are published: on MT-Bench human judgments (CC BY 4.0) a GPT-4 judge agrees
+with experts **84.6%** of the time with ties excluded, while experts agree with each other **81.0%** — and
+the same judge **flips 15.8% of verdicts when A/B are swapped**. `CSML/DIAL` (9,882 comparisons, both
+display orders, 22 judges) and `EstellaCheng42/panel` (1,800 pairs, three annotators with adjudication) make
+position bias measurable without collecting anything.
+
+What public data cannot do is calibrate a judge on *our* task distribution: those are open-ended dialogue
+preferences, ours are "was this attempt better than the last". So W4 splits three ways:
+
+| Layer | Instrument | Human labels |
+|---|---|---|
+| Generic soundness | MT-Bench + DIAL: agreement and order-flip rate | **0** |
+| Task-internal where gold is computable | policy gold (L0) or execution gold (BIRD, τ²) | **0** |
+| The remaining open judgement | κ with a confidence interval | **50–100**, not 200 |
+
+The third layer is only entered if the first two leave a question they cannot answer. The blocker is
+withdrawn as a blocker and kept as a costed, conditional step.
