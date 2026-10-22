@@ -761,3 +761,48 @@ and is next.
 100 across all four dimensions, `curate.ts` at 100/96.25/100/100; `pnpm audit:repo` ok; study unchanged
 (31.79 → 100.00, 17/17 gates) — the regression check that matters, because the widening change touches
 the `no-generalization` arm directly and moved it by nothing.
+
+### 26 — Erasure: deleting the record and what it justified
+
+`D20` was decided and unimplemented, which made the product unsellable to any host with a deletion
+obligation. It is now part of the port rather than an extension point, because an optional method is a
+promise the default store keeps and a replacement quietly drops.
+
+| Request | Covers |
+|---|---|
+| `{ ids }` | named records, whatever their evidence |
+| `{ taskId }` | every event and run of one task instance |
+| `{ actorHash }` | every event one person produced |
+
+`actorHash`, not an id: the library stores a salted hash and never an identity, so it cannot be asked to
+erase by something it never saw. The facade forces its own namespace into every request — an actor hash
+alone would otherwise erase that person in every tenant the store holds, and an erasure that reaches
+further than the request did is worse than the data it was meant to remove. An empty selector is refused
+for the same reason: a wipe should have to be asked for.
+
+**The cascade is the design, not a side effect.** Erasing an event removes it from every claim that cited
+it, recomputes support from the surviving evidence, recomputes the provenance tier from the surviving
+events' kinds, and runs admission again. So a rule promoted by an execution result that has been erased
+falls back behind the promotion gate (`needs-corroboration`) instead of keeping a promotion it no longer
+has evidence for. A claim whose last evidence was erased is removed. A test pins the demotion, because
+"deleted the rows" and "deleted the thing that mattered" are different claims.
+
+**What replaces the data.** A tombstone in `erasures.jsonl`: selector, time, ids — never a statement,
+never a payload, because a copy of what was erased defeats the erasure it documents. The three journals
+are then rewritten, so a reopen sees the deletion rather than replaying it away; the files are replaced
+one at a time, and a crash between them leaves a store the next `forget` finishes from the same selector.
+
+**POC-28b, measured** on the 1,000-event replay:
+
+| Metric | Reading |
+|---|---|
+| erased by id / by task | 10 items / 10 task instances |
+| events removed by the cascade | 170 |
+| claims removed because no evidence survived | 4 |
+| claims re-scored | 86 |
+| erased records retrievable or cited afterwards | **0** |
+| events remaining | 830 (= 1,000 − 170, bounded) |
+
+**Evidence.** 523 tests, coverage **99.81 / 98.31 / 100 / 99.81**; `store.ts` and `journal.ts` at 100 on
+lines and functions; `pnpm audit:repo` ok; study unchanged (31.79 → 100.00, 17/17 gates). The lane now
+runs ten gates, and all ten pass.

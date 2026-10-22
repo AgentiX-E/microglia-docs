@@ -239,9 +239,15 @@ disagrees — without it, a harness that compares nothing would report the same 
 MemForm attack harness are the lane's remaining rungs; the artefact says "not claimed" rather than
 inheriting a gate it did not earn.
 
-Next by the plan: **L8b** (erasure, D20/POC-28b, and the POC-29 attack harness), then **L0**
-rule-derived adjudication on 1,300 cases, then **L2b** pair contrast (which needs a lane whose tasks have
-≥2 attempts) and **L4** τ²-bench.
+Iteration 26 completes the lane's other half: erasure (D20). `forget()` is part of the port, the cascade
+re-derives every claim that cited an erased event — including demoting one whose promotion rested on an
+erased outcome — and a tombstone records the deletion without recording the data. POC-28b: 10 items and
+10 task instances erased, 170 events removed, 4 claims removed, 86 re-scored, **0** retrievable or cited
+afterwards.
+
+Next by the plan: **POC-29** (the MemForm attack harness: five routes × 100 attempts × six defences,
+attack success ≤10%) to close RG6, then **L0** rule-derived adjudication on 1,300 cases, then **L2b**
+pair contrast (which needs a lane whose tasks have ≥2 attempts) and **L4** τ²-bench.
 
 ## S3 — SOTA push (conditional)
 
