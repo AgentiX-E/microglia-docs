@@ -931,3 +931,19 @@ a larger store (a workspace mid-warm-up looks like this and is not broken).
 
 **Evidence.** 549 tests, coverage **99.84 / 97.64 / 100 / 99.84**; `doctor.ts` 100/96.55/100/100;
 `audit:repo` ok; study unchanged (31.79 → 100.00, 17/17 gates).
+
+### 31 — The instrument L2b needs, and the corpus property it exposes
+
+Every lane in the record reports a delta against no memory. That answers "does it help" and not "how much
+of the possible help did it deliver", which is the question a recovery gate actually asks. `recoveryRatio`
+answers the second one: `(arm − baseline) / (oracle − baseline)`, with the three degenerate cases decided
+rather than thrown — no headroom is 1 (nothing to close), below baseline is 0 (a negative share is not
+actionable), above the oracle is 1 (a ratio over one says the oracle is wrong, which is a bug).
+
+L0 now reports it, and the number is **1.00** — which describes the corpus, not the mechanism. The gold
+*is* the policy, so its ceiling is exactly reachable and a loop that learns every convention recovers all
+of it. That is the cleanest possible statement of why L2b cannot be a rerun: a recovery gate is only
+informative where the ceiling is out of reach, and the current corpus has none.
+
+**Evidence.** 552 tests, coverage **99.84 / 97.65 / 100 / 99.84**; `recovery.ts` 100 across; L0's five
+gates pass and its artefact now carries `recovery`; `audit:repo` ok.

@@ -265,6 +265,10 @@ delete route (B15), and its ingest silently dropped the task instance (B16), whi
 every server-hosted deployment and made `forget({ taskId })` match nothing. Both are fixed, and the
 browser client's `forget()` is deliberately unqueued.
 
+Iteration 31 lands the instrument L2b is gated on (`recoveryRatio`, tested on all three degenerate
+cases) and records that L0 recovers 1.00 of a ceiling that is reachable by construction — the measurement
+that makes "a corpus with headroom" a requirement rather than a preference.
+
 Next by the plan: **L2b** pair contrast. Its prerequisite is now explicit: the controlled chart corpus
 saturates (100% on holdout), so a pair-contrast recovery ratio needs a workload with headroom — a corpus
 whose conventions are per-domain, so the unseen domain cannot be recovered by widening, and the oracle's
