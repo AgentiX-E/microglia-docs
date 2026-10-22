@@ -684,3 +684,27 @@ need the replay harness (POC-28) that comes with the integrity lane.
 
 **Evidence.** 484 tests, coverage **99.79 / 98.13 / 100 / 99.79**, `provenance.ts` 100/100/100/100,
 study unchanged (31.79 → 100.00, 17/17 gates).
+
+### 24 — Learning to say "I don't know"
+
+`abstain` was a signal that produced nothing: the event was collected, weighted 0.4 and discarded. So the
+workspace could not learn the one lesson that suppresses hallucination — MobileMem's finding is that the
+*stronger* the memory, the worse the behaviour on unanswerable questions, precisely because a good retriever
+finds a plausible distractor.
+
+Now:
+
+| Piece | Behaviour |
+|---|---|
+| Interpreter | `abstain` → `kind: 'abstention'`, reason in the payload, statement "Questions of this kind cannot be answered from this workspace: …" |
+| Rendering | Its own block with its own instruction — "Do not invent an answer; state what is missing" — because a negation inside positive rules is read as a positive |
+| Selection | Speaks only when no positive rule clears `absenceFloor` (default: the activation threshold) |
+| Promotion | Gated as `user-text`: a second distinct task is required, because a false abstention makes the product refuse to answer |
+
+**The bug the end-to-end test caught.** `trustFor('abstain')` was 0.4, so `Math.min(event.trust, 0.8)` pinned
+the lesson at 0.4 and its confidence peaked at 0.17 — the feature would have shipped, passed its unit tests,
+and never once been injected. It is 0.8 now, matching a clarification, and the test that caught it asserts
+the path from `run.abstain()` to a rendered pack rather than the mapping table.
+
+**Evidence.** 491 tests, coverage **99.79 / 98.28 / 100 / 99.79**, `rules.ts` and `pack.ts` and `render.ts`
+at 100 across, study unchanged (31.79 → 100.00, 17/17 gates).

@@ -226,8 +226,12 @@ Iteration 23 lands the promotion gate (D15/D16): prose is stored and counted but
 until a second distinct task, or a stronger tier, endorses it. Two of G3's four invariants remain for the
 integrity lane: scope-widening bounds and replay under a shuffled log.
 
-Next by the plan: the abstention kind (D18) with its own render block, then the lanes that need them
-(L0 rule-derived adjudication, L2b pair contrast, L8 integrity).
+Iteration 24 lands the abstention kind (D18): learned from `abstain`, promoted like any prose lesson, and
+rendered in its own block that speaks only when nothing confident can. A unit test would have passed while
+the feature shipped dead — the end-to-end assertion is what caught the 0.4 trust floor.
+
+Next by the plan: the lanes that need what is now built — L0 rule-derived adjudication, L8 integrity
+(scope-widening bounds + replay under a shuffled log), then L2b pair contrast and L4 τ²-bench.
 
 ## S3 — SOTA push (conditional)
 
