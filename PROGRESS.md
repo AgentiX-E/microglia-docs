@@ -916,3 +916,18 @@ succeeds now or throws, and a test pins that a refusal does not leave an entry b
 **Evidence.** 548 tests, coverage **99.84 / 97.68 / 100 / 99.84**; `app.ts` 97.04/96.17/100/97.04 and
 `client.ts` 100/95.23/100/100 — both above 95 on every dimension; `audit:repo` ok; study unchanged
 (31.79 → 100.00, 17/17 gates).
+
+### 30 — The doctor could not see the gate's quiet failure
+
+The promotion gate keeps a prose lesson a candidate until a second distinct task endorses it. That is the
+right gate, and it has a failure mode that every other number hides: a workspace can collect lessons that
+are all stored, all counted, and none of which can ever reach a prompt. `active` is 0, `quarantined` is 0,
+the store keeps growing — exactly the stillness `doctor()` exists to name, sitting one state over from the
+checks it already had.
+
+`MG_D_AWAITING_CORROBORATION` reports that backlog, with a severity that depends on how much of the store
+it is: a warning when *every* item is waiting (nothing can steer output), information when it is part of
+a larger store (a workspace mid-warm-up looks like this and is not broken).
+
+**Evidence.** 549 tests, coverage **99.84 / 97.64 / 100 / 99.84**; `doctor.ts` 100/96.55/100/100;
+`audit:repo` ok; study unchanged (31.79 → 100.00, 17/17 gates).

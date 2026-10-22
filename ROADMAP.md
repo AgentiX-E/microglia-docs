@@ -257,6 +257,9 @@ observed discordance it would need 5,922 evaluated cases, and the replacement ga
 own noise floor) passes at 9.5×. S1's annotation blocker is now fully removed — nothing in the plan waits
 on a human label.
 
+Iteration 30 closes a blind spot in the diagnostics rather than opening lane L2b: `doctor()` could not see
+a store where every lesson is stuck behind the promotion gate.
+
 Iteration 29 closed two holes in the shipped surface rather than opening lane L2b: the HTTP server had no
 delete route (B15), and its ingest silently dropped the task instance (B16), which inflated support on
 every server-hosted deployment and made `forget({ taskId })` match nothing. Both are fixed, and the
