@@ -269,6 +269,10 @@ Iteration 31 lands the instrument L2b is gated on (`recoveryRatio`, tested on al
 cases) and records that L0 recovers 1.00 of a ceiling that is reachable by construction — the measurement
 that makes "a corpus with headroom" a requirement rather than a preference.
 
+Iteration 32 lands L4's metric layer and its workflow job, gated behind `vars.TAU_ENV_READY` and a
+`TAU_DRIVER` module; with neither, the lane writes `not-run` rather than a zero. Remaining for L4 is the
+driver: the tool-calling environment and the two arms on a shared split.
+
 Next by the plan: **L2b** pair contrast. Its prerequisite is now explicit: the controlled chart corpus
 saturates (100% on holdout), so a pair-contrast recovery ratio needs a workload with headroom — a corpus
 whose conventions are per-domain, so the unseen domain cannot be recovered by widening, and the oracle's

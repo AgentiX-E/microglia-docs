@@ -947,3 +947,23 @@ informative where the ceiling is out of reach, and the current corpus has none.
 
 **Evidence.** 552 tests, coverage **99.84 / 97.65 / 100 / 99.84**; `recovery.ts` 100 across; L0's five
 gates pass and its artefact now carries `recovery`; `audit:repo` ok.
+
+### 32 — L4: the metric, and the refusal to invent a number
+
+τ²-bench is reported in **pass^k**, and the estimator is where this lane can fail before any model is
+called. `C(c,k)/C(n,k)` is unbiased; `(c/n)^k` understates a deterministic agent; and two of the cases a
+reader would guess wrong are pinned by tests — 3 successes in 4 trials at k=4 is **0** (one failure means
+the agent cannot be relied on four times), and 2 of 4 at k=2 is **1/6**, not 0. Discovering that after a
+two-hour run is an expensive way to learn arithmetic.
+
+The lane ships **without a result**. τ²-retail needs a tool-calling sandbox and a user simulator; the
+execution sandbox cannot reach either, so `poc:l4` writes `status_not_run` and exits 0 when `TAU_DRIVER`
+is unset. A missing environment is not a failed gate and must not be recorded as one — the same rule that
+made B9 a retraction rather than a footnote.
+
+`sota.yml` grows the `l4` job behind `vars.TAU_ENV_READY`, with a 150-minute timeout, the DeepSeek secret,
+and two gates: pass^4 ≥ published + 5pp (ALTK-Evolve, τ²-retail, 0.575) and ≥60 tasks. Until the variable
+and the driver exist the job is skipped, so the workflow stays honest *and* green.
+
+**Evidence.** 556 tests, coverage **99.84 / 97.66 / 100 / 99.84**; `passk.ts` 100 across; `audit:repo` ok;
+`ci` unchanged (the L4 job lives in `sota`, which is manual and variable-gated).
