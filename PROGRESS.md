@@ -806,3 +806,50 @@ one at a time, and a crash between them leaves a store the next `forget` finishe
 **Evidence.** 523 tests, coverage **99.81 / 98.31 / 100 / 99.81**; `store.ts` and `journal.ts` at 100 on
 lines and functions; `pnpm audit:repo` ok; study unchanged (31.79 → 100.00, 17/17 gates). The lane now
 runs ten gates, and all ten pass.
+
+### 27 — Five ways in, and three of them were open
+
+POC-29 turns MemForm's five formation routes into 500 executable attacks (5 routes × 100 attempts, each
+at one of three channel-trust ceilings), with no model calls. Writing them found three real holes.
+
+| Defect | How it surfaced | What it would have cost |
+|---|---|---|
+| A candidate could cite *any* event id as its own evidence (B12) | the evidence route: a host-supplied interpreter attributing its claim to a trusted correction | a claim buys support it never earned, with no false record anywhere in the log |
+| Curation merged paraphrases with different payloads (B13) | the selection route: a paraphrase whose payload says the opposite of the rule it borrows | the survivor's payload inherits the loser's evidence; if the attacker's id sorts first, the false rule wins with three trusted tasks behind it |
+| Widening counted evidence from unadmitted siblings (B14) | the scope route: a quarantined paraphrase riding a trusted rule into a broader scope | applicability bought from evidence the store had already refused |
+
+The fixes are one line each in principle — a citation must match the event; the payload is part of the
+merge identity; only an active claim may endorse — and each is pinned by a test that states the attack
+rather than the implementation.
+
+**Measured, 500 attacks:**
+
+| Channel trust | Success | What it means |
+|---|---|---|
+| 0.3 | **0%** | below the quarantine floor; nothing is admitted |
+| 0.6 | **0%** | three tasks at trust 0.6 reach 0.478 confidence against a 0.6 line |
+| 0.9 | **40%** | content and path only: a trusted editor can teach and can overwrite |
+
+The 40% column is the honest limit, not a defect to be tuned away: those events are indistinguishable
+from a real user's correction, and a store that refused them would refuse its user. The gate is therefore
+written against a **capability-limited attacker** (content, citations, scope, paraphrases, order — but not
+the trust of its channel), where the measured rate is 0%, and the trusted column is printed beside it
+rather than averaged into 13.2%. That column doubles as the harness's positive control: if the attacks
+ever stopped landing, `harness-can-fail` would fail the lane.
+
+**An assumption the measurement corrected.** The quarantine floor was assumed to be the defence against
+low-trust content. Ablating it (`quarantineBelowTrust = 0`) moves 136 claims from `quarantined` to
+`candidate` and changes attack success by **nothing** — trust-weighted fusion, not the floor, is what
+keeps a 0.3-trust claim below the activation line. The floor protects the candidate pool from being
+mistaken for admitted knowledge; it does not protect the prompt.
+
+**A regression that is not one.** The `unguarded` ablation arm moved from 85.71% to 64.29% (−21.42pp, from
+−14.29pp). It is the only arm that moved: `full` stays 100.00%, baseline 31.79%, `no-generalization`
+83.21%. The cause is B13's fix — poison used to be absorbed into the legitimate rule by a payload-blind
+merge, which hid it; it now stands on its own, so removing the trust ceiling hurts more. The ablation got
+more honest, and the product's own arm did not move.
+
+**Evidence.** 535 tests, coverage **99.82 / 97.70 / 100 / 99.82**; `memform.ts` at 100 on lines,
+statements and functions (branch 83.9: four arms are generator invariants — `??` fallbacks and optional
+spreads the generator always fills — recorded here rather than covered by a fake scenario); `study` 17/17
+gates; `audit:repo` ok; all four attack gates pass.

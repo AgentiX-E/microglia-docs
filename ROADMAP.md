@@ -245,9 +245,15 @@ erased outcome — and a tombstone records the deletion without recording the da
 10 task instances erased, 170 events removed, 4 claims removed, 86 re-scored, **0** retrievable or cited
 afterwards.
 
-Next by the plan: **POC-29** (the MemForm attack harness: five routes × 100 attempts × six defences,
-attack success ≤10%) to close RG6, then **L0** rule-derived adjudication on 1,300 cases, then **L2b**
-pair contrast (which needs a lane whose tasks have ≥2 attempts) and **L4** τ²-bench.
+Iteration 27 closes RG6's attack half. Five routes × 100 attempts at three trust ceilings: 0% at trust
+≤ 0.6, 40% at 0.9 where the attacker is a trusted editor and the store cannot tell them from a user.
+Writing the attacks found three holes (borrowed evidence, payload-blind merging, widening from unadmitted
+siblings), all closed and tested. The quarantine floor turned out not to be the defence against low-trust
+content — fusion is — which corrects an assumption the design carried.
+
+Next by the plan: **L0** rule-derived adjudication (1,300 cases, policy-derived gold, top-1 ≥ +3pp), then
+**L2b** pair contrast (which needs a lane whose tasks have ≥2 attempts) and **L4** τ²-bench. L8 is closed;
+what remains there is keeping it green.
 
 ## S3 — SOTA push (conditional)
 
