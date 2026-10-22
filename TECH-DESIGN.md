@@ -2535,6 +2535,16 @@ artefact and a gate; the order is the order in which a failure stops the next la
 | L7 preference | LongMemEval preference subset | 30 | accuracy | ~9pp | ~600 calls / 20 min | ≥ +20pp |
 | L8 integrity | MemForm harness + replay | 500 attacks (+1,000 replay events) | attack success; order invariance | 4pp | 0 (replay) | ≤10% (measured 0% at trust ≤ 0.6); invariance and determinism = 1.00 |
 
+**L4's reader is part of the lane, not plumbing.** Four rules govern it, all taken from
+`sierra-research/tau2-bench` at the pinned ref rather than chosen here: a trial succeeds on
+`reward == 1.0` exactly; a `null` reward is permitted only for an infrastructure error and is never counted
+as a failure; a partial grid is refused instead of averaged; duplicate results for one trial are an error.
+The lane accepts a recorded document (`TAU_RESULTS`), a driver module (`TAU_DRIVER`), or neither, and
+distinguishes three outcomes with three exit codes and artefact statuses: `not-run` (no environment),
+`refused` (measured, unscorable, with a named reason), and a scored run that then faces the pass^4,
+coverage and fully-scored gates. Two synthetic 60-task fixtures exercise the score and the refusal path in
+CI.
+
 **Why this order.** L2 is the cheapest lane that can still falsify the product, so it runs first and its
 gate is the one that matters most. L3 and L4 answer "does it transfer" on gold that is a *fix* and on gold
 that is *policy compliance* — two different shapes of non-inferable knowledge. L5–L7 are competitor

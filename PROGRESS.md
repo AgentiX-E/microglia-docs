@@ -1172,3 +1172,46 @@ a case this workload's conventions cannot produce. Both are recorded; neither is
 **Evidence.** 605 tests, coverage **99.85 / 97.80 / 100 / 99.85**; `lanes/pairs.ts` and `conventions.ts`
 at 100 across all four dimensions; 6/6 L2b gates pass with the lever blocking; `audit:repo` ok; study
 unchanged (31.79 → 100.00, 17/17 gates); L0 unchanged (+67.88pp).
+
+### 44 — L4's reader: the lane can now be wrong about a document, and says which way
+
+L4 had a metric layer and no way to feed it. That gap is not cosmetic: the estimator is only as good as
+the `(successes, trials)` pairs handed to it, and a reader that guessed would have made a bad run look like
+a bad loop. The missing piece was the step between a finished τ²-bench run and `passk.ts`.
+
+**Read upstream first.** `sierra-research/tau2-bench` at `main`, pinned in this repository as `v0.2.0`
+(`src/tau2/data_model/simulation.py`, `src/tau2/runner/pass3.py`, `tests/test_results_format.py`). Four
+rules came out of it, and all four are refusals rather than defaults:
+
+  1. a trial succeeds on `reward == 1.0` **exactly** — τ² rewards are continuous (database, action and
+     communicate checks), so `0.999` is a near miss;
+  2. a `null` reward is permitted only for `INFRASTRUCTURE_ERROR` and is **never** a failure — counting it
+     as one would attribute the sandbox's failure to the agent;
+  3. a partial grid is refused, not averaged: every task needs the same trial count and every claimed task
+     needs a result;
+  4. two results for one trial are an error, not a merge.
+
+Both storage forms are read: the monolithic `simulations` array and the directory form's
+`simulation_index` (`reward` flat, `task_id` sometimes numeric). A `SimulationRun` nests the reward under
+`reward_info`; the reader takes either and treats "no reward anywhere" as unscored rather than zero.
+
+**Ten named refusals.** `L4ParseError` carries a `reason` — `unreadable-json`, `missing-tasks`,
+`missing-results`, `bad-entry`, `unknown-task`, `duplicate-trial`, `bad-reward`, `bad-trial`, `short-grid`,
+`no-scored-tasks` — and the lane writes `status_refused` with the reason, exiting non-zero. That is
+deliberately *not* the same outcome as `not-run`: a refusal means the split was measured and cannot be
+scored as specified, which is a defective run, while `not-run` means no environment exists. Collapsing the
+two is how a broken benchmark becomes a quiet footnote.
+
+**The lane now has three inputs**, in order: `TAU_RESULTS` (re-score a recorded document, no environment
+needed), `TAU_DRIVER` (a module that runs the split), and neither (`not-run`). Gates are the pass^4 bar,
+the 60-task minimum, and *zero unscored tasks* — the last one exists because the reader drops
+infrastructure failures from the denominator, so the count has to be stated beside the score.
+
+**Exercised in CI without the environment.** Two synthetic fixtures (60×4 and 60×2) drive the score path
+and the refusal path on every push, with `POC_RESULT_DIR` redirecting the artefact so the committed
+`poc-l4.json` stays `not-run` until a real run exists. The 60×2 fixture must fail: a lane that scored it
+would be averaging an incomplete grid.
+
+**Evidence.** 625 tests, coverage **99.85 / 97.87 / 100 / 99.85**; `l4.ts` 100 across; `audit:repo` ok;
+study unchanged (31.79 → 100.00, 17/17 gates); L0 and L2b unchanged. L4 still has **no result** — the
+agent invocation is the part that needs the tool-calling environment, and it is not claimed.

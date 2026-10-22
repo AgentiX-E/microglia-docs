@@ -293,10 +293,18 @@ does the same, so the failure record is not what blames. The gate that watches t
 and the lane found a scorer bug of its own on the way (a revised holdout judged by the pre-revision
 answer).
 
-Next by the plan: **L4**'s driver (τ² run output parsing), then the **bundle-size gate** (esbuild, and a
-widened `scripts/audit.mjs` dependency allowlist), then **MCP/webhook delivery**, then the **SQLite index**.
-L2b's remaining question is about the *reader* — a `negative`-lesson channel — not about the corpus or the
-protocol.
+Iteration 44 lands L4's reader. The four rules it enforces are read off upstream rather than chosen:
+`reward == 1.0` exactly, `null` only for infrastructure errors and never counted, partial grids refused,
+duplicate trials an error. Both storage forms are accepted, ten refusals are named, and the lane now
+distinguishes `not-run` (no environment) from `refused` (measured, unscorable) with different exit codes.
+Two synthetic fixtures exercise both paths in CI, so the reader is gated on every push even though the
+agent invocation is not.
+
+Next by the plan: the **bundle-size gate** (esbuild, and a widened `scripts/audit.mjs` dependency
+allowlist), then **MCP/webhook delivery**, then the **SQLite index**. L4's remaining work is the agent
+invocation itself, which needs the tool-calling environment (`TAU_ENV_READY`); until then the lane keeps
+writing `not-run` rather than a number. L2b's remaining question is about the *reader* — a
+`negative`-lesson channel — not about the corpus or the protocol.
 
 ## S3 — SOTA push (conditional)
 
