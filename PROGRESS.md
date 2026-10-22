@@ -1122,3 +1122,53 @@ Until one of those exists, the delta stays 0 for reasons that have nothing to do
 **Evidence.** 593 tests, coverage **99.85 / 97.75 / 100 / 99.85**; `lanes/pairs.ts` 100 across all four
 dimensions; `conventions.ts` 100 across; all four blocking gates pass, the lever gate reports 0/5 as
 designed; `audit:repo` ok; study unchanged (31.79 → 100.00, 17/17 gates); L0 unchanged (+67.88pp).
+
+### 43 — L2b's second attempt: the lever fires, and the answer is still no
+
+Iteration 42 measured a delta of zero that could not have been anything else: a single cold teaching pass
+answers every correction from an empty pack, so neither protocol had a cited rule to blame. That is now
+fixed at the level where the fault was — the corpus and the schedule — rather than by explaining the zero
+away.
+
+**Two rounds, and a convention that moves.** Teaching runs `base` (6 questions), then a distillation, then
+`revision` (2 questions), then a distillation, then the holdout. The two revision questions are the
+*same* question the first round taught — `sales` and `finance` comparison — with a revised answer
+(`REVISIONS`): those domains now want a pie and a line. The store still holds the old rule, the question
+retrieves it, the answer is wrong, and the correction cites the rule that caused it. Both arms correct
+2 of 2 revisions, and those are the only 2 of 7 corrected attempts that cite a rule — exactly as the corpus intends. The lever is exercised, and
+the gate that watched it is now **blocking** rather than advisory.
+
+**The lane found a bug in its own scorer before it found a result.** The holdout of a revised scope was
+still judged against the pre-revision answer, so a store that correctly followed the revision was scored
+wrong — both arms read 62.50% and the revision round looked like a regression. The holdout now asks the
+convention in force *now* (`currentConvention`), and a test pins the rule: for every comparison question,
+the holdout gold is the revision when there is one. That is the third time this lane has been the
+instrument that caught its own construction rather than the mechanism, which is the pattern worth keeping.
+
+**The numbers.** 18 questions: 6 teach, 2 revisions, 8 evaluated, 1 unreachable. Reachable share 75.00%,
+baseline 12.50%, both arms **87.50%**, recovery 0.857 each, delta **0.00pp** against a 0.05 bar. Pair
+writes 15 runs against 8, both make 7 corrections, pair stores 1 more item (the negative lesson) and
+activates the same 3 constraints. Stale rules: **0 in both arms**. Cross-arm store diff: **0 rules**.
+Six of six gates pass.
+
+**Why zero, precisely.** Two measurements, not an argument. First, a correction recorded on the run that
+cited the stale rule demotes it in *both* protocols — the edit's own credit reaches the culprit, so the
+failure record is a second vote on a decision already taken. Second, and stronger: a correction recorded on
+a run that cited **nothing** — a re-generation with an empty pack — still demotes the stale rule, because
+a trusted claim at a scope where an active rule disagrees records a *contradiction*, and contradiction
+resolution demotes the old rule without any help from credit at all. That second case is a test, not a
+paragraph. It says the pair protocol cannot win here by construction: the distiller has already resolved
+the conflict before a failure record could add to it.
+
+**What that means for the product.** `outcome(false)` and `parentRunId` stay — a failed attempt is
+history, task grouping needs it, and a prose reader can act on the negative lesson. What does not follow
+from measurement is a *blame* benefit in the same-scope revision case: it is redundant with contradiction
+resolution. Building a feature on the assumption that it exists would have been the expensive mistake.
+
+**What would change the answer.** Either a reader that consumes `negative` lessons (the deterministic
+surrogate maps only constraints to marks), or a corpus where a *correct* rule is cited on a wrong answer —
+a case this workload's conventions cannot produce. Both are recorded; neither is a corpus problem.
+
+**Evidence.** 605 tests, coverage **99.85 / 97.80 / 100 / 99.85**; `lanes/pairs.ts` and `conventions.ts`
+at 100 across all four dimensions; 6/6 L2b gates pass with the lever blocking; `audit:repo` ok; study
+unchanged (31.79 → 100.00, 17/17 gates); L0 unchanged (+67.88pp).

@@ -283,10 +283,20 @@ identical evidence. The pair arm's only addition is a `negative` lesson, and the
 no channel for one. Four blocking gates pass; a fifth, non-blocking, reports the unexercised lever rather
 than letting a zero read as an effect size.
 
+Iteration 43 closes L2b as a *mechanism* question, negatively and with evidence. Teaching now runs two
+rounds with a distillation between them, and the second round re-asks the scopes whose convention the
+corpus revised — so both arms correct 2 of 2 revisions from a rule that is now wrong. The lever fires
+(2 of 7 corrected attempts cite a rule) and the answer is still 0.00pp, with **0 rules differing** between
+the two stores. The mechanism ablation explains it: a correction landing on a scope where an active rule
+disagrees already records a contradiction, which demotes the old rule; a correction that cites *nothing*
+does the same, so the failure record is not what blames. The gate that watches the lever is now blocking,
+and the lane found a scorer bug of its own on the way (a revised holdout judged by the pre-revision
+answer).
+
 Next by the plan: **L4**'s driver (τ² run output parsing), then the **bundle-size gate** (esbuild, and a
 widened `scripts/audit.mjs` dependency allowlist), then **MCP/webhook delivery**, then the **SQLite index**.
-L2b stays open as a *mechanism* question with two named prerequisites — teaching over rounds with a
-distillation between them, or a reader that consumes negative lessons — and neither is a corpus problem.
+L2b's remaining question is about the *reader* — a `negative`-lesson channel — not about the corpus or the
+protocol.
 
 ## S3 — SOTA push (conditional)
 

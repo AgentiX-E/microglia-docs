@@ -2741,7 +2741,7 @@ checking them exposed an error in our own record.
 | 3 | Which retriever wins? (alias / coverage) | **no — replay** | Availability is a property of the committed artefact, not of the code | **alias half closed** (premise refuted); **ranking half open** (§19.3 #2) |
 | 4 | Does task-type scoping starve? | **no — data inspection** | Every lane has exactly one task type, so a hard filter is an identity | **closed**: ships soft boost, reopen when a host has ≥2 types |
 | 2 | Is a validity interval worth it? | no — **conditional** | Interval semantics pay only for queries that refer to the past; no lane contains one | **conditional decision** with a recorded trigger |
-| 1 | Does pair contrast close the gap? | **yes** | No lane had a multi-attempt task: every question was one attempt, so a pair did not exist to distil from | **measured, null** (iteration 42): 87.50% vs 87.50% at a 12.50% baseline, delta 0.00pp. The verdict is marked vacuous — 0 of 5 corrected attempts cited a rule, so the arms could not have diverged. Needs teaching rounds with distillation between them, or a reader that consumes `negative` lessons |
+| 1 | Does pair contrast close the gap? | **yes** | No lane had a multi-attempt task: every question was one attempt, so a pair did not exist to distil from | **closed, negative** (iterations 42–43): 87.50% vs 87.50% at a 12.50% baseline, delta 0.00pp, **0 rules differing** between the stores. The lever fires (both arms correct 2/2 revisions from a stale rule), and the mechanism ablation shows why the null is structural: a correction at a scope where an active rule disagrees records a contradiction, which demotes it — even when the corrected run cited nothing |
 | 5 | Do push and tool delivery earn their surface? | **yes** | There is no transport to measure and no agent to call a tool | open, blocked on §17.21 |
 | 7 | Do the integrity invariants hold? | **yes** | Order invariance, replay determinism and erasure are properties of a store that does not exist yet | **closed** (iterations 25–26: 1.00 / 1.00 / 0 stale, a control that must disagree, and 0 of 10 erased records retrievable or cited) |
 | 8 | Does an abstention kind help? | **yes** | Needs the kind, the renderer, and an unanswerable set that no current lane has | open, blocked on P2/P6 + dataset |
@@ -2822,7 +2822,7 @@ a past time* — and POC-15 stays specified for that day. This is a decision, no
 
 | # | Blocked on | Not a deferral of convenience: |
 |---|---|---|
-| 1 | a reader with a `negative`-lesson channel, or teaching rounds separated by a distillation | the lane landed in iteration 42 and the pair exists; with one cold pass no correction cites a rule, so the failure record has nothing to blame and the reader has no way to act on one |
+| 1 | a reader with a `negative`-lesson channel | the protocol question is answered (iteration 43): blame is redundant with contradiction resolution at the same scope, and the only thing the pair adds that the edit cannot is a `negative` lesson — which the deterministic reader cannot consume |
 | 3b | the real index (POC-17, 17b) | ranking among 186 rules is exercised by the index; a replay cannot re-rank what it does not have |
 | 5 | §17.21 transports | a webhook and an MCP tool are code; no measurement can precede them |
 | 7 | P3/P4 stores | order invariance and replay determinism are properties of a store; today's store is the object under change |
@@ -2960,7 +2960,7 @@ So nine questions yield ten answers: three closed, one conditional, six open.
 
 | # | Question | Blocked on | Why no design-phase answer exists |
 |---|---|---|---|
-| 1 | Does pair contrast close the ceiling gap? | **answered** (iteration 42) | the lane exists with two attempts per task; the delta is 0.00pp and the artefact proves the comparison vacuous (0/5 cited corrections), so the question moved from "no lane" to "no reader channel" |
+| 1 | Does pair contrast close the ceiling gap? | **answered: no** (iteration 43) | with two teaching rounds and a revision the delta is still 0.00pp and the stores are identical; the residual question is the reader's channel for `negative` lessons, not the protocol |
 | 2 | Which over-fetch and ranking settings maximise Recall@5? (POC-17, 17b) | the real index | ranking among ~186 active rules is a property of the index, not of the artefact |
 | 3 | Do push and tool delivery earn their surface? | §17.21 transports | no transport exists to measure, no agent exists to call a tool |
 | 4 | Do the integrity invariants hold? | **closed** (POC-28, iterations 25–26) | order invariance 1.00, replay determinism 1.00, control 0.00, post-erasure recall 0 |
