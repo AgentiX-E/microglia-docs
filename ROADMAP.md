@@ -308,7 +308,21 @@ push. The plan expected `audit.mjs`'s dependency allowlist to grow for esbuild; 
 allowlist governs *runtime* dependencies and esbuild is a root devDependency — recorded rather than
 silently expanded.
 
-Next by the plan: **MCP/webhook delivery** (§17.21), then the **SQLite index** (W3). L4's remaining work is
+Iteration 46 lands the push half of §17.21 and measures it. The signer is HMAC-SHA256 in the library's own
+bytes (RFC 4231 vectors plus every padding boundary against `node:crypto`), the dispatcher retries without
+overtaking, and the lane runs a real HTTP receiver that loses one acknowledgement on purpose. 50 corrections,
+50 events, 0 missed, 0 ordering violations, one intentional duplicate de-duplicated by id, p95 2.6 ms on
+loopback. **The lane found a defect in `distill`**: a second pass over the same log rewrote every rule's
+`updatedAt` even with no new evidence, so "nothing changed" and "this rule was rewritten" looked identical —
+275 events for 50 changes. A merge with no new evidence is now a no-op, pinned by three tests.
+
+The same sweep found §10.3 had been overstating coverage since the providers landed (it claimed 7 free
+arms at 99.53%; the measured state is 59 arms at 97.93%). The section now states the measurement and splits
+the arms into invariant guards and reachable gaps, the latter tracked as **G-7**.
+
+Next by the plan: the **MCP tool surface** (§17.21's other half), then the **SQLite index** (W3), then **G-7**
+— the 36 reachable coverage arms, starting with the HTTP optional-parameter paths and the model-response
+parsers. L4's remaining work is
 the agent invocation itself, which needs the tool-calling environment (`TAU_ENV_READY`); until then the
 lane keeps writing `not-run` rather than a number. L2b's remaining question is about the *reader* — a
 `negative`-lesson channel — not about the corpus or the protocol.

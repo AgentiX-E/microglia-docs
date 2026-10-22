@@ -59,7 +59,7 @@ appears in the gap register (§15).
 | N4 | Added latency on the request path | p95 ≤ 50ms | 0.02ms at 6 items (POC scale) |
 | N5 | Added prompt size | ≤ 300 tokens | 90 tokens (POC) |
 | N6 | Coverage | ≥95% on every dimension | **100 / 99.53 / 100 / 100** (lines / branches / functions / statements) |
-| N7 | Branch coverage | ≥95% | **99.53%** — the bar is met; the seven remaining arms are named in §10.3 |
+| N7 | Branch coverage | ≥95% | **97.93%** — the bar is met; 59 remaining arms, 23 of them guards, are classified in §10.3 and the 36 reachable ones are tracked as G-7 |
 | N8 | No network in tests | 0 calls | 0 |
 | N9 | No mocks of the system under test | ports only | fakes only for `Storage`/`LLM` |
 | N10 | ESM-only, tree-shakable | `sideEffects: false` | declared |
@@ -956,25 +956,52 @@ fix.
 | Functions | **100%** | 95 |
 | Branches | **99.53%** | 95 |
 
-### 10.3 The seven uncovered branch arms, named
+### 10.3 The uncovered branch arms, counted and classified
 
-99.53% (1508/1515) with no ignore comment anywhere in the repository. Every remaining arm is listed
-below with the reason it cannot be taken; a reader can check the claim against the file.
+**97.93% (2798/2857), 59 arms**, with no ignore comment anywhere in the repository. An earlier version of
+this section claimed "seven arms at 99.53%"; that was true when it was written and had been false since
+the model providers and the HTTP surface landed. The number is now stated as measured, and the arms are
+split by whether they can be taken at all.
+
+**Invariant guards — 23 arms that cannot be taken.** Each protects a state the type system cannot express;
+deleting one turns a future bug into silent data loss rather than an exception.
 
 | File:line | The arm that never runs | Why it is unreachable |
 |---|---|---|
-| `core/src/diff.ts:113` | `key === undefined` when applying an op | the empty-path case returns earlier, so a non-empty path always has a last element |
-| `core/src/stats.ts:93` | `logSumExp` over an empty sample | `mcnemarExact` returns at `n === 0`, so the sum never sees zero terms |
+| `core/src/kernel/diff.ts:113` | `key === undefined` when applying an op | the empty-path case returns earlier, so a non-empty path always has a last element |
+| `core/src/kernel/stats.ts:93` | `logSumExp` over an empty sample | `mcnemarExact` returns at `n === 0`, so the sum never sees zero terms |
+| `core/src/kernel/knowledge.ts:472` | `right === undefined` in `strongestTier` | every item the store writes carries a tier; the arm guards rows written before the field existed |
+| `core/src/capture/task.ts:145` | the `sessionId` absence arm | a task opened without a session carries `undefined`, and every caller in this repository sets one |
+| `core/src/capture/curate.ts:128,181,236` | three sort tie-breaks | they exist so equal keys stay deterministic; no test constructs two items with equal density *and* the same id |
+| `core/src/capture/doctor.ts:91` | the "every item is waiting" severity | the lanes' stores always hold an item that cleared the promotion gate |
+| `core/src/distill/generalize.ts:151` | `target === undefined` after a non-empty sibling filter | `pickGeneralizationTarget` returns the first sibling when none is active |
+| `core/src/memory/journal.ts:188` | the empty-compaction newline | compaction only runs with at least one row |
+| `core/src/memory/lexical-index.ts:38` | a token with no posting bucket during removal | `add` is the only writer and it creates the bucket before recording the token |
+| `core/src/memory/store.ts:170` | a candidate id that resolves to no knowledge item | the index and the map are written in the same call, so they cannot diverge |
+| `browser/src/client.ts:165` | the non-`Error` throw in the retry loop | nothing in the library throws a non-`Error`, and the arm exists so a host's thrown string is still reported |
+| `browser/src/outbox.ts:91` | an attempt count for an entry that vanished | the entry is read and written under one lock |
 | `eval/src/ablations.ts:98` | `status: 'missing'` for the learned rule | the store has no delete, so the rule the function just learned is still there |
-| `eval/src/report.ts:84` | the `still injected` wording of the credit row | one run produces one ablation result; the other wording is covered by the failing-fixture test |
-| `eval/src/scenario.ts:321` | the confidence comparison in `outranks` | two rules that match a query differ in scope size or id first, so the third key is never consulted |
-| `memory/src/lexical-index.ts:38` | a token with no posting bucket during removal | `add` is the only writer and it creates a bucket before recording the token |
-| `memory/src/store.ts:162` | a candidate id that resolves to no knowledge item | the index and the map are written in the same call, so they cannot diverge |
+| `eval/src/attribution.ts:115,127` | two sort tie-breaks and the empty-instance share | a case with no instances is filtered out before the share is computed |
+| `eval/src/competitor.ts:127` | skipping an already-correct baseline item | the fact-store corpus is filtered to defective items first |
+| `eval/src/report.ts:112` | the "still injected" wording of the credit row | one run produces one credit ablation, whose rule is always withdrawn |
+| `eval/src/scenario.ts:328,347` | the reduce and the confidence tie-break in `outranks` | matching rules differ in scope size, then id, before confidence is consulted |
+| `eval/src/study.ts:653` | `baseline?.holdout ?? []` | the baseline arm is always present; the fallback guards a schedule change |
+| `eval/src/lanes/delivery.ts:140` | the "receiver has no port" guard | the guard runs after `listen` resolved, and a resolved listener has an address |
 
-These are invariant guards, not untested behaviour: each protects against a state the type system
-cannot express, and deleting one would turn a future bug into silent data loss rather than an
-exception. The alternative — an `ignore` comment — would make the number look better and the code
-worse, so the number stays where it is and the list stays in the document.
+**Reachable and untested — 36 arms, tracked as G-7.** These are not guards: a test could take them, and
+the number would rise because the behaviour was verified rather than because the bar was lowered.
+
+| File | Arms | What is untested |
+|---|---|---|
+| `node/src/app.ts` | 7 | the optional query and body parameters (`ids`, `taskId`, `actorHash`, `generalize`, `status`, `limit`) and the 1,000-id erasure cap |
+| `eval/src/memform.ts` | 14 | the harness's fallback arms: missing run input, non-edit signals, absent payloads, the borrowed-evidence reason |
+| `core/src/distill/llm.ts` | 7 | the model-response parser's escape and balanced-object paths, and the optional `taskId` arms |
+| `node/src/providers/*.ts` | 5 | `model` / `baseUrl` overrides and the empty-embeddings fallback |
+| `browser/src/client.ts` | 1 | the token-less client (no `Authorization` header) |
+| `node/src/store/cortex.ts` | 2 | `payload === undefined` and a statement without a dot |
+
+The alternative — an `ignore` comment — would make the number look better and the code worse, so the number
+stays where it is and both lists stay in the document.
 
 ### 10.4 Commands
 
@@ -2309,8 +2336,9 @@ Two readings from E3 and E4 that change the design rather than decorating it:
 
 Pull is implemented; these are the two surfaces the POCs will judge.
 
-**Push (webhook).** `POST {host}/microglia/events`, one JSON body per change, `X-Microglia-Signature:
-sha256=<hmac>` over the raw body with the subscription secret, at-least-once with `id` for de-duplication:
+**Push (webhook) — implemented (iteration 46), measured by POC-19.** `POST {host}/microglia/events`, one
+JSON body per change, `X-Microglia-Signature: sha256=<hmac>` over the raw body with the subscription
+secret, at-least-once with `id` for de-duplication:
 
 ```json
 { "id": "evt_01H...", "type": "knowledge.admitted",
@@ -2340,6 +2368,21 @@ Types: `knowledge.admitted`, `knowledge.superseded`, `knowledge.retired`, `task.
 Gate for the tool surface: tool-call utility ≥0.60 (share of tasks where a self-initiated recall preceded
 a correct answer) and call rate ≤2 per task; an agent that recalls on every turn has replaced a prompt
 block with a latency tax.
+
+**Push, as shipped.** `@agentix-e/microglia-core/delivery`: `knowledgeEvents` derives admitted / superseded
+/ retired from a store snapshot and the previous one, `taskCompleted` builds the fourth type from the task
+record the host closes, `WebhookDispatcher` signs the exact bytes it posts and retries 5xx / 429 /
+transport failures without overtaking its own sequence. The signer is HMAC-SHA256 written in the library
+because `node:crypto` is absent in a browser and `crypto.subtle` is async; it is verified against RFC 4231
+vectors and against `node:crypto` at every padding boundary. POC-19 measures it against a real HTTP
+receiver that loses one acknowledgement on purpose: 50 events, 0 missed, 0 ordering violations, one
+duplicate de-duplicated by id, p95 2.6 ms on loopback — a floor, not the 60 s contract.
+
+**A defect this forced.** `distill` reprocesses the log from the beginning when no `since` is passed, and
+`mergeEvidence` used to rewrite every item it re-merged, advancing `updatedAt` with no new evidence. The
+delivery log reads that timestamp to decide what to send, so 50 corrections produced 275 events. A merge
+with unchanged evidence, payload and tier is now a no-op; three tests pin it (identical store on a second
+pass, no events, and a genuinely new observation still moving the timestamp).
 
 ### 17.22 Competitor and benchmark register v2
 

@@ -1248,3 +1248,58 @@ to constrain runtime weight, which is the opposite of the intent. The allowlist 
 **Evidence.** `pnpm check` now ends with the size gate (and `eval:pairs`, which was CI-only before);
 625 tests, coverage **99.85 / 97.87 / 100 / 99.85**; `audit:repo` ok; study unchanged (31.79 → 100.00,
 17/17 gates); CI runs the gate and its probe on every push.
+
+### 46 — Push delivery, and the defect it found in `distill`
+
+POC-19 asked whether push earns a surface. The contract was already written (§17.21): signed body, ordered
+per `(taskType, seq)`, at-least-once with `id` for de-duplication. What was missing was the code and a
+measurement that could fail.
+
+**Built to the contract, not around it.** `@agentix-e/microglia-core/delivery` carries the three event
+types the store can derive (`knowledge.admitted`, `knowledge.superseded`, `knowledge.retired`), a builder
+for `task.completed` — from the record the host holds when it closes a task, because the task table is the
+host's — a signer, and the dispatcher. The signer is HMAC-SHA256 implemented in the library's own bytes:
+`node:crypto` is not in a browser and `crypto.subtle` is async, so ~60 lines of SHA-256 sit in `core`,
+verified against RFC 4231 vectors 1, 2 and 6 *and* cross-checked against `node:crypto` at every padding
+boundary (0, 55, 56, 63, 64, 65, 119, 120, 1000 bytes). The first run failed at 55: the padding length was
+computed one block too long. That is the class of bug a boundary table exists to catch.
+
+**The lane's own numbers found a real defect.** The first run reported **275 events for 50 corrections**.
+The dispatcher was fine; `distill` was not. It reprocesses the log from the beginning when the caller
+passes no `since` — which every lane and every timer-driven host does — and `mergeEvidence` wrote the item
+back with a fresh `updatedAt` even when the candidate's evidence was already in it. So "nothing changed"
+and "this rule was rewritten" produced the same observation, and a delivery log reads exactly that to
+decide what to send. Fixed at the root: a merge whose evidence, payload and tier are all unchanged is a
+no-op and returns the item untouched. Three tests pin it — a second pass leaves the store identical
+including timestamps, it publishes nothing, and a *new* observation of the same claim still moves
+`updatedAt`. The lane now reports 50 events for 50 corrections, which is the number it should always have
+been.
+
+**What the lane measures.** A real `node:http` receiver verifies the HMAC over the raw body, stores by id
+and de-duplicates. It stores the *first* request and then loses the acknowledgement, so the retry has to
+carry the same id: one retry, one repeat, one stored event. One response is delayed 250 ms so the latency
+number can be shown to move — a stopwatch stuck at zero would otherwise pass the bound. 50 corrections
+across two task types, one distillation and one publish per batch:
+
+| metric | value |
+|---|---|
+| events published / delivered | 50 / 50 |
+| missed | **0** |
+| duplicates (same id, de-duplicated) | 1 |
+| retries | 1 |
+| signature failures / ordering violations | 0 / 0 |
+| p50 / p95 / slowest | 0.6 / 2.6 / 253 ms |
+| gates | 7 / 7 |
+
+**What it does not claim.** 2.6 ms is loopback. The contract's 60 s is a ceiling this lane cannot stress,
+and the artefact says so instead of inheriting the bound as if it had been demonstrated.
+
+**A documentation defect, found by the same sweep.** §10.3 promised "the seven uncovered branch arms,
+named" at 99.53%. The measured state is **2,798 / 2,857 = 97.93%**, i.e. 59 arms — the section had been
+stale since the providers and the HTTP surface landed. It is now stated as measured, split into the arms
+that are invariant guards (listed with reasons, as before) and the arms that are *reachable and untested*
+(listed by file, tracked as G-7). A coverage section that overstates is worse than one that admits a gap.
+
+**Evidence.** 660 tests, coverage **99.86 / 97.93 / 100 / 99.86**; `delivery/{sha256,events,dispatcher}.ts`
+and `lanes/delivery.ts` at 100 on branches except one documented guard; `audit:repo` ok; study unchanged
+(31.79 → 100.00, 17/17 gates); L0 and L2b unchanged.
