@@ -300,10 +300,17 @@ distinguishes `not-run` (no environment) from `refused` (measured, unscorable) w
 Two synthetic fixtures exercise both paths in CI, so the reader is gated on every push even though the
 agent invocation is not.
 
-Next by the plan: the **bundle-size gate** (esbuild, and a widened `scripts/audit.mjs` dependency
-allowlist), then **MCP/webhook delivery**, then the **SQLite index**. L4's remaining work is the agent
-invocation itself, which needs the tool-calling environment (`TAU_ENV_READY`); until then the lane keeps
-writing `not-run` rather than a number. L2b's remaining question is about the *reader* — a
+Iteration 45 measures the size promise. One esbuild run per entry point produces two facts: the library
+still bundles for the browser with no Node builtins (or the build fails), and the artefact stays under a
+ceiling — 3,009 B raw / 1,410 B gzipped for the client, 40,133 / 13,842 for the core. Ceilings are
+regression ceilings, not targets, and `--probe` halves one and requires the gate to reject it, on every
+push. The plan expected `audit.mjs`'s dependency allowlist to grow for esbuild; it did not, because the
+allowlist governs *runtime* dependencies and esbuild is a root devDependency — recorded rather than
+silently expanded.
+
+Next by the plan: **MCP/webhook delivery** (§17.21), then the **SQLite index** (W3). L4's remaining work is
+the agent invocation itself, which needs the tool-calling environment (`TAU_ENV_READY`); until then the
+lane keeps writing `not-run` rather than a number. L2b's remaining question is about the *reader* — a
 `negative`-lesson channel — not about the corpus or the protocol.
 
 ## S3 — SOTA push (conditional)

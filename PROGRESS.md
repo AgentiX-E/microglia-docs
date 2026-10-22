@@ -1215,3 +1215,36 @@ would be averaging an incomplete grid.
 **Evidence.** 625 tests, coverage **99.85 / 97.87 / 100 / 99.85**; `l4.ts` 100 across; `audit:repo` ok;
 study unchanged (31.79 → 100.00, 17/17 gates); L0 and L2b unchanged. L4 still has **no result** — the
 agent invocation is the part that needs the tool-calling environment, and it is not claimed.
+
+### 45 — The size gate, and a promise about bytes that is now measured
+
+"No runtime dependency" was enforced in the manifest (`audit:repo` rejects an external `dependencies`
+entry) and never measured on the artefact a host actually bundles. Those are different claims: a package
+can have no dependency and still carry 200 KB of its own code, and a shared module can import a Node
+builtin that only fails when someone opens the page.
+
+**One esbuild run, two facts.** The gate bundles both published entry points for `platform: browser`, which
+makes a Node builtin an error rather than a silent inclusion, and compares the minified output against a
+ceiling:
+
+| entry | raw | gzip | ceiling (raw / gzip) |
+|---|---|---|---|
+| `packages/browser` | 3,009 B | 1,410 B | 3,200 / 1,600 |
+| `packages/core` | 40,133 B | 13,842 B | 42,000 / 15,000 |
+
+The ceilings are **regression ceilings, not targets**: each is the measured size at this commit rounded up,
+which leaves room for ordinary edits and none for a dependency. Raising one is a decision that has to be
+written next to the number.
+
+**The gate proves it can fail.** `pnpm bundle:size -- --probe` halves the first ceiling and requires the
+comparison to reject it, exiting 0 only when the rejection happened. CI runs both. A budget that cannot be
+exceeded is not a gate, and the same rule the lanes follow is applied here to the build.
+
+**A planned change that was not needed.** The plan expected `scripts/audit.mjs`'s dependency allowlist to
+grow. It did not: esbuild is a root **devDependency**, and the audit's rule is about what ships
+(`dependencies` of a published package). Adding it to the allowlist would have widened a rule that exists
+to constrain runtime weight, which is the opposite of the intent. The allowlist stays exact.
+
+**Evidence.** `pnpm check` now ends with the size gate (and `eval:pairs`, which was CI-only before);
+625 tests, coverage **99.85 / 97.87 / 100 / 99.85**; `audit:repo` ok; study unchanged (31.79 → 100.00,
+17/17 gates); CI runs the gate and its probe on every push.
