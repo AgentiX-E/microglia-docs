@@ -1051,3 +1051,33 @@ preferences, ours are "was this attempt better than the last". So W4 splits thre
 
 The third layer is only entered if the first two leave a question they cannot answer. The blocker is
 withdrawn as a blocker and kept as a costed, conditional step.
+
+### 38–41 — Four gates that fail before a run, not after
+
+Four small rounds, each turning a way we have already been wrong into a check.
+
+**38. τ² install path.** Upstream is a repository, not a wheel: `git clone --depth 1 --branch v0.2.0`
+plus `uv sync`, cached by that ref, with three exit codes — clone 21, sync 22, data 23. An install that
+fails must not be readable as a score that disappointed.
+
+**39. `l4Verdict`.** A pass^4 gate has two ways to fail: the effect misses the bar, or the split is too
+short for the effect to mean anything. Collapsed into one boolean, a twelve-task probe becomes "we beat
+ALTK-Evolve". They are returned separately and both must be reported.
+
+**40. `pairVerdict`.** The L2b question as arithmetic: two arms, both recoveries, their difference, and
+the reachable share they rest on. A difference under the bar is not an improvement, and a delta computed
+where nothing was reachable describes the split — both return `pairHelps: false` rather than a quotable
+number.
+
+**41. Workflow-to-script resolution.** `poc:typecheck` became `typecheck:lanes` and one workflow step kept
+`pnpm eval:typecheck`, which nothing defines. CI caught it in twenty seconds, but only after a push. The
+audit now resolves every `pnpm <script>` in every workflow against `package.json`, and it was proven to
+fail by probe — a temporary workflow calling `pnpm does-not-exist` produced the exact message, and removing
+it restored `audit: ok`.
+
+The pattern across all four: the instrument is built and shown able to fail *before* anything is claimed.
+That is the same rule the lanes themselves follow, applied one level down — to the gates.
+
+**Evidence.** 568 tests, coverage **99.84 / 97.69 / 100 / 99.84**; `passk.ts`, `pairs.ts`,
+`conventions.ts` at 100 across all four dimensions; `audit:repo` ok with two new checks; CI green at
+`76363b7`.
