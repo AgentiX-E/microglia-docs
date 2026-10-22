@@ -887,3 +887,32 @@ rather than a better-trained loop.
 
 **Evidence.** 537 tests, coverage **99.82 / 97.70 / 100 / 99.82**; `study.ts` 100/99.52/100/100;
 `audit:repo` ok; study unchanged (31.79 → 100.00, 17/17 gates); L0's four gates pass.
+
+### 29 — The server could not delete, and could not name a task
+
+Writing the test for a new `POST /v1/forget` route exposed two holes in the shipped surface, both of
+which had been invisible because no test asserted the property they broke.
+
+| Defect | How it surfaced | What it would have cost |
+|---|---|---|
+| The HTTP surface had no delete (B15) | asking what a host that runs `microglia-node` does when a user requests deletion | the SDK could erase and the server could not: a deployment with deletion obligations could not be shipped on the server at all |
+| `parseIngest` dropped `taskId`, `attempt` and `parentRunId` (B16) | the forget-by-task test returned 0 events | every event arriving over HTTP became its own task, so three attempts at one job counted as three independent endorsements — the inflation the per-task grouping exists to prevent — and `forget({ taskId })` matched nothing |
+
+The second is the more interesting one: it is the same class of defect as the B10 double count, on the
+boundary rather than in the kernel. The library had the right model and the transport silently flattened
+it. Both fields are now parsed, validated (`taskId` non-empty, `attempt` a positive integer,
+`parentRunId` a string) and carried into the run record and the emitted event.
+
+**What the route refuses.** An empty body, an unknown field, and a mistyped value are 400s rather than a
+200 with zeros. `{ "taskID": "t_7" }` is a typo that would erase nothing and report a completed request,
+which is the worst possible answer to a deletion; the route says `unknown field: taskID` instead.
+
+**What the client refuses.** The browser client gains `forget()`, and it is the one call in that class
+that is deliberately **not** queued. Every other write goes through the outbox because a correction that
+arrives late is still a correction; a deletion that lands after the user changed their mind removes
+something they asked to keep, and one that waits silently is a promise the client cannot keep. It
+succeeds now or throws, and a test pins that a refusal does not leave an entry behind.
+
+**Evidence.** 548 tests, coverage **99.84 / 97.68 / 100 / 99.84**; `app.ts` 97.04/96.17/100/97.04 and
+`client.ts` 100/95.23/100/100 — both above 95 on every dimension; `audit:repo` ok; study unchanged
+(31.79 → 100.00, 17/17 gates).

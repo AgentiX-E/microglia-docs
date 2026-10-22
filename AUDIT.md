@@ -57,7 +57,7 @@ our own artefact are not the same kind of thing:
 
 ## 2. Defects found and fixed during these audits
 
-An audit that finds nothing is an audit that did not look. Fourteen defects were found by writing invariants
+An audit that finds nothing is an audit that did not look. Sixteen defects were found by writing invariants
 down as tests, by recording a failure's cause instead of its message, or by recomputing a published number
 from the artefact it claimed to come from.
 
@@ -74,6 +74,8 @@ from the artefact it claimed to come from.
 | B9 | A 40-question probe's coverage distribution was published as the 352-question result (median 7.1%, 47% zero versus the real 18.2%, 3.1%) | recomputing from the committed artefact during a design audit | a false premise drove a design decision (the alias) and a false causal claim ("retrieval is the constraint") | numbers now carry their n and their run id; §17.31 forbids quoting a probe at full scale |
 
 | B10 | Curation summed the two items' `support` when merging near-duplicates | writing the evidence invariant down as a test: two items citing one `feedbackId` merged to 1.8 support instead of 0.9 | one user's single correction paid for two rules and admitted their sum — the evidence route of MemForm, reached by arithmetic rather than by an attacker | support is the mass of *distinct* observations; the merged evidence array is ordered by `(at, feedbackId)` so arrival order cannot leak into the store |
+| B15 | The HTTP surface had no delete route | asking what a host running the server does with a deletion obligation | the SDK could erase and the server could not, so the server was unsellable to any host with one | `POST /v1/forget`, validating the selector and refusing typos |
+| B16 | `parseIngest` dropped `taskId`, `attempt` and `parentRunId` | the forget-by-task test returned 0 events | every HTTP event was its own task: support inflated three-fold per job, and `forget({ taskId })` matched nothing | the fields are parsed, validated and carried into the run and the event |
 | B12 | A distilled candidate could cite any event id as its own evidence | writing the evidence route of POC-29 as an executable attack | a claim buys the support of a trusted correction it never came from — poisoning with no false record anywhere | a candidate must cite the event being interpreted; a mismatch is rejected and counted (`rejectedBorrowed`) |
 | B13 | Curation merged paraphrases whose payloads disagreed | the selection route: a paraphrase that says the opposite of the rule it borrows | the survivor's payload inherits the loser's evidence, so the false rule wins *with* the trusted support | the payload is part of the merge identity |
 | B14 | Widening absorbed evidence from quarantined or still-candidate siblings | the scope route: an unadmitted paraphrase riding a trusted rule into a broader scope | applicability bought from evidence the store had already refused | only an `active` claim may endorse a widening |

@@ -257,9 +257,16 @@ observed discordance it would need 5,922 evaluated cases, and the replacement ga
 own noise floor) passes at 9.5×. S1's annotation blocker is now fully removed — nothing in the plan waits
 on a human label.
 
-Next by the plan: **L2b** pair contrast (needs a lane whose tasks have ≥2 attempts, recovery ≥0.60) and
-**L4** τ²-bench (pass^4 ≥+5pp and ≥ ALTK-Evolve on the same split). L0 and L8 are closed; what remains is
-keeping them green.
+Iteration 29 closed two holes in the shipped surface rather than opening lane L2b: the HTTP server had no
+delete route (B15), and its ingest silently dropped the task instance (B16), which inflated support on
+every server-hosted deployment and made `forget({ taskId })` match nothing. Both are fixed, and the
+browser client's `forget()` is deliberately unqueued.
+
+Next by the plan: **L2b** pair contrast. Its prerequisite is now explicit: the controlled chart corpus
+saturates (100% on holdout), so a pair-contrast recovery ratio needs a workload with headroom — a corpus
+whose conventions are per-domain, so the unseen domain cannot be recovered by widening, and the oracle's
+advantage over the loop is measurable. That workload is the next design task; it is not a rerun of the
+existing one. Then **L4** τ²-bench. L0 and L8 are closed; what remains is keeping them green.
 
 ## S3 — SOTA push (conditional)
 
