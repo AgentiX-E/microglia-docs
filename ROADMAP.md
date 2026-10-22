@@ -30,9 +30,9 @@ Status as of **2026-10-20**.
 | Fifteen gates, none advisory | `buildGates` + the CI gate step |
 | 370 tests, coverage 100 / 99.53 / 100 / 100 | `pnpm test` |
 | Repository audit (secrets, manifests, soft failures, published deps) | `pnpm audit:repo` |
-| Live-API POCs (DeepSeek reader/distiller, Zhipu embeddings) | `poc/results/*.json`, `poc-live` workflow |
+| Live-API POCs (DeepSeek reader/distiller, Zhipu embeddings) | `eval/results/*.json`, `poc-live` workflow |
 | Cortex conformance against a real build | `scripts/cortex-conformance.mjs`, `cortex.yml` |
-| Public-benchmark harness | `poc/sota-bird.ts`, `sota.yml` |
+| Public-benchmark harness | `packages/eval/src/bin/sota-bird.ts`, `sota.yml` |
 
 **What was learned that changed the design.**
 

@@ -889,7 +889,7 @@ on the pack.
 
 ### 9.1 Measured on CPU (no GPU, no server)
 
-All numbers below are from `pnpm poc:scale` on the CI runner class (2 vCPU, Node 22). The product
+All numbers below are from `pnpm eval:scale` on the CI runner class (2 vCPU, Node 22). The product
 has no GPU path; embeddings, when enabled, run through an ONNX/WASM or WebGPU encoder on the host.
 
 | Items | Build | `recall` p50 | `recall` p95 | Heap delta | Pack tokens |
@@ -1047,7 +1047,7 @@ and the runner must emit a JSON artifact containing: config, seed, model, prompt
 per-case rows, the paired comparison, and the gate verdicts. A report without the artifact is not a
 result.
 
-The BIRD lane (`poc/sota-bird.ts`) implements this as:
+The BIRD lane (`packages/eval/src/bin/sota-bird.ts`) implements this as:
 
 | Artefact field | Content |
 |---|---|
@@ -1097,14 +1097,14 @@ from a run that cannot be reproduced by the command in the same row.
 | ID | Question | Method | n | Command | Artifact | Conclusion |
 |---|---|---|---|---|---|---|
 | POC-0 | Does feedback become transferable knowledge? | Deterministic 6-arm ablation | 280 paired | `pnpm bench` | `bench/results/study.json` | +68.21pp; unseen domain 100% vs 32.86% |
-| POC-1 | Can an LLM turn free-text feedback into a scoped lesson? | DeepSeek + shipped prompt/parser | 24 | `pnpm poc:llm-distill` | `poc/results/poc-llm-distill.json` | 91.7–95.8% mark, 95.8–100% intent, 0 active injections |
-| POC-2 | Does a real LLM follow the pack? | DeepSeek reader, generic vs house vs poison | 70 | `pnpm poc:llm-reader` | `poc/results/poc-llm-reader.json` | generic −2.38 to 0pp; house +75.00 to +89.29pp; poison 0 to −8.33pp |
-| POC-3 | Does lexical retrieval survive paraphrase? | BM25 vs embedding-3 vs rank fusion | 96 | `pnpm poc:embedding` | `poc/results/poc-embedding.json` | BM25 best for light; dense +8.4pp for heavy |
-| POC-4 | Is CPU retrieval viable at 10k items? | Synthetic store, 100 queries | 3 sizes | `pnpm poc:scale` | `poc/results/poc-scale.json` | 2.6–3.1 ms p95, 14 MB |
+| POC-1 | Can an LLM turn free-text feedback into a scoped lesson? | DeepSeek + shipped prompt/parser | 24 | `pnpm eval:llm-distill` | `eval/results/poc-llm-distill.json` | 91.7–95.8% mark, 95.8–100% intent, 0 active injections |
+| POC-2 | Does a real LLM follow the pack? | DeepSeek reader, generic vs house vs poison | 70 | `pnpm eval:llm-reader` | `eval/results/poc-llm-reader.json` | generic −2.38 to 0pp; house +75.00 to +89.29pp; poison 0 to −8.33pp |
+| POC-3 | Does lexical retrieval survive paraphrase? | BM25 vs embedding-3 vs rank fusion | 96 | `pnpm eval:embedding` | `eval/results/poc-embedding.json` | BM25 best for light; dense +8.4pp for heavy |
+| POC-4 | Is CPU retrieval viable at 10k items? | Synthetic store, 100 queries | 3 sizes | `pnpm eval:scale` | `eval/results/poc-scale.json` | 2.6–3.1 ms p95, 14 MB |
 | POC-5 | Can a competitor's design be reproduced from source? | Source audit of 5 OSS projects + Cortex | — | §8.5 | this document | No OSS project models a correction as evidence |
 | POC-6 | Does a pack ever claim a rule it did not render? | Budget sweep 60…2400 chars over 40 rules | 64 budgets | `pnpm test packages/apply` | `budget.test.ts` | **No longer** — a bug, see §12.7 |
-| POC-7 | Does the adapter match the real cortex build? | Clone, build, then compare field sets | 1 item | `pnpm poc:cortex` | `cortex.yml` | 12 fields matched; the structural copy is correct |
-| POC-9 | Does the loop help a real model on a public benchmark? | BIRD Mini-Dev, cross-fitted k=5, execution accuracy | 352 (every usable question) | `pnpm poc:sota` / `sota.yml` run `39390556532` | `poc/results/poc-sota-bird.json` | **54.83% → 51.99% (−2.84pp, 95% CI [−6.25, +0.57], p=0.143)**; 2.25 rules/question; no fold positive |
+| POC-7 | Does the adapter match the real cortex build? | Clone, build, then compare field sets | 1 item | `pnpm eval:cortex` | `cortex.yml` | 12 fields matched; the structural copy is correct |
+| POC-9 | Does the loop help a real model on a public benchmark? | BIRD Mini-Dev, cross-fitted k=5, execution accuracy | 352 (every usable question) | `pnpm eval:sota` / `sota.yml` run `39390556532` | `eval/results/poc-sota-bird.json` | **54.83% → 51.99% (−2.84pp, 95% CI [−6.25, +0.57], p=0.143)**; 2.25 rules/question; no fold positive |
 | POC-8 | Would a competitor-shaped memory do the same job? | A similarity fact store on the same corrections, clean and poisoned | 280 paired | `pnpm bench` | `bench/results/study.json` | 56.07% clean, **19.64%** poisoned; the governed loop is +43.93pp |
 
 ### 12.1 POC-0 — mechanism study
@@ -1139,7 +1139,7 @@ micro-ablations in §12.8 rather than left looking like null results. All 15 gat
 attempts. The prompt and parser are the shipped ones. Provider: `deepseek-chat`, temperature 0.
 
 Three runs are reported because the model is stochastic. Run A is local (2026-10-20T02:36Z) and its
-artifacts are `poc/results/poc-*.json`; runs B and C are `poc-live` CI runs `39360812609` (02:50Z)
+artifacts are `eval/results/poc-*.json`; runs B and C are `poc-live` CI runs `39360812609` (02:50Z)
 and `39362965052` (03:13Z), summarised in `bench/results/ci-runs.json`. A conclusion is only kept if
 it holds across all three.
 
@@ -1416,7 +1416,7 @@ This is consistent with the two other measurements in this document: generic cha
 study's transfer came from conventions a generator could not infer (POC-0). The three results now agree
 on a boundary condition: **knowledge must encode something the model cannot derive from its prompt.**
 
-**Per-rule attribution** (`poc/results/poc-sota-attribution.json`, computed from the per-case rows):
+**Per-rule attribution** (`eval/results/poc-sota-attribution.json`, computed from the per-case rows):
 
 | Rules ever injected | Harmful (net < 0) | Helpful (net > 0) | Neutral | Share of injections belonging to a harmful rule |
 |---|---|---|---|---|
@@ -2089,20 +2089,20 @@ TTL/CR and BIRD-CRITIC, where the object is the same.
 
 | ID | Question | Method | n | Gate | Artifact |
 |---|---|---|---|---|---|
-| POC-13 | Is context redaction complete? | 200 contexts with planted secrets across 6 shapes | 200 | recall ≥0.99, precision ≥0.95 | `poc/results/poc-context-redaction.json` |
-| POC-14 | Does pair contrast beat adjacent diff? | Same lane, distill from (first-wrong, accepted) | 146 | recovery ratio ≥ 0.6 (vs 0.2–0.44 today) | `poc/results/poc-pair-contrast.json` |
-| POC-15 | Does bi-temporal contradiction beat demotion? | 150 labelled pairs, replay 3 conflict patterns | 150 | F1 ≥ 0.90, stale-hit ≤ 0.02 | `poc/results/poc-validity.json` |
-| POC-16 | Can credit be attributed correctly? | 200 replayed runs with known relevant rule | 200 | accuracy ≥ 0.90 | `poc/results/poc-attribution.json` |
-| POC-17 | What over-fetch and gate settings maximise Recall@5? | 200 queries × {12, 24, 60} × coverage {0, .01, .15} | 1 800 | Recall@5 ≥ 0.90 at p95 ≤ 5 ms | `poc/results/poc-retrieval.json` |
-| POC-18 | Does taskType/stage scoping help? | Same queries with/without taskType in scope | 200 | nDCG@10 +0.05 | `poc/results/poc-tasktype.json` |
-| POC-19 | Is push delivery worth a new surface? | Webhook on knowledge change, 50 long tasks | 50 | delivery p95 ≤ 60 s, no missed update | `poc/results/poc-push.json` |
-| POC-20 | Does tool-initiated recall beat pull? | BIRD-Interact Lite, agent decides when to recall | 300 | task success +3pp over pull | `poc/results/poc-tool.json` |
-| POC-21 | Does the flywheel raise a weak model's fix rate? | BIRD-CRITIC-SQLite, memory on/off | 500 | +5pp fix rate, p<0.05 | `poc/results/poc-bird-critic.json` |
-| POC-22 | Does a taught rule apply on MemoryAgentBench TTL? | 4 ICL datasets, teach → classify | full | ≥ baseline +3pp | `poc/results/poc-ttl.json` |
-| POC-23 | Does conflict resolution beat the reported ceiling? | FactConsolidation SH/MH | full | SH ≥ 70% (vs ~60%), MH ≥ 15% (vs ≤7%) | `poc/results/poc-cr.json` |
-| POC-24 | Does a preference lane match Zep's preference gain? | LongMemEval preference subset | 30 | ≥ +20pp | `poc/results/poc-preference.json` |
-| POC-25 | Where does the scope index break? | 100k items, 1 000 queries | 100k | p95 ≤ 20 ms | `poc/results/poc-scale-100k.json` |
-| POC-26 | Is the idempotency store durable? | Restart under load, 1 000 duplicates | 1 000 | 0 duplicates recorded | `poc/results/poc-idempotency.json` |
+| POC-13 | Is context redaction complete? | 200 contexts with planted secrets across 6 shapes | 200 | recall ≥0.99, precision ≥0.95 | `eval/results/poc-context-redaction.json` |
+| POC-14 | Does pair contrast beat adjacent diff? | Same lane, distill from (first-wrong, accepted) | 146 | recovery ratio ≥ 0.6 (vs 0.2–0.44 today) | `eval/results/poc-pair-contrast.json` |
+| POC-15 | Does bi-temporal contradiction beat demotion? | 150 labelled pairs, replay 3 conflict patterns | 150 | F1 ≥ 0.90, stale-hit ≤ 0.02 | `eval/results/poc-validity.json` |
+| POC-16 | Can credit be attributed correctly? | 200 replayed runs with known relevant rule | 200 | accuracy ≥ 0.90 | `eval/results/poc-attribution.json` |
+| POC-17 | What over-fetch and gate settings maximise Recall@5? | 200 queries × {12, 24, 60} × coverage {0, .01, .15} | 1 800 | Recall@5 ≥ 0.90 at p95 ≤ 5 ms | `eval/results/poc-retrieval.json` |
+| POC-18 | Does taskType/stage scoping help? | Same queries with/without taskType in scope | 200 | nDCG@10 +0.05 | `eval/results/poc-tasktype.json` |
+| POC-19 | Is push delivery worth a new surface? | Webhook on knowledge change, 50 long tasks | 50 | delivery p95 ≤ 60 s, no missed update | `eval/results/poc-push.json` |
+| POC-20 | Does tool-initiated recall beat pull? | BIRD-Interact Lite, agent decides when to recall | 300 | task success +3pp over pull | `eval/results/poc-tool.json` |
+| POC-21 | Does the flywheel raise a weak model's fix rate? | BIRD-CRITIC-SQLite, memory on/off | 500 | +5pp fix rate, p<0.05 | `eval/results/poc-bird-critic.json` |
+| POC-22 | Does a taught rule apply on MemoryAgentBench TTL? | 4 ICL datasets, teach → classify | full | ≥ baseline +3pp | `eval/results/poc-ttl.json` |
+| POC-23 | Does conflict resolution beat the reported ceiling? | FactConsolidation SH/MH | full | SH ≥ 70% (vs ~60%), MH ≥ 15% (vs ≤7%) | `eval/results/poc-cr.json` |
+| POC-24 | Does a preference lane match Zep's preference gain? | LongMemEval preference subset | 30 | ≥ +20pp | `eval/results/poc-preference.json` |
+| POC-25 | Where does the scope index break? | 100k items, 1 000 queries | 100k | p95 ≤ 20 ms | `eval/results/poc-scale-100k.json` |
+| POC-26 | Is the idempotency store durable? | Restart under load, 1 000 duplicates | 1 000 | 0 duplicates recorded | `eval/results/poc-idempotency.json` |
 
 ### 17.14 Alternatives, and why each was not chosen (extended by §17.18)
 
@@ -2553,7 +2553,7 @@ about the mechanism. L8 costs nothing (replay) and gates every release.
 
 **Reproducibility rules.** Every lane stores: config hash, model id and version, prompt version, dataset
 digest, seed, per-case rows, the paired test, and the gate verdicts. A number without its artefact is not
-a result; a lane whose artefact is missing from `poc/results/` is reported as "not run".
+a result; a lane whose artefact is missing from `eval/results/` is reported as "not run".
 
 ### 17.28 Source-audit register (requirement 6, and the honesty requirement 7 needs)
 
@@ -2785,7 +2785,7 @@ must not reach activation, `trust(6 distinct tasks)` must.
 #### 17.34.3 Closure 2 and a retraction — the alias premise was a misattributed number
 
 The design carried "47% of packs share no content word with their question; the median coverage is 7.1%".
-Recomputing from the committed n=352 artefact (`poc/results`, run `39406533126`) gives a different picture:
+Recomputing from the committed n=352 artefact (`packages/eval/src/bin/results`, run `39406533126`) gives a different picture:
 
 | Lane | n | Zero-overlap packs | Median coverage | Questions with ≥1 overlapping active rule | ≥2 terms |
 |---|---|---|---|---|---|
@@ -2844,7 +2844,7 @@ build must satisfy). The pipeline stages of §17 are P0–P8 and are not stages 
 |---|---|---|---|---|
 | S0 mechanism | **closed** | study lift, transfer, poison, LLM distillation, reader, CPU scale | as recorded | `bench/results/study.json`, §12.1–§12.7 |
 | S1 host shadow (nl2charts) | **unblocked, replaced by L0** | top-1 lift ≥+3pp (p<0.05), SQL regression ≤1pp, knowledge precision ≥85% | n=1,300, gold **derived by policy** rather than adjudicated (§17.27 L0) | a 100-case human audit remains calibration, not a gate; the host shadow resumes when real users exist |
-| S2 public benchmarks | **closed on BIRD** | see below | — | §12.11–§12.13, `poc/results/poc-sota-bird.json` |
+| S2 public benchmarks | **closed on BIRD** | see below | — | §12.11–§12.13, `eval/results/poc-sota-bird.json` |
 | S2b convention transfer | **read twice, gate not met** | Δ ≥+3pp (p<0.05) **and** recovery ratio ≥0.60 | n=146, resolves 5.08pp; measured +4.79 then +2.05pp, recovery 0.19–0.44 | §12.14 |
 | S3 SOTA push | **conditional** | L3/L4 ladder (§17.27) | rung gates | not started |
 
@@ -3015,16 +3015,16 @@ belongs here.
 
 | Artefact | What it tests | Repo |
 |---|---|---|
-| `poc/llm-reader.ts`, `llm-distill.ts`, `embedding.ts` | whether the library's reader, distiller and retriever work against real providers | microglia |
-| `poc/scale.ts` | recall latency and heap of the embedded store | microglia |
-| `poc/attribute.ts` | which rules caused a flip | microglia |
-| `poc/sota-bird.ts` | the flywheel's effect on a public text-to-SQL benchmark | microglia |
-| `poc/integrity.ts`, `memform.ts` | the store's replay invariants and its attack surface | microglia |
-| `poc/l0.ts`, `l4.ts` | the adjudication and τ² lanes | microglia |
+| `packages/eval/src/bin/llm-reader.ts`, `llm-distill.ts`, `embedding.ts` | whether the library's reader, distiller and retriever work against real providers | microglia |
+| `packages/eval/src/bin/scale.ts` | recall latency and heap of the embedded store | microglia |
+| `packages/eval/src/bin/attribute.ts` | which rules caused a flip | microglia |
+| `packages/eval/src/bin/sota-bird.ts` | the flywheel's effect on a public text-to-SQL benchmark | microglia |
+| `packages/eval/src/bin/integrity.ts`, `memform.ts` | the store's replay invariants and its attack surface | microglia |
+| `packages/eval/src/bin/l0.ts`, `l4.ts` | the adjudication and τ² lanes | microglia |
 | `scripts/audit.mjs`, `cortex-conformance.mjs` | the repository's source rules and the projection's fidelity | microglia |
 | `scripts/hf-inventory.mjs` | what a Hugging Face dataset contains — **judgement call**, kept because its only caller is the `sota` job, where it makes a failed benchmark explain itself | microglia |
 | `.github/workflows/{ci,sota,poc-live,cortex}.yml` | build, coverage, benchmark, live-API and conformance gates | microglia |
-| `poc/results/`, `bench/results/` | artefacts written by those gates, cited from here | microglia |
+| `eval/results/`, `bench/results/` | artefacts written by those gates, cited from here | microglia |
 | This document, the whitepaper, the roadmap, the audit, the progress log | the project | microglia-docs |
 
 Two consequences worth stating. First, **no POC migrates**: every one of them measures the library, so

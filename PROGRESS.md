@@ -82,7 +82,7 @@ structural copy with `import type` as soon as `@agentix-e/cortex-*` is published
 
 ### 6 — Public benchmark lane
 
-`poc/sota-bird.ts` runs BIRD Mini-Dev with two arms on the same questions: no memory, then a pack
+`packages/eval/src/bin/sota-bird.ts` runs BIRD Mini-Dev with two arms on the same questions: no memory, then a pack
 learned from a disjoint half. Execution accuracy is computed by running both the predicted and the
 gold SQL through `node:sqlite` and comparing result multisets — the standard EX metric, with no
 dependency added.
@@ -207,7 +207,7 @@ prompt.
 **One defect the run exposed:** 166 of 642 distillation calls (25.9%) failed to parse, so the pack was
 built from a biased three quarters of the corrections. Under test in iteration 12.
 
-**Evidence.** `poc/results/poc-sota-bird.json` (per-case rows, per-fold table, gates, every stored
+**Evidence.** `eval/results/poc-sota-bird.json` (per-case rows, per-fold table, gates, every stored
 rule), `sota` workflow `39390556532`; `packages/eval/src/protocol.ts` with 11 unit tests; coverage
 100 / 100 / 100 / 99.44 over 391 tests.
 
@@ -231,7 +231,7 @@ Three findings, in order of how much they constrain the product:
    indistinguishable. That is the signature of knowledge the model does not need.
 3. Length is not the driver: doubling the text moves the estimate by ~1pp, inside the interval.
 
-Per-rule attribution (`poc/results/poc-sota-attribution.json`): of 445 rules ever injected, 34 harmed,
+Per-rule attribution (`eval/results/poc-sota-attribution.json`): of 445 rules ever injected, 34 harmed,
 27 helped, **384 changed nothing**; 10.0% of injections belong to a harmful rule. Retiring every bad
 rule would touch a tenth of the injections, so "the distiller writes wrong facts" is not the story.
 
@@ -250,8 +250,8 @@ schema prose ~0pp (here).
 **Still open.** 165 of 641 distillation calls (25.7%) return non-JSON and are dropped, unchanged by a
 larger token budget — the failure is not truncation. The next round records the reply prefix.
 
-**Evidence.** Run `39406533126`, artefact `poc/results/poc-sota-bird.json`, attribution
-`poc/results/poc-sota-attribution.json`, 396 tests, coverage 100 / 100 / 100 / 99.44.
+**Evidence.** Run `39406533126`, artefact `eval/results/poc-sota-bird.json`, attribution
+`eval/results/poc-sota-attribution.json`, 396 tests, coverage 100 / 100 / 100 / 99.44.
 
 ### 13 — A gate that removes nothing, and a parser bug that removed a quarter
 
@@ -291,7 +291,7 @@ waiting for a bigger sample.
 The last two failures are truncations, which need a salvage pass rather than another format. The delta
 still has to be re-measured with the corrected knowledge; the accuracy numbers above predate the fix.
 
-**Evidence.** `poc/results/poc-sota-bird.json`, `poc/results/poc-sota-attribution.json`, 410 tests,
+**Evidence.** `eval/results/poc-sota-bird.json`, `eval/results/poc-sota-attribution.json`, 410 tests,
 coverage 100 / 100 / 100 / 99.44, `pnpm audit:repo` ok.
 
 ## What is left, in order
@@ -399,7 +399,7 @@ subset by a rule (`|value| ≥ 1000` for thousands, everything for `round10`).
 **roughly a quarter to a half of what stating the rule is worth**, and that the ceiling (11–12pp) is
 the stable number, not the effect.
 
-**Evidence.** Run `39548548865`, artefact `poc/results/poc-sota-bird.json`, gates V1–V7 with the V6 fix
+**Evidence.** Run `39548548865`, artefact `eval/results/poc-sota-bird.json`, gates V1–V7 with the V6 fix
 in `f5b53b4`.
 
 ### 16 — Design phase: the pipeline, stage by stage
@@ -971,7 +971,7 @@ and the driver exist the job is skipped, so the workflow stays honest *and* gree
 ### 33 — The repository boundary, stated and enforced
 
 Asked to migrate the POCs into this repository, I audited every lane against one rule the owner gave:
-**a workflow whose test target is microglia belongs in microglia**. All twelve `poc/` scripts, the three
+**a workflow whose test target is microglia belongs in microglia**. All twelve `packages/eval/src/bin/` scripts, the three
 `scripts/`, the four workflows and their artefacts measure the library — replay invariants, attack
 surface, the study, the live probes, the public benchmark — so the rule puts them where they already are.
 Moving them would have separated each lane from the CI that runs it and needed a cross-repo credential for
@@ -986,3 +986,27 @@ What was missing was the **rule in writing**, which is why the question could be
 fails if any of the five internal documents appears in the product repository.
 
 **Evidence.** `audit:repo` ok with the new boundary check; 556 tests unchanged; CI green.
+
+### 34 — POC became eval, because the phase ended
+
+The name was design-phase vocabulary that outlived its phase: these scripts no longer prove a hypothesis
+before building, they measure a property of a library that is built. Two costs came with the old name —
+they lived outside `packages/`, so they escaped the package's typing regime and needed a separate loose
+typecheck, and the word itself read as research artefact rather than executable evidence, which is why
+the repository-boundary question could be asked at all.
+
+`poc/*.ts` → `packages/eval/src/bin/`, artefacts → `eval/results/`, scripts → `pnpm eval:*`. The lane
+logic stays in the package (typed, covered); the CLIs are thin entrypoints excluded from `tsc -b` and
+checked by `typecheck:lanes` plus the CI runs that execute them.
+
+Two things surfaced during the move, both worth recording. Three files carried a relative import that
+had silently been resolving through the repository root (`../packages/eval/...`) — correct only from
+`poc/`, broken from anywhere else; the move found them. And the rename itself produced a CI failure: the
+old step survived with a substituted `pnpm eval:typecheck` that was never defined, so a rename that edits
+call sites instead of moving them fails exactly the way the original bug did. Fixed in its own commit.
+
+**The design record keeps its POC-nn identifiers.** They number decisions, not files; renumbering them
+would rewrite the audit trail. What changed is where the code lives and what it is called.
+
+**Evidence.** 556 tests, coverage **99.84 / 97.66 / 100 / 99.84**; `audit:repo` ok; all three lanes run
+from their new home and write `eval/results/`; CI green at `ce65d8a`.
