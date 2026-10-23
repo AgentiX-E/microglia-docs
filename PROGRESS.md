@@ -1365,3 +1365,38 @@ different dataset.
 **Evidence.** 676 tests, coverage **99.87 / 97.92 / 100 / 99.87**; `bird-data.ts` 100 across except one
 documented arm; the lane reaches the API-key check with all eleven databases counted; `audit:repo` ok; study
 unchanged (31.79 → 100.00, 17/17 gates).
+
+### 48 — The MCP tool surface, and the two defects writing it exposed
+
+§17.21's other half: an agent that runs its own loop can now ask, instead of being handed a prompt block.
+`POST /v1/mcp` speaks JSON-RPC 2.0 over the same facade, with exactly two tools.
+
+**Two tools, and a corrected schema.** `microglia_recall` returns the rendered pack plus `_meta.ids`;
+`microglia_feedback` takes **`runId`**, not the `taskId` §17.21 originally sketched. Feedback attaches to a
+run — one immutable generation — and a task may have several attempts, so a task id cannot say which
+attempt was judged; defaulting to "the last one" would blame a generation that may have been right. The
+deviation is recorded in the design, not hidden in the code.
+
+Failures split the way the protocol asks: a malformed request is `-32602`, while an unknown run or a
+library refusal comes back as `isError: true` with a readable message, because the model is supposed to
+retry differently rather than crash. A notification gets `202` and no body.
+
+**Defect 1 — a namespace hole in the facade.** The first `microglia_feedback` test asked what happens when
+a facade annotates a run from another namespace. The answer was: it worked. `persistRun` refused a foreign
+run, `recordFeedback` did not — so the event landed under *this* tenant while citing a foreign run id, and
+the next distillation would have read that run through this tenant's interpreter. One workspace's content
+becoming another's knowledge, through an API the docs present as safe. The guard now mirrors `persistRun`,
+the refused write leaves no event behind, and the test pins both halves.
+
+**Defect 2 — `note` was accepted and dropped.** `edit(after, { note })` has taken a note since the first
+release; `FeedbackSignal` has no `note` field, so the normaliser threw it away. The one piece of human
+context an interpreter could use never reached the store, and nothing failed. The edit signal now carries
+`note` (redacted, optional), two tests pin presence and absence, and the MCP tool's `note` argument finally
+means something.
+
+Both defects were found by *writing the caller* rather than the library: the tool surface is the first
+client that exercised these paths in anger, which is the argument for shipping the caller alongside the
+capability.
+
+**Evidence.** 699 tests, coverage **99.84 / 97.92 / 100 / 99.84**; `mcp.ts` at 100 lines / 100 functions with
+two documented arms; `audit:repo` ok; study unchanged (31.79 → 100.00, 17/17 gates); L0 and L2b unchanged.

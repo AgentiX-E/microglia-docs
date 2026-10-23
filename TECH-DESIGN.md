@@ -59,7 +59,7 @@ appears in the gap register (§15).
 | N4 | Added latency on the request path | p95 ≤ 50ms | 0.02ms at 6 items (POC scale) |
 | N5 | Added prompt size | ≤ 300 tokens | 90 tokens (POC) |
 | N6 | Coverage | ≥95% on every dimension | **100 / 99.53 / 100 / 100** (lines / branches / functions / statements) |
-| N7 | Branch coverage | ≥95% | **97.93%** — the bar is met; 59 remaining arms, 23 of them guards, are classified in §10.3 and the 36 reachable ones are tracked as G-7 |
+| N7 | Branch coverage | ≥95% | **97.92%** — the bar is met; 62 remaining arms, 23 of them guards, are classified in §10.3 and the 39 reachable ones are tracked as G-7 |
 | N8 | No network in tests | 0 calls | 0 |
 | N9 | No mocks of the system under test | ports only | fakes only for `Storage`/`LLM` |
 | N10 | ESM-only, tree-shakable | `sideEffects: false` | declared |
@@ -958,10 +958,10 @@ fix.
 
 ### 10.3 The uncovered branch arms, counted and classified
 
-**97.93% (2798/2857), 59 arms**, with no ignore comment anywhere in the repository. An earlier version of
-this section claimed "seven arms at 99.53%"; that was true when it was written and had been false since
-the model providers and the HTTP surface landed. The number is now stated as measured, and the arms are
-split by whether they can be taken at all.
+**97.92% (2932/2994), 62 arms**, with no ignore comment anywhere in the repository. An earlier version of
+this section claimed "seven arms at 99.53%"; that was true when it was written and had been false since the
+model providers, the HTTP surface and the MCP tool surface landed. The number is now stated as measured,
+and the arms are split by whether they can be taken at all.
 
 **Invariant guards — 23 arms that cannot be taken.** Each protects a state the type system cannot express;
 deleting one turns a future bug into silent data loss rather than an exception.
@@ -987,18 +987,19 @@ deleting one turns a future bug into silent data loss rather than an exception.
 | `eval/src/scenario.ts:328,347` | the reduce and the confidence tie-break in `outranks` | matching rules differ in scope size, then id, before confidence is consulted |
 | `eval/src/study.ts:653` | `baseline?.holdout ?? []` | the baseline arm is always present; the fallback guards a schedule change |
 | `eval/src/lanes/delivery.ts:140` | the "receiver has no port" guard | the guard runs after `listen` resolved, and a resolved listener has an address |
+| `node/src/mcp.ts:228` | the re-throw of a non-library error from `recordFeedback` | every refusal in the library is a `MicrogliaError`; swallowing anything else would hide a bug behind `isError: true` |
 
-**Reachable and untested — 36 arms, tracked as G-7.** These are not guards: a test could take them, and
-the number would rise because the behaviour was verified rather than because the bar was lowered.
+**Reachable and untested — 39 arms, tracked as G-7.** These are not guards: a test could take them, and the
+number would rise because the behaviour was verified rather than because the bar was lowered.
 
 | File | Arms | What is untested |
 |---|---|---|
-| `node/src/app.ts` | 7 | the optional query and body parameters (`ids`, `taskId`, `actorHash`, `generalize`, `status`, `limit`) and the 1,000-id erasure cap |
+| `node/src/app.ts` | 8 | the optional query and body parameters (`ids`, `taskId`, `actorHash`, `generalize`, `status`, `limit`), the body limit and the 1,000-id erasure cap |
 | `eval/src/memform.ts` | 14 | the harness's fallback arms: missing run input, non-edit signals, absent payloads, the borrowed-evidence reason |
 | `core/src/distill/llm.ts` | 7 | the model-response parser's escape and balanced-object paths, and the optional `taskId` arms |
 | `node/src/providers/*.ts` | 5 | `model` / `baseUrl` overrides and the empty-embeddings fallback |
-| `browser/src/client.ts` | 1 | the token-less client (no `Authorization` header) |
 | `node/src/store/cortex.ts` | 2 | `payload === undefined` and a statement without a dot |
+| `browser/src/client.ts`, `eval/src/attribution.ts`, `eval/src/report.ts` | 3 | the token-less client and the reporters' unused branches |
 
 The alternative — an `ignore` comment — would make the number look better and the code worse, so the number
 stays where it is and both lists stay in the document.
@@ -2350,7 +2351,8 @@ secret, at-least-once with `id` for de-duplication:
 Types: `knowledge.admitted`, `knowledge.superseded`, `knowledge.retired`, `task.completed`. Ordered per
 `(taskType, seq)`; a host that misses one resyncs with `GET /v1/knowledge?since=`.
 
-**Tool (MCP).** Two tools, deliberately small, because an agent that can ask will ask too often:
+**Tool (MCP) — implemented (iteration 48), `POST /v1/mcp`.** Two tools, deliberately small, because an
+agent that can ask will ask too often:
 
 ```json
 {"name": "microglia_recall",
@@ -2368,6 +2370,20 @@ Types: `knowledge.admitted`, `knowledge.superseded`, `knowledge.retired`, `task.
 Gate for the tool surface: tool-call utility ≥0.60 (share of tasks where a self-initiated recall preceded
 a correct answer) and call rate ≤2 per task; an agent that recalls on every turn has replaced a prompt
 block with a latency tax.
+
+**One correction to the schema above, and why.** `microglia_feedback` ships with `runId` where this
+section first wrote `taskId`. Feedback attaches to a run — one immutable generation — and a task may have
+several attempts, so a task id cannot say which attempt was judged; defaulting to "the last one" would
+blame a generation that may have been right. The tool requires `runId` and the eleven request shapes
+(happy paths plus every malformed field) are covered by tests. Transport is JSON-RPC over HTTP, one
+request per call: enough for a tool caller, and testable without a socket dance.
+
+**What the tool surface found.** Writing the `microglia_feedback` test exposed a namespace hole in the
+facade: `persistRun` refused a foreign run, `recordFeedback` did not, so a facade could annotate another
+tenant's run — and the next distillation would read that run through *this* tenant's interpreter, one
+workspace's content becoming another's knowledge. The guard now mirrors `persistRun`, the refused write
+leaves no event behind, and a test pins both halves. The tool surface is the first caller that would have
+exercised this path in production.
 
 **Push, as shipped.** `@agentix-e/microglia-core/delivery`: `knowledgeEvents` derives admitted / superseded
 / retired from a store snapshot and the previous one, `taskCompleted` builds the fourth type from the task

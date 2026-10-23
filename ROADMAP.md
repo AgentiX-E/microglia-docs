@@ -329,7 +329,15 @@ an unchecked schema-only database would have scored every runnable query as corr
 `exec_rate: 0.986`, accuracy 6.83% — an empty database would have read ≈98.6%), and the new row count now
 makes that provable rather than lucky.
 
-Next by the plan: the **MCP tool surface** (§17.21's other half), then the **SQLite index** (W3), then **G-7**
+Iteration 48 ships §17.21's other half: `POST /v1/mcp` with `microglia_recall` and `microglia_feedback`,
+JSON-RPC over the same facade, two tools and no more. Writing the caller found two defects the library had
+been carrying: a facade could record feedback against a run from **another namespace** (the event landed
+here, cited a foreign run, and the next distillation would have read it through this tenant's interpreter),
+and `edit(after, { note })` accepted a note that `FeedbackSignal` had no field for, so it was silently
+dropped. Both fixed at the root with tests. `microglia_feedback` takes `runId` rather than the `taskId` this
+document first sketched, because a task has attempts and feedback judges one.
+
+Next by the plan: the **SQLite index** (W3), then **G-7**
 — the 36 reachable coverage arms, starting with the HTTP optional-parameter paths and the model-response
 parsers. L4's remaining work is
 the agent invocation itself, which needs the tool-calling environment (`TAU_ENV_READY`); until then the
