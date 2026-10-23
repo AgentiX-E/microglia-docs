@@ -1243,9 +1243,16 @@ therefore an optional, confidence-gated channel (ADR-015).
 a number nobody had tested. The lane measures to 100k and applies a rule stated before the numbers: the
 index is needed when p95 at 100k exceeds **100 ms** (a 4x margin over the measured value, so the gate
 measures the code and not the runner) or when the heap at 100k exceeds **256 MB**. At this commit:
-22.73 ms and 173.9 MB, so **`index_needed = 0` on both axes** and W3 stays deferred — with the number that
-would change the answer written down, and a gate that fails the build if it is crossed. The growth ratio is
-reported (8.5x) but not gated: it is a ratio of two quantiles over 100 samples, noisier than either budget.
+22.73 ms and 173.9 MB locally, 24.73 ms and 198.6 MB on the CI runner, so **`index_needed = 0` on both axes**
+and W3 stays deferred — with the numbers that would change the answer written down, and a gate that fails the
+build when either is crossed. The growth ratio is reported (8.0–8.5x) but not gated: it is a ratio of two
+quantiles over 100 samples, noisier than either budget.
+
+**Where the deferral actually ends.** Heap is linear in items (6.3 → 29.3 → 113.1 → 173.9 MB), about 1.7 KB
+per rule locally and 2.0 KB on CI. Against the 256 MB budget that puts the boundary at **roughly 130k
+rules**, not at 100k — which is the number to quote when someone asks when the index is needed. Latency has
+far more room: the 100 ms budget would not be crossed until several hundred thousand items, by the same
+extrapolation.
 
 **Conclusion.** The CPU budget holds at 10k items with a wide margin (p95 2.6–3.1 ms across three
 runs; 1k shows 1.9–4.2 ms because the runner is shared). The

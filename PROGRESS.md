@@ -1549,6 +1549,12 @@ notices memory exhaustion long before it notices a 23 ms recall. The index's rea
 moving items off the heap, which is why W3 remains on the roadmap *with a different justification* than the
 one it had.
 
+**The CI runner moved the numbers, so the boundary moved with them.** The same lane on the GitHub runner
+reports 24.73 ms and **198.6 MB** — 15% more heap than this sandbox. Heap is linear (1.7 KB per rule here,
+2.0 KB on CI), so the 256 MB budget is reached at **roughly 130k rules**, not 100k. That is the number to
+quote when someone asks when the index becomes necessary, and it is 30% closer than the sandbox suggested —
+which is exactly why a single-machine measurement is not the one to publish alone.
+
 **Evidence.** 754 tests, coverage **99.97 / 99.54 / 100 / 99.97**; `pnpm check` green including the new
 scale gate; bundle 3,009 / 40,461 B raw and 1,410 / 13,920 B gzipped (ceilings 3,200 / 42,000 and
 1,600 / 15,000); study unchanged (31.79 → 100.00, 17/17); L0, L2b, POC-19, POC-29 unchanged.
