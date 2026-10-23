@@ -65,7 +65,7 @@ appears in the gap register (§15).
 | N10 | ESM-only, tree-shakable | `sideEffects: false` | declared |
 | N11 | **CPU or WebGPU only** | no CUDA/ROCm, no local GPU runtime | CI runs on CPU; no GPU dependency |
 | N12 | Memory at 10k items | ≤100 MB heap | **13.9 MB** measured |
-| N13 | `recall` p95 at 10k items | ≤50 ms | **3.10 ms** measured |
+| N13 | `recall` p95 at 10k items | ≤50 ms | **2.68 ms** measured at 10k, **22.73 ms** at 100k |
 
 N7 is deliberately reported as a miss rather than rounded up. §15.2 (E1) lists the remediation.
 
@@ -894,15 +894,20 @@ has no GPU path; embeddings, when enabled, run through an ONNX/WASM or WebGPU en
 
 | Items | Build | `recall` p50 | `recall` p95 | Heap delta | Pack tokens |
 |---|---|---|---|---|---|
-| 1,000 | 5–6 ms | 1.3–1.4 ms | **1.9–4.2 ms** | 1.6–2.1 MB | 259 |
-| 5,000 | 22–28 ms | 1.5–1.6 ms | **2.2–4.4 ms** | 7.1–8.4 MB | 259 |
-| 10,000 | 45–61 ms | 1.8–2.1 ms | **2.6–3.1 ms** | **13.9–14.0 MB** | 259 |
+| 1,000 | 13 ms | 1.26 ms | 1.91 ms | 6.3 MB | 260 |
+| 10,000 | 69 ms | 2.11 ms | 2.68 ms | 29.3 MB | 258 |
+| 50,000 | 329 ms | 8.89 ms | 10.76 ms | 113.1 MB | 257 |
+| 100,000 | 750 ms | 18.65 ms | **22.73 ms** | **173.9 MB** | 257 |
 
-The scope scan is O(n), but at 10k items it is 2.6–3.1 ms p95 across three runs — well inside the
-50 ms budget. The earlier
-claim that 10k would be the bottleneck was an inference, not a measurement; it is withdrawn. The next
-checkpoint is 100k, where the scan is expected to cross the budget and the SQLite index becomes the
-fix.
+The scope scan is O(n), and the table is what that costs: 2.7 ms p95 at 10k, 22.7 ms at 100k, a
+10k→100k growth of 8.5x against 10x the items. Pack tokens are flat (257–260), which is the point of a
+budget: more knowledge changes what is selected only when it changes what is relevant.
+
+An earlier version of this section claimed 10k would be the bottleneck; that was an inference, and it is
+withdrawn. The scan is still O(n) — the shape of the curve says so — but the constant is small enough that
+100k items cost 22.7 ms, not the 50 ms the inference implied. What the measurement adds is the second axis
+nobody had looked at: **memory**. 174 MB of heap for 100k rules is the number a host actually runs into,
+and it is the reason the index would still be worth building before the latency budget is crossed.
 
 | Other measurements | Value | Conditions |
 |---|---|---|
@@ -1117,7 +1122,7 @@ from a run that cannot be reproduced by the command in the same row.
 | POC-1 | Can an LLM turn free-text feedback into a scoped lesson? | DeepSeek + shipped prompt/parser | 24 | `pnpm eval:llm-distill` | `eval/results/poc-llm-distill.json` | 91.7–95.8% mark, 95.8–100% intent, 0 active injections |
 | POC-2 | Does a real LLM follow the pack? | DeepSeek reader, generic vs house vs poison | 70 | `pnpm eval:llm-reader` | `eval/results/poc-llm-reader.json` | generic −2.38 to 0pp; house +75.00 to +89.29pp; poison 0 to −8.33pp |
 | POC-3 | Does lexical retrieval survive paraphrase? | BM25 vs embedding-3 vs rank fusion | 96 | `pnpm eval:embedding` | `eval/results/poc-embedding.json` | BM25 best for light; dense +8.4pp for heavy |
-| POC-4 | Is CPU retrieval viable at 10k items? | Synthetic store, 100 queries | 3 sizes | `pnpm eval:scale` | `eval/results/poc-scale.json` | 2.6–3.1 ms p95, 14 MB |
+| POC-4 | Is CPU retrieval viable at 100k items? | Synthetic store, 100 queries | 4 sizes | `pnpm eval:scale` | `eval/results/poc-scale.json` | 22.73 ms p95, 174 MB at 100k; the W3 trigger stays unmet |
 | POC-5 | Can a competitor's design be reproduced from source? | Source audit of 5 OSS projects + Cortex | — | §8.5 | this document | No OSS project models a correction as evidence |
 | POC-6 | Does a pack ever claim a rule it did not render? | Budget sweep 60…2400 chars over 40 rules | 64 budgets | `pnpm test packages/apply` | `budget.test.ts` | **No longer** — a bug, see §12.7 |
 | POC-7 | Does the adapter match the real cortex build? | Clone, build, then compare field sets | 1 item | `pnpm eval:cortex` | `cortex.yml` | 12 fields matched; the structural copy is correct |
@@ -1233,6 +1238,14 @@ therefore an optional, confidence-gated channel (ADR-015).
 | 1,000 | 5 / 6 / 5 ms | 1.34 / 1.40 / 1.5 ms | 1.91 / 3.10 / **4.17** ms | 1.6 / 2.1 / 1.8 MB | 259 |
 | 5,000 | 22 / 28 / 24 ms | 1.52 / 1.61 / 1.7 ms | 2.18 / 2.71 / **4.41** ms | 7.1 / 8.4 / 7.6 MB | 259 |
 | 10,000 | 45 / 56 / 73 ms | 2.07 / 1.82 / 1.9 ms | 3.10 / 2.63 / **3.10** ms | 13.9 / 14.0 / **14.0 MB** | 259 |
+
+**The W3 decision, now measured rather than assumed.** The index was deferred on "more than 50k rules",
+a number nobody had tested. The lane measures to 100k and applies a rule stated before the numbers: the
+index is needed when p95 at 100k exceeds **100 ms** (a 4x margin over the measured value, so the gate
+measures the code and not the runner) or when the heap at 100k exceeds **256 MB**. At this commit:
+22.73 ms and 173.9 MB, so **`index_needed = 0` on both axes** and W3 stays deferred — with the number that
+would change the answer written down, and a gate that fails the build if it is crossed. The growth ratio is
+reported (8.5x) but not gated: it is a ratio of two quantiles over 100 samples, noisier than either budget.
 
 **Conclusion.** The CPU budget holds at 10k items with a wide margin (p95 2.6–3.1 ms across three
 runs; 1k shows 1.9–4.2 ms because the runner is shared). The

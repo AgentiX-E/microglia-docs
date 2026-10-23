@@ -347,10 +347,35 @@ and the model-response extractor threw away any reply whose prose contained a br
 went with them (an array of non-objects read as "no candidates", a missing mark defaulted to the *gold*
 answer). §10.3 now enumerates the 14 remaining arms with a reason each.
 
+Iteration 51 tried to run S2 twice and learned three things, none of them about the mechanism.
+
+**The dispatch itself was broken in three places.** A run sat in its benchmark step for ten hours and
+finished with the artefact from two days earlier: the step had no timeout of its own (five folds at ~700
+calls each is two to four hours), the publish/attribute/upload steps run with `if: always()` and therefore
+uploaded the *committed* artefact as if this run had produced it, and the evaluation printed nothing until
+the end of each fold, so a silent step was indistinguishable from a hung one. The artefact is now deleted
+before the run, its absence is an error in both steps, the step carries `timeout-minutes: 110`, and the
+fold loop prints fold/eval/calls counters every five questions.
+
+**S2 cannot produce a number right now, for a reason outside the code.** The second dispatch reached the
+first model call and stopped with `DeepSeek returned 402`: the account behind `DEEPSEEK_API_KEY` has no
+balance. That is now a named configuration failure with the fix in the message, not a generic store error —
+and it is the reason there is no new S2 result in this iteration. Dispatch again after a top-up; nothing
+else is in the way.
+
+**W3's trigger was asserted, so it was measured.** The index was deferred on "more than 50k rules", a
+number nobody had tested, and the lane stopped at 10k. It now runs to **100k**: p95 **22.73 ms**, heap
+**173.9 MB**, build 750 ms, growth 8.5x against 10x the items. Both budgets (100 ms, 256 MB) hold, so the
+index stays deferred — and the lane now *fails the build* when either is crossed, which is what makes a
+deferral a decision rather than an omission.
+
 Next by the plan: **L4's agent invocation** when `TAU_ENV_READY` is set (the reader, its refusals and its
 gates are already in place), then the **S2 re-run** whose data path is now pinned and verified, then the
-**SQLite index** (W3), whose trigger — more than 50k rules — is still not met: the current corpus is 10k and
-a scope scan is 2.6–3.1 ms at p95, so building it now would be a guess about a workload nobody has.
+**SQLite index** (W3), whose trigger is now measured rather than asserted: the lane runs to 100k items and
+reports **22.73 ms** p95 with **173.9 MB** of heap, against budgets of 100 ms and 256 MB. It stays deferred
+— that is the measurement's answer, not a preference — and the lane fails the build if either budget is
+crossed. The heap is the axis to watch: 174 MB at 100k is what a host runs out of long before it notices
+22 ms.
 L2b's remaining question is about the *reader* — a `negative`-lesson channel — not about the corpus or the
 protocol.
 
@@ -368,7 +393,7 @@ These are tracked but do not block a stage; each has a trigger.
 |---|---|---|---|
 | W1 | **Cortex release dependency** | `@agentix-e/cortex-*` publishes | **Highlighted action item.** Today the adapter carries a structural copy and the `cortex` workflow clones and builds cortex to check it. On release: depend normally, switch the copy back to `import type`, delete the clone lane. |
 | W2 | vitest 4 migration | vite 7 lands in the toolchain | Clears the four dev-only advisories; it changes coverage semantics, so it is a deliberate migration, not a bump |
-| W3 | SQLite index at 100k items | a host reports > 50k rules | The O(n) scope scan is fine at 10k (2.6–3.1 ms p95) |
+| W3 | SQLite index at 100k items | **measured**: p95 > 100 ms or heap > 256 MB at 100k | Measured to 100k in iteration 51: **22.73 ms** p95 and **173.9 MB** heap, growth 8.5x against 10x the items. Both budgets hold, so the index stays deferred — and `pnpm eval:scale` now fails the build when either is crossed, so the deferral cannot quietly expire |
 | W1b | ~~**BIRD data hosting**~~ **closed by pinning** (iteration 47) | — | No upload was needed. The vendor's own archive (`minidev.zip`, 800,943,648 B, sha256 `cc48ba16…b92f`, CC BY-SA 4.0) carries the eleven databases *and* the questions; `eval/manifests/bird-minidev.json` pins it, the lane verifies the digest before extracting, and `BIRD_ARCHIVE_URL` is set. The lane's `_template.sqlite` fallback was removed: it never checked what it downloaded, and an empty database would have scored every runnable query as correct. |
 | W4 | LLM-judge calibration | S2 begins | **Revised**: generic soundness from public data (MT-Bench 84.6% vs 81.0% expert-expert, 15.8% order flip), task-internal gold where computable, and κ on 50–100 labels only for what neither covers |
 | W5 | Per-user preference scope | S1 shows cross-user variance | Requires a cold-start policy, which is a product decision |

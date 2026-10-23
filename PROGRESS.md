@@ -1497,3 +1497,58 @@ reader's contract is now gated in the same place the shipped lane runs it.
 **Evidence.** 754 tests, coverage **99.97 / 99.54 / 100 / 99.97**; the data path verified against the real
 archive (`dropped 2 repeated question(s)`, eleven databases counted, run stops at the missing API key);
 `audit:repo` ok; study and every lane artefact unchanged.
+
+### 51 — Two dispatches, three workflow defects, one 402, and a decision that is finally measured
+
+The S2 lane was pinned in iteration 47 and never dispatched. It has now been dispatched twice, and neither
+run produced a benchmark number — for reasons that had nothing to do with the mechanism, and both worth
+fixing.
+
+**Dispatch #2 hung for ten hours and published the wrong artefact.** The run sat in its benchmark step with
+no completion, and the artefact it uploaded was **87,980 bytes, generated two days earlier** — the committed
+file, picked up by an `if: always()` upload step and reported as this run's evidence. Three faults, each
+sufficient on its own:
+
+| Fault | Why it was invisible | Fix |
+|---|---|---|
+| the step had no timeout of its own | five folds × ~700 calls is 2–4 hours; the only cap was the job-level 180 min, which kills without saying where it got to | `timeout-minutes: 110` on the benchmark step |
+| the artefact was never deleted before the run | publish/attribute/upload all run with `if: always()`, so a committed result is indistinguishable from a fresh one | `rm -f eval/results/poc-sota-bird.json` before the run; a missing artefact is now an **error** in both steps |
+| the evaluation was silent until the end of each fold | a stuck step and a working step look identical in the UI | fold/eval/calls counters printed every five questions |
+
+That last one is the general lesson: **this repository is careful about what a number means and was careless
+about whether the number was produced by the process that claims it.** An artefact with no provenance is a
+claim, not evidence.
+
+**Dispatch #3 stopped at the first model call: `DeepSeek returned 402`.** The account behind
+`DEEPSEEK_API_KEY` has no balance. The lane now reports that as `MG_E_CONFIG` with the fix in the message
+("top up the account … then dispatch again") instead of a store error, because 402 is a configuration state,
+not a transient failure and not a regression. **There is no new S2 result in this iteration, and none is
+claimed.** The three guards above earned their keep immediately: the attribution and publish steps both
+failed with "no artefact" instead of printing last week's numbers.
+
+**W3's trigger was asserted; it is now measured.** The index was deferred on "more than 50k rules". The
+lane stopped at 10k, so nothing in the repository could say whether 50k was fine. It now measures 1k / 10k /
+50k / 100k, with the decision rule written before the numbers: the index is needed when p95 at 100k exceeds
+100 ms or when the heap at 100k exceeds 256 MB.
+
+| Items | Build | p50 | p95 | Heap | Pack tokens |
+|---|---|---|---|---|---|
+| 1,000 | 13 ms | 1.26 ms | 1.91 ms | 6.3 MB | 260 |
+| 10,000 | 69 ms | 2.11 ms | 2.68 ms | 29.3 MB | 258 |
+| 50,000 | 329 ms | 8.89 ms | 10.76 ms | 113.1 MB | 257 |
+| 100,000 | 750 ms | 18.65 ms | **22.73 ms** | **173.9 MB** | 257 |
+
+`index_needed = 0` on both axes, so **W3 stays deferred** — and the lane now fails the build if either
+budget is crossed, which is the difference between a deferral and an omission. The latency budget carries a
+4x margin (100 ms against 22.73 measured) on purpose: a gate at 50 ms would measure the CI runner. The
+10k→100k growth ratio (8.5x) is reported but not gated, because a ratio of two quantiles over 100 samples is
+noisier than either budget.
+
+**What the measurement changed.** 174 MB of heap at 100k is the number that matters, not 22.73 ms: a host
+notices memory exhaustion long before it notices a 23 ms recall. The index's real benefit at this shape is
+moving items off the heap, which is why W3 remains on the roadmap *with a different justification* than the
+one it had.
+
+**Evidence.** 754 tests, coverage **99.97 / 99.54 / 100 / 99.97**; `pnpm check` green including the new
+scale gate; bundle 3,009 / 40,461 B raw and 1,410 / 13,920 B gzipped (ceilings 3,200 / 42,000 and
+1,600 / 15,000); study unchanged (31.79 → 100.00, 17/17); L0, L2b, POC-19, POC-29 unchanged.
