@@ -1558,3 +1558,72 @@ which is exactly why a single-machine measurement is not the one to publish alon
 **Evidence.** 754 tests, coverage **99.97 / 99.54 / 100 / 99.97**; `pnpm check` green including the new
 scale gate; bundle 3,009 / 40,461 B raw and 1,410 / 13,920 B gzipped (ceilings 3,200 / 42,000 and
 1,600 / 15,000); study unchanged (31.79 → 100.00, 17/17); L0, L2b, POC-19, POC-29 unchanged.
+
+### 52 — S2 produces a number at last, and the number is a null with a diagnosis
+
+After the credit was topped up, the lane ran end to end for the first time since its data path was
+pinned. Two dispatches: a bounded pilot (60 questions, 3 folds) to check the pipeline, then the full split.
+The pilot is the one with results to read; the full split is running as this is written and its numbers will
+be recorded when it lands.
+
+**The pilot, in full.** 60 questions, 3 folds, arms `none` / `full` / `gated`, 362 model calls, 382,846
+tokens, **0 retries**.
+
+| | |
+|---|---|
+| execution accuracy, no memory | **46.67%** |
+| execution accuracy, with memory | **41.67%** |
+| delta | **−5.00pp**, CI [−15.00, +5.00] |
+| McNemar | p = 0.508 (6 lost, 3 gained, discordance 15%) |
+| minimum detectable difference at n=60 | **14.01pp** |
+| parse / execution / gold-executable rate | 100% / 100% / 100% |
+| rules created / corrections learned / active per fold | 124 / 62 / 40.3 |
+| rules per question | 1.90 (pack), 1.17 (gated control) |
+
+Six of seven gates pass. The seventh, V5, fails: at n=60 the smallest detectable difference is 14pp, so the
+run **cannot resolve** an effect of the size it is looking for. That gate is advisory on purpose — a small
+run is allowed to be a small run — but it means the honest reading is "no detectable effect", not "memory
+does not work".
+
+**What the attribution says, which is more interesting than the delta.** Of 124 rules, 74 were injected at
+least once: **11 harmful, 5 helpful, 58 neutral**. `harmfulShare` 16.7%. Six of the harmful rules are worth
+looking at together, because they share a shape:
+
+```
+net=-2  active trust=0.9  "count distinct atom identifiers to avoid row duplication from the join"
+net=-1  active trust=0.9  "SUM(...) * 100 / SUM(...) without a REAL cast is wrong in SQLite"
+net=-1  active trust=0.9  "'types' instead of 'type' on the cards table causes an execution mismatch"
+```
+
+Every one is **true for the query it was learned from** and false as a general rule. None is a
+hallucination; all are over-application. That reframes the mechanism's cost: at this sample size the loss is
+**retrieval precision and scope specificity**, not distillation accuracy — and it is the kind of error the
+promotion gate cannot catch, because the claim was corroborated by a real correction.
+
+**Two instrument defects found while reading the artefact.**
+
+- the attribution published the twenty *worst* rules and nothing else. A reader given a list of suspects
+  concludes the pack is uniformly bad; the same table says 11 harmful against 5 helpful, and only one of
+  those numbers was visible. `best` now sits beside `top`, the lane prints three of each.
+- the two sort comparators ended in `a.id < b.id ? -1 : 1`, which is **not a total order** when the same
+  rule appears in two folds: it answers 1 in both directions and the sort may then produce either order.
+  They are named and exported, with the fold as the final tie-break, and tested directly in both
+  directions — a comparator reached only through `Array.prototype.sort` is verified in whatever order V8
+  chooses, which for two or three elements is one direction.
+
+**And two instrument checks that had been thresholds.** `mcnemarExact` is now pinned to nine exact values of
+2·P(X ≤ min(b,c)) computed in rational arithmetic outside the implementation (agreement to twelve decimal
+places, with the doubled tail capped at 1). The bootstrap interval is checked against the normal
+approximation it is meant to reproduce — 400 pairs at 20% discordance give a half-width within 15% of
+1.96·√(p_d/n) — and `detectableDelta`'s constant is pinned at 2.802 = 1.96 + 0.84, i.e. 80% power at a
+two-sided 5% level. Those three numbers are what turn a run into a claim; before this they were checked
+against "less than 0.01" and nothing else.
+
+**What the pilot changes about the plan.** The next S2 experiment is not "more samples". It is an ablation
+of the *retrieval* side, because the attribution localises the loss there: scope widening
+(`generalize: false`), a stricter corroboration band, or a pack budget that prefers specificity over recall.
+The lane already accepts the first as an input (`SOTA_GENERALIZE`), so the ablation costs a dispatch, not a
+patch.
+
+**Evidence.** 762 tests, coverage **99.97 / 99.55 / 100 / 99.97**; `attribution.ts` back to 100% of branches;
+`pnpm check` green; every other lane unchanged.

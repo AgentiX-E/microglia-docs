@@ -369,6 +369,19 @@ number nobody had tested, and the lane stopped at 10k. It now runs to **100k**: 
 index stays deferred — and the lane now *fails the build* when either is crossed, which is what makes a
 deferral a decision rather than an omission.
 
+Iteration 52 is the first S2 result since the data path was pinned, and it is a null with a diagnosis.
+**46.67% without memory, 41.67% with it** over 60 questions (−5.00pp, CI [−15, +5], McNemar p=0.51), with a
+minimum detectable difference of **14.01pp** at that n — so the run cannot resolve an effect of the size it
+is looking for, and says so (gate V5 fails, advisory). The useful part is the attribution: of 74 rules that
+were ever injected, **11 hurt and 5 helped**, and the harmful ones are uniformly *true statements about the
+question they were learned from* applied to other questions. The cost is retrieval precision and scope
+specificity, not distillation accuracy.
+
+**Where that sends the next experiment.** Not "more samples" — an ablation of the retrieval side, with the
+attribution as the readout: `SOTA_GENERALIZE=false` (no scope widening) first, because it is already an
+input to the lane; then a stricter corroboration band if widening is not the cause. A full-split run is in
+flight to give the ablation its baseline.
+
 Next by the plan: **L4's agent invocation** when `TAU_ENV_READY` is set (the reader, its refusals and its
 gates are already in place), then the **S2 re-run** whose data path is now pinned and verified, then the
 **SQLite index** (W3), whose trigger is now measured rather than asserted: the lane runs to 100k items and
