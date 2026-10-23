@@ -337,12 +337,22 @@ and `edit(after, { note })` accepted a note that `FeedbackSignal` had no field f
 dropped. Both fixed at the root with tests. `microglia_feedback` takes `runId` rather than the `taskId` this
 document first sketched, because a task has attempts and feedback judges one.
 
-Next by the plan: the **SQLite index** (W3), then **G-7**
-— the 36 reachable coverage arms, starting with the HTTP optional-parameter paths and the model-response
-parsers. L4's remaining work is
-the agent invocation itself, which needs the tool-calling environment (`TAU_ENV_READY`); until then the
-lane keeps writing `not-run` rather than a number. L2b's remaining question is about the *reader* — a
-`negative`-lesson channel — not about the corpus or the protocol.
+Iteration 49 closes **G-7**: the 39 reachable branch arms are taken, branch coverage moves **97.92% →
+99.54%** over 751 tests, and the campaign found seven defects that all shared one shape — a request or a
+reply the library accepted and then answered successfully while doing something else. A typo in `?status=`
+listed an empty store; `?limit=abc` did the same through `NaN`; `{"generalize": "false"}` applied the wider
+default; `forget { actorHash }` could never match because ingest never recorded one; a misspelt `run.taskID`
+was dropped so the grouping vanished; a Zhipu entry with no vector returned an empty vector for the index;
+and the model-response extractor threw away any reply whose prose contained a bracket. Two silent-zero paths
+went with them (an array of non-objects read as "no candidates", a missing mark defaulted to the *gold*
+answer). §10.3 now enumerates the 14 remaining arms with a reason each.
+
+Next by the plan: **L4's agent invocation** when `TAU_ENV_READY` is set (the reader, its refusals and its
+gates are already in place), then the **S2 re-run** whose data path is now pinned and verified, then the
+**SQLite index** (W3), whose trigger — more than 50k rules — is still not met: the current corpus is 10k and
+a scope scan is 2.6–3.1 ms at p95, so building it now would be a guess about a workload nobody has.
+L2b's remaining question is about the *reader* — a `negative`-lesson channel — not about the corpus or the
+protocol.
 
 ## S3 — SOTA push (conditional)
 

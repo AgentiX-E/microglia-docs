@@ -1400,3 +1400,56 @@ capability.
 
 **Evidence.** 699 tests, coverage **99.84 / 97.92 / 100 / 99.84**; `mcp.ts` at 100 lines / 100 functions with
 two documented arms; `audit:repo` ok; study unchanged (31.79 → 100.00, 17/17 gates); L0 and L2b unchanged.
+
+### 49 — G-7: the reachable arms, and the seven defects they were hiding
+
+§10.3 had been claiming a small, well-understood gap while the real number drifted: 39 of its 59 uncovered
+arms were **reachable and untested**, and they were concentrated in the surfaces added last — the HTTP
+server, the MCP tools, the providers, the model-response parser. Taking them was not a coverage exercise.
+Seven of them were wrong, and each wrongness was the kind that reports success.
+
+**The defects, in the order they were found.**
+
+| # | What it did | Why it mattered | Fix |
+|---|---|---|---|
+| 1 | `GET /v1/knowledge?status=bogus` answered **200 with an empty list** | a typo is indistinguishable from "you have no knowledge" — an empty answer to an invalid question | `parseStatusQuery` returns a union; the route answers 400 with the allowed values |
+| 2 | `?limit=abc` answered 200 with an empty list; `?limit=-1` dropped the last row | `Number('abc')` is `NaN`, and `slice(0, NaN)` is `[]`; `slice(0, -1)` is off-by-one | `parseLimitQuery` checks digits as text; `2.0`, `1e3`, `0` and negatives are refused |
+| 3 | `POST /v1/distill {"generalize": "false"}` applied the **default**, which is the wider behaviour | a string is not a boolean, and the caller was trying to switch the widening *off* | present and not a boolean is a 400 |
+| 4 | `POST /v1/forget {"actorHash": …}` always erased nothing and answered 200 | the surface accepted a documented selector it could not satisfy, because ingest never recorded an actor hash | ingest takes `run.actorIdHash`; the event records it; erasure by actor works and is tested end to end |
+| 5 | a misspelt run field (`run.taskID`) was dropped in silence | the grouping the caller asked for never happened, so three attempts at one job counted as three independent endorsements | unknown fields at the top level and inside `run` are refused, naming the field |
+| 6 | a Zhipu reply with an entry but no vector returned `[]` for that text | an empty vector reaches the index, where every comparison against it is meaningless and indistinguishable from a miss | the provider refuses the reply, naming the entry index |
+| 7 | `parseCandidates` discarded a reply whose prose contained a bracket | `Note [1] here: {…}` and `A {brace} then […]` are ordinary replies; the extractor sliced from the first bracket and called the whole reply "not JSON" | every `{`/`[` is tried as a start and scanned to its balanced close, with strings respected |
+
+**Two silent-zero defects in the same family.** `parseCandidates('[1, 2]')` returned the array, which
+`parseDistillResponse` then filtered to `[]` — an empty distillation reported as a successful one. An array
+with no object in it is now not a candidate list; an *empty* array still is, because "this correction taught
+nothing" is a real answer. And the memory-formation harness defaulted `domain` to `sales` and the intent to
+a constant when a run did not carry them, so it could have reported an attack on a scope nobody chose; the
+interpreter now refuses such a run. Its `markOf` also defaulted a missing mark to **`GOLD`**, which scored a
+malformed attack as a blocked one — it throws now.
+
+**The demotion rule moved into the verdict.** The `path` route carried a local branch for "the attacker won
+by removing the legitimate rule", and no attempt in the sweep ever took it — a claim with no instance. It is
+now part of `judge`, which is a pure function taking the store's items, the pack and the refusal count:
+`injected`, `legitimate-demoted`, `rejected-borrowed`, `never-stored`, `active-not-injected` and the status
+reason are each asserted directly, including the two the sweep cannot produce.
+
+**Both comparators had only ever been called one way.** `applyKnowledge` reduces in pack order, so a test
+that lists the winner first never calls the comparison in the losing direction — and the confidence test was
+passing for the wrong reason: with the corpus factory, the lower-weight rule came back *quarantined*, was
+filtered out, and the reduce ran over one element. The block now uses literal pack items with explicit
+confidence and asserts both orders.
+
+**The numbers.** 39 arms taken: **97.92% → 99.54%** of branches (3087/3101), **751 tests**. Lines and statements 99.97,
+functions 100. The 14 that remain are enumerated in §10.3 with the reason each cannot be taken — including
+one arm of a sort comparator that depends on V8's call order, which is now stated as such rather than
+reported as coverage.
+
+**Regression check.** The ablation study is unchanged (31.79 → 100.00, 17/17 gates), L0 unchanged
+(+67.88pp, 706 gained / 0 lost), L2b unchanged (87.50% both arms, 0 rules differing), POC-19 unchanged
+(50 events, 0 missed, 1 duplicate), POC-29 unchanged (0.132 overall, 0.4 at the trusted ceiling). Every
+artefact was regenerated by the same command and diffed: only latency samples and timestamps moved.
+
+**One refusal recorded rather than fixed.** `?limit=0` is a 400, not an empty page. A count of rows that is
+zero is a request for nothing, and the honest answer to "give me zero rows" is not a 200 with an empty
+array that looks like a bug upstream.

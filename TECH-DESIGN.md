@@ -59,7 +59,7 @@ appears in the gap register (§15).
 | N4 | Added latency on the request path | p95 ≤ 50ms | 0.02ms at 6 items (POC scale) |
 | N5 | Added prompt size | ≤ 300 tokens | 90 tokens (POC) |
 | N6 | Coverage | ≥95% on every dimension | **100 / 99.53 / 100 / 100** (lines / branches / functions / statements) |
-| N7 | Branch coverage | ≥95% | **97.92%** — the bar is met; 62 remaining arms, 23 of them guards, are classified in §10.3 and the 39 reachable ones are tracked as G-7 |
+| N7 | Branch coverage | ≥95% | **99.54%** — the bar is met; the 14 remaining arms are enumerated in §10.3 with the reason each cannot be taken. G-7 (the 39 reachable arms) is closed |
 | N8 | No network in tests | 0 calls | 0 |
 | N9 | No mocks of the system under test | ports only | fakes only for `Storage`/`LLM` |
 | N10 | ESM-only, tree-shakable | `sideEffects: false` | declared |
@@ -958,51 +958,40 @@ fix.
 
 ### 10.3 The uncovered branch arms, counted and classified
 
-**97.92% (2932/2994), 62 arms**, with no ignore comment anywhere in the repository. An earlier version of
-this section claimed "seven arms at 99.53%"; that was true when it was written and had been false since the
-model providers, the HTTP surface and the MCP tool surface landed. The number is now stated as measured,
-and the arms are split by whether they can be taken at all.
+**99.54% (3087/3101), 14 arms**, with no ignore comment anywhere in the repository. Two earlier versions of
+this section were wrong in the same direction — "seven arms at 99.53%", then "59 arms at 97.93%" — because
+the number was restated when a feature landed and never re-derived from the report. It is now measured with
+`vitest --coverage.reporter=json` and enumerated arm by arm; the 14 that remain are listed below, each with
+the reason it cannot be taken.
 
-**Invariant guards — 23 arms that cannot be taken.** Each protects a state the type system cannot express;
-deleting one turns a future bug into silent data loss rather than an exception.
+**The campaign that got here (G-7).** 39 reachable arms were taken between iterations 48 and 49, and doing
+it found seven defects that the suite had been passing over — an HTTP query string that answered typos with
+an empty list, a schema-only database scoring as 100%, a model-response parser that discarded valid replies,
+a memory-formation harness that defaulted away its own inputs. They are recorded in PROGRESS §49; the point
+here is that the arms were reachable *and* load-bearing, which is why the campaign was worth running instead
+of writing them off as guards.
 
 | File:line | The arm that never runs | Why it is unreachable |
 |---|---|---|
-| `core/src/kernel/diff.ts:113` | `key === undefined` when applying an op | the empty-path case returns earlier, so a non-empty path always has a last element |
-| `core/src/kernel/stats.ts:93` | `logSumExp` over an empty sample | `mcnemarExact` returns at `n === 0`, so the sum never sees zero terms |
-| `core/src/kernel/knowledge.ts:472` | `right === undefined` in `strongestTier` | every item the store writes carries a tier; the arm guards rows written before the field existed |
-| `core/src/capture/task.ts:145` | the `sessionId` absence arm | a task opened without a session carries `undefined`, and every caller in this repository sets one |
-| `core/src/capture/curate.ts:128,181,236` | three sort tie-breaks | they exist so equal keys stay deterministic; no test constructs two items with equal density *and* the same id |
-| `core/src/capture/doctor.ts:91` | the "every item is waiting" severity | the lanes' stores always hold an item that cleared the promotion gate |
+| `core/src/capture/curate.ts:128` | one arm of the density comparator | reached only when V8's sort calls the comparator with the two operands in the order the test happens not to produce; the tie-break itself is exercised in both directions |
 | `core/src/distill/generalize.ts:151` | `target === undefined` after a non-empty sibling filter | `pickGeneralizationTarget` returns the first sibling when none is active |
+| `core/src/kernel/diff.ts:113` | `key === undefined` when applying an op | the empty-path case returns earlier, so a non-empty path always has a last element |
+| `core/src/kernel/knowledge.ts:472` | `right === undefined` in `strongestTier` | every item the store writes carries a tier; the arm guards rows written before the field existed |
+| `core/src/kernel/stats.ts:93` | `logSumExp` over an empty sample | `mcnemarExact` returns at `n === 0`, so the sum never sees zero terms |
 | `core/src/memory/journal.ts:188` | the empty-compaction newline | compaction only runs with at least one row |
 | `core/src/memory/lexical-index.ts:38` | a token with no posting bucket during removal | `add` is the only writer and it creates the bucket before recording the token |
 | `core/src/memory/store.ts:170` | a candidate id that resolves to no knowledge item | the index and the map are written in the same call, so they cannot diverge |
-| `browser/src/client.ts:165` | the non-`Error` throw in the retry loop | nothing in the library throws a non-`Error`, and the arm exists so a host's thrown string is still reported |
-| `browser/src/outbox.ts:91` | an attempt count for an entry that vanished | the entry is read and written under one lock |
 | `eval/src/ablations.ts:98` | `status: 'missing'` for the learned rule | the store has no delete, so the rule the function just learned is still there |
-| `eval/src/attribution.ts:115,127` | two sort tie-breaks and the empty-instance share | a case with no instances is filtered out before the share is computed |
 | `eval/src/competitor.ts:127` | skipping an already-correct baseline item | the fact-store corpus is filtered to defective items first |
-| `eval/src/report.ts:112` | the "still injected" wording of the credit row | one run produces one credit ablation, whose rule is always withdrawn |
-| `eval/src/scenario.ts:328,347` | the reduce and the confidence tie-break in `outranks` | matching rules differ in scope size, then id, before confidence is consulted |
-| `eval/src/study.ts:653` | `baseline?.holdout ?? []` | the baseline arm is always present; the fallback guards a schedule change |
 | `eval/src/lanes/delivery.ts:140` | the "receiver has no port" guard | the guard runs after `listen` resolved, and a resolved listener has an address |
+| `eval/src/report.ts:112` | the "still injected" wording of the credit row | one run produces one credit ablation, whose rule is always withdrawn |
+| `eval/src/study.ts:653` | `baseline?.holdout ?? []` | the baseline arm is always present; the fallback guards a schedule change |
 | `node/src/mcp.ts:228` | the re-throw of a non-library error from `recordFeedback` | every refusal in the library is a `MicrogliaError`; swallowing anything else would hide a bug behind `isError: true` |
 
-**Reachable and untested — 39 arms, tracked as G-7.** These are not guards: a test could take them, and the
-number would rise because the behaviour was verified rather than because the bar was lowered.
+Each of these protects a state the type system cannot express, and deleting one would turn a future bug
+into silent data loss rather than an exception. The alternative — an `ignore` comment — would make the
+number look better and the code worse, so the number stays where it is and the list stays in the document.
 
-| File | Arms | What is untested |
-|---|---|---|
-| `node/src/app.ts` | 8 | the optional query and body parameters (`ids`, `taskId`, `actorHash`, `generalize`, `status`, `limit`), the body limit and the 1,000-id erasure cap |
-| `eval/src/memform.ts` | 14 | the harness's fallback arms: missing run input, non-edit signals, absent payloads, the borrowed-evidence reason |
-| `core/src/distill/llm.ts` | 7 | the model-response parser's escape and balanced-object paths, and the optional `taskId` arms |
-| `node/src/providers/*.ts` | 5 | `model` / `baseUrl` overrides and the empty-embeddings fallback |
-| `node/src/store/cortex.ts` | 2 | `payload === undefined` and a statement without a dot |
-| `browser/src/client.ts`, `eval/src/attribution.ts`, `eval/src/report.ts` | 3 | the token-less client and the reporters' unused branches |
-
-The alternative — an `ignore` comment — would make the number look better and the code worse, so the number
-stays where it is and both lists stay in the document.
 
 ### 10.4 Commands
 
