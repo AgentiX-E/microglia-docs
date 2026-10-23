@@ -2733,8 +2733,8 @@ assemble two datasets to run at all.
 
 | Dataset | Source | Size used | Use | If it is unavailable or changed |
 |---|---|---|---|---|
-| BIRD Mini-Dev — questions | Hugging Face `birdsql/bird_mini_dev` | 500 (352 usable) | L2 | lane reported as **blocked**; no substitute |
-| BIRD — SQLite databases | Hugging Face `birdsql/bird-critic-1.0-sqlite` (`<db>_template.sqlite`) | 11 databases | L2, L3 | same |
+| BIRD Mini-Dev — questions | the pinned archive's `mini_dev_sqlite.json` (preferred), else Hugging Face `birdsql/bird_mini_dev` | 500 (352 usable) | L2 | lane reported as **blocked**; no substitute |
+| BIRD — SQLite databases | **vendor archive** `bird-bench.oss-cn-beijing.aliyuncs.com/minidev.zip`, pinned by digest in `eval/manifests/bird-minidev.json` (800,943,648 B, sha256 `cc48ba16…b92f`, CC BY-SA 4.0, 11 databases) | 11 databases | L2, L3 | lane blocked; a mirror with a different digest is not this dataset |
 | BIRD-CRITIC | SQLite split, 500 tasks | 500 | L3 | lane blocked; the PG split is **not** a substitute (different dialect) |
 | τ²-bench | retail (40 held-out) + airline (20 held-out) | 240 runs | L4 | blocked; τ-bench v1 is a different board and is not merged |
 | MemoryAgentBench | TTL sets (ICL banking/clinic/nlu/trec) + FactConsolidation | full | L5, L6 | blocked |
@@ -2743,13 +2743,34 @@ assemble two datasets to run at all.
 | Integrity harness | authored here, MemForm's five routes | 500 attempts | L8 | always available (no third-party data) |
 
 **Pinning.** Each dataset is recorded in the artefact by a digest of the exact files used, plus the retrieval
-date. A change of digest invalidates comparison with earlier runs, and the artefact says so rather than
+date. BIRD's is now a file rather than a promise: `eval/manifests/bird-minidev.json` carries url, size,
+sha256, licence, attribution, extraction root and the eleven database ids, `parseManifest` refuses a
+manifest with a missing or malformed digest (an unchecked digest looks like integrity while falling back to
+"whatever arrived"), and the lane hashes the download with `sha256OfFile` before it opens the zip. A change of digest invalidates comparison with earlier runs, and the artefact says so rather than
 silently producing a new baseline. Licences are recorded at fetch time from the dataset card and carried in
 `datasets.lock.json`; the plan does not assert a licence it has not read.
 
-**Assembly is documented, not assumed.** The BIRD lane's two-repository assembly, the `<db>_template.sqlite`
-naming, and the JSON/JSONL tolerance in the row parser are part of the harness and are covered by the
-lane's own gate (V5: gold queries must execute).
+**Assembly is documented, not assumed — and now verified.** The lane used to assemble the benchmark from two
+Hugging Face repositories and fall back to `birdsql/bird-critic-1.0-sqlite`'s `<db>_template.sqlite` files.
+Nothing checked what those files contained, and the name said *template*: against a schema-only database the
+gold query and the predicted query both return no rows, `matches([], [])` is true, and every query that runs
+scores as correct. Execution accuracy would have degenerated into parse success without a single test
+failing. The fallback is **removed**; the lane reads the pinned archive, verifies its digest before
+extracting, reads the questions from the same archive, and refuses to continue unless every database it is
+about to use has rows:
+
+```
+[sota] data ok: financial 8 tables, 1079680 rows
+```
+
+That line is the gate. A schema-only database now stops the run with `MG_E_STORE_IO` instead of producing a
+plausible number.
+
+**Did the earlier BIRD numbers survive this?** Yes, and the artefact is why: it records `gold_exec_rate: 1`
+and `exec_rate: 0.986` beside an accuracy of **6.83%**. An empty database would have produced ≈98.6% —
+every runnable query matching two empty result sets — so the data the lane actually ran on was populated.
+What was missing was the ability to *say so*; the check and the digest now supply it, and the next run
+records both.
 
 ### 17.33 Versioning, migration and the published contract (requirements 1 and 2)
 

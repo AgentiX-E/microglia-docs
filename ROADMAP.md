@@ -320,6 +320,15 @@ The same sweep found §10.3 had been overstating coverage since the providers la
 arms at 99.53%; the measured state is 59 arms at 97.93%). The section now states the measurement and splits
 the arms into invariant guards and reachable gaps, the latter tracked as **G-7**.
 
+Iteration 47 closes W1b without an upload. The vendor's archive was measured (800,943,648 B, sha256
+`cc48ba16…b92f`, CC BY-SA 4.0, 122 files: 11 databases plus the questions), pinned in
+`eval/manifests/bird-minidev.json`, and fetched by the lane with the digest verified before extraction.
+The lane's `_template.sqlite` fallback is gone — `BIRD_ARCHIVE_URL` had been documented and never read, and
+an unchecked schema-only database would have scored every runnable query as correct, because
+`matches([], [])` is true. The artefact proves the earlier numbers were not affected (`gold_exec_rate: 1`,
+`exec_rate: 0.986`, accuracy 6.83% — an empty database would have read ≈98.6%), and the new row count now
+makes that provable rather than lucky.
+
 Next by the plan: the **MCP tool surface** (§17.21's other half), then the **SQLite index** (W3), then **G-7**
 — the 36 reachable coverage arms, starting with the HTTP optional-parameter paths and the model-response
 parsers. L4's remaining work is
@@ -342,7 +351,7 @@ These are tracked but do not block a stage; each has a trigger.
 | W1 | **Cortex release dependency** | `@agentix-e/cortex-*` publishes | **Highlighted action item.** Today the adapter carries a structural copy and the `cortex` workflow clones and builds cortex to check it. On release: depend normally, switch the copy back to `import type`, delete the clone lane. |
 | W2 | vitest 4 migration | vite 7 lands in the toolchain | Clears the four dev-only advisories; it changes coverage semantics, so it is a deliberate migration, not a bump |
 | W3 | SQLite index at 100k items | a host reports > 50k rules | The O(n) scope scan is fine at 10k (2.6–3.1 ms p95) |
-| W1b | **BIRD data hosting** | before S2 can run | **Highlighted.** The upstream repository holds questions only; execution accuracy needs the databases. Upload the complete Mini-Dev package as a release asset and set the `BIRD_ARCHIVE_URL` repository variable. The lane then runs unchanged. |
+| W1b | ~~**BIRD data hosting**~~ **closed by pinning** (iteration 47) | — | No upload was needed. The vendor's own archive (`minidev.zip`, 800,943,648 B, sha256 `cc48ba16…b92f`, CC BY-SA 4.0) carries the eleven databases *and* the questions; `eval/manifests/bird-minidev.json` pins it, the lane verifies the digest before extracting, and `BIRD_ARCHIVE_URL` is set. The lane's `_template.sqlite` fallback was removed: it never checked what it downloaded, and an empty database would have scored every runnable query as correct. |
 | W4 | LLM-judge calibration | S2 begins | **Revised**: generic soundness from public data (MT-Bench 84.6% vs 81.0% expert-expert, 15.8% order flip), task-internal gold where computable, and κ on 50–100 labels only for what neither covers |
 | W5 | Per-user preference scope | S1 shows cross-user variance | Requires a cold-start policy, which is a product decision |
 | W6 | Multi-process writer | a host runs > 1 writer | Today: one writer per directory, documented |

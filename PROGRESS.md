@@ -1303,3 +1303,65 @@ that are invariant guards (listed with reasons, as before) and the arms that are
 **Evidence.** 660 tests, coverage **99.86 / 97.93 / 100 / 99.86**; `delivery/{sha256,events,dispatcher}.ts`
 and `lanes/delivery.ts` at 100 on branches except one documented guard; `audit:repo` ok; study unchanged
 (31.79 → 100.00, 17/17 gates); L0 and L2b unchanged.
+
+### 47 — S2's data path: pinned, verified, and finally checked
+
+W1b was written as "upload the complete Mini-Dev package as a release asset". Before asking for that, the
+vendor's own distribution was measured, and the decision dissolved: **no upload is needed**.
+
+**What is actually out there** (measured 2026-10-23, not quoted from a README):
+
+| | |
+|---|---|
+| url | `https://bird-bench.oss-cn-beijing.aliyuncs.com/minidev.zip`, linked from the benchmark's own site |
+| bytes | 800,943,648 (764 MiB), `Last-Modified 2024-06-20` |
+| sha256 | `cc48ba16838204e4e214512030cb572eeb5f7bcdd999bae4b9b6ff12ec13b92f` |
+| contents | 122 files: **11 SQLite databases**, `mini_dev_sqlite.json`, gold SQL, DDL, table descriptions |
+| licence | **CC BY-SA 4.0** (the benchmark changed its data licence on 2024-04-27) |
+
+So the databases were always one direct HTTP GET away. What was missing was a *pin* and a *check*.
+
+**The defect.** `BIRD_ARCHIVE_URL` appeared in the workflow, in the lane's error hint and in the roadmap — and
+was **never read by the lane**. With `BIRD_DIR` unset it fell back to `birdsql/bird-critic-1.0-sqlite`'s
+`<db>_template.sqlite` files and executed SQL against whatever those contained, without looking. That
+matters because of one line in the scorer: `matches(predicted, gold)` is true when both are empty. A
+schema-only database therefore scores **every runnable query as correct** — execution accuracy silently
+becomes parse accuracy, with no test failing and no number looking odd.
+
+**Did the recorded numbers survive?** Yes, and the artefact is the reason. `poc-sota-bird.json` reports
+`gold_exec_rate: 1`, `exec_rate: 0.986` and accuracy **6.83% / 8.90%**. An empty database would have produced
+≈98.6%, so the data the lane ran on was populated. The defect was that the lane could not have told us —
+which is the difference between a result and a coincidence.
+
+**What ships now.**
+
+- `eval/manifests/bird-minidev.json` — url, bytes, sha256, licence, attribution, extraction root, the eleven
+  database ids, retrieval date. `parseManifest` refuses a manifest whose digest is missing or malformed: an
+  unchecked digest looks like integrity while falling back to "whatever arrived".
+- `sha256OfFile` hashes the download as a stream (764 MiB in memory would be the largest allocation in the
+  process) and the digest is verified **before** the zip is opened. A same-size substitution fails.
+- The questions are read from `mini_dev_sqlite.json` *inside the archive*, so questions and databases cannot
+  disagree about which schema they describe.
+- `requirePopulated` opens every database the slice uses and counts rows; a schema-only file stops the run
+  with `MG_E_STORE_IO`. This is the gate the lane never had.
+- The `_template.sqlite` fallback is **removed**, not repaired: a path that produced an unattributable number
+  should not survive as a convenience.
+
+**Verified locally against the real archive** (limit 20, no API key — the run stops exactly at the key):
+
+```
+[sota] data ok: debit_card_specializing 5 tables, 423050 rows
+[sota] data ok: financial 8 tables, 1079680 rows
+… 11 databases, 10,614 to 1,079,680 rows each
+[sota] failed: MG_E_CONFIG: DEEPSEEK_API_KEY is required
+```
+
+**The decision, restated.** Nothing needs to be uploaded or re-hosted: the repo records the vendor URL and
+the digest, and the workflow reads them. `BIRD_ARCHIVE_URL` is now set as a repository variable, so the next
+`sota` run fetches, verifies, extracts and measures. The only thing that can still go wrong is the vendor
+deleting the object, and that now produces a named error with the expected digest rather than a silently
+different dataset.
+
+**Evidence.** 676 tests, coverage **99.87 / 97.92 / 100 / 99.87**; `bird-data.ts` 100 across except one
+documented arm; the lane reaches the API-key check with all eleven databases counted; `audit:repo` ok; study
+unchanged (31.79 → 100.00, 17/17 gates).
