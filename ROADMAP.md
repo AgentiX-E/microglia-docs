@@ -131,6 +131,22 @@ resolve it. Three readings follow from the controls in the same run:
 - Of 429 ever-injected rules, **24 helped, 53 hurt, 352 were neutral**. The harmful ones restate one
   question's answer in its own vocabulary, or state a schema fact whose scope is one join path.
 
+**Read 6 (2026-10-23, three controls).** Two dispatches, eight of eight gates each, zero unanswered
+prompts. With scope widening off (`39981368310`): 53.14% → 51.14%, **−2.00pp**, CI [−5.43, +1.14],
+p = 0.31. With the dosage and specificity controls (`39981378703`): full −3.71pp (p = 0.029), and
+
+| Arm | Δ vs none | p | What it rules out |
+|---|---|---|---|
+| duplicate (pack twice) | −4.00pp | 0.024 | dilution: doubling the text does not double the loss |
+| wrong-scope (another database's pack) | −0.29pp | 1.000 | "any injected text distracts": foreign rules are ignored |
+
+So the cost is neither a token budget nor a general distraction. It is that a **plausible,
+same-database** claim is followed even when it is about a different question. Widening appears to carry
+about half of it (harmful rules 53 → 40 when it is off), but that difference comes from two dispatches
+whose baselines differ by 0.57pp and whose intervals overlap — so it is not a result, and the lane now
+measures it as an arm (`full-narrow`: a second memory per fold, same corrections, no widening) instead
+of as a second run.
+
 **Consequence for S2b, and the reason it is not a fourth failure of S2.** The stop rule ("two failures end
 the SOTA path") still stands: BIRD's gold carries no convention, so it cannot host a SOTA claim. Read 5 is
 not an attempt at that claim — it is the **cost measurement** the S2b protocol needs, and it changes the

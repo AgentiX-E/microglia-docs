@@ -1699,3 +1699,57 @@ moved to `eval/results/history/sota-pilot-limit60.json`), attribution
 `eval/results/poc-sota-attribution.json`. 824 tests, coverage **99.97 / 99.56 / 100 / 99.97**;
 `concurrency.ts` and `sota.ts` at **100%** on all four dimensions; `pnpm check` green; CI `39974861391`
 success.
+
+### 54 — Three controls, and the one the lane could not measure properly
+
+Two ablations ran from Read 5's artefact, both on `master`, both with eight of eight gates passing and
+zero failed prompts in ~2,400:
+
+| Run | Change | none | full | Δ | 95% CI | p | MDD |
+|---|---|---|---|---|---|---|---|
+| `39981368310` | `generalize: false` (no widening) | 53.14% | 51.14% | −2.00pp | [−5.43, +1.14] | 0.3105 | 4.74pp |
+| `39981378703` | dosage + specificity controls | 53.43% | 49.71% | −3.71pp | [−6.86, −0.57] | 0.0294 | 4.46pp |
+
+Run `39981378703` also carried the two controls that answer "what kind of harm is this":
+
+| Arm | Accuracy | Δ vs none | CI | p | Reading |
+|---|---|---|---|---|---|
+| full (2.01 rules/q) | 49.71% | −3.71pp | [−6.86, −0.57] | 0.0294 | the effect |
+| duplicate (same pack twice) | 49.43% | −4.00pp | [−7.43, −0.86] | 0.0243 | **not a dosage effect**: doubling the text does not double the harm |
+| wrong-scope (another database's rules) | 53.14% | −0.29pp | [−3.14, +2.29] | 1.0000 | **scope is doing real work**: foreign rules are ignored, same-database rules are followed |
+
+**Three findings, in order of how much they change the plan.**
+
+1. **The harm is not dilution.** `duplicate` injects the pack twice and lands within 0.3pp of `full`
+   (−4.00 vs −3.71, intervals almost identical). A token-budget or attention explanation predicts a
+   larger loss with more text; it does not appear.
+2. **The harm is specific to the database the rule came from.** `wrong-scope` injects two rules per
+   question taken from a *different* database and costs 0.29pp with a p-value of 1.0. The model does
+   not act on rules it can tell are foreign; it acts on rules that look like they belong. So the
+   mechanism's cost is not "any injected text distracts the model" — it is that a *plausible,
+   same-database* claim is accepted even when it is about a different question.
+3. **Widening carries roughly half the cost, and this comparison cannot prove it.** With widening off,
+   the delta goes from −4.00 to −2.00pp and the interval starts to include zero; the attribution agrees,
+   with harmful rules falling 53 → 40 and helpful 24 → 25. But the two numbers come from different
+   dispatches, their baselines differ by 0.57pp, and their intervals overlap. Estimating a 2pp effect
+   from two runs whose noise is about 0.5pp is exactly the kind of comparison this project has been
+   refusing to publish.
+
+**So the lane was changed rather than the claim.** `full-narrow` is now an arm: each fold builds a
+*second* memory from the same corrections, distilled with `generalize: false`, and answers the held-out
+questions from it. Both packs are scored against the same `none` arm on the same questions in the same
+run, so the comparison is paired at the question level. The learning passes share the generation cache,
+so the second memory costs local store writes and one distillation — not another 280 calls. A new
+`narrow_distinct` flag records whether a second memory was actually built, because a run that is itself
+unwidened would answer `full-narrow` from the same pack, and two names for one pack must not be read as
+a comparison.
+
+**What is still unexplained.** After removing widening, 40 rules still hurt and the delta is still
+negative. The remaining explanation is the one the rules themselves suggest: a claim that is true of
+one query is being applied to its neighbours *within* the same database. That is a scoping problem at
+recall time, not at distillation time, and the next lever is a pack that can say which question it came
+from — which is also the constraint Read 5 put on S2b.
+
+**Evidence.** `eval/results/history/sota-ablation-narrow-generalize.json`,
+`eval/results/history/sota-ablation-dosage-scope.json` and their attributions, committed. 827 tests,
+coverage **99.97 / 99.56 / 100 / 99.97**; `pnpm check` green.
