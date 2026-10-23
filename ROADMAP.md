@@ -112,6 +112,33 @@ The stop rule stays as written: **two benchmark failures end the SOTA path.** BI
 failed twice (read 2 and read 3), so the SOTA push is stopped on this benchmark; it resumes only with
 a suite whose gold contains a house convention.
 
+**Read 4 (2026-10-23, pilot after the data path was pinned).** n=60, 5 folds, four arms
+(`39945215096`): 46.67% → 41.67%, **−5.00pp**, CI [−15.00, +5.00], p = 0.51, minimum detectable
+14.01pp. Seven of eight gates pass; V5 fails, so the run cannot resolve an effect of the size it is
+looking for and says so. The useful output was the attribution: of 74 ever-injected rules, 11 hurt and
+5 helped, and the harmful ones are true statements about the question they were learned from.
+
+**Read 5 (2026-10-23, the full split, and the first resolvable answer).** n=350, 5 folds, four arms
+(`39975019927`): 53.71% → 49.71%, **−4.00pp**, CI **[−7.71, −0.29]**, p = **0.0436**, minimum
+detectable **5.19pp** — V5 passes for the first time. All eight gates pass. The interval excludes zero,
+so the pack is **harmful** here, not inert, and the pilot's direction replicates at a sample that can
+resolve it. Three readings follow from the controls in the same run:
+
+- `gated` (one shared word) recovers **0.29pp** of 4.00 while removing 0.13 rules per question. Keyword
+  relevance is not the lever — the rules that hurt are rules the question mentions.
+- `oracle` moves accuracy **+29.14pp**, so the channel is intact: one injected statement the model
+  cannot infer does reach it.
+- Of 429 ever-injected rules, **24 helped, 53 hurt, 352 were neutral**. The harmful ones restate one
+  question's answer in its own vocabulary, or state a schema fact whose scope is one join path.
+
+**Consequence for S2b, and the reason it is not a fourth failure of S2.** The stop rule ("two failures end
+the SOTA path") still stands: BIRD's gold carries no convention, so it cannot host a SOTA claim. Read 5 is
+not an attempt at that claim — it is the **cost measurement** the S2b protocol needs, and it changes the
+protocol in one specific way: the convention S2b teaches must be **explicitly scoped at birth** (a workspace
+convention that says where it applies), because the mechanism's failure mode is applying a true statement
+beyond the query that taught it. Scope widening during distillation is the first ablation in flight for
+that reason, and the dosage/specificity controls (`duplicate`, `wrong-scope`) are the second.
+
 **Exit gate (revised 2026-10-20).** The original gate — BIRD-Interact ≥ +5pp at n=600 — was written
 before the mechanism had been measured on public data, and the four reads above show it tests the wrong
 thing: BIRD's gold contains no knowledge the model cannot infer, so the pack is inert there by
@@ -382,13 +409,24 @@ attribution as the readout: `SOTA_GENERALIZE=false` (no scope widening) first, b
 input to the lane; then a stricter corroboration band if widening is not the cause. A full-split run is in
 flight to give the ablation its baseline.
 
-Next by the plan: **L4's agent invocation** when `TAU_ENV_READY` is set (the reader, its refusals and its
-gates are already in place), then the **S2 re-run** whose data path is now pinned and verified, then the
-**SQLite index** (W3), whose trigger is now measured rather than asserted: the lane runs to 100k items and
-reports **22.73 ms** p95 with **173.9 MB** of heap, against budgets of 100 ms and 256 MB. It stays deferred
-— that is the measurement's answer, not a preference — and the lane fails the build if either budget is
-crossed. The heap is the axis to watch: 174 MB at 100k is what a host runs out of long before it notices
-22 ms.
+The **S2 re-run** is done and is Read 5 above: the lane now issues its calls through a bounded pool, caches
+the learning pass, and refuses a result produced through an outage, so a full split takes 35 minutes instead
+of timing out at 160. Two ablations are in flight from that artefact (`SOTA_GENERALIZE=false`, and the
+dosage/specificity controls), and their readout decides the next change to the mechanism rather than to the
+lane.
+
+Next by the plan, in order:
+
+1. **The two S2 ablations** — scope widening, then dosage and specificity. Each is a dispatch; the readout is
+   the same table, so the comparison is exact.
+2. **L4's agent invocation** when `TAU_ENV_READY` is set: the reader, its refusals and its gates are in
+   place, and the driver contract is `run(): Promise<readonly PassAtKInput[]>`.
+3. **S2b, the convention lane** — with the constraint Read 5 supplies: a convention scoped at birth.
+4. **The SQLite index (W3)** stays deferred, and that is a measurement rather than a preference: 100k items
+   give **22.73 ms** p95 and **173.9 MB** of heap against budgets of 100 ms and 256 MB, and the lane fails
+   the build when either is crossed. The heap is the axis to watch: 174 MB at 100k is what a host runs out of
+   long before it notices 22 ms.
+
 L2b's remaining question is about the *reader* — a `negative`-lesson channel — not about the corpus or the
 protocol.
 

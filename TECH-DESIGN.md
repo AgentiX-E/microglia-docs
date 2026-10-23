@@ -3124,7 +3124,7 @@ belongs here.
 | `packages/eval/src/bin/integrity.ts`, `memform.ts` | the store's replay invariants and its attack surface | microglia |
 | `packages/eval/src/bin/l0.ts`, `l4.ts` | the adjudication and τ² lanes | microglia |
 | `scripts/audit.mjs`, `cortex-conformance.mjs` | the repository's source rules and the projection's fidelity | microglia |
-| `scripts/hf-inventory.mjs` | what a Hugging Face dataset contains — **judgement call**, kept because its only caller is the `sota` job, where it makes a failed benchmark explain itself | microglia |
+| ~~`scripts/hf-inventory.mjs`~~ **removed** | it listed a Hugging Face dataset's inventory for the `sota` job. Removed in iteration 51: the lane now verifies its own data (pinned manifest, digest, row counts), so the step was a second opinion nobody read, and it was the reason a run could look healthy while measuring a two-day-old artefact. Recorded here rather than deleted, because a row that silently disappears hides a decision | — |
 | `.github/workflows/{ci,sota,poc-live,cortex}.yml` | build, coverage, benchmark, live-API and conformance gates | microglia |
 | `eval/results/`, `bench/results/` | artefacts written by those gates, cited from here | microglia |
 | This document, the whitepaper, the roadmap, the audit, the progress log | the project | microglia-docs |
@@ -3135,3 +3135,35 @@ where they already are, and moving them would have split each lane from the CI t
 boundary is now **enforced**: `pnpm audit:repo` fails if `WHITEPAPER.md`, `TECH-DESIGN.md`, `ROADMAP.md`,
 `AUDIT.md` or `PROGRESS.md` appears at the root or under `docs/` of the product repository. A document
 that drifts back is a red build, not a discovery two releases later.
+
+### 17.36 Bounded concurrency in the benchmark lane, and the three defects it exposed
+
+A full BIRD split is 2,400 prompts. Issued in series at two to five seconds each that is more than two
+hours, and the first dispatch to try it spent 160 minutes reaching fold 4 of 5 — a single provider stall
+cost 48 minutes on its own. The measurement does not depend on completion order, so the lane now plans a
+fold's prompts, issues them through a bounded pool, and scores the replies afterwards in corpus order.
+
+| Decision | Alternative rejected | Why |
+|---|---|---|
+| Pool at the *prompt* level (`mapPool`, six in flight) | pool at the question level | a question is four prompts, so a question-level pool leaves the pool idle between arms and makes the wall clock depend on which arm is slowest |
+| Two phases: plan, then call, then judge | interleave recall with the calls | recall reads the frozen pack; interleaving it with calls would make a prompt depend on when an unrelated call finished, which is a measurement change for a scheduling convenience |
+| Cache the learning-pass generation per question | re-ask per fold | cross-fitting asks the same prompt once per fold it appears in — four times at k=5 — because the prompt is a function of the question, its evidence and the schema. Caching deduplicates identical work (1,050 of 1,400 calls here); it does not change a condition |
+| Circuit breaker: eight consecutive exhausted prompts end the run | let the retry policy decide per call | a per-call policy answers "this call failed", never "the provider is down". A run through an outage produces a number that describes the outage, and the numbers looked plausible enough that only a gate would have caught it |
+| New blocking gate V8: at most 2% of prompts may go unanswered | rely on the retry counter | 2% of 350 questions is seven; a 2pp systematic drag is a seventh of the smallest effect the sample resolves, so it cannot manufacture the finding. The denominator is logical prompts, not HTTP attempts, which is why both are recorded |
+| `MG_E_PROVIDER_FAILED` as its own code | reuse `MG_E_STORE_IO` | the host has to tell "my store is broken" from "the model endpoint is down", and they need different responses. A `Record<MicrogliaErrorCode, status>` in the HTTP tests makes an unmapped code a compile error |
+
+**The refactor that made it testable.** The prompt, the arm parser, the reply parser, the result
+canonicaliser and every validity gate lived in `bin/sota-bird.ts`, which `vitest` excludes — so the lane's
+*decisions* were the least covered thing in the repository. They are now `eval/src/sota.ts` (100% on all
+four dimensions) and `eval/src/concurrency.ts` (100%), with the CLI reduced to composition: download,
+SQLite, HTTP.
+
+**Two defects the split found, both pre-existing.** The gold query was executed **twice inside one
+comparison** (`execute(dbPath, row.SQL)` on both sides of `matches`), so scoring one question scanned a
+million-row table three times; it is now cached per question. And the schema was re-read once per arm per
+question — a thousand opens to read eleven strings that cannot change during a run; it is now read once.
+
+**A third, found by writing the test rather than by reading the code.** `MG_E_PROVIDER_FAILED` was added to
+the code union and `statusFor` in the HTTP layer had no case for it: the switch was exhaustive, so `tsc`
+refused the build. That is the intended failure mode — the alternative was a 500 for a failure that is a
+503 — and the test now uses a `Record` over the union so the next code has to be mapped to compile.

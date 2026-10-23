@@ -1627,3 +1627,75 @@ patch.
 
 **Evidence.** 762 tests, coverage **99.97 / 99.55 / 100 / 99.97**; `attribution.ts` back to 100% of branches;
 `pnpm check` green; every other lane unchanged.
+
+### 53 — The full split finishes, and the effect is negative where it can now be resolved
+
+**Result first.** On the whole usable split (n=350, five folds, every question evaluated once by a memory
+that never learned from it), the pack costs **4.00 percentage points**: 53.71% without memory, 49.71% with,
+95% CI **[−7.71, −0.29]**, exact McNemar **p = 0.0436**, minimum detectable difference **5.19pp**. All eight
+validity gates pass, including V5 — the gate that failed the 60-question pilot. The interval excludes zero,
+so this is no longer a null: at this sample the mechanism is **harmful on BIRD Mini-Dev**, not inert.
+
+| Arm | Rules/question | Accuracy | Δ vs none | 95% CI | p |
+|---|---|---|---|---|---|
+| none | 0 | 53.71% | — | — | — |
+| full | 2.00 | 49.71% | **−4.00pp** | [−7.71, −0.29] | 0.0436 |
+| gated (≥1 shared word) | 1.87 | 50.00% | −3.71pp | [−7.14, −0.29] | 0.0470 |
+| oracle | 0 | 82.86% | **+29.14pp** | [24.00, 34.29] | <1e-26 |
+
+Discordance 12%: 28 questions lost, 14 gained. Per fold, the delta is −10.0, −7.1, 0.0, −5.7, **+2.9** —
+four folds negative, one positive, which is the shape a real cost takes rather than a single fold carrying
+the result.
+
+**Why this run exists when the previous one did not.** The first full-split dispatch spent 160 minutes and
+reached fold 4 of 5: it issued every call in series, and a provider stall added 48 minutes on its own. The
+lane now plans every prompt for a fold, issues them through a bounded pool (`SOTA_CONCURRENCY`, six),
+and scores the replies afterwards in corpus order. Three changes came with it, and each is a finding:
+
+| Change | Why | Effect on this run |
+|---|---|---|
+| Bounded pool over prompts | a fold is 560 calls at 2–5 s; order does not affect any condition | 160-minute timeout → **35 minutes**, four folds → five |
+| Learning-pass cache | cross-fitting asks the same prompt once per fold it appears in; the prompt depends only on the question, its evidence and the schema | **1,050 of 1,400** learning calls removed (hits 1,050, misses 350) |
+| Breaker + V8 gate | a per-call retry policy cannot tell noise from an outage | 8 consecutive exhausted prompts end the run as `MG_E_PROVIDER_FAILED`; V8 refuses a result with >2% unanswered prompts. This run: **0 failures in 2,402 prompts** |
+
+**The gated arm answers the question the pilot could not.** A coverage floor of one shared word recovers
+**0.29pp** of the 4.00 — 49.71% → 50.00% — while removing only 0.13 rules per question. So the harm is not
+"rules the question never mentioned"; the rules that hurt are rules the question *does* mention. That kills
+the retrieval-precision-by-keyword hypothesis and leaves scope specificity as the candidate.
+
+**The attribution says the same thing in the rules themselves.** Of 1,304 rules created, 429 were injected at
+least once: **24 helped, 53 hurt, 352 neutral** (harmful share 13.3%). The worst three, at net −2 each:
+
+```
+A query answering 'which driver ranked first in the Canadian Grand Prix in 2007, give reference name'
+  selects forename, surname, and driverRef from drivers joined through results to races filtered on
+  race name, year, and rank = 1.
+In the formula_1 schema, a race is identified by its name in the races table (e.g., 'Canadian Grand
+  Prix'), not by its circuit name in the circuits table.
+A ratio of total single bonds to distinct atoms is not the same as the average number of single bonds
+  per molecule.
+```
+
+The first is a restatement of one question's answer with the question's own vocabulary, which is exactly
+what a relevance floor cannot filter: it shares every word with the question it hurts. The second is a true
+schema fact whose *scope* is one database and one join path. Both are **over-application**, and neither is a
+distillation error — the interpreter wrote down what the correction said.
+
+**What that means for the mechanism, stated plainly.** The flywheel's cost is not that it learns wrong
+things. It is that it applies right things too widely, and the promotion path (a corroborated correction, a
+trust score, dedupe) has no notion of "this claim was true for one query". Every gate in this lane asked
+whether the *number* was valid; none asked whether the *rule* was general, because the rule is not the
+lane's to judge. That is a finding about the mechanism, not about the benchmark.
+
+**Two ablations are in flight from this artefact**, both dispatched on `master`:
+
+| Dispatch | Question it answers | Readout |
+|---|---|---|
+| `generalize: false` | is scope widening the cause? | if the delta shrinks toward zero, the widening is; if it does not, the rules are harmful within their own scope |
+| `arms: duplicate, wrong-scope` | dosage and specificity | `duplicate` doubles the pack text: a delta that doubles with it is a dosage effect. `wrong-scope` injects another database's rules: a delta as large as `full`'s means scope is doing no work at all |
+
+**Evidence.** Run `39975019927`, artefact `eval/results/poc-sota-bird.json` (committed; the 60-question pilot
+moved to `eval/results/history/sota-pilot-limit60.json`), attribution
+`eval/results/poc-sota-attribution.json`. 824 tests, coverage **99.97 / 99.56 / 100 / 99.97**;
+`concurrency.ts` and `sota.ts` at **100%** on all four dimensions; `pnpm check` green; CI `39974861391`
+success.
