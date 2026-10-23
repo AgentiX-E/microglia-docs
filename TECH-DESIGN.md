@@ -2591,7 +2591,10 @@ The lane accepts a recorded document (`TAU_RESULTS`), a driver module (`TAU_DRIV
 distinguishes three outcomes with three exit codes and artefact statuses: `not-run` (no environment),
 `refused` (measured, unscorable, with a named reason), and a scored run that then faces the pass^4,
 coverage and fully-scored gates. Two synthetic 60-task fixtures exercise the score and the refusal path in
-CI.
+CI, and a third case covers the configuration that cannot be satisfied: a `TAU_DRIVER` naming a module that
+does not exist resolves to `not-run` with `status_driver_missing: 1` and an annotation, because an
+environment that cannot be reached is not a measurement that failed. A driver that loads and then throws
+still fails the job.
 
 **Why this order.** L2 is the cheapest lane that can still falsify the product, so it runs first and its
 gate is the one that matters most. L3 and L4 answer "does it transfer" on gold that is a *fix* and on gold
