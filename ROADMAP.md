@@ -147,6 +147,14 @@ whose baselines differ by 0.57pp and whose intervals overlap — so it is not a 
 measures it as an arm (`full-narrow`: a second memory per fold, same corrections, no widening) instead
 of as a second run.
 
+**Read 7 (2026-10-23, widening as an arm).** The same corrections, distilled twice inside one run
+(`full` widened, `full-narrow` not), scored against the same `none` arm on the same questions
+(`40039587765`): full **−4.00pp** (CI [−7.14, −0.86], p = 0.016) against full-narrow **−3.14pp**
+([−6.29, 0.00], p = 0.080). **Widening is worth 0.86pp of the 4.00 — a fifth, not the half that the
+cross-run comparison suggested.** The cross-run estimate was not merely imprecise; it was off by a factor
+of two in the direction that flattered the hypothesis. The narrow pack is still negative, so the remaining
+cost lives at recall: a claim learned in a database is applied to other questions in the same database.
+
 **Consequence for S2b, and the reason it is not a fourth failure of S2.** The stop rule ("two failures end
 the SOTA path") still stands: BIRD's gold carries no convention, so it cannot host a SOTA claim. Read 5 is
 not an attempt at that claim — it is the **cost measurement** the S2b protocol needs, and it changes the

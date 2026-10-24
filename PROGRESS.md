@@ -1753,3 +1753,67 @@ from — which is also the constraint Read 5 put on S2b.
 **Evidence.** `eval/results/history/sota-ablation-narrow-generalize.json`,
 `eval/results/history/sota-ablation-dosage-scope.json` and their attributions, committed. 827 tests,
 coverage **99.97 / 99.56 / 100 / 99.97**; `pnpm check` green.
+
+### 55 — The convention lane runs, and two of its three failures are instrument defects
+
+Three S2b dispatches, three lessons, and only the third is about the mechanism.
+
+**Dispatch 1 refused to start.** `thousands` restricted itself to values of at least a thousand, which
+looks sensible and contradicts the preregistered subset ("gold is one row with one numeric column"). With
+the filter, fewer than twenty questions qualified, and the lane's own threshold of twenty then exited
+before it could report anything. Both filters were wrong in the same way: a rule that protects the
+experiment from a weak result by refusing to produce one. The subset is now everything the protocol
+defines, the only remaining check is that it is non-empty, and a subset below a hundred is recorded by V9
+as a direction rather than a verdict.
+
+**Dispatch 2 ran and was refused, correctly.** n=145, five folds, 1,301 calls, no failed prompts:
+
+| Arm | Accuracy | Δ vs none | p |
+|---|---|---|---|
+| none | 0.69% | — | — |
+| full | 2.76% | +2.07pp | 0.375 |
+| stated | 4.83% | +4.14pp | 0.031 |
+| oracle | 0.69% | +0.00pp | 1.000 |
+
+The channel gate failed because `oracle` must move accuracy by at least 10pp, and it moved it by zero. The
+cause was the prompt, not the model: the hint read *"the answer this workspace accepts for this question
+is 2500.4; it is the only accepted form"*, and 144 of 145 replies came back as **queries that compute the
+raw value**. The hint states a fact about the workspace and leaves the model free to answer the question it
+was asked — which it did, correctly, in the only way it knew. The oracle now says to return the value
+verbatim and not to divide or round it again.
+
+**The failure also exposed a gap in the instrument.** With the answers at 0.69%, there was no way to tell
+"the model cannot follow the convention" from "the scorer is wrong": a rewrite that disagrees with the
+transform would produce exactly the same table. **V10** now executes every qualifying gold query rewritten
+to report the workspace's way and requires 99% of them to produce the expected value — the convention
+lane's counterpart to `gold_exec_rate`, and the gate that makes the next run's 0.69% a statement about the
+model.
+
+**And a refused run now names its gates.** It printed "The benchmark ran but cannot support a claim" with
+the failing gate in an error field nobody reads; the message carries `V7-channel: 4.14pp` directly.
+
+**What the same night settled about narrowing.** `full-narrow`, the arm that builds a second memory per
+fold from the same corrections distilled without widening, ran in one dispatch:
+
+| Arm | Accuracy | Δ vs none | 95% CI | p | rules/question |
+|---|---|---|---|---|---|
+| full | 50.00% | −4.00pp | [−7.14, −0.86] | 0.0161 | 1.98 |
+| full-narrow | 50.86% | −3.14pp | [−6.29, 0.00] | 0.0801 | 1.98 |
+
+**Widening accounts for 0.86pp of the 4.00, not the 2.00 the cross-run comparison suggested.** The earlier
+pair (−4.00 with widening against −2.00 without, from two dispatches) had overlapping intervals and
+baselines 0.57pp apart; measured properly, the same decision is worth a fifth of the cost, and the narrow
+pack is still negative. That is the value of turning an ablation into an arm: the cross-run estimate was
+not wrong by a little, it was wrong by a factor of two, in the direction that flattered the explanation
+this project was hoping for.
+
+Consequence: the remaining cost is not scope widening, and it is not dosage, and it is not foreign rules.
+It is that a claim learned in a database is applied to other questions in the same database. The next
+lever therefore has to be at recall: a pack that knows which question each rule came from, and can decline
+to apply it to a different one.
+
+**Dispatch 3 is in flight** with the corrected oracle and V10 in place.
+
+**Evidence.** `eval/results/history/sota-arm-full-narrow.json` and its attribution, committed; the refused
+run's numbers are quoted from its log and its artefact was never written, which is the lane behaving as
+designed. 829 tests, coverage **99.97 / 99.56 / 100 / 99.97**; `pnpm check` green.
