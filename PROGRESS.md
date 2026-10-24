@@ -2152,3 +2152,90 @@ selects …" is not, however close it sits.
 **Evidence.** `eval/results/poc-embed-probe.json` (committed), `pnpm eval:probe`, workflow run `40094204125`.
 Pure logic — attribution, pairing, permutation test — at **100% on all four dimensions**; 883 tests;
 coverage **99.97 / 99.55 / 100 / 99.97**; `pnpm check` green.
+
+### 63 — The condition is read and does not help, and the rules are no longer the problem
+
+Iteration 62 ended with a plan: if the retriever cannot separate a harmful rule from a helpful one,
+change the *shape* of the rule — give it the condition it was learned under, render the condition first,
+and tell the reader to apply it only where it holds. That is now built, measured, and null.
+
+**First, the instrument, because the null is only readable with it.** A run in which the distiller
+produces no condition has two identical arms and a delta of zero that means nothing. So the lane counts
+what it injected (`injected_rules`, `injected_with_condition`, `active_with_condition`), V12 records the
+share as an advisory gate, and the freeze digest now covers the field. On this run:
+
+| Measurement | Value |
+|---|---|
+| Rules distilled (5 folds) | **1,296**, every one with a condition |
+| Rules ever injected | **640**, **640** carrying a condition (**V12: 100.0%**) |
+| Rules that restate a question verbatim (6-gram overlap with the fold's questions) | **0 of 49** credited rules |
+| SQL strings that differ between the two shapes | **169 of 350** (48%) |
+| Verdicts that differ between the two shapes | **20 of 350** |
+
+**The measurement** (`40097881545`, n=350, five folds, 2,048 prompts, 0 unanswered, 9 of 9 gates):
+
+| Arm | Accuracy | Δ vs none | 95% CI | p |
+|---|---|---|---|---|
+| none | 53.43% | — | — | — |
+| **full** (condition rendered before the claim) | **50.29%** | **−3.14pp** | [−6.00, −0.29] | 0.052 |
+| **full-plain** (same items, condition removed) | **50.29%** | **−3.14pp** | [−6.29, −0.29] | 0.052 |
+| **full vs full-plain, paired** | — | **0.00pp** | **[−2.57, +2.57]** | **1.000** |
+
+Twenty questions changed verdict and the score did not move: **ten lost, ten gained**. That is what the
+paired row says, and it is the strongest form of the result the lane can produce — same items, same
+retrieval, same questions, one field of text different.
+
+**What it means, in the order the evidence supports it.**
+
+1. **The field is read.** Half the SQL changed. This is not a null in which the model ignored the block;
+   the block materially changed what it wrote, on 48% of questions.
+2. **It does not help.** The changes cancel exactly: 10 down, 10 up, p = 1.0. The condition redistributes
+   errors rather than reducing them.
+3. **The rules are not the problem any more.** With the new distillation prompt, **none** of the 49
+   credited rules restates the question that taught it — the failure Read 5 diagnosed ("a restatement of
+   one question's answer with the question's own vocabulary") is gone, and the harm survives it: 33 rules
+   harmful, 16 helpful, 346 neutral, 10.8% of injections belonging to a harmful rule.
+4. **So the harm is a confident true rule in the wrong place.** The worst three, all conditioned, all
+   true statements:
+
+```
+A percentage change between two periods is computed by dividing the difference by the earlier period's value.
+The order of selected columns follows the order in which the question requests them.
+The column holding the customer category value 'LAM' is Segment, not Currency.
+```
+
+None is false. Each is a rule that a reader who cannot check applicability will apply anyway — which is
+exactly what happened, and what the condition was supposed to prevent.
+
+**And a correction to iteration 55.** Every control in this lane was described by its delta against
+`none`, and the difference between two controls was read as the difference of two deltas — a point
+estimate with no interval. The lane now pairs each control with `full` directly (`armPairsAgainstFull`,
+`arm_pairs` in the artefact, `pnpm eval:arm-pairs` for artefacts that already exist). Run on the committed
+`full-narrow` artefact it says:
+
+| Pairing | Δ | 95% CI | p |
+|---|---|---|---|
+| full-narrow vs full | **+0.86pp** | **[−2.00, +3.71]** | **0.71** |
+
+The number is what iteration 55 reported; the statement is not. "Widening accounts for 0.86pp of the
+4.00" reads as a measured contribution. What the paired test says is that it is indistinguishable from
+zero at this sample, and the earlier phrasing should never have been published as a magnitude.
+
+**What is left, and why it is not another prompt.** Five levers have now been measured on this mechanism:
+retrieval signal (no separation, iteration 62), scope widening (p = 0.71), dosage (null), foreign rules
+(ignored), and the shape of the rule (0.00pp, p = 1.0). The remaining difference between a rule that helps
+and one that hurts is *whether it applies to this question*, and every one of those five measurements says
+a language model reading prose cannot decide that. The next change therefore has to make applicability
+**machine-checkable** — a predicate the runtime evaluates against the question and the schema — or the
+mechanism's honest scope is "steers what the model writes, does not certify that it should".
+
+Before building that, one cheap measurement decides whether it can work at all: a probe that embeds each
+rule's `when` and asks whether condition-question similarity separates the pairs that hurt from the pairs
+that help. Iteration 62 asked that of the statement and got p = 0.86; the condition is a different text
+and it is the one a filter would use.
+
+**Evidence.** `eval/results/poc-sota-bird.json`, `eval/results/poc-sota-attribution.json`,
+`eval/results/poc-sota-arm-pairs.json`, and the previous full split kept as
+`eval/results/history/sota-read5-full-split.json`. 918 tests, coverage
+**99.97 / 99.59 / 100 / 99.97**; `render.ts`, `distiller.ts`, `llm.ts`, `knowledge.ts` and
+`attribution.ts` at 100% on all four dimensions; `pnpm check` green; CI `40098496074` success.

@@ -155,6 +155,11 @@ cross-run comparison suggested.** The cross-run estimate was not merely imprecis
 of two in the direction that flattered the hypothesis. The narrow pack is still negative, so the remaining
 cost lives at recall: a claim learned in a database is applied to other questions in the same database.
 
+**Correction (2026-10-24, iteration 63).** 0.86pp was still a difference of two deltas, and the paired
+comparison — the two arms scored against each other on the same questions — gives **+0.86pp [−2.00, +3.71],
+p = 0.71**. The number is the same; the claim is not. Widening is indistinguishable from zero at this
+sample, and no magnitude should have been reported from that arithmetic.
+
 **Consequence for S2b, and the reason it is not a fourth failure of S2.** The stop rule ("two failures end
 the SOTA path") still stands: BIRD's gold carries no convention, so it cannot host a SOTA claim. Read 5 is
 not an attempt at that claim — it is the **cost measurement** the S2b protocol needs, and it changes the
@@ -492,14 +497,21 @@ Next by the plan, in order:
 
 1. ~~**The two S2 ablations**~~ — done, and both are negative: scope widening is worth 0.86pp of the
    4.00pp cost (Read 7), dosage is null and foreign rules are ignored (Read 6).
-2. **Change the shape of a rule, not the index.** Iteration 62 measured the retriever out: rules credited
-   with a hurt sit at median cosine 0.232 from their question and rules credited with a help at 0.228
-   (p = 0.86), and word coverage is 0.133 against 0.130. The failure is that a rule can be maximally
-   relevant and still wrong to apply, because the store records *what was true* and never *when it is
-   true*. The next change carries the condition with the item — ReasoningBank's "when to use", MemHarness's
-   "the state it was formed under" — and presents it as something the model evaluates rather than a prefix
-   it obeys.
-2. **L4's agent invocation** — **ran in iterations 58–61, and the answer is negative.** The driver exists
+2. ~~**Change the shape of a rule, not the index.**~~ — **built and measured in iteration 63, and null.**
+   Every rule now carries a `when` condition (1,296 of 1,296 active items), rendered before the claim with
+   a note telling the reader to apply it only where it holds. The condition changed **48% of the SQL** and
+   **20 of 350 verdicts** — ten gained, ten lost — for a paired **0.00pp [−2.57, +2.57], p = 1.000**. And
+   with the new distillation prompt none of the 49 credited rules restates its question any more, so the
+   harm survives *correct, general, conditioned* rules: 33 harmful against 16 helpful.
+3. **Make applicability machine-checkable, or say what the mechanism cannot do.** Five levers are now
+   measured out on this mechanism — retrieval signal (p = 0.86), widening (p = 0.71), dosage (null),
+   foreign rules (ignored), rule shape (p = 1.000). The one quantity that separates a rule that helps from
+   one that hurts is whether it applies to *this* question, and prose has now failed to carry that five
+   times. Two steps, cheapest first: (a) a probe that embeds each rule's `when` and asks whether
+   condition-question similarity separates hurt pairs from helped pairs — if it does, a filter over that
+   score is the lever; (b) if it does not, a structured predicate (`tables`, `requiresColumns`, `intent`)
+   the runtime evaluates against the schema, because a machine check does not need the model's judgement.
+4. **L4's agent invocation** — **ran in iterations 58–61, and the answer is negative.** The driver exists
    (`eval/drivers/tau2/` for the agent and the phase runner, `packages/eval/src/bin/tau2-driver.ts` for the
    orchestration, every decidable step in the tested `tau2.ts`). Both arms, one configuration, 68 held-out
    τ²-retail tasks, four trials:
@@ -513,8 +525,9 @@ Next by the plan, in order:
    stops it doing so. Both are kept in `eval/results/history/`. The comparison is a difference of means —
    the runs predate per-task pairing, which the lane now supports (`PassAtKInput.taskId`, per-task artefacts,
    `TAU_REFERENCE`, and a blocking `l4-paired` gate).
-3. **S2b, the convention lane** — with the constraint Read 5 supplies: a convention scoped at birth.
-4. **The SQLite index (W3)** stays deferred, and that is a measurement rather than a preference: 100k items
+5. **S2b, the convention lane** — **closed in iterations 55–57**: the ceiling is the format (two oracle
+   forms, 48.97% and 56.55%, against a required 90%), and the falsification clause applied.
+6. **The SQLite index (W3)** stays deferred, and that is a measurement rather than a preference: 100k items
    give **22.73 ms** p95 and **173.9 MB** of heap against budgets of 100 ms and 256 MB, and the lane fails
    the build when either is crossed. The heap is the axis to watch: 174 MB at 100k is what a host runs out of
    long before it notices 22 ms.

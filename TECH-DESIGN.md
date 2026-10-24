@@ -3191,3 +3191,51 @@ workflow would set, and a relative specifier in a dynamic `import` resolves agai
 `bin/l4.ts` looked for `bin/packages/eval/...`. The loader now resolves relative and absolute specifiers
 against the working directory. The end-to-end test drives list → split → evaluate → `pass^4` against a
 stand-in runner, because that is the only way to verify the orchestration without a Python clone.
+
+### 17.38 A rule carries the condition it was learned under
+
+Iteration 62 measured the retriever out: a rule credited with a hurt sat at median cosine 0.232 from the
+question that was harmed, a rule credited with a help at 0.228 (p = 0.86 over 222 pairs), and word coverage
+was 0.133 against 0.130. Two signals, no separation. So the variable is not *which* rule reaches the prompt
+but *what the rule says*: a statement records what was true and never when it is true, and the pack asked
+the model to treat the first as the second.
+
+`KnowledgeItem.when` is that missing half. Five decisions carry it.
+
+| Decision | Alternative rejected | Why |
+|---|---|---|
+| The condition is a first-class field, not a sentence inside the statement | append "when X applies: …" to the text | a field can be dropped, counted, filtered on and audited; a prefix inside a sentence can only be read, and the rendering experiment needs the *same items* with and without it |
+| Rendered **before** the claim | after, as a footnote | a reader that meets the test first can decline to apply the rule; the same sentence after the assertion reads as a qualification of something already stated |
+| Identity ignores `when` | include it in the dedupe key | two observations of one rule must accumulate support. Folding the condition into the key makes one rule compete with itself the moment a later event describes the scope differently |
+| The merge adopts a condition once and then holds it, counting a later conflict | last write wins | a rule whose scope depends on which event arrived first cannot be debugged. `conditionConflicts` is where a second description is visible |
+| A condition that restates its claim is dropped; one that reads as an instruction rejects the claim | keep whatever the model returned | a restated condition teaches that the field is decoration; a condition that *commands* is the exact failure the field exists to prevent, and keeping the claim without its scope stores that failure |
+
+**Widening keeps the condition.** Removing a scope dimension is not removing the description of
+applicability, and blocking widening for conditioned rules would confound the arm that measures widening.
+The condition travels, and it is the thing the reader is asked to check.
+
+**The arm that prices it.** `full-plain` renders the same items — `pack.items`, the ones that survived the
+budget — with the condition removed and the plain note. Since a plain line is shorter than a conditioned
+one, the plain pack can only contain a prefix of the same ids, so the comparison is one field of text and
+nothing else. Comparing two dispatches for this would put the answer inside the run-to-run noise, which on
+this benchmark is 0.7–1.4pp.
+
+**Two instruments that make the null readable.** `injected_rules` / `injected_with_condition` /
+`active_with_condition` count what the distiller actually produced, and gate **V12** reports the share: a
+run in which no rule carries a condition has two identical arms and a delta of zero that means nothing.
+And the freeze digest now includes `when`, because two memories that differ only in the condition are two
+different memories — a digest that ignored the field would call them equal and leave the freeze proof
+silent about the experiment it guards.
+
+**Pairing controls with the treatment.** Every control used to be described by its delta against `none`,
+and the difference between two controls was read as the difference of two deltas — a point estimate with
+no interval. `armPairsAgainstFull` pairs each control with `full` on the questions both answered, and the
+lane records it as `arm_pairs`; `pnpm eval:arm-pairs` recomputes it from any artefact, which is what makes
+older reports auditable rather than merely quotable. Its first finding was a correction of our own:
+`full-narrow` is **+0.86pp [−2.00, +3.71], p = 0.71** against `full`, not "0.86pp of the 4.00".
+
+**Result.** The condition changed 48% of the SQL strings and 20 of 350 verdicts — ten gained, ten lost —
+for a paired **0.00pp [−2.57, +2.57], p = 1.000**. With the new prompt none of the 49 credited rules
+restates its question any more, so the harm survives correct, general, conditioned rules. A language model
+reading prose does not evaluate a condition it was given; the next change has to make applicability
+machine-checkable or state that the mechanism steers generation without certifying it.
