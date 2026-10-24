@@ -1870,3 +1870,57 @@ prose. The next mechanism experiment should render the *pair*, not the sentence.
 **Evidence.** `eval/results/history/sota-s2b-value-oracle.json` and its attribution (the value-form oracle
 run, kept because it is the evidence for abandoning it). 831 tests, coverage
 **99.97 / 99.56 / 100 / 99.97**; `pnpm check` green.
+
+### 57 — S2b is closed: the ceiling is the format, and two oracle forms both fell short
+
+The fourth dispatch used the strongest hint this lane can give — the rewritten gold query, copied verbatim
+into the pack — and V11 refused it:
+
+| Arm | Accuracy | Δ vs none | p |
+|---|---|---|---|
+| none | 0.69% | — | — |
+| full | 2.76% | +2.07pp | 0.250 |
+| stated | 4.14% | +3.45pp | 0.063 |
+| oracle (rewritten query) | **56.55%** | +55.86pp | <1e-4 |
+
+`V11-channel-ceiling: 56.55%`. The protocol requires 90%, because below it the lane measures the model's
+output format rather than its use of knowledge.
+
+**Two oracle forms, both short, and the gap between them is the finding.**
+
+| Oracle form | Accuracy | What it isolates |
+|---|---|---|
+| the accepted *value* as a literal | 48.97% | the model will not stop writing queries to say a number |
+| the rewritten *query*, verbatim | 56.55% | the model will not reliably copy a query either |
+
+Injecting the correct answer in the correct form moves accuracy from 0.69% to about half. The other half
+of the replies are the model's own queries — correct, well-formed, and reporting the raw value. **The
+model reads the pack as reference material, not as an answer key.** That is not a bug in the lane and not
+a property of this dataset: it is what a text-injection channel does when the task's instruction ("write
+one SQLite query that answers the question") has more authority than one line of context.
+
+**So the lane is closed, and the closure is a product finding.** S2b asked whether a house convention can
+be learned and applied from corrections. The answer on this task is: **it is transmitted at a fifth of the
+rate the model can use it, and even a perfect hint only reaches half.** A convention that has a *form* —
+units, rounding, precision, ordering — cannot be guaranteed by describing it. It has to be enforced where
+the answer is produced (a post-processing step, a renderer, a schema) or demonstrated so concretely that
+the model's own generation is a copy.
+
+**Two numbers worth keeping from the two runs together.** `full` moved +2.76pp and +2.07pp across two
+dispatches of the same configuration on 145 questions, and `stated` moved +4.83pp and +3.45pp. The
+run-to-run spread is about 0.7–1.4pp on this subset, which is why every ablation in iterations 53–55 that
+compared two dispatches was treated as suggestive only.
+
+**The falsification clause applies to the protocol as written**, and S3 does not start on this benchmark.
+BIRD Mini-Dev remains what Read 5 called it: a place to measure the *cost* of the mechanism, not a place
+where its knowledge is load-bearing, because its gold carries no convention and — as this iteration shows —
+a convention injected as text is not reliably acted on even when it is handed over.
+
+**What the product does with it.** The user guide now states the boundary explicitly: learned conventions
+steer generation, they do not certify form, and a workspace that requires a unit or a precision must apply
+it after the model has spoken. That is a smaller claim than "the flywheel teaches your house style", and it
+is the one the evidence supports.
+
+**Evidence.** `eval/results/history/sota-s2b-value-oracle.json` (the value-form run), the fourth
+dispatch's numbers quoted from its log with no artefact written — V11 refusing to publish is the gate
+working. 831 tests, coverage **99.97 / 99.56 / 100 / 99.97**; `pnpm check` green.

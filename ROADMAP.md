@@ -168,7 +168,7 @@ before the mechanism had been measured on public data, and the four reads above 
 thing: BIRD's gold contains no knowledge the model cannot infer, so the pack is inert there by
 construction. The gate is replaced by a protocol in which the knowledge is load-bearing by design.
 
-## S2b — convention transfer on a public benchmark (in progress)
+## S2b — convention transfer on a public benchmark (closed: the ceiling is the format)
 
 **Question.** Can the flywheel learn a house convention that the model cannot infer, and apply it to
 held-out questions about the same database?
@@ -222,6 +222,28 @@ the protocol as written. The reading that survives is diagnostic rather than a r
 **Consequence for the mechanism, not the benchmark.** A convention that is only described is transmitted
 at about a fifth of the rate the model can use. Every correction the store already holds is a *pair* of
 outputs; the distilled pack renders it as prose. The next mechanism experiment renders the pair.
+
+**Read 9 (2026-10-24, the ceiling, and the closure).** The strongest hint the lane can give — the rewritten
+gold query copied verbatim — was injected (`40052467297`) and V11 refused the run at **56.55%** against the
+protocol's 90% ceiling. `full` was +2.07pp (p = 0.25) and `stated` +3.45pp in the same run. Together with
+Read 8, the two oracle forms bracket the ceiling:
+
+| Oracle form | Accuracy |
+|---|---|
+| the accepted value, as a literal | 48.97% |
+| the rewritten query, verbatim | 56.55% |
+| (protocol requires) | 90% |
+
+**S2b is closed, and the falsification clause applies.** A convention with a *form* — units, rounding,
+precision, ordering — is not transmitted by describing it, and not reliably by demonstrating it either. The
+model reads the pack as reference material rather than as an answer key, which is what a text-injection
+channel does when the task's own instruction outranks one line of context.
+
+**What this changes, and what it does not.** It does not reopen S3: the stop rule stands, and BIRD Mini-Dev
+remains a place to measure the mechanism's *cost*, not a place where its knowledge is load-bearing. It does
+narrow the product claim, and the narrowing is now in the user guide: the pack steers what the model
+produces; it does not certify form; a requirement on units or precision has to be enforced after generation
+or encoded in the schema.
 
 **Cost.** Roughly 1,400 model calls for 5 folds at the current subset size, about 40 minutes.
 
