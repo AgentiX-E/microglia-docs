@@ -196,6 +196,33 @@ knowledge is both non-inferable (so it can matter) and scored by execution (so i
 argued with). It also exercises the whole product path — capture, distill, admission, generalisation,
 recall, apply — on data nobody curated for us.
 
+**Read 8 (2026-10-24, S2b's first complete measurement).** Subset 145 questions, five folds, 1,301
+calls, ten of ten gates — including V9 (145 ≥ 100, a verdict not a direction) and V10 (145/145 rewritten
+gold queries produce the expected value, so the scorer is correct).
+
+| Arm | Accuracy | Δ vs none | 95% CI | p |
+|---|---|---|---|---|
+| none | 0.69% | — | — | — |
+| full | 3.45% | +2.76pp | [0.69, 5.52] | 0.125 |
+| stated | 5.52% | +4.83pp | — | 0.016 |
+| oracle (value form) | 48.97% | +48.28pp | — | <1e-4 |
+
+**The gate fails**: +2.76pp against a preregistered ≥10pp at p<0.05. The falsification clause applies to
+the protocol as written. The reading that survives is diagnostic rather than a reprieve:
+
+- The 0.69% baseline is the property the protocol wanted — a model that does not know the convention
+  returns the raw figure and is wrong by a factor of a thousand.
+- `stated` reaches **5.52%**: one clear sentence in the prompt is followed by one question in twenty. The
+  knowledge arrives; the output form does not.
+- `oracle` in its value form reaches **48.97%**, half of it lost to replies that are queries rather than
+  literals. That is a prompt-form defect, and it is now fixed: the oracle injects the *rewritten gold
+  query*, and V11 makes the protocol's own 90% ceiling blocking so a channel that responds but cannot be
+  used refuses the result.
+
+**Consequence for the mechanism, not the benchmark.** A convention that is only described is transmitted
+at about a fifth of the rate the model can use. Every correction the store already holds is a *pair* of
+outputs; the distilled pack renders it as prose. The next mechanism experiment renders the pair.
+
 **Cost.** Roughly 1,400 model calls for 5 folds at the current subset size, about 40 minutes.
 
 **Read 1 (2026-10-21, run `39548548865`).** Two amendments were forced by measurement: the convention

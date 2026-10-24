@@ -1817,3 +1817,56 @@ to apply it to a different one.
 **Evidence.** `eval/results/history/sota-arm-full-narrow.json` and its attribution, committed; the refused
 run's numbers are quoted from its log and its artefact was never written, which is the lane behaving as
 designed. 829 tests, coverage **99.97 / 99.56 / 100 / 99.97**; `pnpm check` green.
+
+### 56 — The convention lane runs cleanly, and says something about the model rather than the memory
+
+The third dispatch completed with **ten of ten gates passing**, including the two that did not exist before it:
+V9 (subset 145 ≥ 100, so this is a verdict and not a direction) and V10 (145 of 145 rewritten gold queries
+produce the expected value — the scorer is correct, so every following number is about the model).
+
+| Arm | Accuracy | Δ vs none | 95% CI | p |
+|---|---|---|---|---|
+| none | 0.69% | — | — | — |
+| full | 3.45% | +2.76pp | [0.69, 5.52] | 0.125 |
+| stated | 5.52% | +4.83pp | — | 0.0156 |
+| oracle (value form) | 48.97% | +48.28pp | — | <1e-4 |
+
+**The preregistered gate fails.** S2b asked for `full` to beat `none` by ≥10pp at p<0.05; it beat it by
+2.76pp at p=0.125. That is not a null in the sense the BIRD reads were nulls — the baseline is 0.69%,
+so the interval's lower bound is at the floor — but it is a failure, and the falsification clause applies.
+
+**What the run does say, and it is more useful than a pass would have been.** The baseline is near zero
+*because the convention cannot be inferred*: a model that does not know the workspace reports in thousands
+returns the raw figure, and the raw figure is wrong by a factor of a thousand. That is the property the
+protocol wanted. What it did not anticipate is the size of the gap between knowing and doing:
+
+- **`stated` — the convention written in the prompt from the start — reaches 5.52%.** One sentence, in
+  the workspace's own words, in the prompt, is followed by roughly one question in twenty. The remaining
+  nineteen write a correct query that reports the raw value. The knowledge arrived; the output form did not.
+- **`oracle` in its first form — "return exactly this value, as a single numeric literal" — reaches
+  48.97%.** Half the model's replies are queries rather than the literal, because the task's own
+  instruction ("return one SQLite query") outranks a line of context. This is a prompt-form defect, not a
+  capability ceiling, and the fix is to stop asking the model to say a number and let it copy a query.
+- **`full` at +2.76pp sits between nothing and `stated`**, which is what a mechanism that transmits the
+  convention imperfectly would look like if the ceiling it transmits toward is 5.52%.
+
+**The consequence for the protocol is a new gate, not a new claim.** V11 makes the protocol's own oracle
+ceiling blocking: the strongest control must reach 90%, because below it the lane is measuring the model's
+output format and a delta on top of that is unattributable. V7 already asked whether the channel *responds*
+(≥10pp); a channel can respond and still be unusable, and this run was exactly that — 48pp of response, an
+unusable ceiling.
+
+So the oracle is now the **rewritten gold query**: the statement the model would have written, reported the
+workspace's way. It is the strongest hint that stays inside the task's format, and it is the same form the
+ordinary lane has always used. The fourth dispatch runs with it, and V11 will refuse the result if the
+ceiling is still short.
+
+**One thing this pair of runs settles for the product.** A house convention that is only *described* is
+transmitted at about a fifth of the rate a model can use it, on this task. That is an argument for teaching
+conventions with an example of the corrected output rather than a sentence about it — which is also what
+the store already holds: every correction is a pair of outputs, and the distilled pack renders them as
+prose. The next mechanism experiment should render the *pair*, not the sentence.
+
+**Evidence.** `eval/results/history/sota-s2b-value-oracle.json` and its attribution (the value-form oracle
+run, kept because it is the evidence for abandoning it). 831 tests, coverage
+**99.97 / 99.56 / 100 / 99.97**; `pnpm check` green.
