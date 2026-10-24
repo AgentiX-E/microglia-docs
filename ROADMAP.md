@@ -503,15 +503,24 @@ Next by the plan, in order:
    **20 of 350 verdicts** — ten gained, ten lost — for a paired **0.00pp [−2.57, +2.57], p = 1.000**. And
    with the new distillation prompt none of the 49 credited rules restates its question any more, so the
    harm survives *correct, general, conditioned* rules: 33 harmful against 16 helpful.
-3. **Make applicability machine-checkable, or say what the mechanism cannot do.** Five levers are now
-   measured out on this mechanism — retrieval signal (p = 0.86), widening (p = 0.71), dosage (null),
-   foreign rules (ignored), rule shape (p = 1.000). The one quantity that separates a rule that helps from
-   one that hurts is whether it applies to *this* question, and prose has now failed to carry that five
-   times. Two steps, cheapest first: (a) a probe that embeds each rule's `when` and asks whether
-   condition-question similarity separates hurt pairs from helped pairs — if it does, a filter over that
-   score is the lever; (b) if it does not, a structured predicate (`tables`, `requiresColumns`, `intent`)
-   the runtime evaluates against the schema, because a machine check does not need the model's judgement.
-4. **L4's agent invocation** — **ran in iterations 58–61, and the answer is negative.** The driver exists
+3. ~~**Ask the condition whether it separates.**~~ — **measured in iteration 64, and it does not.**
+   The condition was scored over 148 (question, rule) pairs: hurt
+   0.313 against helped 0.278, **gap −0.035, p = 0.062** — backwards, like the statement (0.254 vs 0.226,
+   p = 0.120). Lexically the condition overlaps the question at **zero** median. A similarity filter over
+   the condition would preferentially keep the rules that hurt, so the retrieval door is closed as well.
+4. **Filter the pack on corroboration, not on similarity.** Every harmful rule in the last two runs was
+   activated by a single correction, and the policy already records how many independent observations a
+   claim has — a distinction the pack has never used. The arm is "inject only rules corroborated by at
+   least two corrections": if the harm disappears, the finding is that one correction is not enough to
+   promote a rule, which is a product rule, not a prompt.
+5. **Make applicability machine-checkable, or state what the mechanism cannot do.** Five levers are now
+   measured out on this mechanism — retrieval signal on the claim (p = 0.86), on the condition (p = 0.062),
+   widening (p = 0.71), dosage (null), foreign rules (ignored), rule shape (p = 1.000) — and two of them
+   point *backwards*. What is left is a predicate the runtime evaluates without the model: which tables and
+   columns the question touches, which answer shape it asks for. If that cannot be derived either, the
+   honest statement is that the mechanism steers generation without certifying applicability, and that
+   belongs in the user guide rather than in a benchmark.
+6. **L4's agent invocation** — **ran in iterations 58–61, and the answer is negative.** The driver exists
    (`eval/drivers/tau2/` for the agent and the phase runner, `packages/eval/src/bin/tau2-driver.ts` for the
    orchestration, every decidable step in the tested `tau2.ts`). Both arms, one configuration, 68 held-out
    τ²-retail tasks, four trials:
@@ -525,9 +534,9 @@ Next by the plan, in order:
    stops it doing so. Both are kept in `eval/results/history/`. The comparison is a difference of means —
    the runs predate per-task pairing, which the lane now supports (`PassAtKInput.taskId`, per-task artefacts,
    `TAU_REFERENCE`, and a blocking `l4-paired` gate).
-5. **S2b, the convention lane** — **closed in iterations 55–57**: the ceiling is the format (two oracle
+7. **S2b, the convention lane** — **closed in iterations 55–57**: the ceiling is the format (two oracle
    forms, 48.97% and 56.55%, against a required 90%), and the falsification clause applied.
-6. **The SQLite index (W3)** stays deferred, and that is a measurement rather than a preference: 100k items
+8. **The SQLite index (W3)** stays deferred, and that is a measurement rather than a preference: 100k items
    give **22.73 ms** p95 and **173.9 MB** of heap against budgets of 100 ms and 256 MB, and the lane fails
    the build when either is crossed. The heap is the axis to watch: 174 MB at 100k is what a host runs out of
    long before it notices 22 ms.

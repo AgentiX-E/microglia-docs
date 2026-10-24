@@ -2239,3 +2239,53 @@ and it is the one a filter would use.
 `eval/results/history/sota-read5-full-split.json`. 918 tests, coverage
 **99.97 / 99.59 / 100 / 99.97**; `render.ts`, `distiller.ts`, `llm.ts`, `knowledge.ts` and
 `attribution.ts` at 100% on all four dimensions; `pnpm check` green; CI `40098496074` success.
+
+### 64 — The retrieval door closes too: a harmful rule is the *closer* one
+
+Iteration 63 removed the last textual explanation the plan had, so the question returned to retrieval in
+the only form it had not been asked: not "which rule is close to this question" but "does this rule
+apply". The probe scores three texts over the same 148 (question, credited rule) pairs on that run's
+artefact — 105 hurt, 43 helped — with Zhipu `embedding-3` and a 5,000-resample permutation test:
+
+| Text scored | Hurt (median cosine) | Helped (median cosine) | Gap (helped − hurt) | p | Separates |
+|---|---|---|---|---|---|
+| the statement (what a retriever ranks on) | 0.254 | 0.226 | **−0.027** | 0.120 | no |
+| **the condition** (what a filter would compare) | 0.313 | 0.278 | **−0.035** | 0.062 | no |
+| the condition, lexically (`queryCoverage`) | 0.000 | 0.000 | 0.000 | 1.000 | no |
+
+**Two of the three point backwards.** The harmful rules are *closer* to the questions they damage than the
+helpful rules are to the questions they help, on the claim and on the condition. A similarity gate over the
+condition would therefore preferentially keep the rules that hurt — the filter would be worse than
+nothing, which is a stronger statement than "the signal is weak".
+
+**The lexical row explains why.** `queryCoverage` between a question and a condition is **zero at the
+median for both groups**: conditions are written as abstract properties ("the question asks for a
+percentage of a specific element within a filtered group") and questions are concrete ("Calculate the
+average number of oxygen atoms…"). Word overlap between them is not a weak signal, it is not a signal.
+
+**What the five levers now say together.**
+
+| Lever | Test | Result |
+|---|---|---|
+| Retrieval signal (statement) | cosine separation, 222 pairs | p = 0.86, backwards |
+| Scope widening | `full-narrow` paired against `full` | +0.86pp [−2.00, +3.71], p = 0.71 |
+| Dosage | pack injected twice | −4.00pp vs −3.71pp: no dose response |
+| Foreign rules | another database's pack | −0.29pp, p = 1.00: ignored |
+| Rule shape (`when`) | paired against the same items without it | 0.00pp [−2.57, +2.57], p = 1.000 |
+| Retrieval signal (condition) | cosine separation, 148 pairs | p = 0.062, backwards |
+
+The mechanism does not lose because it retrieves the wrong rule, because it widens too far, because it
+says too much, because it says the wrong thing, or because it fails to say when it applies. It loses
+because a *true* rule, close to the question, correctly scoped and correctly conditioned, is still applied
+to a question it does not fit — and every signal available before generation says it fits.
+
+**So the next lever is not a signal at all: it is corroboration.** Every harmful rule in the last two
+runs was activated by a *single* correction, and the store's policy already distinguishes a claim with one
+observation from one with three. The pack has never been filtered on that distinction, which makes it the
+one quality axis that is measured rather than inferred: an arm that injects only rules corroborated by at
+least two independent corrections. If the harm disappears when single-observation rules are withheld, the
+answer is not "read the condition better" but "do not promote one correction to a rule".
+
+**Evidence.** `eval/results/poc-embed-probe.json` (committed), `pnpm eval:probe`, workflow run
+`40102511693`, 920 tests, coverage **99.97 / 99.59 / 100 / 99.97**; `embed-probe.ts` at 100%;
+`pnpm check` green.
