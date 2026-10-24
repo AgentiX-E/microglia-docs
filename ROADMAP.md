@@ -508,11 +508,14 @@ Next by the plan, in order:
    0.313 against helped 0.278, **gap −0.035, p = 0.062** — backwards, like the statement (0.254 vs 0.226,
    p = 0.120). Lexically the condition overlaps the question at **zero** median. A similarity filter over
    the condition would preferentially keep the rules that hurt, so the retrieval door is closed as well.
-4. **Filter the pack on corroboration, not on similarity.** Every harmful rule in the last two runs was
-   activated by a single correction, and the policy already records how many independent observations a
-   claim has — a distinction the pack has never used. The arm is "inject only rules corroborated by at
-   least two corrections": if the harm disappears, the finding is that one correction is not enough to
-   promote a rule, which is a product rule, not a prompt.
+4. ~~**Filter the pack on corroboration, not on similarity.**~~ — **done in iteration 65, and it is the
+   dividing line.** On BIRD, **0 of 1,296 rules** have two independent corrections, so a floor of two
+   injects nothing — and that empty pack became the lane's noise floor: 190/350 against no-memory's
+   189/350, **0 lost, 1 gained, 0.29pp**. On the chart study the same floor keeps **96.43% of 100.00%**.
+   The lift and the harm are the same property: where mistakes recur, corroboration is what makes a rule
+   true enough to inject (+68.21pp); where every correction is unique, nothing is corroborated and the pack
+   is noise (−2 to −4pp, against a 0.29pp floor). `minEvidence` is now a pack-layer option and the guide
+   states both numbers; the default stays 1 because that trade belongs to the host.
 5. **Make applicability machine-checkable, or state what the mechanism cannot do.** Five levers are now
    measured out on this mechanism — retrieval signal on the claim (p = 0.86), on the condition (p = 0.062),
    widening (p = 0.71), dosage (null), foreign rules (ignored), rule shape (p = 1.000) — and two of them

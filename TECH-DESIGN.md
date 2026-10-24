@@ -3239,3 +3239,33 @@ for a paired **0.00pp [−2.57, +2.57], p = 1.000**. With the new prompt none of
 restates its question any more, so the harm survives correct, general, conditioned rules. A language model
 reading prose does not evaluate a condition it was given; the next change has to make applicability
 machine-checkable or state that the mechanism steers generation without certifying it.
+
+### 17.39 The corroboration floor, and an empty pack that measures the noise floor
+
+The pack layer decides three different things, and keeping them apart is what made the last measurement
+readable: **scope** (which rules could apply), **coverage** (which rules the question mentions) and
+**corroboration** (which rules have been observed more than once). `minEvidence` is the third, defaulting
+to 1 so no caller changes behaviour on upgrade.
+
+| Decision | Alternative rejected | Why |
+|---|---|---|
+| The floor lives in `buildPack`, before MMR | filter the pack after `recall` in the lane | the lane would then measure a reimplementation of the product path, and a corroborated rule must be able to take a slot an uncorroborated one would have filled |
+| A nonsense floor (0, negative, fractional) is clamped to 1 | interpret it | "require -5 observations" has no reading, and a threshold that is silently reinterpreted is worse than one that is refused |
+| The default stays 1 | ship 2 because it protects BIRD | floor 2 costs a recurring workflow 3.57pp of a 68.21pp lift to protect a workflow whose corrections never repeat. A host knows which it is; an upgrade does not |
+
+**The empty-pack control.** On BIRD the floor injects nothing — 0 of 1,296 rules have a second
+observation — so the arm is functionally "no pack". Running it twice in one job gives the lane its
+**within-run noise floor**: 190/350 against 189/350, 0 lost and 1 gained, **0.29pp**. That number did not
+exist before, and every cost this lane has published (−2.00 to −4.00pp) should be read against it: the
+harm is 7–14 times the nondeterminism, not 2–4 times.
+
+**The pair of numbers that states the thesis.**
+
+| Workload | Floor 1 | Floor 2 |
+|---|---|---|
+| chart study, six recurring defect families | 100.00% (+68.21pp) | 96.43% (+64.64pp) |
+| BIRD Mini-Dev, 350 questions, every correction unique | 52.00% (−2.00pp) | 54.29% (0 rules, +0.29pp) |
+
+A mechanism that lifts a recurring-defect workload by 68pp and costs a unique-correction workload 2–4pp is
+not inconsistent: it is conditional on recurrence, and recurrence is measured — `evidence.length` — before
+the first inference.

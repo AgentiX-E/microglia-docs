@@ -2289,3 +2289,56 @@ answer is not "read the condition better" but "do not promote one correction to 
 **Evidence.** `eval/results/poc-embed-probe.json` (committed), `pnpm eval:probe`, workflow run
 `40102511693`, 920 tests, coverage **99.97 / 99.59 / 100 / 99.97**; `embed-probe.ts` at 100%;
 `pnpm check` green.
+
+### 65 — Corroboration is the dividing line, and an empty pack measures the noise floor
+
+The corroboration arm asked the one question the five signal-based levers could not: not "does this rule
+apply" but "has this rule happened more than once". The answer on BIRD is that **no rule has**:
+
+| Measurement | Value |
+|---|---|
+| Rules distilled (5 folds) | 1,296 |
+| Rules with ≥2 independent corrections | **0** |
+| Rules injected by the corroboration arm (floor 2) | **0.00 per question, on all 350** |
+
+So the arm degenerates to "no pack" — and that accident produced the most useful control this lane has
+ever had, because an empty pack and no pack are the same prompt:
+
+| Arm | Correct | Δ vs none | 95% CI | p | rules/question |
+|---|---|---|---|---|---|
+| none | 189/350 (54.00%) | — | — | — | 0 |
+| **full-corroborated** (0 rules injected) | **190/350 (54.29%)** | **+0.29pp** | [+0.00, +0.86] | 1.000 | 0.00 |
+| full | 182/350 (52.00%) | −2.00pp | [−4.86, +0.86] | 0.248 | 1.78 |
+
+**One question in 350 was answered differently when the same prompt was run twice** — 0 lost, 1 gained.
+That is the lane's within-run noise floor, **0.29pp**, and every cost measured in iterations 53–64
+(−2.00 to −4.00pp) is seven to fourteen times it. The earlier readings never had this denominator; they
+used a between-run comparison that mixed provider variation with the mechanism.
+
+**The corroboration floor is now a pack-layer option**, because it is the same kind of decision as
+`minCoverage`: which rules may reach the prompt. It runs before MMR, so a corroborated rule takes the slot
+an uncorroborated one would have occupied, and a nonsense threshold is clamped to the shipped behaviour.
+
+**What it costs where the mechanism does work.** The chart study repeats six defect families, so most of
+its rules are corroborated and the floor barely binds — but it binds at 3.57pp:
+
+| Workload | Floor 1 (shipped) | Floor 2 |
+|---|---|---|
+| chart study (recurring defects) | **100.00%** (+68.21pp) | **96.43%** (+64.64pp) |
+| BIRD Mini-Dev (unique corrections) | 52.00% (−2.00pp) | **54.29% (0 rules, +0.29pp)** |
+
+That pair is the clearest statement this project has produced about its own mechanism: **the lift and the
+harm are the same property seen on two corpora.** Where a mistake recurs, a rule is corroborated and
+injecting it removes the mistake (+68.21pp). Where every correction is unique, every rule is a single
+observation, nothing can be corroborated, and injecting them is noise that costs 2–4pp. The number that
+separates the two worlds is `evidence.length` on the store, and it is available before the first
+inference.
+
+**Why the default does not change.** Floor 2 would cost every user with a recurring workflow 3.57pp of a
+68.21pp lift to protect a user whose corrections never repeat. That is a trade a host makes with its own
+numbers — the guide now shows both — not one an upgrade makes silently. `minEvidence` defaults to 1, and
+the user guide states how to tell which world you are in.
+
+**Evidence.** `eval/results/history/sota-arm-corroborated.json` (this run's artefact),
+`bench/results/study.json` (the `corroborated-only` arm), 927 tests, coverage
+**99.97 / 99.59 / 100 / 99.97**; `pnpm check` green; study gates PASS.
