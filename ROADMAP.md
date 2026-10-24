@@ -492,13 +492,20 @@ Next by the plan, in order:
 
 1. **The two S2 ablations** — scope widening, then dosage and specificity. Each is a dispatch; the readout is
    the same table, so the comparison is exact.
-2. **L4's agent invocation** — **ran in iterations 58–60.** The driver exists
+2. **L4's agent invocation** — **ran in iterations 58–61, and the answer is negative.** The driver exists
    (`eval/drivers/tau2/` for the agent and the phase runner, `packages/eval/src/bin/tau2-driver.ts` for the
-   orchestration, every decidable step in the tested `tau2.ts`), and the memory arm has produced the lane's
-   first complete number: **pass^4 = 0.5294 over 68 held-out τ²-retail tasks** against ALTK-Evolve's 0.575,
-   delta **−4.56pp**, all tasks scored, two of three gates passing — the `+5pp` bar does not. The reference
-   arm (`TAU_MEMORY=false`, same tasks and trials) is the comparison that answers the project's question
-   and is in flight.
+   orchestration, every decidable step in the tested `tau2.ts`). Both arms, one configuration, 68 held-out
+   τ²-retail tasks, four trials:
+
+   | Arm | pass^4 | vs published 0.575 | Gates |
+   |---|---|---|---|
+   | reference, no store | **0.6471** | **+7.21pp** | 3 of 3 |
+   | memory | **0.5882** | +1.32pp | 2 of 3 |
+
+   **The memory costs 5.89 pass^4 points.** The harness itself beats the published number; the loop is what
+   stops it doing so. Both are kept in `eval/results/history/`. The comparison is a difference of means —
+   the runs predate per-task pairing, which the lane now supports (`PassAtKInput.taskId`, per-task artefacts,
+   `TAU_REFERENCE`, and a blocking `l4-paired` gate).
 3. **S2b, the convention lane** — with the constraint Read 5 supplies: a convention scoped at birth.
 4. **The SQLite index (W3)** stays deferred, and that is a measurement rather than a preference: 100k items
    give **22.73 ms** p95 and **173.9 MB** of heap against budgets of 100 ms and 256 MB, and the lane fails

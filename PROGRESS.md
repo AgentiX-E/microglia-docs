@@ -2052,3 +2052,39 @@ produce a scoreable run.
 
 **Evidence.** Run `40077598797`, job `120824247341`; the artefact is `eval/results/poc-l4.json` inside that
 job's upload. 870 tests, coverage **99.97 / 99.57 / 100 / 99.97**; `pnpm check` green.
+
+### 61 — L4 both arms: the memory costs 5.89 pass^4 points
+
+One configuration, one split, two dispatches started together (`40087279176` memory, `40087284586`
+reference), 68 held-out τ²-retail tasks, four trials, concurrency 2, litellm retries at 4:
+
+| Arm | pass^4 | Δ vs published (0.575) | Gates | Wall clock |
+|---|---|---|---|---|
+| **reference** (same agent, no store) | **0.6471** | **+7.21pp** | **3 of 3** | 52 min |
+| **memory** (learn 46 tasks, distil, recall) | **0.5882** | +1.32pp | 2 of 3 | 60 min |
+
+**The memory costs 5.89 pass^4 points on this task.** That is the number the lane exists to produce, and it
+points the same way as every other measurement in this project: −4.00pp on BIRD, −5.89pp here, with the
+mechanism never ahead.
+
+**The reference arm is the more surprising result.** Without any store, this harness **beats the published
+ALTK-Evolve number by 7.21pp and passes all three gates** — the first time any L4 run has been green. So the
+lane is sound and the reference is beatable; what is not established is that the *memory* is what would beat
+it. On this evidence it is what stops the agent beating it.
+
+**What this comparison is, and what it is not.** Both arms are the same agent, the same model, the same
+split, the same trials, the same day. They are not *paired*: pass^4 is a mean over tasks, and the only
+quantity these two artefacts support is the difference between two means (0.6471 − 0.5882). No interval, no
+p-value. That gap is now closed in the lane — `PassAtKInput` carries a task id, every artefact records
+per-task outcomes, and `TAU_REFERENCE` points at the other arm's artefact so the same tasks are compared
+directly, with a blocking `l4-paired` gate — but the two runs below predate it and must be read as a
+difference of means.
+
+**A configuration decision that had to be made twice.** The first full memory arm was measured at
+concurrency 4 without retries (0.5294) and its reference arm died on a `429` one minute from the end. Numbers
+from different settings are not comparable, so both arms were re-run at concurrency 2 with `num_retries=4`.
+The first attempt is kept as `l4-memory-arm-first-attempt.json`; it is the evidence for why settings are part
+of a result.
+
+**Evidence.** `eval/results/history/l4-arm-reference-c2.json`, `eval/results/history/l4-arm-memory-c2.json`;
+870 tests, coverage **99.97 / 99.57 / 100 / 99.97**; `pnpm check` green.
