@@ -490,8 +490,15 @@ lane.
 
 Next by the plan, in order:
 
-1. **The two S2 ablations** — scope widening, then dosage and specificity. Each is a dispatch; the readout is
-   the same table, so the comparison is exact.
+1. ~~**The two S2 ablations**~~ — done, and both are negative: scope widening is worth 0.86pp of the
+   4.00pp cost (Read 7), dosage is null and foreign rules are ignored (Read 6).
+2. **Change the shape of a rule, not the index.** Iteration 62 measured the retriever out: rules credited
+   with a hurt sit at median cosine 0.232 from their question and rules credited with a help at 0.228
+   (p = 0.86), and word coverage is 0.133 against 0.130. The failure is that a rule can be maximally
+   relevant and still wrong to apply, because the store records *what was true* and never *when it is
+   true*. The next change carries the condition with the item — ReasoningBank's "when to use", MemHarness's
+   "the state it was formed under" — and presents it as something the model evaluates rather than a prefix
+   it obeys.
 2. **L4's agent invocation** — **ran in iterations 58–61, and the answer is negative.** The driver exists
    (`eval/drivers/tau2/` for the agent and the phase runner, `packages/eval/src/bin/tau2-driver.ts` for the
    orchestration, every decidable step in the tested `tau2.ts`). Both arms, one configuration, 68 held-out

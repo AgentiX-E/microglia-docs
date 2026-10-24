@@ -2088,3 +2088,67 @@ of a result.
 
 **Evidence.** `eval/results/history/l4-arm-reference-c2.json`, `eval/results/history/l4-arm-memory-c2.json`;
 870 tests, coverage **99.97 / 99.57 / 100 / 99.97**; `pnpm check` green.
+
+### 62 — The retriever is not the problem, and the probe that says so
+
+The three negative results (−4.00pp BIRD, −5.89pp τ², and every ablation between) share one question:
+was the right rule in the pack? This iteration answers it with measurement instead of architecture, and
+the answer excludes the explanation everyone reaches for first.
+
+**The lexical signal is not weak. It is absent.** Recomputed from the committed BIRD artefact — 350
+questions, 701 injections, 46 rules credited with a hurt and 19 with a help:
+
+| Group | Median word coverage | Median identifier coverage |
+|---|---|---|
+| rules credited with a hurt | **0.133** | 0.000 |
+| rules credited with a help | **0.130** | 0.000 |
+
+The two groups are the same. That is why the coverage gate recovered 0.29pp of a 4.00pp cost: a keyword
+threshold is not a weak relevance signal on this data, it is not a signal.
+
+**So the same question was asked of an embedding** (`poc-embed-probe`, Zhipu `embedding-3`, 415 texts,
+5,000-resample permutation test over 222 (question, credited-rule) pairs):
+
+| Group | n pairs | Median cosine | Mean |
+|---|---|---|---|
+| hurt | 152 | **0.232** | 0.242 |
+| helped | 70 | **0.228** | 0.235 |
+
+**Gap −0.004, p = 0.86.** The harmful rules are exactly as close to their question as the helpful ones.
+Rebuilding recall around a semantic index — which is what ReasoningBank, A-MEM and MemHarness all do —
+would have bought nothing on this data, and this probe cost four minutes instead of a week.
+
+**What this reframes, and it is not a small reframe.** The failure is not "the wrong rule was retrieved".
+It is that a rule can be *maximally relevant* and still wrong to apply: `"A query answering 'which driver
+ranked first in the Canadian Grand Prix in 2007' selects forename, surname, and driverRef…"` is about as
+close to a Formula-1 question as a rule can be, and it is still a statement about a *different* question.
+Relevance and applicability are different quantities, and the store only ever modelled the first.
+
+**The literature reached the same place from the other side.** Three papers found in this iteration's
+search say what the measurement says:
+
+- *Large Language Model Agents Are Not Always Faithful Self-Evolvers* (arXiv 2601.22436): replacing a
+  distilled insight with random characters often changes nothing, and when condensed experience does land
+  it fails in three ways — distraction, overreliance on stale priors, premature inference. Raw trajectories
+  are used faithfully (removing them: 75% → 2%); condensed summaries are not.
+- *Stop Replaying Memories. Rewrite Them.* (MemHarness, arXiv 2607.28272): a 76.4% ALFWorld agent drops to
+  **52.0% with Mem0** and 54.5% with SimpleMem — a *bigger* collapse than ours — and the diagnosis is
+  explicit: "better search cannot fix a mismatch that lives outside the ranking". Their fix is to
+  reconstruct rather than replay: retrieve, **critique the memory against the current state**, then act.
+- *ReasoningBank* (ICLR 2026): memory items carry a **"when to use"** description alongside the content,
+  retrieval is dense-vector with MMR, and failures are distilled into *preventative* lessons; +8.3% WebArena
+  over memory-free.
+
+Together they say the same thing our numbers say: the store models *what was true*, never *when it is
+true*, and the prompt asks the model to treat the former as the latter.
+
+**What the next change is, and what it is not.** Not a better index — that is now measured out. The next
+change is to the *shape of a rule*: a distilled item should carry the condition under which it applies
+(ReasoningBank's `when to use`, MemHarness's "state it was formed under"), and the pack should present the
+condition as something the model evaluates rather than a prefix it obeys. A rule that says "when a question
+names a race, the join goes through `results.raceId`" is applicable; "a query answering <one question>
+selects …" is not, however close it sits.
+
+**Evidence.** `eval/results/poc-embed-probe.json` (committed), `pnpm eval:probe`, workflow run `40094204125`.
+Pure logic — attribution, pairing, permutation test — at **100% on all four dimensions**; 883 tests;
+coverage **99.97 / 99.55 / 100 / 99.97**; `pnpm check` green.
