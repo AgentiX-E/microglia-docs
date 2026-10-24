@@ -3167,3 +3167,27 @@ question — a thousand opens to read eleven strings that cannot change during a
 the code union and `statusFor` in the HTTP layer had no case for it: the switch was exhaustive, so `tsc`
 refused the build. That is the intended failure mode — the alternative was a 500 for a failure that is a
 503 — and the test now uses a `Record` over the union so the next code has to be mapped to compile.
+
+### 17.37 The L4 driver: where an external agent meets our store
+
+τ²-bench is not a dataset, it is a program: it owns the environment, the user simulator, and the evaluator,
+and it constructs agents through a registry. That shapes the integration more than any API detail does.
+
+| Decision | Alternative rejected | Why |
+|---|---|---|
+| Subclass `LLMAgent` and override `generate_next_message` | fork the benchmark, or add a hook upstream | the registry calls a fixed constructor for every `LLMAgent` subclass, so a subclass needs no upstream change and no vendored copy of someone else's sandbox |
+| Inject the pack as one extra **system message** | append to the policy, or expose recall as a tool | the product's claim is context, not capability. A tool would change what the agent can *do*; a policy edit would make the pack indistinguishable from the domain rules the benchmark is testing |
+| Inject on a **copy** of the state | mutate the state in place | τ² keeps one state object for the episode; appending in place accumulates one pack per turn, so turn ten carries ten copies and the prompt grows without bound |
+| Recall over a **one-endpoint** HTTP facade | import the SDK into Python, or pass packs at start-up | the agent runs in another process, and the smallest boundary that works is `GET /v1/recall`. Packs cannot be passed at start-up because recall depends on what the user just said |
+| Feedback written **in-process by the driver** | let the agent write feedback | an agent that writes while it is measured is not being measured. The driver learns from the training half only, before the held-out half is touched |
+| Split, corrections and argv in **TypeScript** | do it in the Python script | those are decisions, and decisions belong where the test runner is. The argv in particular: a flag typo fails after the environment is installed |
+
+The last row has a cost worth stating: the Python side cannot be unit-tested here, so it is kept to the two
+things that must be Python (subclassing the agent, calling `run_tasks`) and everything else is pushed into
+`tau2.ts`, which is at 100% on all four dimensions.
+
+**A defect the wiring produced.** `TAU_DRIVER=./packages/eval/src/bin/tau2-driver.ts` is the obvious value a
+workflow would set, and a relative specifier in a dynamic `import` resolves against the importing module, so
+`bin/l4.ts` looked for `bin/packages/eval/...`. The loader now resolves relative and absolute specifiers
+against the working directory. The end-to-end test drives list → split → evaluate → `pass^4` against a
+stand-in runner, because that is the only way to verify the orchestration without a Python clone.

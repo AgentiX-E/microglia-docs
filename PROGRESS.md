@@ -1924,3 +1924,49 @@ is the one the evidence supports.
 **Evidence.** `eval/results/history/sota-s2b-value-oracle.json` (the value-form run), the fourth
 dispatch's numbers quoted from its log with no artefact written — V11 refusing to publish is the gate
 working. 831 tests, coverage **99.97 / 99.56 / 100 / 99.97**; `pnpm check` green.
+
+### 58 — L4 stops being a lane with no way to run
+
+The reader has been finished since iteration 43 and it has been reporting **not-run** ever since, for the
+honest reason that `TAU_DRIVER` named a module nobody had written. That is the state this iteration ends.
+
+**Three files, and one rule about where each decision lives.**
+
+| File | What it does | How it is verified |
+|---|---|---|
+| `eval/drivers/tau2/microglia_agent.py` | subclasses `LLMAgent`, recalls a pack per turn, prepends one system message **on a copy of the state** | `py_compile`, and the injection point is one method |
+| `eval/drivers/tau2/run_split.py` | `list` / `learn` / `eval` phases over the registry, writing upstream's own `results.json` | the argv comes from the tested builder |
+| `packages/eval/src/bin/tau2-driver.ts` | split, learn from failures, distil, evaluate over HTTP | end-to-end against a stand-in runner |
+
+**Everything decidable without running is TypeScript and tested.** `tau2.ts` parses the criteria upstream
+stores (and refuses a malformed action rather than guessing its call), renders the correction a failed
+episode teaches, splits ids deterministically, and builds the argv. That last one is not pedantry: a driver
+that passes `--trials` where the script reads `--num-trials` fails *after* the environment is installed,
+which is the most expensive possible moment to discover it. `tau2.ts` is at **100% on all four dimensions**.
+
+**A defect found in the wiring, not in the code under test.** `TAU_DRIVER=./packages/eval/src/bin/tau2-driver.ts`
+is how anyone would name a driver in a workflow, and a relative specifier in a dynamic `import` resolves
+against *the importing file* — so `bin/l4.ts` looked for `bin/packages/eval/...`. It now resolves against
+the working directory, and a test drives the whole path — list, split, evaluate, `pass^4` — against a
+stand-in runner, which is the only way to check orchestration without a Python clone and hours of calls.
+
+**Why subclass instead of fork.** τ² constructs agents through a registry and calls
+`AgentConstructor(tools=…, domain_policy=…, llm=…, llm_args=…)` for every `LLMAgent` subclass, so the
+constructor is unchanged and only `generate_next_message` is wrapped. The memory is injected as *context*
+— one extra system message — which is what the product claims to produce, and it keeps the injected text
+auditable in τ²'s own simulation records. A copy of the state per turn is deliberate: appending to the
+shared state would accumulate one pack per turn, and a ten-turn episode would carry ten copies.
+
+**Why the facade serves one endpoint.** The agent runs in another process, so recall has to cross a
+boundary. It crosses the smallest one that exists: `GET /v1/recall`, read-only. Feedback is written by the
+driver in-process, where the store is, so the agent cannot mutate what it is being measured against.
+
+**Status: ready, still not-run.** The job remains gated on `TAU_ENV_READY`, because hours of model calls
+should need a switch rather than a default. What changed is that the switch now has something behind it,
+and `TAU_MEMORY=false` runs the reference arm alone — the cheap way to check the wiring before paying for
+both arms.
+
+**Evidence.** 869 tests, coverage **99.97 / 99.57 / 100 / 99.97**; `tau2.ts` and `model-client.ts` at 100%;
+`pnpm check` green; a local end-to-end run of `pnpm eval:l4` against a stand-in runner produced
+`pass4=0, tasks=4, gates_passed=1` with the two expected failures (coverage below 60 tasks, and a
+stand-in that never passes), and exited non-zero on them.

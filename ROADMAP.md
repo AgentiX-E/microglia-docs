@@ -492,8 +492,11 @@ Next by the plan, in order:
 
 1. **The two S2 ablations** — scope widening, then dosage and specificity. Each is a dispatch; the readout is
    the same table, so the comparison is exact.
-2. **L4's agent invocation** when `TAU_ENV_READY` is set: the reader, its refusals and its gates are in
-   place, and the driver contract is `run(): Promise<readonly PassAtKInput[]>`.
+2. **L4's agent invocation** — **built in iteration 58**, gated on `TAU_ENV_READY`. The reader, its
+   refusals and its gates were already in place; what was missing was a driver, and there now is one
+   (`eval/drivers/tau2/` for the agent and the phase runner, `packages/eval/src/bin/tau2-driver.ts` for the
+   orchestration, with every decidable step in the tested `tau2.ts`). What remains is the switch: a
+   `TAU_MEMORY=false` reference run to check the wiring, then both arms.
 3. **S2b, the convention lane** — with the constraint Read 5 supplies: a convention scoped at birth.
 4. **The SQLite index (W3)** stays deferred, and that is a measurement rather than a preference: 100k items
    give **22.73 ms** p95 and **173.9 MB** of heap against budgets of 100 ms and 256 MB, and the lane fails
