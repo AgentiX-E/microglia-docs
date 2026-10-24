@@ -2011,3 +2011,44 @@ the tail of its summary, which is what made the run above readable.
 
 **Evidence.** Run `40072968214` (L4 job), 870 tests, coverage **99.97 / 99.57 / 100 / 99.97**; `pnpm check`
 green.
+
+### 60 — L4's first comparable number: 0.5294 against ALTK-Evolve's 0.575
+
+The memory arm, on the whole held-out half of τ²-retail (`40077598797`):
+
+| | Value |
+|---|---|
+| Held-out tasks | **68** (114 in the set, 0.4 train share — the floor is 60) |
+| Trials per task | 4 |
+| **pass^4** | **0.5294** |
+| Published (ALTK-Evolve, same split) | 0.575 |
+| Delta | **−0.0456** |
+| Unscored tasks | 0 |
+| Gates | **2 of 3** — coverage and full-scoring pass, the `+5pp` bar fails |
+| Wall clock | 34 minutes (learn 46 tasks: 5; evaluate 68×4: 28) |
+
+Thirty-six of sixty-eight tasks passed all four trials. The lane exits non-zero because
+`0.5294 < 0.575 + 0.05`, which is the honest verdict: **on this split the loop is 4.56pp behind the
+published result, not ahead.**
+
+**What this number is, and what it is not.** It is the first L4 figure this project has ever produced, and
+it is a *complete* split — every held-out task scored, no infrastructure failures discarded, the same
+metric (`pass^4`) and the same published reference. What it is not is the comparison that matters: it
+measures the memory arm against a published number, not against *the same agent without the memory*. Those
+differ for a reason worth stating — the reference was produced by another system on another day with its
+own prompts — so the only reading it supports is "the loop, as wired here, is slightly behind".
+
+**The reference arm is in flight** (`TAU_MEMORY=false`, same 68 tasks, same trials, same model, no store).
+That comparison is paired at the task level and is the one that answers the project's question. Until it
+lands, this table must not be read as "the memory costs 4.56pp" — it cannot distinguish the memory from
+the harness.
+
+**Two measurements worth keeping.** The cost is now known rather than estimated: 34 minutes for 276
+episodes at concurrency 4, which means the 200-minute step budget was never the binding constraint that
+iteration 59 assumed — a full run fits with room to spare, and the earlier "needs sharding" conclusion was
+based on an extrapolation from four tasks that did not scale. And the split had to move to 0.4: at 0.5 the
+held-out half is 57 tasks, under the lane's own 60-task floor, so a 50/50 split on this domain can never
+produce a scoreable run.
+
+**Evidence.** Run `40077598797`, job `120824247341`; the artefact is `eval/results/poc-l4.json` inside that
+job's upload. 870 tests, coverage **99.97 / 99.57 / 100 / 99.97**; `pnpm check` green.
