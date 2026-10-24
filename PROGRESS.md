@@ -1970,3 +1970,44 @@ both arms.
 `pnpm check` green; a local end-to-end run of `pnpm eval:l4` against a stand-in runner produced
 `pass4=0, tasks=4, gates_passed=1` with the two expected failures (coverage below 60 tasks, and a
 stand-in that never passes), and exited non-zero on them.
+
+### 59 — L4 runs a split, and the lane is no longer a promise
+
+Five smoke dispatches, each one a layer deeper, and the fifth completed:
+
+```
+[poc-l4] pass4=0.5 published_pass4=0.575 delta=-0.075 tasks=2 unscored_tasks=0 min_tasks=60 k=4 gates_passed=1
+```
+
+Two held-out tasks, four trials each, **memory on**: the driver learned from two training tasks, distilled,
+started a one-endpoint facade, and answered the held-out pair through `MicrogliaAgent`. `pass^4 = 0.5` with
+`published = 0.575` and **one of three gates passing** — and the lane exited non-zero, which is the correct
+outcome for two tasks against a 60-task coverage floor. The number is not a result; the run is.
+
+**Five defects, one per dispatch, all in the wiring rather than in the code under test.**
+
+| Dispatch | Died at | Cause | Fix |
+|---|---|---|---|
+| 1 | before the lane | `TAU_DRIVER` was a stale repository variable pointing at `./poc/14-driver.mjs` | variable repointed; the job's second switch is now a dispatch input |
+| 2 | task listing | system `python3` cannot import tau2 | prefer `.tau2-bench/.venv/bin/python` |
+| 3 | first episode | `run_tasks` does `if "seed" in llm_args_agent` and both `llm_args_*` default to `None` | pass `{}` |
+| 4 | first model call | litellm imports its MCP handler eagerly; `mcp` is optional and undeclared | install it in the environment step |
+| 5 | completed | — | — |
+
+A sixth defect was found by reading rather than by running: when `save_to` already exists, `run_tasks` opens
+an **interactive prompt** asking whether to resume. In CI that is a hang, not an error. The phase runner now
+deletes its target first, so the branch is unreachable rather than unlikely.
+
+**What the full run costs, measured rather than guessed.** τ²-retail carries 115 tasks. A 50/50 split gives
+57 held out, which is *below* the lane's 60-task coverage floor — so a full run needs `TAU_TRAIN_SHARE=0.4`
+(46 train, 69 test). That is 276 episodes at four trials, plus 46 learning episodes: at the observed pace
+this exceeds the 200-minute step budget, so a full L4 run needs sharding across jobs or a longer window. That
+is a design decision for the next iteration, and it is now a measured constraint rather than a guess.
+
+**Also fixed while reading the logs.** A gate whose sample had no discordant pairs printed
+`minimum detectable Infinitypp`; it now says `not estimable: no question changed hands`. And the driver
+captured the subprocess, so a *successful* phase left no trace in the job log at all — each phase now prints
+the tail of its summary, which is what made the run above readable.
+
+**Evidence.** Run `40072968214` (L4 job), 870 tests, coverage **99.97 / 99.57 / 100 / 99.97**; `pnpm check`
+green.
