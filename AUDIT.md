@@ -122,7 +122,7 @@ D30 adopts.
 | A public benchmark benefit on unmodified data | **four null reads**, n=352 | the lane is sound (oracle +30.97pp) and the pack is inert; this is a result, not a gap |
 | Convention transfer at a stable magnitude | **two reads**: +4.79pp then +2.05pp | 4.79 sits under the sample's 5.08pp resolution; the direction replicates, the size does not, and both are reported |
 | Host shadow results (S1) | not started | needs the private adjudicated set (1,300 cases, κ≥0.7) and real users; no synthetic substitute means anything |
-| LLM-judge calibration (κ) | not started | needs 200 human labels; a judge validated against itself is not validated |
+| LLM-judge calibration (κ) | **reference measured; no judge exists to calibrate** | the 200-label blocker is withdrawn — ROSE-VEC publishes 322 expert-adjudicated BIRD predictions and the five annotators' own files, so nothing had to be bought. Measured on them: committee self-agreement κ 0.7085, execution accuracy vs committee κ 0.4717 (set semantics) / 0.2995 (multiset). The gap is in the criterion, not the labels; a judge is still unvalidated because this repository has none |
 | Successor models | not tested | one provider, three runs; the docs say so wherever a model number appears |
 | 100k-item behaviour | not measured | 10k is measured; extrapolating would repeat the mistake this audit already corrected once |
 | Every §17 pipeline stage | **designed, not implemented** | the design phase excludes product code; each stage's gate is specified and unrunnable until the code exists |

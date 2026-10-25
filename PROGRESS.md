@@ -2485,3 +2485,159 @@ adopt without reading this document.
 **Evidence.** 953 tests, coverage **99.97 / 99.59 / 100 / 99.97**; `microglia.ts` at 100% on all four
 dimensions; `pnpm check` green; bundle ceiling raised 43,000 → 44,000 with both steps recorded beside the
 number.
+
+### 69 — The labels were never the expensive part; the criterion was
+
+The audit has carried one blocker since before S2 began: *"an LLM judge cannot be trusted until it
+reaches κ ≥ 0.7 against 200 human labels; a judge validated against itself is not validated."* Two
+things were wrong with that sentence. This iteration measures both, and both come back differently
+from what the sentence assumed.
+
+**The reference is already public.** ROSE-VEC ([Pei et al., 2026](https://arxiv.org/abs/2604.12988))
+publishes 322 BIRD items — a real system's prediction, the gold query, the question, and a boolean the
+annotators reached independently — and publishes the five annotators' own files beside it. Both are
+fetched and digest-pinned by `pnpm eval:judge`. Rebuilding the consensus from the raw files gives 383
+items rated twice, 333 with unanimous agreement, and **zero** disagreements with the published labels:
+the parse is right, and the reference did not have to be bought.
+
+**The committee has a ceiling, and it is not 1.** Pairwise agreement between the five annotators:
+
+| Quantity | Value |
+|---|---|
+| Mean pairwise κ | **0.7085** |
+| Range across the ten pairs | 0.5115 – 0.8522 |
+| Items two annotators rated | 383 |
+| Items all agreed of those | 333 (87.0%) |
+
+So "κ ≥ 0.7" was never "better than humans" — it is "level with the average pair of humans", and one
+pair of these annotators sits at 0.51. A bar written above 0.7085 describes the annotation, not the
+judge. That is the first correction: the threshold needed a ceiling before it needed a purchase order.
+
+**Execution accuracy is not a substitute for the committee.** The same 322 items, scored four ways,
+where a *false negative* is a prediction the experts accepted and the criterion rejected:
+
+| Criterion | ACC | κ | MCC | κ 95% CI | correct called wrong | wrong called correct |
+|---|---|---|---|---|---|---|
+| Committee against itself | — | **0.7085** | — | — | — | — |
+| EX, ROSE semantics (set of tuples, column order kept) | 0.7196 | **0.4717** | 0.5422 | 0.3886 – 0.5557 | 87 of 216 | 3 of 106 |
+| EX, this repository's semantics (multiset, canonical rows) | 0.5950 | **0.2995** | 0.4136 | 0.2329 – 0.3730 | **129 of 216** | 1 of 106 |
+| all-true | 0.6708 | 0 | — | — | 0 | 106 |
+| all-false | 0.3292 | 0 | — | — | 216 | 0 |
+
+Three readings, in order of how much they cost.
+
+1. **A criterion with no information beats ours on accuracy.** Always answering "correct" scores 0.6708,
+   higher than this repository's execution criterion at 0.5950. Both rank at κ 0 for the first and
+   κ 0.30 for the second, so the two numbers do not contradict each other — but a report that quoted
+   accuracy alone would have preferred the one that answers nothing. This is the arithmetic reason the
+   lane reports κ, MCC and ACC together and refuses to emit one without the others.
+2. **The two things called "EX" are not the same comparison.** They disagree on **52 of 322 items
+   (16.1%)**. ROSE compares a set of tuples by position; this repository sorts column names, rounds
+   numbers to six places, and keeps duplicates. Rounding and multiset both only add false negatives,
+   and the matrix shows exactly that: our variant calls 129 correct predictions wrong where ROSE's calls
+   87, while calling almost nothing wrong.
+3. **That is a systematic downward bias, not noise.** Our criterion has one false positive in 322 items
+   and 129 false negatives. On a two-arm comparison the bias applies to both arms, which is why the
+   paired design still stands — but it compresses the observable difference, because an arm can only be
+   credited by producing a query that survives rounding *and* duplicate *and* column-order normalisation.
+   The ±2–4 pp effects measured in iterations 53–68 have an alternative explanation this table does not
+   exclude, and it is a measurement explanation rather than a mechanism one.
+
+**What this does not say.** It does not overturn iterations 53–68: those lanes compare two arms under
+one criterion, so a criterion that is harsh on both arms narrows the difference rather than inventing
+one, and the sign reversals already reported stand with their intervals. It does not say a judge is
+validated — the ruler now exists and nothing has been measured against it yet. And it does not say
+BIRD's gold is wrong: ROSE-VEC's labels are verdicts on predictions, not corrections of the gold, and
+the separate finding that BIRD Train's gold carries errors ([BIRD-Platinum](https://arxiv.org/abs/2603.20004),
+61.1% of sampled items with at least one) is about a different file.
+
+**Design decisions, each with the alternative it beat.**
+
+- **Public reference over a purchased one.** Buying 200 labels was never about money. Five annotators
+  with NL2SQL project experience reached 0.7085 between themselves; 200 fresh labels from any other five
+  would produce a committee with the same kind of ceiling, no interval worth quoting, and no way for
+  anyone else to check the number. The public set buys comparability, which a private set cannot.
+- **`undefined`, never 0, when κ is not estimable.** Both raters constant means chance agreement is 1 and
+  there is nothing to divide by. Returning 0 there would read as "no better than chance" when the truth
+  is "this set cannot answer the question", and the reason travels in the report so a caller can tell
+  the two apart.
+- **Degenerate controls inside the lane, not in a test.** all-true and all-false must land at κ exactly
+  0 and an oracle self-comparison at exactly 1, or the lane fails. Those are the only conditions under
+  which this lane goes red besides corrupt data — an instrument that cannot be made to say "no
+  information" is an instrument that would report it as a finding.
+- **An unexecutable prediction is unscored, not wrong.** One item of 322 could not be executed. Counting
+  it as a disagreement would let a database refusal become evidence about a query.
+
+**What this leaves for next.** The ruler has no subject: no LLM judge exists in this codebase, so
+nothing has been measured against ROSE-VEC except execution accuracy. Introducing one is a separate
+decision with its own costs — provider, prompt version, per-item spend — and mixing it into the
+calibration's measurement would make the first number about the judge instead of about the metric.
+The cheaper experiment first: re-score the S2 questions under ROSE's set semantics and see whether the
+reported deltas move. If they do not, the ceiling effect is bounded and the existing conclusions stand
+tighter than they did. If they do, the S2 lane's criterion was the finding.
+
+**Evidence.** `pnpm eval:judge` on 322 items, 1 unscored, digest-pinned on both sides (ROSE files by
+sha256, Mini-Dev by the existing manifest); 996 tests, coverage **99.97 / 99.61 / 100 / 99.97**;
+`agreement.ts` and `rose-vec.ts` at 100% on all four dimensions; `pnpm check` green.
+
+### 70 — Two ways out of the criterion problem, both switchable, neither assumed better
+
+Iteration 69 left one finding and no decision: execution accuracy agrees with expert adjudication at
+κ 0.4717 (set semantics) or 0.2995 (this repository's multiset reading), against the committee's own
+0.7085. Two responses are possible — change the criterion, or stop using a row comparison as the
+criterion — and nothing measured says which. Both are now built, and the choice is a configuration.
+
+**A. The comparison becomes a setting, and both readings come from one execution.**
+
+`SOTA_SEMANTICS=multiset|set`, default `multiset`. The default is deliberate: every number this lane has
+published was scored that way, and a silent change would make the next run incomparable with the last
+while presenting itself as an improvement. `set` collapses duplicate rows; `multiset` keeps them; the
+two disagree on **52 of 322** adjudicated items, so the name has to travel with any accuracy quoted.
+
+The part that makes the A/B test cheap: the SQL is executed once and both readings are computed from
+that result, so every run now carries `paired_shadow`, `arm_pairs_shadow` and `scored_disagreements`
+beside the primary numbers. That is the comparison two dispatches could never make cleanly — same
+sample, same executions, one difference. If a delta grows under the shadow reading, the old criterion
+was compressing it; if it does not move, the criterion was not what limited the measurement, and the
+null results of iterations 53–68 stand on firmer ground than they did.
+
+**B. A judge that never sees the answer.**
+
+`JUDGE_MODE=execution|llm|both`, default `execution`. A lane that spends money by default is a lane
+nobody re-runs when a number looks wrong, so buying a judge is an explicit act.
+
+| The prompt carries | Why |
+|---|---|
+| the question | the thing being answered |
+| BIRD's external knowledge | the benchmark says the question needs it |
+| the columns the query returned | shows which tables it used without a 40-table DDL |
+| five rows of the result | what a reviewer would look at |
+| **not** the gold query | a judge handed the reference answers by comparison, which is EX with a markup |
+| **not** the schema | mostly tokens spent on tables the question never mentions |
+
+`UNKNOWN` is a first-class verdict. A judge forced to choose on a query that returned no rows will
+guess, and a guess counted as a verdict is how a criterion acquires a kappa it did not earn. Unstated
+verdicts are counted beside the kappa, and a criterion that stated nothing gets no accuracy field at
+all — "did not answer" must not rank below "answered everything wrongly".
+
+The client lost its last vendor name. `LlmClient` always took an endpoint and a model; the one place
+that still said `DEEPSEEK_API_KEY is required` claimed a dependency it does not have. The message names
+the option now, and a test fails if a vendor name comes back.
+
+**Verified before spending anything.** A stand-in endpoint answering every prompt with one constant
+verdict, which makes the expected κ computable by hand:
+
+| Mock verdict | Items scored | ACC | κ | What it proves |
+|---|---|---|---|---|
+| always `CORRECT` | 321 | 0.6729 | **0** | a constant criterion scores zero even when its accuracy beats the multiset reading's 0.5950; 216 both, 105 measured-only |
+| always `INCORRECT` | 321 | 0.3271 | **0** (−8.2e-17) | the mirror: 216 reference-only, 105 neither. Written to machine precision, because an exact zero from a float division is a coincidence, not a property |
+| always `UNKNOWN` | 0 | — | not estimable | the undefined path writes no accuracy at all, and says `kappa not estimable on 0 stated verdicts of 322` |
+
+**Not measured: the judge's real κ.** It needs a provider key, and the lane refuses to run without one
+rather than report a number over zero items. The workflow takes `mode`, `judge_model` and
+`judge_max_calls` as inputs and fails before the lane if a judge was asked for and no key exists. That
+number is the next dispatch, not a claim this iteration can make.
+
+**Evidence.** 1,024 tests, coverage **99.97 / 99.61 / 100 / 99.97**; `judge.ts` at 100% on all four
+dimensions; `pnpm check` green; the committed artefact is `variant: execution` with `exSetItems: 321`
+and `exSetKappa: 0.4717`.

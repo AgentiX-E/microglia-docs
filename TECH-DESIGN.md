@@ -1688,7 +1688,7 @@ phase's scope or are scheduled engineering work with a named trigger.
 | E5 | 100k-item scale checkpoint | 10k is measured at 3.10 ms p95 and 13.9 MB; the next order of magnitude is a separate benchmark | When a host reports >50k items; add SQLite + scope index |
 | E6 | Per-user preference scope | A product feature, not a design defect; requires a cold-start policy | After S1 shows cross-user variance |
 | E7 | Multi-process JSONL writer | Documented single-writer constraint; the target deployment is one process | When a host runs >1 writer: add a lock or a Postgres `MemoryPort` |
-| E8 | LLM judge calibration (κ ≥ 0.7) | The protocol is specified; no human labels exist yet in this phase | S2, with 200 human labels |
+| E8 | ~~LLM judge calibration (κ ≥ 0.7)~~ **reference supplied** | Closed as a label-acquisition item, open as a judge item: ROSE-VEC provides 322 expert-adjudicated BIRD predictions plus five annotators' raw files; committee self-agreement is κ 0.7085, which is the ceiling any criterion is measured against. Execution accuracy reaches κ 0.4717 (set) / 0.2995 (multiset) on the same items — the bar, the ceiling, and the gap are all reproducible via `pnpm eval:judge` | Introduce a judge only as its own decision (provider, prompt version, per-item spend): a judge scored in the same run that defines the reference would make the first number about the judge |
 
 ### 15.3 Next actions, in order
 
