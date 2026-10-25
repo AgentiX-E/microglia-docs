@@ -2899,3 +2899,63 @@ tests, coverage **99.97 / 99.62 / 100 / 99.97**. The adjudication artefact was w
 `eval/results/sota-adjudication.json` but **not uploaded** — the workflow's upload list names only the two
 files that existed when it was written — which is fixed in the same iteration and is the reason these
 numbers come from the step log rather than an artefact a reader can open.
+
+### 75 — Add-all is harmful, abstention is not a fix, and the literature says why
+
+Two papers describe this project's problem from the outside, and one of them names the half of the
+remedy that has never been implemented here.
+
+**Xiong et al. (arXiv 2505.16067)** find that LLM agents exhibit an *experience-following* property: a
+similar task input produces a highly similar output, because the model imitates the retrieved record
+rather than reasoning from scratch. Two failures follow — *error propagation*, where a wrong stored
+record is copied and then re-stored, and *misaligned experience replay*, where a record that was right
+somewhere else is followed where it does not apply. Their measured remedy is **selective addition plus
+history-based deletion**, worth about 10 points over naive growth; on EHRAgent, add-all reached 13.05%
+and strict selection 38.5%, so **indiscriminate saving is worse than saving nothing**. Deletion by
+observed utility beat deletion by age, and in one agent a strict evaluator with history-based deletion
+outperformed an error-free reference baseline.
+
+**Dynamic Cheatsheet (arXiv 2504.07952)** reaches the same conclusion from the curation side: the
+Curator must prune as well as add, and models that only append fill the buffer with noise until it
+degrades performance.
+
+**This project reproduces the first half on its own corpus.** Five arms, 350 questions, one run:
+
+| Arm | ACC | Δ vs none | p | rules injected / question |
+|---|---|---|---|---|
+| none | 54.00% | — | — | 0 |
+| full (add everything retrieved) | 49.43% | **−4.57pp** | **0.0037** | 1.81 |
+| full-corroborated (≥2 independent corrections) | 53.43% | −0.57pp | 0.625 | **0.00** |
+| critique (model decides applicability first) | 49.14% | −4.86pp | 0.006 | 1.81 |
+| gated | 48.00% | −6.00pp | 0.0002 | 1.73 |
+| oracle (gold rule stated) | 83.43% | +29.43pp | <0.0001 | 0 |
+
+Three findings, and the third is the one that changes the plan.
+
+1. **Add-all costs 4.57 points and the cost is now significant** (p = 0.0037, 22 lost against 6 gained).
+   That is the Xiong result in a different domain: the memory is not inert, it is harmful.
+2. **`full-corroborated` is not selective addition; it is abstention.** Its `mean_pack_ids` is exactly
+   **0** — this corpus contains no rule observed twice, so the corroboration filter admits nothing and
+   the arm degenerates to `none`. Its −0.57pp is the difference between two samples of the same
+   condition, p = 0.625. Selective addition cannot be measured here because the signal it selects on
+   does not exist: 1,240 rules, none corroborated.
+3. **Filtering by hand is worse than not filtering.** `gated` scores 48.00%, below `full`'s 49.43%: the
+   gate removes rules the model would have used well and keeps ones it uses badly. Whatever the
+   selection criterion should be, "the ones that look relevant" is not it — which is consistent with
+   iteration 64's finding that a harmful rule is the *closer* one in embedding space.
+
+**So the deletion half is the one to build**, and it is being built: after learning, a fold runs its own
+pack over its learn rows, records which rules were injected into answers that then failed, and retires
+them before any held-out question is scored. Only negative evidence counts, because a correct answer
+while a rule was present is not evidence the rule helped. The pass reads learn rows and never eval rows:
+deleting on the basis of the questions being scored would be leakage with a tidier name.
+
+**Boundary.** One model, one run, and the arms share a sample but not a store state — `full` and
+`full-corroborated` read different stores by construction, which is the point of them and also why their
+difference is not a paired comparison of one store against itself. The `critique` and `gated` results
+come from arms defined in earlier iterations and are reported here for completeness, not as new
+evidence about them.
+
+**Evidence.** Run [`40206409114`](https://github.com/AgentiX-E/microglia/actions/runs/40206409114):
+350 questions, all gates pass, adjudication −4.75pp (p = 0.0201) on 295 paired questions, consistent with
+the execution reading. 1,065 tests, coverage 99.97 / 99.62 / 100 / 99.97.
