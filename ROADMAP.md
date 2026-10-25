@@ -521,26 +521,34 @@ Next by the plan, in order:
    paired **+0.29pp [−2.29, +2.86], p = 1.000**. Six levers are now measured out, three of them backwards.
 6. **State the mechanism's precondition in the product, and enforce it.** The three workloads disagree in
    exactly one property: whether a correction recurs. Chart study (six defect families, repeated):
-   **+68.21pp**. BIRD (350 questions, 1,296 rules, none corroborated): **−2 to −4pp**. τ²-retail (46
-   training tasks, each corrected once): **−7.35pp** as a difference of means. The property is measurable
+   **+68.21pp**. BIRD (350 questions, 1,296 rules, none corroborated): **−2 to −4pp**. τ²-retail is
+   excluded from this table by iteration 67 — its paired comparison is +1.47pp [−13.24, +16.18], which is
+   no evidence either way. The property is measurable
    on the store before any inference — the share of active rules with more than one observation — so the
    next change is a *detector*, not another prompt: report that share, and let the pack refuse to inject
    when it is near zero. That is the difference between a mechanism that is sometimes harmful and one that
    knows when it cannot help.
-7. **L4's agent invocation** — **ran in iterations 58–61 and 66, and the answer is negative.** The driver exists
-   (`eval/drivers/tau2/` for the agent and the phase runner, `packages/eval/src/bin/tau2-driver.ts` for the
-   orchestration, every decidable step in the tested `tau2.ts`). Both arms, one configuration, 68 held-out
-   τ²-retail tasks, four trials:
+7. **L4's agent invocation** — **ran in iterations 58–67, and the lane cannot answer the question it
+   asks.** The driver exists (`eval/drivers/tau2/` for the agent and the phase runner,
+   `packages/eval/src/bin/tau2-driver.ts` for the orchestration, every decidable step in the tested
+   `tau2.ts`), the two arms now run in one job, and the pairing step compares them per task. What it
+   found is that the comparison has no resolution:
 
-   | Arm | pass^4 | vs published 0.575 | Gates |
-   |---|---|---|---|
-   | reference, no store | **0.6471** | **+7.21pp** | 3 of 3 |
-   | memory | **0.5882** | +1.32pp | 2 of 3 |
+   | | Value |
+   |---|---|
+   | reference (no store) | pass^4 **0.5147** (35/68) |
+   | memory | pass^4 **0.5294** (36/68) |
+   | **paired, memory − reference** | **+1.47pp [−13.24, +16.18], p = 1.000**, 13 lost / 14 gained |
+   | 95% half-width at n=68 | **±15pp** |
+   | tasks needed for a 5pp half-width | **611** (τ²-retail holds 114) |
 
-   **The memory costs 5.89 pass^4 points.** The harness itself beats the published number; the loop is what
-   stops it doing so. Both are kept in `eval/results/history/`. The comparison is a difference of means —
-   the runs predate per-task pairing, which the lane now supports (`PassAtKInput.taskId`, per-task artefacts,
-   `TAU_REFERENCE`, and a blocking `l4-paired` gate).
+   **This reverses iterations 60–61**, which reported −4.56pp and −5.89pp as differences of two means from
+   single runs. The reference arm alone scored 0.6471, 0.6324 and 0.5147 across three runs — a 13.2pp
+   range for a run that changed nothing — so the earlier "the harness beats the published number by 7.21pp"
+   was one draw from that distribution. `l4-resolution` now reports the half-width beside every delta.
+   L4 is therefore a lane for **large** effects only, or for a pooled corpus roughly six times the size of
+   the domain.
+
 8. **S2b, the convention lane** — **closed in iterations 55–57**: the ceiling is the format (two oracle
    forms, 48.97% and 56.55%, against a required 90%), and the falsification clause applied.
 9. **The SQLite index (W3)** stays deferred, and that is a measurement rather than a preference: 100k items

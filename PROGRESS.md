@@ -2393,3 +2393,51 @@ one observation.
 **Evidence.** `eval/results/history/sota-arm-critique.json` and its arm-pairs file (committed); the L4
 numbers are quoted from run `40133305087`, whose artefacts could not be paired for the reason above and
 whose re-run carries the rows. 937 tests, coverage **99.97 / 99.59 / 100 / 99.97**; `pnpm check` green.
+
+### 67 — L4's paired comparison reverses the sign, and the bar was never reachable
+
+The pairing step finally ran on two arms of one split (`40151780732`, 68 held-out τ²-retail tasks,
+four trials, concurrency 2, retries 4):
+
+| Arm | pass^4 | Tasks passed |
+|---|---|---|
+| reference (no store) | **0.5147** | 35/68 |
+| memory | **0.5294** | 36/68 |
+| **paired, memory − reference** | **+1.47pp** | **[−13.24, +16.18], p = 1.000**, 13 lost / 14 gained |
+
+**The sign is the other way round.** Iterations 60 and 61 reported −4.56pp and −5.89pp, both as
+differences of two *means* from single runs. Paired, the same two arms differ by **+1.47pp** and the
+interval spans 30 points. Those earlier numbers were not small effects measured imprecisely; they were
+noise with a sign attached.
+
+**Why the noise is this large, in one line.** The standard error of a paired difference is
+`sqrt(lost + gained) / n`: 27 discordant tasks out of 68 is **7.6pp**, so the 95% half-width is **15pp**.
+The lane's bar is 5pp, which was never inside the design's reach:
+
+| Resolution at n=68 | Value |
+|---|---|
+| Standard error | **7.64pp** |
+| 95% half-width | **14.98pp** |
+| Tasks needed for a 5pp half-width | **611** |
+| Tasks needed for a 3pp half-width | 1,695 |
+| τ²-retail tasks in total | 114 |
+
+So a 5pp claim about this mechanism on this domain is unreachable twice over: the sample is 68, the
+domain holds 114, and the arithmetic asks for 611. `l4-resolution` now reports this beside every delta,
+advisory, with the count it would need.
+
+**The same arithmetic dissolves the one positive L4 claim.** The reference arm — same configuration,
+three runs — scored **0.6471, 0.6324, 0.5147**. A 13.2pp range for a run that changed nothing, against a
+`published + 5pp` bar of 0.625: two of the three reference runs fall below the published number and one
+clears it. "The harness beats ALTK-Evolve by 7.21pp" was a single draw from that distribution.
+
+**What this changes in the plan, and what it does not.** L4 cannot answer "does the memory help by 5
+points" without a corpus four times the size of the domain. What it *can* answer is a question with a
+large effect, and that is what the lane should be pointed at — or the domain should be pooled (retail 114
++ airline 50 + telecom 45 still leaves it at about a third of the requirement). The mechanism's precondition
+finding from iteration 65 is untouched by this: BIRD's paired measurements are on 350 questions with a
+0.29pp floor, and the corroboration result there is a count, not an estimate.
+
+**Evidence.** `eval/results/poc-l4-pair.json` (regenerated with the resolution block),
+`eval/results/history/l4-arm-memory-67.json`, `eval/results/history/l4-arm-reference-67.json`.
+946 tests, coverage **99.97 / 99.59 / 100 / 99.97**; `pnpm check` green.
