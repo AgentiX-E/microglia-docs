@@ -3307,3 +3307,38 @@ wrote them*, so `l4-paired` had been reporting `pass` on every run since it was 
 no reference arm was configured. A gate whose input is never produced reads green forever. `perTaskRows`
 writes the rows now, refuses a task with no id rather than labelling it `unknown`, and the pairing step's
 own failure is what surfaced it.
+
+### 17.41 The validity gates, in one place
+
+Twelve gates decide whether a benchmark number may be published, plus five that decide the same for an
+L4 run. They are listed together because the pattern is the point: every one of them was added after a run
+produced a number that was *technically* a number and not evidence of what it claimed.
+
+| Gate | Blocking | What it refuses |
+|---|---|---|
+| **V1** pack not empty | yes | a run whose "treatment" injected nothing |
+| **V2** fold partition | yes | a question scored twice, or scored by a fold that learned from it |
+| **V3** parse rate | yes | a reply the parser could not read, counted as a wrong answer |
+| **V4** gold executable | yes | a gold query the engine rejects: the denominator is broken, not the model |
+| **V5** resolution | no | a sample whose minimum detectable difference exceeds 6pp — a direction, not a verdict |
+| **V6** controls inject | yes | a control arm that injected nothing and was read as a control |
+| **V7** channel | yes | a pack that never reaches the model (oracle must move ≥10pp) |
+| **V8** call reliability | yes | more than 2% of prompts unanswered: a run through an outage measures the outage |
+| **V9** subset size | no | a convention run with fewer than 100 qualifying questions |
+| **V10** convention executable | yes | a rewritten gold query that does not reproduce the expected value: a scoring bug indistinguishable from a model that cannot follow the convention |
+| **V11** channel ceiling | yes | an oracle below 90%: the lane is measuring output format, not knowledge |
+| **V12** shape present | no | two arms that differ by a field no rule carries: the comparison is the same pack twice |
+| **l4-pass4** | yes | a run that misses `published + 5pp` |
+| **l4-paired** | yes | memory worse than the same agent without it at p<0.05 |
+| **l4-coverage** | yes | fewer than 60 scored tasks |
+| **l4-fully-scored** | yes | any task dropped as an infrastructure failure |
+| **l4-same-split** | yes | two arms that did not score exactly the same tasks |
+
+Five of them earned their place by firing: V5 on the 60-question pilot, V7 and V11 on the convention
+lane's two oracle forms, V8 on a run that would otherwise have measured a provider outage, and V12 on the
+first shape run (100% of injected rules carried a condition, which is what made its null readable).
+
+**The one that did not fire is the lesson.** `l4-paired` passed on every run between its introduction and
+iteration 66, because no artefact ever carried the per-task rows it compares — a gate whose input is never
+produced reports `pass` forever. It is now written, tested, and the pairing step fails loudly when the rows
+are absent.
