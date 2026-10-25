@@ -2714,3 +2714,132 @@ it unproven, which is a different claim and the one the evidence supports.
 (321 calls, 0 failed) and BIRD run
 [`40177366379`](https://github.com/AgentiX-E/microglia/actions/runs/40177366379) (2,370 calls, 0.00%
 failure, all ten gates pass, artefact `scored_by: set`, `shadow_by: multiset`).
+
+### 72 — The cascade raises κ, and the gain is exactly the part nobody has checked
+
+Iteration 71 ended by naming the next mechanism: ROSE's adversarial Refuter, which sees the reference
+query the Prover was denied and is told it is evidence rather than an answer. It is built, run twice, and
+ablated. The headline is good and the ablation is what makes it untrustworthy.
+
+**The three criteria on one sample** (307 scored, 251 refuter calls, 0 failures, 0 unparsed):
+
+| Criterion | ACC | κ | κ 95% CI | MCC | correct → wrong | wrong → correct |
+|---|---|---|---|---|---|---|
+| EX, `set` (iteration 69/71 baseline) | 0.7196 | 0.4717 | 0.3886 – 0.5557 | 0.5422 | 87 | 3 |
+| Prover only | 0.7980 | 0.4642 | 0.3490 – 0.5703 | 0.4914 | 12 | 50 |
+| **Cascade** (all overturns) | 0.8013 | **0.5918** | 0.5028 – 0.6770 | 0.6264 | 55 | 6 |
+| Cascade **strict** (refuses `GOLD_ERROR`) | 0.7785 | **0.4239** | 0.3027 – 0.5333 | 0.4404 | 18 | 50 |
+
+The refuter overturned **87 of 251** approvals and attributed **82 to `GOLD_ERROR`**, 9 to `COINCIDENTAL`,
+and 0 to `AMBIGUOUS`. Every overturned item moved the confusion matrix in one of two directions: 44 came
+from the Prover's false positives and became true negatives, 43 came from true positives and became false
+negatives.
+
+**The ablation is the finding.** Refusing the overturns that blame the reference drops κ from 0.5918 to
+0.4239 — below the Prover's 0.4642. So the entire gain (+12.8pp) rests on the 82 `GOLD_ERROR` claims, and
+"the reference is wrong" is the cheapest thing a refuter can say. Two things are therefore true at once:
+the cascade is the first mechanism in this project that moves agreement toward the committee, and it moves
+it through a judgement nothing here has verified.
+
+**The gain has a second reading, and it is not flattering.** Prover κ 0.4642 with 82% of items approved
+against the committee's 67%; cascade κ 0.5918 with 53% approved. Most of the movement is the predicted
+prevalence travelling from 0.82 to 0.53 while the committee sits at 0.67 — and κ is prevalence-sensitive
+by construction. Accuracy barely moves (0.7980 → 0.8013, +0.3pp) while κ moves 12.8pp, which is the same
+trap iteration 69 documented from the other side. MCC does move with it (0.4914 → 0.6264), so this is not
+*only* a marginal-distribution artefact — but the marginal moved in the helpful direction, and a criterion
+tuned until its positive rate matched the reference would show the same pattern.
+
+**Run-to-run variance is the same size as the effect.** Two dispatches of the same code:
+
+| Run | Overturned | `GOLD_ERROR` | Cascade κ |
+|---|---|---|---|
+| [`40180906410`](https://github.com/AgentiX-E/microglia/actions/runs/40180906410) | 101 / 251 | 94 | 0.5306 |
+| [`40181693967`](https://github.com/AgentiX-E/microglia/actions/runs/40181693967) | 87 / 251 | 82 | 0.5918 |
+
+A 6.1pp spread between two runs of one prompt, against a 12.8pp effect. The mechanism is real in direction
+and unstable in size, and reporting the second number alone would overstate it by exactly the amount the
+first run disagrees by.
+
+**What the next iteration has to settle.** Whether those 82 are right. It is answerable without new calls:
+for each `GOLD_ERROR` overturn, execution accuracy already knows whether the two queries returned the same
+rows. A refuter that says "the reference is wrong" about a query that returns the *same rows* has no
+execution evidence for the claim; one that says it about a query returning *different rows*, where the
+committee still called the prediction correct, is describing the case ROSE exists for. The cross-tab of
+diagnosis against execution verdict and committee label is one artefact away, and until it exists the
+cascade's κ is a number with a plausible story and no check.
+
+**Boundary.** One model (`deepseek-chat`), two prompts, two runs. The refuter never said `AMBIGUOUS` (0 of
+251), which is itself suspicious: ROSE reports 91% precision on that label, and a refuter that never uses
+it is choosing between "wrong" and "reference wrong" without a middle option.
+
+**Evidence.** Runs `40180906410` and `40181693967`; 1,042 tests, coverage **99.97 / 99.61 / 100 / 99.97**;
+`judge.ts` at 100% on all four dimensions including `cascadeVerdict` and both halves of the prompt;
+`pnpm check` green. The strict variant was proven to move only the variable it names: with a stand-in
+endpoint answering `OVERTURN`/`GOLD_ERROR`, strict reproduces the Prover exactly (216 both, κ 0) while the
+full cascade flips everything.
+
+### 73 — Execution cannot judge, but it can veto, and the veto is what makes the cascade work
+
+Iteration 72 left a cross-tab and a suspicion. Of 84 `GOLD_ERROR` overturns, 70 landed on items whose
+two queries returned **different** rows and 12 on items whose queries returned **the same** rows. The
+strict reading threw away all 84 and fell below the Prover; the full reading kept all 84 and gained 13pp
+through a claim half of which had no execution evidence. The third reading refuses only the 12.
+
+**Three readings of one run** (307 scored, 250 refuter calls, 0 failures, 0 unparsed):
+
+| Criterion | ACC | κ | κ 95% CI | MCC | correct → wrong | wrong → correct |
+|---|---|---|---|---|---|---|
+| EX, `set` | 0.7196 | 0.4717 | 0.3886 – 0.5557 | 0.5422 | 87 | 3 |
+| Prover only | 0.8013 | 0.4746 | 0.3636 – 0.5761 | 0.5007 | 12 | 49 |
+| Cascade, every overturn | 0.8046 | 0.5974 | 0.5078 – 0.6830 | 0.6311 | 54 | 6 |
+| Cascade, refuses `GOLD_ERROR` | 0.7915 | 0.4542 | 0.3384 – 0.5608 | 0.4746 | 15 | 49 |
+| **Cascade, refuses only unevidenced `GOLD_ERROR`** | **0.8436** | **0.6676** | **0.5803 – 0.7515** | **0.6893** | 42 | 6 |
+
+The third variant's interval does not overlap the Prover's: **0.5803 > 0.5761**. It is the first
+comparison in this project where a criterion's agreement with the committee is separable from the
+criterion it replaced, and it lands 4.1pp below the committee's own 0.7085.
+
+**The argument, stated once.** Execution accuracy is a **necessary** condition for logical equivalence and
+not a sufficient one, and the asymmetry is measurable here: of the 132 items whose query returned exactly
+the gold's rows, the committee still rejected 3 — 2.3%, small but not zero, which is why equal rows can
+never license an approval on their own. Unequal rows, by contrast, prove the two queries differ; there is
+no item in this set where they disagree on rows and agree on meaning. So the honest use of execution is
+not "decide", it is **"forbid"**: a refuter may not blame the reference for a query that returned the same
+rows, because there is nothing in that pair for the reference to be wrong *about*.
+
+That is why the ordering of the three variants is the evidence. Accepting everything gains 13pp on a claim
+that is 14% unevidenced; refusing everything loses 2pp because it also refuses the 70 items that are
+exactly the case ROSE exists for; refusing only the unevidenced ones gains 19.3pp. The mechanism is not
+"trust the refuter" and it is not "trust the reference" — it is a division of labour in which the model
+supplies the judgement and the database supplies the veto.
+
+**It replicates.** Three dispatches of the same code, after the change:
+
+| Run | Prover κ | Cascade κ | Strict κ | **Evidenced κ** |
+|---|---|---|---|---|
+| [`40185937177`](https://github.com/AgentiX-E/microglia/actions/runs/40185937177) | 0.4746 | 0.5974 | 0.4542 | **0.6676** |
+| [`40190098458`](https://github.com/AgentiX-E/microglia/actions/runs/40190098458) | 0.4762 | 0.5994 | 0.4491 | **0.6634** |
+| [`40190105129`](https://github.com/AgentiX-E/microglia/actions/runs/40190105129) | 0.4642 | 0.6088 | 0.4609 | **0.6736** |
+| Spread | 1.2pp | 1.1pp | 1.2pp | **1.0pp** |
+
+A 1.0pp spread on a 19.3pp effect is a different object from iteration 72's 6.1pp spread on 12.8pp, and
+the difference is the veto: the variance in iteration 72 came from how many unevidenced overturns the
+refuter happened to produce, and those are now filtered by a rule that does not vary.
+
+**What is still not verified.** The 70 evidenced overturns are not the same as 70 correct overturns. The
+veto proves the two queries differ; it does not prove the reference is the one that is wrong. 39 of them
+are items the committee itself accepted, so on those the refuter is disagreeing with both the committee
+and (by construction) the execution — ROSE reports 84.32% precision on that label, and this lane has no
+independent measurement of it. The 42 false negatives are where that shows up: 30 more than the Prover's
+12, and every one of them is a query the committee approved.
+
+**Boundary.** One model, one prompt pair, four runs including the pre-change one (κ 0.5306, an outlier
+6.7pp below the three above; the refuter overturned 101 items that time against 84–87 since, which is the
+variance the veto now removes). `AMBIGUOUS` was never used, 0 of 250 — a refuter that never says "the
+question is ambiguous" is choosing between two accusations without the middle option ROSE provides, and
+that remains unexplained.
+
+**Evidence.** Runs `40185937177`, `40190098458`, `40190105129`; 1,042 tests, coverage
+**99.97 / 99.61 / 100 / 99.97**; `judge.ts` at 100% on all four dimensions; `pnpm check` green; the
+evidenced variant was proven against a stand-in endpoint to keep exactly the 132 approvals whose rows
+agree while flipping the 189 whose rows differ.
