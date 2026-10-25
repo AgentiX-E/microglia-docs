@@ -2441,3 +2441,47 @@ finding from iteration 65 is untouched by this: BIRD's paired measurements are o
 **Evidence.** `eval/results/poc-l4-pair.json` (regenerated with the resolution block),
 `eval/results/history/l4-arm-memory-67.json`, `eval/results/history/l4-arm-reference-67.json`.
 946 tests, coverage **99.97 / 99.59 / 100 / 99.97**; `pnpm check` green.
+
+### 68 — The precondition becomes a behaviour instead of a sentence
+
+Iteration 65 measured the dividing line and wrote it down as advice: "set `minEvidence: 2` if your
+corrections never repeat". A host cannot know that before it has run, and the store can. This iteration
+moves the decision into the library.
+
+**`corroborationFloor`.** If the share of active rules observed more than once falls below the configured
+floor, `recall` raises the pack's evidence floor to two for that request, and returns
+`suppressed: 'uncorroborated-store'` when the result is empty. The distinction the field protects is the
+one a host will otherwise get wrong:
+
+| State | Meaning | What a host should do |
+|---|---|---|
+| `ids: []`, no `suppressed` | nothing in the store matched this question | fix retrieval, or add knowledge |
+| `ids: [], suppressed: 'uncorroborated-store'` | the workspace has no corroborated rule, so the pack was silenced on purpose | treat it as a workspace property; do not lower thresholds |
+
+A host that cannot tell those apart lowers its thresholds until the noise comes back — which is exactly
+how this project spent five iterations discovering that the noise was the pack.
+
+**Design decisions, each with the alternative it beat.**
+
+- **Cached per knowledge version.** The share is a per-distillation fact read on the request path;
+  re-scanning the store per request would tax every call for a value that has not changed. `distill`,
+  `curate`, `recordFeedback` and `forget` all invalidate it, because each can change what is active.
+- **Default off.** An empty pack caused by a policy is worse than a full one when the policy is wrong
+  about the workload, and the three measurements that justify the option were taken on this repository's
+  workloads, not on the caller's.
+- **A floor outside `[0, 1]` is a configuration error**, not a clamp: unlike `minEvidence` (where 0 and
+  negative both mean "off"), a share of 1.5 has no reading at all, and accepting it silently would make
+  the option untestable.
+
+**A defect found by asking what the client sees.** `/v1/recall` returned `ids`, `rendered`, `tokens`,
+`hash` and `truncated` — and dropped `suppressed`. The field that exists to prevent the confusion above
+stopped at the package boundary, so the HTTP consumer had exactly the wrong information. It now crosses,
+with a test that asserts both directions (silenced carries the reason, unmatched does not).
+
+**What this does not do.** It does not change any benchmark result: every lane configures no floor, so
+the numbers in iterations 53–67 stand. What changes is that the finding has an enforcement path a host can
+adopt without reading this document.
+
+**Evidence.** 953 tests, coverage **99.97 / 99.59 / 100 / 99.97**; `microglia.ts` at 100% on all four
+dimensions; `pnpm check` green; bundle ceiling raised 43,000 → 44,000 with both steps recorded beside the
+number.

@@ -519,7 +519,11 @@ Next by the plan, in order:
 5. ~~**Ask for a decision instead of relying on one.**~~ — **measured in iteration 66, null.** Requiring
    `<id>: apply | skip` per item before the query changed 23 of 350 verdicts (11 lost, 12 gained) for a
    paired **+0.29pp [−2.29, +2.86], p = 1.000**. Six levers are now measured out, three of them backwards.
-6. **State the mechanism's precondition in the product, and enforce it.** The three workloads disagree in
+6. ~~**State the mechanism's precondition in the product, and enforce it.**~~ — **shipped in iteration 68.**
+   `corroborationFloor` on the host: below the floor, `recall` requires two observations for that request
+   and reports `suppressed: 'uncorroborated-store'`, and `/v1/recall` carries the reason. Default off,
+   because the measurements behind it were taken on this repository's workloads. The original reasoning
+   stands: the three workloads disagree in
    exactly one property: whether a correction recurs. Chart study (six defect families, repeated):
    **+68.21pp**. BIRD (350 questions, 1,296 rules, none corroborated): **−2 to −4pp**. τ²-retail is
    excluded from this table by iteration 67 — its paired comparison is +1.47pp [−13.24, +16.18], which is

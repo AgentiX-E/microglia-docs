@@ -3342,3 +3342,26 @@ first shape run (100% of injected rules carried a condition, which is what made 
 iteration 66, because no artefact ever carried the per-task rows it compares — a gate whose input is never
 produced reports `pass` forever. It is now written, tested, and the pairing step fails loudly when the rows
 are absent.
+
+### 17.42 Enforcement: a floor the library applies, not a paragraph the caller reads
+
+Iteration 65 established *when* the mechanism helps and wrote the answer down as advice. Advice is not a
+behaviour: a host cannot measure its own recurrence before it has run, and the store can.
+
+`corroborationFloor` closes that loop inside `recall`. Three decisions carry it.
+
+| Decision | Alternative rejected | Why |
+|---|---|---|
+| The share is cached per knowledge version; `distill`, `curate`, `recordFeedback` and `forget` bump it | rescan the store per request | the share is a per-distillation fact on the request path. A host with 100k rules would pay a full scan per prompt for a value that changes when it distils, not when it asks |
+| Applied as `minEvidence: 2`, not as a special "empty" path | return an empty pack directly | the pack layer already knows how to enforce an evidence floor, and a second implementation is a second place for the two to disagree |
+| `suppressed` distinguishes a policy silence from a miss | leave the pack empty | a host that reads a deliberate silence as a retrieval failure weakens its thresholds until the noise returns, which is the failure this project spent five iterations measuring |
+
+**A field that stops at a package boundary does not exist.** `/v1/recall` returned ids, text, hash and
+truncation, and dropped `suppressed` — so the one consumer that needed the distinction got the pack without
+it. The response now carries it, and the test asserts both directions: a silenced pack names its reason, an
+unmatched one does not carry the field at all.
+
+**What the option is not.** It is not a default. An empty pack caused by a policy is worse than a full one
+when the policy is wrong about the workload, and the numbers that justify the floor (68.21pp on the
+study, −2 to −4pp on BIRD, nothing resolvable on τ²-retail) were measured on this repository's three
+workloads. A host that knows its corrections recur should leave the option off and keep the pack.
