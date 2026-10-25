@@ -2641,3 +2641,76 @@ number is the next dispatch, not a claim this iteration can make.
 **Evidence.** 1,024 tests, coverage **99.97 / 99.61 / 100 / 99.97**; `judge.ts` at 100% on all four
 dimensions; `pnpm check` green; the committed artefact is `variant: execution` with `exSetItems: 321`
 and `exSetKappa: 0.4717`.
+
+### 71 — The criterion was not the problem, and the judge reproduces the metric it was meant to replace
+
+Iteration 70 built two switches and measured neither. Both have now run on real data, and neither result
+is the one the switches were built hoping for.
+
+**A. Changing the comparison changes nothing.** One run, 350 questions, scored under `set` with
+`multiset` computed beside it from the same executions:
+
+| Reading | Arm | ACC | Delta vs no memory | 95% CI | p | lost / gained |
+|---|---|---|---|---|---|---|
+| `set` (scored) | no memory | 55.71% | — | — | — | — |
+| `set` (scored) | with memory | 52.29% | **−3.43pp** | [−6.29, −0.57] | 0.0357 | 20 / 8 |
+| `multiset` (shadow) | with memory | 52.29% | **−3.43pp** | [−6.29, −0.57] | 0.0357 | 20 / 8 |
+
+The two outputs are identical to four decimals. `scored_disagreements` says why: **7 of 350 questions
+(2.0%)** are scored differently by the two readings, and not one of them is a question on which the two
+arms disagreed. The paired test is computed from discordant pairs, so seven changed verdicts that all land
+inside a pair where both arms already agreed cannot move it.
+
+That 2.0% is itself the finding. On ROSE-VEC's 322 adjudicated predictions the two readings disagree on
+**52 (16.1%)**; here, on 350 DeepSeek answers, they disagree on 7. The gap is the workload: ROSE-VEC
+collects nineteen systems' outputs including ones that return duplicate rows, while this lane's questions
+mostly aggregate to a single row, where set and multiset are the same object. A criterion's reading matters
+in proportion to how much duplication the corpus produces, and this corpus produces almost none.
+
+So the −3.43pp is not an artefact of the criterion. Whatever the pack does to these questions, it does it
+under both readings, and the new number is **stronger than the −3.14pp (p = 0.052) previously reported** —
+though that comparison crosses two runs and is not the controlled one; only the shadow column is. Gate V5
+reports the minimum detectable difference at this n and discordance as 4.24pp, so a 3.43pp effect sits
+inside the design's resolution, and the honest reading is "negative, significant by McNemar, and below the
+size this sample can resolve". The oracle control still moves +29.14pp (p = 1.3e-27), so the instrument is
+not the thing that failed.
+
+**B. The judge fixes the disease and catches another.** 322 items, 321 calls, 0 failed, 0 unparsed,
+14 unstated (13 `UNKNOWN` plus the one unexecutable prediction):
+
+| Criterion | scored | ACC | κ | κ 95% CI | MCC | correct → wrong | wrong → correct |
+|---|---|---|---|---|---|---|---|
+| Committee against itself | — | — | **0.7085** | — | — | — | — |
+| EX, `set` | 321 | 0.7196 | 0.4717 | 0.3886 – 0.5557 | 0.5422 | 87 | 3 |
+| EX, `multiset` | 321 | 0.5950 | 0.2995 | 0.2329 – 0.3730 | 0.4136 | 129 | 1 |
+| LLM judge (`deepseek-chat`, Prover only) | 308 | **0.8019** | **0.4762** | 0.3636 – 0.5793 | 0.5054 | **11** | **50** |
+
+Three readings, and the third is the one that costs.
+
+1. **The judge does what it was built to do.** False negatives fall from 87 to 11 — the model accepts
+   correct queries written differently, which is exactly the failure execution accuracy cannot avoid.
+   Accuracy rises 8.2pp over the `set` reading.
+2. **Agreement does not move.** κ goes 0.4717 → 0.4762, intervals overlap almost entirely, and neither
+   is near the committee's own 0.7085. The error moved rather than shrank: false positives go 3 → 50,
+   and 82% of items are judged correct against the committee's 67%.
+3. **A judge trading one error type for the other is not a better judge.** It is a differently biased one.
+   This is the clearest case yet for reporting accuracy, κ and the confusion matrix together: on accuracy
+   the judge wins by 8.2pp; on agreement it ties; on the matrix it fails in the opposite direction.
+
+**What this decides.** Not "pick one". Both criteria are roughly equidistant from the committee, from
+opposite sides — EX rejects correct-but-different queries, the judge accepts wrong-but-plausible ones. The
+next mechanism is therefore the one ROSE actually publishes and this lane has not implemented: an
+adversarial **Refuter** that is shown the gold query as *evidence* and asked to overturn the Prover's
+approval. It runs only on the items the Prover approved — 252 of 322 here — so it costs less than the
+Prover did, and it targets precisely the 50 false positives. Until that runs, "add a judge" is not an
+improvement this project can claim.
+
+**Boundary.** One model, one prompt version (`judge-prompt/1`), one run, zero failures — a reliability
+figure from a single sample. The 14 unstated items are reported rather than imputed, and the kappa is
+computed on the 308 the judge was willing to score. None of this makes the judge wrong to build; it makes
+it unproven, which is a different claim and the one the evidence supports.
+
+**Evidence.** Judge run [`40177362384`](https://github.com/AgentiX-E/microglia/actions/runs/40177362384)
+(321 calls, 0 failed) and BIRD run
+[`40177366379`](https://github.com/AgentiX-E/microglia/actions/runs/40177366379) (2,370 calls, 0.00%
+failure, all ten gates pass, artefact `scored_by: set`, `shadow_by: multiset`).

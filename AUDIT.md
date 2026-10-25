@@ -119,7 +119,7 @@ D30 adopts.
 
 | Item | Status | Why it is honest to leave it open |
 |---|---|---|
-| A public benchmark benefit on unmodified data | **four null reads**, n=352 | the lane is sound (oracle +30.97pp) and the pack is inert; this is a result, not a gap |
+| A public benchmark benefit on unmodified data | **five reads, all non-positive**, n=350 | the lane is sound (oracle +29.14pp, p=1.3e-27) and the pack costs 3.43pp [−6.29, −0.57], McNemar p=0.0357, under `set` semantics — and identically under `multiset` on the same run (7 of 350 items scored differently, none of them discordant). The criterion was the standing explanation for the null; it is now excluded |
 | Convention transfer at a stable magnitude | **two reads**: +4.79pp then +2.05pp | 4.79 sits under the sample's 5.08pp resolution; the direction replicates, the size does not, and both are reported |
 | Host shadow results (S1) | not started | needs the private adjudicated set (1,300 cases, κ≥0.7) and real users; no synthetic substitute means anything |
 | LLM-judge calibration (κ) | **reference measured; no judge exists to calibrate** | the 200-label blocker is withdrawn — ROSE-VEC publishes 322 expert-adjudicated BIRD predictions and the five annotators' own files, so nothing had to be bought. Measured on them: committee self-agreement κ 0.7085, execution accuracy vs committee κ 0.4717 (set semantics) / 0.2995 (multiset). The gap is in the criterion, not the labels; a judge is still unvalidated because this repository has none |
