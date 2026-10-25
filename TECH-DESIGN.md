@@ -3269,3 +3269,41 @@ harm is 7–14 times the nondeterminism, not 2–4 times.
 A mechanism that lifts a recurring-defect workload by 68pp and costs a unique-correction workload 2–4pp is
 not inconsistent: it is conditional on recurrence, and recurrence is measured — `evidence.length` — before
 the first inference.
+
+### 17.40 The critique arm, and the detector that replaces it
+
+Five levers were measured out before this iteration — retrieval on the claim, retrieval on the condition,
+widening, dosage, foreign rules — and two of them pointed *backwards*. The sixth asked a different
+question: not whether the model can be *told* when a rule applies, but whether requiring it to **return a
+verdict** about each item changes anything. MemHarness calls it critique; it costs no extra call.
+
+| Arm | Accuracy | Δ vs none | Paired against `full` |
+|---|---|---|---|
+| none | 53.14% | — | — |
+| full | 50.29% | −2.86pp [−5.71, +0.00], p = 0.076 | — |
+| critique | 50.57% | −2.57pp [−5.43, +0.29], p = 0.122 | **+0.29pp [−2.29, +2.86], p = 1.000** |
+
+Twenty-three of 350 verdicts changed (11 lost, 12 gained). The requirement was followed — the answers
+moved — and the quality did not. A prompt that forces an explicit decision about each item is still a
+prompt, and the model's decision agrees with its generation rather than correcting it.
+
+**What replaced it is not a seventh lever but a measurement.** The three workloads now say the same thing
+about *when* the mechanism works:
+
+| Workload | Corrections | Effect |
+|---|---|---|
+| chart study, six defect families | recur | **+68.21pp** |
+| BIRD Mini-Dev, 350 questions, 1,296 rules | every one unique | **−2 to −4pp** |
+| τ²-retail, 46 training tasks | each corrected once | **−7.35pp** (difference of means) |
+
+The property is the store's own: the share of active rules with more than one observation. It needs no
+model, no schema and no inference, and `Microglia.corroboration()` returns it before the first request.
+`minEvidence` on the pack is the enforcement — floor 2 on BIRD injects nothing, which is the honest
+configuration there, and costs 3.57pp of a 68.21pp lift on the study.
+
+**The instrument defect this iteration found is the general lesson.** The L4 pairing step ran, and exited
+with `first artefact has no per_task rows`: `bin/l4.ts` read a reference artefact's rows and *no code ever
+wrote them*, so `l4-paired` had been reporting `pass` on every run since it was added, on the grounds that
+no reference arm was configured. A gate whose input is never produced reads green forever. `perTaskRows`
+writes the rows now, refuses a task with no id rather than labelling it `unknown`, and the pairing step's
+own failure is what surfaced it.
