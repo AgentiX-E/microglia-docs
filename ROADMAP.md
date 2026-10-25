@@ -550,8 +550,11 @@ Next by the plan, in order:
    single runs. The reference arm alone scored 0.6471, 0.6324 and 0.5147 across three runs — a 13.2pp
    range for a run that changed nothing — so the earlier "the harness beats the published number by 7.21pp"
    was one draw from that distribution. `l4-resolution` now reports the half-width beside every delta.
-   L4 is therefore a lane for **large** effects only, or for a pooled corpus roughly six times the size of
-   the domain.
+   **Decision (iteration 68): L4 publishes a smoke result, not a SOTA claim, until a corpus with ≥611
+   paired tasks exists.** The number it produces is real — 68 tasks, every one scored, two arms on one
+   split — and it cannot support a statement about a 5pp effect. Pooling the three τ² domains reaches
+   about 200 tasks, a third of the requirement, so the lane stays as the integration proof it already is:
+   driver, facade, split, scoring, pairing, resolution.
 
 8. **S2b, the convention lane** — **closed in iterations 55–57**: the ceiling is the format (two oracle
    forms, 48.97% and 56.55%, against a required 90%), and the falsification clause applied.
