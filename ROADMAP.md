@@ -516,14 +516,18 @@ Next by the plan, in order:
    true enough to inject (+68.21pp); where every correction is unique, nothing is corroborated and the pack
    is noise (−2 to −4pp, against a 0.29pp floor). `minEvidence` is now a pack-layer option and the guide
    states both numbers; the default stays 1 because that trade belongs to the host.
-5. **Make applicability machine-checkable, or state what the mechanism cannot do.** Five levers are now
-   measured out on this mechanism — retrieval signal on the claim (p = 0.86), on the condition (p = 0.062),
-   widening (p = 0.71), dosage (null), foreign rules (ignored), rule shape (p = 1.000) — and two of them
-   point *backwards*. What is left is a predicate the runtime evaluates without the model: which tables and
-   columns the question touches, which answer shape it asks for. If that cannot be derived either, the
-   honest statement is that the mechanism steers generation without certifying applicability, and that
-   belongs in the user guide rather than in a benchmark.
-6. **L4's agent invocation** — **ran in iterations 58–61, and the answer is negative.** The driver exists
+5. ~~**Ask for a decision instead of relying on one.**~~ — **measured in iteration 66, null.** Requiring
+   `<id>: apply | skip` per item before the query changed 23 of 350 verdicts (11 lost, 12 gained) for a
+   paired **+0.29pp [−2.29, +2.86], p = 1.000**. Six levers are now measured out, three of them backwards.
+6. **State the mechanism's precondition in the product, and enforce it.** The three workloads disagree in
+   exactly one property: whether a correction recurs. Chart study (six defect families, repeated):
+   **+68.21pp**. BIRD (350 questions, 1,296 rules, none corroborated): **−2 to −4pp**. τ²-retail (46
+   training tasks, each corrected once): **−7.35pp** as a difference of means. The property is measurable
+   on the store before any inference — the share of active rules with more than one observation — so the
+   next change is a *detector*, not another prompt: report that share, and let the pack refuse to inject
+   when it is near zero. That is the difference between a mechanism that is sometimes harmful and one that
+   knows when it cannot help.
+7. **L4's agent invocation** — **ran in iterations 58–61 and 66, and the answer is negative.** The driver exists
    (`eval/drivers/tau2/` for the agent and the phase runner, `packages/eval/src/bin/tau2-driver.ts` for the
    orchestration, every decidable step in the tested `tau2.ts`). Both arms, one configuration, 68 held-out
    τ²-retail tasks, four trials:
@@ -537,9 +541,9 @@ Next by the plan, in order:
    stops it doing so. Both are kept in `eval/results/history/`. The comparison is a difference of means —
    the runs predate per-task pairing, which the lane now supports (`PassAtKInput.taskId`, per-task artefacts,
    `TAU_REFERENCE`, and a blocking `l4-paired` gate).
-7. **S2b, the convention lane** — **closed in iterations 55–57**: the ceiling is the format (two oracle
+8. **S2b, the convention lane** — **closed in iterations 55–57**: the ceiling is the format (two oracle
    forms, 48.97% and 56.55%, against a required 90%), and the falsification clause applied.
-8. **The SQLite index (W3)** stays deferred, and that is a measurement rather than a preference: 100k items
+9. **The SQLite index (W3)** stays deferred, and that is a measurement rather than a preference: 100k items
    give **22.73 ms** p95 and **173.9 MB** of heap against budgets of 100 ms and 256 MB, and the lane fails
    the build when either is crossed. The heap is the axis to watch: 174 MB at 100k is what a host runs out of
    long before it notices 22 ms.

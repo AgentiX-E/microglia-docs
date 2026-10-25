@@ -2342,3 +2342,54 @@ the user guide states how to tell which world you are in.
 **Evidence.** `eval/results/history/sota-arm-corroborated.json` (this run's artefact),
 `bench/results/study.json` (the `corroborated-only` arm), 927 tests, coverage
 **99.97 / 99.59 / 100 / 99.97**; `pnpm check` green; study gates PASS.
+
+### 66 — Requiring a decision does not help either, and a capability that was connected in neither end
+
+Two things happened in this iteration, and the second is the kind of defect the project exists to
+find.
+
+**The critique arm** (`40151786002`, n=350, five folds, 2,060 prompts, 0 unanswered, 9 of 9 gates):
+instead of asking the model to *remember* a condition, the prompt requires a **decision** about each
+item — `<id>: apply` or `<id>: skip` with one clause of reasoning — and says the query may use only the
+items marked apply. That is MemHarness's critique step, with the call count unchanged:
+
+| Arm | Accuracy | Δ vs none | 95% CI | p |
+|---|---|---|---|---|
+| none | 53.14% | — | — | — |
+| full | 50.29% | −2.86pp | [−5.71, +0.00] | 0.076 |
+| **critique** | **50.57%** | **−2.57pp** | [−5.43, +0.29] | 0.122 |
+| **critique vs full, paired** | — | **+0.29pp** | **[−2.29, +2.86]** | **1.000** |
+
+Twenty-three questions changed verdict — 11 lost, 12 gained — for a net of +0.29pp and p = 1.000. So the
+requirement was followed (the answers moved) and the quality did not. This is the seventh lever measured
+on this mechanism and the fifth null:
+
+| Lever | Result |
+|---|---|
+| retrieval signal, claim | p = 0.86, backwards |
+| retrieval signal, condition | p = 0.062, backwards |
+| scope widening | +0.86pp [−2.00, +3.71], p = 0.71 |
+| dosage / foreign rules | no dose response; foreign rules ignored |
+| rule shape (`when`) | 0.00pp [−2.57, +2.57], p = 1.000 |
+| **required decision (critique)** | **+0.29pp [−2.29, +2.86], p = 1.000** |
+
+**The defect: the pairing step had nothing to pair.** The L4 job now runs both arms in one job and a
+pairing step compares them per task. It ran, and exited with `first artefact has no per_task rows` —
+correctly, because **no code ever wrote them**. `bin/l4.ts` read a reference artefact's rows; nothing
+produced them; and the `l4-paired` gate had reported `pass` on every run since it was added, on the
+grounds that there was no reference arm. A gate whose input is never produced is worse than no gate: it
+reads green.
+
+`perTaskRows` now writes them, refuses a task with no id rather than labelling it `unknown`, and is
+tested both ways. The run that exposed it is kept: **memory 0.5588 against reference 0.6324** on the same
+68 tasks — −7.35pp as a difference of means, and the reason the pair was worth building.
+
+**What the two workloads now say together.** On BIRD the corrections never repeat and the pack costs
+2–4pp; on τ²-retail the 46 training tasks are also corrected once each, and the memory costs 7.35pp; on
+the chart study six defect families recur and the pack is worth +68.21pp. That is one property seen three
+times, and it is measurable on the store before any inference: the share of active rules with more than
+one observation.
+
+**Evidence.** `eval/results/history/sota-arm-critique.json` and its arm-pairs file (committed); the L4
+numbers are quoted from run `40133305087`, whose artefacts could not be paired for the reason above and
+whose re-run carries the rows. 937 tests, coverage **99.97 / 99.59 / 100 / 99.97**; `pnpm check` green.
