@@ -2843,3 +2843,59 @@ that remains unexplained.
 **99.97 / 99.61 / 100 / 99.97**; `judge.ts` at 100% on all four dimensions; `pnpm check` green; the
 evidenced variant was proven against a stand-in endpoint to keep exactly the 132 approvals whose rows
 agree while flipping the 189 whose rows differ.
+
+### 74 — The memory's cost is real: three criteria, one sign, and a claim withdrawn
+
+Iterations 71 and 73 left the same question standing. The −3.43pp survived `set` and `multiset` because
+those are one metric with two readings, and that metric is the thing under suspicion — execution accuracy
+rejects 87 of 216 queries the ROSE committee accepts. A null that survives EX has survived EX.
+
+**The test that settles it.** The S2 artefact now carries both arms' SQL, so the answers can be re-scored
+without asking the model anything new. `pnpm eval:adjudicate` applies the evidenced cascade — κ 0.6676
+against a human committee where EX reaches 0.4717 — to the questions the benchmark already answered:
+
+| Criterion | n | no memory | with memory | delta | 95% CI | p |
+|---|---|---|---|---|---|---|
+| EX, `multiset` — the run's own verdict | 350 | 53.71% | 50.29% | −3.43pp | [−6.86, 0.00] | 0.0730 |
+| EX, `multiset` — on the re-scored subset | 289 | 60.21% | 57.09% | −3.11pp | — | 0.1221 |
+| **Evidenced cascade** (κ 0.6676) | 289 | 68.86% | 64.71% | **−4.15pp** | **[−7.96, −0.69]** | **0.0428** |
+
+The independent criterion agrees with the sign and disagrees with the significance, in the direction that
+costs the project its excuse: the effect is **larger** and **significant** where EX's was neither. The two
+criteria hand down different verdicts on **54 of 289 questions (18.7%)** — a fifth of the set — and the
+delta barely moves, which is what a real effect looks like when the instrument changes underneath it.
+
+**What this closes.** Three criteria, and the two that share nothing but the answers — a row comparison on
+tuples and a model-mediated adversarial cascade — all place the memory below the baseline on BIRD
+Mini-Dev. The measurement question is answered: the losses are not an artefact of how correctness was
+scored.
+
+**A claim this iteration makes and then withdraws.** The first draft of the paragraph above said the
+independent criterion was *sharper* — p = 0.043 where EX reached 0.122. That comparison does not exist.
+EX's own p on this lane has been 0.0357, 0.0730 and 0.1221 across three runs of the same code, so 0.043
+sits inside EX's own spread and "sharper" is a difference between two samples, not between two
+instruments. What survives is the sign and the rough size: −3.11 to −4.15pp across criteria and runs, with
+significance that is marginal on every one of them. The honest statement is "the loss is real and small,
+and no instrument here resolves it cleanly" — not "the better criterion proves it harder".
+
+**What it does not close.** 61 of 350 questions are dropped because at least one arm never reached a
+verdict — a model call failed or the judge answered `UNKNOWN`. Missing 17.6% is not random: a question the
+judge declines is plausibly a harder one, so the subset is not the full set and the delta is a statement
+about the 289 that both arms answered. The five retries the run needed are the same warning from another
+angle. The 289 are reported as the sample they are, not as a substitute for 350.
+
+**The mechanism stays open, and it is now the only open thing.** The attribution from the same run:
+394 of 1,240 rules were ever injected — 33 harmful, 15 helpful, 346 neutral — so 9.7% of injections belong
+to a rule that loses points, against 4.5% that gain them. Six levers have been tested and five produced
+nothing (retrieval, generalization, dose, foreign rules, shape, requiring a decision). What has not been
+tested is refusing to inject at all: the `full` arm always carries whatever the pack retrieved, and no run
+has measured the arm that filters to corroborated rules *and* abstains when the pack is thin. The library
+already has both mechanisms; the lane has never combined them.
+
+**Evidence.** Run [`40197929151`](https://github.com/AgentiX-E/microglia/actions/runs/40197929151):
+benchmark 350 questions, 2,407 calls, 1 retry, all nine gates pass, delta −3.43pp p = 0.0730; adjudication
+289 paired questions, 5 retries, 183 pairs whose rows agreed (so the veto had something to weigh); 1,065
+tests, coverage **99.97 / 99.62 / 100 / 99.97**. The adjudication artefact was written to
+`eval/results/sota-adjudication.json` but **not uploaded** — the workflow's upload list names only the two
+files that existed when it was written — which is fixed in the same iteration and is the reason these
+numbers come from the step log rather than an artefact a reader can open.

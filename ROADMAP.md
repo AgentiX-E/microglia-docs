@@ -586,6 +586,7 @@ These are tracked but do not block a stage; each has a trigger.
 | W5 | Per-user preference scope | S1 shows cross-user variance | Requires a cold-start policy, which is a product decision |
 | W6 | Multi-process writer | a host runs > 1 writer | Today: one writer per directory, documented |
 | W7 | On-device embedding adapter | a host needs offline retrieval | Must pass the CPU/WebGPU constraint; no CUDA, ever |
+| W8 | **The pack costs points on BIRD, and the mechanism is unexplained** | now — it is the only open mechanism item | Iteration 74 closed the measurement question: three criteria, including one that shares nothing with execution accuracy (κ 0.6676 vs 0.4717), all put the memory below the baseline (−3.11 to −4.15pp, marginal p on each). Attribution says 33 harmful rules against 15 helpful, 9.7% of injections. Six levers tested, five null. **The untested arm is abstention**: corroborated-only filtering combined with refusing to inject when the pack is thin. Both mechanisms exist in the library and no lane has combined them |
 
 ## Sequencing rationale
 
