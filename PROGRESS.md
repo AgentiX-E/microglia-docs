@@ -3041,3 +3041,68 @@ only that this one, chosen before the run, did not.
 350 questions, 3,799 calls, 1 retry, 0 failures, all nine gates pass, `mean_pack_ids` 1.81, oracle
 +30.86pp; adjudication 292 paired questions, 3 retries, 185 pairs whose rows agreed; 1,081 tests,
 coverage **99.97 / 99.62 / 100 / 99.97**; `validation.ts` at 100% on all four dimensions.
+
+### 77 — The counterfactual is the right question, and this corpus cannot answer it
+
+Iteration 76 showed the absolute credit ranks rules at chance and named the fix: ask whether the
+answer changed because the rule was there. That fix is built and run. It produces a number too small to
+rank anything, and the distribution of that number says why in a way that indicted the pass itself.
+
+**The measurement.** Every validation question is answered twice — once with the pack, once without —
+and a rule is credited only where the two outcomes differ. 1,400 injections over five folds:
+
+| Quantity | Value |
+|---|---|
+| Injected questions | 1,400 |
+| Questions where the answer changed (decisive) | **193 (13.8%)** |
+| Rule-injections credited as helped | 203 |
+| Rule-injections credited as harmed | 147 |
+| Rules seen at all | 784 |
+| **Decisive comparisons per rule** | **0.25** |
+| Rules retired (≥ 2 decisive, ≥ 2/3 harm) | **16 (2.0%)** |
+| Questions whose pack the retirement changed | 29 of 350 (8.3%) |
+
+**The wall is arithmetic.** A per-rule policy needs several decisive observations per rule before a
+share means anything, and this corpus produces a quarter of one. Sixteen rules retired, twenty-nine
+questions affected, and the paired result against `full` is **+0.86pp [−0.29, +2.29], p = 0.375** — five
+questions changed hands. That is not "deletion is useless"; it is "at 350 questions and 1.8 rules per
+pack, no per-rule statistic can resolve anything", which is the same wall iteration 68 hit from the
+corroboration side (0 of 1,296 rules observed twice).
+
+**And the distribution indicts the pass.** Of the 213 rules that received any decisive observation,
+**132 received exactly one, and it was a help** — never a harm. That is not what a signal looks like.
+It is what leakage looks like, and the leak was structural: the validation pass runs on the fold's learn
+rows, a rule distilled *from* a row is recalled *for* that row, and the with-rule call was therefore
+asked to reproduce the answer the rule had been derived from.
+
+Two defects, both fixed in this iteration rather than papered over:
+
+1. **Evidence carried no task.** `host.begin` was called without `taskId`, so the host opened a run per
+   attempt and every `EvidenceRef` came out task-less — contradicting the contract stated in the type
+   itself ("support is counted per task, not per event: eight attempts of one task are one observation
+   by one user"). Rules were consequently not attributable to the question that produced them.
+2. **Self-derived rules were scored on their own source.** With attribution in place, the validation
+   pass now drops, per row, every rule whose evidence cites that row, and reports the count it dropped.
+
+**One number this iteration reports against itself.** Iteration 76's absolute credit was also computed
+on learn rows, so it was exposed to the same defect: rules were scored where their own source question
+was in the store, and the correction that produced them was the answer being asked for. Its p = 0.81
+null is therefore a null about a contaminated measure. Removing the contamination does not turn a null
+into a positive result, and nothing here claims it does — it makes the next null a null about a cleaner
+measure, which is a different and weaker statement than the one iteration 76 made.
+
+**What this changes in the plan.** Per-rule credit is the wrong instrument for a 350-question corpus.
+The remaining lever has to act on the *pack*, not on a ranking of its members, and it has to be
+structural: two papers leave nothing else. Xiong et al. describe experience-following — the answer
+imitates the retrieved record — and "Unable to Forget" (ICML 2025) measures interference as a causal
+variable and finds every natural-language intervention against it failing, including explicit
+instructions to ignore the history and chain-of-thought. A model cannot be talked out of imitating a
+rule, but it can be given something else to imitate: its own answer. Two arms are built and dispatched
+for that, with the control the design needs — `full-late` moves the pack after the question (position
+was never a variable), and `full-anchored` answers first and then revises, so the rule is an objection
+to a draft rather than a template for an answer.
+
+**Evidence.** Run [`40278360344`](https://github.com/AgentiX-E/microglia/actions/runs/40278360344):
+350 questions, 5,203 calls, 1 retry, 0 failures, all nine gates pass, oracle +29.71pp; `full` 50.29%
+(−3.43pp, p = 0.0428), `full-validated` 51.14% (−2.57pp, p = 0.1221). 1,107 tests, coverage
+**99.97 / 99.62 / 100 / 99.97**; `validation.ts` at 100% on all four dimensions.
