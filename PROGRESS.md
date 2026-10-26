@@ -3179,3 +3179,57 @@ memory, which is a large improvement over a 4pp loss and not yet a benchmark win
 **Evidence.** Runs `40283723201` (2,745 calls, 1 retry, 0 failures) and `40304176313` (2,763 calls, 1
 retry, 0 failures), both with all nine gates passing and `mean_pack_ids` 1.76; 0 questions skipped by the
 anchored arm; 1,107 tests, coverage **99.97 / 99.62 / 100 / 99.97**.
+
+### 79 — The discovery was a resample, and the treatment was the thing that moved
+
+Iteration 78 reported that anchoring removes the pack's cost: one dispatch at +4.29pp with p = 0.0167, a
+second at +1.43pp with p = 0.487, pooled p = 0.0205. Three more dispatches of the same code were run
+before writing anything else, and the claim does not survive them.
+
+**Five dispatches, same arms, same questions.**
+
+| Run | no memory | `full` | `full-anchored` vs `full` | `full-anchored-conditional` vs `full` |
+|---|---|---|---|---|
+| [`40283723201`](https://github.com/AgentiX-E/microglia/actions/runs/40283723201) | 54.00% | 50.29% (−3.71pp) | +1.43pp, p = 0.487 | — |
+| [`40304176313`](https://github.com/AgentiX-E/microglia/actions/runs/40304176313) | 53.71% | 49.71% (−4.00pp) | **+4.29pp, p = 0.0167** | — |
+| [`40329336780`](https://github.com/AgentiX-E/microglia/actions/runs/40329336780) | 52.57% | 53.43% (+0.86pp) | −1.14pp, p = 0.524 | −1.71pp, p = 0.286 |
+| [`40340260728`](https://github.com/AgentiX-E/microglia/actions/runs/40340260728) | 53.14% | 53.14% (0.00pp) | 0.00pp, p = 1.000 | −1.43pp, p = 0.487 |
+| [`40340281462`](https://github.com/AgentiX-E/microglia/actions/runs/40340281462) | 53.71% | 52.00% (−1.71pp) | −0.57pp, p = 0.851 | −2.00pp, p = 0.281 |
+| **pooled** | — | **−1.71pp mean** | **+0.80pp, McNemar p = 0.285** (67 lost / 81 gained) | **−1.71pp, p = 0.066** (52 lost / 34 gained) |
+
+**The retraction, stated plainly.** Iteration 78's headline — anchoring removes the cost — is withdrawn.
+The effect is +0.80pp over 1,750 paired questions, not significant, and its sign is inconsistent across
+runs. Two dispatches were the favourable tail of a distribution, and reporting them as a result was the
+mistake this iteration exists to correct.
+
+**The cause is measurable, and it is not noise.** `full`, the arm that should be a fixed point, moved from
+−4.00pp to +0.86pp across runs of unchanged code. The reason: every dispatch distils its rules from model
+replies, so *the store itself is resampled each run*. What iteration 78 called run-to-run variance was
+treatment variance — the arm named "memory on" was a different memory in each dispatch. Comparisons inside
+a run survive this, because all arms share one store; comparisons across runs do not, and every claim this
+project has made about "the pack costs 2–5pp" inherits the caveat.
+
+**The conditional variant is the cleanest result here, and it is negative.** Three runs, all worse than
+`full` (−1.71, −1.43, −2.00pp), pooled −1.71pp at p = 0.066. Telling the model to apply an item whose
+`when` condition holds — the one part of a rule that speaks about *this* question — re-imports the harm
+that the conservative instruction was avoiding. The benefit of anchoring, to the extent it exists, comes
+from making "unchanged" the default and not from giving the model a better reason to change.
+
+**The fix ships with the retraction.** `DistillCache` persists every distillation reply, keyed by model,
+prompt version and prompt, and the workflow restores that file between dispatches. A replayed run learns
+the identical store: over a rehearsal against the stand-in, the second run made **160 calls where the
+first made 201** and hit the cache **40 times out of 40**, with the same 40 rules. The next arm comparison
+therefore varies in the arm rather than in the treatment, which is what every comparison in this line of
+work was supposed to do and none of them did.
+
+**What this costs the project's story.** Six iterations of mechanism claims were made against a treatment
+that was silently resampled. The measurements inside each run are still valid — a paired comparison of two
+arms in one dispatch shares a store — so the nulls (deletion, corroboration, per-rule credit) stand as
+within-run results. What does not stand is any statement of the form "the pack costs N points", because N
+has been measured at −4.57, −4.00, −3.71, −1.71, 0.00 and +0.86 across runs. With the cache in place that
+number can finally be estimated, and the estimate may well be smaller than the one this project has been
+quoting.
+
+**Evidence.** Five runs as listed (2,700–5,200 calls each, 0 call failures, all nine gates passing); 1,124
+tests, coverage **99.97 / 99.65 / 100 / 99.97**; `distill-cache.ts` at 100% on all four dimensions; the
+cache rehearsal is `SOTA_DISTILL_CACHE` run twice against `eval/drivers/stand-in.mjs`, 201 then 160 calls.
