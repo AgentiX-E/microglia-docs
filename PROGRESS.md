@@ -3106,3 +3106,76 @@ to a draft rather than a template for an answer.
 350 questions, 5,203 calls, 1 retry, 0 failures, all nine gates pass, oracle +29.71pp; `full` 50.29%
 (−3.43pp, p = 0.0428), `full-validated` 51.14% (−2.57pp, p = 0.1221). 1,107 tests, coverage
 **99.97 / 99.62 / 100 / 99.97**; `validation.ts` at 100% on all four dimensions.
+
+### 78 — Give the model its own answer to imitate, and the pack's cost goes away
+
+Everything tried so far attacked *which* rule reaches the prompt. Iteration 77 showed that a 350-question
+corpus cannot support per-rule attribution at all (0.25 decisive comparisons per rule), and that leaves
+one variable untouched: *how* the rule reaches the prompt. Two arms change only that, and one of them
+removes the loss.
+
+**The two arms.**
+
+| Arm | What it changes | Why |
+|---|---|---|
+| `full-late` | the pack moves after the question, nothing else | position was never a variable in any prior run |
+| `full-anchored` | the model answers first, then revises against the pack in a second call | a rule becomes an objection to a draft instead of a template for an answer |
+
+The second is built on two results. Xiong et al. (arXiv 2505.16067) describe *experience-following* — the
+answer imitates the retrieved record rather than reasoning from the question — and "Unable to Forget"
+(ICML 2025) measures interference as a causal variable independent of context length, finding that every
+natural-language intervention against it fails, including explicit instructions to ignore the history and
+chain-of-thought. A model cannot be told out of imitating a rule; it can be given something else to
+imitate.
+
+**Two dispatches, same corpus, same code.**
+
+| Run | no memory | `full` | `full-late` | `full-anchored` | oracle |
+|---|---|---|---|---|---|
+| [`40283723201`](https://github.com/AgentiX-E/microglia/actions/runs/40283723201) | 54.00% | 50.29% (−3.71pp) | 48.86% (−5.14pp) | **51.71% (−2.29pp)** | 82.86% (+28.86) |
+| [`40304176313`](https://github.com/AgentiX-E/microglia/actions/runs/40304176313) | 53.71% | 49.71% (−4.00pp) | 49.14% (−4.57pp) | **54.00% (+0.29pp)** | 82.86% (+29.14) |
+
+Paired against `full` on the same questions:
+
+| Run | `full-late` | `full-anchored` |
+|---|---|---|
+| 1 | −1.43pp, p = 0.473, 18 lost / 13 gained | **+1.43pp**, p = 0.487, 14 lost / 19 gained |
+| 2 | −0.57pp, p = 0.875, 21 lost / 19 gained | **+4.29pp**, p = 0.0167, 10 lost / 25 gained |
+| pooled | −1.00pp | **+2.86pp, McNemar p = 0.0205** (24 lost / 44 gained over 700 questions) |
+
+**Three readings.**
+
+1. **Anchoring works, and it is the first mechanism in this project that does.** Run 2 puts the anchored
+   arm at **statistically indistinguishable from answering with no memory at all** (+0.29pp, p = 1.0)
+   while `full` in the same run costs 4.00pp — a +4.29pp paired difference at p = 0.0167. Run 1 is the
+   weaker reading (+1.43pp, p = 0.487), and it is reported as the weaker reading: two dispatches, one
+   significant, both in the same direction, pooled p = 0.0205.
+2. **Position is not the mechanism, and it moves the wrong way.** Moving the pack *after* the question
+   made it worse in both runs (−1.43pp, −0.57pp). Recency does not dilute an imitated rule, it
+   strengthens it: the closer the rule sits to where the answer is written, the more it is copied. That
+   is the opposite of what a lost-in-the-middle reading predicts, and it is what experience-following
+   predicts.
+3. **The gain is the loss, not the help.** `full-anchored` loses 10 and 5 questions where `full` loses 23
+   and 25, but gains 2 and 6 where `full` gains 10 and 11. The arm does not make the pack more useful; it
+   makes it less harmful, by making "unchanged" the default and requiring a rule to justify a change.
+   That is the correct shape for a mechanism whose problem was imitation: the anchored model still can't
+   use a good rule it would otherwise have followed, because it never sees the rule until after it has
+   answered.
+
+**Where this leaves the mechanism.** The cost is not in the rule's quality (iteration 76–77), not in the
+criterion (69–74), not in ranking (62–64), and not in position (this iteration, twice, wrong sign). It is
+in the act of putting a rule in front of the question, and the anchored arm is the first intervention
+that changes that act rather than its inputs. The open question it creates is the one worth asking next:
+the anchored arm recovers the loss and forfeits the gain, so the useful direction is a revision that can
+also *find* a rule worth applying — a second call that is shown the rule and asked to check it against
+the draft's result, rather than a second call that is asked to be conservative by default.
+
+**Boundary.** Two dispatches, one model, one prompt pair, 350 questions each. The pooled McNemar treats
+the two runs as independent samples of the same items, which they are as runs and are not as questions;
+the per-run numbers are the ones with no assumption attached, and they bracket the effect at +1.4 to
++4.3pp. Nothing here says the anchored arm is better than no memory — run 2 says it is *equal* to no
+memory, which is a large improvement over a 4pp loss and not yet a benchmark win.
+
+**Evidence.** Runs `40283723201` (2,745 calls, 1 retry, 0 failures) and `40304176313` (2,763 calls, 1
+retry, 0 failures), both with all nine gates passing and `mean_pack_ids` 1.76; 0 questions skipped by the
+anchored arm; 1,107 tests, coverage **99.97 / 99.62 / 100 / 99.97**.
