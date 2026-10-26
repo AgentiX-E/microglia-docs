@@ -3299,3 +3299,72 @@ filter, 2,266 calls, 495 distill-cache hits) and
 [`40393893889`](https://github.com/AgentiX-E/microglia/actions/runs/40393893889) (strict filter, 2,127 calls,
 618 hits of 644, 0 call failures, all nine gates passing); 1,136 tests, coverage
 **99.97 / 99.65 / 100 / 99.97**; `sql-exec.ts` at 100% on all four dimensions.
+
+### 81 — The retry is the treatment, and the content arm measured nothing
+
+Iteration 80 left one number unexplained: guidance in front of the question costs about 1.7pp
+per rule, and nobody had asked what a correction loop looks like when the memory is spent only
+where an answer already failed. This run put that question, the content question, and the
+control that had been missing into one dispatch on BIRD Mini-Dev, cross-fitted over 5 folds,
+350 scored questions, 2,150 model calls.
+
+| Arm | What it injects | Where | Items per pack | ACC | Δ vs no memory | gained / lost |
+|---|---|---|---|---|---|---|
+| no memory | — | — | 0 | 53.43% | — | — |
+| `full` | rules | first prompt | 1.81 | 51.71% | −1.71pp [−4.57, +1.14] p = 0.33 | 10 / 16 |
+| `full-repair` | repair notes | first prompt | 1.00 | 51.71% | −1.71pp [−4.29, +0.86] p = 0.29 | 8 / 14 |
+| `full-onretry` | rules | retry only | 0.13 | **54.86%** | **+1.43pp** [+0.29, +2.86] p = 0.0625 | 5 / **0** |
+| `full-repair-onretry` | repair notes | retry only | 0.07 | 54.57% | +1.14pp [+0.29, +2.29] p = 0.125 | 4 / **0** |
+| `retry-blank` | nothing | retry only | 0.00 | **54.57%** | **+1.14pp** [+0.29, +2.29] p = 0.125 | 4 / **0** |
+| oracle | the answer, stated | first prompt | 0 | 83.14% | +29.71pp p < 1e-15 | 108 / 4 |
+
+**`retry-blank` was the arm the published retry result was missing, and it answers the
+question.** A second attempt with no pack at all recovers 4 of the 25 questions whose first
+answer failed, which is the entire +1.14pp that iteration 80's `full-onretry` reported. The
+memory adds one question on top (20.0% against 16.0% on the retried subset, n = 25): a single
+flip, p = 1.0 between the two arms. **Retrying helps; the pack does not help the retry.**
+
+| On the 25 retried questions | ACC | Δ vs their own first answer |
+|---|---|---|
+| no memory | 0.00% | — |
+| `retry-blank` | 16.0% | +16.0pp [4.0, 32.0] |
+| `full-onretry` | 20.0% | +20.0pp [4.0, 36.0] |
+| `full-repair-onretry` | 16.0% | +16.0pp [4.0, 32.0] |
+| oracle | 60.0% | +60.0pp |
+
+**The retry population is small and that is the finding's limit.** Only 25 of 350 questions
+(7.1%) produce a signal a deployment can see — the query failed to execute, or it ran and
+returned nothing. A treatment that can only reach 7% of the benchmark cannot move it by more
+than 7 points, and the 4 recoveries it did produce are within the noise of a 25-question
+sample. The subset statistic is reported next to the population delta for exactly this reason;
+it is conditional on a post-treatment variable and cannot be a headline.
+
+**The content arm measured nothing, and the artefact said so.** The repair memory ended the run
+with **one active item per fold**. A store holding nothing and a store holding one generic item
+look identical from outside, so the run could not say whether the distiller had nothing to say
+or whether we threw away what it said. Both arms that used it (`full-repair`,
+`full-repair-onretry`) are therefore not measurements of content: they injected the same single
+item into every prompt. Their numbers are recorded rather than read.
+
+The three candidate causes were all in the pipeline, not the model:
+
+| Suspect | Evidence | Fix |
+|---|---|---|
+| the 400-character statement cap | the repair form writes three parts — what failed, why, the fix — and the parser drops past 400 **without a counter** | `MAX_STATEMENT` 400 → 640 |
+| three jobs in one field | `statement` had to be a fix, a diagnosis and a condition at once, and lost to the cap | the account moves to `payload.wrong` / `payload.cause`; `statement` is the fix (≤240 characters) |
+| silent truncation | replies that hit the token limit fail to parse and are counted as "the model said nothing" | 3,000 tokens for the repair form |
+
+`parseDistillResponse` now reports every dropped candidate by reason, the lane aggregates the
+counts per form into `distill_drops`, and the repair store's contents travel as `items_repair`.
+A number that cannot distinguish "nothing was learned" from "everything was discarded" is not a
+measurement, and the next iteration should not have to guess.
+
+**What this changes in the record.** The +1.14pp attributed to memory-on-retry in iteration 80
+is retracted: it is the second attempt, not the retrieved experience. The mechanism that has
+survived every arm so far is unchanged — any block in front of the question costs accuracy, and
+the amount is not explained by which rules are in it (iteration 80) nor, now, by how many
+(1.00 item cost the same 1.71pp as 1.81).
+
+**Evidence.** Run [`40410701773`](https://github.com/AgentiX-E/microglia/actions/runs/40410701773),
+2,150 calls, 0 call failures, 25 retried of 350, all gates passing; 1,160 tests, coverage
+**99.97 / 99.66 / 100 / 99.97**; `master` at `cc36ac0`.
