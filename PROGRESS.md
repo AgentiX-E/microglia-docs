@@ -2959,3 +2959,85 @@ evidence about them.
 **Evidence.** Run [`40206409114`](https://github.com/AgentiX-E/microglia/actions/runs/40206409114):
 350 questions, all gates pass, adjudication −4.75pp (p = 0.0201) on 295 paired questions, consistent with
 the execution reading. 1,065 tests, coverage 99.97 / 99.62 / 100 / 99.97.
+
+### 76 — Deleting a third of the rules changes nothing, and the reason is in the credit itself
+
+Iteration 75 ended by naming the untested half of the literature's remedy: history-based deletion.
+It is now built, run, and reported. It does not help, and this iteration measures why, which is worth
+more than the arm was.
+
+**The arm.** After a fold learns, it answers its own learn rows with the pack it would inject, records
+which rules reached a prompt whose answer was wrong, and retires the rules whose failure share is at
+least half over at least two injections. Then scoring begins. The deletion runs on learn rows and never
+on the questions being scored: deleting on the scored set would be leakage with a tidier name.
+
+| Arm | ACC | Δ vs no memory | p | lost / gained | rules per pack |
+|---|---|---|---|---|---|
+| no memory | 53.14% | — | — | — | 0 |
+| full | 50.86% | −2.29pp | 0.2153 | 20 / 12 | 1.81 |
+| **full-validated** | **50.29%** | −2.86pp | 0.0872 | 19 / 9 | 1.81 |
+| oracle | 84.00% | +30.86pp | <1e-33 | 3 / 111 | 0 |
+
+**The deletion is not a no-op.** 805 distinct rules were injected during validation, 2,530 trials were
+recorded, and **268 rules were retired — 33% of the store**. In one fold the active set went from 275 to
+217. The pruned store produced a **different pack on 192 of 350 scored questions (55%)**, which is the
+count that distinguishes a real intervention from an arm that quietly re-measured `full`.
+
+**And it changes nothing.** Paired against `full` on the same 350 questions: **−0.57pp, 95% CI
+[−2.86, +1.71], p = 0.8145**, 10 lost against 8 gained. Removing a third of the rules, selected as the
+ones with the worst observed records, is indistinguishable from removing none.
+
+**The diagnosis, and it is in the histogram.** Credit was assigned by "the rule was present when the
+answer was wrong". The lane answers 51% of questions correctly, so a rule that does nothing at all
+fails half of its trials anyway. If credit carried any information about the rule, the failure counts
+would be over-dispersed relative to that base rate. They are not:
+
+| Trials | Rules | Observed failures 0..t | Expected at p = 0.4914 | χ² | df | p |
+|---|---|---|---|---|---|---|
+| 1 | 288 | 120, 168 | 146.5, 141.5 | 9.74 | 1 | **0.0018** |
+| 2 | 158 | 48, 73, 37 | 40.9, 79.0, 38.2 | 1.73 | 2 | 0.421 |
+| 3 | 116 | 15, 55, 31, 15 | 15.3, 44.2, 42.7, 13.8 | 5.96 | 3 | 0.114 |
+| 4 | 77 | 7, 20, 24, 23, 3 | 5.2, 19.9, 28.9, 18.6, 4.5 | 3.02 | 4 | 0.555 |
+
+Pooled over two, three and four trials: **χ² = 10.71 on 9 degrees of freedom, p = 0.296**. Every rule's
+failure count is consistent with every other rule's — the distribution is the one you get by flipping a
+coin weighted to the lane's own error rate, once per injection. So the credit ranks rules at chance, and
+retiring the worst third is retiring a random third, which is exactly the −0.57pp the arm measured. Two
+independent readings of the same defect agree.
+
+The single row that does deviate makes the confound explicit rather than refuting it: rules injected
+exactly once failed **more** often than the base rate (168 of 288, p = 0.0018). Retrieval prefers rules
+that resemble a previous correction, and the questions that resemble a previous correction are slightly
+harder than average. Difficulty is what the credit was measuring.
+
+**A third criterion confirms the cost it was trying to remove.** The same run re-scored by the evidenced
+cascade, 292 questions both arms answered: **70.89% → 66.10%, −4.79pp [−8.90, −1.03], p = 0.0243**, with
+49 verdicts changing hands. Iteration 74 measured −4.15pp [−7.96, −0.69] on the same lane with the same
+criterion; this is the second independent dispatch and it moves the estimate a little further from zero,
+not toward it. Execution on the same 292: −3.08pp, p = 0.1078.
+
+**What this closes, stated as a list.** The cost of the pack is not: the result comparison (three
+criteria, one sign), retrieval ranking (no separation between helpful and harmful at cosine 0.232 vs
+0.228), rule shape (`when` present or absent, 0.00pp), dose (no dose response), foreign rules (−0.29pp,
+p = 1.0), requiring a decision before use (+0.29pp, p = 1.000), corroboration (a filter that admits
+nothing), or **the quality of the individual rules as currently measured** (this iteration, p = 0.81
+against a 33% deletion).
+
+**What is left is that the credit is measured wrongly, not that the rules are all equally bad.** The
+current score answers "was the rule present when the answer was wrong", and the answer to that question
+is determined mostly by the question. The question worth asking is the counterfactual one: *would this
+answer have been right without the rule?* That needs two calls per validation question — the same
+question answered with the pack and without it — and a rule is credited only where the two outcomes
+differ. It costs about 2,800 calls per fold set, it is unbiased by difficulty by construction, and it is
+the next iteration rather than this one, because a measurement that has just been shown to carry no
+signal should not be quietly repaired inside the same artefact that reports its null.
+
+**Boundary.** One model, one dispatch, one policy (share ≥ 0.5 over ≥ 2 trials). The policy is a setting
+and the artefact records it beside the histogram, so a stricter or looser value can be run without
+touching code — but nothing here says whether some other threshold would have found the harmful rules,
+only that this one, chosen before the run, did not.
+
+**Evidence.** Run [`40256148306`](https://github.com/AgentiX-E/microglia/actions/runs/40256148306):
+350 questions, 3,799 calls, 1 retry, 0 failures, all nine gates pass, `mean_pack_ids` 1.81, oracle
++30.86pp; adjudication 292 paired questions, 3 retries, 185 pairs whose rows agreed; 1,081 tests,
+coverage **99.97 / 99.62 / 100 / 99.97**; `validation.ts` at 100% on all four dimensions.
