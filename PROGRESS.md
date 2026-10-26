@@ -3233,3 +3233,69 @@ quoting.
 **Evidence.** Five runs as listed (2,700–5,200 calls each, 0 call failures, all nine gates passing); 1,124
 tests, coverage **99.97 / 99.65 / 100 / 99.97**; `distill-cache.ts` at 100% on all four dimensions; the
 cache rehearsal is `SOTA_DISTILL_CACHE` run twice against `eval/drivers/stand-in.mjs`, 201 then 160 calls.
+
+### 80 — The content is not the problem: a random third does as well as the checkable rules
+
+The standing hypothesis after iteration 79 was that the *content* is wrong — that the rules are
+restatements, or wrong, or unusable — and that fixing what is stored would fix the effect. This iteration
+audited the store, built two arms that separate content from volume, and the hypothesis fails in a way
+that is more useful than a confirmation.
+
+**The audit.** 1,288 rules, distilled from BIRD by the dispatch this iteration reports:
+
+| Property | Count |
+|---|---|
+| Carries a condition | 1,288 (100%) |
+| Condition begins "The question asks…" | **992 (77%)** |
+| Names anything with an underscore in it (`player_fifa_api_id`, `frpm.x`) | **144 (11%)** |
+| Passes the strict grounding test — names a table, or a column that cannot be read as prose | **66.2% of pack slots** |
+| Statement contains a quoted literal (`'D'`, `'Semi-Final'`) | 368 (29%) |
+
+So the store is mostly prose: statements like "a positive measure of degree of coagulation is represented
+by a '+' value in the coagulation test columns". It is not obviously *wrong* — the harmful rules sampled in
+iteration 79 were mostly true ("Player_Attributes rows join to Player rows on player_fifa_api_id, not
+player_api_id" is correct for formula_1) — but it is mostly *unfalsifiable*: a reader cannot check the
+claim against the catalogue it is being injected into.
+
+**Two arms that separate the two hypotheses.**
+
+| Arm | What it keeps | Rules per pack | ACC | Δ vs no memory | Δ vs `full` |
+|---|---|---|---|---|---|
+| no memory | — | 0 | 53.71% | — | — |
+| `full` | everything retrieved | 1.76 | 50.86% | −2.86pp | — |
+| **`full-grounded`** | only rules naming a table or a distinctive column | 1.16 | 51.43% | −2.29pp | **+0.57pp** (5 lost / 7 gained, p = 0.774) |
+| **`full-sampled`** | the same number of rules, chosen at random | 1.16 | 51.71% | −2.00pp | **+0.86pp** (6 lost / 9 gained, p = 0.607) |
+| oracle | the gold rule stated | 0 | 83.43% | +29.71pp | — |
+
+**The answer is that which rules are in the pack does not matter.** The checkable subset and a random
+subset of the same size are indistinguishable: **+0.57 against +0.86, and directly against each other
+p = 1.0**. Whatever makes the pack cost points, it is not that three quarters of it cannot be checked
+against the schema, and it is not that the rest is the wrong three quarters.
+
+**What does move is how many.** The two pruned arms beat `full` by half a point each, and the only thing
+they share is that they carry 0.6 fewer rules per question. Across the four arms that vary the pack size,
+accuracy falls about **1.7pp per rule injected** (53.71% at zero, 50.86% at 1.76), with the fitted baseline
+recovering to 53.63%. This is the first dose relationship this project has measured — iteration 66's null
+on dose varied the retrieval budget rather than the injected set, and a budget that is never binding looks
+exactly like a mechanism that does not exist.
+
+**A defect this iteration found in its own instrument.** The first dispatch of `full-grounded` passed
+**79.7%** of the pack, against the 21.5% the audit predicted, and measured nothing (0.00pp, p = 1.0). The
+filter accepted any column name, and BIRD has columns called `date`, `name`, `status`, `rank` and `year` —
+words a rule says in prose. Grounding on those is grounding on English. `SchemaIndex` now keeps tables and
+columns apart and admits a column only when its name cannot be read as prose; the strict reading passes
+66%, which matches the audit, and is the arm reported above. Both numbers are kept in the record because
+the loose one is the measurement that would have been published if the arm had not been rehearsed.
+
+**What this leaves.** The mechanism is not retrieval (iterations 62–64), not ranking, not shape, not
+corroboration, not per-rule credit, not deletion, not anchoring, and now not the content of the rules. It
+is the quantity of guidance in front of the question, at roughly 1.7pp per rule. The next experiment is
+that curve measured properly — three pack sizes, one store, enough power to see where it crosses zero —
+because a relationship that steep is also the most actionable thing this project has found: a pack of one
+rule should cost about a third of what a pack of three costs.
+
+**Evidence.** Runs [`40378820485`](https://github.com/AgentiX-E/microglia/actions/runs/40378820485) (loose
+filter, 2,266 calls, 495 distill-cache hits) and
+[`40393893889`](https://github.com/AgentiX-E/microglia/actions/runs/40393893889) (strict filter, 2,127 calls,
+618 hits of 644, 0 call failures, all nine gates passing); 1,136 tests, coverage
+**99.97 / 99.65 / 100 / 99.97**; `sql-exec.ts` at 100% on all four dimensions.
