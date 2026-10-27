@@ -3485,3 +3485,53 @@ one-item pack is a different treatment from the one the arm is named after.
 [`40435624940`](https://github.com/AgentiX-E/microglia/actions/runs/40435624940) — 1,907 to 2,150
 calls each, 0 call failures, 23–25 retried of 350, all gates passing; 1,168 tests, coverage
 **99.97 / 99.66 / 100 / 99.97**; `master` at `f12e365`.
+
+### 84 — The content arm finally runs, and the richer memory is worse
+
+The store had been empty for four dispatches. The cause was one predicate: scope widening
+identified a claim by its payload, so two lessons of the same kind that carried no payload were
+"the same claim seen from two domains", and a fold's 200 notes became one. Run
+[`40496280712`](https://github.com/AgentiX-E/microglia/actions/runs/40496280712) is the first in
+which the repair memory holds what it learned: **123–137 active notes per fold**, 30 of 30
+sampled items `active`, and notes that read as the account they were asked for — "the attempt
+counted distinct patient identifiers across a join of the patient, laboratory and examination
+relations; because the join multiplies each patient into one row per match, the count is a count
+of matches; the correction counts rows of the joined result instead."
+
+| Arm | What it injects | Where | Items | ACC | Δ vs no memory | gained / lost |
+|---|---|---|---|---|---|---|
+| no memory | — | — | 0 | 53.43% | — | — |
+| `full` | rules | first prompt | 1.86 | 50.57% | −2.86pp [−6.00, +0.29] p = 0.11 | 11 / 21 |
+| **`full-repair`** | **repair notes** | **first prompt** | 1.00 | **48.29%** | **−5.14pp [−8.29, −2.00] p = 0.0021** | 7 / **25** |
+| `full-onretry` | rules | retry only | 0.14 | 54.57% | +1.14pp [+0.29, +2.29] p = 0.125 | 4 / 0 |
+| `full-repair-onretry` | repair notes | retry only | 0.07 | 54.29% | +0.86pp [0.00, +2.00] p = 0.25 | 3 / 0 |
+| `retry-blank` | nothing | retry only | 0.00 | 54.29% | +0.86pp [0.00, +2.00] p = 0.25 | 3 / 0 |
+| oracle | the answer, stated | first prompt | 0 | 82.86% | +29.43pp p < 1e-15 | 104 / 1 |
+
+**The answer to "what should be remembered" is that it does not help to remember more.** The
+repair notes are exactly the artefact the hypothesis asked for — a comparison of the wrong answer
+with the right one, the mechanism, and the condition — and in front of the question they cost
+**5.14pp, significantly**, against 2.86pp for the declarative rules they replaced. More
+explanation, more damage.
+
+**Both forms are inert at the only moment that costs nothing.** On the 26 retried questions:
+blank 11.5%, repair-on-retry 11.5%, rule-on-retry 15.4%. The repair note that says *this failure,
+this cause, this fix* is worth exactly nothing over a blind second attempt. The rule is worth one
+question.
+
+**A mechanism the numbers now support.** The two always-on arms differ in item count (1.86 against
+1.00) and in nothing else that moved: one rule is about 250 characters of block, one repair note
+about 450, and the packs are therefore of similar size. Accuracy tracks the size of the text, not
+the number of claims or their form — which is what iteration 80's dose null could not see,
+because it varied the retrieval budget rather than the injected characters. The next experiment
+is the one that follows: packs matched on characters, 0 to 1,200, and a zero crossing.
+
+**What four earlier runs had already settled.** The retry channel is neutral (0 questions lost in
+five dispatches); the gain inside it belongs to the retry, not to the memory (blank recovers 2–4
+of 23–26, memory adds at most one); and guidance before the first answer costs accuracy every
+time it has been measured (−1.43, −2.00, −2.86, −1.71).
+
+**Evidence.** Run [`40496280712`](https://github.com/AgentiX-E/microglia/actions/runs/40496280712),
+1,921 calls, 0 call failures, 26 retried of 350, all gates passing, `master` at `01fdedf`; four
+dropped repair statements of 1,400 distillations (0.3%, the cap doing its job); 1,174 tests,
+coverage **99.97 / 99.66 / 100 / 99.97**.
