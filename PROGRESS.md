@@ -3626,3 +3626,60 @@ has already been given, and its failure is what the second call is about.
 **Evidence.** Run [`40506721172`](https://github.com/AgentiX-E/microglia/actions/runs/40506721172),
 3,220 calls, 0 call failures, 25 retried of 350, all gates passing, `master` at `08b3736`; 1,175
 tests, coverage **99.97 / 99.66 / 100 / 99.97**.
+
+### 87 — Retrieval was never the problem; obedience is
+
+The question this iteration had to answer: is the failure experience extracted correctly, is it
+retrieved for the right question, and is it shown at the right moment? The lane had only ever
+measured the third of those with accuracy, which cannot separate "the memory is wrong" from "the
+memory never arrived". Two numbers were missing: how often the pack is *about* the question, and
+what happens in each half.
+
+**Measured, in-lane, on 350 packs** (`retrieval_relevance`), and recomputed independently from the
+per-case texts (287 against 271 — the difference is the `when` clause, which the lane includes and
+the audit script did not):
+
+| Packs | Share | ACC | Same questions, no memory | Δ |
+|---|---|---|---|---|
+| named an entity the answer uses | 271–287 of 350 (77–82%) | 46.1% | 48.7% | **−2.6pp** |
+| named nothing the answer uses | 63–79 | 70.9% | 72.2% | −1.3pp |
+
+**Retrieval is not broken.** Four fifths of the packs name a table or column the gold query
+actually uses, and the questions that receive an unrelated pack — the oxygen-atoms question that
+was handed a note about parsing lap times — are **unharmed**: 74.6% with the pack, 74.6% without.
+A rule about another database is ignored.
+
+**The harm is entirely in the packs that are relevant.** They cost 2.6–2.8pp, and the more the
+note explains the more they cost: `full-repair` −5.71pp this run (p = 0.0012), −4.86 (p = 0.0137)
+and −5.14 (p = 0.0021) in the two before, against −2.29, −3.14 and −2.86 for the shorter rules.
+
+So the answer to "is the experience extracted correctly and used in the right place" is:
+
+| Step | Verdict | Evidence |
+|---|---|---|
+| extraction | yes | 123–137 active notes per fold; they read as *what failed, why, what fixed it*; 0.3% dropped |
+| retrieval | yes, by entity | 77–82% of packs name something the answer uses |
+| **application** | **no** | a relevant pack is *followed*, not weighed: −2.6pp, and −5.7pp when it explains more |
+
+**The fix that follows is not a better retriever.** `full-asked`, which keeps only rules naming a
+token the *question* names, removed 0.03 of an item per pack (1.84 → 1.81) and left the loss
+intact (−2.29pp): the filter has nothing to remove, because the packs already pass it. What is
+left to test is the one thing no arm has varied — whether the note carries the case's nouns at
+all. A rule that names `thrombosis_prediction.Laboratory` invites the model to reproduce the case
+that produced it; a rule that says *when a question counts entities across a one-to-many join,
+count after filtering* has no case to reproduce. `full-procedural` is the next arm.
+
+**The retry channel is unchanged and still the only non-negative one.** 24 retried of 350;
+`full-onretry` +1.43pp with 5 gained and 0 lost; `retry-blank` +0.57pp with 2 gained and 0 lost;
+`none-replica` — the identical prompt asked twice — 4 gained and 3 lost. The memory's contribution
+at retry (+1 question) is at the instrument's floor.
+
+**A correction.** The commit message of `b86400b` reports "210 of 350 packs named nothing the gold
+query uses". That number came from a join against an artefact list that held one fold's items, so
+most packs looked unrelated; the lane's own metric and the independent recomputation both say
+63–79. The claim in the commit is withdrawn here, and the measurement now travels in the artefact
+rather than in a script.
+
+**Evidence.** Run [`40512822827`](https://github.com/AgentiX-E/microglia/actions/runs/40512822827),
+2,526 calls, 0 call failures, all gates passing, `master` at `b86400b`; 1,180 tests, coverage
+**99.97 / 99.48 / 100 / 99.97**.
