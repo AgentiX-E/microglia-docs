@@ -3683,3 +3683,52 @@ rather than in a script.
 **Evidence.** Run [`40512822827`](https://github.com/AgentiX-E/microglia/actions/runs/40512822827),
 2,526 calls, 0 call failures, all gates passing, `master` at `b86400b`; 1,180 tests, coverage
 **99.97 / 99.48 / 100 / 99.97**.
+
+### 88 — The first form that does not lose: a procedure with no case in it
+
+The relevance audit said the nouns are the problem. This run removed them: a third distillation
+form states one sentence about the *shape* of the question — "when a question counts entities
+across a one-to-many join, aggregate after filtering, because the join multiplies rows" — with no
+table, column, alias, literal or database in it, and the store enforces the rule rather than
+asking for it: `distill()` now takes a host veto, and the lane refuses any candidate naming a
+table or column of the database it was learned from. 124–138 procedural notes survive per fold.
+
+| Arm | Items | Characters | ACC | Δ vs no memory | gained / lost | p |
+|---|---|---|---|---|---|---|
+| no memory | 0 | 0 | 53.71% | — | — | — |
+| `none-replica` | 0 | 0 | 54.00% | +0.29pp | 2 / 1 | 1.00 |
+| **`full`** (rules, with the case) | 1.88 | 1,096 | **49.43%** | **−4.29pp** [−7.43, −1.43] | 7 / **22** | 0.008 |
+| **`full-procedural`** | 1.76 | 1,064 | **54.57%** | **+0.86pp** [−2.29, +4.00] | 17 / 14 | 0.72 |
+| `full-onretry` | 0.13 | 78 | 55.14% | +1.43pp | 5 / 0 | 0.063 |
+| `retry-blank` | 0 | 0 | 54.57% | +0.86pp | 3 / 0 | 0.25 |
+| oracle | 0 | 223 | 83.14% | +29.43pp | 103 / 0 | < 1e-15 |
+
+**Same store, same corrections, same size, same position — opposite sign.** The two arms inject
+almost the same number of characters (1,096 against 1,064) and differ in one property: whether the
+claim names the case. Rules with nouns: −4.29pp, twenty-two questions lost. Procedures without
+them: +0.86pp, fourteen lost. At this sample size the honest claim is **"no longer loses"**, not
+"gains" — 0.86pp is a third of the floor this run measured (3 discordant questions).
+
+**And the relevance split, scored correctly, says where the difference lives** (the first version
+of this block was scored by the wrong arm and is fixed in `2dbacef`, with a reconciliation check):
+
+| Arm | Packs naming an answer entity | Δ | Packs naming none | Δ |
+|---|---|---|---|---|
+| `full` | 284 | **−4.6pp** | 66 | −3.0pp |
+| `full-procedural` | 85 | +1.2pp | 265 | +0.8pp |
+
+A procedural pack is *by construction* usually unable to name anything (85 of 350 do, through
+ordinary words). That is the point: it has nothing to map onto this question, and it stops
+costing. The rule that names `Laboratory` invites the model to reproduce the case that produced
+it; the procedure says what to do and leaves the case behind — which is the shape ExpeL's insights
+and ReasoningBank's strategies have, and the shape this project had never tried.
+
+**What this establishes and what it does not.** It establishes that the loss was caused by the
+case nouns and not by the presence of guidance as such — the two arms are matched on characters,
+items, store and position. It does not establish a gain: one run, p = 0.72, and 17 gained against
+14 lost is three flips of signal at this sample size. Replication is the next dispatch, and the
+form is now the first entry of ROADMAP R1 with that criterion written down.
+
+**Evidence.** Run [`40520115956`](https://github.com/AgentiX-E/microglia/actions/runs/40520115956),
+2,337 calls, 0 call failures, all gates passing, `master` at `3b96fec` followed by `2dbacef`;
+1,182 tests, coverage **99.97 / 99.46 / 100 / 99.97**.
