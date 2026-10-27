@@ -596,3 +596,54 @@ expensive experiment first would leave three explanations for one number.
 
 S3 last because a SOTA claim is a claim about the field, and it should be made only after the mechanism
 has survived a product and two public datasets.
+
+## R1 — Competitor replication programme (opened 2026-10-27)
+
+The question this section answers: why is our memory a record of "what happened in this
+database" rather than the transferable kind the literature reports gains for, and why is
+borrowing their implementations not in the plan?
+
+**The first half is answered by the record.** Our memory is factual because of three decisions
+taken when the pipeline was built and never revisited:
+
+| Decision | Where | Consequence |
+|---|---|---|
+| distill from a single `(question, attempt, correction)` event | `distill-prompt/3` | the only content available is the case; a rule can only generalise across cases that the *same* sentence recurs in |
+| identify a claim by its payload, not its sentence, when widening | `generalize.ts` | until iteration 87 no two prose claims could ever be recognised as the same claim, so nothing widened, so nothing became domain-free |
+| retrieve by question text | `recall` | a note about a *failure* is retrieved by a *question*, and the question does not say what failed |
+
+The measurement that makes this concrete: 77–82% of packs name an entity the answer uses, and
+those packs cost 2.6pp; the packs that name nothing are ignored (0.0pp); a three-sentence repair
+note costs 5.7pp. The model is not lacking information about the database. It is being handed a
+case and reproducing it.
+
+**The second half was a gap in this document, and it is now the plan.** Five replications, each
+as an arm under the same protocol, each with a stated acceptance criterion. An arm that cannot
+beat the noise floor of its own run (`none-replica`, currently 3–5 discordant questions) is
+recorded as a null and not pursued.
+
+| # | Source | What is replicated | Arm | Acceptance |
+|---|---|---|---|---|
+| R1.1 | ExpeL (AAAI'24) | insights extracted by *comparing* a failed and a successful attempt, managed by ADD/EDIT/UPVOTE/DOWNVOTE | `full-procedural` | the form exists, is enforced (no case nouns may be stored), and beats `full` on the same store |
+| R1.2 | ReasoningBank (ICLR'25) | three-field memory (title/description/content) and retrieval by embedding of the *task* | `rb-format` | same content, restructured: delta against `full` outside the noise floor |
+| R1.3 | Reflexion (NeurIPS'23) | reflection stored per task, injected only on the next attempt of that task | `retry-task` | retrieval keyed by task, not by question text; measured on the retried subset |
+| R1.4 | Dynamic Cheatsheet (2024) | a single running note that is updated, not a set of retrieved items | `cheatsheet` | one note per fold, updated after each failure; delta against `retry-blank` |
+| R1.5 | ACE (2025) | Generator / Reflector / Curator, with brevity-bias and context-collapse guards | `ace-curate` | the curator's merge must not shrink the store below the fold's note count |
+
+**Where "surpass" is defined.** Not on absolute accuracy: the leaderboard is a different game —
+AskData 77.14, CHASE-SQL 76.02, XiYan-SQL 75.63 on BIRD dev, all with schema linking, multiple
+candidates and a selection model, against our single call to a mid-size model at 53–54% on the
+350-question Mini-Dev subset. The claim this project can make and defend is causal: which memory
+component contributes what, measured with a noise floor in every run. Surpassing means two
+things, in order:
+
+1. **A memory that is non-negative.** Today the only non-negative channel is the retry, and its
+   gain belongs to the retry. R1.1–R1.5 are the five candidate forms; the first that clears the
+   noise floor becomes the default.
+2. **A pipeline that can enter the leaderboard comparison.** Schema linking, N candidate
+   queries, and a selector — the three components every system above 70% has and we do not. That
+   is a separate work item (R2) and it is what makes an absolute number comparable at all.
+
+**Order.** R1.1 is implemented and dispatched. R1.2–R1.5 are one iteration each, and any of them
+may be dropped on a null. R2 starts only after one memory form clears the floor, because a
+stronger generator without a memory that works measures a different thing.
