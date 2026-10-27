@@ -3732,3 +3732,45 @@ form is now the first entry of ROADMAP R1 with that criterion written down.
 **Evidence.** Run [`40520115956`](https://github.com/AgentiX-E/microglia/actions/runs/40520115956),
 2,337 calls, 0 call failures, all gates passing, `master` at `3b96fec` followed by `2dbacef`;
 1,182 tests, coverage **99.97 / 99.46 / 100 / 99.97**.
+
+### 89 — The procedural form does not replicate, and the case-bearing form does
+
+Iteration 88 ended with the first positive sign this project has had for an always-on arm
+(+0.86pp). The floor it measured in the same run was three discordant questions, so the entry
+said "no longer loses" rather than "gains", and the replication was dispatched. It does not
+replicate.
+
+| Arm | 88 | 89 | mean | verdict |
+|---|---|---|---|---|
+| `full` (rules, with the case) | −4.29pp (7/22, p = 0.008) | −4.29pp (5/20, p = 0.004) | **−4.29** | replicated, significant twice |
+| `full-procedural` | +0.86pp (17/14) | −2.00pp (12/19) | −0.57 | **not replicated** |
+| `full-onretry` | +1.43pp (5/0) | +1.71pp (6/0, p = 0.031) | +1.57 | replicated, never loses |
+| `retry-blank` | +0.86pp (3/0) | +0.57pp (2/0) | +0.72 | replicated |
+| `none-replica` | +0.29pp (2/1) | +0.29pp (1/0) | +0.29 | the floor, and it moves between runs |
+
+**What survives is the comparison, not the level.** Across two runs the procedural form is 2.3 and
+5.1 points better than the case-bearing form it replaced, and that difference has the same sign
+twice with a matched store, matched characters and matched position. What does not survive is the
+claim that it is neutral: −0.57pp on average, one run positive and one negative, inside a floor
+that was 1 flip in one run and 3 in the other.
+
+**Also worth recording: the procedural pack is cheap in every run.** Its relevance split shows 81
+of 350 packs naming an answer entity, against 284 for the rule pack, and it costs −0.6pp in the
+half that names something and −2.2pp in the half that does not… which is the opposite of the rule
+pack's pattern and the reason to distrust two-run deltas at this sample size. What is stable is
+that a pack of procedures loses about half of what a pack of case-bearing rules loses.
+
+**A dose point that failed to be a dose point.** `chars-proc-600` recalled at 600 characters and
+produced an **empty** pack on every question (0.00 characters, 0.00 items): a procedural note plus
+its envelope is longer than 600 characters, so the arm measured no-memory again (−0.57pp, 0 gained
+2 lost). The next dose point for this store is 900, and the render fix from iteration 85 is what
+made the empty pack visible instead of a wrapper claiming zero items.
+
+**Evidence.** Runs [`40520115956`](https://github.com/AgentiX-E/microglia/actions/runs/40520115956)
+(2,337 calls) and [`40527117087`](https://github.com/AgentiX-E/microglia/actions/runs/40527117087)
+(2,567 calls, 0 call failures, 350 scored, all gates passing); `master` at `19fb282`; 1,182 tests,
+coverage **99.97 / 99.46 / 100 / 99.97**.
+
+**R1.1 status: acceptance not met.** The form exists, is enforced, and is measurably better than
+the form it replaces; it is not measurably better than nothing. R1.2 (ReasoningBank's three-field
+memory) starts from that position rather than from a claimed gain.
