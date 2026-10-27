@@ -3535,3 +3535,48 @@ time it has been measured (−1.43, −2.00, −2.86, −1.71).
 1,921 calls, 0 call failures, 26 retried of 350, all gates passing, `master` at `01fdedf`; four
 dropped repair statements of 1,400 distillations (0.3%, the cap doing its job); 1,174 tests,
 coverage **99.97 / 99.66 / 100 / 99.97**.
+
+### 85 — The lane measures itself, and the dose curve is flat
+
+The content run said accuracy tracks the size of the injected block. This run made the block
+size the only variable: the same store, the same retrieval, the same question, and a character
+budget handed to the pack layer.
+
+| Arm | Characters injected | Items | ACC | Δ vs no memory | gained / lost |
+|---|---|---|---|---|---|
+| no memory | 0 | 0 | 53.43% | — | — |
+| `chars-150` | **0** | 0 | 54.29% | **+0.86pp** | 4 / 1 |
+| `chars-300` | 230 | 0.00 | 52.29% | −1.14pp | 8 / 12 |
+| `chars-600` | 328 | 0.29 | 52.00% | −1.43pp | 8 / 13 |
+| `full` | 1,088 | 1.85 | 52.57% | −0.86pp | 13 / 16 |
+| `full-onretry` | 82 | 0.14 | 55.14% | +1.71pp p = 0.031 | 6 / 0 |
+| `retry-blank` | 0 | 0.00 | 54.86% | +1.43pp | 5 / 0 |
+| oracle | 223 | 0 | 82.86% | +29.43pp | 105 / 2 |
+
+**Two of the arms were not what they were named.** The 150-character budget is smaller than the
+wrapper, so the pack layer returned nothing and `chars-150` asked a byte-identical question to
+`none`. The two copies differ by **4 questions gained and 1 lost, +0.86pp** — that is the
+endpoint, not the treatment. Every effect this project has reported for a memory arm is of the
+same order: one to five questions.
+
+The 300 and 600 budgets admitted the wrapper but no item, because one JSON line is ~250
+characters after the header. They injected 230 and 328 characters of a block that says
+`items="0"`: **text with no knowledge in it**. It cost 1.14 and 1.43pp, which is to say the
+"cost of guidance" that seven iterations attributed to rules was in part the cost of a header.
+
+**A defect, fixed.** `renderPack` refused a budget smaller than the wrapper and returned the
+wrapper when no item fitted — two hundred characters announcing zero knowledge. It now returns
+nothing in both cases, with a test that pins the empty render.
+
+**What survives.** With the curve flat inside its own noise band, the memory arms in front of the
+question are indistinguishable from no memory at this sample size; the retry arms never lose a
+question and gain 1.4–1.7pp, of which the blind retry gains 1.4. The distances are unchanged and
+the confidence in them is lower than the last four entries claimed.
+
+**What this costs the record.** Iterations 81–84 read 1–5 question differences as mechanisms.
+The honest statement is that the instrument's floor is about one percentage point, and the next
+run measures that floor *inside* every run (`none-replica`) instead of inferring it afterwards.
+
+**Evidence.** Run [`40501280407`](https://github.com/AgentiX-E/microglia/actions/runs/40501280407),
+2,570 calls, 0 call failures, all gates passing, `master` at `b30c482`; 1,175 tests, coverage
+**99.97 / 99.66 / 100 / 99.97**.
