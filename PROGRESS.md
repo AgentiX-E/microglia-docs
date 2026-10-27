@@ -3424,3 +3424,64 @@ unstable at this sample size; the memory's contribution to it is one question in
 (2,018 calls) and [`40425009437`](https://github.com/AgentiX-E/microglia/actions/runs/40425009437)
 (2,024 calls, 24 retried of 350, 0 call failures); local probes on the built packages; 1,168
 tests, coverage **99.97 / 99.66 / 100 / 99.97**; `master` at `f12e365`.
+
+### 83 — Four runs of the timing question, and the content arm still cannot be read
+
+The timing question now has four independent dispatches on the same protocol (BIRD Mini-Dev, 5
+folds, 350 scored questions, cross-fitted, `multiset` scoring, seed 7). The content question has
+four attempts and no measurement, for a reason that is not the model.
+
+| Run | no memory | `full` (always) | `full-onretry` | `retry-blank` | `full-repair` | oracle |
+|---|---|---|---|---|---|---|
+| 81 | 53.43% | −1.71pp | +1.43pp | **+1.14pp** | — (empty store) | +29.71 |
+| 82 | 52.57% | −1.43pp | +1.43pp | **+1.14pp** | +0.57pp (1 item) | +31.43 |
+| 83 | 53.14% | −1.43pp | +1.43pp | **+0.57pp** | −2.29pp (1 item) | +30.57 |
+| 84 | 53.43% | −2.00pp | +1.43pp | **+1.14pp** | −1.14pp (1 item) | +29.71 |
+
+**The timing half is answered.** Guidance in front of the first answer loses accuracy in every
+run (−1.43, −1.43, −1.71, −2.00; one of four significant on its own, none positive). The same
+guidance spent only after a failure never loses a question in any run (0 lost, four times).
+
+**And the gain in that arm is the retry.** `retry-blank` — the identical second attempt with an
+empty pack — gains +1.14, +1.14, +0.57, +1.14. `full-onretry` gains +1.43 four times. The
+difference is **one question**, in every run, and it is not significant against the blank arm at
+any point (p = 1.0 on the retried subset). Ten of ten claims that memory helps a retry, across
+four dispatches, resolve to the same one or two flips.
+
+| Run | retried / 350 | blank recovers | memory-on-retry recovers |
+|---|---|---|---|
+| 81 | 25 | 4 | 5 |
+| 82 | 23 | 4 | 5 |
+| 83 | 24 | 2 | 5 |
+| 84 | 25 | 4 | 5 |
+
+**The content half is still unmeasured, and the store is why.** Four runs, four diagnoses, each
+one wrong in a way the previous one could not see:
+
+| Run | What the store held | What the artefact said | What was actually happening |
+|---|---|---|---|
+| 81 | 1 active item per fold | nothing — there was no counter | a 400-character cap was *assumed* to be the cause |
+| 82 | 1 active item per fold | 0 parser drops | the cap was innocent; `payload` made every note contradict every other |
+| 83 | 249 items, 1 active | 4 drops of 1,400 | `{}` vs absent payload poisoned the rest |
+| 84 | 11 items, 10 `retired` | 0 drops, no payloads anywhere | unexplained: a local probe with the same fix keeps 20 of 20 active |
+
+The fourth row is the honest state: the repair notes are written correctly — they read as three
+sentences naming a mechanism, e.g. "the attempt counted distinct player identifiers after
+filtering on preferred foot; counting distinct values collapses repeated rows per player, so the
+result counts players rather than appearances; the correction counts rows instead" — and the
+store retires them anyway. The local reproduction that motivated the last fix does not reproduce
+this, which means the difference is in the event stream rather than in the candidate, and the
+next iteration starts by replaying a real fold's events through `distill` offline instead of
+guessing at the policy again.
+
+**What four runs buy.** The timing result is replicated and the effect sizes are stable to a
+question. The content result does not exist yet, and no number above should be read as evidence
+that repair notes are worse than rules: `full-repair` never saw more than one note, and a
+one-item pack is a different treatment from the one the arm is named after.
+
+**Evidence.** Runs [`40410701773`](https://github.com/AgentiX-E/microglia/actions/runs/40410701773),
+[`40420466889`](https://github.com/AgentiX-E/microglia/actions/runs/40420466889),
+[`40425009437`](https://github.com/AgentiX-E/microglia/actions/runs/40425009437),
+[`40435624940`](https://github.com/AgentiX-E/microglia/actions/runs/40435624940) — 1,907 to 2,150
+calls each, 0 call failures, 23–25 retried of 350, all gates passing; 1,168 tests, coverage
+**99.97 / 99.66 / 100 / 99.97**; `master` at `f12e365`.
