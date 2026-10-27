@@ -3580,3 +3580,49 @@ run measures that floor *inside* every run (`none-replica`) instead of inferring
 **Evidence.** Run [`40501280407`](https://github.com/AgentiX-E/microglia/actions/runs/40501280407),
 2,570 calls, 0 call failures, all gates passing, `master` at `b30c482`; 1,175 tests, coverage
 **99.97 / 99.66 / 100 / 99.97**.
+
+### 86 — A dose curve with its own noise floor, and the first two replications
+
+One run, 3,220 calls, ten arms, and for the first time the instrument's floor measured inside the
+same run: `none-replica` asks the no-memory question twice, byte for byte.
+
+| Arm | Characters injected | Items | ACC | Δ vs no memory | gained / lost | p |
+|---|---|---|---|---|---|---|
+| no memory | 0 | 0 | 53.43% | — | — | — |
+| **`none-replica`** | **0** | 0 | 53.43% | **0.00pp** | **3 / 3** | 1.00 |
+| `chars-300` | 0 | 0.00 | 53.71% | +0.29pp | 5 / 4 | 1.00 |
+| `chars-600` | 156 | 0.27 | 54.00% | +0.57pp | 6 / 4 | 0.75 |
+| `chars-900` | 718 | 1.00 | **50.29%** | **−3.14pp** [−6.29, −0.29] | 9 / **20** | 0.061 |
+| `full` | 1,094 | 1.87 | **50.29%** | **−3.14pp** [−6.00, −0.29] | 9 / **20** | 0.061 |
+| `full-repair` | 939 | 1.00 | **48.57%** | **−4.86pp** [−8.57, −1.43] | 13 / **30** | 0.014 |
+| `full-onretry` | 77 | 0.13 | 54.00% | +0.57pp | 2 / 0 | 0.50 |
+| `retry-blank` | 0 | 0.00 | 54.00% | +0.57pp | 2 / 0 | 0.50 |
+| oracle | 223 | 0 | 82.86% | +29.43pp | 105 / 2 | < 1e-15 |
+
+**The floor is three discordant questions.** Two identical prompts still produced 3 gained and 3
+lost. Everything at or below three flips is noise: `chars-300`, `chars-600`, and both retry arms —
+which is to say the retry memory's contribution, measured five times now, has never exceeded the
+instrument.
+
+**The dose curve is monotone once a whole item fits.** Below one item the packs are empty (the
+render fix) and the deltas are noise; at 718 characters — one rule, envelope included — accuracy
+falls 3.14pp on 20 lost against 9 gained; at 1,094 characters with 1.87 rules it falls the same
+3.14pp; and one 450-character repair note at 939 characters falls 4.86pp. The cost arrives when
+the block becomes readable as a claim, and grows with how much of a claim there is.
+
+**The content result replicated.** `full-repair` cost −5.14pp in iteration 84 (p = 0.0021) and
+−4.86pp here (p = 0.0137) against rules at −2.86 and −3.14: the comparison of a wrong answer with
+the right one, which is what the hypothesis asked for, is consistently the *more* damaging of the
+two forms when it precedes the question. That is now two independent dispatches with the same
+sign, magnitude and significance.
+
+**Why this is the shape it is.** A record in the prompt is read as an instruction to reproduce the
+case it describes. Twenty questions are lost for nine gained because the model follows the
+retrieved query's structure where the question wanted a different one — the effect the
+experience-following literature reports and the reason every natural-language intervention fails
+on it. The retry channel is the one place where the record cannot displace anything: the answer
+has already been given, and its failure is what the second call is about.
+
+**Evidence.** Run [`40506721172`](https://github.com/AgentiX-E/microglia/actions/runs/40506721172),
+3,220 calls, 0 call failures, 25 retried of 350, all gates passing, `master` at `08b3736`; 1,175
+tests, coverage **99.97 / 99.66 / 100 / 99.97**.
