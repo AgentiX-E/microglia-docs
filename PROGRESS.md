@@ -3368,3 +3368,59 @@ the amount is not explained by which rules are in it (iteration 80) nor, now, by
 **Evidence.** Run [`40410701773`](https://github.com/AgentiX-E/microglia/actions/runs/40410701773),
 2,150 calls, 0 call failures, 25 retried of 350, all gates passing; 1,160 tests, coverage
 **99.97 / 99.66 / 100 / 99.97**; `master` at `cc36ac0`.
+
+### 82 — The content arm's store was empty twice, for two different reasons
+
+Iteration 81 ended with a hypothesis: the repair distiller's statements were being dropped by a
+400-character cap that counted nothing. Two dispatches and three local probes later, that
+hypothesis is wrong, and the two actual causes are both in the store rather than in the model.
+
+**The cap was not the cause.** With the drop counter in place, run
+[`40425009437`](https://github.com/AgentiX-E/microglia/actions/runs/40425009437) reports **four**
+dropped statements across 1,400 distillations, one per fold. The store still ended with one
+active item per fold. A counter that acquits the suspect it was built for is worth the run.
+
+**Cause one: a payload made every note contradict every other.** Reproduced locally without a
+model. Thirty distinct procedure candidates in one scope, each carrying `{wrong, cause}`:
+
+| Candidates | Payload | Items | Active | Confidence |
+|---|---|---|---|---|
+| 30 | per-case record | 30 | **1** | 0.456 (29), 0.617 (1) |
+| 30 | none | 30 | **30** | 0.617 |
+| 20 | `{}` on alternating replies | 20 | **1** | 0.456 (19) |
+
+`contradictSameScope` treats *any* active item of the same kind in the same scope with a
+different payload as a claim it contradicts. Nineteen of twenty items therefore demote
+themselves and their neighbours, land at 0.456 — below the activation floor — and stay
+`candidate` forever. The store holds the lessons and cannot show them, which from outside is
+indistinguishable from having learned nothing.
+
+Two defects, not one, and the second is the sharper one: `jsonEqual({}, null)` is false, so an
+item that carries no payload "contradicts" an item that carries none either. A model that writes
+`"payload": {}` on some replies and omits it on others poisons its own store. Both are fixed:
+normalise `{}` to absent at parse time, and require both sides to carry structured content before
+a conflict can be counted. After the fix both probes keep 20 of 20 active.
+
+**Cause two: it was the wrong shape for the store anyway.** The repair form now writes one
+statement of three sentences — what the attempt did, why that is wrong, what the correction does
+— and no payload. That is what the reader was going to see either way, and it is what the store's
+claim identity can represent: a claim is its sentence.
+
+**A retraction, on the record.** Iteration 81 said the 400-character cap was "probably the
+cause". The counter that was added to prove it proved the opposite, and the entry above is the
+correction. The earlier reasoning was not unreasonable — the statements were long and the drop
+was silent — but it was a guess dressed as a diagnosis, and the fix cost a dispatch.
+
+**What the two runs measured while the content arm was empty.** Both arms that read the broken
+store injected a single item, and both lost accuracy: `full-repair` −2.29pp in run 3, +0.57pp in
+run 2, against a rule pack of 1.8 items losing 1.43pp twice. One item is enough to cost, which is
+consistent with iteration 81 and inconsistent with a per-rule price.
+
+The retry control also moved: `retry-blank` recovered 4 questions in run 2 and 2 in run 3
+(+1.14pp against +0.57pp), while `full-onretry` recovered 5 both times. The retry's own benefit is
+unstable at this sample size; the memory's contribution to it is one question in both runs.
+
+**Evidence.** Runs [`40420466889`](https://github.com/AgentiX-E/microglia/actions/runs/40420466889)
+(2,018 calls) and [`40425009437`](https://github.com/AgentiX-E/microglia/actions/runs/40425009437)
+(2,024 calls, 24 retried of 350, 0 call failures); local probes on the built packages; 1,168
+tests, coverage **99.97 / 99.66 / 100 / 99.97**; `master` at `f12e365`.
