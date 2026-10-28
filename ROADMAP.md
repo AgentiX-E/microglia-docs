@@ -647,3 +647,78 @@ things, in order:
 **Order.** R1.1 is implemented and dispatched. R1.2–R1.5 are one iteration each, and any of them
 may be dropped on a null. R2 starts only after one memory form clears the floor, because a
 stronger generator without a memory that works measures a different thing.
+
+## R2 — Test-time compute: candidates and selection (opened 2026-10-28)
+
+R1 asked what to remember. R2 asks a different question, and it is the one the leaderboard actually
+answers: how many answers do you generate, and how do you choose. Every system above 70% EX on BIRD
+does both, and this pipeline does neither — one draw, at temperature 0, judged by nobody.
+
+**The published numbers that define the gap.**
+
+| System | What it adds | BIRD dev EX |
+|---|---|---|
+| zero-shot, single call | — | 54.9 (MCS-SQL, GPT-4) |
+| + schema linking | prune tables/columns before prompting | 55.2 (**+2.1**) |
+| + value samples | show cell values, not only column names | 60.0 (**+4.8**) |
+| + MCS (1 prompt, 20 draws) | majority vote over execution results | 62.1 (+2.1) |
+| + MCS (5 prompts, 20 draws) | same, over five prompt phrasings | 63.4 (+1.3) |
+
+| CHASE-SQL (BIRD dev) | EX |
+|---|---|
+| single query | 63.01 |
+| self-consistency over draws | 68.84 (**+5.84**) |
+| upper bound, best of the candidate pool | 82.79 (**+19.78**) |
+| their selection agent instead of voting | 73.01 (≈ +4.2 over self-consistency) |
+
+Two facts follow, and they order the work:
+
+1. **Most of the gain is in generating several candidates at all** (+5.8), not in the clever
+   selector (+4.2 on top). Selection is worth building only after the pool exists.
+2. **The pool is far better than the choice** — 13.9 points sit between voting and the ceiling. That
+   gap is the definition of a selection problem, and it is the number to shrink.
+
+**What this project has already measured, and how it constrains R2.** `none-replica` — the same
+prompt asked twice — disagrees with itself on 3–6 of 350 questions. That is the sampling spread at
+temperature 0, and it is the same size as every memory effect reported in iterations 81–90. So in
+this pipeline the first thing to establish is not whether a selector helps but whether *draws differ
+enough to select among*, which requires a non-zero temperature and a per-question distribution.
+
+**The arms, and what each one buys.**
+
+| Arm | Selector | Reads | What it isolates |
+|---|---|---|---|
+| `sample-5-first` | first draw | nothing | the price of temperature 0.7 alone |
+| `sample-5-random` | uniform random | a seed | what alternatives are worth before judgement |
+| `sample-5` | largest agreeing group | execution results | what the selector is worth |
+| `sample-3` | same, on a prefix | execution results | whether more draws help, or only more agreement |
+| `sample-5-oracle` | the right one | **the answer key** | the ceiling; not deployable |
+
+The three differences are the experiment: `first − none` is temperature, `random − first` is
+alternatives, `majority − random` is selection. Reporting only `sample-5 − none` would attribute all
+three to "sampling", which is how the memory literature's own ablations get read.
+
+**Acceptance.** In order, because each is a precondition for the next:
+
+1. **Draws must differ.** Mean distinct execution signatures per question ≥ 2 at temperature 0.7. If
+   it is near 1, the endpoint is too deterministic and every arm above measures nothing — which is
+   exactly what happened to `chars-proc-600` in iteration 89, where the arm silently degenerated to
+   no-memory.
+2. **The ceiling must be above the baseline.** Best-of-5 must exceed `none` by more than the run's
+   own noise floor. If it does not, the bottleneck is generation and R2 stops here.
+3. **The selector must beat random** by more than the floor. If it does not, execution agreement is
+   not a usable signal on this benchmark and the next candidate is a model-based selector (MCS-SQL's
+   multiple-choice prompt, or CHASE-SQL's pairwise tournament) — a separate iteration with its own
+   controls.
+
+**What comes after, in the order the published gains imply.** Schema linking (+2.1 measured by
+MCS-SQL with the same model family) and value samples (+4.8) both act on the *generator*, and both are
+upstream of selection: a better pool makes any selector better. They are R3 and R4, and they are
+cheaper than a selection model — no extra calls, one narrow prompt change each.
+
+**The honest position on "beating" a competitor.** Our 350-question Mini-Dev subset, one model, one
+call, 53% is not comparable with a leaderboard number that uses a bigger model, schema linking, 20
+draws and a fine-tuned selector. "Surpass" therefore means, in order: a memory or selection component
+that clears this run's own noise floor; then a pipeline whose components are all present, measured
+one at a time; then a number produced by the same protocol as the competitors'. The third is the only
+one that can be compared, and it is only meaningful once the first two hold.
