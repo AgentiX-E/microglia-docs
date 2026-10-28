@@ -3774,3 +3774,63 @@ coverage **99.97 / 99.46 / 100 / 99.97**.
 **R1.1 status: acceptance not met.** The form exists, is enforced, and is measurably better than
 the form it replaces; it is not measurably better than nothing. R1.2 (ReasoningBank's three-field
 memory) starts from that position rather than from a claimed gain.
+
+### 90 — The key works now, and the memory is inert anyway
+
+Two runs. The first asked the failure key 22 times and hit **nothing**; the second asks 26 times
+and hits **25**. Both put the memory in the only configuration this project has ever found
+non-negative — a procedure with no case in it, retrieved by the failure, shown after the failure.
+
+**Why the key found nothing.** `failure_key: {asked: 22, hit: 0}` was not a retrieval failure. The
+store and the retry spoke two vocabularies: the learning pass wrote "it returned 0 rows where the
+corrected query returns 3", which the classifier files under `row-count`, and the retry said "it
+returned no rows", which it files under `no-rows`. The two sides never shared a code, so the key
+could not match by construction. `mismatchNote` now says "no rows" in the retry's words, and both
+histograms travel in the artefact:
+
+| | |
+|---|---|
+| stored (procedural store, all folds) | `columns` 380, `row-count` 148, `no-rows` 100, `values` 36, `other` 4 |
+| observed (retried questions) | `no-rows` 25, `other` 1 |
+| hits | **25 of 26** |
+
+**And the accuracy is unchanged.**
+
+| Arm | 90a (key broken) | 90b (key working) | mean | gained / lost (90b) |
+|---|---|---|---|---|
+| no memory | 54.00% | 53.14% | — | — |
+| `none-replica` | −1.14pp (1/5) | +0.86pp (6/3) | −0.14 | the floor, 3–6 flips |
+| `full` (case-bearing rules) | −4.00pp (6/20) | −3.43pp (9/21) | **−3.72** | −3.4, **significant** |
+| `full-procedural` | −2.29pp (12/20) | +0.29pp (15/14) | −1.00 | +0.3 |
+| `retry-blank` | +0.57pp (2/0) | +1.14pp (4/0) | +0.86 | +1.1 |
+| `retry-keyed` | +0.57pp (2/0) | +1.14pp (4/0) | +0.86 | +1.1 |
+| `full-onretry` | +1.14pp (4/0) | +1.14pp (4/0) | +1.14 | +1.1 |
+
+`retry-keyed` and `retry-blank` are **identical to the question** in the working-key run: same four
+gains, same zero losses, same accuracy. Retrieving the right note, by the right key, at the right
+moment, on a store built from the right kind of claim, moves nothing.
+
+**What this closes.** The hypothesis under test was: the memory hurts because it is remembered
+wrongly and used wrongly. Every part of that has now been varied one at a time and measured:
+
+| Component | Varied | Result |
+|---|---|---|
+| content | rules / repair accounts / procedures without the case | −3.7 / −5.2 / −1.0 against no memory |
+| quantity | 0 to 1,200 characters, 0 to 3 items | cost arrives with the first readable claim |
+| position | before the answer / after a failure / before and after | before: −3.7; after: 0.0 |
+| retrieval key | question text / failure code | 96% hit on the failure key, no change in accuracy |
+| selection | entity relevance, question relevance, corroboration | no arm moved more than the floor |
+
+The memory is **inert when used correctly and harmful when used early**. It is not remembered
+wrongly and it is not retrieved wrongly; it simply does not add information the model lacks about a
+database it can already read, and it displaces attention when it arrives first.
+
+**What follows for the product.** `retry` is the only admissible position, and its value is the
+retry, not the pack. The pre-answer block should be off by default — five runs, four significant,
+same sign every time. That is a decision the evidence supports and it is now the default the
+implementation will carry.
+
+**Evidence.** Runs [`40603859001`](https://github.com/AgentiX-E/microglia/actions/runs/40603859001)
+(2,229 calls) and [`40614310589`](https://github.com/AgentiX-E/microglia/actions/runs/40614310589)
+(2,316 calls, 0 call failures, 26 retried of 350, all gates passing); `master` at `547eaad`; 1,191
+tests, coverage **99.97 / 99.46 / 100 / 99.97**.
