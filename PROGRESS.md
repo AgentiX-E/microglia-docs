@@ -3950,3 +3950,141 @@ coverage **99.97 / 99.45 / 100 / 99.97**.
 
 **R3 status: not accepted, attribution open.** The arm as built does not help and may hurt. The
 measurement that decides it is the pruned/unpruned split, and it is now one run away.
+
+### 93 — Agreement is not blind, it is wrong exactly where it matters
+
+Iteration 91 left one question open: agreement selected +0.00pp while the best of the same three
+draws was +5.43pp. Either the selector was blind, or the ceiling was a fluke. This run answers both,
+and adds the selector the literature actually uses.
+
+| Arm | ACC | Δ vs `none` | 95% CI | p | gained / lost |
+|---|---|---|---|---|---|
+| `none` | 54.57% | — | — | — | — |
+| `none-replica` | 54.29% | −0.29pp | [−1.43, 0.86] | 1.00 | 2 / 3 |
+| `full` (memory) | 51.71% | −2.86pp | [−6.00, 0.00] | 0.099 | 10 / 20 |
+| `sample-3-first` | 51.43% | −3.14pp | [−5.71, −0.86] | **0.019** | 4 / 15 |
+| `sample-3` (agreement) | 52.00% | −2.57pp | [−4.57, −0.57] | **0.022** | 2 / 11 |
+| `sample-3-model` | 51.43% | −3.14pp | [−5.71, −0.86] | 0.019 | 4 / 15 |
+| `sample-3-oracle` | 56.29% | +1.71pp | [−0.29, 3.71] | 0.146 | 9 / 3 |
+| `linked` | 46.57% | −8.00pp | [−11.43, −4.57] | **8.4e-6** | 6 / 34 |
+
+**The ceiling is real but it moves.** +1.71pp here against +5.43pp in iteration 91, with
+non-overlapping intervals. `correct_draws` was `[153, 16, 19, 162]` against `[143, 22, 22, 163]`:
+the same number of all-wrong and all-right questions, and 35 mixed instead of 44. Draw quality at
+temperature 0.7 is itself unstable, which is a property of the endpoint, not of the arm — and it is
+the reason every claim here is bounded by "at three draws, on this run".
+
+**The population delta hides the whole effect, again.** 82 of 350 questions had more than one
+distinct execution signature; those are the only ones where any selector can act. On them:
+
+| Draws correct | n | first | agreement | model | oracle |
+|---|---|---|---|---|---|
+| 0 | 47 | 0 | 0 | 0 | 0 |
+| 1 | 16 | 3 | **1** | 5 | 16 |
+| 2 | 19 | 14 | **19** | 14 | 19 |
+| **total of 82** | | 18 (22.0%) | **20 (24.4%)** | 18 (22.0%) | 35 (42.7%) |
+
+Agreement is **perfect** when two of three draws are right (19 of 19) and **almost never right** when
+one is (1 of 16). The second number is not noise: when only one draw is correct, the other two are
+usually the *same* wrong answer, so the majority group is the wrong one and a majority vote is
+wrong by construction. Agreement is not blind. It is systematically wrong in exactly the case a
+selector exists to fix — the confidently-wrong pair beating the lonely right answer.
+
+**The model selector is at chance, and it works.** 82 asked, 0 unparsed, 16 answers different from
+the first draw, 8 gained and 8 lost, 18 correct against 18 for the first draw. It is not a broken
+arm — it is a competent reader of three plausible SQL queries, and plausibility is not correctness.
+Two queries that differ in one join condition read as two plausible queries.
+
+**And the schema-linker's loss now decomposes exactly.** The split is computed by the lane
+(`schema_link.split`) rather than by a script:
+
+| Group | n | `none` | `linked` | Δ | gained / lost | tables |
+|---|---|---|---|---|---|---|
+| **pruned** | 122 | 53.3% | 32.0% | **−21.3pp** | 5 / 31 | 719 → 199 |
+| unchanged | 228 | 55.3% | 54.4% | −0.9pp | 1 / 3 | 1,534 → 1,407 |
+
+The two groups reconcile to the population figure: 122 × (−21.3) + 228 × (−0.9) = −2,804 correct
+answers over 350 questions = −8.01pp, against −8.00pp reported. The linker is not noisy — it drops
+72% of the tables on the questions it touches and breaks a quarter of them. The `unchanged` group's
+−0.9pp is a noise floor measured on 228 questions with two byte-identical prompts, and it is the
+same size as every `none-replica` this project has run.
+
+**What this changes.** The temperature now costs more than the ceiling is worth on average
+(`first − none` −3.14pp, `oracle − none` +1.71pp), and both selectors are at chance. The one thing
+neither selector has is the information that would separate the candidates: none of them sees what
+the queries *return*. `sample-3-exec` is that arm — the same draws, the same call count, the rows
+attached — and it is the last cheap test of whether selection is empty because the signal is missing
+or because the signal does not exist.
+
+**Evidence.** Run [`40707498228`](https://github.com/AgentiX-E/microglia/actions/runs/40707498228),
+2,889 calls, 1 retry, 0 call failures, 350 scored, all gates passing, `master` at `df0035f`; 1,241
+tests, coverage **99.97 / 99.46 / 100 / 99.97**.
+
+### 94 — Showing the selector the rows helps, and still does not pay for the temperature
+
+The arm iteration 93 called for: same draws, same call count, and each candidate shown with the rows
+it returns. It is the best selector this project has measured, and it is still worse than taking one
+greedy draw.
+
+| Arm | ACC | Δ vs `none` | 95% CI | p | gained / lost |
+|---|---|---|---|---|---|
+| `none` | 54.57% | — | — | — | — |
+| `none-replica` | 54.57% | +0.00pp | [−1.14, 1.14] | 1.00 | 2 / 2 |
+| `full` (memory) | 53.14% | −1.43pp | [−4.29, 1.43] | 0.44 | 11 / 16 |
+| `sample-3-first` | 52.57% | −2.00pp | [−4.29, 0.29] | 0.14 | 5 / 12 |
+| `sample-3` (agreement) | 52.86% | −1.71pp | [−3.71, 0.00] | 0.15 | 3 / 9 |
+| `sample-3-model` | 52.86% | −1.71pp | [−4.00, 0.29] | 0.21 | 5 / 11 |
+| **`sample-3-exec`** | **53.43%** | **−1.14pp** | [−3.43, 1.14] | 0.45 | 6 / 10 |
+| `sample-3-oracle` | 58.00% | **+3.43pp** | **[1.43, 5.71]** | **0.004** | 14 / 2 |
+
+**On the 85 questions where a choice existed, the ordering is the one the design predicted.**
+
+| Draws correct | n | first | agreement | model | exec | oracle |
+|---|---|---|---|---|---|---|
+| 0 | 45 | 0 | 0 | 0 | 0 | 0 |
+| 1 | 17 | 3 | **0** | 10 | 8 | 17 |
+| 2 | 22 | 18 | 22 | 13 | 17 | 22 |
+| 3 | 1 | 1 | 1 | 0 | 0 | 1 |
+| **total of 85** | | 22 (25.9%) | 23 (27.1%) | 23 (27.1%) | **25 (29.4%)** | 40 (47.1%) |
+
+`exec` beats taking the first draw by 13 gained against 10 lost — the first selector in three runs to
+beat that control at all. `model` breaks even (11/10). Agreement is again **0 of 17** on the
+questions where only one draw is right, and perfect (22 of 22) where two are: it is a majority vote,
+and a majority vote is wrong whenever the wrong answer is the popular one.
+
+**But the temperature costs more than the selection returns.** Across three runs at temperature 0.7
+and three draws:
+
+| Run | `first − none` | `agreement − none` | `model − none` | `exec − none` | `oracle − none` |
+|---|---|---|---|---|---|
+| 91 | −1.71pp | +0.00pp | — | — | **+5.43pp** |
+| 93 | −3.14pp | −2.57pp | −3.14pp | — | +1.71pp |
+| 94 | −2.00pp | −1.71pp | −1.71pp | −1.14pp | **+3.43pp** |
+| mean | **−2.28** | −1.43 | −2.43 | −1.14 | **+3.52** |
+
+The ceiling averages +3.52pp and the price of sampling averages −2.28pp, so a selector that reached
+the ceiling every time would net about +1.2pp — on 350 questions, at a resolution of 2.3pp. The best
+selector measured recovers 0.86pp of the 2.00pp the temperature cost and none of the 3.43pp the
+ceiling holds.
+
+**R2 closes here, and its answer is a decision, not a number.** Sampling at temperature 0.7 and
+selecting with anything this project has built — agreement, a model over SQL, a model over results —
+is worse than one greedy draw, in three runs, with no exception and with the best arm still 1.14pp
+short. The deployable conclusion is the same shape as iteration 90's: *do not sample*. Two selectors
+and one ceiling later, the selection axis is measured and it is worth less than it costs at this
+draw count on this endpoint.
+
+**R2 status: acceptance 1 marginal, 2 met, 3 failed — closed on generated evidence.** Acceptance 2
+(the ceiling exists) held in all three runs. Acceptance 3 (a selector beats the control by more than
+the floor) held for `exec` on the subset, +3 questions of 85, and not on the population. What
+survives is the mechanism: results are a better signal than text, by 2 questions of 85 over the
+model selector, and the ordering exec > model = agreement > first is the ordering of how much
+evidence each sees.
+
+**The memory arm is negative for the ninth consecutive run** (−1.43pp here, 11 gained against 16
+lost). Nothing in this window changes iteration 90's finding: the pack is inert when shown after a
+failure and harmful when shown before the answer.
+
+**Evidence.** Run [`40714313142`](https://github.com/AgentiX-E/microglia/actions/runs/40714313142),
+2,642 calls, 13 retries, 0 call failures, 350 scored, all gates passing, `master` at `2b2938c`;
+1,254 tests, coverage **99.97 / 99.56 / 100 / 99.97**.

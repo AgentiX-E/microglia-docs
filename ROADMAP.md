@@ -755,3 +755,32 @@ delta is unattributable as reported. The arm now carries `per_case.schemaTables`
 one run away. The published +2.1pp for schema linking comes from an LLM-driven linker that prunes
 every question; a conservative lexical one that declines on 83% of them is not the same treatment
 and its null result does not contradict the paper.
+
+### R2 closed (2026-10-28)
+
+| Acceptance | Threshold | Measured across three runs | Verdict |
+|---|---|---|---|
+| 1. Draws differ | mean distinct ≥ 2 | 1.31 — 76% of questions have one distinct signature | marginal, and it is the binding one |
+| 2. Ceiling above baseline | best-of-3 > `none` by more than the floor | +5.43, +1.71, +3.43pp; mean **+3.52** | **met** |
+| 3. Selector beats the control | > floor | exec +0.86pp on the population (13/10 on the 85 mixed questions), model 11/10, agreement 6/5 | **failed** on the population |
+
+The three-run mean of the temperature's own cost is **−2.28pp** and the ceiling's is **+3.52pp**, so
+a selector that always reached the ceiling would net +1.2pp at a 2.3pp resolution. The best arm
+measured, `sample-3-exec` (the candidates shown with the rows they return), recovers 0.86pp of the
+2.00pp the temperature cost and none of the 3.43pp the ceiling held.
+
+**Closed with a decision:** do not sample at temperature 0.7 to select among draws, on this endpoint,
+at three draws. The measured ordering exec > model = agreement > first is a fact about how much
+evidence each selector sees, and it is the useful residue: if this axis is ever reopened — twenty
+draws, a stronger selector, a cheaper temperature — `exec` is the arm to start from, not agreement.
+
+**What R2 taught that outlives it.** Agreement is not blind; it is a majority vote, and a majority
+vote is wrong exactly when the wrong answer is the popular one. On the questions where one of three
+draws was right, agreement picked the right one **once in twenty-two across three runs**, while the
+two wrong draws — being usually the same wrong answer — formed the majority. That is a mechanism, not
+a noise floor, and it is the reason a vote cannot be improved by making the vote better.
+
+**R4 moves up.** Value samples are the largest component MCS-SQL measures (+4.8pp) and the only one
+that acts on the generator rather than on the choice. This pipeline's prompt carries the DDL and no
+cell values, so every literal in every answer is a guess about a column's contents. R3 (schema
+linking, tried early) is closed on its own evidence: −21.3pp on the questions it pruned.
