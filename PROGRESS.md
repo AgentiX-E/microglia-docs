@@ -4088,3 +4088,60 @@ failure and harmful when shown before the answer.
 **Evidence.** Run [`40714313142`](https://github.com/AgentiX-E/microglia/actions/runs/40714313142),
 2,642 calls, 13 retries, 0 call failures, 350 scored, all gates passing, `master` at `2b2938c`;
 1,254 tests, coverage **99.97 / 99.56 / 100 / 99.97**.
+
+### 95 — Value samples are null, and no wrong answer is wrong only in its literals
+
+The last published lever that acts on the generator. The prompt has always carried the DDL and
+nothing else, so every literal in every answer was a guess about a column's contents. This run
+annotates each table with a few distinct values per column and measures the same questions.
+
+| Arm | ACC | Δ vs `none` | 95% CI | p | gained / lost |
+|---|---|---|---|---|---|
+| `none` | 53.71% | — | — | — | — |
+| `none-replica` | 54.29% | +0.57pp | [−0.57, 1.71] | 0.63 | 3 / 1 |
+| **`values`** | **54.00%** | **+0.29pp** | **[−2.57, 3.14]** | **1.00** | 12 / 11 |
+| `full` (memory) | 50.00% | **−3.71pp** | [−7.14, −0.57] | **0.047** | 12 / 25 |
+
+`value_samples = { databases: 11, tables: 75, columns: 798, annotated: 796 }` — 99.7% of the
+columns were annotated, so the arm is not vacuous. Twelve gained against eleven lost is the
+definition of no effect, and the interval is wide enough to hold anything the published +4.8pp
+would need.
+
+**The diagnostic says why, and it is a better result than the arm.** Of the 162 questions the
+baseline got wrong:
+
+| What the wrong answer looks like | n | share |
+|---|---|---|
+| already contains every literal the gold query uses | 92 | 56.8% |
+| missing at least one gold literal | 46 | 28.4% |
+| gold query has no literals at all | 24 | 14.8% |
+| **identical to gold once literals are masked** | **0** | **0.0%** |
+
+The last row is the ceiling, and it is zero. In no wrong answer is the literal the *only* thing
+wrong: mask every string literal on both sides and the two queries are still different, in all 162
+cases. A model that guessed every literal perfectly would fix **no question**, because the join, the
+aggregation or the filter is also wrong. The literal channel is worth 0pp on this benchmark by
+construction, and that is why a fully-applied annotation moved 12 questions in each direction.
+
+**What this does not say.** MCS-SQL's value samples are not a literal patch — they are a
+question-linked index that uses cell values to identify which *column* a question is about, and that
+channel can improve structure. This arm annotated uniformly and asked the model to work it out, which
+is a weaker treatment and a different one. The honest claim is: uniform annotation is null here, and
+the mechanism value samples are usually justified by — a wrong literal — has no headroom on this
+corpus.
+
+**The memory arm is negative for the tenth consecutive run**, and this one is significant
+(−3.71pp, p = 0.047, 12 gained against 25 lost). Ten runs, one sign. Iteration 90's decision stands
+and the implementation already carries it.
+
+**Where the published ordering ends.** R2 (selection) is closed on three runs; R3 (schema linking)
+is closed at −21.3pp on the questions it pruned; R4 (value samples) is closed at +0.29pp with a
+zero-ceiling diagnostic. Three components of the competitors' pipelines have been built, measured
+one at a time on the same protocol, and none of them pays on this corpus with this model. That is a
+result about the *benchmark's* remaining headroom, not about the components: 53.7% of Mini-Dev is
+what this model reaches from the schema alone, and the published margins come from pipelines whose
+largest components are the ones now measured.
+
+**Evidence.** Run [`40729502661`](https://github.com/AgentiX-E/microglia/actions/runs/40729502661),
+1,754 calls, 1 retry, 0 call failures, 350 scored, all gates passing, `master` at `c52c7ab`; 1,267
+tests, coverage **99.97 / 99.56 / 100 / 99.97**.

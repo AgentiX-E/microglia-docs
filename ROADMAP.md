@@ -784,3 +784,42 @@ a noise floor, and it is the reason a vote cannot be improved by making the vote
 that acts on the generator rather than on the choice. This pipeline's prompt carries the DDL and no
 cell values, so every literal in every answer is a guess about a column's contents. R3 (schema
 linking, tried early) is closed on its own evidence: −21.3pp on the questions it pruned.
+
+### R4 closed (2026-10-28), and with it the published ordering
+
+| Arm | Δ vs `none` | 95% CI | gained / lost |
+|---|---|---|---|
+| `values` (every column annotated with 3 distinct values) | **+0.29pp** | [−2.57, 3.14] | 12 / 11 |
+
+796 of 798 columns annotated across the eleven databases, so the treatment was fully applied. The
+arm is null, and the diagnostic that explains it is stronger than the arm: of 162 wrong answers,
+**0 are identical to gold once string literals are masked**. In every failure the structure is also
+wrong, so a perfect literal guesser would fix nothing. The channel value samples are usually
+justified by has a zero ceiling on this corpus.
+
+MCS-SQL's +4.8pp comes from a question-linked index that uses cell values to identify the column a
+question is about, which can improve structure; that is a different treatment from uniform
+annotation and it is not ruled out by this run. What is ruled out is the cheap version.
+
+**The published ordering is now exhausted for this protocol.** Three components built and measured
+one at a time, against the same 350 questions, five folds, seed 7, temperature 0:
+
+| Component | Published gain | Measured | Verdict |
+|---|---|---|---|
+| selection over draws (R2) | +5.84 (CHASE-SQL) / +2.1 (MCS-SQL) | −1.14 to −2.57pp vs one draw | closed |
+| schema linking (R3) | +2.1 (MCS-SQL) | −21.3pp on pruned questions | closed |
+| value samples (R4) | +4.8 (MCS-SQL) | +0.29pp, 12/11 | closed |
+
+The reading that survives all three: **this pipeline's baseline is already at the level the papers
+call zero-shot-with-schema**, and each published component is a repair for a deficit this model does
+not have — a single draw it must choose among, a schema it cannot fit, literals it cannot guess.
+Adding information before the question has now been measured four ways (memory pack, pruned schema,
+annotated schema, agreement) and it has not once produced a significant gain.
+
+**Where the remaining headroom is.** The only channel that has never lost is the retry: `retry-blank`
++0.57, +1.14, +0.57pp across three runs, 0 losses every time, and `retry-keyed` identical to it to the
+question. That is a second attempt at a question the first attempt failed, and the second attempt
+currently receives nothing but the same prompt. Feeding the failure back — the error, the empty
+result, the mismatched columns — is the only untested intervention that acts where the evidence says
+the effect is, and it is the project's own thesis: capture the correction, apply it at the point of
+failure.
