@@ -722,3 +722,36 @@ draws and a fine-tuned selector. "Surpass" therefore means, in order: a memory o
 that clears this run's own noise floor; then a pipeline whose components are all present, measured
 one at a time; then a number produced by the same protocol as the competitors'. The third is the only
 one that can be compared, and it is only meaningful once the first two hold.
+
+### R2 status, after two dispatch windows (2026-10-28)
+
+| Acceptance | Threshold | Measured | Verdict |
+|---|---|---|---|
+| 1. Draws differ | mean distinct signatures ≥ 2 | 254 of 350 questions had **one** distinct signature; mean 1.31 | **marginal** — 27% of questions carry alternatives |
+| 2. Ceiling above baseline | best-of-3 > `none` by more than the floor | **+5.43pp [3.14, 8.00]**, 20 gained / 1 lost | **met** |
+| 3. Selector beats random | `sample-3 − sample-3-random` > floor | +1.14pp nominal, interval includes zero; `sample-3` = `none` exactly | **failed** |
+
+Agreement is measured and insufficient: it is right on every question where two of three draws
+agree, wrong on nineteen of the twenty-two where only one does, which is the 1-in-3 a blind
+tie-break gets. The mixed population is 44 questions — that is the entire headroom a selector can
+win, and best-of-three takes 20 of it.
+
+**What that reorders.** Acceptance 3 sends the work to a model-based selector rather than a better
+vote, because voting is blind by construction when all candidates are distinct. The new arms are
+`sample-3-model` / `sample-5-model`: the generator's own prompt plus the numbered candidates, one
+`<choice>` tag back. The call is skipped where the draws agreed — three byte-identical queries are
+one candidate — so `sampling.model.asked` is the number of questions on which the choice was real,
+and `unparsed` is the number of replies that named none. The comparison is `sample-3-model −
+sample-3` on identical draws: one selector against another, one call apart.
+
+**Acceptance 1 is now the constraint, not a footnote.** Temperature 0.7 costs 1.71pp on the first
+draw and buys alternatives on 27% of questions. A temperature that raises the distinct-signature
+count without lowering `sample-3-first` is strictly better and is measurable in the same run, so R2.5
+(temperature sweep) is a candidate for promotion ahead of R3/R4 if the model selector also fails.
+
+**R3 was tried before its turn and did not pay.** The lexical linker was built and measured in the
+same window (iteration 92): −7.43pp, with 292 of 350 prompts byte-identical to the baseline, so the
+delta is unattributable as reported. The arm now carries `per_case.schemaTables`, and the split is
+one run away. The published +2.1pp for schema linking comes from an LLM-driven linker that prunes
+every question; a conservative lexical one that declines on 83% of them is not the same treatment
+and its null result does not contradict the paper.

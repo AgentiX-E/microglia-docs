@@ -3834,3 +3834,119 @@ implementation will carry.
 (2,229 calls) and [`40614310589`](https://github.com/AgentiX-E/microglia/actions/runs/40614310589)
 (2,316 calls, 0 call failures, 26 retried of 350, all gates passing); `master` at `547eaad`; 1,191
 tests, coverage **99.97 / 99.46 / 100 / 99.97**.
+
+### 91 — Three draws: the ceiling is real, and agreement finds none of it
+
+R2 exists because every system above 70% EX on BIRD generates several candidates and chooses. This
+pipeline had only ever taken one draw at temperature 0, so the selection axis was absent from every
+measurement it had made — a memory arm and a no-memory arm were both single-sample, and the
+difference between them could not be separated from the difference between two draws. This is the
+first run with draws, controls and a ceiling in it.
+
+| Arm | ACC | Δ vs `none` | 95% CI | gained / lost |
+|---|---|---|---|---|
+| `none` | 53.71% | — | — | — |
+| `none-replica` | 54.57% | +0.86pp | [−1.43, 3.43] | 5 / 2 |
+| `sample-3-first` | 52.00% | −1.71pp | [−4.29, 0.86] | 5 / 11 |
+| `sample-3-random` | 52.57% | −1.14pp | [−3.71, 1.43] | 7 / 11 |
+| `sample-3` (agreement) | 53.71% | **+0.00pp** | [−2.29, 2.29] | 7 / 7 |
+| **`sample-3-oracle`** (ceiling) | **59.14%** | **+5.43pp** | **[3.14, 8.00]** | 20 / 1 |
+| `full` (memory) | 50.57% | −3.14pp | [−6.29, −0.29] | 10 / 21 |
+
+**Acceptance 2 is met and acceptance 3 is not, and the two facts are the result.**
+
+- **The pool is better than the pipeline.** Best-of-3 exceeds the baseline by 5.43pp with a
+  confidence interval that excludes zero and one lost question. Temperature 0.7 produces answers the
+  greedy path does not, and some of them are right: 20 questions became correct, 1 became wrong.
+  Generation is not the bottleneck at three draws.
+- **Agreement retrieves none of it.** `sample-3` is the baseline to the question. The selector is not
+  broken — it agreed on 334 of 350 questions and picked a winning group of two or more 254 times —
+  it is simply blind. When the draws are distinct all three singleton groups are equally large, the
+  tie goes to the earliest, and the arm degenerates to `sample-3-first`.
+
+**The joint distribution says which failure each question has.** `correct_draws = [143, 22, 22, 163]`
+— 143 questions wrong in all three draws, 163 right in all three, and **44 mixed**. Those 44 are the
+only questions where a selector can act, and they are where the 5.43pp lives:
+
+| Draws correct | Questions | Selected right | Selected wrong |
+|---|---|---|---|
+| 0 | 143 | 0 | 143 |
+| 1 | 22 | 3 | 19 |
+| 2 | 22 | 22 | 0 |
+| 3 | 163 | 163 | 0 |
+
+A question with two of three correct is answered correctly by agreement every time (the majority
+group is the right answer). A question with one of three correct is answered wrong 19 times out of
+22, which is exactly the 1-in-3 a blind tie-break gets. **The mixed population is not uniform, and
+the selector's failure is concentrated in the harder half of it.**
+
+**And the diversity is thinner than the design assumed.** 254 of 350 questions had a single distinct
+execution signature across all three draws, 81 had two, 14 had three. Temperature 0.7 buys
+alternatives on 27% of questions, which is why the consistency selector has so little to work with:
+there is nothing to be consistent about. R2.5 (temperature) now has a judgement criterion rather than
+a guess — a temperature that raises `distinct ≥ 2` without lowering `sample-3-first` is strictly
+better, and this run says 0.7 costs 1.71pp on the first draw.
+
+**Temperature alone is not free, and it is not significant.** `sample-3-first` −1.71pp (5 gained,
+11 lost) is the price of asking at 0.7 instead of 0, and its interval includes zero. It is the same
+size as the `full` memory arm's effect and the same size as the noise floor of every prior run,
+which is the reason every number in this table travels with its interval.
+
+**Evidence.** Run [`40698116045`](https://github.com/AgentiX-E/microglia/actions/runs/40698116045),
+2,468 calls, 0 call failures, 350 scored, all gates passing, `master` at `a3e420a`; 1,213 tests,
+coverage **99.97 / 99.45 / 100 / 99.97**.
+
+**R2 status: acceptance 1 marginal, 2 met, 3 failed.** Agreement is measured and insufficient. The
+next candidate is the selector the literature actually uses — MCS-SQL's multiple-choice prompt, worth
++2.1pp over value samples, or CHASE-SQL's selection agent, worth +4.2pp over self-consistency.
+
+### 92 — Schema linking loses 7.4 points, and 292 of 350 prompts never changed
+
+The second-cheapest item in the published ordering: MCS-SQL measures +2.1pp from pruning the schema
+to the tables the question names, with the same model. The arm is a lexical linker — anchors on
+identifiers the question and evidence mention, adds the key columns one join away, and declines to
+prune when it would remove less than a third of the schema.
+
+| Arm | ACC | Δ vs `none` | 95% CI | p | gained / lost |
+|---|---|---|---|---|---|
+| `none` | 54.00% | — | — | — | — |
+| `none-replica` | 52.57% | −1.43pp | [−4.00, 1.14] | 0.45 | 1 / 6 |
+| `full` | 50.57% | −3.43pp | [−6.29, −0.57] | 0.036 | 8 / 20 |
+| **`linked`** | **46.57%** | **−7.43pp** | **[−10.86, −4.00]** | **< 1e-4** | 7 / 33 |
+| `oracle` | 83.71% | +29.71pp | [26.86, 32.57] | < 1e-15 | 105 / 1 |
+
+`schema_link = { reasons: { linked: 122, 'single-table': 35, 'all-matched': 170, 'nothing-matched':
+23 }, dropped: 520, total: 2,253 }`.
+
+**The number cannot be read as written.** 292 of 350 questions (all-matched, single-table,
+nothing-matched) were offered a prompt **byte-identical to `none`**, and 122 were offered a pruned
+one. A population delta that mixes 83% unchanged questions with 17% changed ones is mostly a
+measurement of the run, not of the pruner: if the unchanged questions contributed nothing, the 122
+pruned ones would have to carry −7.43pp by themselves, which is −21pp on that subset. That is a
+claim no prompt change of this size supports, and the honest reading is that this run's baseline
+moved and the arm moved with it.
+
+**So the arm now records what it actually did.** `per_case.schemaTables` carries `{kept, total,
+pruned}` for every question, which is what splits the delta in one read instead of two: the
+`pruned === false` group is a second noise floor measured on 292 questions, and the `pruned ===
+true` group is the effect. Until that field existed the split could not be computed from the
+artefact, and the −7.43pp could not be attributed to pruning rather than to the run.
+
+**Why the linker prunes so rarely.** `nothing-matched` is 23 questions — the question named no
+identifier the schema has — and the linker returns the full schema rather than an empty one, because
+an empty schema would be measuring SQL-from-nothing. `all-matched` is 170: the anchors reached more
+than two thirds of the tables and the conservative rule declines. That leaves 122 questions with a
+real reduction, 520 tables dropped of 2,253 offered, i.e. 23% of the schema on average when it acts.
+
+**A design defect found by the first version's own test.** The first closure started from every
+table already kept and walked further, so in a six-table fixture `drivers` reached all six through
+`raceId` and the arm became a no-op. It now starts only from the anchors, one hop. The pruning
+threshold had the same shape of error: `> 0.6` kept almost everything, so it is now "prune only if a
+third goes".
+
+**Evidence.** Run [`40702038834`](https://github.com/AgentiX-E/microglia/actions/runs/40702038834),
+2,110 calls, 0 call failures, 350 scored, all gates passing, `master` at `a3e420a`; 1,213 tests,
+coverage **99.97 / 99.45 / 100 / 99.97**.
+
+**R3 status: not accepted, attribution open.** The arm as built does not help and may hurt. The
+measurement that decides it is the pruned/unpruned split, and it is now one run away.
