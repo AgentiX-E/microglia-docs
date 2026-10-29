@@ -4548,3 +4548,87 @@ first fenced block and a plan inside one would be scored as a paragraph of SQL.
 **Evidence.** 1,427 tests, 90 files, coverage **99.96 / 99.57 / 100 / 99.96**; `pnpm check` green.
 Commits: `205408d` (pool report and `eval:pool`), `9ca2d16` (README), `73a76b0` (generators and union
 ceiling); `master` at `b60dd48`.
+
+### 100 — The gate that decides whether a signal may rank anything
+
+Eleven iteration closures in this log end the same way: a selector arm at or below zero, a ceiling
+somewhere above it, and a sentence explaining that the selector did not capture the ceiling. Every one
+of them shipped the composite first and measured the composite. Not one of them could say which of its
+parts separated a right answer from a wrong one, because nothing was ever measured alone.
+
+Iteration 99 made each of the six execution signals computable and priced them one at a time on the
+recorded pool. This iteration adds the decision that follows: **which of them, if any, may rank
+anything**, with the bar fixed before the measurement it will be judged by, and the composite scored on
+a pool that already exists rather than on a new dispatch.
+
+**The rule, and why each part of it is not negotiable.**
+
+| Element | Rule | The failure it prevents |
+|---|---|---|
+| Effect bar | `AUC - 0.5 > 2 SE` | a point estimate of 0.56 with an interval that straddles one half |
+| Family correction | Holm across the six | six tests at two standard errors produce one false inclusion at 20% under the null |
+| Standard error | question-clustered, floored at `sqrt(0.25 / min(n1, n2))` | a degenerate bootstrap reporting zero variance as certainty |
+| Direction | a signal below one half is dropped, not flipped | fitting the direction to the same pool it is tested on |
+| Combination | one vote per surviving signal; ties to the earlier draw | summing magnitudes that are placeholders into something called a score |
+| Baseline | the composite with no signals, by construction | a second implementation of "take the first draw" that can disagree with the first |
+
+The floor is the part that needed the most care, and it is worth stating as arithmetic. `signalReading`
+resamples **questions**, not candidates, because five candidates from one question share the question,
+the schema and usually the misreading. That clustering is right and it has a consequence: a pool where
+every candidate pair is concordant returns the same AUC on every resample, so the bootstrap reports a
+variance of exactly zero. Zero variance is not certainty — it is the resampling saying it cannot see
+inside a question. The floor is the largest standard error an AUC over that many pairs could have, the
+variance of a proportion at its maximum over the smaller group:
+
+| Candidates per side | Floored SE | z at AUC = 1.0 | Verdict at the bar |
+|---|---|---|---|
+| 4 | 0.2500 | 2.00 | fails: not above 2 |
+| 12 | 0.1443 | 3.46 | passes |
+| 20 | 0.1118 | 4.47 | passes |
+| 40 | 0.0791 | 6.32 | passes |
+
+Without the floor, a twelve-candidate pool of unanimous comparisons would report an infinite z and the
+gate would wave through a signal measured on a pool too small to say anything.
+
+**Correction, recorded rather than edited away.** The commit message for `889ba17` states that twelve
+unanimous candidates report `z = 4.08`. That is a miscomputation: `0.5 / sqrt(0.25 / 12) = 3.46`, and
+3.46 is what the code returns. The claim the sentence was making — that the floor replaces an infinity
+with a finite and modest number — is unaffected, and the wrong figure stays visible here rather than
+being rewritten out of a pushed commit.
+
+**The leak check is a test, not a sentence.** The doctrine says a verifier never reads the answer, and
+every previous composite in this programme said so in a comment. `signal-gate.test.ts` replaces each
+candidate's `correct` field with a getter that throws, then calls `compositePicks` and asserts the picks
+are unchanged. A scorer that peeks cannot pass it: the test does not check a claim about the code, it
+makes the labelled field unreadable and requires the code to work anyway.
+
+**What the composite reports.** Accuracy beside the first-draw baseline on the same population —
+questions where more than one outcome existed — and, beside the delta, the questions it fixed and the
+questions it broke. That last pair is the lesson of iteration 99 applied one module early: a net of zero
+made of one repair and one break is a different object from a net of zero made of neither, and the
+transfer measurement would have reported `+0.00pp` for a rule that destroyed 42.6% of what it touched
+if the 2×2 table had not been printed beside it.
+
+**Two things were read by two functions and now are read by one.**
+
+- `artifact-pool.ts` is the only reader of `per_case[].pool`. The command added in iteration 99 carried
+  a private copy of the question-shape regular expressions — a second definition of what a question
+  asks for, which would have drifted from the first the next time either changed. Its 10 tests pin the
+  reading: null and empty pools are both skipped (but for different reasons), the draw count comes from
+  the arm names so dropped calls count against the collapse statistic, and the shape is recomputed so a
+  past artefact is re-analysable with a better reader.
+- `FAILED_SIGNATURE` is exported from `exec-signature.ts`. Three places ask what shape a failure has:
+  the signature computation, the signal reading's tie-break and the composite's vote.
+
+**Evidence.** 92 test files, **1,475 tests**, coverage **99.98 / 99.62 / 100 / 99.98**; the four
+modules this stage added report 100 on all four dimensions individually (`pool.ts`, `pool-report.ts`,
+`signal-gate.ts`, `artifact-pool.ts`). `pnpm check` green including the bench and the bundle budget.
+Commits: `889ba17`; `master` at `889ba17`. `pnpm eval:signals` is wired as a workflow step beside
+`pnpm eval:pool`, and exits zero when nothing survives, because "no signal separates right answers from
+wrong ones" is a finding and not a broken step.
+
+**What this iteration does not have, and will not pretend to.** No gate verdict. Run
+[`40862283263`](https://github.com/AgentiX-E/microglia/actions/runs/40862283263) is still in its
+benchmark step, and R7.2a's reading arrives with the artefact. The gate is built, pre-registered and
+wired; the numbers it will print are not in this document yet. R7.2b remains where iteration 99 left
+it: activated only if something survives, cancelled without appeal if nothing does.

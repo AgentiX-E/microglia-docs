@@ -1145,6 +1145,13 @@ artefact rather than assembled by hand: the union over generators is the score o
 always picked right, and it is reported net of the `none` arm because a question the direct
 generator already answered is not headroom.
 
+The generators the union is taken over are `gen-plan`, `gen-decompose` and `m-schema` — every arm that
+changes how the statement is produced. `m-schema` is in that set because a second representation of the
+question is a genuinely different procedure: on the questions where the DDL prompt misreads a table it
+can be the only arm that answers. It is also reported on its own, by criterion 4, because its effect
+XiYan publishes (+1.63) is a single-cell delta rather than a pool effect, and the two readings answer
+different questions. Criterion 6 is what stops the pool from being that one arm.
+
 **If criterion 1 fails**, candidate diversity is not the constraint and R7.2 becomes the whole stage
 with a 3.52pp ceiling as its maximum possible prize. That outcome would be published as the stage's
 result, not buried.
@@ -1164,18 +1171,36 @@ the base rate of picking the first draw.
 | `duplicate-share` | repeated rows, unless distinct was asked | against |
 | `value-type` | numeric-only vs an average/ratio/percentage | shape match |
 
-The module and its tests exist (`packages/eval/src/exec-signature.ts`, 30 tests, 100% coverage four
-dimensions). What does not exist is the measurement that decides whether any of them is worth a point.
+The signals are computed by `packages/eval/src/exec-signature.ts` (30 tests, 100% four dimensions) and
+priced by `packages/eval/src/pool.ts`. The gate that decides is `packages/eval/src/signal-gate.ts`,
+run as `pnpm eval:signals` and as a workflow step beside `pnpm eval:pool`. It costs no calls and it is
+built before the numbers arrive, which is the only order in which a bar means anything.
+
+**The rule, fixed in code as well as here.**
+
+| Element | Rule | Field the artefact or command prints |
+|---|---|---|
+| effect bar | `AUC − 0.5 > 2 SE` | `verdicts[].z` |
+| family correction | Holm across the six | `verdicts[].holm` |
+| standard error | question-clustered, floored at `sqrt(0.25 / min(n1, n2))` | `verdicts[].se` |
+| direction | a signal below one half is dropped, not flipped | `verdicts[].survives` |
+| combination | one vote per surviving signal, ties to the earlier draw | `kept`, `compositeTopPick` |
+| baseline | the same function with no signals | `baselineTopPick` |
+
+The floor exists because the interval resamples questions: a pool where every pair is concordant
+returns a zero-variance bootstrap, and a zero variance read as certainty would pass a signal measured on
+four candidates. The floor turns that into `z = 2.00` at four — which fails — and `z = 3.46` at twelve.
 
 **Acceptance.**
 
 | # | Criterion | Reading | Refuted if |
 |---|---|---|---|
-| 1 | every signal reports AUC over correct/incorrect candidates | with a bootstrap interval | — |
+| 1 | every signal reports AUC over correct/incorrect candidates | with a bootstrap interval and its SE | — |
 | 2 | only signals with AUC − 0.5 > 2 SE enter the composite | per signal, Holm-corrected | — |
 | 3 | the composite is measured before activation | simulated ordering on the recorded pool | — |
-| 4 | inert signals are named and removed | listed in the artefact | — |
-| 5 | the leak check is explicit | no signal reads gold SQL, gold rows, or scorer fields | any read at all |
+| 4 | inert signals are named and removed | `inert[]` in the command's output | — |
+| 5 | the leak check is explicit and executable | a test that makes the label unreadable and requires unchanged picks | any read at all |
+| 6 | the composite reports what it broke as well as what it fixed | `gained`, `lost` beside `deltaPp` | a delta with no break count |
 
 **The number this produces is a gate, not a result.** If every signal lands at AUC 0.50 ± noise, the
 honest conclusion is that execution shape carries no signal beyond what the model already uses, and
