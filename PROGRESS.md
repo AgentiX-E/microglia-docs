@@ -5003,3 +5003,21 @@ an arm until they exist.
 **Evidence.** `eval:signals` and the artefact's `metrics.pool.signals` disagree as tabulated above;
 the discrepancy is reproducible from `/tmp/run-40862283263/poc-sota-bird.json`. Commit `8ee3b1e`.
 1,511 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**.
+
+**A second inconsistency, pre-registered rather than fixed.** Checking the above turned up a defect in
+the metric itself. `signalReading` counts `pairs` as the sum of within-question products
+(`up × down` per question, 300 here) and then computes AUC over the **flattened** positives and
+negatives, which adds every cross-question comparison as well. A ranking signal is only ever asked to
+order candidates *inside one question*; a positive from question A against a negative from question B is
+not a decision the composite makes, and those pairs are mostly ties, so pooling dilutes every reading
+toward 0.5.
+
+Within-question, on the same artefact and the same evidence-less shapes: `value-type` 0.6133,
+`empty` 0.5767, `column-shape` 0.5767, `row-shape` 0.5683, `duplicate-share` 0.5583, `null-share`
+0.5467 — higher for five of six, and `null-share` crosses from 0.5213 to 0.5467.
+
+Not fixed in this commit, for one reason: the run in flight is measuring the pooled version, and
+changing the metric now would make its artefact incomparable with the next one. The order is to read
+that run, then change the estimator and the two artefacts together, so the size of the correction is a
+measured quantity rather than a claim in a commit message. Pre-registered here so the change is
+justified before it is made.
