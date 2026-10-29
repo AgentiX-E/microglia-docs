@@ -823,3 +823,89 @@ currently receives nothing but the same prompt. Feeding the failure back — the
 result, the mismatched columns — is the only untested intervention that acts where the evidence says
 the effect is, and it is the project's own thesis: capture the correction, apply it at the point of
 failure.
+
+## R5 — Rule admission by reproduction (opened 2026-10-29)
+
+The question this section answers is the one that has been asked of this project three times and
+never measured: **are the mistakes correctly extracted as rules?** Every arm so far measured what the
+extraction is *worth* on held-out questions. None of them asked the extraction to demonstrate
+anything, and the difference matters, because a negative delta on held-out questions has three
+possible causes that the protocol could not separate:
+
+| Cause | What it predicts | Measured before R5 |
+|---|---|---|
+| the rule is wrong | nothing on its own case either | **unknown** |
+| the rule is right and does not transfer | works on its own case, fails elsewhere | **unknown** |
+| the rule is right and transfers but is not obeyed | works on its own case, no delta on held-out | **unknown** |
+
+Seven variables have been swept — content (rules / repair accounts / procedures), quantity (0 to
+1,200 characters, 0 to 3 items), position (before the answer / after a failure / both), retrieval
+key (question text / failure code), corroboration floor, grounding filter, and utility-based
+deletion — and every sweep reported a delta against no memory. A delta against no memory cannot
+distinguish the three rows above, which is why ten runs of evidence have not settled what is wrong
+with the store.
+
+**The measurement.** A distilled rule is a claim that one correction generalises. The first thing
+such a claim must survive is the case it came from: give the model the failure, the failed attempt
+and the rules that correction produced, and see whether the correction comes back. Two calls per
+corrected question — with the rules and without — because a second attempt already repairs some
+failures by itself (+0.57 to +1.14pp with zero losses across three runs), and crediting that to the
+rules is the specific error this project has spent ten iterations avoiding.
+
+|                    | retry alone right | retry alone wrong |
+|--------------------|-------------------|-------------------|
+| **with rules right** | `redundant`     | `supplied`        |
+| **with rules wrong** | `broke`         | `useless`         |
+
+Only `supplied` shows the rules doing work. `broke` is the sharpest available evidence that a rule
+is wrong rather than merely unhelpful: the question needed no help and the help is what made it
+wrong. `redundant` and `useless` are both extraction failures for opposite reasons — the experience
+was unnecessary, or it was insufficient — and they are counted apart because they call for opposite
+repairs.
+
+**Two arms, because the diagnosis and the fix are one dispatch apart.**
+
+| Arm | What it is | What it answers |
+|---|---|---|
+| `full-verified` | the same retrieval, order and budget, restricted to the rules that reproduced their own correction, and to none that broke theirs | is a store of *demonstrated* experience non-negative where a store of *plausible* prose is −3.7pp? |
+| `full-shuffled` | the same pack size, drawn from a different question of the same database | is the harm the retrieved case, or the mere presence of advice about this workspace? |
+
+`full-shuffled` is the missing cell of a mechanism table this project has been building since
+iteration 71. `wrong-scope` (another database's rules) is inert at −0.29pp, so a matching vocabulary
+is what makes the model follow a claim. `duplicate` doubles the same pack and prices the dosage. What
+has never been measured is same vocabulary, same size, wrong content — and if that costs what `full`
+costs, then every retrieval-quality explanation in this project's record is wrong and the harm is
+the instruction to consult memory at all.
+
+**Acceptance.** Fixed before dispatch, checked against the artefact.
+
+| # | Criterion | Reading |
+|---|---|---|
+| 1 | the gate reaches a verdict on at least 80% of corrected questions | `measured / source_questions`; below that the probe is a direction, not a measurement |
+| 2 | the four verdicts reconcile to the rules | `kept + unsupported + broke_its_source + no_verified_source = rules` (gate V13, blocking) |
+| 3 | `supplied` is reported with its blank rate | a `supplied` share quoted without `blank_fix_rate` would credit the retry to the rules |
+| 4 | `full-verified` is non-negative against `none` and beats `full` on the same run | 350 questions, paired bootstrap; the noise floor is the same run's `none-replica` |
+| 5 | `full-shuffled` is reported beside `full` with its donor count | `donors` and `identical` must show the swap really happened, or the arm is `full` renamed (gate V14) |
+
+**Cost.** 2 calls per corrected learn question (≈134 × 5 folds ≈ 1,340) plus four arms on 350
+questions (1,400): about 3,400 calls, one dispatch, no new data.
+
+**What each outcome licenses.**
+
+- `supplied` rare (< 10% of corrections) and `full-verified` non-negative → the extraction is the
+  defect, R1.2–R1.5 (ReasoningBank form, Reflexion task keying, cheat sheet, ACE curation) each get a
+  reason to be tried on top of a store that only admits demonstrations.
+- `supplied` common and `full-verified` still negative → the extraction is fine and the *injection* is
+  the defect. That closes the content axis for good and sends the work to R1.3/R1.4, which differ
+  from every arm so far in *when* the memory is read, not in what it says.
+- `full-shuffled` as negative as `full` → retrieval is not the variable, and the whole
+  relevance-based line of explanation (77–82% entity hit rate, the relevance split) was reading a
+  coincidence.
+- `full-shuffled` inert while `full` is negative → the retrieved case is what misleads, which is
+  Xiong et al.'s experience-following mechanism measured on our own corpus with our own numbers.
+
+**Position in the programme.** R2 (selection), R3 (schema linking) and R4 (value samples) are closed
+on their own measurements. R5 is the memory axis's last unmeasured quantity and it gates R1.2–R1.5:
+running four memory *forms* on top of a store whose extraction quality is unknown is how four more
+nulls get published. R5 answers that first, and its two arms are the last items on the critical path
+before the memory question is either answered or abandoned with a reason.
