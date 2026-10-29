@@ -1447,3 +1447,32 @@ the inertness is not a property of the corpus but of the distillation, and the n
 rewrite rather than a policy. If R9.3's fitted policy beats the floor but R9.4's transfer does not, the
 finding is that memory is a lookup and not a lesson — which is consistent with everything measured since
 R4 and would be the honest end of the flywheel claim.
+
+### R9.1 — the family, fixed before the first dispatch (2026-10-30)
+
+The stage above says what R9.1 must deliver. This section says exactly what the family is, because a
+density claim that is not fixed in advance is a claim that can always be met by lowering the bar.
+
+| Element | Fixed value | Why this value |
+|---|---|---|
+| Rule set | fold 0's store, active rules that name a database, at most **8 per database**, ordered by a content hash of `statement + when` | a hash subset is a sample of the store rather than the rules that look best, and it is reproducible from the artefact |
+| Panel | **20 questions per database**, drawn by a hash of the seed and the question id, shared by every rule of that database | one panel per database makes every rule in it comparable without also comparing the questions it happened to draw, and one control per question instead of one per rule |
+| Position | one rule in the prompt, first attempt, temperature 0 | attribution is exact by construction (`rulesPerInjection` = 1) instead of being credited to every rule in a pack |
+| Control | the `none` arm's answer to the same question | same prompt with an empty pack, deterministic, already measured — 0 extra calls and no sampling noise to subtract |
+| Floor | one rule from a different database, shown on the same panel | if foreign vocabulary flips as often as the real rules, the flips are about text being present rather than about what it says |
+| Databases with fewer than 20 usable questions | left out, by name, and counted | a rule given sixteen chances is not a rule given twenty, and the family's whole claim is the number |
+| Cost | ~1,400 calls per dispatch | 60-odd rules × 20 plus ~200 floor injections |
+
+**What the run reads.** Five strata (overall, relevant, irrelevant, cued, floor) and four policies
+(`always`, `fitted`, `cued`, `oracle`). `relevant` is defined with the gold query and is therefore an
+upper bound on what retrieval could know; `cued` is defined from the question and its evidence and is
+the only one a deployment could compute. The four gates are V18 (every rule shown the panel), V19
+(≥60% of rules discriminating — R9.2), V20 (the strata reconcile), V21 (the floor ran, advisory).
+
+**The prediction, recorded before the run.** R7 measured 23% of injected rules discriminating at a
+mean of ~3 shows each, and the transfer probe measured a 42.6% break rate on targets that were
+already right, so the two point in opposite directions: more chances should raise the discriminating
+share, and the harmful tail should grow with it. The prediction is **35–55% discriminating**, i.e.
+**R9.2 fails**, and that the fitted policy's out-of-sample Δ stays inside ±2pp while its CI includes
+zero. If instead more than 60% of rules discriminate, the constraint was density and R9.3 becomes the
+live question rather than a formality.
