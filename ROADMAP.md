@@ -909,3 +909,58 @@ on their own measurements. R5 is the memory axis's last unmeasured quantity and 
 running four memory *forms* on top of a store whose extraction quality is unknown is how four more
 nulls get published. R5 answers that first, and its two arms are the last items on the critical path
 before the memory question is either answered or abandoned with a reason.
+
+### R5 status, after one dispatch window (2026-10-29)
+
+| Acceptance | Threshold | Measured | Verdict |
+|---|---|---|---|
+| 1. Verdict coverage | verdict on ≥ 80% of corrected questions | 651/652 = **99.8%** | **met** |
+| 2. Attribution closes | four buckets sum to the rules held | **1256/1256** (V13, blocking) | **met** |
+| 3. `supplied` with its blank rate | both reported | 22.9% against a 12.75% blank rate | **met** |
+| 4. `full-verified` non-negative and above `full` | Δ > 0 vs `none`, and > `full` | −0.57pp vs `none` [−2.57, 1.43]; **+2.29pp vs `full`** [−0.57, 5.14] | **partly** — neutral, not positive |
+| 5. The shuffle really happened | donors > 0, identical ≪ donors | 350 donors, 18 identical | **met** |
+
+**The extraction is the defect, and the third of it that is right does not transfer.**
+
+| Verdict | n | share |
+|---|---|---|
+| `supplied` | 149 | 22.9% |
+| `redundant` | 61 | 9.4% |
+| `broke` | 22 | 3.4% |
+| `useless` | **419** | **64.4%** |
+
+Two thirds of corrections cannot be reproduced from the rules distilled from them. The gate that
+keeps the 23% which can removes 76% of injected rules, and the split says the two halves behave in
+opposite ways:
+
+| Group | n | `full` | `full-verified` | Δ | gained / lost |
+|---|---|---|---|---|---|
+| pack emptied by the gate | 211 | 49.3% | 54.0% | +4.7pp | 18 / 8 |
+| a demonstrated rule survived | 139 | 52.5% | 51.1% | −1.4pp | **0 / 2** |
+
+**So the content axis is closed with a mechanism rather than a null.** The harm is rules that cannot
+replay their own correction; removing them recovers 80% of it (2.29 of 2.86pp). The rules that *can*
+replay their own correction change nothing on held-out questions — 1.11 per question over 139
+questions, zero gained, two lost. And `full-shuffled` (same vocabulary, same size, wrong question)
+costs −1.71pp, so relevance to the question is not what makes a rule followed; the register is.
+
+**Two things this changes.**
+
+1. **The relevance line of explanation is retired.** Packs that name an answer entity cost 2.6pp,
+   packs that name nothing cost 0.0pp, foreign-database rules are inert — all of that was read as
+   evidence that retrieval picks the wrong case. The shuffle says a *wrong* case in the right
+   vocabulary costs what the right one costs, so the correlation with entity mentions was measuring
+   the pack's vocabulary, not its appropriateness.
+2. **R6 becomes the last measurement on this axis, and it is narrow.** A demonstrated rule repairs
+   its own case 149 times. Whether it repairs *any other* case has never been asked, and it is the
+   only question that separates a store that is useless from a store that is too small. Every other
+   variant of the memory — ReasoningBank's fields, Reflexion's task key, a running cheat sheet, ACE's
+   curator — is a rearrangement of content whose individual units have now been shown to be inert.
+
+**R6, sketched before it is built.** Take the 294 surviving rules and probe each against *other*
+corrected cases in the same database, reusing the blanks the R5 probe already computes (a blank is a
+property of a question, not of a rule). The rate that comes back is the transfer probability of one
+demonstrated rule, and it converts directly into the store size a memory would need: at transfer rate
+*p*, a pack of *k* rules repairs *k·p* questions per question asked. If *p* is 2%, the corpus's 1,256
+rules are worth about 25 questions of 350 and the memory is too small, not wrong. If *p* is 0%, the
+axis is closed and the record can say so with a number instead of an opinion.

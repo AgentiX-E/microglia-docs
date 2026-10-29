@@ -4145,3 +4145,97 @@ largest components are the ones now measured.
 **Evidence.** Run [`40729502661`](https://github.com/AgentiX-E/microglia/actions/runs/40729502661),
 1,754 calls, 1 retry, 0 call failures, 350 scored, all gates passing, `master` at `c52c7ab`; 1,267
 tests, coverage **99.97 / 99.56 / 100 / 99.97**.
+
+### 96 — Two thirds of the corrections are not in the store, and the third that is does nothing
+
+The question asked three times and never measured: are the mistakes correctly extracted as rules?
+Every previous arm reported a delta against no memory, and that statistic cannot separate a rule
+that is wrong from a rule that does not transfer from a rule that is not obeyed. This run asks the
+store to reproduce its own cases, with a paired blank so the retry's own repair rate is subtracted
+rather than credited.
+
+| Arm | ACC | Δ vs `none` | 95% CI | p | rules/question | gained / lost |
+|---|---|---|---|---|---|---|
+| `none` | 53.43% | — | — | — | — | — |
+| `none-replica` | 54.00% | +0.57pp | [−0.86, 2.29] | 0.727 | 0.00 | 5 / 3 |
+| `full` (memory) | 50.57% | −2.86pp | [−6.00, 0.29] | 0.110 | 1.87 | 11 / 21 |
+| **`full-verified`** | **52.86%** | **−0.57pp** | **[−2.57, 1.43]** | **0.774** | **0.44** | 5 / 7 |
+| `full-shuffled` | 51.71% | −1.71pp | [−4.86, 1.43] | 0.392 | 1.92 | 14 / 20 |
+
+Against `full` on the same questions, `full-verified` is **+2.29pp [−0.57, 5.14] p = 0.185 (18
+gained, 10 lost)**. It recovers 80% of the pack's deficit without being significant on its own.
+
+**The extraction, measured for the first time.**
+
+`rule_probe = { source_questions: 652, measured: 651, supplied: 149, redundant: 61, broke: 22,
+useless: 419, blank_fix_rate: 0.1275, rules: 1256, kept: 294, unsupported: 918, broke_its_source:
+42, no_verified_source: 2 }`
+
+| Verdict | Meaning | n | share |
+|---|---|---|---|
+| `supplied` | the rules reproduce the correction the retry alone could not | **149** | **22.9%** |
+| `redundant` | the correction was reachable without them | 61 | 9.4% |
+| `broke` | the retry alone was right and the rules made it wrong | 22 | 3.4% |
+| `useless` | neither attempt reached the correction | **419** | **64.4%** |
+
+**Two thirds of the corrections are not in the store in any form that can replay them.** Given the
+failure, the attempt that failed and the rules that correction produced, the model reproduces the
+correction 149 times in 651 and fails 419 times. This is the first direct evidence about extraction
+quality in eleven iterations, and it says the store's problem is upstream of retrieval, of position
+and of quantity — all of which were swept, twice, without moving the number.
+
+**And the third that is in the store does nothing.** The gate kept 294 of 1,256 rules (23%) and
+removed 76% of the rules that would have been injected, which splits the arm by construction:
+
+| Group | n | `full` | `full-verified` | Δ | gained / lost |
+|---|---|---|---|---|---|
+| pack emptied by the gate | 211 | 49.3% | 54.0% | **+4.7pp** | 18 / 8 |
+| a demonstrated rule survived | 139 | 52.5% | 51.1% | −1.4pp | **0 / 2** |
+
+The two halves reconcile exactly to the arm's 18/10 against `full`, and they say two different
+things. **The entire harm lives in the questions whose rules could not reproduce their own
+correction** — removing those rules is worth +4.7pp (sign test p = 0.076). **The rules that did
+reproduce their own correction change nothing**: 1.11 demonstrated rules per question over 139
+questions, zero questions gained, two lost.
+
+That is the cleanest negative result this project has, because it is not a null about a treatment —
+it is a null about the *content* of the treatment, measured on the subset where the content was
+known to be good.
+
+**Relevance is not what makes a rule followed.** `full-shuffled` — the same pack size, drawn from a
+different question of the same database — costs −1.71pp, and against `full` it is +1.14pp
+[−2.00, 4.29] p = 0.60 (18/14). Foreign-database rules are inert (−0.29pp, iteration 70); rules about
+*this* database applied to the *wrong* question cost almost what the right ones cost. So the model is
+not matching content to question. It is reading claims in the vocabulary of the workspace it is
+answering about, and that register — not the retrieval — is what moves the answer. Every
+relevance-based explanation in this project's record (the 77–82% entity hit rate, the relevance
+split, the 2.6pp attributed to packs that name an answer entity) was reading a coincidence.
+
+**What the probe cannot say, and it matters for the next run.** 552 of the 652 probed cases failed as
+`rejected` — the first attempt ran and returned rows, and the only failure signal available is that
+the person who asked said it was wrong. For those cases the probe's "with rules" prompt carries no
+symptom, and `useless` then conflates *the rule is wrong* with *the rule had nothing to work from*.
+Only 100 cases had a mechanical symptom (`empty` 96, `error` 4). The cross-tabulation of verdict by
+failure kind is the measurement that separates those two, and it is not in this artefact — the next
+run records it.
+
+**Acceptance, against the table fixed before dispatch.**
+
+| # | Criterion | Result |
+|---|---|---|
+| 1 | verdict on ≥ 80% of corrected questions | **met**: 651/652 = 99.8% |
+| 2 | the four buckets reconcile to the rules | **met**: 1256/1256 (gate V13, blocking) |
+| 3 | `supplied` reported with its blank rate | **met**: 22.9% against `blank_fix_rate` 12.75% |
+| 4 | `full-verified` non-negative and above `full` | **partly**: −0.57pp is neutral not positive; +2.29pp over `full`, interval touching zero |
+| 5 | `full-shuffled` reported with its donors | **met**: 350 donors, 18 identical packs |
+
+**What it licenses.** The content axis is not closed by "memory does not work" — it is closed by
+"the store contains mostly rules that cannot replay their own correction, and the ones that can do
+not transfer". Those are different findings and only the second one says where to look next: a
+demonstrated rule repairs its own case 149 times and other cases **unknown**, because no run has ever
+asked one rule to repair a case other than its own. That is the last measurement on this axis that
+can distinguish a store that is useless from a store that is too small, and it is R6.
+
+**Evidence.** Run [`40791608028`](https://github.com/AgentiX-E/microglia/actions/runs/40791608028),
+3,414 calls, 1 retry, 0 call failures, 350 scored, all eleven gates passing, `master` at `739fb72`;
+1,293 tests, coverage **99.97 / 99.56 / 100 / 99.97**.
