@@ -4319,3 +4319,76 @@ text on the first call, and it did so here. The failure was not visibility; it w
 / 99.97**; `pnpm check` green. R6 re-dispatched as run
 [`40820868520`](https://github.com/AgentiX-E/microglia/actions/runs/40820868520) with the same arms
 and `max_calls=8000`.
+
+### 98 — The gap is the candidate pool, and we have been building selectors for a pool that is not there
+
+The direction was wrong, and the correction is not about memory. It is about where test-time compute
+was spent. A competitive reading (`COMPETITIVE.md`, new) produced three numbers that locate the error
+precisely, and one of them is an accidental controlled comparison.
+
+**Our baseline reproduces a competitor's published cell to 0.09pp.** XiYan-SQL, Table 6, BIRD dev,
+DeepSeek with a DDL schema: **53.52%**. Ours, Mini-Dev, DeepSeek with DDL and evidence: **53.43%**.
+Different code, different prompt, different harness — and the same number. That agreement is the
+strongest evidence in this project that the protocol is sound: the measurement is not what is wrong.
+
+**The candidate pool is four times narrower than the one a SOTA selector was trained on.**
+
+| | Generators | Candidates | Ceiling over one draw | Best selector | Captured |
+|---|---|---|---|---|---|
+| CHASE-SQL (Gemini 1.5 Pro) | 3 different procedures | 21 | **+13.95pp** (68.84 → 82.79) | 73.01 | 29.9% |
+| microglia | 1 prompt, 5 draws | 5 | **+3.52pp** | 52.29 | negative |
+
+Every selection arm this project ran — agreement (−1.43), model (−2.43), execution (−1.14) — was
+measured against a pool with 3.52pp of headroom in it. The ceiling was reported each time and read as
+"the selector is bad". It is also a statement about the pool: five draws from one prompt are five
+spellings of one misreading, and a selector cannot capture headroom the generator never produced.
+
+**Three mechanisms we got backwards, all of them by using a component in the wrong position.**
+
+| Mechanism | Our use | Measured | The competitors' use | Their measured |
+|---|---|---|---|---|
+| schema filtering | prune to one smaller schema | **−8.00pp** | sample several schemas, one per generator | +2.15 |
+| value samples | annotate the DDL in a comment | +0.29pp | values inside the column, plus LSH retrieval as a candidate source | +1.63 (M-Schema on DeepSeek) |
+| selection | ask a model to compare result sets | −1.14pp | group by execution result, reorder, then select | +2.74 (XiYan), +4.33 (GradeSQL ORM) |
+
+The pattern is one pattern: **a lossy filter used to shrink an input is damage; the same filter used to
+sample an output is diversity.** We ran all three as input shrinkers.
+
+**What was built, in this order.**
+
+`packages/eval/src/m-schema.ts` — the semi-structured schema rendering, 25 tests, 100% on all four
+dimensions. XiYan's ablation prices it at +1.63 on this exact model (53.52 → 55.15), which makes it the
+only available component whose value is already known before we spend a call on it. Two decisions
+differ from the published form: the sample budget is enforced inside the renderer (600 columns × 3
+values is more prompt than schema) and the foreign keys survive the budget, because a relation is
+either stated or guessed.
+
+`packages/eval/src/exec-signature.ts` — six deterministic signals over a candidate's execution
+(`empty`, `row-shape`, `column-shape`, `null-share`, `duplicate-share`, `value-type`), 30 tests, 100%
+on all four dimensions. Deliberately **not** a scorer: each signal computes alone and returns zero when
+it has nothing to say, because a composite that fails cannot be blamed piece by piece — which is how
+eleven iterations of composites ended. Three constraints are enforced in the module: no signal reads
+the gold SQL or the gold rows, every signal is deterministic, and every signal abstains rather than
+hedges.
+
+`ROADMAP.md` R7 rewritten around the pool (R7.0 instrumentation → R7.1 heterogeneous candidates →
+R7.2a signal measurement → R7.2b verifier → R7.3 memory as a feature), each step with acceptance fixed
+before dispatch and an explicit refutation. R8 added: the paired-statistics protocol as a deliverable,
+because no competitor publishes intervals, a noise floor, or a minimum detectable difference.
+
+**Acceptance.**
+
+| # | Criterion | Result |
+|---|---|---|
+| 1 | the competitive reading carries a source grade per claim | **met**: 13 claims graded, 2 marked low and un-reproduced |
+| 2 | every quoted competitor number names its table or section | **met**: `COMPETITIVE.md` §6 |
+| 3 | the decomposition is stated as not additive | **met**: 8.38pp of components against an 18pp gap, said in the text |
+| 4 | M-Schema module at 100% on four dimensions | **met**: 100 / 100 / 100 / 100 |
+| 5 | execution-signature module at 100% on four dimensions | **met**: 100 / 100 / 100 / 100 |
+| 6 | no signal reads the answer | **met**: signatures take rows and columns only; R7.2a keeps the leak check as a gate |
+| 7 | whole repository stays above the 95% gate | **met**: 99.95 / 99.58 / 100 / 99.95 |
+
+**Evidence.** 1,376 tests, 87 files, coverage **99.95 / 99.58 / 100 / 99.95**; `pnpm check` green;
+`microglia-docs` at this commit. R6 (transfer) is still running as run
+[`40820868520`](https://github.com/AgentiX-E/microglia/actions/runs/40820868520) at the 8,000-call
+ceiling sized in iteration 97; its rate decides whether R7.3 exists at all.

@@ -240,16 +240,74 @@ captures. Today, on five homogeneous draws: ceiling +3.52pp, yield negative. CHA
 comparable pair at 68.84% → 73.01% (+4.17pp) with **heterogeneous** candidates, which is the first
 thing our candidate set lacks: five samples from one prompt are five versions of the same mistake.
 
-### 3.7 What R7 has to prove, in order
+### 3.7 The gap has a scale, and it is not the one we assumed
 
-| # | Claim | Measurement | Refuted if |
+Our baseline is 53.43% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no
+memory). XiYan-SQL publishes the same cell — DeepSeek with a DDL schema on BIRD dev — at **53.52%**.
+Two independently built harnesses, 0.09pp apart, which is the best available evidence that our
+protocol is sound and that the model is not what separates us from a 73–75% system.
+
+What separates us is the **candidate pool**, and two published numbers make the comparison exact:
+
+| | Generators | Candidates | Ceiling over one draw | Best selector | Captured |
+|---|---|---|---|---|---|
+| CHASE-SQL | 3 different procedures | 21 | **+13.95pp** (68.84 → 82.79) | 73.01 | 29.9% |
+| microglia | 1 prompt, 5 draws | 5 | **+3.52pp** | 52.29 | negative |
+
+A selector cannot capture headroom the generator never produced. Every selection arm this project has
+run — agreement, model, execution — was measured against a pool a quarter the width of the one the
+competitor's selector was trained on, and the negative results are as much a measurement of the pool as
+of the selector. This is the correction that the last eleven iterations were missing, and it is not a
+correction about memory: it is a correction about **where test-time compute is spent**.
+
+XiYan's own leave-one-out ablation puts the sizes on the components we can and cannot buy (BIRD dev):
+
+| Component | Δ EX | Available without weights or a GPU |
+|---|---|---|
+| fine-tuned generator | −2.91 when removed | no |
+| selection model | −2.74 when removed | yes, in a deterministic form |
+| **M-Schema instead of DDL** | **+1.63** on this exact model | **yes** |
+| ICL generator (skeleton-selected examples) | −1.31 when removed | yes |
+| refiner on execution feedback | −0.55 when removed | yes |
+| schema linking (as multi-schema sampling, not pruning) | +2.15 | yes |
+
+The available column sums to 8.4pp and does not reach the 18pp gap, because leave-one-out deltas do not
+add and the remaining mass is candidate diversity plus weights. That is why the target this project
+sets for itself is **53.43 → 62–65**, not 80: a claim we can verify, against components we can build.
+
+### 3.8 Order of work, and what each step can refute
+
+| Step | Question | Cost | Refuted if |
 |---|---|---|---|
-| R7.1 | heterogeneous candidates raise the ceiling | oracle over 3 generators × 2 draws vs +3.52pp on 5 homogeneous draws | oracle gain < +2pp |
-| R7.2 | an execution-signature verifier captures a third of the ceiling | yield = captured / ceiling, paired over 350 questions | yield ≤ 0 with a CI that excludes 5% |
-| R7.3 | memory helps only as a verifier feature, never as a prefix | same store, two positions, one run | the prefix arm ≥ the feature arm |
+| **R7.0** instrument the pool | how many distinct answers do five draws actually contain? | 0 calls | — (descriptive) |
+| **R7.1** heterogeneous candidates | does the ceiling move? | 3 generators × 2 draws | ceiling < +2pp |
+| **R7.2a** measure each execution signal alone | does any signature discriminate? | 0 calls | every AUC ≈ 0.5 |
+| **R7.2b** deterministic verifier | what share of the ceiling is captured? | 0 calls | yield ≤ 0 |
+| **R7.3** memory as a verifier feature | does position beat content? | 1 fold-aligned run | cancelled if R6 transfer ≈ 0 |
 
-R7.3 is deliberately last and is the only place memory appears. If R6's transfer rate is at the
-noise floor, R7.3 is cancelled rather than reworked, and the store's role narrows to R7.2's features.
+The order is the argument. R7.0 and R7.2a spend nothing and decide whether the expensive steps are
+worth running; R7.3 — the only step where memory appears — is last and is cancelled rather than
+reworked if the transfer measurement says the store cannot repair a question it was not built from.
+
+### 3.9 Where this can be better than the systems ahead of it
+
+Not on BIRD execution accuracy, and saying so is part of the design. Every system above 80% uses a
+fine-tuned generator; this project runs on a closed API. Four things are nonetheless ours:
+
+1. **Zero training, zero weights, zero GPU.** Every competitor's selection gain comes from a fine-tuned
+   scorer (Qwen2.5-Coder-7B listwise, Gemma 2 9B LoRA, task-specific ORMs). A deterministic verifier
+   that captures a third of the ceiling is a different product with zero marginal cost.
+2. **A protocol nobody else publishes.** Paired bootstrap over 10,000 resamples, a `none-replica` noise
+   floor on every run, a minimum detectable difference computed per run, and blocking gates that refuse
+   a claim when instrument validity fails. XiYan, CHASE-SQL and R³-SQL publish point estimates;
+   GradeSQL's own reviewer flagged its missing significance tests. A number with an interval is
+   auditable in a way a number without one is not.
+3. **Cross-run accumulation.** R³-SQL's resampling judge is single-question. A store of
+   `(schema, signature, outcome)` triples accumulates across runs — the one form of memory that
+   survives the AgentSM finding, because it is a prior over shapes rather than a lesson in a prompt.
+4. **The negative results, published.** Twelve arms with one sign is a map of where not to spend. No
+   competitor publishes theirs, which is why the field keeps rediscovering that prompt-injected lessons
+   do not pay.
 
 ---
 

@@ -1032,98 +1032,169 @@ dispatch.
 
 ---
 
-## R7 — The lever is on the output side (opened 2026-10-29)
+## R7 — The lever is on the output side (opened 2026-10-29, revised with competitive anchors)
 
-R2 measured selection and closed it on three dispatches. R3, R4, R5 and R6 measured the input side
-and closed it too. Read together, the two closures say something neither says alone: **every arm that
-changes what the prompt contains is at or below zero, and the only positive number in the programme
-is a ceiling that lives on the output side** (oracle over five draws, +3.52pp). The best real
-selector captures −1.14pp of that ceiling, so the gap is 4.66pp and it is a verifier gap.
+R2 measured selection and closed it on three dispatches. R3, R4, R5 and R6 measured the input side and
+closed that too. Read together the two closures say what neither says alone: **every arm that changes
+what the prompt contains is at or below zero, and the only positive number in the programme is a
+ceiling that lives on the output side** — oracle over five draws, +3.52pp, against a best real selector
+of −1.14pp.
 
-The three-year habit of this project has been to treat "memory does not work" as a problem of
-content. R7 treats it as a problem of **position**, and moves the store from the prefix to the
-scorer. That is a different product claim, and the point of the stage is to make it falsifiable in
-three steps rather than to assert it.
+The competitive reading in `COMPETITIVE.md` turns that gap into a number with a scale on it:
 
-### R7.1 — Heterogeneous candidates, because five samples of one prompt are five versions of one mistake
+| | Candidate pool | Ceiling over one draw | Best selector | Captured |
+|---|---|---|---|---|
+| CHASE-SQL (Gemini 1.5 Pro, 21 candidates from 3 generators) | 21 | **+13.95pp** | 73.01 | 29.9% |
+| microglia (DeepSeek, 5 draws from 1 prompt) | 5 | +3.52pp | 52.29 | **negative** |
 
-The ceiling is set by the candidate set, not by the selector. Five draws at temperature 0.7 from one
-prompt share the same framing, the same table choices and usually the same wrong join; CHASE-SQL
-reports its selection gain on candidates from **three different generators**, which is why its
-selection agent can move 68.84% → 73.01% while ours cannot move a homogeneous five.
+Two systems standing on the same 53.5 baseline (their DeepSeek + DDL cell is 53.52; ours is 53.43)
+differ by a factor of four in candidate headroom before either selector is trained. **A selector
+cannot capture headroom that the generator never produced**, and every selection arm this project has
+run has been measuring the selector against a pool that was too narrow to show one.
 
-**Arms.** `hetero-2` (three generators × 2 draws) with `oracle-hetero` as its ceiling, against the
-recorded `sample-5-*` ceiling of +3.52pp. The generators:
+R7 is therefore ordered so that the pool is measured before any scorer is built. Three of its four
+steps cost no model calls beyond the generation they already need, and the one that could be skipped —
+training — is explicitly last.
 
-| Generator | Prompt shape | What it fixes that the others do not |
-|---|---|---|
-| `direct` | question + schema, answer in one step | nothing; it is the incumbent and the control |
-| `plan-first` | name the columns, the grain and the filters before writing SQL | the wrong-grain and wrong-distinct errors that survive a direct attempt |
-| `decompose` | split into sub-questions, answer each, compose | the multi-hop joins that a single pass collapses |
+### R7.0 — Instrumentation, because the pool has never been described
 
-**Acceptance.** Fixed before dispatch.
+Nothing about behaviour changes. Each question records every candidate it produced: the generator that
+produced it, its SQL after de-formalisation, its execution outcome as a signature (`empty`, row and
+column counts, null share, duplicate share, numeric-only, scalar), and whether it scored correct. The
+artefact carries the pool's own statistics — how often the oracle is reachable, how many **distinct**
+execution results the five draws collapse to, and the rank of the first correct candidate under each
+of six orderings.
 
-| # | Criterion | Reading |
-|---|---|---|
-| 1 | the oracle ceiling rises | `oracle-hetero − oracle-5` ≥ +2pp, paired over 350 questions |
-| 2 | the generators are actually different | share of questions where the three generators disagree ≥ 40%, and no generator is right < 10% of the time |
-| 3 | the ceiling is not bought with calls | calls per question reported beside the delta; a ceiling that costs 6x calls and gains 2pp is recorded as such |
-| 4 | no generator dominates | if one generator alone reaches the multi-generator oracle, the other two are dropped and the stage reports a single-generator result |
-
-**Refuted if** the ceiling does not move at least 2pp: then candidate diversity is not the constraint,
-and R7.2 is the whole stage.
-
-### R7.2 — An execution-signature verifier
-
-The environment already scores candidates for free; the only question is whether a *rule* can read
-that score. R2's `sample-N-exec` asked a model to compare result sets and captured −1.14pp, which is
-the wrong instrument: a model comparing two result sets has no idea which one answers the question.
-
-A signature verifier does not compare result sets. It reads properties of each execution — the one
-that are cheap, deterministic and wrong-answer-shaped — and ranks:
-
-| Signal | Why it separates | Direction |
-|---|---|---|
-| empty result | the most common failure shape on a join that should not have been inner | against |
-| row count vs. question's plurality | "each"/"list" implies many rows; a scalar implies one | shape match |
-| column count vs. question's entities | a question naming two things rarely wants one column | shape match |
-| NULL share in the answer column | a wrong join multiplies rows and nulls | against |
-| duplicate rows unless "distinct" is asked | grain error | against |
-| type of the returned value | a count is an integer, a name is text | shape match |
+The last number is the one that decides the stage. If five draws collapse to 1.2 distinct results on
+average, the pool is one answer with five spellings and no selector can help; if they collapse to 4.1,
+the selector is the problem and R7.2 is the work.
 
 **Acceptance.**
 
 | # | Criterion | Reading |
 |---|---|---|
-| 1 | the verifier captures a third of the available ceiling | `yield = captured / (oracle − none)` ≥ 0.33, paired |
-| 2 | it is measured against the best real selector | must beat `sample-N-exec` (−1.14pp) and `agreement` (−1.43pp) on the same draws |
-| 3 | each signal is ablated | one arm per signal disabled; a signal whose removal changes nothing is reported as inert and removed |
-| 4 | no signal is scored by the answer | the verifier may not read the gold SQL, the gold result, or any field the scorer uses |
+| 1 | every candidate carries a signature | `signed / candidates` = 100%, gate blocking |
+| 2 | the collapse statistic is reported per fold | `distinct_results / draws`, pooled and by fold |
+| 3 | the oracle is decomposed, not just totalled | `oracle − none` split into "unique correct" and "shared correct" |
+| 4 | no behaviour change | `none` and `none-replica` deltas within the recorded noise floor |
 
-**Refuted if** yield ≤ 0 with a CI excluding 5%: then execution signatures carry no signal beyond what
-the model already uses, and the output-side thesis fails with the same honesty the input side failed
-with. The programme then reports two closed axes and stops claiming a lever.
+**Cost.** Zero extra calls.
+
+### R7.1 — Heterogeneous candidates: the pool is the constraint
+
+Five draws from one prompt share the framing, the tables and usually the wrong join. CHASE-SQL's three
+generators are different *procedures*, and its pool carries 13.95pp because of it. The arms:
+
+| Arm | Generator | What it fixes that the others do not |
+|---|---|---|
+| `direct` | question + schema, one step (incumbent) | nothing; it is the control |
+| `plan-first` | name columns, grain and filters before writing SQL | grain and distinct errors that survive a direct attempt |
+| `decompose` | split into sub-questions, answer each, compose | multi-hop joins a single pass collapses |
+| `m-schema` | the incumbent prompt with M-Schema instead of DDL | the representation itself (XiYan: +1.63 on this model) |
+| `hetero-2` | three generators × two draws, plus `m-schema` on one branch | the pool |
+
+**Acceptance, fixed before dispatch.**
+
+| # | Criterion | Reading | Refuted if |
+|---|---|---|---|
+| 1 | the ceiling rises | `oracle(hetero-2) − oracle(sample-5)` ≥ +2pp paired | < +2pp |
+| 2 | the generators are genuinely different | pairwise disagreement ≥ 40%; no generator correct < 10% | one generator dominates |
+| 3 | distinctness, not just count | median distinct execution results ≥ 3.0 of 6 | ≤ 2.0 |
+| 4 | `m-schema` alone is measured | `m-schema − none` reported with CI | — (informative either way) |
+| 5 | the cost is stated with the gain | calls/question beside every delta | a gain bought at 4x calls is recorded as such |
+
+**If criterion 1 fails**, candidate diversity is not the constraint and R7.2 becomes the whole stage
+with a 3.52pp ceiling as its maximum possible prize. That outcome would be published as the stage's
+result, not buried.
+
+### R7.2a — Which execution signals actually discriminate (no calls, no activation)
+
+Before any signal is allowed to rank anything, each is measured alone. For every question with at
+least two candidates, each signal is asked to order the candidates, and its accuracy is compared with
+the base rate of picking the first draw.
+
+| Signal | What it reads | Direction |
+|---|---|---|
+| `empty` | no rows | against, unless the question asks for what is absent |
+| `row-shape` | row count vs the question's plurality | shape match |
+| `column-shape` | column count vs the question's entities | shape match |
+| `null-share` | share of null cells | against |
+| `duplicate-share` | repeated rows, unless distinct was asked | against |
+| `value-type` | numeric-only vs an average/ratio/percentage | shape match |
+
+The module and its tests exist (`packages/eval/src/exec-signature.ts`, 30 tests, 100% coverage four
+dimensions). What does not exist is the measurement that decides whether any of them is worth a point.
+
+**Acceptance.**
+
+| # | Criterion | Reading | Refuted if |
+|---|---|---|---|
+| 1 | every signal reports AUC over correct/incorrect candidates | with a bootstrap interval | — |
+| 2 | only signals with AUC − 0.5 > 2 SE enter the composite | per signal, Holm-corrected | — |
+| 3 | the composite is measured before activation | simulated ordering on the recorded pool | — |
+| 4 | inert signals are named and removed | listed in the artefact | — |
+| 5 | the leak check is explicit | no signal reads gold SQL, gold rows, or scorer fields | any read at all |
+
+**The number this produces is a gate, not a result.** If every signal lands at AUC 0.50 ± noise, the
+honest conclusion is that execution shape carries no signal beyond what the model already uses, and
+R7.2b is cancelled before it spends anything.
+
+### R7.2b — The verifier, deterministic first and learned second
+
+Activated only if R7.2a passes. Deterministic composite first; a learned scorer (GradeSQL's ORM
+recipe, XiYan's listwise selection) only if the deterministic one leaves more than half the ceiling on
+the table **and** R7.1 has produced a pool wide enough to train on.
+
+**Acceptance.**
+
+| # | Criterion | Reading | Refuted if |
+|---|---|---|---|
+| 1 | yield = captured / (oracle − none) | ≥ 0.33 paired | ≤ 0 with a CI excluding 5% |
+| 2 | it beats the two selectors already measured | > −1.14 (exec) and > −1.43 (agreement) | — |
+| 3 | each signal ablated one at a time | leave-one-out deltas | — |
+| 4 | the subset where execution is uninformative is reported separately | questions where all candidates execute identically | a gain that lives only in the easy subset |
+| 5 | the selector never sees the answer | gate V17, blocking | — |
 
 ### R7.3 — Memory's last position: a verifier feature, never a prefix
 
-Only after R7.1 and R7.2. The same store, two positions, one run: as prompt text (`full`, already
-measured at −2.86pp) and as a feature the verifier reads — "this question's schema, this candidate's
-execution signature, and a stored record that this signature was wrong here before".
+Only after R7.1 and R7.2. The same store, two positions, one run: as prompt text (`full`, measured at
+−2.86pp) and as a feature the verifier reads — "this schema, this signature, and a stored record that
+this signature was wrong here before".
 
-**Acceptance.**
+**Cancelled, not reworked, if** R6's transfer rate lands at the noise floor. A feature built from rules
+that cannot repair another question is a lookup table with one row.
 
-| # | Criterion | Reading |
+### Protocol, fixed before any R7 dispatch
+
+The statistics are part of the pre-registration, not a post-hoc report:
+
+| Element | Rule |
+|---|---|
+| **Paired test** | McNemar on per-question flips; 10,000 bootstrap resamples for the interval |
+| **Noise floor** | `none-replica` on every dispatch; a delta inside the floor is reported as inside the floor |
+| **Minimum detectable difference** | computed per dispatch from n and discordance, printed beside every delta |
+| **Multiplicity** | Holm-Bonferroni across the arms of one dispatch; the family is declared before dispatch |
+| **Pre-registration** | arms, criteria and refutation conditions written to this file before the workflow is triggered |
+| **Effect size over significance** | a +0.3pp result with p < 0.05 is reported as +0.3pp, not as a win |
+| **Artefact first** | every number in a report is read from the artefact, never from a log line or a memory |
+
+---
+
+## R8 — The protocol as a deliverable (opened 2026-10-29)
+
+Every competitor measured above reports point estimates. XiYan, CHASE-SQL and R³-SQL publish an EX
+figure with no interval; GradeSQL's own reviewer flagged the missing significance tests; none publishes
+a noise floor. Our harness already computes all three and uses them as gates.
+
+R8 turns that into something another team can run:
+
+| Step | Deliverable | Acceptance |
 |---|---|---|
-| 1 | the feature arm beats the prefix arm | paired, on the same candidate set and the same store |
-| 2 | the feature is ablated | feature off = R7.2's verifier alone; the difference is memory's contribution |
-| 3 | the store's size is reported | a feature that helps at 1.11 rules per question and not at 0.44 is a size finding |
+| R8.1 | a benchmark runner that takes any candidate generator as a plugin | a third-party generator runs without touching `packages/eval` |
+| R8.2 | the paired-statistics report as a standalone artefact schema | a run's JSON validates against a published schema and reproduces its own report |
+| R8.3 | a reproduction of one competitor's published cell | XiYan's DeepSeek + DDL 53.52 reproduced within the noise floor on the same split |
+| R8.4 | a pre-registration template | a dispatch that skips it fails a gate |
 
-**Cancelled if** R6's transfer rate lands at the noise floor. A feature built from rules that cannot
-repair another question would be a lookup table with one row, and R7.2 alone would carry the stage.
-
-### Cost
-
-R7.1: three generators × two draws × 350 questions ≈ 2,100 calls, plus the existing arms.
-R7.2: no model calls, the signatures are computed from results already in hand. R7.3: one fold-aligned
-run of the feature arm, ≈ 1,500 calls. Two dispatches, both inside the 8,000-call ceiling that
-iteration 97 sized from measurement.
+R8.3 is the one that matters most and it is small: our 53.43 against their 53.52 is already an
+informal reproduction. Making it formal — same split, same prompt contract, published diff — is what
+lets every later comparison be read as a comparison rather than as an anecdote.
