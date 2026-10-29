@@ -1439,7 +1439,7 @@ R9 is the stage that changes the workload rather than the arm:
 |---|---|---|
 | R9.1 | a task family with a fixed rule set and many cases per rule | every rule exercised ≥ 20 times with a paired control, measured from the artefact and not asserted |
 | R9.2 | the ledger as a gate | `discriminationOf` reports ≥ 60% of rules discriminating at that density, or the family is too easy and R9.1 is wrong |
-| R9.3 | a per-rule policy fitted on one half and scored on the other | out-of-sample Δ over `none` with CI excluding zero, against a `none-replica` floor |
+| R9.3 | a per-rule policy fitted on one half and scored on the other | out-of-sample Δ over `none` with CI excluding zero, against a `none-replica` floor; narrowed by the measured ceiling — see the R9.1 verdict |
 | R9.4 | the same policy transferred to the held-out domain | transfer rate above the 3.52% that R6 measured, or the stage reports that memory does not transfer at all |
 
 **The refutation condition, fixed here.** If R9.1 produces a family where 80% of rules are still inert,
@@ -1476,3 +1476,43 @@ share, and the harmful tail should grow with it. The prediction is **35–55% di
 **R9.2 fails**, and that the fitted policy's out-of-sample Δ stays inside ±2pp while its CI includes
 zero. If instead more than 60% of rules discriminate, the constraint was density and R9.3 becomes the
 live question rather than a formality.
+
+### R9.1 — the run, and the verdict on the prediction (2026-10-30)
+
+Run [`40973498367`](https://github.com/AgentiX-E/microglia/actions/runs/40973498367), 350 questions, 1,800
+density calls, 0 failures; the artefact is `poc-sota-bird.json` and every number below is read from it.
+
+| Gate | Reading | Verdict |
+|---|---|---|
+| V18-density-exercised | 20-20 per rule (median 20) | pass — R9.1 delivered |
+| V19-density-discriminates | 68.8% of 80 rules | pass — **R9.2 met** |
+| V20-density-reconciles | 1,600 = 679 relevant + 921 irrelevant | pass |
+| V21-density-floor (advisory) | 200 floor injections, 7.5% flips | pass |
+
+**The prediction recorded in the section above was refuted.** It said 35–55% discriminating and "R9.2
+fails"; the reading is 68.8% against a bar of 60%. The refutation condition attached to R9 — "if R9.1
+produces a family where 80% of rules are still inert, the inertness is a property of the distillation" —
+is therefore **not triggered**: the inert share is 31.3% (18 of 80 rules never move an answer at all, 7
+more move it both ways), against 77% at a mean of three shows per rule. The honest generalisation is that
+the four-fifths-silent figure quoted since iteration 68 was a property of the workload, and that the
+filters designed against it were designed against an artefact.
+
+**The floor is the result that outranks the gate.** A rule from a different database, shown on the same
+panel — vocabulary the workspace does not have — flips 7.5% of its injections and discriminates on 8 of
+its 10 rules; the store flips 7.1% and discriminates on 55 of its 80. Movement is a property of text
+arriving in the pack block at about one injection in fourteen; content decides the direction only, and it
+decides it negatively for both (−29 net flips on 1,600 for the store, −3 on 200 for the floor). V19 is
+retained as a population check, not as evidence about content.
+
+**What R9.3 inherits.** `oracle` +1.75pp [+0.38, +3.75] with 14 repairs and 0 breaks is the measured
+ceiling and it is outside the noise floor; `fitted` +0.63pp [−0.50, +2.25]; `cued` −2.13pp [−4.25, −0.38]
+— the only policy computable from the question alone is significantly worse than showing nothing. Sign
+persistence is 16 of 20 rules (80%, p = 0.012) with a backward run agreeing (+12 / −4), so a rule's sign
+is learnable. The halves are not exchangeable (first half 25 repairs / 25 breaks, second 17 / 46), so
+R9.3's acceptance is narrowed accordingly:
+
+> R9.3 must produce a per-rule selection whose out-of-sample Δ over `none` has a CI excluding zero, with
+> the selection fitted on **repeated or stratified splits** rather than one half, and the resulting Δ
+> compared against the `none-replica` floor and against the 1.75pp ceiling measured here. A single-split
+> fit that lands inside [−0.50, +2.25] is the null this run already contains and does not count as
+> progress.

@@ -5387,3 +5387,96 @@ it is written into the roadmap as R9 with its acceptance criteria before anythin
 **Evidence.** `per_case[].arms` from `40961917806`; the tables are `comparePaired` at 10,000 resamples
 over those flags, `metrics.prior` and `contrasts` from the artefact itself. `pnpm eval:prior` on the same
 file reproduces the second table. 3,509 calls, 0 failures.
+
+### 112 — R9.1: the store was silent because it was never asked, and the floor prices the answer
+
+The stage R7 closed with was a workload problem, and this iteration builds the workload. `density.ts`
+holds the family: a rule set fixed by content hash, one rule per prompt so `rulesPerInjection` is 1 by
+construction, a panel of twenty questions per database shared by every rule in it, the `none` arm's
+deterministic answer as the control, and one foreign rule per panel as the floor. The readings are two
+units on purpose — `inertShare`, which the roadmap pre-registered and which grows with the number of
+chances, and `flipRate`, which does not — and applicability is measured twice: against the gold query
+(a diagnostic upper bound) and against the question and its evidence (the only decidable one).
+
+**The first dispatch measured everything and then failed its own bar on bookkeeping.** Run
+[`40970179043`](https://github.com/AgentiX-E/microglia/actions/runs/40970179043): 2,861 calls, 0
+failures, 1,600 injections, and `V18-density-exercised` red at "0-20 per rule" because eight rules were
+selected from the one database the corpus cannot fill (`debit_card_specializing`, 16 usable questions
+against a panel of 20) and were then never shown. Selection ran before the panels existed. The
+measurement was complete; the population was not. The fix is one line of ordering — compute the panels,
+then restrict selection to the databases that can fill one — and three readings the first artefact could
+not answer were added before the re-run: the per-rule ledger split by half, the flips-per-rule histogram,
+and sign persistence.
+
+**What the family measured** (run [`40973498367`](https://github.com/AgentiX-E/microglia/actions/runs/40973498367):
+350 questions, 0 failures, 1,800 density calls, 80 rules × 20 questions over 200 targets = 1,600 injections,
+plus 200 floor injections; 91 store rules name a database, 80 are placed on a panel and 11 name one the
+panels do not cover, and `debit_card_specializing` is left out by name):
+
+| Stratum | rules | injections | discriminating | flips | accuracy | Δ |
+|---|---|---|---|---|---|---|
+| overall | 80 | 1,600 | **68.8%** | 7.1% | 52.0% → 50.2% | −1.81pp [−4.38, +0.69], sign p 0.030 |
+| relevant | 53 | 679 | 50.9% | 7.4% | 49.9% → 47.0% | −2.95pp [−6.15, 0.00] |
+| irrelevant | 70 | 921 | 52.9% | 6.8% | 53.5% → 52.6% | −0.98pp [−3.73, +1.73] |
+| cued | 54 | 475 | 44.4% | 8.2% | 49.5% → 47.2% | −2.32pp [−6.24, +1.31] |
+| **floor** | 10 | 200 | 80.0% | **7.5%** | 52.0% → 50.5% | −1.50pp [−5.50, +2.50] |
+
+**R9.2 passes and the pre-registered prediction is refuted.** The prediction on file was 35–55%
+discriminating and "R9.2 fails"; the reading is **68.8%** against a bar of 60%. At a mean of ~3 shows per
+rule the same instrument read 23%. The histogram is `0:18 1:30 2:20 3:6 4:5 5:1`: 18 of 80 rules (22.5%)
+never move an answer at all and 7 more move it both ways, which is the 31.3% `inertShare` — against 77%
+before. So the four-fifths-silent figure this project has quoted since iteration 68 was a property of the
+workload: a rule shown three times cannot be classified, and every filter designed against that number
+was designed against an artefact.
+
+**The floor is the finding, not the gate.** A rule from a different database — vocabulary the workspace
+does not have, about tables that are not there — flips **7.5%** of its injections and discriminates on 8
+of its 10 rules; the store flips **7.1%** and discriminates on 55 of its 80. Movement is therefore a
+property of *text arriving in the pack block*, at about one injection in fourteen, and not of what the
+text says: a family of rules that cannot apply reaches the same discriminating share within noise. The
+content decides only the direction, and the direction is negative for both — 42 repairs against 71 breaks
+on 1,600 for the store, 6 against 9 on 200 for the floor.
+
+**Applicability carries no information about sign, and if anything the sign is backwards.** On the 679
+injections whose gold query uses the rule's vocabulary, Δ is **−2.95pp** [−6.15, 0.00]; on the other 921
+it is **−0.98pp** [−3.73, +1.73]. The intervals overlap and the strata share targets, so the defensible
+reading is "indistinguishable — at minus three points": a rule that has something to say about the
+question is not better than one that does not. The instrument also says why — 49.1% of the rules shown a
+question they *can* answer never moved it, against 31.3% overall, so the gold-query filter selects the
+**more** inert rules, not the more useful ones. That is the sharpest form the suspicion that opened R9
+has taken.
+
+**Four policies, all scored on the second half of the panel, which no fit ever saw.**
+
+| Policy | shown | accuracy | Δ | 95% CI | +/− |
+|---|---|---|---|---|---|
+| `always` | 800/800 | 49.38% | −3.62pp | [−7.88, +0.25] | +17 / −46 |
+| `cued` | 224/800 | 50.88% | **−2.13pp** | [−4.25, −0.38] | +4 / −21 |
+| `fitted` | 170/800 | 53.63% | +0.63pp | [−0.50, +2.25] | +8 / −3 |
+| `oracle` | 130/800 | 54.75% | **+1.75pp** | [+0.38, +3.75] | +14 / −0 |
+
+The ceiling is outside the noise floor on the memory axis for the second run in a row, which says the
+effect is real and per-rule: some rules repair answers and never break one. No deployable policy reaches
+it. The only one a deployment can compute from the question alone (`cued`) is **significantly worse than
+showing nothing** — the vocabulary cue selects rules that hurt — and the fitted one beats that cue by 2.8pp
+with an interval through zero. That gap is R9.3's question, now with a measured ceiling to aim at.
+
+**The per-rule sign is a stable property, which is what makes R9.3 possible at all.** Of the 20 rules that
+had a sign on both halves of the panel, **16 kept it (80%, p = 0.012)**; 36 rules had a sign to learn
+from. The same test run backwards agrees: fitted on the second half and scored on the first, the selected
+rules gain 12 and lose 4. Of the 17 rules the first half judged positive, 7 were positive on the second
+half, against 1 of the 19 it judged negative. So a rule's effect is predictable from ten observations,
+and the reason the fitted policy earns only +0.63pp is that there are too few positive rules to select.
+
+**The two halves are not exchangeable, and that is a caveat on the whole reading.** First half: 25
+repairs, 25 breaks — exactly balanced. Second half: 17 repairs, 46 breaks. The 113 flips split 50 / 63,
+the net sign of the store goes from 0 to −29, and the persistence statistic above is computed across that
+drift. A per-rule sign survives it at p = 0.012, but the aggregate does not, so R9.3 must not treat the
+fit half as an unbiased estimate of a rule's true effect: 25/25 is what a zero-mean population looks like
+and 17/46 is what the same rules did on ten different questions. The plan entering R9.3 is therefore a
+stratified or repeated split, not a single one, and it is written down here before that run.
+
+**Evidence.** `density.ts` at 100% on all four dimensions, 43 tests in `density.test.ts` and 7 in
+`stats.test.ts`; `pnpm check` green with 1,599 tests, 96 files, coverage 99.98 / 99.64 / 100 / 99.98. Gates
+on the authoritative run: V18 "20-20 per rule (median 20)", V19 "68.8% of 80 rules", V20 1,600 = 679 + 921,
+V21 200 floor injections.

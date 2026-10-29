@@ -507,8 +507,83 @@ all four positions it can occupy, and none of them is worth anything on this ben
 costs 4.57pp with p = 0.007 and 24 lost questions against 8 gained. On retry it is worth nothing once the
 retry is controlled. As a selection feature its content never enters. As a prior over result shapes it is
 inside the noise floor. What is left is not another position: it is a workload where a rule is exercised
-more than a quarter of a time, which is a different experiment and is opened as R9 with its refutation
-condition stated first.
+more than a quarter of a time, which is a different experiment and was opened as R9 with its refutation
+condition stated first. §3.6.5 runs it, and the answer is that most of what looked like the store being
+silent was the store never being asked.
+
+### 3.6.5 The store was not silent; it had never been asked
+
+Every measurement up to here gave each rule about three chances. R9.1 builds a workload that gives each
+rule twenty: fold 0's store, at most eight rules per database chosen by content hash, **one rule per
+prompt** so a flip has exactly one candidate cause, and a panel of twenty questions from the rule's own
+database shared by every rule in it. The control is the `none` arm's answer to the same question — same
+prompt, empty pack, temperature 0 — so nothing is re-bought to obtain it and no sampling noise has to be
+subtracted. Eighty rules over ten databases, 1,600 injections, and one foreign rule per panel as the
+floor.
+
+| Stratum | rules | injections | discriminating | flips | accuracy | Δ vs no memory |
+|---|---|---|---|---|---|---|
+| overall | 80 | 1,600 | **68.8%** | 7.1% | 52.0% → 50.2% | −1.81pp [−4.38, +0.69] |
+| relevant | 53 | 679 | 50.9% | 7.4% | 49.9% → 47.0% | −2.95pp [−6.15, 0.00] |
+| irrelevant | 70 | 921 | 52.9% | 6.8% | 53.5% → 52.6% | −0.98pp [−3.73, +1.73] |
+| cued | 54 | 475 | 44.4% | 8.2% | 49.5% → 47.2% | −2.32pp [−6.24, +1.31] |
+| **floor** (foreign rule) | 10 | 200 | 80.0% | **7.5%** | 52.0% → 50.5% | −1.50pp [−5.50, +2.50] |
+
+**First: the inertness was the workload.** At three shows per rule, 23% of injected rules moved an answer
+in one direction more than the other; at twenty, **68.8%** do. Eighteen of the 80 (22.5%) never move
+anything at all and seven more move it both ways, so the inert share is **31.3%** against 77% before. The
+roadmap's bar of 60% passes, and the prediction recorded before the dispatch — 35–55%, "R9.2 fails" — is
+refuted. "Four fifths of the store never changes an answer" was a fact about how often the store was
+asked, not about what it contains, and every filter designed against that number was designed against an
+artefact.
+
+**Second: the floor takes it back.** A rule from a *different* database, shown on the same twenty
+questions — vocabulary the workspace does not have, about tables that are not there — flips **7.5%** of
+its injections, discriminates on 8 of its 10 rules, and costs 1.50pp. The store flips 7.1%,
+discriminates on 55 of its 80, and costs 1.81pp. So *movement* is a property of text arriving in the
+pack block, at about one injection in fourteen, and a rule's presence perturbs the generator whether or
+not the rule is about the question. The discriminating share is therefore not evidence of content
+either: a family of rules that cannot apply reaches the same share within noise.
+
+**Third: applicability is not merely uninformative, it is inverted.** On the 679 injections where the
+rule's vocabulary is in the query that answers the question, the store is **−2.95pp** with an interval
+that touches zero; where it is not, **−0.98pp**. The two overlap, and the strata share targets, so the
+defensible statement is that they are indistinguishable — at minus three points. A rule that has
+something to say about the question is not better than one that does not, and the instrument says why:
+**49.1%** of the rules shown a question they can answer never moved it, against **31.3%** overall, so the
+only filter that reads the corpus selects the *more* inert rules. That is the sharpest form the suspicion
+that opened R9 has taken.
+
+**Fourth: the effect is real, per-rule, and too small to find.** Four policies, all scored on the second
+half of the panel, which no fit ever saw:
+
+| Policy | shown | accuracy | Δ vs no memory | 95% CI | +/− |
+|---|---|---|---|---|---|
+| `always` — carry every rule | 800/800 | 49.38% | −3.62pp | [−7.88, +0.25] | +17 / −46 |
+| `cued` — show when the question names its vocabulary | 224/800 | 50.88% | **−2.13pp** | [−4.25, −0.38] | +4 / −21 |
+| `fitted` — show when the first half said it helped | 170/800 | 53.63% | +0.63pp | [−0.50, +2.25] | +8 / −3 |
+| `oracle` — show when the second half says it helped | 130/800 | 54.75% | **+1.75pp** | [+0.38, +3.75] | +14 / −0 |
+
+The ceiling is outside the noise floor: some rules repair answers and never break one, and the rules the
+second half liked produced 14 repairs and no breakage. What does not exist is a *decision*. The only
+policy a deployment can compute from the question alone is **significantly worse than showing nothing**
+— the vocabulary cue selects rules that hurt. The per-rule fit does beat it, and it beats it because the
+sign of a rule's effect is a stable property: of the 20 rules that had a sign on both halves of the
+panel, **16 kept it (80%, p = 0.012)**; of the 17 rules the first half judged positive, 7 were positive
+on the second half against 1 of the 19 it judged negative. The same test run backwards agrees: fitted on
+the second half and scored on the first, the selected rules gain 12 and lose 4.
+
+One caveat belongs with that number rather than after it. The first half of the panel recorded 25 repairs
+and 25 breaks; the second half recorded 17 and 46. The per-rule sign survives that drift at p = 0.012,
+the aggregate does not, so a single split cannot be treated as an unbiased estimate of a rule's effect —
+which is why the next step is a repeated split rather than a larger fit.
+
+So the whole of R9 is this: the store is worth about **+1.75pp** if the rules are chosen with hindsight,
+**+0.63pp** if they are chosen by a fit on the same panel (interval through zero), and **−2.13pp** if
+they are chosen by the only cue available before answering. A rule's effect is small — 42 repairs and 71
+breaks across 80 rules and 1,600 injections — stable enough to predict with ten observations, and worth
+less than the cost of predicting it. That is a different finding from "memory does not work": it says
+memory works at a magnitude the selection problem eats.
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
