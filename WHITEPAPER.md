@@ -325,6 +325,57 @@ position repairs a unit whose content is its own index.** A lesson and its case 
 only thing that survives being moved to another question is a property of the *answer* rather than of
 the question, which is what an execution signature is and what R7.2 measures.
 
+### 3.6.2 What the store actually contained
+
+Section 3.6.1 measures what a rule does when it is moved. This one measures what the store *is*, from
+every attribution run the project has recorded, and the two agree while answering different questions.
+
+Each arm's attribution artefact records, per rule, how many questions it was shown on and how many of
+those answers it changed in each direction. `pnpm eval:store` adds them up over the results directory
+including the archive — eight runs, 2026-10-23 to 10-26, each one a 60-to-350-question cross-fitted
+slice of BIRD Mini-Dev.
+
+| Quantity | Count | Share |
+|---|---|---|
+| Rules the distiller kept | 9,062 | — |
+| Rule **instances** that reached a prompt | 2,817 | **31.1%** of the store ever reached a prompt |
+| Instances after which the answer was repaired | 110 | 3.90% of injected |
+| Instances after which the answer broke | 229 | 8.13% of injected |
+| Instances after which nothing changed | 2,478 | **87.97%** of injected |
+| Net | **−119** | **−4.22pp** of the injected population, exact McNemar p = 9.5e-11 |
+
+| Run | Rules | Injected | Repaired | Broke | Unchanged | Broke share |
+|---|---|---|---|---|---|---|
+| 10-23 11:27 (pilot, 60 q) | 124 | 74 | 5 | 11 | 58 | 14.9% |
+| 10-23 16:26 | 1,296 | 439 | 25 | 40 | 374 | 9.1% |
+| 10-23 17:18 | 1,280 | 442 | 17 | 42 | 383 | 9.5% |
+| 10-23 23:15 | 1,295 | 423 | 13 | 38 | 372 | 9.0% |
+| 10-24 01:45 (value oracle) | 1,149 | 233 | 8 | 0 | 225 | 0.0% |
+| 10-24 15:12 | 1,312 | 396 | 16 | 27 | 353 | 6.8% |
+| 10-25 02:19 | 1,319 | 407 | 12 | 31 | 364 | 7.6% |
+| 10-26 07:42 | 1,287 | 403 | 14 | 40 | 349 | 9.9% |
+
+Three facts, and each one constrains the fix:
+
+1. **The store is mostly inert text.** 88% of injected instances changed nothing at all. That is not a
+   neutral outcome for a prefix: the tokens are paid on every call, and section 3.5 measured what the
+   payment buys. A pack whose content is nine parts noise is a context tax with a 12% chance of a
+   consequence, and the consequence is twice as likely to be bad.
+2. **Harm is not noise, it is a ratio.** 110 repairs against 229 breaks, and the direction holds in
+   seven of the eight runs. The eighth is the S2b value-oracle pack — the convention-transfer stage,
+   whose rules were conditioned on a measured value rather than on a reading of a question — and it
+   broke nothing in 233 instances while repairing 8. Two caveats keep that from being a conclusion:
+   it is the smallest consequence class here (n = 145 questions) and a zero in 233 instances is
+   consistent with a rate as high as 1.3% per instance. It is a lead, not a result, and the lead is
+   that a rule carrying a measured fact may not break the way a rule carrying prose does.
+3. **Retrieval is the other half of the problem, and it is untouched.** Only 31% of stored rules ever
+   reached a prompt. Whatever the distiller knows, the injector shows a third of it, and the report
+   above cannot say whether the third it chose was the right third — that question needs a rule-level
+   counterfactual this project has not run.
+
+The numbers above predate the R6 gate. They are the store the gate was applied to, which is why they
+are published as a description rather than as a verdict on the current implementation.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline is 53.43% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no

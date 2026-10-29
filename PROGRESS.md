@@ -4663,3 +4663,45 @@ was seen.
 
 **Evidence.** 1,484 tests, 92 files, coverage **99.98 / 99.62 / 100 / 99.98**; `union.ts` 100 on all
 four dimensions. Commit `cdf849d`; `master` at `61c104a`.
+
+### 101 — What the store is, added up over every run that scored it
+
+Iteration 99 measured what a rule does when it is moved to a foreign question. This one measures what
+the store *is*, and the two agree while answering different questions. The attribution artefacts
+record, per rule, how many questions it was shown on and how many answers it changed in each direction;
+nothing had ever added them up.
+
+`packages/eval/src/store-report.ts` (8 tests, 100% four dimensions) and `pnpm eval:store` do, over the
+results directory including the archive: eight runs, 2026-10-23 to 10-26.
+
+| Quantity | Count | Share |
+|---|---|---|
+| Rules the distiller kept | 9,062 | — |
+| Rule instances that reached a prompt | 2,817 | **31.1%** of the store |
+| Repaired the answer | 110 | 3.90% of injected |
+| Broke it | 229 | 8.13% of injected |
+| Changed nothing | 2,478 | **87.97%** of injected |
+| Net | **−119** | **−4.22pp** of injected, exact McNemar p = 9.5e-11 |
+
+Three denominators are kept apart because they are not interchangeable: rules the distiller kept, rule
+*instances* that reached a prompt, and the instances after which the answer changed. The shares are
+taken over the second. Dividing the effects by the whole store would describe a retrieval problem as a
+smaller effect — and retrieval is the third finding here: only 31% of what the store holds ever reaches
+a prompt, and this report cannot say whether the third it chose was the right third.
+
+The per-instance loss is a ratio, not noise: 110 repairs against 229 breaks, in the same direction in
+seven of eight runs. The eighth is the S2b value-oracle pack, which broke nothing in 233 instances —
+the smallest class here, and a zero in 233 is consistent with a rate as high as 1.3%, so it is a lead
+rather than a result.
+
+Read beside §3.6.1 of the whitepaper this is one story: a rule carries its own case, the store is
+mostly rules that carry nothing else, and 88% of them are paid for in context on every call. The
+negative effect was never mysterious; it was the price of showing nine parts noise for the chance of
+one part signal that is itself twice as likely to be wrong as right.
+
+**What it does not say.** These artefacts predate the R6 gate, so they describe the store the gate was
+applied to, not the current implementation. And a rule-level counterfactual — "would a *different*
+third of the store have done better" — has not been run.
+
+**Evidence.** 1,492 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**. Commit `e8110f4`;
+`master` at `716befd`.
