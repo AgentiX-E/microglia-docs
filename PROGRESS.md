@@ -4755,6 +4755,11 @@ answers, which is why eleven of them landed at zero.
 | `duplicate-share` | 0.542 | 0.017 | 2.46 | 0.0137 | **kept** |
 | `null-share` | 0.521 | 0.017 | 1.23 | 0.109 | removed |
 
+*The AUC column above is the **reconstruction's**, not the run's: the artefact did not record the
+evidence, so the shapes were rebuilt from the question alone. The run's own numbers are `value-type`
+0.6015, `column-shape` 0.5998, `row-shape` 0.5749, `empty` 0.5653, `duplicate-share` 0.5418,
+`null-share` 0.5213 — see iteration 106. Same five kept, same one removed; the digits moved.*
+
 Composite of the five, on the 122 questions where a choice existed:
 
 | | Value |
@@ -4914,3 +4919,87 @@ extra — which makes "is the composite worth its complexity" a measured questio
 **Evidence.** `pnpm eval:signals` on the artefact from run `40862283263` reproduces every row above;
 `readSubsets` is exercised in `signal-gate.test.ts` (48 tests, 100 on all four dimensions). Commit
 `3a3761f`. Total suite 1,509 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**.
+
+### 105 — The ablation becomes an arm, so its answer stops being in sample
+
+Iteration 104 could name the comparison but not settle it: `value-type` alone reaching 39.3% of the
+composite's 40.2% was read off the same pool the composite is scored on, so a run refitted to that
+reading would report the fit. `sample-5-value` is the comparison as an arm — one voter, the same five
+draws, the same judge, cross-fitted.
+
+`selectByShape` now takes its signal set as a parameter with the licensed five as the default, so the
+two arms are one function applied to two sets rather than two implementations of one idea. `VALUE_VOTERS`
+sits beside `SHAPE_VOTERS` for the same reason `SHAPE_VOTERS` exists: a signal set a public selector may
+vote with, fixed once and named, so that no lane can invent a third.
+
+**The arm is free.** Both selectors read the executions the sampling pass has already paid for. That is
+the whole reason this comparison is worth making now rather than after a bigger run: "is the composite
+worth four extra signals" is answerable at zero marginal cost, and it is the question that decides
+whether this verifier stays a composite at all.
+
+A test states the difference the two sets make, on one pool: a list question answered with a single
+number is `row-shape`'s objection and nobody else's, so the five-voter set moves off the first draw and
+the one-voter set cannot. Without that test the two arms would be two names for a function that happens
+to be called with different arguments, which is how a comparison silently becomes an identity.
+
+**Evidence.** 1,510 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**; `signal-gate.ts` 48 → 49
+tests, 100 on all four dimensions. Commit `da5a303`.
+
+### 106 — The artefact did not record the evidence, so the gate was read against a different question
+
+Found while checking whether a database-conditioned prior over execution signatures was worth an
+iteration. The check failed for an unrelated reason and the reason is worse than the thing it was
+checking.
+
+**The defect.** `shapeOf(question, evidence)` reads the question *and* the evidence, because BIRD's
+evidence carries half the intent — the module says so in its own comment, and `poolFromArtifact` says it
+recomputes "the shape from the question and its evidence". The artefact that carries the pool recorded
+`question` and did not record `evidence`. Every re-analysis therefore rebuilt each shape against an empty
+string, and `entry.evidence ?? ''` hid the omission: no error, no warning, a full set of numbers.
+
+**The size of it.** Same file, same equations, two reads:
+
+| Signal | Run computed | `pnpm eval:signals` reports |
+|---|---|---|
+| `value-type` | 0.6015 | 0.6077 |
+| `column-shape` | **0.5998** | 0.5788 |
+| `row-shape` | **0.5749** | 0.5626 |
+| `empty` | **0.5653** | 0.5719 |
+| `duplicate-share` | 0.5418 | 0.5425 |
+| `null-share` | 0.5213 | 0.5213 |
+
+Three of six move by more than half a percentage point and one moves the wrong way. The gate's
+verdicts survive — all six AUCs sit above 0.5 under both reads, `null-share` is lowest under both, and
+the five that were kept were kept on the run's own numbers when the run ran — but the digits in
+iterations 102, 104 and 105 are the reconstruction's digits, and the reconstruction is of a selector
+that never ran.
+
+**What that costs the argument.** The composite's +7.38pp and the whole ablation table in iteration 104
+were computed from the evidence-less shapes. The arm dispatched as `sample-5-shape` reads the real
+evidence. So the simulation and the arm were not the same selector, which is exactly the property
+iteration 103 claimed to have established by sharing `bestIndex`. Sharing the ranking rule is not
+sharing the input.
+
+**The fix, and why it is a type.** `evidence` is now a required field of `CaseOutcome`. The writer
+cannot omit it and the compiler will not let a new writer forget it — the type is the guard, and a test
+prices the difference on one question so a reader can see what the guard is for. That is the second
+time in this log that a required field has done the work a convention could not: the arm table is a
+`Record` over the union for the same reason.
+
+**What is not fixed.** Run `40880218444` was dispatched before the field existed and will produce an
+artefact that is un-re-readable in this respect. Its own embedded signal readings and its own arm
+table are the authoritative record of what it measured; the commands reproduce something else. That
+inversion — the artefact more trustworthy than the re-analysis — lasts exactly until the next dispatch.
+
+**The thing that was being checked, recorded so it is not lost.** A prior keyed on `(database,
+execution signature)` and built leave-one-fold-out ranks candidates at AUC **0.636** over the 176
+within-question pairs the coarse signature can tell apart, which is above every one of the six shape
+signals. It is not yet a result: the key is the coarse shape, and 1,750 candidates collapse to 124
+distinct shapes across 11 databases, so what the prior has learned is the frequency of a shape on a
+database, not the memory of a case. The memory-shaped version of it needs a digest of the result rows
+per draw, which the pool does not record either. Both fields are now on the list, and the prior is not
+an arm until they exist.
+
+**Evidence.** `eval:signals` and the artefact's `metrics.pool.signals` disagree as tabulated above;
+the discrepancy is reproducible from `/tmp/run-40862283263/poc-sota-bird.json`. Commit `8ee3b1e`.
+1,511 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**.

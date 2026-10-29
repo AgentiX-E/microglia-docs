@@ -420,6 +420,12 @@ and five of six signals cleared it:
 | `duplicate-share` | 0.542 | 0.017 | 2.46 | 0.0137 | **kept** |
 | `null-share` | 0.521 | 0.017 | 1.23 | 0.109 | removed |
 
+The AUCs in that table are reconstructed, not the run's own: the artefact did not carry the evidence
+BIRD ships with each question, so a re-analysis reads every question against an empty evidence string
+while the run read both. The run's own readings are `value-type` 0.6015, `column-shape` 0.5998,
+`row-shape` 0.5749, `empty` 0.5653, `duplicate-share` 0.5418, `null-share` 0.5213 — the same five kept
+and the same one removed. The field is now required, so the next artefact cannot repeat the omission.
+
 **What the gate is worth.** The composite of the five picks correctly on 40.2% of those 122 questions
 against 32.8% for the first draw: +7.38pp there, +2.57pp over the whole run, 11 gained and 2 lost, exact
 McNemar p = 0.0225. It is the first positive selection number in the project's history, and it is the

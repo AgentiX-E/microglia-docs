@@ -1225,6 +1225,14 @@ composite of the five picks correctly on 40.2% of the 122 choice-bearing questio
 the first draw: **+7.38pp** there, **+2.57pp** over the run, 11 gained / 2 lost, exact McNemar
 **p = 0.0225**, yield 0.44 of the 25-question ceiling.
 
+Two caveats on those digits, both from iteration 106. The AUCs above are a reconstruction's: the
+artefact did not record the evidence BIRD ships with each question, so a re-analysis rebuilds every
+shape from the question alone while the run used both. The run's own readings are `value-type` 0.6015,
+`column-shape` 0.5998, `row-shape` 0.5749, `empty` 0.5653, `duplicate-share` 0.5418, `null-share`
+0.5213 — the same five kept, the same one removed. And the composite's 40.2% inherits the same defect,
+so it describes a selector reading a degraded shape rather than the one `sample-5-shape` runs. The
+verdicts stand; the digits are provisional until an artefact carries the evidence.
+
 Criterion 5 was met by construction rather than by inspection: `compositePicks` is called in a test with
 every candidate's `correct` field replaced by a getter that throws.
 
