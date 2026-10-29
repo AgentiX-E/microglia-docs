@@ -26,27 +26,77 @@ as a target. The POC is a **controlled mechanism study**, not a leaderboard entr
 
 ---
 
-## 1. 中文摘要
+## 1. Summary
 
-**结论：这个方向值得做，但必须做成"库"而不是"平台"，且成败取决于三个工程约束，而不是模型能力。**
+**The direction holds; the unit does not.** Feedback-to-knowledge is a real lever, and the evidence for
+it is industrial as well as academic. But eleven measured arms on a public benchmark say the same thing
+from eleven angles: **a lesson distilled from one correction carries information about that correction
+and about nothing else.** The product that survives that finding is not a memory middleware that
+prepends lessons, and section 3 is the measurement that says so rather than the argument.
 
-反馈数据飞轮的价值已有可复现的工业证据：Airbnb 的 Agent-in-the-Loop 把四类人工反馈嵌入在线客服流程，检索 recall@75 +11.7%、precision@8 +14.8%、有用性 +8.4%、坐席采纳率 +4.5%；NVIDIA 的 MAPE 飞轮在 3 个月内收集 495 条负样本，定向微调后路由准确率 96%、模型小 10 倍、延迟降 70%。学术侧的 ACE（+10.6% agent / +8.6% finance）、ReasoningBank（WebArena +8.3%，MaTTS 下相对 +34.2%）、ExpeL（HotpotQA 28%→39%）、AWM（WebArena 相对 +51.1%）说明"从经验中提炼可复用知识"是真实杠杆。
+### 1.1 What is established, with the number
 
-但市场存在明确空位：Langfuse / LangSmith / Braintrust 等观测与评测平台**采集**反馈，止步于数据集和看板；Mem0 / Zep / Letta 等记忆系统**存储**记忆，却不理解"一次编辑"意味着什么；Humanloop 已被 Anthropic acqui-hire、平台于 2025-09-08 关停，说明"再做一层平台"正被模型厂商吸收。**没有一个可嵌入的 SDK 把"反馈 → 语义化纠错 → 受治理的知识 → 注入回请求路径 → 归因"闭成环。** 这正是 microglia 的位置。
+| Finding | Evidence | Size |
+|---|---|---|
+| Generic chart knowledge needs no memory layer | DeepSeek without a pack already answers 90.48% | a pack moved it −2.38pp to 0.00pp |
+| Organisational convention is where the value is | gold disagrees with the model's prior, no pack 0.00% | **+75.0 to +89.3pp** with a pack |
+| The pipeline can learn from a correction at all | synthetic POC, 560 train / 280 held out, 4 schemas, 6 systematic defect classes | 31.79% → 100.00%, McNemar p < 0.0001 |
+| Scope widening is what makes it generalise | held-out `ops` domain that never gave feedback | **100.00% with widening, 32.86% without** |
+| The trust ceiling is load-bearing | poisoned arm with the ceiling removed | 100.00% → 85.71% |
+| Cost is not the obstacle | 1k / 5k / 10k knowledge items, CPU | p95 **1.9–4.4ms**, heap **+14MB**, no GPU, no server |
 
-定位判断：可行。理由有三。第一，宿主（nl2charts）已有成熟评测体系（BIRD Mini-Dev 49.6%、nvBench 2.0 91.73%、Text2Vis 44.94%，并以 gate 固化），反馈闭环可以直接挂在现成的 HITL 面上，不需要新造产品。第二，"无 UI、无服务、无多租户"意味着集成成本是五行代码，而不是一次采购。第三，cortex 已经提供了记忆的认知层（价值门、双时态事实、FSRS、矛盾消解），microglia 不需要重造，只需要补齐它缺的"反馈语义"和"归因"。
+Those five rows are why the project exists, and none of them has been retracted.
 
-关于 cortex：**可作为投影层与认知维护引擎，不能原样作为反馈账本或知识反哺引擎。** 它没有 `derivedFrom` 溯源边、没有 TD(λ) 信用分配、没有概率校准，且其 83.55% 的 LongMemEval-S 数字出自 55 个 commit 之前的快照，未在 LoCoMo 上测量。本仓库的 `@agentix-e/microglia-cortex-adapter` 用结构化适配器验证了"知识项 → MemoryValue / Fact"的投影可行，但结论是**互补而非替代**。
+### 1.2 What R2–R6 overturned
 
-POC 的受控实验（560 训练 / 280 留出，4 个 schema，6 类系统性缺陷，留出 `ops` 域完全不给反馈）测得：31.79% → 100.00%（+68.21pp，McNemar p<0.0001）；**在从未收到反馈的 `ops` 域上，允许作用域泛化的臂为 100.00%，禁止泛化的臂为 32.86%**——这是"越用越聪明"最干净的一次隔离验证。去掉信任上限后，投毒臂从 100.00% 掉到 85.71%，说明防护是承重的，不是装饰。
+On BIRD Mini-Dev, under a pre-registered protocol with a noise-floor control on every dispatch, every
+arm that changes what the prompt contains came back at or below zero:
 
-这一轮又用真实 API 补了四个 POC（三次运行，结论须在三次都成立）：**通用图表知识不需要 microglia**——DeepSeek 在无 pack 时已达 90.48%，加 pack 为 90.48% 至 88.10%（0 至 −2.38pp）；**组织惯例才是价值所在**——当 gold 与模型先验冲突时，无 pack 为 0.00%，加 pack 为 **75.00%–89.29%**。LLM 蒸馏把自由文本纠错转成带 scope 的规则，mark 准确率 **91.67%–95.83%**、intent **95.83%–100%**、注入文本 **0 条激活**；Embedding 在重度改写下比 BM25 的 recall@1 稳定高 **8.3pp**，但轻度改写时 BM25 更强，因此 embedding 只能作为按置信度启用的可选通道。CPU 规模测试在 1k/5k/10k 条知识上 p95 为 **1.9–4.4ms**（10k 为 2.6–3.1ms）、堆增量 **14MB**——**不需要 GPU，也不需要服务端**。
+| Arm | Position | Δ vs no memory |
+|---|---|---|
+| lexical schema linking (pruned DDL) | input | −8.00pp |
+| rule pack (`full`), pooled over two dispatches | input | −2.29pp (p = 0.052) |
+| `full-verified` — only rules that reproduce their own correction | input | +0.71pp (p = 0.42) |
+| value samples in the DDL | input | +0.29pp |
+| model selection over five draws | output | −2.43pp |
+| execution selection over five draws | output | −1.14pp |
+| **oracle over five draws** | **ceiling** | **+3.52pp** |
 
-必须说清楚的三个前提：纠错必须是**系统性**的（同一类错误会重复出现）；每条知识需要有**重复证据**（本 POC 每条规则约 12 次观测，均匀噪声因此被多数票吸收）；宿主必须传入**结构化 scope**（intent/domain），否则检索退化为纯文本匹配。产品约束同样明确：**只支持 CPU 或浏览器 WebGPU，不做 GPU 训练/推理，不做本地微调**。
+The one positive number is a ceiling, and it sits on the output side. The gap between the ceiling and
+the best real selector — 4.66pp — is the entire opportunity this project has measured, and it is a
+verifier problem.
 
-**下一步**：批准后按 §10 的 S1 阶段在 nl2charts 私有评测集（n=1300，κ≥0.7）上做 shadow 模式验证，再进入 BIRD-Interact / nvBench 2.0 的公开评测。若 S1 的 +3pp 不成立，按 §10.5 的 kill criteria 停止，不做"再调一版"。
+### 1.3 The measurement that ends the ambiguity
+
+R6 pointed every admitted rule at four foreign questions and recorded both what it repaired and what it
+broke. A rule repairs **22.6%** of the questions a bare retry could not fix — on its own question — and
+**29 repaired against 29 broken** on questions it was not distilled from. Net marginal effect:
+**+0.00pp** on 892 trials, against **+20.53pp** on 638 own-case trials.
+
+A rule and its case are one object. Moving that object from the prompt prefix to a scorer changes where
+a zero sits, not what it is worth. Section 3.6.1 states this with the full 2×2.
+
+### 1.4 Product constraint, restated
+
+- **CPU or browser WebGPU only.** No GPU training, no local fine-tuning, no served inference.
+- **A library, not a platform.** Integration is a handful of lines; there is no UI, no service, no
+  tenancy.
+- **The store holds execution-grounded evidence**, not prose lessons: `(schema, execution signature,
+  outcome)` is the object that survives being read by a question it was not built from.
+
+### 1.5 What is next, and what would stop it
+
+R7 is ordered so the pool is described before any scorer is built: instrument the candidates (R7.0,
+done), widen the pool with heterogeneous generators and measure whether the ceiling moves (R7.1), price
+each execution signal alone (R7.2a), then build the deterministic verifier (R7.2b). If the ceiling does
+not move at least 2pp in R7.1, candidate diversity is not the constraint and R7.2 becomes the whole
+stage with a 3.52pp ceiling as its maximum prize. If the verifier's yield is at the floor, the stage
+ends and the programme reports two closed axes rather than a third mechanism.
+
+The kill criteria are in `ROADMAP.md` §R7, written before the dispatches they govern.
 
 ---
+
 
 ## 2. The problem: a loop that is captured but not closed
 
@@ -110,7 +160,11 @@ A product in this space that does not encode these lessons will produce confiden
 
 ## 3. Is the direction valuable? — the verdict
 
-**Yes, with four conditions. It is a real lever, not a universal one.**
+**Yes for the four mechanisms below, and no for the form this project spent eleven iterations building.**
+
+Read 3.1 with 3.5 in hand: the mechanisms are where the value is, and the *prompt prefix* is not a
+delivery route for any of them on a one-shot benchmark — every arm that put knowledge in front of the
+question measured at or below zero, and §3.6.1 shows why. The direction survives; the substrate did not.
 
 ### 3.1 Where the value comes from (four distinct mechanisms)
 
@@ -239,6 +293,37 @@ where the ceiling is measured on the same candidate set and the yield is the sha
 captures. Today, on five homogeneous draws: ceiling +3.52pp, yield negative. CHASE-SQL reports the
 comparable pair at 68.84% → 73.01% (+4.17pp) with **heterogeneous** candidates, which is the first
 thing our candidate set lacks: five samples from one prompt are five versions of the same mistake.
+
+### 3.6.1 The measurement that settles what the unit of memory is
+
+The paragraph above was an inference from the shape of the residual errors. It is now a measurement, and
+the measurement is sharper than the inference.
+
+R6 pointed every rule that reproduced its own correction at four foreign questions from the same
+database, judged each attempt against a bare retry on the same target, and recorded both halves of the
+2×2 — what the rule repaired, and what it broke.
+
+| | A bare retry fixed it | A bare retry did not | Marginal |
+|---|---|---|---|
+| **Rule shown a foreign question** | 39 kept / **29 broken** | **29 repaired** / 795 unchanged | **(29 − 29) / 892 = +0.00pp** |
+| **Rule shown its own question** | 61 kept / 13 broken | 144 repaired / 420 unchanged | **(144 − 13) / 638 = +20.53pp** |
+
+> A rule distilled from a corrected case carries **20.5 points of information about that case and 0.0
+> about any other**. It is not weak knowledge. It is a case record whose content is the case.
+
+Read with the break column, the two negative arm results stop being surprising and stop being about
+implementation. `full` injects 1.86 of these per question and loses 2.29pp pooled over two dispatches;
+each one is a coin flip on correctness that costs attention on every call. `full-verified` — the same
+run, keeping only rules that demonstrably reproduce their own correction — recovers **+3.00pp against
+`full`** (pooled, n = 700, p = 0.0075) and still lands at **+0.71pp against no memory at all**
+(p = 0.42). The gate removes the harm and produces nothing, which is exactly what a good filter does
+to a substrate with no signal in it.
+
+This is where the project's own question — *are we remembering the wrong thing, or using it wrongly?* —
+gets its answer, and the answer is neither of the two options it offered. **The unit is wrong, and no
+position repairs a unit whose content is its own index.** A lesson and its case are one object; the
+only thing that survives being moved to another question is a property of the *answer* rather than of
+the question, which is what an execution signature is and what R7.2 measures.
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 

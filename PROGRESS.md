@@ -4392,3 +4392,128 @@ because no competitor publishes intervals, a noise floor, or a minimum detectabl
 `microglia-docs` at this commit. R6 (transfer) is still running as run
 [`40820868520`](https://github.com/AgentiX-E/microglia/actions/runs/40820868520) at the 8,000-call
 ceiling sized in iteration 97; its rate decides whether R7.3 exists at all.
+
+### 99 — A rule repairs its own case at +20.5pp and any other case at 0.0pp
+
+R6 finished as run [`40820868520`](https://github.com/AgentiX-E/microglia/actions/runs/40820868520):
+4,289 calls, 8 retries, no failures, five folds, gates green. It published
+
+```
+rule_transfer = { rules: 224, trials: 896, informative: 824, repaired: 29,
+                  rate: 0.0352, blank_right: 68, broke: 29 }
+```
+
+and `0.0352` is not the number that decides the question. The conditional rate divides the 29
+repairs by the 824 targets a bare retry could not fix, which **excludes by construction every trial
+where the rule can do damage** — the 68 targets a retry had already fixed. On those, the rule broke
+29. So the table the artefact already contained reads:
+
+| | A bare retry fixed it | A bare retry did not | Row total |
+|---|---|---|---|
+| **The rule fixed it** | 39 (kept) | 29 (**repaired**) | 68 |
+| **The rule did not** | 29 (**broke**) | 795 (unchanged) | 824 |
+| Column total | 68 | 824 | **892 measured** |
+
+Net marginal effect of showing a rule to a foreign question: **(29 − 29) / 892 = +0.00pp**. Not
+"weak transfer" — a symmetric perturbation around zero, with 42.6% of the easy targets destroyed.
+
+**The same 2×2 on the rule's own question**, from the probe in the same run:
+
+| | Blank retry fixed it | Blank retry did not | Row total |
+|---|---|---|---|
+| **Rule fixed it** | 61 (redundant) | 144 (**supplied**) | 205 |
+| **Rule did not** | 13 (**broke**) | 420 (useless) | 433 |
+| Column total | 74 | 564 | **638 measured** |
+
+Net marginal: **(144 − 13) / 638 = +20.53pp**.
+
+> A rule distilled from a corrected case carries 20.5pp of information about that case and 0.00pp
+> about any other. That is the definition of a demonstration, and it is now measured rather than
+> argued.
+
+This is the answer to the question the last four iterations were circling. The unit of memory is not
+knowledge that failed to generalise; it is a *case record* whose content is the case. It applies
+where it was born and nowhere else, and the cost of carrying it — attention spent on a rule that
+does not apply — is paid on every call. That is why `full` has now measured −2.86pp and −1.71pp on
+two independent dispatches while its own gate, `full-verified`, keeps the rules that demonstrably
+work on their own case and gains nothing either: 0 of 2 in R5, 10 of 3 in R6, pooled +0.71pp over
+700 questions at p = 0.42.
+
+**What the verification gate is actually worth, pooled.** Both dispatches, paired:
+
+| Comparison | R5 | R6 | Pooled (n = 700) | McNemar p |
+|---|---|---|---|---|
+| `full-verified − full` | +2.29pp (18/10) | +3.71pp (21/8) | **+3.00pp** | **0.0075** |
+| `full-verified − none` | −0.57pp (5/7) | +2.00pp (10/3) | +0.71pp | 0.42 |
+| `full − none` | −2.86pp (11/21) | −1.71pp (11/17) | **−2.29pp** | 0.052 |
+
+Read top to bottom: the gate reliably removes the harm and reliably adds nothing. A mechanism that
+takes a treatment from −2.29pp to +0.71pp is a good *filter* on a substrate with no signal in it.
+That is a precise statement of what the store is worth in the prefix position, and it is the last
+one the prefix position gets.
+
+**The pre-registered criterion was not met, and the verdict does not rest on it.** R6 was written
+with "rate < 3% ⇒ cancel R7.3". Measured rate: 3.52%. The threshold was crossed by 0.52pp, so the
+literal criterion says "not refuted". The cancellation above rests instead on two facts the
+pre-registration did not anticipate, both stated before the run was read:
+
+- the statistic it named cannot express the question, because its denominator drops the break side;
+- the break side is as large as the repair side (29 = 29), which is a result about the *content*
+  of the rule, not about the sample.
+
+Recording the miss rather than moving the goalposts: the criterion was mis-specified, and the
+replacement (net marginal effect, gated) is the one that should have been written in R6.
+
+**What was built.** Three things, in the order they had to exist.
+
+`transferSummary` now returns the whole 2×2 — `measured`, `marginalRepair`, `marginalBreak`,
+`netPp`, `breakRate` — beside the conditional `rate`, and a `verdict` that applies a 100-informative
+floor *before* reading the sign, so eleven trials cannot become the word `no-transfer`.
+**Gate V17** blocks a run whose `netPp` does not reconcile with `(repaired − broke) / measured`,
+because a summary that can only improve is a summary that should not be printable.
+
+`packages/eval/src/pool.ts` (22 tests, 100% on all four dimensions) is R7.0: the pool, described
+from candidates a sampling pass already produced, at **zero call cost**.
+
+| Quantity | What it answers | Why it decides the stage |
+|---|---|---|
+| `distinctMean` / `distinctHistogram` | how many *different* execution results five draws contained | five draws that collapse to one answer are one candidate with five spellings, and no selector can gain on them |
+| `ceilingOnly` | questions where some draw was right and the first was not | the ceiling, minus the part that was already free |
+| `uniqueCorrect` / `sharedCorrect` | whether the ceiling needs a choice or just agreement | agreement is what the majority selector already reads |
+| `signalReadings` | each of the six signals priced alone | AUC against correctness with a question-clustered bootstrap, and top-pick accuracy beside the first-draw base rate |
+
+The clustering is the methodological point. Five candidates from one question share the schema and
+usually the misreading, so a flat bootstrap over candidates reports an interval about the square
+root of the pool size too narrow — which is exactly the error that makes an inert signal look real.
+Resampling questions instead is one line more code and the difference between a gate and a decoration.
+
+The pool is written into every case of the artefact, so the next question about it is a computation
+over a file. **V18** blocks a pool that describes fewer questions than the run answered; **V19**
+blocks candidates that do not reconcile as signed or explicitly unsigned.
+
+**The `m-schema` arm.** XiYan publishes the exact cell it tests — BIRD dev, DeepSeek, DDL 53.52
+against M-Schema 55.15 — and our own baseline is 53.43 on that model, a 0.09pp agreement. So this is
+not an analogy: it is a competitor's ablation, re-run on our harness, on the same split. The two
+schema arms now differ in *placement* rather than in amount, which is the variable this project has
+already measured twice (+0.29pp for a value comment above the DDL, −2.86pp for a rule pack above it).
+
+**Acceptance.**
+
+| # | Criterion | Result |
+|---|---|---|
+| 1 | the transfer summary reports the break side, not only the conditional rate | **met**: `measured`, `marginalRepair`, `marginalBreak`, `netPp`, `breakRate` |
+| 2 | a rate without its net effect cannot pass | **met**: V17, blocking, reconciles `netPp` against the counts |
+| 3 | a verdict is not drawn below the resolvability floor | **met**: `TransferVerdict` = `unmeasured` under 100 informative trials |
+| 4 | the pool is described at zero call cost | **met**: `pool.ts` reads candidates the sampling pass produced |
+| 5 | the signal intervals respect the question cluster | **met**: bootstrap resamples questions, not candidates |
+| 6 | the pool is in the artefact, not only its summary | **met**: `per_case[].pool` carries every candidate and its shape |
+| 7 | instrumentation cannot silently drop a question | **met**: V18 blocking, `questions === expected` |
+| 8 | a competitor's published cell is reproduced on this harness | **met**: `m-schema` arm wired, dispatched as run `40862283263` |
+| 9 | four-dimension coverage of every new module | **met**: `pool.ts` 100/100/100/100, `rule-probe.ts` 100/100/100/100 |
+| 10 | the repository stays above the 95% gate | **met**: 99.96 / 99.59 / 100 / 99.96, 1,407 tests |
+
+**Evidence.** `master` at `b95b9c4`; 88 test files, 1,407 tests, coverage **99.96 / 99.59 / 100 /
+99.96**; `pnpm check` green including the bench and the bundle budget. R7.0 dispatched as run
+[`40862283263`](https://github.com/AgentiX-E/microglia/actions/runs/40862283263) with
+`none-replica, sample-5-first, sample-5-oracle, m-schema`, transfer measurement off, 8,000-call
+ceiling.

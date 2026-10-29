@@ -1030,6 +1030,38 @@ input to the distiller rather than the distiller, and one table separates the tw
 **Cost.** 294 admitted rules × 4 targets ≈ 1,176 calls, plus four arms on 350 questions. One
 dispatch.
 
+### R6 — closed 2026-10-29, run `40820868520`
+
+| # | Criterion | Reading | Result |
+|---|---|---|---|
+| 1 | ≥ 90% of admitted rules pointed at ≥ 3 foreign cases | 224 rules × 4 = 896 trials, 0 short | **met** |
+| 2 | the buckets reconcile | 4 unmeasured + 68 blank-right + 824 informative = 896 | **met** (V15) |
+| 3 | the rate is reported with `informative` | 29 / 824 = 3.52% | **met** (V16: 824 ≥ 100) |
+| 4 | the rate converts to an expectation | 0.0352 × 1.86 packs = 0.065 repairs per question | **met** |
+| 5 | `full-transferred` reported with its pack size | +2.57pp with `mean_pack_ids = 0.031` | **met**: an arm that carried 11 rules in 350 questions |
+| 6 | `supplied` stable across folds | 20.3–24.4% (R5), no fold drives the figure | **met** |
+
+**The verdict is `no-transfer`, and it is not the threshold's.**
+
+| Statistic | Value | What it says |
+|---|---|---|
+| conditional rate (`repaired / informative`) | 3.52% | as pre-registered; above the 3% cancellation trigger |
+| **net marginal effect** | **(29 − 29) / 892 = +0.00pp** | the rule repairs and damages in equal measure |
+| **break rate on targets a retry had fixed** | **29 / 68 = 42.6%** | the rule destroys easy targets at four times the rate it repairs hard ones |
+| own-case net marginal, same run | (144 − 13) / 638 = **+20.53pp** | the same rule, the case it came from |
+| repairs per question, deployed | 0.065 | 23 questions in 350, inside the noise floor |
+
+Criterion 3 was met and criterion 5 was met; the rate landed at 3.52% against a pre-registered
+cancel-below of 3%. **The statistic the pre-registration named could not have refuted anything**: its
+denominator is the targets a bare retry failed, which removes every trial where the rule does damage,
+so it can only go up. Iteration 99 added the marginal accounting and gate V17 to make the loss side
+unprintable-without, and re-read R6 under it. The axis closes on the break rate, not the threshold.
+
+Outcome per the licence table above: **rate in the 3–10% band with a zero net effect**. Neither of the
+two pre-written branches applies literally, and the reading that does apply is the third one —
+what the probe measures does not survive being put in a prompt — except that iteration 99 shows it
+does not survive being put anywhere: the transfer is zero before the rendering is reached.
+
 ---
 
 ## R7 — The lever is on the output side (opened 2026-10-29, revised with competitive anchors)
@@ -1161,8 +1193,26 @@ Only after R7.1 and R7.2. The same store, two positions, one run: as prompt text
 −2.86pp) and as a feature the verifier reads — "this schema, this signature, and a stored record that
 this signature was wrong here before".
 
-**Cancelled, not reworked, if** R6's transfer rate lands at the noise floor. A feature built from rules
-that cannot repair another question is a lookup table with one row.
+**Cancelled as a prefix feature; it survives only in rewritten form as a verifier prior (2026-10-29).**
+
+R6 measured a rule shown to a foreign question: 29 repaired and 29 broken over 892 measured trials,
+net **+0.00pp**, with 42.6% of the targets a bare retry had already fixed destroyed. The same rule on
+its own question nets **+20.53pp**. The unit is a case record, and text distilled from a case carries
+nothing about any other case; R7.3 as written — the same rules, moved from the prefix to a feature
+slot — would move a zero from one place to another.
+
+What survives is a different *stored object*, not a different position for the same one: a
+`(schema, execution signature, outcome)` triple. That object is a prior over the shape of an answer
+rather than a lesson about a question, it is complete at one observation, and the verifier reads it
+without applying it to a prompt. It is folded into R7.2b's feature set and keeps a cancellation rule:
+if the deterministic verifier's yield sits at the floor, the prior has nothing to attach to and the
+stage ends.
+
+Recorded plainly: the pre-registered cancellation trigger was a transfer rate under 3%, and the
+measured rate was **3.52%** — above the threshold, not below it. The cancellation rests on the net
+marginal effect and the break rate instead, statistics the pre-registration did not name, added in
+iteration 99 because the ratio it did name cannot express the question. The replacement criterion is
+the one R6 should have carried.
 
 ### Protocol, fixed before any R7 dispatch
 
