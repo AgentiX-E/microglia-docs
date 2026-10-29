@@ -165,6 +165,94 @@ The project stops, rather than pivots, if any of these holds after S1 (§10):
 
 ---
 
+### 3.5 The lever is not on the input side
+
+Nine arms have now been measured on BIRD Mini-Dev under one protocol — same model, same folds, same
+scorer, paired bootstrap over 10,000 resamples, and a `none-replica` control that measures the noise
+floor of an identical prompt. Five of them act on the **input** (what the prompt contains). Four act
+on the **output** (which of several answers is kept).
+
+| Iteration | Arm | Acts on | Δ vs no memory | n | gained / lost |
+|---|---|---|---|---|---|
+| 94 | lexical schema linking (pruned DDL) | input | **−8.00pp** | 350 | 31 / 59 |
+| 96 | rule pack (`full`) | input | −2.86pp | 350 | 11 / 21 |
+| 96 | `full-shuffled` (same size, wrong donors) | input | −1.71pp | 350 | 14 / 20 |
+| 96 | `full-verified` (only rules that replay their own case) | input | −0.57pp | 350 | 5 / 7 |
+| 95 | value samples in the DDL | input | +0.29pp | 350 | 12 / 11 |
+| 93 | model selection over five draws | output | −2.43pp | 350 | — |
+| 93 | first draw (control for resampling) | output | −2.28pp | 350 | — |
+| 93 | agreement selection | output | −1.43pp | 350 | — |
+| 94 | execution selection | output | −1.14pp | 350 | 13 / 10 |
+| 93 | **oracle over five draws** | **ceiling** | **+3.52pp** | 350 | — |
+
+Two readings, and only one of them is a complaint about implementation.
+
+**Every input-side arm is at or below zero, including the one whose content was verified good.**
+`full-verified` injects only rules that demonstrably reproduce the correction they were derived from
+— 1.11 such rules per question, 139 questions — and gains zero questions while losing two. That is
+not a null about a treatment; it is a null about the *content* of the treatment, measured on the
+subset where the content was known to be good.
+
+**The only positive number in the table is a ceiling, and it lives on the output side.** Oracle
+selection over five homogeneous draws is worth +3.52pp: on 350 questions, the best of five draws is
+3.5pp better than one draw. The best *real* selector captures −1.14pp of it. The gap between the
+ceiling and the selector — 4.66pp — is the entire opportunity this project has measured, and it is a
+verifier problem, not a memory problem.
+
+### 3.6 Which flywheel can actually turn here
+
+Three loops are called "data flywheels" in the industry, and they turn on different things. Naming
+which one a product is building is the difference between a roadmap and a metaphor.
+
+| Flywheel | What turns | Signal it needs | Available in this setting | Verdict |
+|---|---|---|---|---|
+| **Parameter** (RLHF, DPO, o-series RL) | model weights | dense, trustworthy outcome signal | No: the generator is a closed API. Available only as LoRA on open weights, with a training path and volume | Out of scope until M3 has volume |
+| **Verifier / reranker** (Cursor's accept-rate loop, CHASE-SQL's selection agent) | the scorer, not the generator | two outcomes that can be compared | **Yes.** SQL is executable: the environment scores candidates for free | **The only flywheel that can turn here** |
+| **Context** (Mem0, Zep, MemGPT, ACE, ReasoningBank) | retrieved text | repeated tasks + information not derivable from the environment | Partial: needs repetition. One-shot benchmarks and novel schemas have none | Does not turn on this workload |
+
+The distinction that matters: a **parameter** flywheel compounds because the artefact of each turn is
+a better model. A **context** flywheel does not compound, because the artefact is text that the same
+fixed model must re-read every time — and re-reading costs attention. That is why the input-side
+column above is negative rather than merely flat: the cost is structural and paid on every call,
+while the benefit is a probability that a rule written for another question applies to this one.
+Measured, that probability is 22.9% even for the rule's *own* case (149 of 652 probed questions),
+and R6 is measuring it for foreign cases.
+
+**Why the residuals are not knowledge-shaped.** Of 350 questions the model gets 53.7% right from the
+schema alone. In the 162 wrong answers analysed in iteration 95, masking every string literal on both
+sides leaves the two queries different in **162 of 162** cases: the join, the aggregation or the
+filter is also wrong. What remains is question-specific semantics — which column this workspace calls
+revenue, whether this join needs a distinct, what this table's grain is — and that information does
+not exist in a rule distilled from a different question. It exists in *this* schema, *this* data and
+*this* question, which is exactly what a verifier can see and a prompt prefix cannot.
+
+**What that makes the product.** Not a memory middleware that prepends lessons, but an
+**execution-grounded verifier memory**: it stores the candidate queries a run produced together with
+what executing them returned, and it acts after generation and before commit — re-ranking, refusing,
+or asking. Its promise is falsifiable in one line:
+
+```
+pass@1 gain  =  selection yield  ×  oracle ceiling
+```
+
+where the ceiling is measured on the same candidate set and the yield is the share of it the verifier
+captures. Today, on five homogeneous draws: ceiling +3.52pp, yield negative. CHASE-SQL reports the
+comparable pair at 68.84% → 73.01% (+4.17pp) with **heterogeneous** candidates, which is the first
+thing our candidate set lacks: five samples from one prompt are five versions of the same mistake.
+
+### 3.7 What R7 has to prove, in order
+
+| # | Claim | Measurement | Refuted if |
+|---|---|---|---|
+| R7.1 | heterogeneous candidates raise the ceiling | oracle over 3 generators × 2 draws vs +3.52pp on 5 homogeneous draws | oracle gain < +2pp |
+| R7.2 | an execution-signature verifier captures a third of the ceiling | yield = captured / ceiling, paired over 350 questions | yield ≤ 0 with a CI that excludes 5% |
+| R7.3 | memory helps only as a verifier feature, never as a prefix | same store, two positions, one run | the prefix arm ≥ the feature arm |
+
+R7.3 is deliberately last and is the only place memory appears. If R6's transfer rate is at the
+noise floor, R7.3 is cancelled rather than reworked, and the store's role narrows to R7.2's features.
+
+---
+
 ## 4. What "valuable" means in numbers: the unit economics
 
 A single correction has four possible consumers. Assume a host with 1,000 runs/day and a 3%

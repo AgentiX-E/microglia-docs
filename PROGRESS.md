@@ -4239,3 +4239,83 @@ can distinguish a store that is useless from a store that is too small, and it i
 **Evidence.** Run [`40791608028`](https://github.com/AgentiX-E/microglia/actions/runs/40791608028),
 3,414 calls, 1 retry, 0 call failures, 350 scored, all eleven gates passing, `master` at `739fb72`;
 1,293 tests, coverage **99.97 / 99.56 / 100 / 99.97**.
+
+### 97 — The run that measured nothing, and the check that would have said so
+
+Run [`40798494938`](https://github.com/AgentiX-E/microglia/actions/runs/40798494938) ended `failure`
+after 47 minutes with no artefact. The cause was one line, 528 of 529 into the log:
+
+```
+[sota] fold 5/5 eval 100/350 calls=4197 retries=8 failed=0
+[sota] failed: MG_E_BUDGET_EXCEEDED: call budget reached
+```
+
+Four folds completed for 3,657 calls; the fifth reached call 4,197 of a 4,200 ceiling at question
+100 of 350. The lane exited non-zero, `publish` found no `poc-sota-bird.json`, and every subsequent
+step failed on the artefact's absence — so the log's last three errors all describe the missing file
+and none describes the cause. The ceiling was wrong by a factor of about 1.5 and nothing in the
+pipeline could see it before paying for it.
+
+**Measured cost per fold, from that run's own log.** The numbers the next dispatch has to be sized
+from, and the reason a static prior would have been wrong:
+
+| Fold | eval | probe | transfer | calls at fold end | calls this fold |
+|---|---|---|---|---|---|
+| 1/5 | 1,150 | 337 | 219 | 1,150 | 1,150 |
+| 2/5 | 907 | 244 | 219 | 2,057 | 907 |
+| 3/5 | 814 | 256 | 200 | 2,871 | 814 |
+| 4/5 | 786 | 247 | 187 | 3,657 | 786 |
+| 5/5 | ≥ 450 | — | — | **≥ 4,400** | — |
+
+Five folds of this arm set measure out at roughly 4,700 calls, and the R6 arms add the probe (2
+calls per probed question) and the transfer measurement (1 call per trial) on top. 4,200 was a guess
+made before any five-fold run existed.
+
+**The fix is a forecast, not a bigger number.** `forecastBudget` (packages/eval/src/call-budget.ts)
+is a pure function over what the completed folds actually spent:
+
+- it projects from the **dearest** fold, not the mean, because folds are not priced alike (1,150 in
+  fold 1 against 786 in fold 4 — a 1.46x spread inside one run);
+- it carries 10% headroom, because the retry rate moves inside a run (5 retries in fold 1, 8 in
+  fold 5) and an optimistic projection is worse than none;
+- it refuses only on evidence: with no completed fold there is nothing to extrapolate from, and the
+  check passes rather than inventing a prior;
+- the headroom is expressed in percent rather than as a multiplier, because `1150 * 3 * 1.1` is
+  3795.0000000000005 in binary floating point and ceils to 3796 — a two-call error that would show
+  up as an unexplained discrepancy in a run's own arithmetic.
+
+It runs **between folds**, the one moment where a sample exists and the next fold has not yet spent
+anything. On this run it would have fired after fold 1: 1,150 + ceil(1,150 × 4 × 110/100) = 6,210 >
+4,200, short by 2,010 — five seconds in, instead of forty-seven minutes.
+
+**A stopped run now leaves something behind.** `poc-sota-bird.partial.json` records the folds that
+did complete, their per-fold cost, and the reason for the stop; the workflow uploads it as its own
+artefact, named `sota-bird-partial` so it cannot be mistaken for evidence. The attribution step
+reports the budget stop's own reason instead of `no artefact`, which is what turned a one-line cause
+into a log dive.
+
+**Default ceiling 4,000 → 8,000.** Not a safety margin, a measurement: 4,700 for five folds plus the
+probe and transfer arms is what this configuration costs, and the old default was below the cost of
+the run it was supposed to pay for.
+
+**Why the cause took a log dive to find, stated plainly.** The previous dispatch's failure was
+reported to this session as "conclusion failure, step unidentified", and the follow-up to read the
+log did not happen — a tool call was blocked and the block was treated as the end of the question
+rather than as something to retry. `gh api repos/.../actions/jobs/<id>/logs` returns the full log as
+text on the first call, and it did so here. The failure was not visibility; it was not looking.
+
+**Acceptance.**
+
+| # | Criterion | Result |
+|---|---|---|
+| 1 | the projection refuses the 4,200 ceiling the run died on | **met**: 6,210 projected, 2,010 short |
+| 2 | projection uses the dearest fold, not the mean | **met**: 5,495 against a mean-based 4,505 on a synthetic ledger |
+| 3 | no fold completed ⇒ no refusal | **met**: passes, projection equals spend |
+| 4 | a stopped run writes its completed folds | **met**: `poc-sota-bird.partial.json`, uploaded separately |
+| 5 | the failure reason appears in the check annotation | **met**: the attribution step prints it |
+| 6 | four-dimension coverage of the new module | **met**: 100 / 100 / 100 / 100 |
+
+**Evidence.** `master` at `0e4cdc2` (local `9059d3e`); 1,321 tests, coverage **99.97 / 99.64 / 100
+/ 99.97**; `pnpm check` green. R6 re-dispatched as run
+[`40820868520`](https://github.com/AgentiX-E/microglia/actions/runs/40820868520) with the same arms
+and `max_calls=8000`.

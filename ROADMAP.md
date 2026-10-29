@@ -1029,3 +1029,101 @@ input to the distiller rather than the distiller, and one table separates the tw
 
 **Cost.** 294 admitted rules × 4 targets ≈ 1,176 calls, plus four arms on 350 questions. One
 dispatch.
+
+---
+
+## R7 — The lever is on the output side (opened 2026-10-29)
+
+R2 measured selection and closed it on three dispatches. R3, R4, R5 and R6 measured the input side
+and closed it too. Read together, the two closures say something neither says alone: **every arm that
+changes what the prompt contains is at or below zero, and the only positive number in the programme
+is a ceiling that lives on the output side** (oracle over five draws, +3.52pp). The best real
+selector captures −1.14pp of that ceiling, so the gap is 4.66pp and it is a verifier gap.
+
+The three-year habit of this project has been to treat "memory does not work" as a problem of
+content. R7 treats it as a problem of **position**, and moves the store from the prefix to the
+scorer. That is a different product claim, and the point of the stage is to make it falsifiable in
+three steps rather than to assert it.
+
+### R7.1 — Heterogeneous candidates, because five samples of one prompt are five versions of one mistake
+
+The ceiling is set by the candidate set, not by the selector. Five draws at temperature 0.7 from one
+prompt share the same framing, the same table choices and usually the same wrong join; CHASE-SQL
+reports its selection gain on candidates from **three different generators**, which is why its
+selection agent can move 68.84% → 73.01% while ours cannot move a homogeneous five.
+
+**Arms.** `hetero-2` (three generators × 2 draws) with `oracle-hetero` as its ceiling, against the
+recorded `sample-5-*` ceiling of +3.52pp. The generators:
+
+| Generator | Prompt shape | What it fixes that the others do not |
+|---|---|---|
+| `direct` | question + schema, answer in one step | nothing; it is the incumbent and the control |
+| `plan-first` | name the columns, the grain and the filters before writing SQL | the wrong-grain and wrong-distinct errors that survive a direct attempt |
+| `decompose` | split into sub-questions, answer each, compose | the multi-hop joins that a single pass collapses |
+
+**Acceptance.** Fixed before dispatch.
+
+| # | Criterion | Reading |
+|---|---|---|
+| 1 | the oracle ceiling rises | `oracle-hetero − oracle-5` ≥ +2pp, paired over 350 questions |
+| 2 | the generators are actually different | share of questions where the three generators disagree ≥ 40%, and no generator is right < 10% of the time |
+| 3 | the ceiling is not bought with calls | calls per question reported beside the delta; a ceiling that costs 6x calls and gains 2pp is recorded as such |
+| 4 | no generator dominates | if one generator alone reaches the multi-generator oracle, the other two are dropped and the stage reports a single-generator result |
+
+**Refuted if** the ceiling does not move at least 2pp: then candidate diversity is not the constraint,
+and R7.2 is the whole stage.
+
+### R7.2 — An execution-signature verifier
+
+The environment already scores candidates for free; the only question is whether a *rule* can read
+that score. R2's `sample-N-exec` asked a model to compare result sets and captured −1.14pp, which is
+the wrong instrument: a model comparing two result sets has no idea which one answers the question.
+
+A signature verifier does not compare result sets. It reads properties of each execution — the one
+that are cheap, deterministic and wrong-answer-shaped — and ranks:
+
+| Signal | Why it separates | Direction |
+|---|---|---|
+| empty result | the most common failure shape on a join that should not have been inner | against |
+| row count vs. question's plurality | "each"/"list" implies many rows; a scalar implies one | shape match |
+| column count vs. question's entities | a question naming two things rarely wants one column | shape match |
+| NULL share in the answer column | a wrong join multiplies rows and nulls | against |
+| duplicate rows unless "distinct" is asked | grain error | against |
+| type of the returned value | a count is an integer, a name is text | shape match |
+
+**Acceptance.**
+
+| # | Criterion | Reading |
+|---|---|---|
+| 1 | the verifier captures a third of the available ceiling | `yield = captured / (oracle − none)` ≥ 0.33, paired |
+| 2 | it is measured against the best real selector | must beat `sample-N-exec` (−1.14pp) and `agreement` (−1.43pp) on the same draws |
+| 3 | each signal is ablated | one arm per signal disabled; a signal whose removal changes nothing is reported as inert and removed |
+| 4 | no signal is scored by the answer | the verifier may not read the gold SQL, the gold result, or any field the scorer uses |
+
+**Refuted if** yield ≤ 0 with a CI excluding 5%: then execution signatures carry no signal beyond what
+the model already uses, and the output-side thesis fails with the same honesty the input side failed
+with. The programme then reports two closed axes and stops claiming a lever.
+
+### R7.3 — Memory's last position: a verifier feature, never a prefix
+
+Only after R7.1 and R7.2. The same store, two positions, one run: as prompt text (`full`, already
+measured at −2.86pp) and as a feature the verifier reads — "this question's schema, this candidate's
+execution signature, and a stored record that this signature was wrong here before".
+
+**Acceptance.**
+
+| # | Criterion | Reading |
+|---|---|---|
+| 1 | the feature arm beats the prefix arm | paired, on the same candidate set and the same store |
+| 2 | the feature is ablated | feature off = R7.2's verifier alone; the difference is memory's contribution |
+| 3 | the store's size is reported | a feature that helps at 1.11 rules per question and not at 0.44 is a size finding |
+
+**Cancelled if** R6's transfer rate lands at the noise floor. A feature built from rules that cannot
+repair another question would be a lookup table with one row, and R7.2 alone would carry the stage.
+
+### Cost
+
+R7.1: three generators × two draws × 350 questions ≈ 2,100 calls, plus the existing arms.
+R7.2: no model calls, the signatures are computed from results already in hand. R7.3: one fold-aligned
+run of the feature arm, ≈ 1,500 calls. Two dispatches, both inside the 8,000-call ceiling that
+iteration 97 sized from measurement.
