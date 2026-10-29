@@ -964,3 +964,68 @@ demonstrated rule, and it converts directly into the store size a memory would n
 *p*, a pack of *k* rules repairs *k·p* questions per question asked. If *p* is 2%, the corpus's 1,256
 rules are worth about 25 questions of 350 and the memory is too small, not wrong. If *p* is 0%, the
 axis is closed and the record can say so with a number instead of an opinion.
+
+## R6 — Transfer: is an admitted rule knowledge or a demonstration? (opened 2026-10-29)
+
+R5 answered what is in the store. It could not answer what the store is worth, because a rule that
+reproduces the correction it was distilled from is a lookup table with one row. The difference
+between a demonstration and knowledge is whether the rule repairs a *different* question, and it has
+never been measured here.
+
+**The measurement.** Every rule that passed the R5 gate is pointed at four foreign cases from the
+same database, drawn by a seeded partial Fisher-Yates so two runs of one store probe the same pairs.
+The repair is judged against the target's own blank — a bare retry on that target, which is a
+property of the target rather than of the rule and is therefore paid for once and reused.
+
+| | blank right | blank wrong |
+|---|---|---|
+| **with the rule right** | `blankRight` (nothing shown) | **`repaired`** |
+| **with the rule wrong** | `broke` (damage on a case that needed nothing) | `unchanged` |
+
+`rate = repaired / informative`, where informative means the target's blank was wrong. A target a
+bare retry already fixes cannot be counted as a repair, for the same reason the own-case probe has a
+blank.
+
+**Why the rate is the number that decides the axis.** Repairs per question ≈ admitted rules per pack
+× rate. At the 0.44 admitted rules per question measured in R5:
+
+| Transfer rate | Expected repairs on 350 questions | Reading |
+|---|---|---|
+| 20% | ~30 | the store is real but thin; more data is the answer |
+| 5% | ~8 | worth less than the floor, and more data would not fix it at this corpus size |
+| 1% | ~1.5 | the units are demonstrations, not lessons; adsorption of "rules" is the wrong substrate |
+
+**Arm.** `full-transferred` carries only the intersection: reproduced its own correction, and repaired
+another question. It is the only content this project has ever shown to be knowledge, and its pack
+size is reported — a store that admits nothing is a finding about the corpus rather than an arm that
+did nothing.
+
+**Also fixed from R5's gap.** `rule_probe.by_kind` cross-tabulates verdict against the failure the
+case presented. 552 of 652 corrections failed as *rejected* — the query ran and returned rows, and the
+only symptom is that a person said it was wrong — so a dominant `useless` share there indicts the
+input to the distiller rather than the distiller, and one table separates the two readings.
+`rule_probe.by_fold` gives the supplied rate per fold, so a figure driven by one fold is visible.
+
+**Acceptance.** Fixed before dispatch.
+
+| # | Criterion | Reading |
+|---|---|---|
+| 1 | at least 90% of admitted rules are pointed at ≥ 3 foreign cases | `trials / (rules × targets)`, with `skipped` accounted |
+| 2 | the trial buckets reconcile | `unmeasured + blank_right + informative = trials` (gate V15, blocking) |
+| 3 | the rate is reported with `informative`, never as a bare share | and gate V16 records whether 100 informative trials existed |
+| 4 | the rate converts to an expectation | repairs per question = `rate × mean_pack_ids`, stated in the report |
+| 5 | `full-transferred` is reported with its pack size | a delta beside `mean_pack_ids = 0` describes `none`, not the arm |
+| 6 | `supplied` is stable across folds | `by_fold.rate` within ±10pp of the pooled rate, or the pooled number is one fold's |
+
+**What each outcome licenses.**
+
+- rate ≥ 10% and `full-transferred` non-negative → the store works and is under-populated. The next
+  work is corpus size and retrieval precision, not another memory form.
+- rate < 3% → the units are demonstrations. Then the four remaining memory forms (R1.2–R1.5) are all
+  rearrangements of a unit that does not carry, and the honest close is to say so with the number and
+  stop spending dispatches on it.
+- rate high but `full-transferred` negative → the transfer that the probe measures does not survive
+  being put in a prompt, which points at the rendering and the position rather than the content.
+
+**Cost.** 294 admitted rules × 4 targets ≈ 1,176 calls, plus four arms on 350 questions. One
+dispatch.
