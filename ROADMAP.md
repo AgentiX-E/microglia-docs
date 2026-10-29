@@ -1103,12 +1103,17 @@ the selector is the problem and R7.2 is the work.
 
 **Acceptance.**
 
-| # | Criterion | Reading |
-|---|---|---|
-| 1 | every candidate carries a signature | `signed / candidates` = 100%, gate blocking |
-| 2 | the collapse statistic is reported per fold | `distinct_results / draws`, pooled and by fold |
-| 3 | the oracle is decomposed, not just totalled | `oracle − none` split into "unique correct" and "shared correct" |
-| 4 | no behaviour change | `none` and `none-replica` deltas within the recorded noise floor |
+| # | Criterion | Reading | Result (run 40862283263) |
+|---|---|---|---|
+| 1 | every candidate carries a signature | `signed / candidates` | **1,745 / 1,750 = 99.7%**, the five unsigned are draws that produced no query |
+| 2 | the collapse statistic is reported per fold | `distinct_results / draws` | **mean 1.43, median 1** of 5 |
+| 3 | the oracle is decomposed, not just totalled | unique vs shared correct | 14 unique / **195 shared** / 141 none |
+| 4 | no behaviour change | `none` and `none-replica` deltas within the noise floor | `none-replica` **+0.29pp** [−0.86, 1.71], inside the ±1.7pp floor |
+
+**Closed 2026-10-29. Verdict: NARROW**, on the bar fixed before the run: a median of one distinct answer
+per five draws is 0.20 of the draws, below the 0.33 collapse threshold. The pool is one answer with
+several spellings, and 93% of the questions the oracle reaches are questions where two or more draws
+were already right.
 
 **Cost.** Zero extra calls.
 
@@ -1212,6 +1217,16 @@ four candidates. The floor turns that into `z = 2.00` at four — which fails �
 **The number this produces is a gate, not a result.** If every signal lands at AUC 0.50 ± noise, the
 honest conclusion is that execution shape carries no signal beyond what the model already uses, and
 R7.2b is cancelled before it spends anything.
+
+**Read on run 40862283263 (2026-10-29).** Five of six signals cleared `AUC − 0.5 > 2 SE` after Holm:
+`value-type` 0.608 (z 6.25), `column-shape` 0.579 (4.57), `empty` 0.572 (4.17), `row-shape` 0.563
+(3.38), `duplicate-share` 0.542 (2.46). `null-share` 0.521 did not (z 1.23) and is removed. The
+composite of the five picks correctly on 40.2% of the 122 choice-bearing questions against 32.8% for
+the first draw: **+7.38pp** there, **+2.57pp** over the run, 11 gained / 2 lost, exact McNemar
+**p = 0.0225**, yield 0.44 of the 25-question ceiling.
+
+Criterion 5 was met by construction rather than by inspection: `compositePicks` is called in a test with
+every candidate's `correct` field replaced by a getter that throws.
 
 ### R7.2b — The verifier, deterministic first and learned second
 

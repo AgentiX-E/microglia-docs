@@ -4715,3 +4715,112 @@ applied to, not the current implementation.
 
 **Evidence.** 1,494 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**; `store-report.ts` 100 on
 all four dimensions. Commits `e8110f4` (the report), `aba31f0` (the unit fix); `master` at `d46cc45`.
+
+### 102 — R7.0 and R7.2a: the pool is one answer with five spellings, and shape still picks well inside it
+
+Run [`40862283263`](https://github.com/AgentiX-E/microglia/actions/runs/40862283263) finished green:
+350 questions, 5 folds, 3,507 calls, 3 retries, 0 failed calls, every gate passing. Arms
+`none, full, none-replica, sample-5-first, sample-5-oracle, m-schema`, transfer measurement off. It is
+the first run in this programme that records the candidate pool.
+
+**R7.0 — the pool is narrow, on the bar that was fixed before the run.**
+
+| Reading | Value |
+|---|---|
+| Distinct answers per question | mean **1.43**, median **1** (0.20 of the five draws) |
+| Histogram | 235 questions at one answer, 85 at two, 23 at three, 7 at four |
+| Oracle over five draws | 209 of 350 |
+| First draw correct | 184 |
+| Ceiling worth having | **25 questions = 7.14pp** |
+| Decomposition | 14 unique-correct, **195 shared-correct**, 141 none |
+| Verdict (`median/draws` against 0.50 wide, 0.33 narrow) | **NARROW** |
+
+Five draws from one prompt collapse to 1.43 different answers. 195 of the 209 questions the oracle
+reaches are questions where at least two draws were already right: the draws agree, and the ceiling is
+a ceiling of agreement rather than a choice. This is the pre-registered refutation condition of R7.1's
+criterion 3, read on the incumbent pool, and it says the headroom is not in the selector for the
+questions that collapse.
+
+It also prices the whole of R2 to date: every selection arm this project ran was choosing among 1.43
+answers, which is why eleven of them landed at zero.
+
+**R7.2a — five of six signals survive their own gate, and the composite beats the first draw.**
+
+| Signal | AUC | SE | z | Holm | Verdict |
+|---|---|---|---|---|---|
+| `value-type` | 0.608 | 0.017 | 6.25 | <0.001 | **kept** |
+| `column-shape` | 0.579 | 0.017 | 4.57 | <0.001 | **kept** |
+| `empty` | 0.572 | 0.017 | 4.17 | <0.001 | **kept** |
+| `row-shape` | 0.563 | 0.019 | 3.38 | 0.0011 | **kept** |
+| `duplicate-share` | 0.542 | 0.017 | 2.46 | 0.0137 | **kept** |
+| `null-share` | 0.521 | 0.017 | 1.23 | 0.109 | removed |
+
+Composite of the five, on the 122 questions where a choice existed:
+
+| | Value |
+|---|---|
+| Composite top-pick | 49 of 122 = **40.2%** |
+| First draw | 40 of 122 = 32.8% |
+| Delta on the eligible questions | **+7.38pp** |
+| Gained / lost | **11 / 2**, exact McNemar p = **0.0225** |
+| Delta over the whole run | **+2.57pp** |
+| Yield against the 25-question ceiling | 11/25 = **0.44** |
+
+This is the first positive selection number in the project's history, and it is the one the doctrine
+predicted: not a model comparing result sets (measured at −1.14pp in R2) but a deterministic comparison
+of an execution's shape against the shape the question asks for. The gate that licenses it was written
+before the run existed — `signal-gate.ts` was committed at `889ba17`, at a time when no artefact carried
+a pool — and the composite rule (one vote per signal, ties to the earlier draw) was fixed in the same
+commit.
+
+**The arm table from the same run**, which prices the pool against the arms that existed:
+
+| Arm | Execution accuracy | Δ vs `none` | 95% CI | p |
+|---|---|---|---|---|
+| `none` (control) | 54.00% | — | — | — |
+| `none-replica` | 54.29% | +0.29pp | [−0.86, +1.71] | 1.00 |
+| `full` (memory prefix) | 51.43% | −2.57pp | [−5.43, +0.29] | 0.108 |
+| `sample-5-first` | 52.57% | −1.43pp | [−4.00, +1.14] | 0.383 |
+| `sample-5-oracle` | 59.71% | +5.71pp | [+3.43, +8.29] | <0.001 |
+| `m-schema` | 52.29% | −1.71pp | [−5.14, +1.71] | 0.418 |
+
+Two things in that table matter beyond R7.
+
+`none-replica` moves +0.29pp, so the noise floor here is ±1.7pp and R7.0's criterion 4 is met: the
+instrumentation changed no behaviour.
+
+`m-schema` **does not replicate.** XiYan-SQL publishes +1.63pp for M-Schema against a DDL prompt on this
+model (DeepSeek) and this dataset (BIRD), and this harness measures **−1.71pp** with an interval that
+contains zero. R7.1's criterion 4 asked for the reading and did not condition on its sign; the reading is
+negative. Either the schema rendering differs in a way that matters (their collect/render pipeline is
+their own), or the +1.63 cell does not transfer across harnesses. Recorded as a failed replication
+rather than as a null result: the number was published, this is a measurement of it, and they disagree.
+
+Note also that `sample-5-oracle` at +5.71pp against `none` is not the ceiling R7.0 reports: the ceiling
+is measured against `sample-5-first` (184 of 350 = 52.57%), and 209 − 184 = 25 questions = 7.14pp. The
+oracle arm and the pool agree exactly once the baseline is the right one.
+
+**What this does not yet establish, stated before the next dispatch.**
+
+1. **It is a simulation, not an arm.** The composite was applied to the pool the sampling arm recorded;
+   it has not been scored as a strategy inside a cross-fitted run, so it has no CI of its own and it is
+   not yet comparable to `full` or to any published number. Turning it into an arm is the next commit.
+2. **The population is 122 of 350 questions.** The other 228 offered no choice at all. +7.38pp inside
+   those 122 is +2.57pp over the run, which is the number that would sit in a results table.
+3. **`value-type` alone may carry most of it.** Its top-pick accuracy is 39.3% against the composite's
+   40.2%; the vote adds 0.9pp over the best single signal. A composite is worth its complexity only if
+   that gap survives cross-fitting, and the leave-one-out reading belongs with the arm result.
+4. **Shape-matching could be a question-type prior rather than a verifier.** "Asks for an average, gets
+   a number" is a statement about the question as much as about the answer. If the gain lives in that
+   correlation, it will not survive a pool of genuinely different procedures — which is what R7.1 is
+   for, and why the two are being run together next.
+
+**Next dispatch, pre-registered here.** Arms
+`none-replica, sample-5-first, sample-5-shape, gen-plan, gen-decompose, m-schema`: the composite as a
+real arm (`sample-5-shape`), the generator pool from R7.1, and the replicates that keep both honest.
+Eleven calls per question, 3,850 expected, ceiling 7,000. The signal set the arm votes with is fixed
+now — the five that survived this gate — so that the arm does not select its own features on the data
+it is scored on.
+
+**Evidence.** `eval/results` from run `40862283263` (artefact `sota-bird`, 2.5 MB); `pnpm eval:pool`
+and `pnpm eval:signals` reproduce every number above from that file.
