@@ -1365,6 +1365,28 @@ a perfect recall can be. That would be the fourth position for memory measured a
 leave the store's value resting entirely on the answer-prefix experiment that already costs 3.14pp —
 which is the finding, not a failure to keep trying.
 
+**Read on run 40961917806 (2026-10-29) — cancelled, and R7 closes with it.**
+
+| # | Criterion | Bar | Reading | Verdict |
+|---|---|---|---|---|
+| 1 | `prior-shape` beats the first draw | ≥ +1.0pp, CI excluding 0, p < 0.05 | **+0.57pp [−0.86, +2.29], p = 0.73** | ✗ |
+| 2 | the database earns its place | `prior` within 1.0pp of `prior-shape` | both **+0.57pp**, identical | ✓ trivially, and therefore uninformative |
+| 3 | support reported | `metrics.prior` present | 213 keys / 29 supported vs 124 / 46; `db` key offers no choice at all | ✓ |
+| 4 | coverage beside every delta | — | 350 questions, 9 calls each, 0 failures | ✓ |
+
+The prior's estimate sits inside `none-replica`'s interval and the replica's inside the prior's, so the
+cancellation condition is met: perfect recall of shape frequencies is not worth a verifier here, and no
+imperfect version of it can be. The in-sample table on the same run's pool agrees to the decimal —
++2.78pp on 72 choice-bearing questions is 2 net flips, which is 0.57pp over 350.
+
+**R7 is closed in full.** R7.0 described the pool (1.43 distinct answers, 7.14pp of headroom), R7.1
+refuted heterogeneous generation (+8.57pp of ceiling, 0.229 disagreement, two of three generators worse
+than the prompt), R7.2a licensed five signals under an estimator that iteration 108 then showed was
+pooling comparisons no selector makes, R7.2b measured the deterministic composite at +1.14pp and +0.57pp
+in two runs — neither interval excluding zero — and R7.3a has now measured memory as a verifier prior at
++0.57pp. **Both axes this stage was built to explore are empty on this harness, and every rung says so
+with an interval.**
+
 ### Protocol, fixed before any R7 dispatch
 
 The statistics are part of the pre-registration, not a post-hoc report:
@@ -1399,3 +1421,29 @@ R8 turns that into something another team can run:
 R8.3 is the one that matters most and it is small: our 53.43 against their 53.52 is already an
 informal reproduction. Making it formal — same split, same prompt contract, published diff — is what
 lets every later comparison be read as a comparison rather than as an anecdote.
+
+---
+
+## R9 — A workload where a rule is exercised more than once (opened 2026-10-29)
+
+R7 closed having measured what memory does in this benchmark and why: about four fifths of the injected
+store never changes an answer, the harmful tail is twice the helpful one, and each rule receives **0.25
+decisive observations** in the whole run. Neither the corroboration filter (0 of 1,296 rules observed
+twice) nor the retirement pass (16 rules retired) nor a feature filter (~45 discriminating rules per run
+against the ~80 a single pre-registered split needs) can work at that density. The constraint is
+observations per rule, and it is a property of the workload rather than of the memory system.
+
+R9 is the stage that changes the workload rather than the arm:
+
+| Step | Deliverable | Acceptance |
+|---|---|---|
+| R9.1 | a task family with a fixed rule set and many cases per rule | every rule exercised ≥ 20 times with a paired control, measured from the artefact and not asserted |
+| R9.2 | the ledger as a gate | `discriminationOf` reports ≥ 60% of rules discriminating at that density, or the family is too easy and R9.1 is wrong |
+| R9.3 | a per-rule policy fitted on one half and scored on the other | out-of-sample Δ over `none` with CI excluding zero, against a `none-replica` floor |
+| R9.4 | the same policy transferred to the held-out domain | transfer rate above the 3.52% that R6 measured, or the stage reports that memory does not transfer at all |
+
+**The refutation condition, fixed here.** If R9.1 produces a family where 80% of rules are still inert,
+the inertness is not a property of the corpus but of the distillation, and the next stage is a distiller
+rewrite rather than a policy. If R9.3's fitted policy beats the floor but R9.4's transfer does not, the
+finding is that memory is a lookup and not a lesson — which is consistent with everything measured since
+R4 and would be the honest end of the flywheel claim.

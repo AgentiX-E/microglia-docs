@@ -5304,3 +5304,86 @@ count is printed, because a silent drop is how a ledger becomes a measurement of
 
 **Evidence.** `pnpm eval:store` on each run's artefact reproduces the table; 1,549 tests, 94 files,
 coverage **99.98 / 99.63 / 100 / 99.98**, `store-report.ts` 100 on all four dimensions. Commit `b6b969d`.
+
+### 111 — The fourth position measured, and it is inside the noise floor: R7 closes
+
+Run [`40961917806`](https://github.com/AgentiX-E/microglia/actions/runs/40961917806) finished green:
+350 questions, 5 folds, seed 7, nine calls per question, 3,509 calls, 0 failures, 1 retry, every
+blocking gate passing. It is the first run that scored a memory prior as an arm, and the answer is the
+one the price predicted.
+
+**Every arm against `none` (54.86%).**
+
+| Arm | Accuracy | Δ vs `none` | 95% CI | p | +/− |
+|---|---|---|---|---|---|
+| `sample-5-shape` | 54.86% | +0.00pp | [−2.00, +2.00] | 1.000 | +7 / −7 |
+| `sample-5-prior` | 54.86% | +0.00pp | [−2.29, +2.00] | 1.000 | +7 / −7 |
+| `sample-5-prior-shape` | 54.86% | +0.00pp | [−2.00, +2.00] | 1.000 | +7 / −7 |
+| `sample-5-value` | 54.57% | −0.29pp | [−2.29, +1.43] | 1.000 | +5 / −6 |
+| `sample-5-first` | 54.29% | −0.57pp | [−2.57, +1.43] | 0.774 | +5 / −7 |
+| `none-replica` | 54.29% | −0.57pp | [−2.00, +0.86] | 0.688 | +2 / −4 |
+| `m-schema` | 54.00% | −0.86pp | [−4.29, +2.57] | 0.736 | +16 / −19 |
+| `full` | 50.29% | **−4.57pp** | [−7.71, −1.71] | **0.007** | +8 / −24 |
+
+**The pre-registered contrasts, which are the reason the artefact now carries them.**
+
+| Pair | Δ | 95% CI | p | +/− |
+|---|---|---|---|---|
+| `prior-shape` vs first draw | +0.57pp | [−0.86, +2.29] | 0.727 | +5 / −3 |
+| `prior` vs first draw | +0.57pp | [−0.86, +2.00] | 0.688 | +4 / −2 |
+| `shape` vs first draw | +0.57pp | [−0.86, +2.00] | 0.688 | +4 / −2 |
+| `value` vs first draw | +0.29pp | [−0.57, +1.43] | 1.000 | +2 / −1 |
+| `shape` vs `value` | +0.29pp | [−0.57, +1.14] | 1.000 | +2 / −1 |
+| `prior` vs `shape` | +0.00pp | [−1.71, +1.71] | 1.000 | +4 / −4 |
+| `prior-shape` vs `prior` | +0.00pp | [−1.43, +1.43] | 1.000 | +3 / −3 |
+| `m-schema` vs direct | −0.29pp | [−3.71, +3.14] | 1.000 | +18 / −19 |
+
+**R7.3a's criterion 1 is not met and the stage closes.** The bar was ≥ +1.0pp with an interval excluding
+zero; the reading is **+0.57pp [−0.86, +2.29], p = 0.73**, and the run's own `none-replica` floor is
+**−0.57pp [−2.00, +0.86]**. The prior's estimate lies inside the replica's interval and the replica's
+lies inside the prior's; the two are the same number measured twice, which is the cancellation condition
+written into the roadmap before the dispatch. Note that the floor is not a fixed ±x: this run's replica
+moved 0.57pp, the previous run's moved 0.29pp, and the prior's 0.57pp is the same size as the drift of a
+byte-identical prompt. Criterion 2 passes trivially and therefore says nothing: the
+database-keyed and shape-keyed priors are *identical* at +0.57pp, so the schema is neither context nor
+harm in this key — it is inert, exactly as the previous run's support counts predicted (38 of 79 with
+support when the database is in the key, 53 when it is not).
+
+**The in-sample table on this run's own pool says the same thing at a different denominator.**
+
+| Key | Keys | Choices | With support | Accuracy | First draw | Δ | +/− |
+|---|---|---|---|---|---|---|---|
+| `db-signature` | 213 | 72 | 29 | 27.8% | 25.0% | +2.78pp | +4 / −2 |
+| `signature` | 124 | 72 | 46 | 27.8% | 25.0% | +2.78pp | +5 / −3 |
+| `db` | 11 | **0** | 0 | — | — | — | — |
+
+Two and a half points on 72 questions is 2 net flips, and 2/350 is 0.57pp — the arm's number exactly.
+So the simulation and the arm agree a *second* time (iteration 107 checked the same property for the
+shape composite), which is the only part of this iteration that went the way it was designed to.
+
+**What the four positions now cost, in one table.**
+
+| Position | Object | Measured | Verdict |
+|---|---|---|---|
+| Prompt prefix | distilled text | **−4.57pp [−7.71, −1.71], p = 0.007** | significantly harmful, replicated |
+| Retry injection | the same text, later | +0.29pp over an empty retry | the retry was the effect |
+| Verifier feature | the same text, read by a selector | never built | no selector reads a rule |
+| Verifier prior | `(key, outcome)` over result shapes | **+0.57pp [−0.86, +2.29], p = 0.73** | indistinguishable from zero and from the replica; stage closed |
+
+**R7 is closed.** Every rung of it has run: R7.0 described the pool (1.43 distinct answers), R7.1 refuted
+heterogeneous generation, R7.2a licensed five signals under a pooled estimator that iteration 108 then
+showed was wrong, R7.2b measured the composite at +1.14pp and then +0.57pp — two readings of the same
+mechanism, neither outside its own interval — and R7.3a has now measured the last position and found
+nothing. The selection axis and the memory axis are both empty on this harness, and the harness says so
+with intervals rather than with adjectives.
+
+**What that closes and what it opens.** The negative is now explained from two directions that agree: a
+store whose rules are inert four times out of five and harmful twice as often as helpful (iteration 110),
+and a workload that gives each rule 0.25 decisive observations (iteration 77). Neither is a ranking
+problem, and no amount of selector engineering addresses either. The next stage has to put memory in a
+workload where one rule is exercised tens of times; that is a different corpus, not a different arm, and
+it is written into the roadmap as R9 with its acceptance criteria before anything is built.
+
+**Evidence.** `per_case[].arms` from `40961917806`; the tables are `comparePaired` at 10,000 resamples
+over those flags, `metrics.prior` and `contrasts` from the artefact itself. `pnpm eval:prior` on the same
+file reproduces the second table. 3,509 calls, 0 failures.

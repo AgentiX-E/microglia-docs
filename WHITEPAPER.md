@@ -480,7 +480,7 @@ a price:
 | **Prompt prefix** | states rules before the question | **−3.14pp** [−6.29, −0.29], p = 0.071, +10 / −21 | 1 call |
 | **Retry injection** | states them only after a first answer fails | **+0.29pp** over a retry with an empty pack — nothing | 1 call |
 | **Verifier feature** | ranks candidates by what it recalls | never measured: no selector here reads a rule | 0 calls |
-| **Verifier prior** | *is* the ranker: on this shape, were we right before | priced at **+0.86pp** scaled, CI to come | 0 calls |
+| **Verifier prior** | *is* the ranker: on this shape, were we right before | **+0.57pp** [−0.86, +2.29], p = 0.73 — inside the replica's interval | 0 calls |
 
 The first two are the same object in two positions, and moving it changed nothing: what looked like
 memory's effect on retry was the retry. That is the measurement that says the problem is the object and
@@ -496,11 +496,19 @@ the database key takes 1. Keying on the database fragments the memory: 208 keys 
 any support, while 118 leave 53. **A memory that insists on the schema is a memory that has usually
 never seen this schema**, which is the same failure the rule store has, one level down.
 
-So the honest summary of the flywheel at this point in the programme: the part of it that was built —
-distill an episode into text, show the text — is measured and negative in every position. The part that
-has never been built — recall the *outcome* of a shape rather than the *wording* of a lesson — prices at
-under a point, and the run that decides it is dispatched and named in the roadmap with its cancellation
-rule written down first.
+The run that decided it came back green: 350 questions, nine calls each, 0 failures, every gate passing.
+`sample-5-prior-shape` scored **+0.57pp [−0.86, +2.29], p = 0.73** against the first draw, and the run's
+own `none-replica` scored −0.57pp — the two intervals contain each other. The in-sample table on the same
+pick agreed to the decimal: +2.78pp on 72 choice-bearing questions is two net flips, which is 0.57pp over
+350. Criterion met? No. The stage is cancelled by the rule written down before the dispatch.
+
+So the honest summary of the flywheel at this point in the programme: **memory has now been measured in
+all four positions it can occupy, and none of them is worth anything on this benchmark.** As a prefix it
+costs 4.57pp with p = 0.007 and 24 lost questions against 8 gained. On retry it is worth nothing once the
+retry is controlled. As a selection feature its content never enters. As a prior over result shapes it is
+inside the noise floor. What is left is not another position: it is a workload where a rule is exercised
+more than a quarter of a time, which is a different experiment and is opened as R9 with its refutation
+condition stated first.
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
