@@ -5273,6 +5273,22 @@ binary feature could be tested at 80% power — and the multiplicity across plau
 most of that. This is why the next step on this axis is not a classifier. It is more evidence per rule,
 which means either many more runs or a workload where each rule is shown many times.
 
+**What is new here, and what is not.** The arithmetic wall is not new: iteration 68 found 0 of 1,296
+rules observed twice, and iteration 77 measured **0.25 decisive comparisons per rule** from the
+validation pass and retired 16 rules with it. This iteration measures the same wall from the other side —
+from the injections rather than from a validation pass — and the two agree to within the arithmetic:
+0.25 decisive comparisons per rule and 21% of rules with any decisive observation are the same statement
+about the same corpus. What is new is the *shape* of the negative: not "some rules hurt" but "four
+fifths of the store is silent, and the harmful tail is twice the helpful one", which is the number a
+product decision needs and which no accuracy delta carries.
+
+**And the two readings together say where the next experiment has to run.** A corpus with 350 questions
+and 1.8 rules per pack cannot produce a per-rule statistic, however it is cut: corroboration admits
+nothing, retirement reaches 16 rules, a feature filter would need ten times the sample. The flywheel
+needs a workload where one rule is exercised tens of times, and this benchmark is not one. That is a
+statement about the *workload*, and it is the first time in this programme that the constraint has been
+located outside the memory system itself.
+
 **A defect found while wiring it, and it was mine.** The artefact's field is `withoutMemoryCorrect`; the
 first draft of the reader used `withoutMemory`. Undefined is falsy in JavaScript, so `!entry.withoutMemory`
 was true for every case and every correctly answered question counted as a repair: the command printed
