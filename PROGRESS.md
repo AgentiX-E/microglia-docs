@@ -5021,3 +5021,91 @@ changing the metric now would make its artefact incomparable with the next one. 
 that run, then change the estimator and the two artefacts together, so the size of the correction is a
 measured quantity rather than a claim in a commit message. Pre-registered here so the change is
 justified before it is made.
+
+### 107 — The composite as an arm: +1.14pp, inside the noise floor, and the generators made it worse
+
+Run [`40880218444`](https://github.com/AgentiX-E/microglia/actions/runs/40880218444) finished green:
+350 questions, 5 folds, seed 7, arms `none, full, none-replica, sample-5-first, sample-5-shape,
+gen-plan, gen-decompose, m-schema`, 10,000 resamples, every gate passing. This is the first run in the
+programme where the shape composite selected *inside* the cross-fitted loop, and the first that ran two
+generators against one prompt on the same questions.
+
+**Every arm, paired against `none`.**
+
+| Arm | Accuracy | Δ vs `none` | 95% CI | p | +/− |
+|---|---|---|---|---|---|
+| `none` | 54.57% | — | — | — | — |
+| `sample-5-shape` | **54.57%** | **+0.00pp** | [−2.57, +2.57] | 1.000 | +11 / −11 |
+| `m-schema` | 54.57% | +0.00pp | [−3.43, +3.43] | 1.000 | +20 / −20 |
+| `none-replica` | 54.29% | −0.29pp | [−1.43, +0.86] | 1.000 | +2 / −3 |
+| `sample-5-first` | 53.43% | −1.14pp | [−3.43, +1.14] | 0.481 | +7 / −11 |
+| `full` (memory prefix) | 51.43% | −3.14pp | [−6.29, −0.29] | 0.071 | +10 / −21 |
+| `gen-decompose` | 51.43% | −3.14pp | [−6.29, +0.00] | 0.071 | +10 / −21 |
+| `gen-plan` | **49.14%** | **−5.43pp** | [−9.14, −2.00] | **0.004** | +11 / −30 |
+
+**The comparison the arm exists for.** `sample-5-shape` against `sample-5-first`, on identical draws:
+
+| | Value |
+|---|---|
+| Shape composite | 54.57% |
+| First draw | 53.43% |
+| Delta | **+1.14pp**, 95% CI **[−0.57, +2.86]**, exact McNemar p = **0.344** |
+| Gained / lost | **7 / 3** |
+| By fold | +0, +0, +2, +1, +1 — never negative, never significant |
+| Noise floor this run (`none-replica`) | **±1.4pp** |
+
+The point estimate is a quarter of the interval it sits in, and smaller than what an identical prompt
+moves when it is run twice. That is the answer to the question iteration 102's +7.38pp raised: the
+composite is not a discovery, it is a small effect that this protocol cannot resolve.
+
+**The simulation and the arm now agree, which is how the defect was found.** The run's own gate block
+computes the composite on its own pool with its own shapes: 30.77% against 27.35% on the 117
+choice-bearing questions, **+3.42pp**, 7 gained / 3 lost. And 3.42pp × 117/350 = **1.14pp** — the arm's
+delta, exactly. Sharing `bestIndex` between the simulation and the arm did what iteration 103 claimed.
+The +7.38pp of iteration 102 was not that number and could not have been: it was computed with the
+question's shape read from the question alone, because the artefact had no evidence field.
+
+So the honest sequence is:
+
+| Reading | Value | What it was |
+|---|---|---|
+| Iteration 102 | +7.38pp | the composite, fed a shape read without the evidence |
+| Iteration 104's ablation | +7.38pp family | same defect, so every row inherited it |
+| This run's gate block | **+3.42pp** | the composite the arm runs, in sample on 117 questions |
+| This run's arm | **+1.14pp [−0.57, +2.86]** | the same thing, cross-fitted, over the run |
+
+**R7.1 is refuted, and not by a small margin.** Two generators against the one prompt, same questions,
+same judge:
+
+| Reading | Value | Bar |
+|---|---|---|
+| Union of four arms over `none` | 221 vs 191 = **+8.57pp** | ceiling ≥ +2pp ✓ |
+| Disagreement share | **0.229** | ≥ 0.40 ✗ |
+| Dominant arm | none | must be null ✓ |
+| Distinct answers across four procedures | mean **1.557**, median 1, share 0.25 | not `narrow` ✗ |
+| Individual arms | `gen-plan` −5.43pp, `gen-decompose` −3.14pp, `m-schema` ±0.00pp | must not lose ✗ |
+
+The ceiling is there (+8.57pp) and unreachable, because the four procedures collapse to 1.56 distinct
+answers — barely wider than the 1.46 that five draws of one prompt produced. Heterogeneity did not widen
+the pool; it produced *worse* candidates that mostly repeated what the direct prompt already said.
+CHASE-SQL's +13.95pp comes from three procedures that answered differently; ours do not.
+
+**R7.2b's criterion 1 is not met.** Yield = captured / ceiling = 4 net questions / 25 = **0.16** against
+a bar of 0.33. Criterion 2 is met trivially (it beats −1.14 and −1.43). Criterion 3 is the ablation of
+iteration 104, which stands as a description but inherits the shape defect. The rung above this — a
+learned scorer — is licensed only if the deterministic one leaves more than half the ceiling *and* R7.1
+produced a pool wide enough to train on. The first condition is false twice over and the second is
+false outright, so **the learned rung is not licensed and R7.2b ends here.**
+
+**What that closes, stated plainly.** The selection axis has now been measured end to end on this
+harness: agreement (+0.00pp), a model reading SQL (−1.14pp), a model reading results, a deterministic
+shape composite (+1.14pp, CI spanning zero), and a heterogeneous generator pool (worse). The five-draw
+pool is 1.46 answers wide; there is no selector that retrieves four points from it because four points
+are not there to retrieve. Everything that is left has to change what the candidates *are*, not how
+they are chosen.
+
+**Evidence.** `eval/results` from `40880218444` (artefact 21.5 MB); `pnpm eval:pool`, `eval:signals`,
+`eval:union` reproduce the pool, gate and union numbers from that file. The arm table is
+`comparePaired` over `per_case[].arms` at 10,000 resamples. Note that `eval:signals` on this artefact
+still re-reads shapes without the evidence — the field landed after the dispatch — so the command's
+AUCs will differ from the gate block above in exactly the way iteration 106 tabulates.

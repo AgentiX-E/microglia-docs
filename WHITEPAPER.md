@@ -426,17 +426,33 @@ while the run read both. The run's own readings are `value-type` 0.6015, `column
 `row-shape` 0.5749, `empty` 0.5653, `duplicate-share` 0.5418, `null-share` 0.5213 — the same five kept
 and the same one removed. The field is now required, so the next artefact cannot repeat the omission.
 
-**What the gate is worth.** The composite of the five picks correctly on 40.2% of those 122 questions
-against 32.8% for the first draw: +7.38pp there, +2.57pp over the whole run, 11 gained and 2 lost, exact
-McNemar p = 0.0225. It is the first positive selection number in the project's history, and it is the
-first one that is attributable, because every member was measured before the sum was taken.
+**What the gate is worth.** The composite of the five, scored as an arm inside the cross-fitted run
+rather than simulated on a recorded pool: **+1.14pp** over the first draw on the same five draws,
+54.57% against 53.43%, 7 gained and 3 lost, exact McNemar p = 0.344, 95% CI **[−0.57, +2.86]**. In
+sample, on the 117 questions where a draw choice existed, it is +3.42pp — and 3.42 × 117/350 is 1.14,
+so the two agree exactly.
+
+That interval is the whole result. The point estimate is smaller than the **±1.4pp** an identical
+prompt moves when it is run twice on these questions, and it is a quarter of the width of its own
+interval. An earlier reading of +7.38pp was the same composite fed a question shape computed without
+BIRD's evidence; with the evidence the effect is a third as large. The mechanism is real in direction —
+positive in three folds, zero in two, negative in none — and unresolvable at this sample size on this
+pool. It is not the discovery it once looked like.
 
 **What it is worth decomposing.** The same pool says the sum is carried by one member. `value-type`
-alone reaches 39.3% and never breaks a question the first draw had right; the other four add one
-question between them and `row-shape` costs one. On 122 questions, one or two questions is inside the
-binomial spread, so the honest statement is that the remaining four are unproven rather than worthless —
-and the reason they look like four opinions when they are closer to one is that every signal penalises
-an empty result, not only the one called `empty`.
+alone reaches 39.3% of the composite's 40.2% and never breaks a question the first draw had right; the
+other four add one question between them and `row-shape` costs one. On 122 questions, one or two
+questions is inside the binomial spread, so the honest statement is that the remaining four are
+unproven rather than worthless — and the reason they look like four opinions when they are closer to one
+is that every signal penalises an empty result, not only the one called `empty`.
+
+**And the pool is why none of it can pay.** The ceiling this composite could ever have captured is 25
+questions of 350 — the draws disagree on 1.46 answers per question, and 235 of 350 questions collapse to
+a single answer. Yield is 4 net questions of 25, **0.16** against the 0.33 the stage required. Three
+different generation procedures do not widen it: four procedures over the same questions produce **1.56**
+distinct answers and two of the three arms are *worse* than the direct prompt (`gen-plan` −5.43pp,
+p = 0.004; `gen-decompose` −3.14pp). The ceiling rises to 8.57pp and a chooser still retrieves nothing
+from it.
 
 That is the trade this section is making, stated plainly: a mechanism that can only *reject* what it
 recognises has a ceiling, and the composite has found it. `scoreOf` returns no positive number by
@@ -457,7 +473,20 @@ What separates us is the **candidate pool**, and two published numbers make the 
 | | Generators | Candidates | Ceiling over one draw | Best selector | Captured |
 |---|---|---|---|---|---|
 | CHASE-SQL | 3 different procedures | 21 | **+13.95pp** (68.84 → 82.79) | 73.01 | 29.9% |
-| microglia | 1 prompt, 5 draws | 5 | **+3.52pp** | 52.29 | negative |
+| microglia, one prompt | 1 procedure, 5 draws | 5 | **+7.14pp** (53.43 → 60.57) | 54.57 | 16.0% |
+| microglia, four procedures | 4 procedures, 1 call each | 4 | **+8.57pp** (54.57 → 63.14) | 54.57 | 0% |
+
+The three rows are the whole argument, and the third one is the correction this project needed to
+measure. Four generation procedures do widen the pool: the union over them is worth +8.57pp, more than
+five draws of one prompt. But a chooser among them captures **nothing** — the best arm is the control
+itself, and two of the three generators are worse than it. The ceiling is not the constraint on its own;
+the constraint is that our candidates differ in *wording* and agree in *answer*, so a wider pool of them
+is a wider pool of the same answer.
+
+CHASE-SQL's 29.9% capture from a 21-candidate pool is only possible because their procedures answer
+differently. Ours do not: 1.46 distinct answers from five draws, 1.56 from four procedures. All four rows
+above are run 40880218444's own numbers, so the columns are comparable within a row and the two microglia
+rows are comparable with each other.
 
 A selector cannot capture headroom the generator never produced. Every selection arm this project has
 run — agreement, model, execution — was measured against a pool a quarter the width of the one the
@@ -484,11 +513,17 @@ sets for itself is **53.43 → 62–65**, not 80: a claim we can verify, against
 
 | Step | Question | Cost | Refuted if |
 |---|---|---|---|
-| **R7.0** instrument the pool | how many distinct answers do five draws actually contain? | 0 calls | — (descriptive) |
-| **R7.1** heterogeneous candidates | does the ceiling move? | 3 generators × 2 draws | ceiling < +2pp |
-| **R7.2a** measure each execution signal alone | does any signature discriminate? | 0 calls | every AUC ≈ 0.5 |
-| **R7.2b** deterministic verifier | what share of the ceiling is captured? | 0 calls | yield ≤ 0 |
+| **R7.0** instrument the pool | how many distinct answers do five draws actually contain? | 0 calls | ran: **1.46 per question**, 235 of 350 collapsed |
+| **R7.1** heterogeneous candidates | does the ceiling move? | 3 generators × 2 draws | ran: ceiling **+8.57pp**, disagreement **0.229**, distinct **1.56** — **refuted**, two arms worse than the control |
+| **R7.2a** measure each execution signal alone | does any signature discriminate? | 0 calls | ran: five of six clear `AUC − 0.5 > 2 SE` |
+| **R7.2b** deterministic verifier | what share of the ceiling is captured? | 0 calls | ran: **+1.14pp [−0.57, +2.86]**, yield **0.16** — criterion not met, stage closed |
 | **R7.3** memory as a verifier feature | does position beat content? | 1 fold-aligned run | cancelled if R6 transfer ≈ 0 |
+
+Every row but the last has now run, and the two that could have refuted the direction did. The sequence
+did what it was built to do: R7.0 and R7.2a cost nothing and priced the prize at seven points, R7.1 spent
+three arms and found no wider pool, and R7.2b spent nothing further to show that a chooser among 1.46
+answers retrieves one point of it. The last row is the only one left, and it is the only one where memory
+appears.
 
 The order is the argument. R7.0 and R7.2a spend nothing and decide whether the expensive steps are
 worth running; R7.3 — the only step where memory appears — is last and is cancelled rather than

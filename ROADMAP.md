@@ -1168,6 +1168,27 @@ different questions. Criterion 6 is what stops the pool from being that one arm.
 with a 3.52pp ceiling as its maximum possible prize. That outcome would be published as the stage's
 result, not buried.
 
+**Read on run 40880218444 (2026-10-29) — refuted on criteria 2, 3 and the arm-level condition.**
+
+| # | Criterion | Bar | Reading | Verdict |
+|---|---|---|---|---|
+| 1 | ceiling rises | ≥ +2.00pp | **+8.57pp** (221 vs 191) | ✓ |
+| 2 | generators genuinely different | disagreement ≥ 0.40 | **0.229** | ✗ |
+| 3 | distinctness | not `narrow`, median share ≥ 0.33 | mean **1.557**, median **1**, share **0.25**, `narrow` | ✗ |
+| 6 | no single procedure is the pool | `null` | `null` | ✓ |
+
+The ceiling is there and the pool that carries it is not: four procedures over 350 questions collapse to
+1.56 distinct answers, against 1.46 for five draws of one prompt. And the arms lose individually —
+`gen-plan` **−5.43pp** [−9.14, −2.00] p = 0.004, `gen-decompose` **−3.14pp** [−6.29, +0.00] p = 0.071,
+`m-schema` **±0.00pp** [+20 / −20]. The heterogeneous pool does not contain better candidates; it
+contains worse ones that mostly repeat what the direct prompt already said, which is why the union is
+worth 8.57pp and a chooser among it is worth nothing.
+
+CHASE-SQL's +13.95pp comes from three procedures that answer *differently*. Ours answer the same way and
+some of them answer wrongly. Recorded as the stage's result rather than buried, per the sentence above:
+candidate diversity is not the constraint this harness can exploit, and R7.2's ceiling was 7.14pp, not
+13.95pp.
+
 ### R7.2a — Which execution signals actually discriminate (no calls, no activation)
 
 Before any signal is allowed to rank anything, each is measured alone. For every question with at
@@ -1269,6 +1290,27 @@ signal that can prefer a shape rather than only reject one.
 scored on. Run `40880218444` keeps the pre-registered five. The correct use of the ablation is to name
 the next comparison, and it names one: the five against `value-type` alone, on the same draws in one
 run, where both selectors read the identical five draws and the second therefore costs no calls.
+
+**Read on run 40880218444 (2026-10-29) — criterion 1 not met, and the stage ends here.**
+
+| # | Criterion | Bar | Reading | Verdict |
+|---|---|---|---|---|
+| 1 | yield = captured / ceiling | ≥ 0.33 | **0.16** (4 net of 25) | ✗ |
+| 2 | beats the selectors already measured | > −1.14 and > −1.43 | **+1.14pp** over `sample-5-first` | ✓ |
+| 3 | each signal ablated alone | leave-one-out | iteration 104, inheriting the shape defect | ✓ with caveat |
+| 4 | the uninformative subset reported separately | — | not built | ✗ |
+| 5 | the selector never sees the answer | gate V17 | `selectByShape` reads signatures only | ✓ |
+
+The gate on this run's own shapes keeps the same five signals and drops `null-share` again:
+`column-shape` 0.6012 (z 5.83), `value-type` 0.5961 (5.53), `row-shape` 0.5693 (3.37), `empty` 0.5657
+(3.79), `duplicate-share` 0.5427 (2.46), `null-share` 0.5175 (1.01). The composite built from them takes
+36 of 117 choice-bearing questions against 32 for the first draw — **+3.42pp** in sample — and the arm
+takes 54.57% against 53.43% cross-fitted: **+1.14pp, 95% CI [−0.57, +2.86], McNemar p = 0.344**.
+
+The point estimate is smaller than the ±1.4pp an identical prompt moves between two runs on these same
+questions. The rung above — a learned scorer — is licensed only if the deterministic one leaves more than
+half the ceiling *and* R7.1 produced a pool wide enough to train on; the first is false and the second is
+false, so it is not licensed. **R7.2b closes with the selection axis measured and empty.**
 
 ### R7.3 — Memory's last position: a verifier feature, never a prefix
 
