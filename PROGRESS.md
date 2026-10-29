@@ -5239,3 +5239,52 @@ sample-5-prior, sample-5-prior-shape, m-schema` — nine calls per question, cei
 **Evidence.** 1,541 tests, 94 files, coverage **99.98 / 99.63 / 100 / 99.98**; `memory-prior.ts`,
 `pool.ts`, `sota.ts`, `artifact-pool.ts` all 100 on all four dimensions. The table above is
 `pnpm eval:prior` on `/tmp/run-40880218444/poc-sota-bird.json`. Commits `79daca7`, `950c38d`.
+
+### 110 — Four fifths of what the store injects never changes an answer
+
+Iteration 109 priced the fourth position for memory. This one goes back to the first two and asks the
+question the deltas have never answered: not *did the pack help* but *what did each rule do*.
+
+`ruleLedger` builds a record per injected rule from the flips that happened while it was in the prompt —
+a flip being a question where the treatment and the control disagreed — and `discriminationOf` says how
+the store splits. Three runs, same configuration, read from their own artefacts:
+
+| Run | Rules shown | Injections | Rules that moved something | Repaired | Broke | Rules per injection |
+|---|---|---|---|---|---|---|
+| `40880218444` | 219 | 650 | **51 (23.3%)** | 20 | 39 | 1.86 |
+| `40862283263` | 214 | 650 | **37 (17.3%)** | 16 | 28 | 1.86 |
+| `40820868520` | 217 | 652 | **46 (21.2%)** | 22 | 30 | 1.87 |
+
+**Four fifths of the store is silent.** For a rule shown on a question the control already answered
+correctly, nothing happened — and that is 77%–83% of everything injected. Of the fifth that did move an
+answer, two thirds moved it the wrong way, in all three runs, with no exception.
+
+That is a different statement from the one the −3.14pp delta makes, and it is the one that says what to
+do. "Memory is slightly harmful" invites a better ranker. "Memory is mostly inert with a harmful tail"
+says the ranks have nothing to sort: the store admits claims that cannot matter and a few that hurt, and
+the retrieval that put them in the prompt is not making a choice among candidates so much as passing
+everything through.
+
+**It also sizes the fix, and the size is the bad news.** A filter over rule features has to be fitted on
+the rules that discriminated, because the inert ones carry no label. That is ~45 rules per run. A
+two-way split at 22 per side cannot separate a 70/30 difference in harm rate from a coin; the arithmetic
+needs about 40 per group, so roughly two runs of the same configuration before *one* pre-registered
+binary feature could be tested at 80% power — and the multiplicity across plausible features would eat
+most of that. This is why the next step on this axis is not a classifier. It is more evidence per rule,
+which means either many more runs or a workload where each rule is shown many times.
+
+**A defect found while wiring it, and it was mine.** The artefact's field is `withoutMemoryCorrect`; the
+first draft of the reader used `withoutMemory`. Undefined is falsy in JavaScript, so `!entry.withoutMemory`
+was true for every case and every correctly answered question counted as a repair: the command printed
+**332 repairs and 0 breaks** where the ledger's true values are 20 and 39, and `inertShare` came out as
+21% instead of 77%. The unit was right, the sign was right, and the magnitude was wrong by a factor of
+sixteen — which is the second time in three iterations that a reader built from memory rather than from
+the type produced a plausible number about the wrong thing (iteration 106 was the missing `evidence`
+field). The type now names the field, so a bin that reads the artefact cannot compile without it.
+
+**A second, smaller decision.** A case with rules but no ids, or with ids and texts of different lengths,
+is counted as `unkeyed` and contributes nothing, rather than being dropped or given a synthesised id. The
+count is printed, because a silent drop is how a ledger becomes a measurement of its own filter.
+
+**Evidence.** `pnpm eval:store` on each run's artefact reproduces the table; 1,549 tests, 94 files,
+coverage **99.98 / 99.63 / 100 / 99.98**, `store-report.ts` 100 on all four dimensions. Commit `b6b969d`.

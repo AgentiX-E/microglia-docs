@@ -446,6 +446,15 @@ questions is inside the binomial spread, so the honest statement is that the rem
 unproven rather than worthless — and the reason they look like four opinions when they are closer to one
 is that every signal penalises an empty result, not only the one called `empty`.
 
+**What the store is doing while all this happens.** The per-rule ledger, read from three runs of the
+same configuration, splits the injected store into a large silence and a small harmful tail: 17%–23% of
+rules ever move an answer at all, and of those two thirds move it the wrong way. The −3.14pp is the sum
+of that tail and that silence — the store is not (only) slightly harmful, it is **mostly inert**, and a
+better ranker over an inert store has nothing to sort. A filter that could tell the two apart would have
+to be fitted on the 45 discriminating rules a run produces, which is under half the evidence one
+pre-registered split needs, so the constraint is observations per rule rather than model capacity. That
+is what a workload with repeated rules would buy and what a 350-question benchmark cannot.
+
 **And the pool is why none of it can pay.** The ceiling this composite could ever have captured is 25
 questions of 350 — the draws disagree on 1.46 answers per question, and 235 of 350 questions collapse to
 a single answer. Yield is 4 net questions of 25, **0.16** against the 0.33 the stage required. Three
