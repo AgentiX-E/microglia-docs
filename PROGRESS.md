@@ -4668,40 +4668,50 @@ four dimensions. Commit `cdf849d`; `master` at `61c104a`.
 
 Iteration 99 measured what a rule does when it is moved to a foreign question. This one measures what
 the store *is*, and the two agree while answering different questions. The attribution artefacts
-record, per rule, how many questions it was shown on and how many answers it changed in each direction;
-nothing had ever added them up.
+classify every rule that reached a prompt by the sign of its net effect; nothing had ever added them up.
 
-`packages/eval/src/store-report.ts` (8 tests, 100% four dimensions) and `pnpm eval:store` do, over the
+`packages/eval/src/store-report.ts` (10 tests, 100% four dimensions) and `pnpm eval:store` do, over the
 results directory including the archive: eight runs, 2026-10-23 to 10-26.
 
 | Quantity | Count | Share |
 |---|---|---|
 | Rules the distiller kept | 9,062 | — |
-| Rule instances that reached a prompt | 2,817 | **31.1%** of the store |
-| Repaired the answer | 110 | 3.90% of injected |
-| Broke it | 229 | 8.13% of injected |
-| Changed nothing | 2,478 | **87.97%** of injected |
-| Net | **−119** | **−4.22pp** of injected, exact McNemar p = 9.5e-11 |
+| Rules that reached a prompt at least once | 2,817 | **31.1%** of the store |
+| … net-repaired more than they broke | 110 | 3.90% of injected rules |
+| … net-broke more than they repaired | 229 | 8.13% of injected rules |
+| … flips cancelled exactly | 2,478 | **87.97%** of injected rules |
+| Net | **−119 rules** | exact sign test p = 9.5e-11 |
 
-Three denominators are kept apart because they are not interchangeable: rules the distiller kept, rule
-*instances* that reached a prompt, and the instances after which the answer changed. The shares are
-taken over the second. Dividing the effects by the whole store would describe a retrieval problem as a
-smaller effect — and retrieval is the third finding here: only 31% of what the store holds ever reaches
-a prompt, and this report cannot say whether the third it chose was the right third.
+Two findings carry the stage forward. **88% of what reaches a prompt changes nothing**, and that is not
+free: the tokens are paid on every call, and section 3.5 of the whitepaper measured what the payment
+buys. **Of the 12% that do move, twice as many move it the wrong way.** And a third, untouched:
+retrieval. Only 31% of stored rules ever reach a prompt, and nothing here can say whether the third the
+injector chose was the right third — that needs a rule-level counterfactual this project has not run.
 
-The per-instance loss is a ratio, not noise: 110 repairs against 229 breaks, in the same direction in
-seven of eight runs. The eighth is the S2b value-oracle pack, which broke nothing in 233 instances —
-the smallest class here, and a zero in 233 is consistent with a rate as high as 1.3%, so it is a lead
-rather than a result.
+Read beside §3.6.1 this is one story: a rule carries its own case, the store is mostly rules that carry
+nothing else, and the majority of them are inert text paid for in context on every call. The negative
+effect was never mysterious; it was the price of showing nine parts noise for the chance of one part
+signal that is itself twice as likely to be wrong as right.
 
-Read beside §3.6.1 of the whitepaper this is one story: a rule carries its own case, the store is
-mostly rules that carry nothing else, and 88% of them are paid for in context on every call. The
-negative effect was never mysterious; it was the price of showing nine parts noise for the chance of
-one part signal that is itself twice as likely to be wrong as right.
+**A unit error, found and corrected in the same iteration.** The first version of this report read the
+artefact's `helpful` / `harmful` / `neutral` as counts of injection *instances* and published "3.90% of
+injected instances repaired the answer". They are counts of **rules**: they sum to `injectedRules`
+exactly, which is what a rule-level classification looks like and what one line against a real artefact
+shows. The digits did not move; the claim they support shrank by an order of magnitude. Corrected in
+`aba31f0`, where every field is now named for its unit (`helpfulRules`, `injectedRules`), the command
+prints "rules" where it printed "instances", and a test asserts the field names so the instance claim
+cannot be read back out. The sign test is restated in unit too: it is an exact binomial over rules, not
+McNemar over paired instances. The erroneous commit stays pushed and this paragraph stays beside the
+corrected table, because a log that edits its own mistakes is a log nobody can check.
+
+**What the corrected numbers still say.** The direction and the size of the ratio are unaffected: 110
+net-helpful rules against 229 net-harmful, in the same direction in seven of eight runs. The eighth is
+the S2b value-oracle pack, which broke nothing in 233 injections — the smallest run here, and a zero in
+eight repairs is consistent with a break rate as high as 1.3% per injection, so it is a lead rather
+than a result.
 
 **What it does not say.** These artefacts predate the R6 gate, so they describe the store the gate was
-applied to, not the current implementation. And a rule-level counterfactual — "would a *different*
-third of the store have done better" — has not been run.
+applied to, not the current implementation.
 
-**Evidence.** 1,492 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**. Commit `e8110f4`;
-`master` at `716befd`.
+**Evidence.** 1,494 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**; `store-report.ts` 100 on
+all four dimensions. Commits `e8110f4` (the report), `aba31f0` (the unit fix); `master` at `d46cc45`.

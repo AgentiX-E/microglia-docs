@@ -330,51 +330,60 @@ the question, which is what an execution signature is and what R7.2 measures.
 Section 3.6.1 measures what a rule does when it is moved. This one measures what the store *is*, from
 every attribution run the project has recorded, and the two agree while answering different questions.
 
-Each arm's attribution artefact records, per rule, how many questions it was shown on and how many of
-those answers it changed in each direction. `pnpm eval:store` adds them up over the results directory
-including the archive — eight runs, 2026-10-23 to 10-26, each one a 60-to-350-question cross-fitted
-slice of BIRD Mini-Dev.
+Each arm's attribution artefact classifies every rule that reached a prompt by the sign of its net
+effect — did it repair more answers than it broke, or the reverse — and carries one instance-weighted
+number, the share of injections belonging to a net-harmful rule. `pnpm eval:store` adds the runs up
+over the results directory including the archive: eight runs, 2026-10-23 to 10-26, each a 60-to-350
+question cross-fitted slice of BIRD Mini-Dev.
 
 | Quantity | Count | Share |
 |---|---|---|
 | Rules the distiller kept | 9,062 | — |
-| Rule **instances** that reached a prompt | 2,817 | **31.1%** of the store ever reached a prompt |
-| Instances after which the answer was repaired | 110 | 3.90% of injected |
-| Instances after which the answer broke | 229 | 8.13% of injected |
-| Instances after which nothing changed | 2,478 | **87.97%** of injected |
-| Net | **−119** | **−4.22pp** of the injected population, exact McNemar p = 9.5e-11 |
+| Rules that reached a prompt at least once | 2,817 | **31.1%** of the store |
+| … of those, net-repaired more than they broke | 110 | 3.90% of injected rules |
+| … net-broke more than they repaired | 229 | 8.13% of injected rules |
+| … flips cancelled exactly (a wash) | 2,478 | **87.97%** of injected rules |
+| Net | **−119 rules** | exact sign test p = 9.5e-11 |
 
-| Run | Rules | Injected | Repaired | Broke | Unchanged | Broke share |
+| Run | Rules | Reached a prompt | Repaired | Broke | A wash | Injections in a harmful rule |
 |---|---|---|---|---|---|---|
-| 10-23 11:27 (pilot, 60 q) | 124 | 74 | 5 | 11 | 58 | 14.9% |
-| 10-23 16:26 | 1,296 | 439 | 25 | 40 | 374 | 9.1% |
-| 10-23 17:18 | 1,280 | 442 | 17 | 42 | 383 | 9.5% |
-| 10-23 23:15 | 1,295 | 423 | 13 | 38 | 372 | 9.0% |
+| 10-23 11:27 (pilot, 60 q) | 124 | 74 | 5 | 11 | 58 | 16.7% |
+| 10-23 16:26 | 1,296 | 439 | 25 | 40 | 374 | 10.7% |
+| 10-23 17:18 | 1,280 | 442 | 17 | 42 | 383 | 11.4% |
+| 10-23 23:15 | 1,295 | 423 | 13 | 38 | 372 | 12.3% |
 | 10-24 01:45 (value oracle) | 1,149 | 233 | 8 | 0 | 225 | 0.0% |
-| 10-24 15:12 | 1,312 | 396 | 16 | 27 | 353 | 6.8% |
-| 10-25 02:19 | 1,319 | 407 | 12 | 31 | 364 | 7.6% |
-| 10-26 07:42 | 1,287 | 403 | 14 | 40 | 349 | 9.9% |
+| 10-24 15:12 | 1,312 | 396 | 16 | 27 | 353 | 8.7% |
+| 10-25 02:19 | 1,319 | 407 | 12 | 31 | 364 | 8.9% |
+| 10-26 07:42 | 1,287 | 403 | 14 | 40 | 349 | 12.8% |
 
 Three facts, and each one constrains the fix:
 
-1. **The store is mostly inert text.** 88% of injected instances changed nothing at all. That is not a
-   neutral outcome for a prefix: the tokens are paid on every call, and section 3.5 measured what the
-   payment buys. A pack whose content is nine parts noise is a context tax with a 12% chance of a
-   consequence, and the consequence is twice as likely to be bad.
-2. **Harm is not noise, it is a ratio.** 110 repairs against 229 breaks, and the direction holds in
-   seven of the eight runs. The eighth is the S2b value-oracle pack — the convention-transfer stage,
-   whose rules were conditioned on a measured value rather than on a reading of a question — and it
-   broke nothing in 233 instances while repairing 8. Two caveats keep that from being a conclusion:
-   it is the smallest consequence class here (n = 145 questions) and a zero in 233 instances is
-   consistent with a rate as high as 1.3% per instance. It is a lead, not a result, and the lead is
-   that a rule carrying a measured fact may not break the way a rule carrying prose does.
+1. **Most of what reaches a prompt does nothing.** 88% of injected rules have a net effect of exactly
+   zero: the flips they caused cancelled, or — for a rule shown once — there were none. That is not a
+   neutral outcome for a prefix. The tokens are paid on every call, and section 3.5 measured what the
+   payment buys. A pack that is nine parts inert is a context tax with a 12% chance of a consequence,
+   and the consequence is twice as likely to be bad.
+2. **Harm is not noise, it is a ratio.** 110 net-helpful rules against 229 net-harmful ones, the same
+   direction in seven of eight runs. The eighth is the S2b value-oracle pack — the convention-transfer
+   stage, whose rules were conditioned on a measured value rather than on a reading of a question —
+   which broke nothing while repairing 8. Two caveats keep that from being a conclusion: it is the
+   smallest run here (n = 145 questions), and eight repairs with zero breaks in 233 injections is
+   consistent with a break rate as high as 1.3% per injection. It is a lead, not a result.
 3. **Retrieval is the other half of the problem, and it is untouched.** Only 31% of stored rules ever
-   reached a prompt. Whatever the distiller knows, the injector shows a third of it, and the report
-   above cannot say whether the third it chose was the right third — that question needs a rule-level
+   reached a prompt. Whatever the distiller knows, the injector shows a third of it, and nothing here
+   can say whether the third it chose was the right third — that question needs a rule-level
    counterfactual this project has not run.
 
-The numbers above predate the R6 gate. They are the store the gate was applied to, which is why they
-are published as a description rather than as a verdict on the current implementation.
+**Unit, stated because it was got wrong.** The classes above count *rules*, not injection instances:
+`helpful + harmful + neutral` equals the injected-rule count exactly. The first version of this report
+read them as instances and published "3.90% of injected instances repaired the answer". The digits were
+right and the unit was wrong, and the same digits support a much weaker claim — which is why the field
+names now carry the unit (`helpfulRules`, `injectedRules`) and a test asserts the names. The one
+instance-weighted number available is the last column, and it is reported per run rather than averaged,
+because the artefact does not carry the instance totals needed to weight the runs against each other.
+
+The numbers above predate the R6 gate. They describe the store the gate was applied to, not the
+current implementation.
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
