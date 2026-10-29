@@ -461,6 +461,38 @@ give it that ability — a `(schema, execution signature, outcome)` triple rathe
 question — is the rewritten form of R7.3, folded into the verifier as a prior rather than shown to a
 prompt as text.
 
+### 3.6.4 Memory has four positions, and three of them are measured
+
+Every arm in this project puts memory in one of four places. Three now have numbers, and the fourth has
+a price:
+
+| Position | What memory does there | Measured | Cost |
+|---|---|---|---|
+| **Prompt prefix** | states rules before the question | **−3.14pp** [−6.29, −0.29], p = 0.071, +10 / −21 | 1 call |
+| **Retry injection** | states them only after a first answer fails | **+0.29pp** over a retry with an empty pack — nothing | 1 call |
+| **Verifier feature** | ranks candidates by what it recalls | never measured: no selector here reads a rule | 0 calls |
+| **Verifier prior** | *is* the ranker: on this shape, were we right before | priced at **+0.86pp** scaled, CI to come | 0 calls |
+
+The first two are the same object in two positions, and moving it changed nothing: what looked like
+memory's effect on retry was the retry. That is the measurement that says the problem is the object and
+not its timing — a rule distilled from one question carries nothing about another, so a better moment
+to show it cannot help.
+
+The fourth is the only position where the object itself changes. `memory-prior.ts` prices it at its
+strongest, assuming extraction and retrieval are already solved: no rule text, no relevance filter, no
+embedding, only *on this shape, how often were we right* answered from the other folds. On the 79
+questions where five draws produced more than one shape — the questions the model was guessing on, first
+draw right 20.3%, best of five 40.5% — the shape key takes 3 net questions of a 16-question ceiling and
+the database key takes 1. Keying on the database fragments the memory: 208 keys leave 38 questions with
+any support, while 118 leave 53. **A memory that insists on the schema is a memory that has usually
+never seen this schema**, which is the same failure the rule store has, one level down.
+
+So the honest summary of the flywheel at this point in the programme: the part of it that was built —
+distill an episode into text, show the text — is measured and negative in every position. The part that
+has never been built — recall the *outcome* of a shape rather than the *wording* of a lesson — prices at
+under a point, and the run that decides it is dispatched and named in the roadmap with its cancellation
+rule written down first.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline is 53.43% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no

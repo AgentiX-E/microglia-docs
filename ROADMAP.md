@@ -1339,6 +1339,32 @@ marginal effect and the break rate instead, statistics the pre-registration did 
 iteration 99 because the ratio it did name cannot express the question. The replacement criterion is
 the one R6 should have carried.
 
+#### R7.3a — the verifier prior, pre-registered before its dispatch (2026-10-29)
+
+The object is a `(key, outcome)` table where the key is the shape of an executed result, retrieved
+leave-one-fold-out. It is deliberately the *strongest* form of the idea: extraction and retrieval are
+assumed perfect, so the measurement is an upper bound on any store-backed version of it.
+
+| Element | Value |
+|---|---|
+| Arms | `sample-5-prior` (key = database + shape), `sample-5-prior-shape` (key = shape alone) |
+| Controls | `sample-5-first` (the draw it would have taken with no opinion), `sample-5-shape` (the deterministic composite), `none-replica` (noise floor) |
+| Cost | nine calls per question; the priors themselves spend nothing |
+| Price on the previous pool | `db-signature` +1.27pp, `signature` +3.80pp, on 79 choice-bearing questions where the first draw was right 20.3% of the time |
+
+| # | Criterion | Bar | If it fails |
+|---|---|---|---|
+| 1 | `prior-shape` beats the first draw | ≥ +1.0pp, 95% CI excluding 0, McNemar p < 0.05 | no verifier position for memory exists at this granularity |
+| 2 | the database earns its place in the key | `prior` within 1.0pp of `prior-shape` | the key is the shape; the database is a bias that fragments the memory |
+| 3 | support, not just accuracy | the artefact carries `metrics.prior`: keys, questions with support, per scope | a flat arm cannot be separated from a key with no support, and the stage would be read as a verdict rather than a measurement |
+| 4 | coverage of the choice set | reported beside every delta | — |
+
+**Cancellation rule, fixed here.** If `prior-shape` lands inside the run's own `none-replica` floor, the
+stage closes: perfect recall of shape frequencies is not worth a verifier, and no imperfect version of
+a perfect recall can be. That would be the fourth position for memory measured and empty, and it would
+leave the store's value resting entirely on the answer-prefix experiment that already costs 3.14pp —
+which is the finding, not a failure to keep trying.
+
 ### Protocol, fixed before any R7 dispatch
 
 The statistics are part of the pre-registration, not a post-hoc report:

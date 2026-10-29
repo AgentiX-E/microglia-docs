@@ -5165,3 +5165,77 @@ claim nobody can test, and the coverage gate found both as soon as the call grap
 estimators over `per_case[].pool` — done independently in Python and in the module, agreeing to four
 decimals. Commit `6eda4ba`. 1,512 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**; `pool.ts`
 100 on all four dimensions.
+
+### 109 — Memory's fourth position, priced before it is built
+
+Iterations 100–108 spent themselves on the selection axis and emptied it: agreement +0.00pp, a model
+reading SQL −1.14pp, a deterministic shape composite +1.14pp inside a ±1.4pp noise floor, a
+heterogeneous generator pool worse than the prompt it replaced. Every one of those arms asks the same
+question — *which of these five answers should I keep* — and every one of them reads the answer's
+words or its shape.
+
+Memory has four positions in this system. Three have numbers. As a prompt prefix it costs **−3.14pp**
+(p = 0.071). On retry it is worth **+0.29pp** over a retry with an empty pack, which is nothing. As a
+selection feature its content never enters at all, because no selector here reads a rule. The fourth —
+memory *judging* a candidate — has never been measured, and it is the only one left.
+
+**What was built.** `memory-prior.ts` prices it at its strongest: extraction and retrieval are assumed
+perfect. No rule text, no relevance filter, no embedding. The only question is *on this database, how
+often did a result of this shape turn out right*, answered leave-one-fold-out so a question is never
+helped by its own answer — the same cross-fitting the rules go through. Three keys, one function:
+`db-signature`, `signature`, `db`.
+
+**The price, on run 40880218444's pool, at zero model calls:**
+
+| Key | Keys | Questions with a choice | Of those, with any support | Accuracy | First draw | Δ | Gained / lost | p |
+|---|---|---|---|---|---|---|---|---|
+| `db-signature` | 208 | 79 | 38 | 21.5% | 20.3% | **+1.27pp** | +5 / −4 | 1.00 |
+| `signature` | 118 | 79 | 53 | 24.1% | 20.3% | **+3.80pp** | +6 / −3 | 0.51 |
+| `db` | 11 | **0** | 0 | — | — | — | — | — |
+
+**The third row is structural, not disappointing.** A key with no shape in it gives every candidate of
+a question the same key, so the prior can never separate two answers to one question. It is not that
+the database is uninformative; it is that a prior needs something the candidates differ in.
+
+**The first two rows say the database is a bias, not context.** 208 keys across 350 questions leaves
+38 questions with any support at all; forgetting the database cuts the key space to 118 and raises
+support to 53. A memory that insists on the database is a memory that has usually never seen this
+database — which is the same failure the rule store has, one level down.
+
+**The population is the hard one, and that is why the numbers deserve a second read.** The 79
+questions where five draws produced more than one shape are the questions the model was guessing on:
+the first draw was right 20.3% of the time and the best of five 40.5%. The ceiling there is 16
+questions; the shape key takes 3 net of it, the database key 1. Scaled to the full 350 that is
+**+0.86pp** for the shape key — under the noise floor, which is the honest expectation for the run
+that will measure it out of sample.
+
+**Both keys became arms, because both are free.** They read the pool the sampling pass has already
+paid for, so the comparison costs nothing beyond the draws: `sample-5-prior` (database and shape) and
+`sample-5-prior-shape` (shape alone). The prior is applied after every fold is measured, because it is
+the one selector in the lane that cannot run inside the fold it scores.
+
+**A protocol defect fixed in the same commit.** Every arm-versus-arm number this project has published
+was computed *after* the run, by a script outside the repository — `sample-5-shape` against
+`sample-5-first`, `m-schema` against `none-replica`, all of iteration 107's paired table. That means
+the pairs were chosen with the artefact in hand, which is the definition of a comparison that has not
+been pre-registered. `CONTRASTS` now declares the pairs in code, before a dispatch, and
+`contrastTable` reports them on the questions both arms answered; the artefact carries the result.
+`samplingSpecOf` moved into the package for the same reason it exists at all: two sites read it now,
+and a lane-local parser read from a second site is exactly how `full-validated` came to exist in one
+file and not in the other.
+
+**And an operational failure worth recording.** This iteration's first push was red in CI within
+eight seconds: `git commit -a` stages modifications, not untracked files, so the three new files the
+message described were absent from the tree while `index.ts` imported one of them. The push pipeline
+uploads from the index, so nothing caught it locally — `pnpm check` passes on a working tree where the
+files exist. Fixed by committing them (commit `950c38d`) and re-dispatching. The lesson is the same
+one the coverage gate keeps teaching: a gate that reads the tree and a gate that reads the index are
+different gates.
+
+**Dispatched.** Run [`40961917806`](https://github.com/AgentiX-E/microglia/actions/runs/40961917806) at
+`00237d0`, arms `none, full, none-replica, sample-5-first, sample-5-shape, sample-5-value,
+sample-5-prior, sample-5-prior-shape, m-schema` — nine calls per question, ceiling 7,000.
+
+**Evidence.** 1,541 tests, 94 files, coverage **99.98 / 99.63 / 100 / 99.98**; `memory-prior.ts`,
+`pool.ts`, `sota.ts`, `artifact-pool.ts` all 100 on all four dimensions. The table above is
+`pnpm eval:prior` on `/tmp/run-40880218444/poc-sota-bird.json`. Commits `79daca7`, `950c38d`.
