@@ -4632,3 +4632,34 @@ wrong ones" is a finding and not a broken step.
 benchmark step, and R7.2a's reading arrives with the artefact. The gate is built, pre-registered and
 wired; the numbers it will print are not in this document yet. R7.2b remains where iteration 99 left
 it: activated only if something survives, cancelled without appeal if nothing does.
+
+**Addendum (same iteration).** One more piece of R7.1's instrumentation landed after the entry above,
+and it is the piece that makes the ceiling interpretable.
+
+The union answers "what would a chooser have scored", and nothing answered "was there anything to
+choose from". Those are different questions and the second decides the first: a ceiling computed over
+four arms that all execute to the same rows is a **ceiling of agreement** — the number a selector would
+have to capture is however large it looks, and there is nothing in the pool to rank. Iteration 99 could
+only describe the sampling pool, five draws from one prompt; the generator pool had no description at
+all because no field recorded what the arms produced.
+
+`per_case[].arm_keys` now records the canonical identity of each arm's result, control included. The
+key is the joined `canonicalRows` output, which already sorts rows and orders columns, so two statements
+that reach the same answer share one key and a failed statement has none. It costs nothing: `judgeReply`
+executed the statement to score it, and the identity is a function of rows it already had.
+
+`unionCeiling` counts distinct keys per question and reports mean, median, median-as-share-of-arms, a
+histogram and a verdict. The verdict is the same rule as R7.0's, and it is now one function —
+`verdictOf`, exported from `pool-report.ts` — rather than two copies of `0.5` and `1/3` that could call
+identical evidence wide in one pool and narrow in the other. An unmeasured pool reports `between`,
+never `narrow`: a file written before this field existed must not be read as "we looked and it
+collapsed", which is the error the whole stage exists to stop.
+
+R7.1's criterion 3 therefore moved. It used to read `metrics.pool.distinctMean` — the sampling pool's
+collapse — under a sentence asking about the generator pool. It now reads
+`metrics.union.distinct.verdict`, with `narrow` as the refutation. No reading of either exists yet, so
+this is a criterion being made to say what it always meant rather than a bar being moved after a number
+was seen.
+
+**Evidence.** 1,484 tests, 92 files, coverage **99.98 / 99.62 / 100 / 99.98**; `union.ts` 100 on all
+four dimensions. Commit `cdf849d`; `master` at `61c104a`.

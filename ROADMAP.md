@@ -1135,7 +1135,7 @@ running if the first shows a ceiling: criterion 1 prices the pool, and a pool th
 |---|---|---|---|---|
 | 1 | the ceiling rises | `metrics.union.ceiling_pp` | ≥ +2.00pp over `none` | < +2pp |
 | 2 | the generators are genuinely different | `metrics.union.disagreement_share` and `per_arm` | ≥ 0.40; no generator under 10% of the questions | one generator answers everything |
-| 3 | distinctness, not just count | `metrics.pool.distinctMean` when a sampling arm runs beside them | median ≥ 3.0 of 6 | ≤ 2.0 |
+| 3 | distinctness, not just count | `metrics.union.distinct.verdict` and its median | not `narrow`; median as a share of the arms ≥ 0.33 | `narrow` |
 | 4 | `m-schema` is measured on its own | `arms[m-schema].delta_pp` with its interval | — (informative either way) | — |
 | 5 | the cost is stated with the gain | `calls / questions` beside every delta | — | a gain bought at 4x calls is recorded as such |
 | 6 | no single procedure is the pool | `metrics.union.dominant` | `null` | a named generator |
@@ -1144,6 +1144,13 @@ Criteria 1, 2 and 6 are computed from `per_case[].arms` by `unionCeiling`, so th
 artefact rather than assembled by hand: the union over generators is the score of a chooser that
 always picked right, and it is reported net of the `none` arm because a question the direct
 generator already answered is not headroom.
+
+Criterion 3 reads the pool the ceiling was actually computed over, which needed a field that did not
+exist before iteration 100: every arm now records the canonical identity of the rows it produced
+(`per_case[].arm_keys`), so distinctness is counted across `none`, `gen-plan`, `gen-decompose` and
+`m-schema` rather than only across sampling draws of one prompt. It is the same collapse rule R7.0
+applies, through the same function (`verdictOf`), because the two pools differ in what produced the
+candidates and not in what "collapsed" means.
 
 The generators the union is taken over are `gen-plan`, `gen-decompose` and `m-schema` — every arm that
 changes how the statement is produced. `m-schema` is in that set because a second representation of the
