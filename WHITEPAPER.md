@@ -385,6 +385,60 @@ because the artefact does not carry the instance totals needed to weight the run
 The numbers above predate the R6 gate. They describe the store the gate was applied to, not the
 current implementation.
 
+### 3.6.3 What replaced the prefix: a verifier over the pool
+
+Sections 3.6.1 and 3.6.2 close the prefix as a position for memory. A rule shown to a foreign question
+nets +0.00pp and breaks 42.6% of the targets a bare retry had already fixed; the store it comes from is
+88% inert and 2:1 harmful when it is not. Neither finding says memory is worthless — both say that *text
+distilled from a case carries nothing about another case*, and that a mechanism which must help has to
+act on something the case and the question share.
+
+The thing they share is not text. It is the shape of the answer. Three systems converged on that
+independently: XiYan-SQL groups candidates by execution result before ranking them, R³-SQL groups and
+resamples, GradeSQL trains an outcome reward model on execution labels and beats execution-based
+Best-of-N by up to +4.33 on BIRD. This project's own attempt at the *fourth* thing — asking a model to
+compare two result sets — measured −1.14pp, and the difference is not the idea of using execution; it is
+that a model comparing result sets has no ground to stand on while a shape comparison does.
+
+So the mechanism was rebuilt as six deterministic signals over an execution signature, each measured
+alone before any of them was allowed to rank anything. The order is the design: eleven earlier
+iterations shipped a composite and measured the composite, and when it came out negative nothing in the
+result said which part was wrong.
+
+**The gate.** A signal enters the composite only if `AUC − 0.5 > 2 SE` after Holm correction, with the
+bootstrap standard error floored at `sqrt(0.25/min(n₁,n₂))` because a pool whose pairs are all
+concordant returns zero variance and a zero variance read as certainty would pass a signal measured on
+four candidates. On 350 BIRD Mini-Dev questions and five draws, 122 of them offered any choice at all,
+and five of six signals cleared it:
+
+| Signal | AUC | SE | z | Holm | Verdict |
+|---|---|---|---|---|---|
+| `value-type` | 0.608 | 0.017 | 6.25 | <0.001 | **kept** |
+| `column-shape` | 0.579 | 0.017 | 4.57 | <0.001 | **kept** |
+| `empty` | 0.572 | 0.017 | 4.17 | <0.001 | **kept** |
+| `row-shape` | 0.563 | 0.019 | 3.38 | 0.0011 | **kept** |
+| `duplicate-share` | 0.542 | 0.017 | 2.46 | 0.0137 | **kept** |
+| `null-share` | 0.521 | 0.017 | 1.23 | 0.109 | removed |
+
+**What the gate is worth.** The composite of the five picks correctly on 40.2% of those 122 questions
+against 32.8% for the first draw: +7.38pp there, +2.57pp over the whole run, 11 gained and 2 lost, exact
+McNemar p = 0.0225. It is the first positive selection number in the project's history, and it is the
+first one that is attributable, because every member was measured before the sum was taken.
+
+**What it is worth decomposing.** The same pool says the sum is carried by one member. `value-type`
+alone reaches 39.3% and never breaks a question the first draw had right; the other four add one
+question between them and `row-shape` costs one. On 122 questions, one or two questions is inside the
+binomial spread, so the honest statement is that the remaining four are unproven rather than worthless —
+and the reason they look like four opinions when they are closer to one is that every signal penalises
+an empty result, not only the one called `empty`.
+
+That is the trade this section is making, stated plainly: a mechanism that can only *reject* what it
+recognises has a ceiling, and the composite has found it. `scoreOf` returns no positive number by
+construction. The next signal has to be one that can prefer a shape, and the stored object that would
+give it that ability — a `(schema, execution signature, outcome)` triple rather than a sentence about a
+question — is the rewritten form of R7.3, folded into the verifier as a prior rather than shown to a
+prompt as text.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline is 53.43% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no

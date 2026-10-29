@@ -4824,3 +4824,93 @@ it is scored on.
 
 **Evidence.** `eval/results` from run `40862283263` (artefact `sota-bird`, 2.5 MB); `pnpm eval:pool`
 and `pnpm eval:signals` reproduce every number above from that file.
+
+### 103 — The composite becomes an arm, and the thing it could not do is written down as a test
+
+Iteration 102 left the composite priced but unscoreable: +7.38pp computed by applying it to a pool
+another run had recorded. A simulation has no interval, is judged by no arm's judge, and sits in no
+results table. `sample-5-shape` is that composite as a strategy inside the cross-fitted run — the same
+signals, the same draws, the same multiset judge, against `sample-5-first` rather than against `none`.
+
+**It costs nothing.** Every draw is executed anyway to compute agreement, and the five signals are pure
+functions of a signature. The arm adds a decision, not a call.
+
+**One rule, two presentations.** The choice is delegated to `bestIndex`, which `compositePicks` now also
+uses, so the arm a run scores and the object the simulation priced cannot become two definitions of "the
+composite". A second copy of the ranking would have been a second answer to the same question, and this
+project has already paid for that mistake once: iteration 100's `shortlist` field decided the same thing
+the gate decided and was deleted rather than reconciled.
+
+**A dead branch caught before it shipped.** The first draft reported `votes` as the number of signals
+that *endorsed* the winner — `Math.sign(score) > 0`. That branch can never be taken: `scoreOf` returns
+only zero and negative numbers, because no signal in the module is permitted to prefer a shape, only to
+reject one. Left in, every pick would have been reported as `no-agreement`, the reporting would have
+been uniformly wrong, and the branch would have been unreachable for the coverage gate to find later.
+`votes` is now the number of candidates the winner outscored, which is zero exactly when the composite
+had nothing to say.
+
+**What that asymmetry means, stated as a test rather than as a caveat.** A question that asks for what is
+*absent* only stops the composite objecting to an empty result; it does not make the empty result
+attractive, and on a level field the tie-break keeps the first draw. `selectByShape` therefore cannot
+prefer emptiness, and `signal-gate.test.ts` says so in a test named for it. That is the composite's
+ceiling in one line: it can refuse a wrong answer it recognises and cannot find a right one it does not.
+
+**Dispatched.** Run [`40880218444`](https://github.com/AgentiX-E/microglia/actions/runs/40880218444) at
+`ad37855`, arms exactly as pre-registered in iteration 102 — `none, full, none-replica, sample-5-first,
+sample-5-shape, gen-plan, gen-decompose, m-schema` — eleven calls per question, ceiling 7,000. The signal
+set is the five that cleared their own gate, fixed in `SHAPE_VOTERS` before the run existed, so the arm
+does not select its features on the data it is scored on.
+
+**Evidence.** 1,504 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**; `signal-gate.ts` 100 on
+all four. Commit `7d7dd87`.
+
+### 104 — The composite is its best member with four redundancies attached
+
+R7.2b's criterion 3 asks for each signal ablated one at a time. `readSubsets` answers it from the
+recorded pool: any subset of signals, every row against the same first draw, so the rows are comparable
+to each other and to the composite's own number. No dispatch; arithmetic over run `40862283263`.
+
+On the 122 questions where a draw choice existed:
+
+| Subset | Top-pick | Δ vs first draw | Gained / lost |
+|---|---|---|---|
+| all five | 49/122 = 40.2% | **+7.38pp** | +11 / −2 |
+| without `row-shape` | 50/122 = **41.0%** | **+8.20pp** | +11 / −1 |
+| without `empty` | 49/122 = 40.2% | +7.38pp | +11 / −2 |
+| without `column-shape` | 49/122 = 40.2% | +7.38pp | +11 / −2 |
+| without `duplicate-share` | 47/122 = 38.5% | +5.74pp | +8 / −1 |
+| without `value-type` | 45/122 = 36.9% | +4.10pp | +8 / −3 |
+| only `value-type` | 48/122 = 39.3% | **+6.56pp** | +8 / −0 |
+| only `empty` | 45/122 = 36.9% | +4.10pp | +5 / −0 |
+| only `column-shape` | 45/122 = 36.9% | +4.10pp | +5 / −0 |
+| only `duplicate-share` | 43/122 = 35.2% | +2.46pp | +4 / −1 |
+| only `row-shape` | 42/122 = 34.4% | +1.64pp | +4 / −2 |
+
+**The composite is not measurably better than one of its members.** `value-type` alone takes 39.3% of
+the 40.2% the five take, and never breaks a question the first draw had right. The other four add one
+question between them and `row-shape` costs one. On 122 questions a difference of one or two is inside
+the binomial spread — the standard error on a proportion near 0.4 at this size is 4.4pp — so the reading
+does not separate "the four add a little" from "the four add nothing".
+
+Iteration 102 predicted this before the ablation existed: *"`value-type` alone may carry most of it. Its
+top-pick accuracy is 39.3% against the composite's 40.2%"*. The prediction was exact, which is the only
+reason the row is worth reading twice: it was written from the composite's own number, not from a
+subset measurement.
+
+**Why the six AUCs sat so close together.** `scoreOf` penalises an empty result on *every* signal, not
+only on the one named `empty`. So four of the five voters share a floor that fires on the same
+candidates, and their AUCs are four readings of one opinion about shape plus `value-type`'s independent
+reading of the unit. The module's comment called the floor a tie-breaker on failure; the ablation shows
+it is also the largest single component of three other signals. A signal set is not as many opinions as
+it has members.
+
+**What this does not license.** Refitting the arm to four signals, or to `value-type` alone, before the
+run finishes. Those subsets were chosen by looking at the pool the arm is scored on, and an arm refitted
+that way reports the fit. Run `40880218444` keeps the pre-registered set. The ablation's job is to say
+which comparison the *next* run should make, and it says one clearly: the set against its best member,
+on identical draws, cross-fitted. Both selectors read the same five draws, so that run costs nothing
+extra — which makes "is the composite worth its complexity" a measured question rather than an argument.
+
+**Evidence.** `pnpm eval:signals` on the artefact from run `40862283263` reproduces every row above;
+`readSubsets` is exercised in `signal-gate.test.ts` (48 tests, 100 on all four dimensions). Commit
+`3a3761f`. Total suite 1,509 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**.

@@ -1244,6 +1244,24 @@ the table **and** R7.1 has produced a pool wide enough to train on.
 | 4 | the subset where execution is uninformative is reported separately | questions where all candidates execute identically | a gain that lives only in the easy subset |
 | 5 | the selector never sees the answer | gate V17, blocking | — |
 
+**Criterion 3, read on run 40862283263 (2026-10-29).** `pnpm eval:signals` prints eleven subsets, each
+against the same first draw. The composite of five takes 40.2% of the 122 choice-bearing questions;
+`value-type` alone takes 39.3% and never breaks a question the first draw had right; the other four add
+one question between them and `row-shape` costs one (`without row-shape` = 41.0%). A difference of one
+or two questions on 122 is inside the binomial spread (SE ≈ 4.4pp), so the ablation does not separate
+"the four add a little" from "the four add nothing" — but it does establish that the composite's gain is
+carried by one member.
+
+The cause is structural: `scoreOf` penalises an empty result on every signal, not only on the one named
+`empty`, so four of the five voters share a floor that fires on the same candidates. A signal set is not
+as many opinions as it has members, and the next stage's job is to add one that is *independent* — a
+signal that can prefer a shape rather than only reject one.
+
+**Criterion 3 does not license a refit.** The subsets were chosen by looking at the pool the arm is
+scored on. Run `40880218444` keeps the pre-registered five. The correct use of the ablation is to name
+the next comparison, and it names one: the five against `value-type` alone, on the same draws in one
+run, where both selectors read the identical five draws and the second therefore costs no calls.
+
 ### R7.3 — Memory's last position: a verifier feature, never a prefix
 
 Only after R7.1 and R7.2. The same store, two positions, one run: as prompt text (`full`, measured at
