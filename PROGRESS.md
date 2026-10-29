@@ -5109,3 +5109,59 @@ they are chosen.
 `comparePaired` over `per_case[].arms` at 10,000 resamples. Note that `eval:signals` on this artefact
 still re-reads shapes without the evidence — the field landed after the dispatch — so the command's
 AUCs will differ from the gate block above in exactly the way iteration 106 tabulates.
+
+### 108 — The gate's AUC was pooling comparisons no selector makes, and `row-shape` loses its licence
+
+The pre-registered defect from iteration 106. `signalReading` counted `pairs` as the within-question
+product `up × down` and then computed the AUC over the **flattened** positive and negative lists, which
+adds every cross-question comparison. A selector is never asked to rank one question's candidate against
+another's; those pairs are also mostly ties, because two candidates scored by the same signal on
+different questions usually score the same and every tie counts as half.
+
+Same file, same shapes, one estimator changed — run 40880218444's pool:
+
+| Signal | Pooled (old) | Within (new) | Direction |
+|---|---|---|---|
+| `empty` | 0.5718 | **0.5405** | down |
+| `row-shape` | 0.5592 | **0.5176** | down, **licence lost** |
+| `column-shape` | 0.5799 | **0.5405** | down |
+| `duplicate-share` | 0.5427 | 0.5423 | flat |
+| `value-type` | 0.6018 | **0.5827** | down |
+| `null-share` | 0.5175 | **0.5282** | up |
+
+**The bias has no sign.** On run 40862283263 the same estimator change moves `empty` from 0.5719 to
+**0.5767** — upward. So the pooled figure is not a pessimistic version of the right number; it is a
+different quantity, one that depends on how many candidates each question contributed rather than on the
+signal. That is why it had to be replaced rather than corrected by an offset.
+
+**What it costs the gate.** With the estimator fixed, the evidence-less read of this pool keeps three
+signals — `value-type` 0.5827, `empty` 0.5405, `column-shape` 0.5405 — and removes three: `row-shape`
+0.5176 (z 0.71), `null-share` 0.5282 (z 1.62), `duplicate-share` 0.5423 (z 1.76, Holm 0.118). The
+composite of the three captures **+0.85pp** on the 117 choice-bearing questions, against the **+3.42pp**
+the run's own gate block reported for the five.
+
+Two caveats keep that from being the final word. First, this read still lacks the evidence, so it is the
+same degraded input iteration 106 tabulated. Second, the run's gate block was computed by the pooled
+estimator, so "five of six survive" — the sentence that launched iterations 103 to 107 — is a pooled
+statement. The corrected licensing of these signals on this corpus is **not yet measured**; it needs a
+dispatch whose artefact carries the evidence.
+
+**What does not change.** The arm's delta is an accuracy, not an AUC, so `sample-5-shape`'s
+**+1.14pp [−0.57, +2.86]** stands as measured. The conclusion of iteration 107 does not depend on which
+estimator licensed the signals: a chooser among 1.46 answers retrieves about a point of a seven-point
+ceiling, and the ceiling itself is the constraint.
+
+**What it does change.** Whether the composite is a five-signal object at all. Under the corrected
+estimator three of the five do not clear their own bar on this pool, and the two that carried the arm —
+`value-type` and `column-shape` — are the two that survive it. The `sample-5-value` arm built in
+iteration 105 asked exactly that question and was never dispatched; on this evidence it is the only
+version of the composite worth spending on.
+
+**Also removed.** `aucOf`'s empty-list guard, which no test could reach once the caller filters, and the
+`undefined` fallbacks on the grouped arrays, which are dense by construction. An unreachable branch is a
+claim nobody can test, and the coverage gate found both as soon as the call graph changed.
+
+**Evidence.** The table is reproducible from `/tmp/run-40880218444/poc-sota-bird.json` by evaluating both
+estimators over `per_case[].pool` — done independently in Python and in the module, agreeing to four
+decimals. Commit `6eda4ba`. 1,512 tests, 93 files, coverage **99.98 / 99.62 / 100 / 99.98**; `pool.ts`
+100 on all four dimensions.
