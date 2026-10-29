@@ -4517,3 +4517,34 @@ already measured twice (+0.29pp for a value comment above the DDL, −2.86pp for
 [`40862283263`](https://github.com/AgentiX-E/microglia/actions/runs/40862283263) with
 `none-replica, sample-5-first, sample-5-oracle, m-schema`, transfer measurement off, 8,000-call
 ceiling.
+
+**Addendum (same iteration).** Three more pieces landed after the entry above, all of them R7's own
+instrumentation rather than a new treatment.
+
+`packages/eval/src/pool-report.ts` (8 tests, 100% four dimensions) turns a recorded pool into the two
+decisions R7 is ordered around — can this pool support a selection claim at all, and which signals may
+rank anything — and refuses a third: the verdict is `wide`, `narrow`, or **`between`**, the last being
+the statement that the measurement does not decide the question. The bars are the ones R7.1
+pre-registered, expressed as a share of the draws taken so a three-draw run is not judged by a
+six-draw rule. `pnpm eval:pool` prints it over `eval/results/poc-sota-bird.json`, and the workflow runs
+it beside the attribution step: a run's own log now carries the pool's description, and every number in
+this programme is supposed to be reproducible from the artefact.
+
+`packages/eval/src/union.ts` (8 tests, 100% four dimensions) answers R7.1's ceiling from the artefact
+without another dispatch: each arm already records per-question correctness, so the union over
+generators is the score of a chooser that always picked right. It reports the ceiling net of the
+control — a question the direct generator already answered is not headroom — how often the generators
+disagreed, and names a generator that alone reaches the union. A pool of three where one procedure
+answers everything the pool answers is one generator with two extra calls per question, and criterion 6
+of R7.1 now reads `metrics.union.dominant` to say so.
+
+Two generators were added as arms to make that measurable: `gen-plan` (name the columns, the grain and
+the filters first) and `gen-decompose` (split into sub-questions, then compose). Both leave the
+incumbent prompt byte-identical when unnamed, and a regression test asserts it — every published number
+was produced by that exact string, so a generator that changed it by default would move the baseline
+under the whole record. Both require their reasoning outside any fence, because `extractSql` takes the
+first fenced block and a plan inside one would be scored as a paragraph of SQL.
+
+**Evidence.** 1,427 tests, 90 files, coverage **99.96 / 99.57 / 100 / 99.96**; `pnpm check` green.
+Commits: `205408d` (pool report and `eval:pool`), `9ca2d16` (README), `73a76b0` (generators and union
+ceiling); `master` at `b60dd48`.

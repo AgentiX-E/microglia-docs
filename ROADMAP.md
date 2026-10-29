@@ -1119,21 +1119,31 @@ generators are different *procedures*, and its pool carries 13.95pp because of i
 
 | Arm | Generator | What it fixes that the others do not |
 |---|---|---|
-| `direct` | question + schema, one step (incumbent) | nothing; it is the control |
-| `plan-first` | name columns, grain and filters before writing SQL | grain and distinct errors that survive a direct attempt |
-| `decompose` | split into sub-questions, answer each, compose | multi-hop joins a single pass collapses |
+| `none` | question + schema, one step (incumbent) | nothing; it is the control |
+| `gen-plan` | name columns, grain and filters before writing SQL | grain and distinct errors that survive a direct attempt |
+| `gen-decompose` | split into sub-questions, answer each, compose | multi-hop joins a single pass collapses |
 | `m-schema` | the incumbent prompt with M-Schema instead of DDL | the representation itself (XiYan: +1.63 on this model) |
-| `hetero-2` | three generators × two draws, plus `m-schema` on one branch | the pool |
 
-**Acceptance, fixed before dispatch.**
+All four are single calls per question, so one dispatch measures each generator against the control
+and the three together as a pool. Two draws per generator is a second dispatch and is only worth
+running if the first shows a ceiling: criterion 1 prices the pool, and a pool that does not clear
++2pp from one draw each will not clear it from two.
 
-| # | Criterion | Reading | Refuted if |
-|---|---|---|---|
-| 1 | the ceiling rises | `oracle(hetero-2) − oracle(sample-5)` ≥ +2pp paired | < +2pp |
-| 2 | the generators are genuinely different | pairwise disagreement ≥ 40%; no generator correct < 10% | one generator dominates |
-| 3 | distinctness, not just count | median distinct execution results ≥ 3.0 of 6 | ≤ 2.0 |
-| 4 | `m-schema` alone is measured | `m-schema − none` reported with CI | — (informative either way) |
-| 5 | the cost is stated with the gain | calls/question beside every delta | a gain bought at 4x calls is recorded as such |
+**Acceptance, fixed before dispatch, with the artefact field each criterion reads from.**
+
+| # | Criterion | Field | Bar | Refuted if |
+|---|---|---|---|---|
+| 1 | the ceiling rises | `metrics.union.ceiling_pp` | ≥ +2.00pp over `none` | < +2pp |
+| 2 | the generators are genuinely different | `metrics.union.disagreement_share` and `per_arm` | ≥ 0.40; no generator under 10% of the questions | one generator answers everything |
+| 3 | distinctness, not just count | `metrics.pool.distinctMean` when a sampling arm runs beside them | median ≥ 3.0 of 6 | ≤ 2.0 |
+| 4 | `m-schema` is measured on its own | `arms[m-schema].delta_pp` with its interval | — (informative either way) | — |
+| 5 | the cost is stated with the gain | `calls / questions` beside every delta | — | a gain bought at 4x calls is recorded as such |
+| 6 | no single procedure is the pool | `metrics.union.dominant` | `null` | a named generator |
+
+Criteria 1, 2 and 6 are computed from `per_case[].arms` by `unionCeiling`, so they are read off the
+artefact rather than assembled by hand: the union over generators is the score of a chooser that
+always picked right, and it is reported net of the `none` arm because a question the direct
+generator already answered is not headroom.
 
 **If criterion 1 fails**, candidate diversity is not the constraint and R7.2 becomes the whole stage
 with a 3.52pp ceiling as its maximum possible prize. That outcome would be published as the stage's
