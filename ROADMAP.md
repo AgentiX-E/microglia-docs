@@ -1516,3 +1516,37 @@ R9.3's acceptance is narrowed accordingly:
 > compared against the `none-replica` floor and against the 1.75pp ceiling measured here. A single-split
 > fit that lands inside [−0.50, +2.25] is the null this run already contains and does not count as
 > progress.
+
+### R9.3 — the cross-fit, fixed before the dispatch (2026-10-30)
+
+R9.1 measured the policy on **one split**: decide a rule's sign on the first half of its panel, obey the
+decision on the second. It returned `fitted` +0.63pp [−0.50, +2.25] against a `cued` policy of −2.13pp and
+an `oracle` ceiling of +1.75pp, and it also returned the reason not to trust one split: the fit halves
+carried 25 repairs and 25 breaks while the scoring halves carried 17 and 46. A single draw of a statistic
+that unstable is not an estimate, and the acceptance written in the R9.1 verdict says so.
+
+R9.3 replaces the split with repeated cross-fitting. The elements are fixed here, before the run:
+
+| Element | Fixed value | Why this value |
+|---|---|---|
+| Fold count | **5** per rule's panel, one held out | 4 of 20 questions to fit on, 4 to score: the ratio R9.1 used, cut five ways |
+| Repeats | **10** independent cuts | one cut of twenty questions is the draw R9.1 already showed to be unstable; ten makes the interval mean what it says |
+| Cut | a rule's own trials ranked by a hash of the repeat and the trial's position, rank modulo the folds | balanced by construction, independent of the order the artefact lists the trials in, and different per repeat |
+| Decision | show a rule when its **out-of-fold** net is positive, hide it otherwise | the same rule `fitted` obeys, so the only thing that changes is where the evidence comes from |
+| Control | the **same machinery on the foreign rules** | a fit that earns as much on vocabulary the workspace does not have is measuring the fit, not the content |
+| Unit | Δ against the `none` arm on the same trials, cluster bootstrap over questions, 10,000 resamples, seed 7 | identical to every other interval in this project |
+| Cost | **0 calls** | the trials are carried in the artefact; this reading re-cuts what R9.1 already bought |
+
+**The two bars.** V22 is bookkeeping and blocking: every trial must be scored exactly once per repeat,
+and the split must actually be repeated — a one-cut fit is the null R9.3 exists to beat, not a smaller
+version of it. V23 is the claim and advisory: the store's cross-fit interval must clear zero **and** beat
+the foreign rules fitted the same way.
+
+**The prediction, recorded before the run.** The single split earned +0.63pp with an interval through
+zero, and it earned it on a fit half that was exactly balanced (25 repairs, 25 breaks) while the scoring
+half was not. A cross-fit averages ten cuts of that same data, so it should land **inside [0.00, +1.00]pp
+with an interval containing zero**, and the foreign rules should land slightly negative because their sign
+is noise: **V23 fails**. If instead the store clears zero and the floor does not, the policy is real and
+R9.4 — the held-out domain — becomes the live question. If the floor earns as much as the store, the fit
+is a coin weighted by the schedule, the R9.3 line is closed, and the honest end of the flywheel claim is
+that a rule's measured effect does not survive being fitted on other questions.
