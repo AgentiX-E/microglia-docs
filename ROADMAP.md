@@ -1853,6 +1853,27 @@ published cell measures and every cross-paper comparison in this repository is w
 is significantly positive — an interval excluding zero — R9's closing condition reopens with this
 artefact as its first evidence.
 
+**Four dispatches, three bugs found by the run and one by the log.** Each attempt died on a defect the
+previous one exposed, and the fourth died on a defect that was in the client all along:
+
+| Dispatch | Died on | Fix |
+|---|---|---|
+| 1 | `the dataset archive failed its size check` — a repository variable named the Mini-Dev URL while the split selected the dev manifest | the archive URL comes from the manifest, not from a second description of the same download |
+| 2 | `No database file for 'california_schools'` — `dev.zip` nests `dev_databases.zip` | a nested archive is extracted before the loader reads it |
+| 3 | `MG_E_BUDGET_EXCEEDED` — the lane's own forecast: 12,037 calls against a cap of 8,000 | `SOTA_LEARN_SAMPLE=64`, declared in the pre-registration |
+| 4 | **step timeout at 160 minutes**, three folds finished, no artefact | §17.44: the attempt timeout is a function of the reply allowance; the lane holds its own deadline; distillation pays its batch concurrently; `V32` |
+
+**The fourth dispatch's log is the finding of iteration 118.** Evaluation took two minutes per fold and
+learning took forty-three, at the same endpoint in the same hour. The difference is the reply
+allowance: distillation asks for 2,000 tokens and the client waited a fixed sixty seconds per attempt,
+so it aborted replies that were about to arrive and retried them as though the provider had failed.
+That is not a slow run; it is a policy, computable in one line. It survived four dispatches because
+the artefact could not distinguish "the model said nothing" from "the client hung up".
+
+**The fifth dispatch is sized from measurements rather than from a guess:** `split=dev`,
+`learn_sample=64`, `arms=none,full`, `deadline_min=130`, `distill_concurrency=8`, step timeout 200,
+job timeout 260, and `V32` declared in the pre-registration before it runs.
+
 ### R10 — migrate the structure, not the sentence (pre-registered 2026-10-30)
 
 **The finding R9 left on the table.** R9.4 measured what happens when a rule learned in one database

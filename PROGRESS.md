@@ -13,7 +13,7 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | S2b Convention transfer | **first positive read**: +4.79pp (p=0.0156) on a rule the schema cannot reveal | replication; 44% of the stated ceiling is the gap to close |
 | S3 SOTA push | stopped on BIRD; starts only after S2b moves accuracy | — |
 | R1–R9 (research lines) | **closed** — R9 closed on its own refutation condition | — |
-| R8 Protocol as a deliverable | **closed**; R8.3b **running** | nothing — the dev archive is on the vendor CDN and the lane now measures it |
+| R8 Protocol as a deliverable | **closed**; R8.3b **fifth dispatch pending** — four attempts, three lane bugs and one client bug | the fifth dispatch, now that the attempt timeout scales with the reply allowance and the run holds its own deadline |
 | R10 Migrate the structure | **refused pre-dispatch** — 66.8% of the family cannot bind, above its own 60% kill condition; hypothesis untested | R11: bind to the target's schema links instead of to spelling |
 
 ## Iteration log
@@ -5857,3 +5857,66 @@ of the artefact's shape.
 it does not say structure does not travel. R11 binds a slot to the target's own schema links — the
 tables and columns the question mentions, already computed by `linkSchema` — with the same 60% kill
 condition measured by the same command before anything is bought.
+
+### 118 — The fold was never hung; the client was killing its own requests
+
+The fourth dev dispatch (`41021842231`) finished three folds and was killed by its step timeout at
+160 minutes. Its log has an interleaving that rules out almost every explanation:
+
+| Fold | Evaluation | Learning + distillation |
+|---|---|---|
+| 1 | 614 replies, 2m07s | 3m47s |
+| 2 | 614 replies, 1m45s | **43m02s** |
+| 3 | 614 replies, 2m00s | **nothing printed for 107 minutes**, then killed |
+
+The evaluation half is the control. Same endpoint, same minute, same 200-token replies, 614 of them
+in under two minutes. What changed between the two halves is the *reply allowance*: distillation asks
+for 2,000 tokens, and `LlmClient` waited a constant `60_000` ms per attempt regardless.
+
+That is the finding: **the client was aborting requests that were about to succeed, four times each,
+and recording each prompt as one the model could not answer.** 24 corrections × ~2.5 attempts × 60 s
+is the 43 minutes in the second row, to the minute. The third fold is the same arithmetic without the
+final success.
+
+**Why it survived four dispatches.** Nothing in the artefact could distinguish "the model had nothing
+to say" from "the client hung up": a failed generation was cached as `''`, and a failed distillation
+was counted in `distilled.failed` — a number that appeared in the fold line and explained nothing. The
+learning half also had no progress output at all, so 107 minutes of retrying looked exactly like a
+process that had wedged.
+
+**What was fixed, in four places.**
+
+| Defect | Fix | Where |
+|---|---|---|
+| one timeout for every request | `attemptTimeoutMs(maxTokens) = 25s + 140ms/token`, capped at 300s | `model-client.ts` |
+| a timeout retried like a 429 | two attempts after a timeout, four after a status; `Retry-After` honoured | `model-client.ts` |
+| no limit the run held over itself | `SOTA_DEADLINE_MIN` (130) checked before every attempt, raising `MG_E_DEADLINE`; the fold loop writes `partial.json` with `stopped_by: deadline` | lane + client |
+| a batch paid for one call at a time | `Interpreter.prefetch`: the batch's prompts are warmed at `SOTA_DISTILL_CONCURRENCY` while the claims are still applied in corpus order | `distill/` |
+
+**The concurrency change is a two-phase loop, and the split is the whole argument.** A prompt is built
+from its own event alone, so the calls can overlap; a claim's effect on the store depends on what is
+already in it, so the claims cannot. `distill()` now gathers the contexts, offers them to
+`interpreter.prefetch`, and then applies the interpretations in corpus order — the same order, the
+same prompts, the same store. An interpreter without a prefetch behaves exactly as before, which is
+why the default width is one.
+
+**A spent budget used to be a silent thinning of the store.** `distill()` counted any interpreter
+error as `failed` and continued, and a spent budget arrives that way. A fold that ran out of calls
+mid-distillation would have published a store built from part of its corrections. The host now passes
+`fatal: stoppedRun`, which re-throws the three codes that mean the run is over
+(`MG_E_BUDGET_EXCEEDED`, `MG_E_PROVIDER_FAILED`, `MG_E_DEADLINE`) and counts only the ones that mean
+this event had nothing to say. The same predicate is now the single place in the lane where that
+decision is made; before, four call sites each made it differently, and one of them made it wrong.
+
+**`V32-fold-learning-intact`, declared before the fifth dispatch.** More than 10% of the learning
+questions unanswered, or more than 10% of the corrections failing to distil, fails the run. A store
+built from 57 of 64 questions is not the treatment the arm was defined as, and until this gate the
+artefact had no way to say so. The amendment is in `prereg/R8.3b-dev-split.md` and it moved no
+prediction.
+
+**Green:** `pnpm check` — 1,824 tests, 102 files, coverage 99.98 / 99.61 / 100 / 99.98.
+
+**Fifth dispatch:** `split=dev`, `learn_sample=64`, `arms=none,full`, `max_calls=6000`,
+`deadline_min=130`, `distill_concurrency=8`, step timeout 200, job timeout 260. The step and job
+limits were raised because the lane's deadline is now the thing that stops a run; the runner's limit
+is only a backstop.

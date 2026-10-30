@@ -874,6 +874,57 @@ structure is **untested**; what is now measured is that name identity is not the
 carries it, and the successor construction must bind a slot to the target's own schema links rather
 than to a similarly spelled name.
 
+### 3.6.11 The instrument was the bottleneck, and it was hiding
+
+The dev split's fourth dispatch finished three of five folds and was killed at its step timeout. Its
+log separates two facts that had been one:
+
+| Fold | Evaluation (614 replies) | Learning + distillation |
+|---|---|---|
+| 1 | 2m07s | 3m47s |
+| 2 | 1m45s | **43m02s** |
+| 3 | 2m00s | nothing for 107 minutes, then killed |
+
+The evaluation half is the control. Same endpoint, same hour, short replies, 614 of them in under two
+minutes at width eight. The learning half asks a different question of the same endpoint — a 2,000-token
+distillation — and the client waited **a constant sixty seconds per attempt** whatever the reply was
+allowed to contain, four times.
+
+So the dispatch was not slow and not hung. The client was aborting requests that were about to arrive,
+retrying them, aborting them again, and then recording the prompt as one the model could not answer.
+24 corrections × ~2.5 attempts × 60 s is 43 minutes: the second row of the table is the policy,
+computed.
+
+**Why it took four dispatches to see.** The artefact could not tell "the model had nothing to say"
+from "the client hung up" — a failed generation was cached as an empty string, and a failed
+distillation incremented a counter whose only appearance was in a fold summary that said a number.
+There was also no progress line in the learning half, so 107 minutes of retrying was indistinguishable
+from a wedged process. Both are the same defect this project keeps finding in different clothes: a
+quantity that is *observed* was not being *counted*, so a run could fail without saying how.
+
+**Three repairs, and one new gate.**
+
+- The attempt timeout is now a function of the reply allowance (`25s + 140ms/token`, capped at 300s),
+  and a timeout is retried once rather than three times: repeating a request the client itself killed
+  buys the same slowness and no evidence. `timeouts` and `retries` are counted separately, because a
+  high retry count with no timeouts is a provider throttling you and the reverse is a client asking
+  for too much.
+- The run holds its own deadline (`MG_E_DEADLINE`, checked before every attempt) below the runner's
+  step timeout, and writes the folds it finished when it reaches it. A step timeout is not a deadline:
+  it kills the process and takes three measured folds with it.
+- Distillation pays its batch concurrently and applies it in order. A prompt depends only on its own
+  event; a claim's effect depends on what is already in the store. Splitting those two facts is what
+  makes a fold's learning half a few minutes instead of tens.
+- `V32-fold-learning-intact` fails a run in which more than 10% of the learning questions went
+  unanswered or more than 10% of the corrections failed to distil. It was declared before the dispatch,
+  because a gate written after a result is a preference.
+
+**The general lesson, which is about memory rather than about timeouts.** A store distilled from part
+of its corrections is a *different treatment*, not a noisier one — and until this iteration nothing in
+the artefact distinguished the two. The same was true of the binding census in §3.6.10 and of the
+replayed cell in §3.6.9: each time, the measurement was sound and the *bookkeeping about the
+measurement* was missing, so the number looked like a finding about the mechanism.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline is 53.71% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no

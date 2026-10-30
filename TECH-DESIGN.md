@@ -3416,3 +3416,52 @@ hypothesis stays untested, and the successor binds against `linkSchema`'s answer
 question* — the tables and columns it actually mentions — instead of against spelling. The same
 command computes the successor's kill condition before it buys anything, which is the reusable part
 of this iteration.
+
+### 17.44 Paying a batch without reordering it
+
+A fold's distillation is a loop over the fold's corrections, one model call each, and the loop was
+serial for a reason that is still true: a claim's effect on the store depends on what is already in
+it, so applying claims out of order produces a different store. What was *not* true is that the calls
+have to be serial. A prompt is built from its own event and the run's output, and from nothing else.
+
+So the interpreter gained an optional second phase:
+
+```ts
+export type Interpreter = ((context: InterpretContext) => ...) & {
+  prefetch?: (contexts: readonly InterpretContext[]) => Promise<void>;
+};
+```
+
+`distill()` gathers the contexts, offers them to `prefetch`, and only then applies the interpretations
+in corpus order. Three properties make this safe rather than clever:
+
+| Property | Why it holds |
+|---|---|
+| Order is unchanged | the apply loop iterates the same `contexts` array in the same order it was collected in |
+| Prompts are unchanged | `createLlmInterpreter` builds them with the same `buildDistillPrompt` call in both phases, and a test asserts the two strings are equal |
+| A caller that does not ask is untouched | `concurrency` defaults to 1, which attaches no `prefetch` at all, so every existing dispatch and every composition behaves exactly as before |
+
+**A failed warm-up is absorbed, not reported.** The serial pass asks again, and that pass is where a
+failure is counted. This is also why the warm-up does not carry the `fatal` classification: a deadline
+thrown there is thrown again by the serial pass one iteration later, which is the pass that can stop
+the run.
+
+**`fatal` closes a hole that predates this iteration.** `distill()` counted every interpreter error as
+`failed` and continued, which is right for one unparseable reply and wrong for a spent budget. A fold
+that ran out of calls in the middle of distillation wrote a store built from part of its corrections
+and reported `full` on it. The host now supplies the test — `fatal: stoppedRun` — so that
+`MG_E_BUDGET_EXCEEDED`, `MG_E_PROVIDER_FAILED` and `MG_E_DEADLINE` stop the batch and everything else
+is counted.
+
+**The client's timeout is part of the measurement, not plumbing.** `25s + 140ms/token` capped at 300s,
+a timeout retried once rather than four times, `Retry-After` honoured on 429, and a deadline checked
+before every attempt. The number that motivated all of it is a division: 24 corrections, about 2.5
+attempts each, 60 seconds per attempt, 43 minutes — the measured learning half of a fold whose
+evaluation half took two.
+
+**The gate, and why its threshold is 10%.** `V32-fold-learning-intact` fails a run in which more than
+10% of the learning questions went unanswered or more than 10% of the corrections failed to distil.
+Ten is not a statistical threshold; it is the point beyond which the store can no longer be described
+as "distilled from this fold's corrections". The gate does not claim a run at 9% is sound — it claims
+that at 10% the treatment has changed identity, which is the point at which a number stops being
+comparable to the one beside it in a table.
