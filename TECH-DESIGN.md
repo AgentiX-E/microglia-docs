@@ -3514,3 +3514,68 @@ SHA-256 — because the only question anything asks of it is whether two arms pr
 `union.ts` records the contract: a caller may pass keys or digests, and nothing in the module
 distinguishes them. The committed dev artefact is left as it ran; an evidence file is not rewritten
 to make a later repository smaller.
+
+### 17.46 The instrument that asks the store to prove itself
+
+Twelve iterations varied what is stored, how much, where it is injected and how it is retrieved, and
+every one of them compared a pack against no pack on questions the store had never seen. That design
+can say "the pack changes the score" and cannot say "the pack is any good": a store of nonsense would
+have received the same treatment. `rule-probe.ts` existed for that question and had never run on BIRD
+— `rule_probe` is `null` in both committed artefacts — which is the gap this iteration closes.
+
+**The design.** Each corrected learning question is re-asked twice: once with a blank retry (the
+failure statement, no rules) and once with the rules that correction produced. Two calls per case,
+learning rows only, so the probe cannot see the questions whose packs it filters.
+
+|  | retry alone right | retry alone wrong |
+|---|---|---|
+| **with the rules right** | `redundant` — a retry was enough | `supplied` — the rules did the work |
+| **with the rules wrong** | `broke` — a case that needed no help was destroyed | `useless` — neither attempt reached the correction |
+
+Three decisions, each visible in the artefact:
+
+1. **The blank call is not optional.** Retries alone repair some failures — measured at +0.57 to
+   +1.14pp on three earlier runs — so a `supplied` count without its control would credit the rules
+   with what a second attempt does for free. `blank_fix_rate` is that control.
+2. **A hole is not a verdict.** A call that never returned resolves both halves of the pair to
+   `undefined` and the trial to no verdict, so a provider hiccup never becomes evidence.
+3. **Admission is a filter on evidence, not on plausibility.** A rule is kept only when at least one
+   of its own cases reproduced with it and none broke: one demonstration and one counter-demonstration
+   is not a rule the project can defend on the average of the two.
+
+**The reading** (BIRD Mini-Dev, k=5, 350 questions, 1,445 calls, 312 of them the probe):
+
+| Reading | Value |
+|---|---|
+| corrected cases | 156, all measured |
+| `supplied` / `redundant` / `broke` / `useless` | **19 / 31 / 3 / 103** — 12.2 / 19.9 / 1.9 / 66.0% |
+| blank-retry repair rate | 21.8% (the free ceiling `supplied` is measured against) |
+| admission | **38 kept**, 252 unsupported, 6 broke their source, 0 unprobed — 296/296 reconciled |
+| the verified arm | **54.00% vs 54.00%** — `0.00pp`, p = 1.00, 0.39 rules per question |
+
+**Two predictions failed and they are the finding.** The pre-registration fixed `supplied` ≥ 20% and
+`kept` ≥ 25%; the run measured 12.2% and 12.8%. `broke` ≤ 15% and a blank-retry rate in [20%, 60%]
+both held at 1.9% and 21.8%. Two thirds of corrections cannot be reproduced even with the failure and
+its own rules in the prompt, so the deficit is in the **extraction** rather than in retrieval,
+injection point, budget or schema boundary — which is where the last four iterations looked.
+
+**Why the admitted store proves nothing yet.** It moved 342 of 350 prompts and no accuracy. The 130
+questions that actually received a rule scored 56 against the baseline's 57 (−0.77pp at n = 130); the
+220 that received none differed by one question the other way, on *identical prompts*, because the
+client samples at temperature 0.7 and pairs arms by question rather than by seed. That is the noise
+floor of every arm comparison on this split — 36 of 220 identical prompts produced a different
+statement — and it is now a number rather than an assumption.
+
+**A defect the dry run caught before it cost anything.** The artefact's `probe.rules` was
+`summary.rules`, the number of rule *citations* the trials carry, while the four admission buckets
+partition *items*; one correction can distil two rules and one rule can be cited by two corrections,
+so the two counts diverge in both directions and `V13` — a blocking gate — could only pass in a store
+where no rule is cited twice. `rules` is now the store the probe was given and `citations` keeps the
+other reading, with a unit test pinning the distinction. The arm had never run, so no dispatch had
+ever been failed by it.
+
+**What the next stage is, given this.** Not another arm variant. The one claim the design still
+supports unmeasured is *in-database* transfer: whether an admitted rule repairs a **different**
+question in the **same** database. The probe already carries that ledger (`transfer`), it was disabled
+on this dispatch because cross-database transfer closed in R11 and this run asked one question, and it
+costs four calls per admitted rule — 152 calls for the 38 survivors.

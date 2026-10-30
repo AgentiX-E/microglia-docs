@@ -6026,3 +6026,49 @@ and the bar is the same.
 
 **Green:** `pnpm check` — 1,852 tests, 103 files, coverage 99.98 / 99.60 / 100 / 99.98, with
 `link-bind.ts` and `sql-exec.ts` at 100 on all four dimensions.
+
+### 121 — The store was asked to prove itself, and two thirds could not
+
+Twelve iterations compared a pack against no pack on questions the store had never seen. That design
+answers "does the pack change the score" and cannot answer "is the pack any good". The instrument for
+the second question has existed since `rule-probe.ts` was written and had never run on BIRD: `rule_probe`
+was `null` in both committed artefacts. Iteration 121 dispatches `full-verified`, which probes first
+and then answers with what survived.
+
+**The probe, on 156 corrected cases for 312 calls** (out of 1,445 for the whole run):
+
+| Verdict | Count | Share |
+|---|---|---|
+| `supplied` — the rules did the work | 19 | **12.2%** |
+| `redundant` — a blank retry was already enough | 31 | 19.9% |
+| `broke` — a case that needed no help was destroyed | 3 | **1.9%** |
+| `useless` — neither attempt reached the correction | 103 | **66.0%** |
+
+The blank-retry repair rate is 21.8%: that is the free ceiling `supplied` is measured against, and the
+number that stops it being read as the rules' contribution. **Two predictions failed and two held.**
+`supplied` ≥ 20% and `kept` ≥ 25% were predicted; 12.2% and 12.8% were measured. `broke` ≤ 15% and a
+blank-retry rate in [20%, 60%] held at 1.9% and 21.8%.
+
+**Admission keeps 38 of 296 rules** (252 unsupported, 6 broke their own case, 0 unprobed — V13
+reconciled 296/296, and it is blocking). The verified arm answers 350 held-out questions at
+**54.00% against 54.00%** — `0.00pp`, p = 1.00, 0.39 rules per question, with 342 of 350 prompts
+changed. The 130 questions that actually received a rule scored 56 against 57 (−0.77pp at n = 130);
+the 220 that received none differed by one question the other way **on identical prompts**, which is
+the sampling noise of a temperature-0.7 client that pairs arms by question rather than by seed. It is
+now measured: 36 of 220 identical prompts produced a different statement.
+
+**Where the deficit is.** Two corrections in three cannot be reproduced even with the failure and the
+rules distilled from it in the same prompt. That is the extraction, and it is the one place the last
+four iterations were not looking — retrieval, budget, injection point and schema boundary were each
+measured and each closed. A single correction, read by a model into a sentence, is usually not enough
+to reproduce itself; what does survive is too weak to move a different question.
+
+**A blocking gate that could never have passed, found before it cost a dispatch.** The artefact's
+`probe.rules` was `summary.rules` — rule *citations* — while the four admission buckets partition
+*items*. One correction can distil two rules and one rule can be cited by two corrections, so the
+counts diverge in both directions and V13 could only pass in a store where no rule is cited twice.
+`rules` is now the store the probe was given, `citations` keeps the other reading, and a unit test
+pins the distinction. A stand-in endpoint exercised the arm end to end before the dispatch.
+
+**Green:** `pnpm check` — 1,853 tests, 103 files, coverage 99.98 / 99.60 / 100 / 99.98; the dispatch
+1,445 calls, 0 retries, 0 timeouts, 11 minutes, every gate pass including V13 (blocking).

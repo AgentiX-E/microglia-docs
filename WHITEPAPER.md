@@ -962,6 +962,54 @@ measured it as +1.33pp at home and −2.27pp across a boundary; R10 as 66.8% no 
 of which 60.0% is a missing column. The transfer question is closed, and the product statement is the
 one the user guide now carries: the pack is an **in-database prompt**.
 
+### 3.6.13 The store was asked to prove itself, and two thirds could not
+
+Every measurement in §3.6 asks the same question — does a pack made from other questions improve this
+question — and every one of them assumes the stored rules are worth injecting. §3.6.13 reports the
+first measurement of that assumption. Each *corrected* learning question is re-asked twice: once with
+a blank retry (the failure statement, no rules) and once with the rules that correction produced. The
+two answers give one of four verdicts, and only one of them shows the extraction doing work.
+
+| | retry alone right | retry alone wrong |
+|---|---|---|
+| **with the rules right** | `redundant` — a second attempt was enough | `supplied` — the rules did the work |
+| **with the rules wrong** | `broke` — the rules destroyed a case that needed no help | `useless` — neither attempt reached the correction |
+
+One dispatch, BIRD Mini-Dev, cross-fitted at k=5, 350 scored questions, **1,445 model calls** — of
+which 312 bought the probe itself:
+
+| Reading | Value |
+|---|---|
+| corrected cases probed | 156, all measured, none unanswered |
+| `supplied` | **19 — 12.2%** |
+| `redundant` | 31 — 19.9% |
+| `broke` | **3 — 1.9%** |
+| `useless` | **103 — 66.0%** |
+| blank-retry repair rate (the free ceiling) | 21.8% |
+| rules admitted by the gate | **38 of 296 — 12.8%**, with 6 excluded for breaking their own case |
+
+**Two of the four predictions written before the run failed, and that is the result.** We predicted
+`supplied` ≥ 20% and `kept` ≥ 25%; we measured 12.2% and 12.8%. We predicted `broke` ≤ 15% and a
+blank-retry rate between 20% and 60% — 1.9% and 21.8% both held. The extraction is *not* the
+catastrophe the failed predictions might suggest — it does produce, in one case in eight, a rule that
+carries enough to repair the very case it came from — but two corrections in three cannot be reached
+even when the model is shown its own failure **and** the rules distilled from it.
+
+**The admitted store is inert, which is the second half of the finding.** With only the 38 survivors,
+the pack still changed 342 of 350 prompts and moved execution accuracy from 54.00% to **54.00%** —
+`0.00pp`, p = 1.00, at 0.39 rules per question. The 130 questions that actually received a rule scored
+56 against the baseline's 57 (−0.77pp, n = 130); the 220 that received none differed by one question
+in the other direction, on **identical prompts**, which is the sampling noise a temperature-0.7 client
+buys when it pairs arms by question rather than by seed.
+
+So the mechanism's deficit is not retrieval, not injection timing, not budget, and not the
+cross-database question that §3.6.10–3.6.12 closed. It is the **extraction**: a single correction,
+read by a model into a sentence, is usually not enough to reproduce itself, and what does survive is
+too weak to move a different question. The next stage is not another variant of the arms; it is the
+one measurement this design makes possible and has not yet taken — whether an admitted rule repairs a
+*different* question in the *same* database, which is the only form of transfer this project still
+claims.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

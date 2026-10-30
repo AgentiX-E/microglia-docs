@@ -2033,3 +2033,51 @@ pre-registration and its own census, and the bar is the same.
 **Also fixed, because the census exposed it.** `per_case.arm_keys` held each arm's canonical result
 set, and one `card_games` answer is 12 MB: 37.9 MB of a 38 MB evidence file, for a field whose only use
 is an equality test. The field is now `arm_result_digests`. The dev artefact is left as it ran.
+
+### R12 — the store was asked to prove itself (2026-10-31)
+
+**Built.** `SOTA_ARMS=full-verified` — the probe path that had existed since `rule-probe.ts` was
+written and had never run on BIRD (`rule_probe` was `null` in both committed artefacts). Each corrected
+learning question is re-asked twice, blank retry and retry with the rules that correction produced, and
+the pair yields one of four verdicts. Pre-registration: `prereg/R12-own-case-probe.md`, written before
+the dispatch.
+
+**Reading** (Mini-Dev, k=5, 350 questions, 1,445 calls — 312 of them the probe):
+
+| Reading | Value | Predicted |
+|---|---|---|
+| corrected cases probed | 156, all measured | ≥ 80% measured ✅ |
+| `supplied` | **19 — 12.2%** | ≥ 20% ❌ |
+| `redundant` | 31 — 19.9% | — |
+| `broke` | **3 — 1.9%** | ≤ 15% ✅ |
+| `useless` | **103 — 66.0%** | — |
+| blank-retry repair rate | 21.8% | 20–60% ✅ |
+| rules admitted | **38 of 296 — 12.8%** | ≥ 25% ❌ |
+| the verified arm | **54.00% vs 54.00% — 0.00pp**, 0.39 rules/question | — |
+
+**Two predictions failed, and they are the result.** The store does not catastrophically fail — one
+case in eight is repaired only when its own rules are shown — but **two corrections in three cannot be
+reproduced even with the failure and its own rules in the prompt**. A single correction, read into a
+sentence, is usually not enough to reproduce itself. That locates the deficit in the **extraction**,
+and every one of the last four iterations was spent looking somewhere else (retrieval, budget,
+injection point, schema boundary).
+
+**The admitted store is inert.** 38 rules moved 342 of 350 prompts and no accuracy. The 130 questions
+that received a rule scored 56 against 57 (−0.77pp at n = 130); the 220 that received none differed by
+one question in the other direction **on identical prompts** — the sampling noise a temperature-0.7
+client buys when it pairs arms by question rather than by seed, measured here for the first time at 36
+of 220 (16.4%) and one question.
+
+**A blocking gate could never have passed, and the dry run found it.** `probe.rules` was
+`summary.rules` — rule *citations* — while the admission buckets partition *items*. The two diverge
+whenever a rule is cited twice, so `V13` would have failed every real dispatch. Fixed before the run
+(`rules` = the store the probe was given, `citations` = the other reading) and pinned by a test.
+
+**Cost.** 1,445 calls, 11 minutes, 0 retries, 0 timeouts. The probe is 312 of those calls, which makes
+it the cheapest instrument in the project: 4.6% of a two-arm run for the only measurement that asks
+whether the pack is any good.
+
+**Next, and it is not another arm variant.** The one claim the design still supports and has not
+measured is *in-database* transfer of an **admitted** rule: does it repair a different question in the
+same database? The ledger exists (`transfer`, four calls per rule — 152 for 38 survivors) and was
+disabled here because R11 closed the cross-database question and this dispatch asked one thing.
