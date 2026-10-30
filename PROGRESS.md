@@ -350,20 +350,23 @@ runs offline in about a second and is part of `pnpm check`.
 
 ## What is left, in order
 
-1. **R8.3b, the dev-split reproduction** — the one R8 item blocked on data: `compareCell` will call the
-   XiYan cell `reproduced` the moment a run exists at n = 1,534 on the same split, and nothing else in
-   the protocol has to change for that to happen.
-2. **S2b, convention transfer** — replicate the +4.79pp read, then close the gap to the stated ceiling
-   (+10.96pp): the learned pack carries 2.08 rules per question and 189.6 are active, so the question
-   is whether retrieval finds the one that applies.
-3. **Re-measure the parser fix**: the corrected parser changes which corrections become rules, so the
-   failure rate and the delta both need one more read before either is quoted.
-4. **S2 at power, if needed**: Mini-Dev caps at 352 usable questions (4.9pp resolution); BIRD dev
-   (1,534 questions over the same 11 databases) fixes the sample, not the mechanism.
-5. **S1**: instrument nl2charts behind a flag, adjudicate 1,300 cases, run the three modes. Gate:
-   +3pp top-1 (p<0.05), SQL regression ≤1pp, knowledge precision ≥85%.
-6. **Cortex release**: swap the clone lane for the published package (W1).
-7. **vitest 4 migration** once vite 7 is the toolchain default (W2).
+Every stage that is not blocked is closed. What remains is blocked on something outside this
+repository, and the distinction is stated because a list that mixes the two hides the one thing a
+reader wants to know: whether anything here is waiting on us.
+
+1. **R8.3b — the dev-split reproduction.** Blocked on data: this environment cannot reach the dataset
+   host, so no run exists at n = 1,534. `compareCell` returns `reproduced` the moment one does, and
+   nothing else in the protocol changes.
+2. **S1 — host shadow.** Blocked on the private adjudicated set: 1,300 cases, two annotators, κ ≥ 0.7.
+   The instrument (a flag, a journal, recall before generation) is specified and not built.
+3. **S3 — SOTA push.** Gated, not blocked: it starts only if S2b moves accuracy. S2b closed with its
+   gate missed (+4.79 then +2.05pp against a ≥10pp bar), so S3 stays stopped by its own rule.
+4. **Cortex release (W1).** Excluded from this programme by the owner; the conformance lane is green
+   against a real build and the release itself is a decision, not a task.
+5. **vitest 4 (W2).** Blocked on the toolchain: it lands when vite 7 is the default.
+
+The parser fix that used to be on this list is no longer: the committed S2 artefact reads
+`parse_rate 1.0`, `distill_failed 0`, so the corrected parser has been measured on a full run.
 
 Nothing on this list blocks the S0 result, and none of it is hidden behind the green build: each item
 is either an experiment that has not run or a dependency that has not shipped.
