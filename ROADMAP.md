@@ -1588,3 +1588,151 @@ interval is set by the 200 questions the bootstrap resamples, not by the 16,000 
 foreign rules, and the interval will be wide because the constraints are questions rather than repeats. A
 policy that transfers should be reported as a difference against **+1.28pp**, not against zero, because the
 schedule has now been priced and it is the number the machinery earns on material that cannot apply.
+
+### R9.4 — the held-out domain, fixed before the dispatch (2026-10-30)
+
+R9.3 priced the policy inside one domain and against one control: the same machinery on foreign
+rules earns +0.05pp, so 1.28pp of the 1.33pp is content. What it did not ask is where that content
+lives. A rule distilled from `financial` states a fact about the `financial` schema, and every trial
+in the family so far has put it on a `financial` question. The question R9.4 asks is the one R6
+asked from the other direction: **a rule that works at home, does it still work away?**
+
+| Element | Fixed value | Why |
+|---|---|---|
+| Cross panel | **10** targets per rule, all from databases other than the rule's own | R6 pointed a rule at four foreign cases and read 3.52%; ten gives 800 injections pooled over 80 rules |
+| Draw | target databases ordered by `hash(ruleId + dbId)`, targets within each by `hash(ruleId + id)`, taken round-robin | deterministic, spread across databases rather than clustered in one, and independent of the order the cases arrive in |
+| Injection | **one** rule, the same prompt shape, pack budget and temperature as the in-domain family | so the only difference between a home trial and a foreign trial is the target it landed on |
+| Control | the target's own `none` answer, already bought in the learning pass | a foreign target's control is the same measurement as a home target's |
+| Strata | the rule's in-domain sign over its **20** home trials: positive / zero / negative | the claim is about rules that worked at home, so the stratum is what "worked" means |
+| Units | Δ in pp with a question-clustered interval, **and** R6's units: repair rate over trials the control failed, break rate over trials the control passed, each beside its home counterpart | R6 closed on the break rate rather than on the repair rate, and a foreign reading that quotes only one of them repeats that mistake |
+| Cost | **800 calls** | 80 rules × 10 |
+
+**Bars.** V24-density-transfer-covers (blocking) is bookkeeping: every injection landed on a database
+that is not the rule's, the strata reconcile to the total, and the panel is the size it claims.
+V25-density-transfer-holds (advisory) is the claim: the home-positive stratum earns a positive Δ on
+foreign questions.
+
+**The prediction, recorded before the dispatch.** Home-positive rules keep a positive point estimate
+no larger than half their home effect — **at most +0.7pp** — with an interval containing zero, and
+their foreign break rate stays within 5pp of their home break rate. That is, a rule's value is bound
+to the schema it was distilled from and the store must be partitioned by database rather than
+retrieved across one. The two other outcomes are pre-written because they would mean different
+things: **+1pp or more with an interval excluding zero** means the store can be global and the
+retrieval layer is the entire problem; **−1pp or worse** means cross-database retrieval is actively
+harmful, which would be the first mechanism in this programme that explains a negative effect
+instead of only measuring one.
+
+### R9.5 — how many observations a rule needs, fixed before the dispatch (2026-10-30)
+
+R9.3's policy shows a rule when its out-of-fold net is positive, and the fold it is fitted on is a
+choice nobody has tested: 5 folds leave 16 of 20 observations, and folds 2 leave 10, which collapses
+the reading to +0.04pp. So the number of chances a rule has been given is a *parameter of the
+policy*, not a property of the workload, and it decides what a deployment must pay before it may
+show a rule at all.
+
+**The measurement.** Re-run the cross-fit with the fit pool capped at the first `m` observations of
+each rule — `m ∈ {4, 6, 8, 10, 12, 16, 20}` — scoring every trial as before. The cap restricts what
+the fit may look at, never what is scored, so every row of the curve is measured on the same 16,000
+injections over the same 200 questions and the rows are paired.
+
+**Bars.** V26-density-evidence-curve (blocking) is bookkeeping: the curve has at least three caps,
+the smallest is strictly below the panel, and none exceeds it. The reading itself is descriptive and
+is reported as a curve rather than as a pass.
+
+**The prediction.** Δ at m = 4 is at or below zero — four observations cannot separate a rule that
+helps from one that does not — rising to within 0.3pp of the full-panel reading by m = 12 and flat
+afterwards. The deployment number to quote is the smallest m at which Δ exceeds +1pp.
+
+### R9.4 — the run, and the verdict (2026-10-30)
+
+Run [`40988215122`](https://github.com/AgentiX-E/microglia/actions/runs/40988215122), 350 questions,
+3,656 calls, 1 retry, 0 failures, **0 holes**, 2,600 density injections of which 800 are foreign.
+
+| Gate | Reading | Verdict |
+|---|---|---|
+| V24-density-transfer-covers | 800 of 800 injections, 0 on the rule's own, 11 databases, 272 questions | pass |
+| V25-density-transfer-holds | home-positive rules −2.27pp [−7.86, +2.68] over 220 injections | **fail** |
+
+| Stratum, by home sign | rules | foreign Δ | 95% CI | repair | break | home Δ |
+|---|---|---|---|---|---|---|
+| positive | 22 | **−2.27pp** | [−7.86, +2.68] | 7/105 = 6.7% | 12/115 = 10.4% | +7.05pp |
+| zero | 23 | −1.74pp | [−5.98, +2.86] | 6/104 = 5.8% | 10/126 = 7.9% | 0.00pp |
+| negative | 35 | −2.29pp | [−5.49, +0.90] | 6/155 = 3.9% | 14/195 = 7.2% | −8.71pp |
+| all | 80 | −2.12pp | [−5.16, +1.02] | 19/364 = 5.2% | 36/436 = 8.3% | −1.88pp |
+
+**The prediction is confirmed and the stage's claim is refuted.** The prediction said: home-positive
+rules keep at most half their home effect (+0.7pp at most), interval containing zero, foreign break
+rate within 5pp of home. The reading is −2.27pp with an interval containing zero, and a break rate of
+10.4% against a home rate that R6 measured at 42.6% — the material does not break foreign questions
+because it does not act on them.
+
+**The home figure is not the comparison.** `home +7.05pp` is the same rules on the same twenty trials
+the stratum was defined by, so it is a description of what "worked at home" means and not a
+measurement. The comparable in-domain number is the cross-fit's **+0.33pp** in the same run.
+
+**R6's two statistics do not reappear, and the difference is the finding.** A rule pointed at a
+foreign case *in its own database* repaired 3.52% and broke 42.6% (R6). Across schemas the same rules
+repair 6.7% and break 10.4%. The conditional repair rate is *higher* than R6's because its denominator
+excludes every trial the rule fails to damage; the break rate is *lower* because a sentence about
+tables that are not in the workspace is ignored rather than obeyed. The negative stratum is the
+control for this: rules that cost 8.71pp at home cost 2.29pp abroad. **Leaving the schema does not
+make a rule wrong, it makes it inert** — and a global store therefore buys nothing rather than costing
+something.
+
+### R9.5 — the run, and the verdict (2026-10-30)
+
+Same run, same ledger, zero calls: the cross-fit re-read with the fit pool capped at the first *m*
+observations of each rule, the whole panel scored every time.
+
+| fit sees | Δ | 95% CI | shown | +/− |
+|---|---|---|---|---|
+| 4 | +0.00pp | [−0.29, +0.29] | 1,360 | 33/33 |
+| 6 | +0.25pp | [−0.17, +0.72] | 1,948 | 73/33 |
+| 8 | +0.36pp | [−0.12, +0.87] | 2,108 | 99/42 |
+| 10 | +0.29pp | [−0.34, +0.96] | 2,460 | 118/72 |
+| 12 | +0.22pp | [−0.47, +0.96] | 2,780 | 119/83 |
+| 16 | +0.20pp | [−0.61, +1.03] | 3,316 | 138/106 |
+| 20 | +0.33pp | [−0.49, +1.18] | 3,804 | 161/109 |
+
+**The prediction holds in every clause and the premise behind it does not.** Four observations at or
+below zero: yes, exactly zero. Within 0.3pp of the full panel by twelve: yes, +0.22 against +0.33.
+Flat afterwards: yes. What the curve shows is that there is no knee, so the number of chances a rule
+has been given is not what decides whether the policy can use it. The family was built on the
+hypothesis that the store was silent because it was never asked twenty times; it was asked, in R9.1,
+and the silence moved from the rules to the policy.
+
+### R9 — closed 2026-10-30, on its own refutation condition
+
+The stage's refutation condition, written before R9.1 was dispatched:
+
+> If R9.3's fitted policy beats the floor but R9.4's transfer does not, the finding is that memory is
+> a lookup and not a lesson — which is consistent with everything measured since R4 and would be the
+> honest end of the flywheel claim.
+
+The fitted policy beat its content-free floor in both runs (+1.33pp vs +0.05pp; +0.33pp vs −0.25pp)
+and R9.4's transfer is −2.27pp. **The condition is triggered.**
+
+| | R9.1 (2026-10-30) | R9.3 (2026-10-30) | R9.4 (2026-10-30) |
+|---|---|---|---|
+| cross-fit, store | — | +1.33pp [−0.06, +2.83] | +0.33pp [−0.49, +1.18] |
+| cross-fit, foreign rules | — | +0.05pp | −0.25pp |
+| oracle | +1.75pp [+0.38, +3.75] | +3.25pp [+1.00, +6.25] | +2.25pp [+0.63, +4.38] |
+| `always` | −3.62pp | −2.75pp | −3.25pp |
+| `cued` | −2.13pp | −1.00pp | −0.75pp |
+| discriminating | 68.8% | 68.8% | 71.3% |
+| sign persistence | 16/20 | 17/24 | 10/15 |
+
+Three stores, same code: the cross-fit is **+1.33, +0.41, +0.33**, mean **+0.69pp**, sd **0.56pp**.
+The store is a fresh distillation draw every run and the draw-to-draw spread is as wide as the effect,
+so no single run's point estimate is a property of the method. What is stable is the ceiling —
+`oracle` at +1.75 / +3.25 / +2.25pp, all excluding zero, all with zero breaks — and the fact that
+nothing computable from the question, from the rule's text, or from another database approaches it.
+
+**What the stage establishes, in one sentence each.** A rule's sign is real and stable (43 of 59 rules
+that had a sign on both halves kept it, p 0.0006, pooled over three runs). A rule's value is bounded
+by its own database. A rule that is shown indiscriminately costs about three points. Nothing that can
+be known before the rule is exercised predicts whether it will help, and exercising it more does not
+help either.
+
+The remaining work in R9's line is none. R8 — the protocol as a deliverable — is the last stage open
+that this reading does not close.

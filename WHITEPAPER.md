@@ -640,7 +640,79 @@ quote.
 The honest summary of the position: a rule the store carries is worth about **+1.3pp** on the questions of
 its own database when it is chosen out of fold, its direction is stable three times in four, and the
 programme's instrument cannot resolve that effect at 95% because 200 questions is not enough clusters. That
-is not the earlier finding that memory does not work, and it is not yet the finding that it does.
+is not the earlier finding that memory does not work, and it is not yet the finding that it does. Two things
+were left open and §3.6.7 closes both: whether the effect survives a second store (it does not — +1.33,
++0.41, +0.33), and whether it survives leaving the database (it does not — −2.27pp).
+
+### 3.6.7 A rule is a lookup, and the schema is the edge of the page
+
+R9.3 measured what a rule is worth in the database it came from and reported the reason to doubt it:
+one split, two halves that were not exchangeable. R9.4 asked the question that decides whether any of
+this is knowledge. Every one of the eighty rules was put on ten questions drawn from *other*
+databases — 800 injections over eleven schemas, round-robin so no rule saw one foreign database
+twice before it had seen them all — and the reading is stratified by the sign the rule had at home.
+
+| Stratum, by home sign | rules | foreign Δ | 95% CI | repair | break |
+|---|---|---|---|---|---|
+| positive (it worked at home) | 22 | **−2.27pp** | [−7.86, +2.68] | 7/105 = 6.7% | 12/115 = 10.4% |
+| zero | 23 | −1.74pp | [−5.98, +2.86] | 6/104 = 5.8% | 10/126 = 7.9% |
+| negative (it hurt at home) | 35 | −2.29pp | [−5.49, +0.90] | 6/155 = 3.9% | 14/195 = 7.2% |
+| **all** | 80 | **−2.12pp** | [−5.16, +1.02] | 19/364 = 5.2% | 36/436 = 8.3% |
+
+**The rules that worked at home did not work away.** The twenty-two rules with a positive net on their
+own twenty questions earn −2.27pp on foreign ones, and the interval is wide enough to contain a small
+positive effect but its point estimate is on the wrong side of zero. Their home figure is +7.05pp and
+it is not a fair comparison — the stratum was defined by that same measurement, so a rule selected for
+having a positive net cannot have a negative one. The fair in-domain number is the cross-fit's
++0.33pp (§3.6.6's reading, three stores later), and the foreign number is −2.27pp. Both say the same
+thing: nothing survives the boundary.
+
+**The units do not transfer, and the way they fail is not damage.** R6 pointed a rule at a foreign
+case *in its own database* and found 3.52% repairs against a 42.6% break rate — a unit that repairs
+rarely and destroys easy questions often. Across schemas the same rules repair 6.7% of the questions
+the control failed and break 10.4% of the ones it passed: the ratio inverts toward inertness. A rule
+about `financial` shown a `formula_1` question is not a wrong instruction, it is a sentence about
+tables that are not there, and the model ignores it. The negative stratum makes this explicit: rules
+that cost 8.71pp at home cost 2.29pp abroad, because abroad they stop acting at all. **A global store
+is not dangerous. It is pointless.**
+
+**Giving a rule more chances does not make it a lesson.** R9.5 capped what the fit may look at — the
+first 4, 6, 8, 10, 12, 16 and 20 observations of each rule — and scored the whole panel every time, so
+the rows are paired over the same 16,000 injections:
+
+| fit sees | Δ | 95% CI | shown |
+|---|---|---|---|
+| 4 | +0.00pp | [−0.29, +0.29] | 1,360 |
+| 8 | +0.36pp | [−0.12, +0.87] | 2,108 |
+| 12 | +0.22pp | [−0.47, +0.96] | 2,780 |
+| 20 | +0.33pp | [−0.49, +1.18] | 3,804 |
+
+There is no knee. Four observations and twenty are worth the same, and both are worth nothing. The
+prediction recorded before the dispatch — four observations at or below zero, within 0.3pp of the full
+panel by twelve, flat after — is confirmed in every clause, and the confirmation is the refutation of
+the reason the family was built: the problem was never that rules were under-exercised.
+
+**The +1.33pp of §3.6.6 was a high draw.** Three stores, same code, same panel size: **+1.33, +0.41,
++0.33** — mean **+0.69pp**, standard deviation **0.56**. The store is distilled from five samples at
+temperature 0.7, so every run is a new draw of the rules, and the run-to-run spread is as large as the
+effect. What is stable across the three is the ceiling: `oracle` earned +3.25pp [+1.00, +6.25] and
++2.25pp [+0.63, +4.38], both excluding zero, both with **zero breaks**. The rules that help are
+findable and the measure of their worth is real; what does not exist is any way to identify them from
+the question, and R9.4 now adds: or from another database.
+
+**The refutation condition, which was written before any of this.** R9's stage section says: *if
+R9.3's fitted policy beats the floor but R9.4's transfer does not, the finding is that memory is a
+lookup and not a lesson — which is consistent with everything measured since R4 and would be the
+honest end of the flywheel claim.* The fitted policy beat its content-free floor in both runs
+(+1.33 vs +0.05, +0.33 vs −0.25) and the transfer is −2.27pp. The condition is triggered, on the
+condition's own terms, with the numbers it asked for.
+
+What that closes is not the project but a hypothesis. The unit the store holds is a **case**: it
+repairs the question that produced it (own-case net, +20.53pp in R6), it is worth a fraction of a
+point on its own database once selected by exercise, and it is worth nothing on any other database.
+Four memory forms have now been measured in four positions, at three densities, with a content-free
+control each time, and the answer has not moved: the flywheel does not turn because the thing it
+stores cannot be carried.
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 

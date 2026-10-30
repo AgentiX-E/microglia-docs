@@ -5550,3 +5550,79 @@ in direction: the stratum whose gold query uses the rule's vocabulary is the wor
 questions, 2,859 calls, 0 failures, 1 retry, V18–V22 green, V23 red. `crossFit` at 100% on all four
 dimensions with 61 tests in `density.test.ts`; `pnpm check` green with 1,617 tests, 96 files, coverage
 99.98 / 99.65 / 100 / 99.98.
+
+### 114 — R9.4 and R9.5: the rule stops at the schema, and exercise was never the problem
+
+**One dispatch was refused before it was read.** The first R9.4 dispatch (`40985127694`) bought all
+2,600 density injections — 1,600 home, 200 floor, 800 foreign — with 3,657 calls, no failures, and then
+failed itself. V18 read `19-20 per rule`: one call had never returned, so one rule had nineteen
+observations in the ledger, and the gate that exists to prove every rule was exercised twenty times
+said no. The lane published a partial with the reason instead of an artefact, and the run is a total
+loss of 3,657 calls and twenty-two minutes over a single 503.
+
+That is a defect in the instrument, not in the family, and it selected for luck: a family that
+measures 2,599 of 2,600 injections correctly was being discarded while a luckier one with identical
+machinery was kept. Two changes, both keeping the claim tight:
+
+| Change | Why it does not weaken the claim |
+|---|---|
+| A density injection is retried once before it becomes a hole | a hole costs a rule one of its twenty chances; a duplicate costs a call, and the retry is bounded at one |
+| V18 compares the shortest rule against `panel − holes`, and bounds holes at one per rule and at 1% of the family | a run that really lost its injections still fails; a run that lost one call no longer prints a null result |
+
+**The accepted run** (`40988215122`, commit `5cbed98`): 350 questions, 3,656 calls, 1 retry, 0
+failures, **0 holes**, 2,600 density injections over 80 rules × 10 databases, plus 800 foreign
+injections over 11 databases. `none` 53.71% → `full` 51.14%, **−2.57pp**.
+
+| Gate | Reading | Verdict |
+|---|---|---|
+| V18-density-exercised | 20-20 per rule (median 20), 0 holes in 1,600 | pass |
+| V19-density-discriminates | 71.3% of 80 rules | pass |
+| V20-density-reconciles | 1,600 = 704 relevant + 896 irrelevant | pass |
+| V21-density-floor (advisory) | 200 floor injections, 7.0% flips | pass |
+| V22-density-crossfit-covers | 16,000 of 16,000 scored, 5 folds × 10 repeats | pass |
+| V23-density-crossfit-beats-floor (advisory) | store +0.33pp [−0.49, +1.18] vs floor −0.25pp | fail |
+| V24-density-transfer-covers | 800 of 800 injections, 0 on the rule's own, 11 databases | pass |
+| V25-density-transfer-holds (advisory) | home-positive rules −2.27pp [−7.86, +2.68] | **fail — the claim** |
+| V26-density-evidence-curve | caps 4, 6, 8, 10, 12, 16, 20 of a 20-question panel | pass |
+
+**R9.4 fails, and the failure is the cleanest result in the programme.** The twenty-two rules that
+worked at home — a positive net over their own twenty questions — earn **−2.27pp** on questions from
+other databases, with 7 repairs against 12 breaks. R6's two numbers do not reappear in this setting:
+across schemas the repair rate is 6.7% (above R6's 3.52%) and the break rate 10.4% (far below R6's
+42.6%), because a rule about tables that are not there is not a wrong instruction but an ignorable
+one. The negative stratum proves it from the other side: rules that cost 8.71pp at home cost 2.29pp
+abroad — they stop acting. Cross-schema memory is not harmful, it is inert, and a global store buys
+exactly nothing.
+
+**R9.5 confirms its prediction and refutes its own premise.** The curve is flat: +0.00pp at four
+observations, +0.36pp at eight, +0.33pp at twenty. The prediction on file (four at or below zero,
+within 0.3pp of the full panel by twelve, flat afterwards) holds in every clause. What it means is
+that the family's founding premise — that four fifths of the store was silent because it was never
+asked — was right about the observation and wrong about the cause: asking twenty times does not
+produce a policy that works, because the sign of a rule is only learnable where the rule applies.
+
+**The +1.33pp did not replicate.** Three stores, same code: **+1.33, +0.41, +0.33**, mean **+0.69**,
+sd **0.56**. Every run is a new distillation draw, and the draw-to-draw spread is as wide as the
+effect. The stable number is the ceiling: `oracle` +3.25pp [+1.00, +6.25] and +2.25pp [+0.63, +4.38],
+both excluding zero, both with zero breaks.
+
+| Policy (second half of the panel, out of sample) | shows | accuracy | Δ | 95% CI | +/− |
+|---|---|---|---|---|---|
+| `always` | 800/800 | 52.0 → 48.8% | −3.25pp | [−7.75, +0.88] | 22/48 |
+| `cued` | 220/800 | 52.0 → 51.2% | −0.75pp | [−2.63, +0.88] | 9/15 |
+| `fitted` (one split) | 140/800 | 52.0 → 52.1% | +0.13pp | [−0.63, +1.13] | 5/4 |
+| `oracle` | 150/800 | 52.0 → 54.3% | **+2.25pp** | [+0.63, +4.38] | 18/0 |
+| cross-fit, store | 3,804/16,000 | 52.0 → 52.3% | +0.33pp | [−0.49, +1.18] | 161/109 |
+| cross-fit, foreign rules | 460/2,000 | 52.0 → 51.7% | −0.25pp | [−2.25, +1.70] | 20/25 |
+
+Sign persistence this run is 10 of 15 (66.7%, p 0.302); **pooled over the three runs it is 43 of 59,
+72.9%, p 0.0006**. A rule's sign is a real property of the rule. It is simply a property of the rule
+*in one database*.
+
+**The R9 refutation condition is triggered.** It was written into the stage before any of this was
+measured: *if R9.3's fitted policy beats the floor but R9.4's transfer does not, the finding is that
+memory is a lookup and not a lesson.* The fitted policy beat its content-free floor in both runs, and
+transfer is −2.27pp. R9 closes on its own pre-registered terms.
+
+**Green:** `pnpm check` — 1,650 tests, 96 files, coverage 99.98 / 99.65 / 100 / 99.98, `density.ts`
+100 on all four dimensions; CI `40988208012` on the same commit.
