@@ -1418,9 +1418,40 @@ R8 turns that into something another team can run:
 | R8.3 | a reproduction of one competitor's published cell | XiYan's DeepSeek + DDL 53.52 reproduced within the noise floor on the same split |
 | R8.4 | a pre-registration template | a dispatch that skips it fails a gate |
 
-R8.3 is the one that matters most and it is small: our 53.43 against their 53.52 is already an
-informal reproduction. Making it formal — same split, same prompt contract, published diff — is what
-lets every later comparison be read as a comparison rather than as an anecdote.
+R8.3 is the one that matters most, and writing it down forced a correction: **our 53.43 and their
+53.52 are not the same measurement.** Theirs is BIRD *dev* (n = 1,534); ours is Mini-Dev (n = 350), a
+subset of it. A 0.09pp difference between an estimate on 350 questions and one on 1,534 is 0.03 of the
+smaller estimate's standard error, which is what agreement looks like and also what two coarse numbers
+look like. The "informal reproduction" was arithmetic between two different splits, and the deliverable
+is the rule that stops the next one.
+
+### R8 — the four deliverables, specified before the work (2026-10-30)
+
+| Step | Deliverable | Acceptance | Gate |
+|---|---|---|---|
+| R8.1 | `plugin.ts`: one request type, one reply, a loader that refuses a module inside `packages/eval` | `eval/plugins/keyword-router.mjs`, a module outside the package, runs through `pnpm eval:plugin` and is scored | V27 |
+| R8.2 | `schema/run-artifact.schema.json` plus `artifact-schema.ts` (validator and renderer) | the committed artefact validates, and the committed report is byte-identical to the one rendered from it | V28 |
+| R8.3 | `reproduction.ts`: published cells with their splits, Wilson intervals, and an admissibility rule | a comparison across splits is `indicative`, never `reproduced`; the gate re-derives every record from the artefact | V31 |
+| R8.4 | `prereg/<id>.md` with a fixed header and two mandatory sections, plus a dispatch step | a dispatch that names none fails before the first model call; a file with a placeholder or without a refutation is refused | V30 |
+
+**Why a fixture instead of a second model.** The acceptance for R8.1 has to be checkable without a
+network, or it is a claim about a run somebody has to trust. `keyword-router.mjs` is a 2019-vintage
+baseline — pick the table the question names, count its rows, project everything when asked to list —
+and it is wrong in the two ways that class of system is wrong: it drops filters and it over-projects.
+Its score is therefore predictable in advance, which is exactly what a harness check needs.
+
+**Predictions, fixed here.**
+
+1. The router answers all six fixture cases and scores **exactly two** of them: the two unfiltered counts.
+2. The committed report is a pure function of the artefact: re-rendering it from the JSON reproduces it byte for byte, and `pnpm eval:protocol` fails if a number in the prose is not in the JSON.
+3. The XiYan comparison is `indicative` at **+0.19pp** — our 53.71 on 350 questions against their 53.52 on 1,534 — and the published cell's own standard error (1.27pp) is seven times that gap.
+4. The common failure of a pre-registration is a missing refutation section, and V30 catches it before the run rather than after.
+
+**Refutation.** If the fixture scores anything other than two of six, the harness is not scoring the
+comparison it prints and no number it produces may be quoted. If a recorded comparison can say
+`reproduced` across splits and survive the gate, the catalogue is decoration and every competitor
+number in this repository reverts to prose. If a dispatch can spend a model call without a
+pre-registration, R8.4 is a template and not a gate.
 
 ---
 
@@ -1734,5 +1765,30 @@ by its own database. A rule that is shown indiscriminately costs about three poi
 be known before the rule is exercised predicts whether it will help, and exercising it more does not
 help either.
 
-The remaining work in R9's line is none. R8 — the protocol as a deliverable — is the last stage open
-that this reading does not close.
+The remaining work in R9's line is none.
+
+### R8 — the run, and the verdict (2026-10-30)
+
+| Prediction | Measured | Verdict |
+|---|---|---|
+| P1 — the fixture scores exactly two of six | 2/6, **33.33%**, Wilson [9.68, 70.00] | **holds** |
+| P2 — the report is a pure function of the artefact | `eval:protocol` re-renders it from the JSON and compares byte for byte; a one-character edit fails the step | **holds** |
+| P3 — the XiYan comparison is `indicative` at +0.19pp | **+0.19pp**; published band ±2.50pp; band a difference must fit inside: **7.72pp** | **holds** |
+| P4 — a missing refutation is the common defect and V30 catches it | six defect classes exercised in `prereg.test.ts`, each refused before dispatch | **holds** |
+
+**What each gate now refuses, concretely.** V27 refuses a generator that resolves inside
+`packages/eval`, before importing it. V29 refuses a run whose answer rate is under the registered
+floor — a broken generator scores zero and is not reported as a bad one. V30 refuses a
+pre-registration with a missing section, an unfilled placeholder, or an id that disagrees with its
+filename, and the `sota` workflow refuses a dispatch that names none *before* the first model call,
+because a gate that fires at the end has already spent the budget. V31 re-derives every recorded cell
+comparison from the artefact and fails when the record disagrees — so `indicative` cannot be edited
+into `reproduced`, and a difference inside the noise floor cannot be filed as a win.
+
+**What R8 does not deliver, stated rather than implied.** A genuine reproduction of XiYan's dev cell
+needs the dev split at n = 1,534. This environment cannot reach the dataset host, so the reproduction
+is of the *cell's definition* on the split we can run, and the artefact says `indicative`. That item
+is recorded as **R8.3b** and is blocked on data availability, not on method.
+
+**Green:** `pnpm check` — 1,748 tests, 97 files, coverage 99.98 / 99.62 / 100 / 99.98, with `plugin.ts`,
+`prereg.ts`, `reproduction.ts` and `artifact-schema.ts` at 100 on all four dimensions.

@@ -14,18 +14,28 @@ reproduced is a hypothesis with a citation, not evidence.
 
 ## 1. The finding that reframes everything
 
-Our BIRD Mini-Dev baseline — DeepSeek, DDL schema, evidence supplied, no memory — is **53.43%
-execution accuracy**. XiYan-SQL publishes the same cell: **DeepSeek + DDL schema on BIRD dev =
-53.52%**. Two systems, different code, different prompts, 0.09pp apart.
+Our BIRD Mini-Dev baseline — DeepSeek, DDL schema, evidence supplied, no memory — is **53.71%
+execution accuracy on 350 questions**. XiYan-SQL publishes **DeepSeek + DDL schema on BIRD dev =
+53.52% on 1,534 questions**. The two numbers are 0.19pp apart.
 
-That agreement does two things. It validates our protocol (our number is not an artefact of a badly
-built harness), and it localises the gap: **the model is not what separates us from a 73–75% system.
-The pipeline is.** Our pipeline is a memory that scores −2.86pp.
+**Correction (2026-10-30, R8.3).** An earlier revision of this section called those two numbers "the
+same cell, 0.09pp apart" and read the agreement as validating our harness. They are not the same cell:
+theirs is dev, ours is a 350-question subset of dev, and a difference of 0.09pp between an estimate on
+350 questions and one on 1,534 is 0.03 of the smaller estimate's standard error. That is what agreement
+looks like and also what two coarse numbers look like; it cannot distinguish the two. The published
+cell's own standard error is **±1.27pp** — seven times the gap the prose was treating as a match — and
+the correct verdict, produced by `compareCell` and archived in `eval/results/poc-cell-comparison.json`,
+is **`indicative`**, never `reproduced`.
+
+What survives the correction is weaker and still useful: our no-memory number is *consistent with* the
+published baseline for the same model and schema form, so the gap to a 73–75% system is not plausibly
+an artefact of a badly built harness. It is a claim about consistency inside a ±7.7pp band, not a
+reproduction, and a genuine reproduction needs the dev split (recorded as R8.3b).
 
 | System | Generator | Schema form | Candidates | BIRD dev / test EX | Gap from 53.5 |
 |---|---|---|---|---|---|
-| **microglia (ours)** | DeepSeek, API | DDL | 1 (+ memory pack) | 53.43 (Mini-Dev) | — |
-| XiYan-SQL baseline | DeepSeek | DDL | 1 | 53.52 (dev) | +0.09 |
+| **microglia (ours)** | DeepSeek, API | DDL | 1 (+ memory pack) | 53.71 (Mini-Dev, n=350) | — |
+| XiYan-SQL baseline | DeepSeek | DDL | 1 | 53.52 (dev, n=1,534) | −0.19 (indicative) |
 | XiYan-SQL + M-Schema | DeepSeek | M-Schema | 1 | 55.15 (dev) | +1.63 |
 | XiYan-SQL, full | FT + ICL ensemble | M-Schema | 5–21 | 71.58 (dev), 75.63 (test) | +18.06 / +22.11 |
 | CHASE-SQL | Gemini 1.5 Pro | DDL + values | 21 (3×7) | 73.01 (dev), 73.0 (test) | +19.49 |

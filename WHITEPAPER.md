@@ -714,10 +714,52 @@ Four memory forms have now been measured in four positions, at three densities, 
 control each time, and the answer has not moved: the flywheel does not turn because the thing it
 stores cannot be carried.
 
+### 3.6.8 The protocol is the deliverable, and it caught a comparison
+
+Every number above was produced by a harness that only its authors could run. R8 makes the harness the
+product, and writing down four rules turned up an error in this document's own comparison table.
+
+**A generator somebody else wrote runs without editing our code.** `plugin.ts` defines one request
+(question, evidence, schema) and one reply (SQL), loads the module by path, and refuses one that
+resolves inside `packages/eval` — provenance is checked, not asserted. The acceptance case is a
+2019-vintage keyword router, outside the package, that scores **2 of 6** on a six-question fixture
+because it drops filters and over-projects; the number was written into
+`prereg/R8.1-offline-fixture.md` before the run and matched exactly.
+
+**A report cannot drift from its artefact.** `schema/run-artifact.schema.json` publishes the shape, and
+`artifact-schema.ts` validates the arithmetic as well as the shape — `accuracy` must be `correct / n`,
+the per-database rows must sum to the totals. The report beside the artefact is rendered *from* it, and
+`pnpm eval:protocol` compares the committed prose against the rendered text byte for byte. A sentence
+that needed knowledge from outside the JSON would fail the build on the next run.
+
+**A prediction exists before the run.** `prereg/<id>.md` carries a machine-readable header (arms,
+sample, gates) and two prose sections that must exist: Prediction and Refutation. `pnpm eval:prereg`
+refuses a placeholder, a missing section, or an id that disagrees with the filename, and the benchmark
+workflow refuses a dispatch that names no file — before the first model call, because a gate that
+fires at the end has already spent the budget.
+
+**And the comparison was wrong.** §3.7 opens with our 53.43% against XiYan's 53.52% and calls them
+"the same cell". They are not: theirs is BIRD **dev** (n = 1,534), ours is **Mini-Dev** (n = 350). The
+gap is 0.03 of the smaller estimate's standard error — indistinguishable from nothing, which is what
+agreement looks like and also what two coarse numbers look like. The published cell's own standard
+error is **±1.27pp**, seven times the difference the prose was reading as a near-match.
+
+`reproduction.ts` now holds the rule that would have caught it: a comparison may be called `reproduced`
+only on the same split, and is otherwise `indicative`, with the difference judged against 1.96 standard
+errors of each estimate added — **7.72pp** here. The verdict for our 53.71% against their 53.52% is
+`indicative` at **+0.19pp**, it is archived in `eval/results/poc-cell-comparison.json`, and gate V31
+re-derives it from the artefact so `indicative` cannot be edited into `reproduced`.
+
+What survives is weaker and still worth having: our no-memory baseline is consistent with the published
+baseline for the same model and schema form, so the distance to a 73–75% system is not plausibly an
+artefact of a badly built harness. A genuine reproduction needs the dev split (1,534 questions), which
+this environment cannot download; that is recorded as R8.3b rather than quietly implied.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
-Our baseline is 53.43% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no
-memory). XiYan-SQL publishes the same cell — DeepSeek with a DDL schema on BIRD dev — at **53.52%**.
+Our baseline is 53.71% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no
+memory; n = 350). XiYan-SQL publishes **53.52%** for DeepSeek with a DDL schema — on BIRD *dev*
+(n = 1,534), which is not the same split, so the two are consistent rather than equal (§3.6.8).
 Two independently built harnesses, 0.09pp apart, which is the best available evidence that our
 protocol is sound and that the model is not what separates us from a 73–75% system.
 

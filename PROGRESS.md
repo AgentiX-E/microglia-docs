@@ -12,6 +12,8 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | S2 Public benchmarks | **four reads: no benefit** (−2.84, −1.14, −0.57, −0.28pp); controls show the pack is inert | the knowledge that transfers is convention, which this benchmark has none of |
 | S2b Convention transfer | **first positive read**: +4.79pp (p=0.0156) on a rule the schema cannot reveal | replication; 44% of the stated ceiling is the gap to close |
 | S3 SOTA push | stopped on BIRD; starts only after S2b moves accuracy | — |
+| R1–R9 (research lines) | **closed** — R9 closed on its own refutation condition | — |
+| R8 Protocol as a deliverable | **closed**; R8.3b open | the dev split (n=1,534) is not reachable from this environment |
 
 ## Iteration log
 
@@ -294,19 +296,74 @@ still has to be re-measured with the corrected knowledge; the accuracy numbers a
 **Evidence.** `eval/results/poc-sota-bird.json`, `eval/results/poc-sota-attribution.json`, 410 tests,
 coverage 100 / 100 / 100 / 99.44, `pnpm audit:repo` ok.
 
+### 115 — R8: the protocol becomes a product, and it finds an error in our own table
+
+R8 was the last stage open after R9 closed on its own refutation condition. It owed four things, all
+of them about making the measurement checkable by somebody who does not run our code — and writing
+them down turned up a mistake in this document's competitor table.
+
+| Step | Delivered | Evidence |
+|---|---|---|
+| R8.1 | `plugin.ts` — one request, one reply, a loader that refuses a module inside `packages/eval` | `eval/plugins/keyword-router.mjs` scores **2/6** through `pnpm eval:plugin`, no model, no network |
+| R8.2 | `schema/run-artifact.schema.json` + `artifact-schema.ts` (validator with arithmetic, renderer) | the committed report is byte-identical to the one rendered from the artefact; V28 |
+| R8.3 | `reproduction.ts` — published cells with their splits, Wilson intervals, the admissibility rule | `xiyan-deepseek-ddl` is **`indicative` at +0.19pp**, archived in `poc-cell-comparison.json`; V31 |
+| R8.4 | `prereg/<id>.md` with a fixed header and two mandatory sections, plus a dispatch step | `pnpm eval:prereg` refuses six defect classes; the workflow refuses a dispatch that names none; V30 |
+
+**The fixture is the acceptance, and it is predictable.** A keyword router of the kind a 2019
+text-to-SQL baseline shipped — pick the table the question names, count its rows, project everything
+when asked to list — is wrong in exactly two ways: it drops filters and it over-projects. Six cases, two
+databases, and a predicted score of 2/6 written into `prereg/R8.1-offline-fixture.md` before the run.
+Measured: **2/6, 33.33%, Wilson [9.68, 70.00]** — the two unfiltered counts, and the four errors for the
+two stated reasons. The prediction held, so the arithmetic between a generator, an executed answer and
+a score is now checked by something that cannot drift with a model version.
+
+**Four gates refuse four specific things.** V27: a generator that resolves inside `packages/eval` is
+refused before it is imported, because the claim is provenance and not behaviour. V29: an answer rate
+under the registered floor — a broken generator scores zero and must not be reported as a bad one.
+V30: a pre-registration with a missing section, a placeholder, or an id that disagrees with its
+filename; the `sota` workflow refuses a dispatch that names none *before* the first model call, since a
+gate that fires at the end has already spent the budget. V31: every recorded cell comparison is
+re-derived from the artefact, so `indicative` cannot be edited into `reproduced` and a difference inside
+the noise floor cannot be filed as a win.
+
+**The error.** This document — `COMPETITIVE.md` and §3.7 of the whitepaper — compared our 53.43% on
+BIRD **Mini-Dev** (n = 350) with XiYan's 53.52% on BIRD **dev** (n = 1,534) and called them "the same
+cell, 0.09pp apart". They are not the same cell. The gap is 0.03 of the smaller estimate's standard
+error: indistinguishable from nothing, which is what agreement looks like and also what two coarse
+numbers look like. The published cell's own standard error is **±1.27pp**, seven times the difference
+that was being read as a near-match. Both documents are corrected, the admissibility rule now lives in
+code, and the archived verdict is `indicative` at **+0.19pp** against a 7.72pp band.
+
+| Comparison | Ours | Published | Difference | Verdict |
+|---|---|---|---|---|
+| DeepSeek + DDL, no memory | 53.71% (Mini-Dev, n=350) | 53.52% (dev, n=1,534) | +0.19pp | **indicative** — different splits |
+| difference explained by error | | | ±7.72pp band | inside |
+| published cell's own band | | | ±2.50pp | — |
+
+**What R8 does not deliver.** A reproduction of the dev cell needs the dev split, and this environment
+cannot reach the dataset host. That item is recorded as R8.3b and is blocked on data availability, not
+on method — the difference between an open dependency and an unstated assumption.
+
+**Green:** `pnpm check` — 1,748 tests, 97 files, coverage 99.98 / 99.62 / 100 / 99.98, with `plugin.ts`,
+`prereg.ts`, `reproduction.ts` and `artifact-schema.ts` at 100 on all four dimensions. `eval:protocol`
+runs offline in about a second and is part of `pnpm check`.
+
 ## What is left, in order
 
-1. **S2b, convention transfer** — replicate the +4.79pp read, then close the gap to the stated ceiling
+1. **R8.3b, the dev-split reproduction** — the one R8 item blocked on data: `compareCell` will call the
+   XiYan cell `reproduced` the moment a run exists at n = 1,534 on the same split, and nothing else in
+   the protocol has to change for that to happen.
+2. **S2b, convention transfer** — replicate the +4.79pp read, then close the gap to the stated ceiling
    (+10.96pp): the learned pack carries 2.08 rules per question and 189.6 are active, so the question
    is whether retrieval finds the one that applies.
-2. **Re-measure the parser fix**: the corrected parser changes which corrections become rules, so the
+3. **Re-measure the parser fix**: the corrected parser changes which corrections become rules, so the
    failure rate and the delta both need one more read before either is quoted.
-3. **S2 at power, if needed**: Mini-Dev caps at 352 usable questions (4.9pp resolution); BIRD dev
+4. **S2 at power, if needed**: Mini-Dev caps at 352 usable questions (4.9pp resolution); BIRD dev
    (1,534 questions over the same 11 databases) fixes the sample, not the mechanism.
-4. **S1**: instrument nl2charts behind a flag, adjudicate 1,300 cases, run the three modes. Gate:
+5. **S1**: instrument nl2charts behind a flag, adjudicate 1,300 cases, run the three modes. Gate:
    +3pp top-1 (p<0.05), SQL regression ≤1pp, knowledge precision ≥85%.
-5. **Cortex release**: swap the clone lane for the published package (W1).
-6. **vitest 4 migration** once vite 7 is the toolchain default (W2).
+6. **Cortex release**: swap the clone lane for the published package (W1).
+7. **vitest 4 migration** once vite 7 is the toolchain default (W2).
 
 Nothing on this list blocks the S0 result, and none of it is hidden behind the green build: each item
 is either an experiment that has not run or a dependency that has not shipped.
