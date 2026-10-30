@@ -4,7 +4,7 @@ The plan, in stages, with the gate that ends each one. A stage that misses its g
 roll forward into the next with a caveat. This document is the contract between the design and the
 work, and it is updated only when a stage closes or a gate changes for a stated reason.
 
-Status as of **2026-10-20**.
+Status as of **2026-10-31**.
 
 ## Stage map
 
@@ -1983,3 +1983,53 @@ or is withheld. Its kill condition is the same 60%, measured by the same command
 anything, and its prediction is the same pair of rates R10 could not reach: repair above 6.7%, break
 below 10.4%.
 
+
+### R11 — the run that was not paid for, and the closure of the transfer question (2026-10-31)
+
+**Built.** `packages/eval/src/link-bind.ts`: a table slot's referent is the table the *question* names
+(`linkSchema`'s anchors, not its join closure), a column slot binds only inside the table its template
+reached and only to a column of the same declared kind, and every refusal names its reason. `pnpm
+eval:template` now runs both censuses over the same store and the same 350 questions, for zero calls.
+
+| Reading | R10 (bind by name) | R11 (bind by question) |
+|---|---|---|
+| rules bound in at least one foreign place | 10 — 3.9% | **57 — 22.0%** |
+| rules withheld | 173 — 66.8% | **126 — 48.6%** |
+| attempts withheld | 1,796 / 2,590 — 69.3% | **51,159 / 82,137 — 62.3%** |
+
+**Refused on its own pre-registered condition.** The prediction was under 20% withheld; the kill
+condition was 60%. At 62.3% of attempts, an arm-B dispatch would measure the binder, so no verdict is
+issued and no call was spent. The 4.4x reduction in bound rules that the link was worth is real, and
+so is the margin it missed by.
+
+**Why it missed, counted.** Every withheld attempt now records which wall it hit:
+
+| Reason | Attempts | Share of the withheld |
+|---|---|---|
+| the target has no column by that name, in the table the rule reached | 30,692 | **60.0%** |
+| the question named no table the slot could take | 12,114 | 23.7% |
+| two anchors of equal length, and the construction withholds rather than guesses | 7,541 | 14.7% |
+| the name is there and the column holds another kind of thing | 812 | **1.6%** |
+
+The kind check is not the wall — 1.6% of the withheld. The vocabulary is: three in five refusals are a
+column the target database does not have at all. A table slot has a referent to inherit because
+questions name tables; a column slot has none, because the column is the knowledge rather than its
+address.
+
+**The transfer question is closed, and this is the third measurement of the same property.** R9 found a
+rule's value bounded by its own database (+1.33pp fitted, −2.27pp across a boundary). R10 found the
+sentence has no referent away from home (66.8% unbindable). R11 found the structure is bindable and the
+column is not. The product statement that follows is now written in three places rather than hedged:
+the pack is an **in-database prompt**; a domain pack distilled on one schema does not steer questions
+written against another; no claim in this repository says otherwise.
+
+**What would reopen it, stated so that it is not reopened by accident.** A construction that *guesses*
+a referent instead of withholding — mapping every slot onto whatever the linked schema has most of.
+The table-tie is 9.2% of attempts, so such a binder would clear the 60% bar on arithmetic alone; it is
+not built because its failure mode is a confident statement about the wrong table, which is the harm
+R9 measured at 42.6% break on same-database foreign rules. If it is ever built it needs its own
+pre-registration and its own census, and the bar is the same.
+
+**Also fixed, because the census exposed it.** `per_case.arm_keys` held each arm's canonical result
+set, and one `card_games` answer is 12 MB: 37.9 MB of a 38 MB evidence file, for a field whose only use
+is an equality test. The field is now `arm_result_digests`. The dev artefact is left as it ran.

@@ -925,6 +925,43 @@ the artefact distinguished the two. The same was true of the binding census in �
 replayed cell in §3.6.9: each time, the measurement was sound and the *bookkeeping about the
 measurement* was missing, so the number looked like a finding about the mechanism.
 
+### 3.6.12 The successor was refused too, and the wall was the column
+
+The construction §3.6.10 named — bind a slot to the tables the target **question** links, not to a
+similar spelling — was built and measured against the same offline census: 289 rules, 350 scored
+questions, 82,137 binding attempts, zero model calls.
+
+| Reading | Bind by name (R10) | Bind by question (R11) |
+|---|---|---|
+| rules bound in at least one foreign place | 10 — 3.9% | **57 — 22.0%** |
+| rules withheld | 173 — 66.8% | **126 — 48.6%** |
+| attempts withheld | 1,796 / 2,590 — 69.3% | **51,159 / 82,137 — 62.3%** |
+
+The link is worth four and a half times as many bound rules and takes the rule-level withhold from two
+thirds to under a half. It does not clear the bar its own file fixed (60% of attempts, with the
+prediction under 20%), so no arm was dispatched and no verdict was issued — the second construction
+refused for the price of a directory listing rather than 2,600 calls.
+
+**What the reasons say, which is the finding.** Every refusal now records which test it failed:
+
+| Reason | Attempts | Share of the withheld |
+|---|---|---|
+| the target has no column by that name, in the table the rule reached | 30,692 | **60.0%** |
+| the question named no table the slot could take | 12,114 | 23.7% |
+| two anchors of equal length; withheld rather than guessed | 7,541 | 14.7% |
+| the name is there and the column holds another kind of thing | 812 | **1.6%** |
+
+Type agreement — the check that a rule about a TEXT `price` does not apply to a REAL one — is not what
+refuses this: it stops 1.6% of the withheld. **The wall is vocabulary.** Three in five refusals are a
+column the target database does not have at all, and no reading of a question invents one, because a
+question names tables and a rule is *about* a column.
+
+That is why two unrelated constructions fail the same way, and it is the sharpest statement this
+project has of its own mechanism's boundary: **a rule's value is bounded by its own database.** R9
+measured it as +1.33pp at home and −2.27pp across a boundary; R10 as 66.8% no referent; R11 as 62.3%,
+of which 60.0% is a missing column. The transfer question is closed, and the product statement is the
+one the user guide now carries: the pack is an **in-database prompt**.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

@@ -5968,3 +5968,61 @@ run's store is the store the fold paid for — the thing the previous four dispa
 
 **Green:** `pnpm check` — 1,824 tests, 102 files, coverage 99.98 / 99.61 / 100 / 99.98, protocol
 gate reporting both rows (`indicative` +0.19pp on 350, `reproduced` +4.11pp on 1,534).
+
+### 120 — The successor was refused too, and the wall is the column
+
+R10 refused a template binder for 66.8% withheld and named its successor: bind a slot to the tables
+the *question* links rather than to a similar spelling. R11 builds that
+(`packages/eval/src/link-bind.ts`) and asks the same question of it, offline, before any arm is paid
+for.
+
+**Three decisions, each of which the census can be wrong about.** A table slot's referent is the table
+the question *names* — `linkSchema`'s anchors, not its join closure, because a join neighbour is a
+consequence of the question rather than something it said. A name match outranks a link, since a
+target that spells the table the way the rule does has already answered. A column slot binds only
+inside the table its template reached, by name overlap **and** agreement in declared kind
+(`PRAGMA` affinity, an undeclared type agreeing with everything): `price` is TEXT at home and REAL
+elsewhere, and a rule about casting it is a claim about one of those.
+
+**`pnpm eval:template` now runs both censuses**, from the same store and the same 350 scored questions.
+
+| Reading | R10 — bind by name | R11 — bind by question |
+|---|---|---|
+| rules bound in at least one foreign place | 10 — 3.9% | **57 — 22.0%** |
+| rules withheld | 173 — 66.8% | **126 — 48.6%** |
+| attempts withheld | 1,796 / 2,590 — 69.3% | **51,159 / 82,137 — 62.3%** |
+
+`62.3% > 60%`, so R11 issues **no verdict** and arm B is not dispatched — the second construction
+refused by a condition written before its code, at a cost of zero calls.
+
+**The reasons are the deliverable.** A withheld attempt used to name the slot that stopped it; it now
+names the test it failed.
+
+| Reason | Attempts | Share of the withheld |
+|---|---|---|
+| `no-column` — the target has no column by that name in the table the rule reached | 30,692 | **60.0%** |
+| `no-table` — the question named no table the slot could take | 12,114 | 23.7% |
+| `table-tie` — two anchors of equal length, withheld rather than guessed | 7,541 | 14.7% |
+| `column-kind` — the name is there and the column holds another kind of thing | 812 | **1.6%** |
+
+That inverts R10's explanation. The type check is 1.6% of the refusals; the vocabulary is 60%. A
+table slot has a referent to inherit because questions name tables; a column slot has none, because
+the column is the knowledge rather than its address. **The transfer question closes** on its third
+measurement (R9 −2.27pp across a boundary, R10 66.8% no referent, R11 62.3% of which 60.0% is a
+missing column), and the product statement is written into the guide rather than hedged: the pack is
+an **in-database prompt**.
+
+**A defect the census exposed, fixed on the way.** `per_case.arm_keys` stored each arm's canonical
+result set; one `card_games` answer is 12 MB, so 37.9 MB of the 38 MB dev artefact was one field that
+every consumer reads as an equality test. It is now `arm_result_digests` — 128 bits of SHA-256 — and
+`union.ts` states the contract. The committed dev artefact is left as it ran: an evidence file is not
+rewritten to make a later repository smaller.
+
+**What was also true, and could be mistaken for a loophole.** The table-tie is 9.2% of all attempts,
+so a construction that *guessed* a referent would clear the 60% bar on arithmetic. It is not built:
+its failure mode is a confident statement about the wrong table, which is the harm R9 measured at
+42.6% break on same-database foreign rules. If it is ever built it needs its own pre-registration,
+and the bar is the same.
+
+**Green:** `pnpm check` — 1,852 tests, 103 files, coverage 99.98 / 99.60 / 100 / 99.98, with
+`link-bind.ts` and `sql-exec.ts` at 100 on all four dimensions.

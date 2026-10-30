@@ -3465,3 +3465,52 @@ Ten is not a statistical threshold; it is the point beyond which the store can n
 as "distilled from this fold's corrections". The gate does not claim a run at 9% is sound — it claims
 that at 10% the treatment has changed identity, which is the point at which a number stops being
 comparable to the one beside it in a table.
+
+### 17.45 A slot's referent is a role the question fills, and the wall is the column
+
+R10's census refused a construction without spending a call and named the successor in one sentence:
+bind against the **target question's** links rather than against a spelling. `linkSchema` already
+computes those links for the schema-pruning lane, so the referent of a slot is available before the
+prompt is written.
+
+**`packages/eval/src/link-bind.ts`**, three decisions and one refusal surface.
+
+| Decision | Alternative rejected | Why |
+|---|---|---|
+| A table slot's referent is the table the question *names* | any linked table, including join neighbours | `linkSchema` adds key-neighbour tables so a pruned prompt can express the join; those are consequences of the question, not things it names, and binding a rule to one is binding it to a table nobody asked about |
+| A name match outranks a link | link first, always | a target that spells the table the way the rule does has already said what the referent is; the link is for the case spelling cannot answer |
+| A column slot binds only inside the table its template reached | search the whole linked schema | the column is what the rule is *about*; a column of the right name in a table the rule is not about is a different claim |
+| A column must agree in **kind** (`PRAGMA`'s declared affinity) | name overlap alone | `price` is TEXT at home and REAL elsewhere, and a rule about casting it holds for one and not the other. An undeclared type agrees with everything: an absence of information is not a disagreement |
+
+**Every refusal carries a reason** — `no-table`, `table-tie`, `no-column`, `column-kind` — because
+"62% withheld" says the construction is partial and "60% of those are a column the target does not
+have" says which half of the idea to change. `TemplateOutcome` therefore grew an optional `reason`,
+and `templateCoverage` a `reasons` breakdown; the field is optional so R10's record, taken before it
+existed, still reads as what it was (`unstated`).
+
+**The census, for zero calls.** The attempt unit changes with the construction: a link is a property
+of a *question*, so a rule is attempted once per foreign question rather than once per foreign
+database — 82,137 attempts against R10's 2,590, from the same 289 rules and the 350 scored questions.
+
+| Reading | R10 (name) | R11 (link) |
+|---|---|---|
+| rules bound somewhere | 10 — 3.9% | **57 — 22.0%** |
+| rules withheld | 173 — 66.8% | **126 — 48.6%** |
+| attempts withheld | 1,796 / 2,590 — 69.3% | **51,159 / 82,137 — 62.3%** |
+
+62.3% against the 60% kill condition fixed before the code: **refused, no dispatch, no verdict**. The
+breakdown is the deliverable — `no-column` 60.0%, `no-table` 23.7%, `table-tie` 14.7%,
+`column-kind` 1.6% — and it corrects the explanation R10 offered. The type check is not the wall
+(1.6%); the vocabulary is. Questions name tables, so a table slot has a referent to inherit; a column
+slot has none, because the column is the knowledge rather than its address. That is why the two
+constructions fail the same way, and why the conclusion is a property of the mechanism rather than of
+a binder: **a rule's value is bounded by its own database**, measured three times (R9, R10, R11) and
+now with a reason.
+
+**The artefact's size was a defect of the same kind.** `per_case.arm_keys` stored each arm's canonical
+result set, and one `card_games` question returns 12 MB of rows: 37.9 MB of a 38 MB evidence file, for
+a field every consumer reads as an equality test. It is now `arm_result_digests` — 128 bits of
+SHA-256 — because the only question anything asks of it is whether two arms produced the same answer.
+`union.ts` records the contract: a caller may pass keys or digests, and nothing in the module
+distinguishes them. The committed dev artefact is left as it ran; an evidence file is not rewritten
+to make a later repository smaller.
