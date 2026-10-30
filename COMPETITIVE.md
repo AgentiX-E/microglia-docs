@@ -233,8 +233,30 @@ candidate arm can separate them.
 
 ---
 
-## 4. What we are missing, ranked by evidence strength and cost
+### Memory-layer systems: what a rule is, in each product
 
+The systems above compete on generating SQL. R10's question is about the other half — what a memory
+stores and how it is put back in front of a model — and the closest prior art is a different
+literature. Mechanism, as each system describes it:
+
+| System | What is stored | How it is used | Mechanism our layer shares, and what it lacks |
+|---|---|---|---|
+| **Mem0** (arXiv 2504.19413) | extracted facts, deduplicated against similar memories with ADD/UPDATE/DELETE | nearest-fact retrieval into the prompt | our `competitor.ts` FactStore implements this faithfully as a baseline: recall, no scope, no evidence weight, no retirement |
+| **MemGPT / Letta** (arXiv 2310.08560) | a paged context and self-edited memory blocks | the model decides what to page in | paging is capacity management; it says nothing about whether a stored sentence has a referent in the current task, which is the failure R9.4 measured |
+| **ExpeL** (arXiv 2308.10144) | natural-language **insights** extracted across tasks, kept with upvote/downvote counts | similarity retrieval; insights are dropped or promoted by their counts | this is our rule, including the retirement idea. Its own ablation is the one that matters here: insights that are specific to one task hurt on another — the same null we measured as repair 6.7% / break 10.4% |
+| **Reflexion** (arXiv 2303.11366) | verbal self-reflections inside one task attempt | appended to the next attempt of the **same** task | we do not adopt cross-task transfer from it, and R6 closed the in-task variant: the reflection is a within-episode prompt, not a memory |
+| **Agent Workflow Memory** (arXiv 2409.07429) | induced **workflows** abstracted from past trajectories, reused as in-context exemplars | retrieval, then instantiation on the current task | the nearest prior art to R10: it is structure-preserving, and it abstracts at the trajectory level rather than binding names to a target schema. Our slots are the specialization AWM does not do |
+
+**What that map says about the negative result.** Every system in the table that carries text
+across tasks — Mem0's facts, ExpeL's insights, AWM's workflows — either abstracts the text
+(AWM), or filters it by measured success (ExpeL), or does not claim transfer at all (Mem0).
+None of them shows a sentence about one schema being handed to another schema unchanged and
+working. That is what our layer did for eleven iterations, and it is the defect R10 attacks — not
+by storing different content, but by binding the same content at the moment it is used.
+
+---
+
+## 4. What we are missing, ranked by evidence strength and cost
 | # | Missing | Evidence that it matters | Cost to build | Blocks |
 |---|---|---|---|---|
 | 1 | **Heterogeneous candidates** | CHASE pool 13.95pp vs ours 3.52pp; XiYan ensemble −2.91 when the FT generator is removed | 3 prompts, no training | every selector claim |
@@ -288,6 +310,13 @@ generators; we use a closed API. Four things are nonetheless ours to win:
 | BIRD leaderboard rows (82.95 GrainSQL, 80.04 Gemini-SQL2, 92.96 human, 67.41 no-evidence) | bird-bench.github.io, read 2026-10-29 | medium (leaderboards move; the 67.41 threshold is the benchmark's own statement) |
 | Spider 2.0 59% / 38–45% / 40%; 21.3% at launch | secondary round-ups | **low — not independently verified here** |
 | BIRD 52.8% / Spider 2.0-Snow 66.1% annotation errors | secondary summary of a CIDR/VLDB 2026 audit | **low — primary not read** |
+| Mem0 fact extraction, dedupe and retrieval | arXiv 2504.19413, mechanism section; our baseline reimplements it | medium — mechanism from the paper, baseline ours |
+| MemGPT / Letta paging and self-editing | arXiv 2310.08560 | medium — not re-run here |
+| ExpeL insight extraction, upvote/downvote, cross-task negative transfer | arXiv 2308.10144, ablation tables | medium — the negative-transfer direction is what our R9.4 measured independently |
+| Reflexion within-episode reflection | arXiv 2303.11366 | medium |
+| Agent Workflow Memory induction and reuse | arXiv 2409.07429 | medium — mechanism only; no line-level audit of the released code |
+| ODIS in-domain SQL distribution (+1.1 / +11.8) | arXiv 2310.06302 | high — the construction R10 implements |
+| SQL-Exchange structure-preserving schema mapping | arXiv 2508.07087, PVLDB 2026 | high — the construction R10 implements |
 
 Numbers we intend to reproduce ourselves, because they change a decision: the M-Schema delta on
 DeepSeek (one arm), the CHASE-style pool ceiling under heterogeneous generators (R7.1), and the

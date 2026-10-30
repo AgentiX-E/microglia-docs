@@ -797,6 +797,61 @@ written before the dispatch. If the number falls outside the band, the honest co
 weaker claim but a withdrawal: our harness would not be measuring what the published cell measures,
 and every cross-paper comparison in this document goes with it.
 
+### 3.6.10 The rule was not wrong; it was unaddressed
+
+§3.6.7 read R9.4 as "a rule is a lookup and the schema is the edge of the page". The reading is
+right about the numbers and wrong about the diagnosis, and the difference decides whether this
+project has a memory layer or a per-database prompt.
+
+**What the foreign arm actually saw.** On the rules that had worked at home, shown a question from a
+database they were not learned in: **repair 6.7%, break 10.4%**. On the same rules shown a foreign
+case from their **own** database: repair 3.52%, **break 42.6%**. A rule that is obeyed and wrong
+leaves one fingerprint; a rule that is ignored leaves another. The second column is obedience — the
+rule was read, applied, and moved a right answer to a wrong one on 42.6% of the cases it could have
+harmed. The first column is not a weak effect, it is **no effect**: the sentence arrived, and there
+was nothing in the target database for it to be about. "`price` is stored as text, cast before
+comparing" is not advice in a schema that calls the column `unit_price`; it is a string.
+
+That distinction has a consequence the earlier reading did not: if the rule is ignored rather than
+harmful, then the memory's **content** may be sound and its **use** may be wrong — and the two
+hypotheses make different predictions about the same store.
+
+**The construction.** Two published systems isolate the part of a demonstration that crosses a domain
+boundary. ODIS (arXiv 2310.06302) finds it is the **SQL distribution** and not the question
+distribution (+1.1 and +11.8 on two cross-domain benchmarks). SQL-Exchange (arXiv 2508.07087, PVLDB
+2026) maps a query into a target schema by keeping its **structure** and substituting only its
+domain-specific elements, and its mapped demonstrations beat raw source-schema ones across model
+families. R10 does the same to a rule: it is read as a template whose slots are its identifiers that
+the **home** schema has, and before it is shown the slots are filled from the schema it is about to
+meet.
+
+```
+stored     Cast price to real when price is text
+template   Cast {price} to real when {price} is text
+shown      Cast unit_price to real when unit_price is text
+```
+
+Binding is a name operation, not a semantic one: the score is the Jaccard overlap of the two names'
+`snake_case` parts, identity scores 1, `price` → `unit_price` scores 0.5, nothing below 0.5 is
+accepted, ties go to the shorter name, and one candidate never fills two slots. No stemming and no
+edit distance, because both would raise the binding rate by inventing referents — `price` → `prize`
+is a rule about prize money. A template with a slot that cannot bind is **withheld**: it makes no
+call, contributes no trial, and is counted.
+
+**Why the derivation happens at use time.** Changing what the distiller emits would move every
+artefact in this project at once and leave the two arms incomparable on anything but the template.
+Reading the stored statement structurally when it is shown makes the arms differ in one field of one
+rendered line — the id, kind, confidence, scope and budget of the item are untouched — which is the
+only form in which "does the form matter" is a question with one answer.
+
+**What it will be read against.** The pre-registration is `prereg/R10-template-transfer.md`, written
+before the dispatch, and it is falsifiable in three ways rather than one: repair above 6.7%, break
+below 10.4%, and a repair-minus-break pair that improves even when the accuracy delta stays inside
+its interval. If the break rate does not fall under 8%, the structural hypothesis is wrong for this
+class of rule, the memory layer is documented as an **in-database prompt**, and no transfer claim
+appears anywhere in this project again. That sentence is the point of running it: a construction
+whose failure mode is written down in advance is a construction, not a preference.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline is 53.71% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no

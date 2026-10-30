@@ -14,7 +14,7 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | S3 SOTA push | stopped on BIRD; starts only after S2b moves accuracy | — |
 | R1–R9 (research lines) | **closed** — R9 closed on its own refutation condition | — |
 | R8 Protocol as a deliverable | **closed**; R8.3b **running** | nothing — the dev archive is on the vendor CDN and the lane now measures it |
-| R10 Migrate the structure | **pre-registered** | needs the template distiller (arm B) before a dispatch |
+| R10 Migrate the structure | **built, dispatch pending** | arm B's run, which waits on the dev dispatch for the same model budget |
 
 ## Iteration log
 
@@ -5774,3 +5774,51 @@ transfer is −2.27pp. R9 closes on its own pre-registered terms.
 
 **Green:** `pnpm check` — 1,650 tests, 96 files, coverage 99.98 / 99.65 / 100 / 99.98, `density.ts`
 100 on all four dimensions; CI `40988208012` on the same commit.
+
+### 117 — R10: the rule is read as a structure, and the binder is allowed to say no
+
+R10 was pre-registered in 116 and unimplemented. This iteration builds the construction, and the two
+decisions that had to be made while building it are worth more than the code.
+
+**What exists now.** `packages/eval/src/template.ts`: three pure functions over schema name sets, no
+model call, no I/O. A stored statement is read against the schema it was learned in — an identifier
+the home schema has becomes a slot, everything else stays prose — and before it is shown on another
+database each slot is filled from *that* database's names. Binding scores the Jaccard overlap of the
+two names' `snake_case` parts: identity 1, `price` → `unit_price` 0.5, nothing below 0.5 accepted,
+ties to the shorter candidate, one candidate never filling two slots. A slot with no candidate
+withholds the whole rule.
+
+**Two defects the build found, both in the instrument rather than the hypothesis.**
+
+| Defect | How it surfaced | Fix |
+|---|---|---|
+| `V27` was already taken — by the candidate contract's gate in `plugin.ts` — so the new withholding bar collided with a gate that has nothing to do with it | the protocol gate's own output line, `R8.1-offline-fixture … with V27, V29, V30`, printed the id back while the new bar was being written | renamed to **`V28`**; the number is a namespace, and two families sharing one is how a reader comes to quote the wrong criterion |
+| The first version of `V24`'s new denominator counted the rules that reached the ledger, and a run where seventy-nine of eighty rules were withheld would have **passed** the coverage bar | the existing test `fails the coverage bar when the foreign panels came back short` went green when it should have gone red | coverage is `(rules − withheld attempts) × panel`; the withheld count is subtracted from the selection, never from the ledger, and `V28` closes the hole on the other side |
+
+The second one is the iteration's real finding. Counting what arrived is the natural way to divide
+when some attempts are legitimately withheld, and it silently converts the bar that exists to catch
+vanishing rules into a bar that certifies their disappearance.
+
+**Gates and their reasons.** `V24` subtracts withheld panels because under the bound form withholding
+is the pre-registered behaviour; `V28` requires `bound + slotless` attempts to equal the rule-database
+pairs the foreign ledger carries, so withholding is a number and vanishing is a defect. The
+distinction is on the attempt, not the rule: one rule can bind in `formula_1` and be withheld in
+`california_schools`, and a per-rule count would have to be wrong about one of them.
+
+**Three amendments, written before the first dispatch** (`prereg/R10-template-transfer.md`): the
+template is derived at use time rather than by the distiller, so the arms differ in one field of one
+rendered line; a withheld attempt makes no call and contributes no trial rather than a zero-delta
+trial; `V24`'s denominator changes as above. None of them moves a prediction.
+
+**Cost of being wrong, priced in advance.** The lane prints the binding record — bound, slotless,
+withheld, and the schema names that stopped attempts — *before* the first model call, because the
+pre-registration's own kill condition is a withheld share above 60%: a run that cannot answer its
+question should not spend 3,800 calls finding that out.
+
+**Green:** `pnpm check` — 1,792 tests, 102 files, coverage 99.98 / 99.63 / 100 / 99.98; `template.ts`
+and `density.ts` 100 on all four dimensions.
+
+**Still open.** The fourth dev dispatch (`41021842231`, `split=dev`, `learn_sample=64`,
+`max_calls=6000`) has been running since 07:43Z and has not finished; the three before it each died
+on a defect the run found rather than a defect reading found. R10's arm-B dispatch waits for it,
+because both draw on the same model budget and the dev cell is the one that closes a published row.

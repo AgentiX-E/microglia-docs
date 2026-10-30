@@ -1894,3 +1894,28 @@ only", written down rather than hoped for.
 lesson" holds at the structural level too, the R-series closes for good, and the memory layer is
 documented as an in-database prompt with no transfer claim anywhere in the project.
 
+**The construction, built 2026-10-30 (dispatch pending).** `packages/eval/src/template.ts` reads a
+stored statement as a template and binds it, in three pure functions and no model call:
+
+| Step | Function | Rule it obeys |
+|---|---|---|
+| read | `templateOf(statement, home)` | a slot is an identifier the *home* schema has; everything else stays prose |
+| bind | `bindTemplate(template, target)` | score = Jaccard overlap of `snake_case` parts; identity 1, `price`→`unit_price` 0.5, nothing below 0.5; ties to the shorter name; one candidate never fills two slots |
+| decide | `transferStatement(...)` | all-or-nothing: one unbound slot withholds the whole rule, and a rule with no slots is `slotless` rather than `bound` |
+
+**Why the derivation is at use time and not in the distiller.** The distiller's output is stored,
+audited and reproduced by every arm in this project; changing it would move every artefact at once
+and leave arm B incomparable to arm A on anything but the template. Reading the statement
+structurally when it is shown makes the two arms differ in one field of one rendered line, which is
+the only form in which the comparison is a comparison. The three amendments this required are
+written into `prereg/R10-template-transfer.md` before the first dispatch: a withheld attempt makes
+no call and contributes no trial (instead of a zero-delta trial), `V24`'s coverage drops the withheld
+panels from its denominator, and `V28` holds `bound + slotless` equal to the rule-database pairs the
+foreign ledger carries, so a rule that vanishes is a defect and not a result.
+
+**What the dispatch is.** `SOTA_TEMPLATE=bound SOTA_DENSITY_PANEL=20 SOTA_TRANSFER_PANEL=10`, with
+`prereg=R10-template-transfer`, `arms=none,full`, `split=minidev`, 8 rules per database over two
+arms. The prose arm is not re-bought: R9.4's cells are the baseline, its artefact is in the
+repository, and its ledger is recomputable — which is what the density family's carried ledger was
+for.
+

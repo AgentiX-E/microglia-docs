@@ -3365,3 +3365,40 @@ unmatched one does not carry the field at all.
 when the policy is wrong about the workload, and the numbers that justify the floor (68.21pp on the
 study, −2 to −4pp on BIRD, nothing resolvable on τ²-retail) were measured on this repository's three
 workloads. A host that knows its corrections recur should leave the option off and keep the pack.
+
+### 17.43 Binding a rule to the schema it is shown in
+
+R9.4 left a null that two classes of explanation fit equally well: a rule stops working across a
+database because the memory's content is weak, or because the sentence has no referent there. The
+same-database control separates them — repair 3.52% / break 42.6% at home against 6.7% / 10.4%
+away — and the second explanation predicts that changing **how** the rule is shown changes the
+reading while the stored content is untouched.
+
+`packages/eval/src/template.ts` is that change, as three pure functions over schema name sets.
+
+| Decision | Alternative rejected | Why |
+|---|---|---|
+| The template is derived at use time from the stored statement | teach the distiller to emit templates | the distiller's output is stored, audited and reproduced by every arm; changing it moves every artefact at once and leaves the two arms incomparable on anything but the template |
+| A slot is an identifier the **home** schema has | lift every capitalised or backticked word | "the second highest" and "a date column" are not bindable, and a slot that cannot be filled is a defect carried into the prompt |
+| Binding scores name parts by Jaccard; nothing below 0.5 binds | stemming, edit distance, embeddings | each raises the binding rate by inventing referents. `price` → `prize` is a rule about prize money, and the arm would then measure that |
+| Ties go to the shorter candidate name | refuse ambiguous slots | a refusal on every two-candidate slot withholds most of the family, and R10's own kill condition is 60% withheld; the shorter name adds least to what the rule already said |
+| One candidate never fills two slots | allow it | two slots of one template are two objects in the source database; mapping both onto one is a rewrite the rule never claimed |
+| A slot with no candidate withholds the rule | show it with `{price}` still in it | an unbound template is the sentence the construction exists to replace, and it would be an unmeasured defect inside a measurement |
+
+**The unit of the reading is the attempt, not the rule.** One rule can bind in `formula_1` and be
+withheld in `california_schools`, so the coverage record is keyed `<rule>\0<database>`, collapsed on
+duplicates (a lane reports one attempt per trial, and counting those separately would make the
+binding rate a property of the panel size), and it names the **blockers** — "`rental_rates` stopped
+nine attempts" is checkable against a schema, "20% were withheld" is not.
+
+**Gates.** `V24` had to change denominator and the change is the interesting part: coverage is now
+`(rules − withheld attempts) × panel`, because under the bound form a withheld attempt is the
+pre-registered behaviour and not a lost injection. Counting the selection alone would fail the run
+for doing what was asked; counting only the rules that reached the ledger would let seventy-nine of
+eighty rules vanish and pass. `V28` is what closes that second hole: `bound + slotless` attempts must
+equal the rule-database pairs the foreign ledger carries, so a rule that disappears is a defect and
+withholding is a number.
+
+**Cost.** Zero model calls. The lane prints the binding record before the first call is made, so a
+dispatch whose binder withholds more than the stage's kill condition can be stopped rather than
+read.
