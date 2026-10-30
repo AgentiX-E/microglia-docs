@@ -5843,6 +5843,10 @@ what SQL-Exchange substitutes by mapping to the *target query* — structure a n
 sees. So R10 closes as a construction **refused before it was paid for**: no arm-B dispatch, no
 verdict on the structural hypothesis, and 2,600 calls not spent.
 
+The reading is committed as an artefact rather than quoted from a terminal:
+`eval/results/poc-template-census.json` carries the rules, the databases, the attempts, the blockers
+and the verdict, so the refusal can be recomputed by a reader who trusts none of the above.
+
 **A defect in the census itself, found by its own first output.** The artefact lists the store once
 per fold, so the first run counted 1,288 rules where the store holds 289, and the withheld share was
 weighted by fold overlap (64.3% instead of 66.8%). `bindingCensus` now collapses duplicate ids and
