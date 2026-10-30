@@ -852,6 +852,28 @@ class of rule, the memory layer is documented as an **in-database prompt**, and 
 appears anywhere in this project again. That sentence is the point of running it: a construction
 whose failure mode is written down in advance is a construction, not a preference.
 
+**It was read against a cheaper number first, and it did not survive.** The same file fixes a kill
+condition: *if more than 60% of the family is withheld as unbindable, the measurement is about the
+binder and no verdict is issued.* Withholding is a property of schemas, and schemas are on disk, so
+the condition was measured for zero model calls — `pnpm eval:template` over the committed artefact's
+store and the eleven BIRD databases:
+
+| Reading | Value |
+|---|---|
+| rules in the store | 289 (1,288 entries; the five folds repeat a rule once each) |
+| with a home database / homeless | 259 / 30 |
+| bound in at least one foreign database | **10 — 3.9%** |
+| slotless: no schema identifier to bind | 76 — 29.3% |
+| withheld | **173 — 66.8%** |
+
+The blockers are the diagnosis: table `posts` (103 attempts), `cards` (91), `drivers` (86), column
+`lap` (80), `patient` (70), `player` (57). Those are **domain elements** — the words that make a rule
+about one database — and SQL-Exchange substitutes them by mapping to the *target query*, which name
+comparison cannot do. Arm B was therefore not dispatched. The hypothesis that a rule travels as
+structure is **untested**; what is now measured is that name identity is not the substitution that
+carries it, and the successor construction must bind a slot to the target's own schema links rather
+than to a similarly spelled name.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline is 53.71% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no

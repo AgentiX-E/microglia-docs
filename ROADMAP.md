@@ -1919,3 +1919,30 @@ arms. The prose arm is not re-bought: R9.4's cells are the baseline, its artefac
 repository, and its ledger is recomputable — which is what the density family's carried ledger was
 for.
 
+**The dispatch did not happen, because the pre-registered kill condition fired for free.** Withholding
+is a property of schemas, so it was measured without a model call: `pnpm eval:template` reads the
+committed artefact's store and the eleven BIRD databases and puts the binder on every pair.
+
+| Reading | Value |
+|---|---|
+| rules | 289 (1,288 entries; five folds repeat each rule once) |
+| homeless / attempted | 30 / 259 |
+| bound in at least one foreign database | **10 — 3.9%** |
+| slotless | 76 — 29.3% |
+| **withheld** | **173 — 66.8%** |
+| attempts bound / slotless / withheld | 34 / 760 / 1,796 of 2,590 |
+| top blockers | table `posts` 103, `cards` 91, `drivers` 86, column `lap` 80, `patient` 70 |
+
+`66.8% > 60%`, so R10 issues **no verdict** and arm B is not bought. The blockers are the finding:
+every one is a domain element, and SQL-Exchange substitutes those by mapping to the *target query* —
+structure the binder never sees when it compares names. R10 therefore closes as **a construction
+rejected before it was paid for**, with the hypothesis (a rule travels as structure) still untested.
+
+**R11, opened by that reading.** Bind a slot to the target's own **schema links** — the tables and
+columns the question actually mentions, which this repository already computes in `linkSchema` —
+rather than to a similarly spelled name. A rule about `posts` binds to whichever table the target
+question names; a column slot binds inside the linked table, by name overlap with a type agreement,
+or is withheld. Its kill condition is the same 60%, measured by the same command before it spends
+anything, and its prediction is the same pair of rates R10 could not reach: repair above 6.7%, break
+below 10.4%.
+

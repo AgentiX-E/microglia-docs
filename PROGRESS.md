@@ -14,7 +14,7 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | S3 SOTA push | stopped on BIRD; starts only after S2b moves accuracy | — |
 | R1–R9 (research lines) | **closed** — R9 closed on its own refutation condition | — |
 | R8 Protocol as a deliverable | **closed**; R8.3b **running** | nothing — the dev archive is on the vendor CDN and the lane now measures it |
-| R10 Migrate the structure | **built, dispatch pending** | arm B's run, which waits on the dev dispatch for the same model budget |
+| R10 Migrate the structure | **refused pre-dispatch** — 66.8% of the family cannot bind, above its own 60% kill condition; hypothesis untested | R11: bind to the target's schema links instead of to spelling |
 
 ## Iteration log
 
@@ -5822,3 +5822,34 @@ and `density.ts` 100 on all four dimensions.
 `max_calls=6000`) has been running since 07:43Z and has not finished; the three before it each died
 on a defect the run found rather than a defect reading found. R10's arm-B dispatch waits for it,
 because both draw on the same model budget and the dev cell is the one that closes a published row.
+
+**The arm was never dispatched, because the kill condition was cheaper than the arm.** Withholding is
+a property of *schemas*, and the schemas are on disk, so the pre-registered condition — more than 60%
+withheld means the run measures the binder — was measured for zero model calls. `pnpm eval:template`
+reads the store the committed artefact carries, opens the eleven databases it covers, and puts the
+binder on all 2,590 rule-database pairs:
+
+| Reading | Value |
+|---|---|
+| rules | 289 (1,288 entries; the five folds repeat each rule once — the distiller's id is a content hash) |
+| homeless / attempted | 30 / 259 |
+| bound in at least one foreign database | **10 — 3.9%** |
+| slotless | 76 — 29.3% |
+| withheld | **173 — 66.8%** |
+| top blockers | table `posts` 103, `cards` 91, `drivers` 86, column `lap` 80, `patient` 70, `player` 57 |
+
+Every blocker is a **domain element**: the word that makes a rule about one database, and precisely
+what SQL-Exchange substitutes by mapping to the *target query* — structure a name comparison never
+sees. So R10 closes as a construction **refused before it was paid for**: no arm-B dispatch, no
+verdict on the structural hypothesis, and 2,600 calls not spent.
+
+**A defect in the census itself, found by its own first output.** The artefact lists the store once
+per fold, so the first run counted 1,288 rules where the store holds 289, and the withheld share was
+weighted by fold overlap (64.3% instead of 66.8%). `bindingCensus` now collapses duplicate ids and
+reports how many it collapsed; the number a reader quotes had to be a property of the store and not
+of the artefact's shape.
+
+**What R11 has to be.** The reading says name identity is not the substitution that carries a rule;
+it does not say structure does not travel. R11 binds a slot to the target's own schema links — the
+tables and columns the question mentions, already computed by `linkSchema` — with the same 60% kill
+condition measured by the same command before anything is bought.

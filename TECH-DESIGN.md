@@ -3402,3 +3402,17 @@ withholding is a number.
 **Cost.** Zero model calls. The lane prints the binding record before the first call is made, so a
 dispatch whose binder withholds more than the stage's kill condition can be stopped rather than
 read.
+
+**The construction was refused by its own census, for free.** Withholding is a property of schemas,
+so `bindingCensus` answers it from an artefact and a directory: 289 rules (the artefact lists the
+store once per fold, and the census collapses the repeats), 259 with a home database, **10 bound
+somewhere, 76 slotless, 173 withheld — 66.8%**, against the 60% the pre-registration fixed. The
+blockers are table names (`posts`, `cards`, `drivers`) and column names (`lap`, `patient`), which is
+the answer to *why*: those are the domain elements SQL-Exchange substitutes by mapping to the target
+query, and a name comparison never sees a query.
+
+The consequence is written into the stage rather than into a note: arm B was not dispatched, the
+hypothesis stays untested, and the successor binds against `linkSchema`'s answer for the *target
+question* — the tables and columns it actually mentions — instead of against spelling. The same
+command computes the successor's kill condition before it buys anything, which is the reusable part
+of this iteration.
