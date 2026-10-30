@@ -1874,6 +1874,22 @@ the artefact could not distinguish "the model said nothing" from "the client hun
 `learn_sample=64`, `arms=none,full`, `deadline_min=130`, `distill_concurrency=8`, step timeout 200,
 job timeout 260, and `V32` declared in the pre-registration before it runs.
 
+**Closed 2026-10-30, run `41049843360`, 77 minutes, 3,190 calls, 0 timeouts.**
+
+| Prediction | Measured | Held |
+|---|---|---|
+| `none` inside 53.52 ± 7.72, verdict `reproduced` | **57.63%** [55.14, 60.08], +4.11pp against a 4.97pp same-split tolerance → `reproduced` | yes, and on the stricter test |
+| interval narrows from ±5.2pp to about ±2.5pp | ±**2.47pp** | yes |
+| `full` does not turn positive at n = 1,534 | **−1.37pp** [−2.74, 0.00], p = 0.062, 68 lost / 47 gained | yes |
+
+The third row is now the project's most precise statement about memory: on 1,534 questions, with a
+store distilled from 64 questions a fold, adding the rules costs 1.37 points and the interval's upper
+bound is zero. R9's closing condition stands, measured at 4.4× the sample rather than asserted.
+
+The reproduction also retires a class of hedging from every other document: the 18pp gap to a 73–75%
+system is now measured against a baseline on the *published* split, so no further comparison in this
+repository needs the `indicative` qualifier.
+
 ### R10 — migrate the structure, not the sentence (pre-registered 2026-10-30)
 
 **The finding R9 left on the table.** R9.4 measured what happens when a rule learned in one database

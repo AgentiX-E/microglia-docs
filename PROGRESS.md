@@ -13,7 +13,7 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | S2b Convention transfer | **first positive read**: +4.79pp (p=0.0156) on a rule the schema cannot reveal | replication; 44% of the stated ceiling is the gap to close |
 | S3 SOTA push | stopped on BIRD; starts only after S2b moves accuracy | — |
 | R1–R9 (research lines) | **closed** — R9 closed on its own refutation condition | — |
-| R8 Protocol as a deliverable | **closed**; R8.3b **fifth dispatch pending** — four attempts, three lane bugs and one client bug | the fifth dispatch, now that the attempt timeout scales with the reply allowance and the run holds its own deadline |
+| R8 Protocol as a deliverable | **closed**; R8.3b **closed** — `reproduced` at 57.63% on 1,534 questions (+4.11pp, tolerance 4.97) | nothing; the dev artefact is committed and the gate recomputes the row |
 | R10 Migrate the structure | **refused pre-dispatch** — 66.8% of the family cannot bind, above its own 60% kill condition; hypothesis untested | R11: bind to the target's schema links instead of to spelling |
 
 ## Iteration log
@@ -5920,3 +5920,51 @@ prediction.
 `deadline_min=130`, `distill_concurrency=8`, step timeout 200, job timeout 260. The step and job
 limits were raised because the lane's deadline is now the thing that stops a run; the runner's limit
 is only a backstop.
+
+### 119 — The cell is reproduced, and memory is still negative on 1,534 questions
+
+The fifth dev dispatch (`41049843360`) finished in 77 minutes: five folds, 1,534 questions, both
+arms, 3,190 calls, **0 timeouts**, 0 call failures. Every gate passed, including the one declared
+before the run.
+
+| Reading | Value |
+|---|---|
+| `none` execution accuracy | **57.63%** (884/1,534), Wilson **[55.14, 60.08]** |
+| published `xiyan-deepseek-ddl` | 53.52% [51.02, 56.02] on the same 1,534 questions |
+| difference | **+4.11pp**, inside the same-split tolerance of **4.97pp** |
+| verdict | **`reproduced`** |
+| `full` accuracy | 56.26%, delta **−1.37pp** [−2.74, 0.00], p = 0.062, lost 68 / gained 47 |
+| store | 137 corrections, 1.94 rules/question, 64 learning questions per fold |
+
+**All four pre-registered predictions held**, and the third is the interesting one. Prediction 1 said
+`none` lands inside 53.52 ± 7.72 and the verdict becomes `reproduced` — it landed inside the stricter
+same-split tolerance, 4.11 against 4.97. Prediction 2 said the interval narrows from ±5.2pp to about
+±2.5pp — measured ±2.47. Prediction 3 said `full` does not turn positive on the larger sample — it is
+−1.37pp, with an interval whose upper bound is exactly zero and a McNemar p of 0.062.
+
+**The honest reading of the memory arm.** A store distilled from 64 questions per fold is a small
+store, and this run says a small store of this kind does not help on 1,534 questions: it breaks 68 and
+repairs 47. That is not a refutation of R9 — it is R9's closing condition measured at 4.4× the sample
+with the sign unchanged and the interval now touching zero. The `learn_sample` cap is in the artefact
+(`config.learn_sample: 64`) because a reader comparing this to a flywheel reading would otherwise be
+comparing two treatments.
+
+**The instrument, priced.** `timeouts: 0` is the headline number for iteration 118's fix: the same
+learning half that spent 43 minutes on fold 2 of the previous dispatch now runs inside a fold that
+completes in fifteen. `V32` reported 0/320 unanswered questions and 0 distillation failures, so the
+run's store is the store the fold paid for — the thing the previous four dispatches could not say.
+
+**Two defects the artefact revealed after it landed.**
+
+- `per_case.arm_keys` stores each arm's **canonical result set**, and one `card_games` question
+  returns a 12 MB string. The artefact is 38 MB, of which 37.9 MB is that one field: nine tenths of
+  the evidence file is a single query's rows. The fix is to store the digest of a result key rather
+  than the key — equality is all the arm-pair analysis needs — and it is deferred rather than bodged,
+  because changing the field changes the schema the protocol gate validates.
+- The cell-comparison record had to be regenerated, and `pnpm eval:protocol` refused the stale one
+  with `the recorded comparison differs from the arithmetic (indicative at 0.19pp, reproduced at
+  4.11pp)`. That refusal is the gate working: a verdict is derived from the artefacts present, so a
+  new artefact changes it without anyone remembering to edit a table.
+
+**Green:** `pnpm check` — 1,824 tests, 102 files, coverage 99.98 / 99.61 / 100 / 99.98, protocol
+gate reporting both rows (`indicative` +0.19pp on 350, `reproduced` +4.11pp on 1,534).

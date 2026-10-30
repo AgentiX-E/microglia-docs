@@ -927,12 +927,21 @@ measurement* was missing, so the number looked like a finding about the mechanis
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
-Our baseline is 53.71% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no
-memory; n = 350). XiYan-SQL publishes **53.52%** for DeepSeek with a DDL schema — on BIRD *dev*
-(n = 1,534), which is not the same split, so the two are consistent rather than equal (§3.6.8), and
-the dev split is now measured rather than assumed unreachable (§3.6.9).
-Two independently built harnesses, 0.09pp apart, which is the best available evidence that our
-protocol is sound and that the model is not what separates us from a 73–75% system.
+Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on
+BIRD dev (DeepSeek, DDL, evidence supplied, no memory; n = 1,534), Wilson [55.14, 60.08]. XiYan-SQL
+publishes **53.52%** [51.02, 56.02] for the same model and the same schema on the same 1,534
+questions. The difference is **+4.11pp**, inside the 4.97pp tolerance that two samples of these sizes
+require, and the cell's verdict is therefore **`reproduced`** rather than `indicative`.
+
+That is the sentence this project spent four iterations trying to be allowed to say. A reproduction is
+not agreement of point estimates — 53.71 on 350 questions agreed to within 0.19pp and proved nothing,
+because the split was different. It is agreement inside the sampling error of two estimates on the
+same sample. Two independently built harnesses now agree on the same 1,534 questions, which is the
+best available evidence that our protocol measures the quantity the published cell measures, and that
+the model is not what separates us from a 73–75% system.
+
+The mini-dev row stays in the table beside it (`indicative` at +0.19pp), because the two rows answer
+different questions: one says the harness is consistent with a claim, the other says it reproduces it.
 
 What separates us is the **candidate pool**, and two published numbers make the comparison exact:
 
