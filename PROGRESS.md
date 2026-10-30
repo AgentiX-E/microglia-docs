@@ -407,6 +407,21 @@ databases with `amb_user_query`, `user_query_ambiguity`, `knowledge_ambiguity`, 
 annotators, measures whether ambiguity is resolved) and **S1b** (the private chart-vocabulary set,
 which is the only thing the public data cannot carry).
 
+**Three dispatches, three bugs, each found by the run rather than by reading.** The lane had never
+been asked to fetch a second archive, and every assumption that mattered was in the code that only
+one archive exercised:
+
+| Dispatch | Stopped at | Cause | Fix |
+|---|---|---|---|
+| 1 | `the dataset archive failed its size check` | `BIRD_ARCHIVE_URL` came from a repository variable naming Mini-Dev while `SOTA_SPLIT` selected the dev manifest — two sources for one download, and the check blamed the data | the URL comes from the manifest, which is also where the digest lives, so the thing fetched and the thing verified cannot disagree; the variable is gone |
+| 2 | `No database file for 'california_schools'` | `dev.zip` nests: `dev.json` sits beside `dev_databases.zip`, which holds the eleven SQLite files. Mini-Dev does not nest, so one pass had always been enough | unpack the inner archive when it is there; verified locally end to end (**29,941 rows** for `california_schools`, all eleven databases counted) before the third dispatch |
+| 3 | `MG_E_BUDGET_EXCEEDED: the configured cap cannot finish the folds` | fold 1 of 5 took 93 minutes and 2,229 calls, and the lane's own forecast said **12,037 calls needed, 8,000 available** | `SOTA_LEARN_SAMPLE` caps how many questions a fold distils from; the evaluation stays complete at 1,534 x 2, total about 3,800, and the cap is recorded in the artefact |
+
+The third one is the useful number, and it is a fact about the benchmark rather than about the code:
+**a fold on dev learns from 1,227 questions for about 1,227 calls.** The 350-question slice never
+showed this because it learns from 280. Any future dev run that wants a full flywheel reading needs
+roughly 12,000 calls — twelve times the Mini-Dev budget, for 4.4 times the questions.
+
 **Green:** `pnpm check` — 1,765 tests, 97 files, coverage 99.98 / 99.6 / 100 / 99.98, with
 `artefacts.ts`, `bird-data.ts`, `plugin.ts`, `prereg.ts`, `reproduction.ts` and `artifact-schema.ts`
 at 100 on all four dimensions. The dev dispatch runs on the runner, not here: the benchmark lane is
