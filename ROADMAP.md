@@ -1550,3 +1550,41 @@ is noise: **V23 fails**. If instead the store clears zero and the floor does not
 R9.4 — the held-out domain — becomes the live question. If the floor earns as much as the store, the fit
 is a coin weighted by the schedule, the R9.3 line is closed, and the honest end of the flywheel claim is
 that a rule's measured effect does not survive being fitted on other questions.
+
+### R9.3 — the run, and the verdict (2026-10-30)
+
+Run [`40979195141`](https://github.com/AgentiX-E/microglia/actions/runs/40979195141), 350 questions,
+2,859 calls, 0 failures, 1 retry, `1,800` density calls — the same ones R9.1 bought, because the trials
+travel in the artefact and this reading re-cuts them.
+
+| Gate | Reading | Verdict |
+|---|---|---|
+| V18-density-exercised | 20-20 per rule (median 20) | pass |
+| V19-density-discriminates | 68.8% of 80 rules | pass |
+| V20-density-reconciles | 1,600 = 721 relevant + 879 irrelevant | pass |
+| V21-density-floor (advisory) | 200 floor injections, 8.5% flips | pass |
+| V22-density-crossfit-covers | 16,000 of 16,000 injections scored, 5 folds x 10 repeats | pass |
+| V23-density-crossfit-beats-floor | store +1.33pp [−0.06, +2.83] vs floor +0.05pp | **fail** |
+
+**R9.3 does not pass, and the way it fails is worth more than the bar.** The store's cross-fit is
+**+1.33pp** with a 95% interval that contains zero by 0.0625pp; the same machinery on foreign rules earns
+**+0.05pp**. R9.1 could not separate a policy from a schedule, because the foreign rules flipped 7.5% of
+their injections against the store's 7.1%. Fitted identically they earn nothing, so the 1.28pp difference is
+content. That is the first positive reading on this axis that survives its own content-free control.
+
+**The pre-registered prediction is half confirmed.** Recorded before the dispatch: store inside
+[0.00, +1.00]pp with an interval containing zero, floor slightly negative, V23 fails. V23 failed and the
+floor is flat, as predicted; the point estimate came in at +1.33pp, above the predicted range.
+
+**The estimate does not depend on the schedule, and the interval does not depend on the repeats.** From the
+carried ledger, twenty repeats each, zero calls: folds 4 / 5 / 10 / 20 give +0.95 / +1.33 / +1.30 / +1.38pp
+with the floor at or below +0.65pp throughout; only folds 2 — ten fit observations per rule — collapses to
++0.04pp. Doubling the cuts from 10 to 20 moved the interval from [−0.06, +2.83] to [−0.06, +2.83]. The
+interval is set by the 200 questions the bootstrap resamples, not by the 16,000 injections the policy scores.
+
+**What R9.4 inherits, and what the next bar has to be.** R9.4's acceptance is a transfer rate above R6's
+3.52% on a held-out domain, and it can now be run on a policy whose in-domain value is known to be about
++1.3pp rather than unknown. Two things are settled before it starts: the control is the same machinery on
+foreign rules, and the interval will be wide because the constraints are questions rather than repeats. A
+policy that transfers should be reported as a difference against **+1.28pp**, not against zero, because the
+schedule has now been priced and it is the number the machinery earns on material that cannot apply.

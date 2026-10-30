@@ -5480,3 +5480,73 @@ stratified or repeated split, not a single one, and it is written down here befo
 `stats.test.ts`; `pnpm check` green with 1,599 tests, 96 files, coverage 99.98 / 99.64 / 100 / 99.98. Gates
 on the authoritative run: V18 "20-20 per rule (median 20)", V19 "68.8% of 80 rules", V20 1,600 = 679 + 921,
 V21 200 floor injections.
+
+### 113 — R9.3: the fit is worth about a point, the schedule is not the reason, and the bar is missed by 0.06pp
+
+R9.1 priced the per-rule policy on one split and reported why one split should not be trusted: the fit
+halves carried 25 repairs and 25 breaks, the scoring halves 17 and 46. This iteration replaces the split
+with a cross-fit — five folds per rule's panel, ten independent cuts, the rule's sign fitted on the four
+folds it is not being scored on — and fits the foreign rules with the same machinery as the control. The
+trials are now carried in the artefact, so both readings cost no calls: this whole iteration is
+`1,800` density calls, the same ones R9.1 bought.
+
+**The bar was `CI excluding zero`, and the interval contains zero by 0.0625pp.**
+
+| Reading | shown | accuracy | Δ | 95% CI | +/− |
+|---|---|---|---|---|---|
+| cross-fit, store | 4,884 / 16,000 | 51.5% → 52.83% | **+1.33pp** | **[−0.06, +2.83]** | +339 / −126 |
+| cross-fit, foreign rules | 512 / 2,000 | 51.5% → 51.55% | +0.05pp | [−1.75, +1.85] | +21 / −20 |
+| single split, `fitted` | 220 / 800 | 52.0% → 52.5% | +0.50pp | [−1.38, +2.25] | +11 / −7 |
+| `cued`, the only cue a deployment has | 243 / 800 | 52.0% → 51.0% | −1.00pp | [−3.25, +1.12] | +11 / −19 |
+| `oracle`, the ceiling | 180 / 800 | 52.0% → 55.3% | +3.25pp | [+1.00, +6.25] | +26 / −0 |
+
+V22 passes: 16,000 of 16,000 injections scored, 5 folds × 10 repeats. V23 fails on the interval and only
+on the interval — the store beats its own floor by **1.28pp**, and the pre-registered prediction ("inside
+[0.00, +1.00]pp with an interval containing zero, floor slightly negative, V23 fails") is confirmed on the
+bar and on the floor and refuted on the point estimate, which came in at +1.33 rather than ≤ +1.00.
+
+**What the floor buys.** R9.1 could not tell a policy from a schedule: the foreign rules flipped 7.5% of
+their injections against the store's 7.1%. Fitted by the same machinery they earn **+0.05pp**, and the
+store earns +1.33pp. The schedule is now priced and it is worth nothing; the 1.28pp difference is content.
+The shape prior in §3.6.4 also cleared its control, but that control was a replica of the empty pack and so
+priced sampling noise; this is the first time a rule-selection policy has been priced against the same
+machinery applied to material that cannot apply, and it is the first time the answer was positive.
+
+**The reading does not depend on how the cut was made.** Recomputed from the carried ledger, 20 repeats per
+schedule, zero calls:
+
+| Folds | store Δ | 95% CI | foreign Δ |
+|---|---|---|---|
+| 2 | +0.04pp | [−0.79, +0.79] | 0.00pp |
+| 4 | +0.95pp | [−0.27, +2.17] | +0.27pp |
+| 5 *(pre-registered)* | +1.33pp | [−0.06, +2.83] | +0.15pp |
+| 10 | +1.30pp | [−0.16, +2.85] | +0.65pp |
+| 20 (leave-one-out) | +1.38pp | [−0.19, +3.00] | +0.50pp |
+
+Every schedule with at least fifteen fit observations lands between +0.95 and +1.38pp; only two folds — ten
+fit observations a rule, which is the density R7 said cannot classify — collapses to zero. The floor never
+exceeds +0.65pp on any schedule. Two runs in a row now show the ceiling outside the noise floor
+(+1.75 [+0.38, +3.75] and +3.25 [+1.00, +6.25], the second with 26 repairs and no breaks).
+
+**Why the interval is wide is the finding, not a complaint.** The cross-fit scores 16,000 injections, but
+they are ten cuts of the same 1,600 trials on 200 questions, and the bootstrap resamples questions. Doubling
+the schedule from 10 cuts to 20 moved the interval from [−0.06, +2.83] to [−0.06, +2.83] — the same two
+decimals. **Repeats do not buy precision; questions do.** Halving the interval needs four times the
+clusters, which is 800 questions, not another pass over the same 350. R9.3's bar is therefore not a bar this
+family can clear at this size, and that is a statement about BIRD Mini-Dev rather than about the policy.
+
+**The sign a rule carries is real but weaker than R9.1 made it look.** This run: 17 of 24 rules kept their
+sign across halves (70.8%, p 0.064). R9.1: 16 of 20 (80.0%, p 0.012). Pooled over both runs, 33 of 44
+(75.0%, **p 0.0013**) — so a rule's direction is learnable, at a lower rate than one run suggested, and the
+pooled estimate is the one to quote.
+
+**The strata, for the record** (80 rules × 20 questions, 1,600 injections, floor 200): overall 68.8%
+discriminating, 8.0% flips, 51.5% → 50.7%, −0.75pp [−3.69, +2.25], sign p 0.788; relevant 58 rules on 721
+injections −2.08pp [−5.48, +1.13]; irrelevant 67 on 879 +0.34pp [−2.92, +3.65]; cued 59 on 533 −0.38pp
+[−4.23, +3.38]; floor 10 on 200 −2.50pp [−6.50, +1.50]. The applicability inversion R9.1 reported reproduces
+in direction: the stratum whose gold query uses the rule's vocabulary is the worse one, again.
+
+**Evidence.** Run [`40979195141`](https://github.com/AgentiX-E/microglia/actions/runs/40979195141): 350
+questions, 2,859 calls, 0 failures, 1 retry, V18–V22 green, V23 red. `crossFit` at 100% on all four
+dimensions with 61 tests in `density.test.ts`; `pnpm check` green with 1,617 tests, 96 files, coverage
+99.98 / 99.65 / 100 / 99.98.

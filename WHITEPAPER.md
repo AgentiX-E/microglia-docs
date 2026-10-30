@@ -583,7 +583,64 @@ So the whole of R9 is this: the store is worth about **+1.75pp** if the rules ar
 they are chosen by the only cue available before answering. A rule's effect is small — 42 repairs and 71
 breaks across 80 rules and 1,600 injections — stable enough to predict with ten observations, and worth
 less than the cost of predicting it. That is a different finding from "memory does not work": it says
-memory works at a magnitude the selection problem eats.
+memory works at a magnitude the selection problem eats. §3.6.6 prices that selection problem with a repeated
+split and a control that cannot be passed by a schedule.
+
+### 3.6.6 The fit is worth about a point, and the number of questions is what limits it
+
+§3.6.5 priced the per-rule policy on one split of the panel, and the reason not to trust one split was in
+the same artefact: the fit halves carried 25 repairs and 25 breaks, the scoring halves 17 and 46. The
+cross-fit replaces that split — each rule's panel cut into five folds, the rule's sign fitted on the four
+folds it is not being scored on, the whole cut repeated ten times — and the foreign rules are fitted by the
+same machinery, which is the control a schedule cannot pass.
+
+| Reading | shows | accuracy | Δ | 95% CI | +/− |
+|---|---|---|---|---|---|
+| cross-fit, the store | 4,884 / 16,000 | 51.5% → 52.83% | **+1.33pp** | **[−0.06, +2.83]** | +339 / −126 |
+| cross-fit, foreign rules | 512 / 2,000 | 51.5% → 51.55% | +0.05pp | [−1.75, +1.85] | +21 / −20 |
+| single split, as measured in §3.6.5 | 220 / 800 | 52.0% → 52.5% | +0.50pp | [−1.38, +2.25] | +11 / −7 |
+| `cued`, the only cue a deployment has | 243 / 800 | 52.0% → 51.0% | −1.00pp | [−3.25, +1.12] | +11 / −19 |
+| `oracle`, the ceiling | 180 / 800 | 52.0% → 55.3% | +3.25pp | [+1.00, +6.25] | +26 / −0 |
+
+**The bar is missed by 0.0625pp, and that is the result.** The criterion written down before the run was an
+interval excluding zero; the interval excludes zero by nothing on the wrong side. What the run does
+establish is the thing the previous section could not: the foreign rules, fitted by exactly the same
+procedure, earn **+0.05pp**. The schedule is worth nothing. The store is worth **1.28pp more than the
+schedule**, and that difference is content.
+
+**It does not depend on how the cut was made.** Recomputed from the trials the artefact now carries, at
+twenty repeats, for no calls:
+
+| Folds | store Δ | 95% CI | foreign Δ |
+|---|---|---|---|
+| 2 | +0.04pp | [−0.79, +0.79] | 0.00pp |
+| 4 | +0.95pp | [−0.27, +2.17] | +0.27pp |
+| 5 | +1.33pp | [−0.06, +2.83] | +0.15pp |
+| 10 | +1.30pp | [−0.16, +2.85] | +0.65pp |
+| 20 (leave-one-out) | +1.38pp | [−0.19, +3.00] | +0.50pp |
+
+Every schedule that leaves a rule at least fifteen observations to be fitted on lands between +0.95 and
++1.38pp. Only two folds — ten observations per rule — collapses to nothing, which is the wall §3.6.5 opened
+on: below a certain number of chances a rule cannot be classified at all. The floor never exceeds +0.65pp on
+any of them. Two runs in a row now put the ceiling outside the
+noise floor, the second with 26 repairs and no breaks.
+
+**Why the interval stays wide is the more useful finding.** The cross-fit scores 16,000 injections, but they
+are ten cuts of the same 1,600 trials drawn from 200 questions, and the bootstrap resamples questions.
+Doubling the number of cuts moved the interval from [−0.06, +2.83] to [−0.06, +2.83]: the same two decimals.
+**More repeats do not buy precision; more questions do.** Halving the interval takes four times the
+clusters — 800 questions, not another pass over the same 350. So the bar in §3.6.5 is not one this family
+can clear at the size BIRD Mini-Dev allows, which is a fact about the benchmark and not about the policy.
+
+**What a rule's sign is worth.** 17 of 24 rules kept their sign across halves in this run (70.8%,
+p = 0.064); §3.6.5 measured 16 of 20 (80.0%, p = 0.012). Pooled, 33 of 44 — **75.0%, p = 0.0013**. A rule's
+direction is learnable, at a lower rate than any single run suggests, and the pooled number is the one to
+quote.
+
+The honest summary of the position: a rule the store carries is worth about **+1.3pp** on the questions of
+its own database when it is chosen out of fold, its direction is stable three times in four, and the
+programme's instrument cannot resolve that effect at 95% because 200 questions is not enough clusters. That
+is not the earlier finding that memory does not work, and it is not yet the finding that it does.
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
