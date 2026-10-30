@@ -752,14 +752,57 @@ re-derives it from the artefact so `indicative` cannot be edited into `reproduce
 
 What survives is weaker and still worth having: our no-memory baseline is consistent with the published
 baseline for the same model and schema form, so the distance to a 73–75% system is not plausibly an
-artefact of a badly built harness. A genuine reproduction needs the dev split (1,534 questions), which
-this environment cannot download; that is recorded as R8.3b rather than quietly implied.
+artefact of a badly built harness. A genuine reproduction needs the dev split (1,534 questions); §3.6.9
+records what happened when that sentence was tested instead of repeated.
+
+### 3.6.9 The protocol tested its own claim, and the claim failed
+
+§3.6.8 ends with a sentence that is worth reading as evidence rather than as a caveat: *"a genuine
+reproduction needs the dev split (1,534 questions), which this environment cannot download"*. It is
+false. The dataset is not on the host that was probed, and the probe's failure was generalised into a
+property of the environment — which is precisely the error the protocol exists to prevent, committed
+about a URL instead of about an accuracy.
+
+**What the probe found in four requests.**
+
+| Request | Answer |
+|---|---|
+| `curl -sI https://bird-bench.oss-cn-beijing.aliyuncs.com/dev.zip` | **200**, 346,207,293 bytes, last modified 2024-06-29 |
+| `unzip` and count | `dev_20240627/dev.json`: **1,534** questions, 11 databases, 925 `simple` / 464 `moderate` / 145 `challenging` |
+| `sha256sum` | `cdd6d19f…a60cf5a630` — pinned in `eval/manifests/bird-dev.json` |
+| load through the lane | `data ok` for all eleven databases, counted before the first model call |
+
+Hugging Face is unreachable from the build environment; the vendor's CDN is not, and the manifest had
+named the CDN all along. One host was tested, the class was reported.
+
+**Why that is the same failure the protocol names.** §3.6.8's own rule is that a comparison may be
+called a reproduction only when it was measured on the same split as the published number, because a
+difference between estimates on different samples is sampling error. The reachability claim is that
+rule one level up: a probe of one object, reported as a property of the class, with no interval and no
+second observation. It survived four weeks because it made a stage look closed instead of open.
+
+**What changed, and why the change is small.** A split became a parameter rather than a constant.
+The manifest answers which question file the archive carries (`questions`), so a second split is a
+second manifest and not a second branch in the loader. `poolOf(rows, split)` owns the one genuinely
+split-dependent decision: dropping `simple` questions is a measurement choice on the 350-question
+transfer slice and a protocol violation on dev, where it would leave 609 and stop being the cell. A
+`dev` run writes `poc-sota-bird-dev.json`, and the cell table gains a second row rather than
+overwriting the first — because a row is only honest while the artefact behind it is in the
+repository to be recomputed.
+
+**What it will say when it lands.** `none` on 1,534 questions, an interval near ±2.5pp instead of
+±5.2pp, and a verdict of `reproduced` if the difference from 53.52 falls inside 1.96 standard errors
+of each estimate added. The prediction and its refutation are in `prereg/R8.3b-dev-split.md`,
+written before the dispatch. If the number falls outside the band, the honest consequence is not a
+weaker claim but a withdrawal: our harness would not be measuring what the published cell measures,
+and every cross-paper comparison in this document goes with it.
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline is 53.71% execution accuracy on BIRD Mini-Dev (DeepSeek, DDL, evidence supplied, no
 memory; n = 350). XiYan-SQL publishes **53.52%** for DeepSeek with a DDL schema — on BIRD *dev*
-(n = 1,534), which is not the same split, so the two are consistent rather than equal (§3.6.8).
+(n = 1,534), which is not the same split, so the two are consistent rather than equal (§3.6.8), and
+the dev split is now measured rather than assumed unreachable (§3.6.9).
 Two independently built harnesses, 0.09pp apart, which is the best available evidence that our
 protocol is sound and that the model is not what separates us from a 73–75% system.
 

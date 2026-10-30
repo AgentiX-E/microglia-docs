@@ -8,12 +8,13 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | Stage | State | Blocking item |
 |---|---|---|
 | S0 Mechanism | **closed** | — |
-| S1 Host shadow (nl2charts) | not started | needs the private adjudicated set (n=1,300, κ≥0.7) |
+| S1 Host shadow (nl2charts) | **split**: S1a public ambiguity, S1b private chart vocabulary | S1a unblocked by BIRD-Interact's annotated ambiguity; S1b still needs the 1,300-case set |
 | S2 Public benchmarks | **four reads: no benefit** (−2.84, −1.14, −0.57, −0.28pp); controls show the pack is inert | the knowledge that transfers is convention, which this benchmark has none of |
 | S2b Convention transfer | **first positive read**: +4.79pp (p=0.0156) on a rule the schema cannot reveal | replication; 44% of the stated ceiling is the gap to close |
 | S3 SOTA push | stopped on BIRD; starts only after S2b moves accuracy | — |
 | R1–R9 (research lines) | **closed** — R9 closed on its own refutation condition | — |
-| R8 Protocol as a deliverable | **closed**; R8.3b open | the dev split (n=1,534) is not reachable from this environment |
+| R8 Protocol as a deliverable | **closed**; R8.3b **running** | nothing — the dev archive is on the vendor CDN and the lane now measures it |
+| R10 Migrate the structure | **pre-registered** | needs the template distiller (arm B) before a dispatch |
 
 ## Iteration log
 
@@ -348,25 +349,97 @@ on method — the difference between an open dependency and an unstated assumpti
 `prereg.ts`, `reproduction.ts` and `artifact-schema.ts` at 100 on all four dimensions. `eval:protocol`
 runs offline in about a second and is part of `pnpm check`.
 
+### 116 — R8.3b: the block was a probe, not a property; and R10 is opened from the literature
+
+R8.3 closed with a sentence that was true about one command and false about the project:
+*"a genuine reproduction needs the dev split (n=1,534), which this environment cannot download"*.
+It was tested on `huggingface.co`, which is indeed unreachable from the sandbox. The dataset is not
+there. It is on `bird-bench.oss-cn-beijing.aliyuncs.com`, and four probes replace the estimate with
+a fact:
+
+| Probe | Result |
+|---|---|
+| `curl -sI …/dev.zip` | **200**, `Content-Length: 346,207,293`, `Last-Modified 2024-06-29` |
+| `unzip -l dev.zip` / count `dev.json` | **1,534** questions, 925 simple / 464 moderate / 145 challenging, 11 databases |
+| `sha256sum dev.zip` | `cdd6d19f…a60cf5a630`, now pinned in `eval/manifests/bird-dev.json` |
+| `SOTA_SPLIT=dev BIRD_DIR=… pnpm eval:sota` | `data ok` for all eleven databases before the first model call; stops at the fold check with `SOTA_LIMIT=3`, which is what a working data path looks like |
+
+**The mistake has a name in our own protocol.** It is the cross-split comparison error one level up:
+a check performed on one object, reported as a property of the class. R8.3 exists to stop exactly
+this in the accuracy table — "our number and their number are the same cell" — and R8.3 then made the
+same move about a URL.
+
+**What the lane now does.** `SOTA_SPLIT` is a first-class parameter: `dev` selects its own manifest,
+reads `dev.json` through `manifest.questions` instead of a hard-coded filename, keeps all 1,534
+questions, and writes `poc-sota-bird-dev.json`. The split-dependent filter is the subtle part and it
+lives in `poolOf`: dropping `simple` questions is a *measurement* decision on Mini-Dev (a question
+answered without memory carries no signal) and a *protocol violation* on dev (it leaves 609, and a
+run on 609 is not a reproduction of a cell measured on 1,534). Both halves are asserted.
+
+**Three downstream readers were silently broken by the second artefact.** Attribution, the pool, the
+signals, the density family and the union price each spelled `poc-sota-bird.json`, and each opens
+with "if it is missing, print a line and exit zero" — so a dev-only dispatch would have produced a
+green job with no reading. `chooseArtefact` resolves it once, `SOTA_ARTEFACT` overrides it, and the
+workflow now names the split's artefact in one place instead of fifteen.
+
+**R10, opened from two papers rather than from intuition.** R9.4's finding was that a rule learned in
+one database is ignored in another — repair 6.7%, break 10.4%, against 3.52% / 42.6% for a
+same-database foreign case — because the rule is a sentence about a table that does not exist there.
+
+- **ODIS** (arXiv 2310.06302, EMNLP 2023 Findings) shows that what makes an in-domain demonstration
+  work is the **SQL distribution**, not the question distribution, and gets +1.1 / +11.8 by
+  synthesising in-domain examples.
+- **SQL-Exchange** (arXiv 2508.07087, PVLDB 2026) maps a query to a target schema by preserving its
+  **structure** and substituting only the domain-specific elements, and reports that mapped
+  demonstrations beat raw source-schema ones consistently.
+
+Same diagnosis, stated as a construction. R10 rewrites a rule as a slot template
+(`CAST({column} AS REAL) when {column} is TEXT and compared to a number`), binds the slots against
+the target schema at transfer time, and runs three arms — prose rule, bound template, nothing — on
+R9.4's panel. Predictions and refutation are in `ROADMAP.md` §R10 and were written before the code.
+If arm B's break rate does not fall below 8%, the structural hypothesis is wrong and the memory
+layer is documented as in-database only.
+
+**S1 stops waiting behind an annotation set it does not need for half its question.** Ambiguity now
+has annotated public data: BIRD-Interact (ICLR 2026 oral) ships 600 tasks over 22 PostgreSQL
+databases with `amb_user_query`, `user_query_ambiguity`, `knowledge_ambiguity`, `sol_sql` and
+`test_cases`; GPT-5 completes 8.67% of them. S1 therefore splits into **S1a** (public, no
+annotators, measures whether ambiguity is resolved) and **S1b** (the private chart-vocabulary set,
+which is the only thing the public data cannot carry).
+
+**Green:** `pnpm check` — 1,765 tests, 97 files, coverage 99.98 / 99.6 / 100 / 99.98, with
+`artefacts.ts`, `bird-data.ts`, `plugin.ts`, `prereg.ts`, `reproduction.ts` and `artifact-schema.ts`
+at 100 on all four dimensions. The dev dispatch runs on the runner, not here: the benchmark lane is
+required to be a GitHub workflow, and this keeps that rule even when the sandbox could run it.
+
 ## What is left, in order
 
-Every stage that is not blocked is closed. What remains is blocked on something outside this
-repository, and the distinction is stated because a list that mixes the two hides the one thing a
-reader wants to know: whether anything here is waiting on us.
+The list used to be short because everything on it had been declared blocked, and one of those
+declarations was wrong: "the dev split is not reachable from this environment" was a probe of one
+host reported as a property of the environment. It is reachable, the lane measures it, and the
+dispatch is running. What is left now separates work we owe from work we are waiting on.
 
-1. **R8.3b — the dev-split reproduction.** Blocked on data: this environment cannot reach the dataset
-   host, so no run exists at n = 1,534. `compareCell` returns `reproduced` the moment one does, and
-   nothing else in the protocol changes.
-2. **S1 — host shadow.** Blocked on the private adjudicated set: 1,300 cases, two annotators, κ ≥ 0.7.
-   The instrument (a flag, a journal, recall before generation) is specified and not built.
-3. **S3 — SOTA push.** Gated, not blocked: it starts only if S2b moves accuracy. S2b closed with its
-   gate missed (+4.79 then +2.05pp against a ≥10pp bar), so S3 stays stopped by its own rule.
-4. **Cortex release (W1).** Excluded from this programme by the owner; the conformance lane is green
+1. **R8.3b — the dev-split reproduction.** Running. The lane measures 1,534 questions on the runner;
+   `compareCell` returns `reproduced` the moment the artefact lands, and the cell table gains a
+   second row rather than replacing the first.
+2. **R10 — migrate the structure, not the sentence.** Pre-registered, not built. Needs a template
+   distiller: rules as slot patterns instead of prose, bound against the target schema at transfer
+   time. Three arms on R9.4's panel; the refutation is in `ROADMAP.md` and was written first.
+3. **S1a — ambiguity, on public annotations.** Unblocked and unbuilt. BIRD-Interact carries the
+   annotated ambiguity (`amb_user_query`, `user_query_ambiguity`, `sol_sql`, `test_cases`), so this
+   half of S1 does not wait for annotators.
+4. **S1b — the chart vocabulary.** Blocked on the private set: 1,300 cases, two annotators, κ ≥ 0.7.
+   This is the only part of S1 the public data cannot substitute, because it measures our product's
+   own words.
+5. **S3 — SOTA push.** Gated, not blocked: it starts only if S2b moves accuracy. S2b closed with its
+   gate missed (+4.79 then +2.05pp against a ≥10pp bar), so S3 stays stopped by its own rule — and
+   R10 is the experiment that could move that gate rather than a reason to bypass it.
+6. **Cortex release (W1).** Excluded from this programme by the owner; the conformance lane is green
    against a real build and the release itself is a decision, not a task.
-5. **vitest 4 (W2).** Blocked on the toolchain: it lands when vite 7 is the default.
+7. **vitest 4 (W2).** Blocked on the toolchain: it lands when vite 7 is the default.
 
-The parser fix that used to be on this list is no longer: the committed S2 artefact reads
-`parse_rate 1.0`, `distill_failed 0`, so the corrected parser has been measured on a full run.
+Items 1–3 are ours to finish. Items 4–7 wait on an annotation set, a gate, a decision, and a
+toolchain respectively.
 
 Nothing on this list blocks the S0 result, and none of it is hidden behind the green build: each item
 is either an experiment that has not run or a dependency that has not shipped.

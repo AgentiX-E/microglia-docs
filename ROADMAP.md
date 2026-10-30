@@ -62,6 +62,27 @@ first-pass answer?
 audit. **Stop rule:** if the gate misses, invoke K1 (stop; do not pivot to another benchmark to find a
 friendlier number).
 
+**What the private annotation set is, and why it was assumed to be private.** The 1,300 cases are
+pairs of *what a user asked* and *what they wanted*, written by two annotators on our own chart
+product, with κ ≥ 0.7 measured and disagreements resolved by a third. That is what the stage tests:
+not whether a chart is correct, but whether the system can tell that "revenue by quarter" meant
+fiscal quarters. A public benchmark cannot carry our product's vocabulary, so the set was scoped as
+private — and that scoping was correct for S1b and unnecessary for the part of S1 that is about
+ambiguity in general.
+
+**The public substitutes, checked rather than assumed.** Ambiguity now has annotated public data:
+
+| Source | What it annotates | Size |
+|---|---|---|
+| **BIRD-Interact** (ICLR 2026 oral, arXiv 2510.05318) | per task: `amb_user_query` (the ambiguous phrasing), `user_query_ambiguity` (the annotated readings), `knowledge_ambiguity`, `sol_sql`, `test_cases`, plus a follow-up subtask | 600 tasks / 22 PostgreSQL databases (300 lite); GPT-5 completes 8.67% in c-Interact, 17.00% in a-Interact |
+| **AmbiQT** and the ambiguity-detection line | question pairs that differ only in an ambiguity, one SQL each | public, small |
+| **BIRD train** | 12,751 question–SQL–evidence triples, the annotation the benchmark itself learned from | 9.4 GB archive |
+
+So S1 splits. **S1a** measures ambiguity handling on BIRD-Interact's annotated ambiguity labels —
+public, reproducible, no annotators. **S1b** keeps the private set for the one thing only it can
+measure: whether our chart product's own vocabulary is being learned. A stage that can be tested
+publicly should not wait behind a stage that cannot, and the previous roadmap made it wait.
+
 ## S2 — Public benchmarks (planned)
 
 **Question.** Does the same loop improve a strong backbone on data nobody curated for us?
@@ -1785,10 +1806,91 @@ because a gate that fires at the end has already spent the budget. V31 re-derive
 comparison from the artefact and fails when the record disagrees — so `indicative` cannot be edited
 into `reproduced`, and a difference inside the noise floor cannot be filed as a win.
 
-**What R8 does not deliver, stated rather than implied.** A genuine reproduction of XiYan's dev cell
-needs the dev split at n = 1,534. This environment cannot reach the dataset host, so the reproduction
-is of the *cell's definition* on the split we can run, and the artefact says `indicative`. That item
-is recorded as **R8.3b** and is blocked on data availability, not on method.
+**What R8 does not deliver, and the correction it forced.** A genuine reproduction of XiYan's dev
+cell needs the dev split at n = 1,534. R8.3 closed by calling that item *blocked on data
+availability*: the sandbox could not reach `huggingface.co`, and the block was written down as a
+property of the environment. It was a property of one probe. The dataset is not on Hugging Face; it
+is on the vendor's CDN, which answers in one request (see R8.3b below).
 
 **Green:** `pnpm check` — 1,748 tests, 97 files, coverage 99.98 / 99.62 / 100 / 99.98, with `plugin.ts`,
 `prereg.ts`, `reproduction.ts` and `artifact-schema.ts` at 100 on all four dimensions.
+
+### R8.3b — the block was a probe, not a property (opened 2026-10-30)
+
+| Question | Probe | Answer |
+|---|---|---|
+| Is the dev split reachable? | `curl -sI https://bird-bench.oss-cn-beijing.aliyuncs.com/dev.zip` | **200**, `Content-Length: 346,207,293`, `Last-Modified 2024-06-29` |
+| Is it the same data the paper used? | extract and count | `dev_20240627/dev.json`, **1,534** questions, 925 simple / 464 moderate / 145 challenging, 11 databases |
+| Does our loader accept it? | `BIRD_DIR=<extracted> SOTA_SPLIT=dev` | `data ok: california_schools 3 tables 29,941 rows` … eleven of eleven, before any model call |
+| Does the digest pin it? | `sha256sum dev.zip` | `cdd6d19faeb45a23970b98d3ef6c40a87987c95459c2cf12076897a60cf5a630`, pinned in `eval/manifests/bird-dev.json` |
+
+**The error, named.** R8.3 tested one host (`huggingface.co`), found it unreachable, and reported
+the result as "this environment cannot download the dev split". Those are different claims: the
+first is a measurement, the second is a generality the measurement cannot support. The same mistake
+has a name in this project's own protocol — it is the cross-split comparison problem, one level up:
+a check performed on one object, reported as a property of the class. Four minutes of probing the
+host the manifest already named would have replaced the estimate with a fact.
+
+**What changed in the lane.** A split is now a first-class parameter. `SOTA_SPLIT=dev` selects the
+`bird-dev.json` manifest, reads `dev.json` through `manifest.questions` instead of a hard-coded file
+name, keeps all 1,534 questions (`poolOf` — the `simple` filter that is right for a transfer
+experiment is a protocol violation for a reproduction, since it would leave 609), and writes
+`poc-sota-bird-dev.json` rather than overwriting the 350-question artefact. Fifteen places in the
+workflow that spelled one artefact name now read `SOTA_ARTEFACT`, and `chooseArtefact` resolves it
+once so a downstream lane cannot silently read the wrong split and exit zero.
+
+**Predictions, fixed before the run** (`prereg/R8.3b-dev-split.md`):
+
+1. `none` on 1,534 questions lands inside 53.52 ± 7.72 — roughly 51–56 — and the verdict becomes
+   `reproduced` rather than `indicative`.
+2. The Wilson band narrows from ±5.2pp to about ±2.5pp. That narrowing, not a better point estimate,
+   is the return on the run.
+3. The `full` arm does not turn positive at n = 1,534. R9's +1.33pp over a +0.05pp floor, with a
+   2.27pp cross-database penalty, is a claim about a mechanism rather than about 350 questions.
+
+**Refutation.** If `none` falls outside the band, the harness is not measuring the quantity the
+published cell measures and every cross-paper comparison in this repository is withdrawn. If `full`
+is significantly positive — an interval excluding zero — R9's closing condition reopens with this
+artefact as its first evidence.
+
+### R10 — migrate the structure, not the sentence (pre-registered 2026-10-30)
+
+**The finding R9 left on the table.** R9.4 measured what happens when a rule learned in one database
+is shown a question from another: **repair 6.7%, break 10.4%**, against a same-database foreign case
+at 3.52% / 42.6%. A cross-database rule is not obeyed, it is ignored — because it is a sentence about
+a table that is not there ("`price` is stored as text, cast before comparing") and the target
+database has no `price`.
+
+**Two published answers, both direct hits.**
+
+- **ODIS** (EMNLP 2023 Findings, arXiv 2310.06302) separates out-of-domain demonstrations from
+  *synthetically generated in-domain* ones and reports **+1.1 and +11.8 points** on two cross-domain
+  text-to-SQL benchmarks. Its ablation isolates the factor: what matters in an in-domain
+  demonstration is the **SQL distribution**, not the question distribution.
+- **SQL-Exchange** (PVLDB 2026, arXiv 2508.07087) maps a query from a source schema to a target
+  schema by **preserving the source query's structure and substituting only the domain-specific
+  elements**. Mapped queries used as in-context examples beat raw source-schema queries consistently
+  across model families and datasets — which is the same claim as ours, stated as a construction
+  rather than as a hope.
+
+**What R10 does with them.** A rule stops being prose and becomes a template: a structural pattern
+over SQL with slots, e.g. `CAST({column} AS REAL) when {column} is TEXT and compared to a number`.
+Distillation emits the template; transfer binds its slots against the *target* schema before the rule
+is shown. The three arms are the ablation the question deserves:
+
+| Arm | What the model sees | What it tests |
+|---|---|---|
+| A | the current prose rule | the R9.4 baseline |
+| B | the same rule as a slot template, bound to this database | whether structure is the part that transfers |
+| C | nothing | the control the other two are priced against |
+
+**Predictions.** B's cross-database repair rate exceeds A's 6.7% and its break rate falls below
+10.4%; the *pair* moves even if the accuracy delta stays inside the interval, because a rule that
+repairs more and breaks less is a different rule. If B's break rate does not fall under 8%, the
+structural hypothesis is wrong for this class of rule and the memory layer's scope is "same database
+only", written down rather than hoped for.
+
+**Refutation.** If B's net cross-database effect is still ≤ 0, then "the memory is a lookup and not a
+lesson" holds at the structural level too, the R-series closes for good, and the memory layer is
+documented as an in-database prompt with no transfer claim anywhere in the project.
+
