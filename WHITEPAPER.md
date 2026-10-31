@@ -1189,6 +1189,64 @@ items per question, `full` is negative in both dispatches that measured it (−2
 −3.71pp, p = 0.02), and every arm that injects fewer items sits above it. R16 measures the dose
 directly, in both directions, and is pre-registered before its dispatch.
 
+### 3.6.17 The harm is at the first item, and no budget can fix it
+
+§3.6.16 closed the content axis with a tie and left one variable standing. The store is injected at
+1.78–1.83 items per question, `full` is negative in every dispatch that measured it, and every arm that
+injects *fewer* items sits above it — but those cells differ in content as well as in quantity, so they
+cannot be read as a dose response. R16 holds content fixed: same store, same retrieval order, same
+question, and one number changed, the character budget the pack layer enforces.
+
+The old arms could only look down, and down was degenerate. The pack layer adds whole items in rank
+order and returns an empty pack when none fits, so the unit the budget controls is the item: on this
+store an item renders to 500–824 characters, 150 and 300 admit nothing at all, and 600 admits one item
+on a quarter of questions. Two new arms, 1,800 and 2,400, make the axis 0/1/2/3/4 items.
+
+| Arm | Items | Characters | ACC | Δ vs no memory | 95% CI | gained / lost | p |
+|---|---|---|---|---|---|---|---|
+| `chars-600` | 0.29 | 168 | 54.00% | **+0.00pp** | [−1.43, +1.71] | 4 / 4 | 1.0000 |
+| `full` (1,200) | 1.83 | 1,080 | 51.43% | −2.57pp | [−5.43, +0.29] | 8 / 17 | 0.1078 |
+| `chars-1800` | 2.97 | 1,649 | 50.00% | **−4.00pp** | [−6.86, −1.14] | 6 / 20 | 0.0094 |
+| `chars-2400` | 4.16 | 2,212 | 51.14% | −2.86pp | [−6.00, +0.29] | 11 / 21 | 0.1102 |
+| `none-replica` | 0 | 0 | 52.57% | −1.43pp | [−2.86, +0.00] | 1 / 6 | 0.1250 |
+
+No point on the curve is above no memory, and the whole spread of the curve — 4.00pp — is this sample's
+own minimum detectable effect. One cell clears its bar; four do not.
+
+**The registered instrument prediction failed, and the failure is the reading.** `chars-600` was meant to
+be a one-item cell and it is one on 100 of 350 questions; the pack layer takes rank order and stops, so
+the top-ranked item renders to more than 600 characters on the other 250. The cell is 71.4% control by
+construction, and at that dilution a per-item cost of −5.0pp and a per-item gain of +6.0pp both sit
+inside its interval. The product sentence this stage was written to license — *the store is not harmful,
+the default budget is* — cannot be licensed from a cell that is seven parts control.
+
+**The cell it needed already exists, three iterations back.** Iteration 86 ran the same four low budgets
+against the same rules-with-the-case store, and its `chars-900` reached exactly 1.00 item per question at
+718 characters for **−3.14pp**, on a run whose `full` cell was −3.14pp at 1.87 items — within 0.6pp of
+this one's 1.83-item cell. Read together, the curve is a step rather than a slope:
+
+| items per question | 0.27 | 0.29 | **1.00** | 1.83 | 1.87 | 2.97 | 4.16 |
+|---|---|---|---|---|---|---|---|
+| Δ vs no memory | +0.57 | +0.00 | **−3.14** | −2.57 | −3.14 | −4.00 | −2.86 |
+
+Every point above one item sits within 1.43pp of every other across a fourfold range of injected text.
+**The loss is complete at the first item**, which is the refutation clause arriving by a door the file
+did not name: quantity is not the variable above one item, and the next measurement is not another
+budget.
+
+**A budget cannot be the fix**, because the smallest budget that injects anything already costs what the
+default costs. That is a stronger conclusion than this stage was designed to reach, and it moves the work
+from the count to the item: which one is retrieved, and how it is said. `prereg/R17-framing.md` registers
+the second — one sentence granting the model standing to ignore a note whose condition does not hold, its
+own control with the sentence and no pack, and an arm that classifies the same facts as recorded errors,
+which is the trauma mechanism the memory literature reports run forward instead of mitigated.
+
+**The floor moved, and it moved against this run.** Iteration 86's replica was 3 gained and 3 lost; this
+one is 1 gained and 6 lost — seven discordant questions, the first clearly negative replica on record.
+Everything at or below seven flips is noise here, which includes the 600 cell's eight. And because no
+memory is the luckier of two identical prompts, every delta in the table overstates the harm by up to
+1.43pp: the sign does not depend on it, the size does.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

@@ -20,8 +20,8 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R13 Admitted-rule transfer | **closed** — 7.3% of the questions that need help are repaired, 50% of those that do not are broken; both gates leave 10 items over 350 questions | R14: render the pair instead of the sentence |
 | R14 Substrate comparison | **closed** — the pair reproduces 53.8% of its own corrections against the sentence's 30.7% (+23.10pp, p = 1e-14), and the arm built from it moves the product by one question of 350 (−0.29pp); the extraction is no longer a live explanation | R15: does the pair *transfer*? |
 | R15 Repair-substrate transfer | **closed** — 6.21% against the sentence's 6.28%: a tie on 720 informative trials, so an 18pp reproduction advantage buys no transfer. Four content forms are now inert within ±3pp and the extraction axis is closed | R16: the dose, in both directions |
-| R16 Injection dose | **open** — pre-registered; 0/1/2/3/4 items, the first dose experiment whose points are not `none` by construction | the run |
-| R17 Framing | **planned** — negative-feedback memory ("this was wrong") against a neutral statement of the same content; MemTrapBench's trauma result is the hypothesis | R16's outcome |
+| R16 Injection dose | **closed** — the curve is a step at the first item: 0.29 items per question costs +0.00pp, 1.00 costs −3.14pp (iteration 86's cell), 1.83 −2.57pp, 2.97 −4.00pp and 4.16 −2.86pp; no point is above `none` and the whole spread equals the sample's own floor | R17: framing |
+| R17 Framing | **open** — pre-registered; `full-advisory` (standing permission to ignore a note), `none-advisory` as its control, and `full-prohibitive` for the trauma mechanism run forward | the run |
 
 ## Iteration log
 
@@ -6274,3 +6274,93 @@ would have found that harm shrinks as the pack empties, which is true by constru
 **Green.** `pnpm check` — 1,891 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98, `sota.ts` 100 on
 all four dimensions. Dispatch 3,298 calls, 1 retry, 0 timeouts, every gate pass including V14, V38, V17,
 V39–V42, all four of which failed or could have failed on the first attempt.
+
+### 125 — The harm is at the first item, and no budget can fix it
+
+**Question.** R15 closed the content axis with a tie and R14 closed the substrate axis with a cell that
+moved one question of 350. What both left standing is the one number that has never come back positive:
+`full` costs −3.71 and −2.00pp on the two dispatches before last, and every arm that injects *fewer*
+items sits above it. Those cells differ in content as well as in quantity, so they cannot be read as a
+dose response. R16 holds content fixed — same store, same retrieval order, same question — and varies
+one number, the character budget the pack layer enforces. The old arms could only look down, and down
+was degenerate: 150 and 300 admit nothing, 600 admits one item on a quarter of questions, and only 1,200
+admits more than one. Two new arms, 1,800 and 2,400, make the axis 0/1/2/3/4 items.
+
+**What was built.** `chars-1800` and `chars-2400` in `CHARS_ARMS` and the optional arm table; the
+`prereg` field written into the artefact's `config` from the dispatch's own input, so a run names the
+prediction it is being judged against from inside its own file; new gates V39–V42 arrive with R15 and are
+not touched here. Two preregistrations: `prereg/R16-injection-dose.md`, and `prereg/R17-framing.md`
+for the iteration this one points at. One instrument repair: `preregGateAgreement` plus a fourth claim in
+`bin/protocol.ts`, because this stage's own header was wrong in a way nothing could catch.
+
+**Reading** (350 questions, 5 folds, 2,263 calls, dispatch `41177896801`, artefact
+`eval/results/poc-sota-bird-dose.json`; `none` at 54.00%):
+
+| Arm | Items | Characters | ACC | Δ vs `none` | 95% CI | gained / lost | p |
+|---|---|---|---|---|---|---|---|
+| `chars-600` | 0.29 | 168 | 54.00% | **+0.00pp** | [−1.43, +1.71] | 4 / 4 | 1.0000 |
+| `full` (1,200) | 1.83 | 1,080 | 51.43% | −2.57pp | [−5.43, +0.29] | 8 / 17 | 0.1078 |
+| `chars-1800` | 2.97 | 1,649 | 50.00% | **−4.00pp** | [−6.86, −1.14] | 6 / 20 | 0.0094 |
+| `chars-2400` | 4.16 | 2,212 | 51.14% | −2.86pp | [−6.00, +0.29] | 11 / 21 | 0.1102 |
+| `none-replica` | 0 | 0 | 52.57% | −1.43pp | [−2.86, +0.00] | 1 / 6 | 0.1250 |
+
+Nothing on the curve is above `none`. The best arm is the one that injects nothing; the worst is 4.00pp
+below it, which is this sample's own minimum detectable effect, so exactly one cell clears its bar and
+the spread of the whole curve is the width of the instrument.
+
+**The instrument prediction failed and the failure is the reading.** `chars-600` was registered as a
+one-item cell and it is a one-item cell on 100 of 350 questions: the pack layer takes items in rank order,
+adds a whole item or stops, and the top-ranked item renders to more than 600 characters on the other 250.
+The cell is therefore 71.4% `none` by construction, and at that dilution a per-item cost of −5.0pp or a
+per-item gain of +6.0pp both sit inside its interval. The sentence this iteration was written to license —
+*the store is not harmful, the default budget is* — cannot be licensed from a cell that is seven parts
+control.
+
+**The one-item cell exists, three iterations back.** Iteration 86 ran the same four low budgets against the
+same rules-with-the-case store and its `chars-900` reached exactly 1.00 item per question at 718
+characters, costing **−3.14pp** on a run whose `full` cell was −3.14pp at 1.87 items — within 0.6pp of
+today's 1.83-item cell. Put the two dispatches in one table and the curve is a step, not a slope:
+
+| Items | 0.27 | 0.29 | **1.00** | 1.83 | 1.87 | 2.97 | 4.16 |
+|---|---|---|---|---|---|---|---|
+| Δ vs `none` | +0.57 | +0.00 | **−3.14** | −2.57 | −3.14 | −4.00 | −2.86 |
+
+Everything above one item sits within 1.43pp across a fourfold range of injected text; the whole of the
+step is between 0.29 and 1.00. **The loss is complete at the first item.** That is the refutation clause
+arriving by a door the file did not name: it required all points within ±2pp to declare that quantity is
+not the variable, and inside one run the spread is 4.00pp, but across the two runs the substance of the
+clause holds for every point above one item. The next measurement is not another budget.
+
+**The floor moved, against this run.** Iteration 86's `none-replica` was 3 gained and 3 lost. This run's
+is 1 gained and 6 lost — seven discordant questions, −1.43pp, the first clearly negative replica on
+record. Everything at or below seven flips is noise here, which is `chars-600` (8) and the replica
+itself (7); flatness at 600 is what an unchanged question looks like rather than evidence about one item.
+And because `none` is the luckier of two identical prompts, every delta in the table overstates the harm
+by up to 1.43pp: the sign of the finding does not depend on it, the size does.
+
+**Four dispatches, one sign.** The default budget has been measured at −3.71pp (p = 0.0192), −3.14pp,
+−2.00pp (p = 0.3105) and −2.57pp (p = 0.1078) on four disjoint 350-question draws of this lane. The sign
+has held four times and the size has not; the mean is **−2.86pp**, and it is the one number here that has
+never come back positive.
+
+**One instrument defect, and it was in this stage's own paperwork.** `prereg/R16-injection-dose.md`
+shipped with R15's gate list: seven transfer gates that a dose arm set cannot emit. The file validated,
+the run passed its own ten gates, and the two disagreed — the same shape as R12's admission, R13's ledger
+and R15's V14/V17, a field that was true when written and silently stopped being true when the thing it
+described changed. It is the first instance where both halves of the claim are files in the repository, so
+it is the first one that can be checked offline: `preregGateAgreement` compares header and artefact in
+both directions, `bin/protocol.ts` pairs every artefact that names a `config.prereg` with its file, and
+the check refuses the mismatch that this stage shipped.
+
+**What is left is the item, not the count.** A budget cannot be the fix: the smallest budget that injects
+anything already costs what the default costs. Two candidates follow, and only one of them has a mechanism
+in the literature — a pack that *chooses* an item that fits rather than taking rank order and stopping, and
+a note that says something about its own fallibility. `prereg/R17-framing.md` registers the second:
+`full-advisory` (one sentence granting the model standing to ignore a note whose condition does not hold),
+`none-advisory` (the sentence with no pack, so a recovery is attributable), and `full-prohibitive` (the
+same facts classified as recorded errors, which is MemTrapBench's trauma mechanism run forward).
+
+**Green.** `pnpm check` — 1,897 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98, with `prereg.ts`
+at 100 on all four dimensions after the agreement check replaced a `??` fallback that could never run.
+Dispatch 2,263 calls, 1 retry, 0 timeouts, 0 call failures; ten gates pass and the header that names them
+is the one the artefacts are checked against.

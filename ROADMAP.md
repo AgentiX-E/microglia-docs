@@ -2223,7 +2223,7 @@ directions.
 **Cost.** 3,298 calls, 20 minutes, 1 retry, 0 timeouts; every gate pass. `pnpm check` — 1,891 tests, 104
 files, coverage 99.98 / 99.61 / 100 / 99.98.
 
-### R16 — the dose, in both directions (open)
+### R16 — the harm is at the first item, and no budget can fix it (closed 2026-10-31)
 
 **Why.** R15 closed the extraction axis. The store is injected at 1.78 items per question, `full` is
 negative in both dispatches that measured it (−2.00pp, p = 0.31; −3.71pp, p = 0.02), and every arm that
@@ -2241,3 +2241,85 @@ after, and UTILMEM measures the largest loss in the first two to eight distracto
 **Refutation.** Flat across 600–2,400 means quantity is not the variable and the next iteration is
 relevance or framing (R17) rather than a budget; rising with the dose means the negative cells were
 dispatch artefacts and the next measurement is a gate that keeps enough items to matter.
+
+**Reading** (350 questions, 5 folds, 2,263 calls, dispatch `41177896801`, `none` at 54.00%):
+
+| Arm | Items | Characters | ACC | Δ vs `none` | gained / lost | p |
+|---|---|---|---|---|---|---|
+| `chars-600` | 0.29 | 168 | 54.00% | **+0.00pp** | 4 / 4 | 1.0000 |
+| `full` (1,200) | 1.83 | 1,080 | 51.43% | −2.57pp | 8 / 17 | 0.1078 |
+| `chars-1800` | 2.97 | 1,649 | 50.00% | **−4.00pp** | 6 / 20 | 0.0094 |
+| `chars-2400` | 4.16 | 2,212 | 51.14% | −2.86pp | 11 / 21 | 0.1102 |
+| `none-replica` | 0 | 0 | 52.57% | −1.43pp | 1 / 6 | 0.1250 |
+
+**The registered instrument prediction failed, and that is the finding.** `chars-600` is a one-item cell
+on 100 of 350 questions, not on 70% of them: the pack layer takes rank order and stops, so the pack is
+empty wherever the top item renders past 600 characters. The cell is 71.4% control, and its interval
+[−1.43, +1.71] admits a per-item effect anywhere in ±5–6pp, so *the store is harmless at one item* could
+not be tested here. Iteration 86's `chars-900` — exactly 1.00 item per question, on a store whose `full`
+cell is within 0.6pp of this one — cost **−3.14pp**. With it, the curve is a step: +0.57 at 0.27 items,
++0.00 at 0.29, −3.14 at 1.00, −2.57 at 1.83, −3.14 at 1.87, −4.00 at 2.97, −2.86 at 4.16.
+
+**The refutation clause fired by a door the file did not name.** No point beats `none`, the whole spread
+is 4.00pp — this sample's own minimum detectable effect — and everything above one item sits within
+1.43pp across a fourfold range of injected text. Quantity is not the variable above the first item, so
+the next measurement is not another budget: a budget that admits anything already costs what the default
+costs.
+
+**The floor moved against this run.** The replica is 1 gained and 6 lost — seven discordant questions,
+the first clearly negative one on record, against 3 in iteration 86. Everything at or below seven flips
+is noise here, which includes the 600 cell's eight, and every delta in the table overstates the harm by
+up to 1.43pp.
+
+**One instrument defect, in this stage's own paperwork.** The prereg header shipped with R15's seven
+transfer gates, which a dose arm set cannot emit. `preregGateAgreement` and a fourth claim in
+`bin/protocol.ts` now compare a header against the artefact that names it, in both directions, for every
+committed artefact.
+
+**Consequence.** A budget cannot be the fix, so the work moves to the item: which one is retrieved
+(a selection rule rather than truncation) and how it is said (R17). The default budget's cost is now the
+mean of four disjoint dispatches — −3.71, −3.14, −2.00, −2.57pp — **−2.86pp**, all four negative.
+
+**Cost.** 2,263 calls, 1 retry, 0 timeouts, 0 call failures; ten gates pass. `pnpm check` — 1,897 tests,
+104 files, coverage 99.98 / 99.61 / 100 / 99.98.
+
+### R17 — does permission to ignore the note recover what the note costs? (open)
+
+**Why.** R16 removed the last structural explanation. The loss is complete at the first item, so no
+budget can recover it, and content, substrate and dose are all closed with a sign of zero or below. What
+has never been varied is the pack's *standing*: the notes arrive as reference data from an authority the
+model did not ask for, carrying no statement that they may not apply. The one arm family this project has
+ever measured as non-negative is the one that asks the model differently rather than giving it different
+text — `full-onretry` +1.43pp with 5 gained and 0 lost, `retry-blank` +0.57pp with 2 gained and 0 lost.
+
+**Hypothesis** (`prereg/R17-framing.md`, written before the dispatch): the harm is not the item's content
+but the absence of permission to reject it. MemTrapBench reports that every memory framework it tests
+sits below its no-memory baseline and that its mitigation is an inference-time instruction, not an
+architecture change; this project's own repair-pair arms, which record an error rather than a fact,
+were worse than the rule arms in every dispatch that measured both.
+
+**Arms.** `full-advisory` — one sentence beside the unchanged pack granting the model standing to ignore
+a note whose condition does not hold; `none-advisory` — the same sentence with no pack, so a recovery is
+attributable to the sentence rather than to 200 extra characters; `full-prohibitive` — the same facts
+classified as recorded errors, which is the trauma mechanism run forward instead of mitigated;
+`none` and `full` as controls.
+
+**Prediction.** `full-advisory` at least 2pp above `full` and no more than 1pp below `none`;
+`full-prohibitive` within 1pp of `full`; `none-advisory` within ±1.5pp of `none`; no arm 2pp above `none`.
+
+**Refutation.** `full-advisory` within 1pp of `full` means framing is not the channel, and the next
+iteration is selection — a pack that picks the highest-ranked item that fits instead of stopping at the
+first that does not — with relevance strata as its readout. `full-advisory` 2pp above `none` is the first
+positive read on this lane in nineteen iterations and is not called a gain until a second dispatch
+reproduces the sign.
+
+### R18 — a pack that chooses instead of truncating (planned, gated on R17)
+
+**Why.** R16's instrument failure is a mechanism defect, not a budget defect: `renderPack` walks rank
+order and returns an empty pack when the top item does not fit, so "one item" is unrepresentable at any
+budget smaller than the item. A selection rule — take the highest-ranked item that fits, rather than the
+highest-ranked item or nothing — makes the one-item dose measurable at full coverage, which is the cell
+every framing result in R17 has to be read against.
+
+**Blocked on.** R17's outcome: if the advisory sentence recovers the harm, the pack's size stops being
+the open question and selection follows framing; if it does not, selection precedes it.

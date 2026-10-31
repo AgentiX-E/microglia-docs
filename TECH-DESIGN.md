@@ -2933,6 +2933,52 @@ a past time* — and POC-15 stays specified for that day. This is a decision, no
 
 Each is recorded in §17.27 with a lane, a gate and an order, so none is an unowned question.
 
+### 17.50 The dose axis, and an artefact that names the prediction it is judged by
+
+**The question §17.49 left.** The content axis closed with a tie, and the only variable still standing
+was how much text arrives: `full` is negative in every dispatch that measured it and every arm injecting
+fewer items sits above it. Those cells differed in content, so nothing could be read as a dose response.
+R16 changes one number per arm — the character budget `makePack` enforces — and holds the store, the
+ranking and the question fixed.
+
+**Why the axis is items and not characters.** `renderPack` walks the ranked list, adds a whole rendered
+line or skips it, and returns `''` when not one line fits. An item measures 500–824 characters on this
+store (median 582), so a budget is a step function: 150 and 300 admit nothing, 600 admits one item on
+28.6% of questions, 1,200 admits 1.83, and the axis only becomes 0/1/2/3/4 with `chars-1800` and
+`chars-2400` added. A dose response is read in `mean_pack_ids`; the budget that produced it is recorded
+beside it and is not the reading.
+
+**The prefix property is what makes the points nested rather than independent.** `chars-600` is a prefix
+of `chars-1200` from the same ranking — extra text is appended, never substituted — so a difference
+between two points is a difference in how much arrived, not in which items were retrieved. The price is
+that a budget cannot express "the one item that fits": selection is a different operation from truncation
+and R16 exposes it as such rather than papering over it with a smaller number.
+
+**The prediction travels with the outcome.** `bin/sota-bird.ts` reads `SOTA_PREREG` and writes
+`config.prereg` into the artefact, so a run names the file it is being judged against from inside its own
+JSON, and `preregGateAgreement` in `prereg.ts` compares that file's header against the artefact in both
+directions:
+
+| Header field | Artefact field | Comparison |
+|---|---|---|
+| `arms` | `config.arms` | set equality, checked by `eval:prereg` against the file alone |
+| `gates` | `gates[].id` | equality in both directions, with the id's `-slug` stripped to its code |
+| `sample` | `n.total` | equality, by the run's own gates |
+
+**Both halves are files, so the pairing is checked offline.** `bin/protocol.ts` gained a fourth claim:
+for every committed artefact whose `config.prereg` is a string, read that file, require it to validate,
+and require its `gates` to equal what the run emitted. Neither side can check itself — a dispatch holds
+the artefact, `eval:prereg` holds the header — and R16 shipped a header copied from R15 that named seven
+transfer gates a dose arm set could never emit. That is the fourth instance of the same defect (R12's
+admission, R13's ledger, R15's V14/V17) and the first one where the repository holds both sides, so this
+one is refused rather than narrated.
+
+**What it refuses.** A gate the file names and the run never emitted; a gate the run emitted and the file
+never named; a `config.prereg` naming a file that is not in the repository; and a file that is not a
+pre-registration. A gate id in an artefact is `V17-net-sign` and in a header `V17`, so the comparison
+strips the slug — a gate whose id carries no slug is already a code, which is why the separator is
+searched for rather than assumed.
+
 ---
 
 ## 18. Acceptance criteria

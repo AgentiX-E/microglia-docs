@@ -307,3 +307,88 @@ not.
 instrument-defect run, kept for §10.2). `pnpm check`: 1,891 tests, 104 files, coverage
 99.98 / 99.61 / 100 / 99.98, `sota.ts` 100 on all four dimensions. CI: `8875708` (fixes) and `d3bee4d`
 (result and documentation) both green.
+
+## 11. Addendum — R16 (2026-10-31)
+
+R16 asked whether the harm is a property of what is stored or of how much of it arrives. It is a property
+of neither above the first item: the curve is a step, and the step is at one.
+
+**11.1 The registered instrument prediction failed, and no delta from that cell may be quoted.** The
+pre-registration called `chars-600` a one-item cell and required one item on ≥70% of questions. It is one
+item on 100 of 350. `renderPack` walks the ranked list and adds a whole line or stops, and this store
+renders an item at 500–824 characters, so the top-ranked item overruns a 600-character budget on 250
+questions and the pack is empty. The cell is 71.4% control by construction, and its interval
+[−1.43, +1.71] admits a per-item effect anywhere in ±5–6pp. **Any reading of the form "one item is
+harmless" is unsupported by this artefact**, including the one the stage was written to license.
+
+**11.2 The cell that was missing exists in an earlier dispatch, and it is not harmless.** Iteration 86
+ran the same budgets against the same rules-with-the-case store and its `chars-900` reached exactly 1.00
+item per question (718 characters), at −3.14pp [−6.29, −0.29], 9 gained and 20 lost, on a run whose `full`
+cell was −3.14pp at 1.87 items — within 0.6pp of this run's 1.83-item cell. Read as one curve:
+
+| items per question | 0.27 | 0.29 | 1.00 | 1.83 | 1.87 | 2.97 | 4.16 |
+|---|---|---|---|---|---|---|---|
+| Δ vs no memory | +0.57 | +0.00 | −3.14 | −2.57 | −3.14 | −4.00 | −2.86 |
+| runs | 86 | R16 | 86 | R16 | 86 | R16 | R16 |
+
+Everything above one item sits within 1.43pp across a fourfold range of injected text. **The loss is
+complete at the first item**, which fires the refutation clause in substance — quantity is not the
+variable — rather than in the letter, since the clause was written for a single run whose spread is
+4.00pp.
+
+**11.3 The floor moved, against this run, and it changes what can be said.** Iteration 86's `none-replica`
+was 3 gained and 3 lost. R16's is 1 gained and 6 lost: seven discordant questions, −1.43pp, the first
+clearly negative replica on record.
+
+| Run | replica gained / lost | floor (discordant) | smallest cell that clears |
+|---|---|---|---|
+| 86 | 3 / 3 | 3 | — |
+| R16 | 1 / 6 | 7 | 26 discordant (−4.00pp, p = 0.0094) |
+
+Two consequences. The 600 cell's eight discordant pairs are inside the floor, so its flatness is
+indistinguishable from an unchanged question. And because no memory is the luckier of two identical
+prompts here, every delta in the run overstates the harm by up to 1.43pp — the sign of the finding does
+not depend on it, the size does. The default budget's cost is quoted as the mean of four disjoint
+dispatches (−3.71, −3.14, −2.00, −2.57pp → **−2.86pp**) rather than as any single cell.
+
+**11.4 One instrument defect, and it was in this stage's own paperwork.** `prereg/R16-injection-dose.md`
+shipped with R15's `gates` line: seven transfer gates — V13, V14, V15, V16, V17, V33 — that a dose arm
+set cannot emit. The file validated, the run passed its own ten gates, and nothing compared them. That is
+the fourth instance of the class this audit has recorded at §2, §8.1, §9.3 and §10.2, and the first in
+which both halves of the claim are files in the repository rather than one file and one runtime.
+`preregGateAgreement` compares the two lists in both directions with the artefact id's slug stripped to
+its code, and `bin/protocol.ts` applies it to every committed artefact that names a `config.prereg`:
+a gate the file names and the run never emitted, a gate the run emitted and the file never named, a
+`config.prereg` naming a file that is not in the repository, and a file that is not a pre-registration all
+fail the gate. The header was corrected in the same commit as the outcome, and the corrected header is the
+first thing the new check accepts.
+
+**11.5 Claims that change.**
+
+| Claim | Status after R16 |
+|---|---|
+| "The default budget is wrong by a single item" (R16's stated licence) | **refuted**: the one-item cell costs what the default costs, and the cell meant to show otherwise was 71% control |
+| "The harm grows with the dose" (R16's prediction) | **refuted above one item**: 1.00 → 4.16 items moves the number by 1.43pp, inside the floor |
+| "The first two to eight distractors carry the loss" (UTILMEM, as applied in §3.6.16) | **sharpened**: the first *one* carries all of it in this lane, which is a stronger statement than the paper's window and is measured on one cell in iteration 86 plus four in R16 |
+| "`full` costs about three points" (four dispatches) | **stands, and is now a mean**: −3.71, −3.14, −2.00, −2.57pp → −2.86pp, one sign, four draws |
+| "A smaller budget is the cheap fix" | **closed**: the smallest budget that injects anything already costs the default's price |
+| "A pre-registration is checkable against its run" | **new**: true for the first time, offline, for every artefact that names a file |
+
+**11.6 What is still not verified.**
+
+1. **Whether one item is harmful at full coverage in the *current* store.** The −3.14pp one-item reading is
+   iteration 86's, four iterations and one distillation pipeline away; its `full` cell matches this run's
+   within 0.6pp, which is a reason to read them together and not a proof that the stores are the same.
+   R18's selection rule is the instrument that would measure it on today's store.
+2. **Whether the harm is relevance rather than every item.** The pack injects the top-ranked items and the
+   ranking is the store's own; a one-item cell built from the *best* item and a one-item cell built from an
+   arbitrary item have never been compared, and R16 shows the difference between them would be resolvable
+   only at full coverage.
+3. **Whether the endpoint's floor is drifting.** The replica moved from 3 discordant questions to 7 between
+   iteration 86 and now, on the same lane and the same prompt. One observation is not a trend, and it
+   changes the resolution of every cell in this document if it holds.
+
+**11.7 Reproducibility.** `prereg/R16-injection-dose.md`, artefact
+`eval/results/poc-sota-bird-dose.json`, dispatch `41177896801` (success, 2,263 calls, 1 retry, 0
+timeouts, 0 call failures, ten gates pass). `pnpm check`: 1,897 tests, 104 files, coverage
+99.98 / 99.61 / 100 / 99.98, `prereg.ts` and `sota.ts` 100 on all four dimensions.

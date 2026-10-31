@@ -262,7 +262,7 @@ about SQL — which is why they were missed for eleven iterations:
 | Source | Finding | What it predicts for us |
 |---|---|---|
 | Context-poisoning analysis (softmax retrieval abstraction) | the decisive-evidence score is capped while the strongest distractor's score grows with the number of distractors; holding accuracy above chance requires the evidence margin to grow as Ω(√log N) in the **effective distractor count**, not in context length | harm is a function of **how many items** compete, and the loss is steep while N is small — a dose curve, not a content axis |
-| **UTILMEM** (arXiv 2608.30508) | with evidence recall fixed at 1.0, strong semantically similar distractors drop quality; the largest loss is in the **first two to eight**, then it plateaus, and fewer than ~2.5 strong distractors suffice for a 25% reduction | our default injects 1.78 items — inside the window where the loss is nearly complete, which is why every filtered arm sits above `full` |
+| **UTILMEM** (arXiv 2608.30508) | with evidence recall fixed at 1.0, strong semantically similar distractors drop quality; the largest loss is in the **first two to eight**, then it plateaus, and fewer than ~2.5 strong distractors suffice for a 25% reduction | our default injects 1.83 items — past the window rather than inside it: R16 puts the whole loss at **one** item (−3.14pp at exactly 1.00 item), which is why every filtered arm sits above `full` |
 | **MemTrapBench** (arXiv 2608.20202) | across two model families and five memory frameworks, **every memory strategy is below its no-memory setting**, the strongest by more than 10pp; the trap strength scales with memory length; the degradation is driven by memory *semantics* rather than length alone | our −2.00 and −3.71pp are not an anomaly; a memory layer that is merely faithful is expected to be negative. Its two trap classes — reasoning fixation and belief distortion — name what an injected correction can do to a query |
 | **Lost in the middle** (Liu et al., 2024) | retrieved context is not an unconditional asset; under adversarial placement it can fall below answering with no context | our packs are always before the question, so placement is the one axis this protocol has never varied |
 
@@ -278,6 +278,20 @@ and every rule is phrased as what the attempt got wrong. If the trauma mechanism
 setting, the store is teaching avoidance as much as it is teaching technique, and no amount of scope
 filtering or gate admission would show it — the phrasing would have to change while the content stayed
 fixed.
+
+**R16 put a number on the window, and the number is one.** The distractor-count bound predicts a steep
+loss while N is small and a plateau after, and both halves held: 0.29 items per question costs +0.00pp,
+1.00 costs −3.14pp, 2.97 costs −4.00pp and 4.16 costs −2.86pp, so a fourfold range of injected text above
+the first item moves accuracy by 1.43pp. What did not hold is the paper's lower bound. UTILMEM puts the
+largest loss in the first *two* to eight distractors; on this store and this lane the whole of it is
+already present at **one**, which is a stronger statement than the published window and is measured on one
+cell from iteration 86 (exactly 1.00 item per question) plus four from R16. The practical difference is
+the same in both directions: at 1.8 items the shipped configuration is not near the safe end of the curve,
+it is past it.
+
+**AdaptiveMem is the one published intervention this project has not yet tested on itself**, and R17 is
+that test — with a control the paper does not report, an arm carrying the instruction and no pack, so a
+recovery cannot be attributed to 200 characters of extra prompt rather than to the permission they grant.
 
 ---
 
