@@ -1079,6 +1079,54 @@ failed query, corrected query, and the failure that separated them — instead o
 pair, and submits itself to the same probe. The instrument that produced this reading is the one that
 will judge the successor, which is what makes it an iteration rather than a search.
 
+### 3.6.15 The sentence loses the pair, and the pair does not fix the product
+
+§3.6.14 ended with a claim about a *substrate*: a distilled sentence about a correction loses the query
+pair that made the correction mechanical. That claim was an interpretation of one column. The
+alternative — the `repair` distiller, which renders the question, the attempt, the correction and the
+observed failure into three sentences — had been measured three times as a whole pack (−5.14pp,
+−4.86pp, −5.71pp) and never as a store asked to reproduce its own corrections. A reproduction rate and
+an accuracy delta are not commensurable, so the project had no way to say whether the form was wrong
+or the delivery was.
+
+R14 gives the pair the same instrument. Both stores are built from the same 303 corrected cases, probed
+with the same 1,200-character pack budget, and compared on the *same* source questions with one shared
+control each — the blank retry prompt does not depend on the store, and 16.4% of questions come back
+with a different query under the same prompt, so paying for a second control would put that noise
+inside the difference the pairing exists to isolate.
+
+| | rule | repair |
+|---|---|---|
+| reproduced its own correction | **30.69%** | **53.80%** |
+| `supplied` | 19.5% | 42.2% |
+| broke its own case | 11 | 10 |
+| admitted by the gate | 20.0% | 42.2% |
+| items without a home database | 16.3% | 10.6% |
+
+Paired McNemar over the 303 shared cases: **+23.10pp, p = 1.05e-14**, 80 discordant pairs to the repair
+and 10 to the rule, and five folds out of five positive (+23.08, +22.95, +22.03, +28.81, +18.64pp, each
+p < 0.01 on its own).
+
+**So the substrate claim was right and it does not matter.** `full-repair-verified` — the repair store
+under the same admission rule that produced §3.6.13's 12–20% — answered **52.86% against 53.14%**
+(−0.29pp, one question of 350) while carrying 0.31 items per question. A store that reproduces half of
+what it was learned from moves the product by nothing, and the gap between those two facts is the
+finding: **reproduction is a property of the extraction, and an accuracy cell is a property of what the
+extraction is worth on questions the store was not written from.**
+
+It also removes an explanation rather than adding one. Three iterations have now varied the thing the
+store *says*: a sentence (§3.6.13), a procedure with the case removed (measured as an arm and
+never probed), and now the pair itself. The sentence has been probed three times and reproduces its own
+corrections at 12.2%, 19.9% and 30.7% depending on the learn sample and on whether the cases a retry
+already fixed are counted; the pair reaches 53.8%. Every arm built from any of them is inert within
+±3pp. The extraction is not what limits this design.
+
+**One number that bounds every transfer measurement.** 16.3% of the rule store's items and 10.6% of the
+repair store's carry no `scope.domain`, so they cannot be pointed at a foreign question at all — R13
+lost 20 of 118 admitted rules to a field the host knows and the model merely echoes. It is reported
+rather than repaired here, because filling it changes which rules `full` injects and would make every
+earlier cell incomparable; the repair is R16's, with the ceiling measured first.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

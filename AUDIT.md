@@ -202,3 +202,42 @@ artefact that carries it, and a field nobody checks can be absent.**
 | "An admitted store is harmless but inert" (§3.6.13) | **narrowed**: harmless at 0.42 rules per question (+1.14pp, p=0.34), and inert once the transfer gate is intersected with it (0.03 rules per question, 0.00pp) |
 | C20–C23 (knowledge that transfers is convention) | unchanged; R13 measures within-database transfer on a benchmark whose gold has no convention, so it neither supports nor contradicts them |
 | Any SOTA claim | unchanged: stopped on BIRD (§2), and R13 removes the last memory-axis hypothesis that would have reopened it without new data |
+
+## 9. Addendum — R14 (2026-10-31)
+
+R14 asked a question that had only ever been answered by interpretation: is the substrate the defect, or
+the delivery? It answered it, and the answer separates two things this project had been treating as one.
+
+**9.1 A claim confirmed at the resolution it was made.** R13 wrote that a sentence about a correction
+loses the query pair. Measured against the pair-rendering distiller on 303 shared source questions with
+one shared control each, the sentence reproduces 30.69% of its own corrections and the account 53.80%:
++23.10pp, p = 1.05e-14, five folds out of five positive. The claim was correct, and it is now a number.
+
+**9.2 The claim does not license a product statement, and the documents say so.** `full-repair-verified`
+— the same store under the same admission rule — answered 52.86% against 53.14%, one question of 350,
+carrying 0.31 items per question. Any document that quoted the +23pp without the −0.29pp would be
+reporting the extraction as if it were the product. The rule this addendum records: **a rate about the
+store and a cell about the arm are two different measurements, and this project will not let one stand in
+for the other** — the same discipline §8.3 applied to the conditional transfer rate.
+
+**9.3 Two instrument decisions that changed the number's meaning.**
+
+1. **The control is shared, not re-measured.** The blank retry prompt does not depend on the store, so
+   paying for it twice would have put the endpoint's own re-sampling (16.4% of questions return a
+   different query under the same prompt) inside the difference the pairing exists to isolate. Holes are
+   carried as holes rather than re-asked, for the same reason: a control that returned on the second
+   attempt is not the control the first substrate was scored against.
+2. **The paired set is reported, not assumed.** Both stores held a rule for all 303 corrected cases, so
+   the exclusion is zero and V36 is satisfied trivially. That is a fact about this run and not a property
+   of the design: the set is chosen by the stores, and the gate makes its size a reading rather than an
+   assumption the next run can inherit.
+
+**9.4 Claims that change.**
+
+| Claim | Status after R14 |
+|---|---|
+| "Two corrections in three cannot reproduce themselves" (§3.6.13) | **brackets to 12–31%**: 12.2% supplied at `learn_sample` 64, 19.5% at 128, and 30.7% once the cases a retry already fixes are counted. No document may quote a single figure as the store's reproduction rate without saying which denominator it is |
+| "The extraction is the wrong shape" (§3.6.14) | **confirmed as a description, refuted as a constraint**: the pair-rendered store reproduces 53.8% and moves the arm by one question, so what a store can reproduce does not bound what it can teach |
+| "An admitted store is inert" (§3.6.13, §3.6.14) | **stands for a third content form**: `full-verified` +1.14pp, `full-repair-verified` −0.29pp, both on stores whose reproduction rates differ by 23pp |
+| Any SOTA claim | unchanged: stopped on BIRD (§2). R14 removes the last content-axis hypothesis that could have reopened it without new data, which narrows rather than widens what a next dispatch could claim |
+| `scope.domain` as a transfer ceiling | **new and quantified**: 16.3% of rule items and 10.6% of repair items have no home database, so no transfer measurement can speak for the whole store. Filling it is deferred because it would change the `full` baseline; the ceiling is published first |

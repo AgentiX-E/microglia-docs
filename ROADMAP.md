@@ -2126,3 +2126,51 @@ submit it to the same probe with the same admission rule.
 **Cost.** 2,679 calls, 20 minutes, 1 retry, 0 timeouts. Artefact:
 `eval/results/poc-sota-bird-transfer.json` (dispatch 41157635856). `pnpm check` — 1,860 tests, 103
 files, coverage 99.98 / 99.61 / 100 / 99.98.
+
+### R14 — the substrate, measured against itself (2026-10-31)
+
+**Why.** R13 closed on a claim about a substrate and one column of evidence for it. The `repair`
+distiller — three sentences comparing the failed attempt with the correction — had been measured three
+times as a whole pack (−5.14, −4.86, −5.71pp, p ≤ 0.014) and never as a store asked to reproduce its own
+corrections. A reproduction rate and an accuracy delta are not commensurable, so "the form is wrong" and
+"the delivery is wrong" had never been separated.
+
+**Built.** `probe-pair.ts` (paired McNemar over the questions both stores covered, with the exclusive
+sets and the holes counted rather than absorbed), a shared control per source question so the two
+substrates differ in exactly one thing, the arm `full-repair-verified` (R12's admission rule applied to
+the repair store), one `probeArtefact` projection used by both substrates, and five gates: V34 (cells,
+rates and delta reconcile), V35 (a small paired set is a direction), V36 (the size of the exclusion is a
+reading), V37 (the repair store's buckets reconcile), V38 (its gate changed a pack). Pre-registration:
+`prereg/R14-substrate-pair.md`.
+
+**Reading** (Mini-Dev, k=5, 350 questions, `learn_sample` 128, 2,490 calls, dispatch `41165067200`,
+artefact `eval/results/poc-sota-bird-substrate.json`):
+
+| Reading | rule | repair | Predicted |
+|---|---|---|---|
+| reproduced its own correction | 30.69% | **53.80%** | Δ ≥ +10pp ✅ |
+| paired delta (303 shared, 0 holes, 0 exclusive) | — | **+23.10pp**, p = 1.05e-14 | ✅ |
+| discordant pairs | 10 | 80 | — |
+| `broke` | 11 | 10 | not lower ✅ (one case) |
+| admitted | 118 of 590 (20.0%) | 128 of 303 (42.2%) | — |
+| items without a home database | 16.3% | 10.6% | 8–20% ✅ |
+| gated arm | `full-verified` 54.29% (+1.14pp) | `full-repair-verified` 52.86% (−0.29pp) | \|Δ\| ≤ 3pp ✅ |
+
+Five folds, five positive deltas: +23.08, +22.95, +22.03, +28.81, +18.64pp, each p < 0.01.
+
+**The prediction held and the product did not move.** A store that reproduces half of what it was
+learned from answers one question of 350 differently. That is not a contradiction: reproduction is a
+property of the extraction, and an accuracy cell is a property of what the extraction is worth on
+questions the store was not written from. Three content forms have now been measured as arms — a
+sentence, a procedure with the case removed, and the pair — and all three are inert within ±3pp; the two
+that were probed reproduce 12–31% (sentence, three runs) and 53.8% (pair) of their own corrections.
+**The extraction is no longer an available explanation**, and that is what R14 buys the next stage.
+
+**Consequence.** R15 measures the repair substrate's *transfer* with R13's instrument, because the one
+question R14 cannot answer is the one that decides the product: whether a store that reproduces twice as
+much also repairs questions it was not written from, at better than R13's 7.3% repair against 50%
+damage. R16 then fills `scope.domain` from the run input, which 16.3% of rule items and 10.6% of repair
+items are currently missing — a field the host knows and the model merely echoes.
+
+**Cost.** 2,490 calls, 22 minutes, 1 retry, 0 timeouts; every gate pass. `pnpm check` — 1,889 tests, 104
+files, coverage 99.98 / 99.61 / 100 / 99.98; `probe-pair.ts` 100 on all four dimensions.

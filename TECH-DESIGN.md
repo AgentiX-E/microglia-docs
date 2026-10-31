@@ -3640,3 +3640,69 @@ same admission rule, so that the successor is judged by the instrument that prod
 
 **Cost.** 2,679 calls, 20 minutes, 1 retry, 0 timeouts, 0 call failures; the probe is 592 of those
 calls and the transfer 523. Every gate passes, including the two blocking ones this iteration touched.
+
+### 17.48 The comparison the substrate question needed, and the arm it does not move
+
+**The question §17.47 left.** R13 closed with a claim about a substrate and one sentence of evidence for
+it. The `repair` distiller — three sentences comparing the failed attempt with the correction — had
+been measured only as a whole pack (−5.14pp p = 0.0021, −4.86pp p = 0.0137, −5.71pp p = 0.0012), never
+as a store asked to reproduce its own corrections. A reproduction rate and an accuracy delta cannot be
+compared, so "the form is wrong" and "the delivery is wrong" were indistinguishable. Pre-registration:
+`prereg/R14-substrate-pair.md`, written before the dispatch; outcomes recorded in the same file.
+
+**The instrument.** `probe-pair.ts`, a pure function of two trial lists:
+
+1. `compareSubstrates` pairs the two probes on the source questions **both** stores covered and runs
+   `comparePaired` (McNemar exact + bootstrap interval) over the discordant pairs. The exclusive
+   questions on each side and the holes are counted separately, never folded into the 2×2.
+2. `reproducedBy` is the one place a verdict becomes a boolean — `supplied` and `redundant` are "came
+   back", `broke` and `useless` are not, a hole stays a hole — and it is a `Record` over the verdict
+   union so a verdict added later is a compile error rather than a silent omission.
+3. `poolSubstrates` adds the folds and recomputes the rates from the summed cells. A mean of per-fold
+   rates would give a 59-question fold the same weight as a 65-question one; more importantly, the
+   stratified sum is what lets four folds of ±60 pair into a 303-question reading.
+4. `SUBSTRATE_FLOOR` = 100 paired questions keeps a smaller result a direction.
+
+**One control, shared.** `probeMemory` now takes the blank verdicts already measured and writes back
+the ones it paid for. The blank prompt is built from the question, the attempt and the observed failure
+— none of which depend on the store — so re-asking it would only re-sample the endpoint, and 16.4% of
+questions return a different query under the same prompt. A hole is carried as a hole rather than
+re-asked, because a control that returned on the second attempt is not the control the first substrate
+was scored against.
+
+**The second arm.** `full-repair-verified` runs the repair store under R12's admission rule unchanged.
+V37 reconciles its four buckets against the store it was given, V38 asks whether its gate changed any
+held-out pack, V34 makes the cells, both rates and the delta reconcile, V35 keeps a small paired set a
+direction, and V36 makes the size of the exclusion a reading. `probeArtefact` is one projection used by
+both substrates, so the two blocks cannot drift in a field name or a denominator.
+
+**The reading.** Dispatch `41165067200`, artefact `eval/results/poc-sota-bird-substrate.json`: 350
+questions, 5 folds, 2,490 calls, 1 retry, 0 timeouts, 0 call failures, every gate pass.
+
+| | rule | repair |
+|---|---|---|
+| store items | 590 | 303 |
+| reproduced its own correction | **30.69%** (93/303) | **53.80%** (163/303) |
+| `supplied` / `redundant` / `broke` / `useless` | 59 / 34 / 11 / 199 | 128 / 35 / 10 / 130 |
+| admitted (kept / unsupported / broke its source) | 118 / 450 / 22 | 128 / 165 / 10 |
+| items without `scope.domain` | 96 (16.3%) | 32 (10.6%) |
+| injected after the gate | 127 items | 109 items |
+| arm accuracy | `full-verified` 54.29% (+1.14pp) | `full-repair-verified` 52.86% (−0.29pp) |
+
+Paired: 303 shared, 0 holes, 0 exclusive; both 83, only-rule 10, only-repair 80, neither 130;
+**+23.10pp, p = 1.05e-14**, verdict `right`. Per fold: +23.08, +22.95, +22.03, +28.81, +18.64pp, each
+p < 0.01.
+
+**Two facts that must be quoted together.** The pair reproduces nearly twice as much of what it was
+learned from, and the arm built from it answers one question of 350 differently. The first confirms
+R13's hypothesis at the resolution R13 stated it; the second says the hypothesis was not the binding
+constraint. Since §3.6.13's 12–20% store, the procedure store and now the 54% store are all inert within
+±3pp, the extraction is the one explanation three iterations of evidence have eliminated — which is what
+moves R15 to the repair substrate's *transfer* rather than to a fourth content form.
+
+**Cost.** 2,490 calls, 22 minutes, 1 retry, 0 timeouts. The generation cache records 162 misses
+against 1,118 hits, because both stores per fold are learned from the same generations — the second
+construction pays local store writes and one distillation, not another 128 calls. The probe is 909
+calls for two substrates — 303 controls paid once, then 303 treatments each — against 592 for a single
+substrate: the shared control is what makes the second substrate cost one call per case rather than
+two, and it keeps the endpoint's own re-sampling out of the difference.

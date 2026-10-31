@@ -18,6 +18,7 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R11 Link binding | **refused pre-dispatch** — 62.3% withheld, and 60% of those are a column the target database does not have; the wall is vocabulary, not structure | R12: ask the store to prove itself |
 | R12 Own-case probe | **closed** — 12.2% of corrections are reproduced with their own rules, 66% not reproduced at all; the deficit is the extraction | R13: does an admitted rule repair a different question? |
 | R13 Admitted-rule transfer | **closed** — 7.3% of the questions that need help are repaired, 50% of those that do not are broken; both gates leave 10 items over 350 questions | R14: render the pair instead of the sentence |
+| R14 Substrate comparison | **closed** — the pair reproduces 53.8% of its own corrections against the sentence's 30.7% (+23.10pp, p = 1e-14), and the arm built from it moves the product by one question of 350 (−0.29pp); the extraction is no longer a live explanation | R15: does the pair *transfer*? |
 
 ## Iteration log
 
@@ -6137,3 +6138,67 @@ it.
 
 **Green.** `pnpm check` — 1,860 tests, 103 files, coverage 99.98 / 99.61 / 100 / 99.98; the dispatch
 2,679 calls, 1 retry, 0 timeouts, every gate pass including `V13`, `V15`, `V17` and `V33`.
+
+### 123 — The pair reproduces twice as much, and the product does not move
+
+**Question.** R13 ended on a claim about a substrate: a distilled sentence loses the query pair that
+made the correction mechanical. The claim was an interpretation of one column, and the alternative had
+never been measured with the same instrument — the `repair` distiller renders question, attempt,
+correction and observed failure into three sentences and had only ever been measured as a whole pack
+(−5.14pp, −4.86pp, −5.71pp across three runs). A reproduction rate and an accuracy delta cannot be
+compared, so "the form is wrong" and "the delivery is wrong" were the same sentence with two readings.
+
+**What was built.** `probe-pair.ts`: `compareSubstrates` pairs two probes on the source questions both
+stores covered and runs McNemar's exact test over the discordant pairs; `reproducedBy` is the one place
+a verdict becomes a boolean; `poolSubstrates` adds the folds and recomputes rates from the summed cells
+rather than averaging per-fold rates. `probeMemory` now takes the blank verdicts already measured and
+writes back the ones it paid for — the control is the same call under both substrates, and 16.4% of
+questions return a different query under the same prompt, so a second control would put that noise
+inside the difference. `full-repair-verified` is R12's admission rule applied to the repair store. Five
+gates: V34 (cells, rates and delta reconcile), V35 (a small paired set is a direction), V36 (the size of
+the exclusion is a reading), V37 (the repair store's buckets reconcile), V38 (its gate changed a pack).
+Pre-registration: `prereg/R14-substrate-pair.md`, outcome recorded in the same file.
+
+**Reading** (350 questions, 5 folds, `learn_sample` 128, 2,490 calls, dispatch `41165067200`):
+
+| | rule | repair |
+|---|---|---|
+| store items | 590 | 303 |
+| reproduced its own correction | 30.69% | **53.80%** |
+| `supplied` / `redundant` / `broke` / `useless` | 59 / 34 / 11 / 199 | 128 / 35 / 10 / 130 |
+| admitted | 118 (20.0%) | 128 (42.2%) |
+| items without `scope.domain` | 96 (16.3%) | 32 (10.6%) |
+| gated arm | `full-verified` 54.29% (+1.14pp) | `full-repair-verified` 52.86% (−0.29pp) |
+
+Paired: 303 shared, 0 holes, 0 exclusive; both 83, only-rule 10, only-repair 80, neither 130;
+**+23.10pp, p = 1.05e-14**. Five folds, five positive deltas (+23.08, +22.95, +22.03, +28.81, +18.64pp),
+each p < 0.01.
+
+**All five predictions held, including the one that says the finding is smaller than it looks.** The
+substrate delta was predicted ≥ +10pp and is +23.10; `broke` was predicted not to fall and fell by one
+case of 303; the gated arm was predicted within ±3pp of no memory and is −0.29pp; the domain omission
+was predicted at 8–20% and is 16.3% and 10.6%.
+
+**What the two numbers mean together.** The account reproduces nearly twice as much of what it was
+learned from, and an arm built from it answers one question of 350 differently. That is not a
+contradiction but the separation this iteration was designed to make: **reproduction is a property of the
+extraction; an accuracy cell is a property of what the extraction is worth on questions the store was not
+written from.** The first confirms R13's hypothesis at the resolution R13 stated it. The second removes
+the hypothesis as the binding constraint.
+
+**Why that is progress rather than a null.** Three content forms have now been measured as arms — a
+sentence, a procedure with the case removed, and the pair — and all three are inert within ±3pp, while
+the two that were probed reproduce 12–31% and 53.8% of their own corrections. A design that has
+eliminated the extraction is one that can no longer spend its next dispatch on distillation, and the
+next question is the one R14 cannot answer: whether a store that reproduces twice as much also repairs
+questions it was not written from, at better than R13's 7.3% against 50% damage.
+
+**One ceiling measured, not repaired.** 16.3% of the rule store's items carry no `scope.domain` and can
+never be pointed at a foreign question; the repair store loses 10.6%. The host knows this value — it is
+in the run input the distiller was shown — and the model only echoes it, which is the same class of
+defect as `reasonCodeOf` before it was fixed. It is reported here rather than filled, because filling it
+changes which rules `full` injects and would make every cell in this file incomparable overnight.
+
+**Green.** `pnpm check` — 1,889 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98, `probe-pair.ts`
+100 on all four dimensions; the dispatch 2,490 calls, 1 retry, 0 timeouts, every gate pass including
+V34, V35, V36, V37 and V38.
