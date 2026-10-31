@@ -15,6 +15,9 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R1–R9 (research lines) | **closed** — R9 closed on its own refutation condition | — |
 | R8 Protocol as a deliverable | **closed**; R8.3b **closed** — `reproduced` at 57.63% on 1,534 questions (+4.11pp, tolerance 4.97) | nothing; the dev artefact is committed and the gate recomputes the row |
 | R10 Migrate the structure | **refused pre-dispatch** — 66.8% of the family cannot bind, above its own 60% kill condition; hypothesis untested | R11: bind to the target's schema links instead of to spelling |
+| R11 Link binding | **refused pre-dispatch** — 62.3% withheld, and 60% of those are a column the target database does not have; the wall is vocabulary, not structure | R12: ask the store to prove itself |
+| R12 Own-case probe | **closed** — 12.2% of corrections are reproduced with their own rules, 66% not reproduced at all; the deficit is the extraction | R13: does an admitted rule repair a different question? |
+| R13 Admitted-rule transfer | **closed** — 7.3% of the questions that need help are repaired, 50% of those that do not are broken; both gates leave 10 items over 350 questions | R14: render the pair instead of the sentence |
 
 ## Iteration log
 
@@ -6072,3 +6075,65 @@ pins the distinction. A stand-in endpoint exercised the arm end to end before th
 
 **Green:** `pnpm check` — 1,853 tests, 103 files, coverage 99.98 / 99.60 / 100 / 99.98; the dispatch
 1,445 calls, 0 retries, 0 timeouts, 11 minutes, every gate pass including V13 (blocking).
+
+### 122 — The rule travels, and it breaks as often as it repairs
+
+**Question.** R12 put the store on trial and two thirds of the corrections could not be reproduced even
+with their own rules in the prompt. It left the product's question untouched: does a rule that *does*
+reproduce its own case repair a question it was not written from? Without that number, "the store is
+too small" and "the substrate is empty" are indistinguishable, and the next stage is a guess.
+
+**The instrument existed and had never run.** `TransferTrial` and `transferSummary` have been in
+`rule-probe.ts` since the probe was written; no run had dispatched them. R13 pointed each admitted rule
+at up to eight other *corrected* questions from its own database — a target that was never wrong has
+nothing to repair — with the target's blank measured once and reused, which is what makes the draw
+affordable. Pre-registration: `prereg/R13-admitted-transfer.md`, written before the dispatch.
+
+**Two defects fixed on the way in.**
+
+1. `TransferTrial.blankCorrect` was a `boolean`, so a control call that never returned was recorded as
+   "the retry alone was wrong" — the exact set that makes a repair attributable. A rule that then
+   repaired such a target was credited with work nobody measured. The field is `boolean | undefined`,
+   both halves must have returned, `transferringItemIds` needs an explicit `false`, and
+   `unmeasuredBlank` says how many holes are on the control side.
+2. The pairs were written into the fold record, which the artefact does not serialise: the rate would
+   have shipped with no rows behind it. `transferLedgerOf` projects them where the artefact reads, and
+   `V33-transfer-ledger` is blocking — a file with the summary and not the pairs fails the run.
+
+**Reading** (350 questions, 5 folds, `learn_sample` 128, 2,679 calls, dispatch `41157635856`,
+artefact `eval/results/poc-sota-bird-transfer.json`):
+
+| Reading | Value |
+|---|---|
+| own-case probe | 296 corrected cases: `supplied` 59 (19.9%), `redundant` 40, `broke` 7, `useless` 190 |
+| admission | 118 of 576 rules kept; `V13` reconciles 576/576 |
+| transfer | 523 trials, 467 informative, **34 repaired — 7.3%** |
+| damage | 56 targets needed nothing, **28 broken — 50.0%** |
+| net | **+1.15pp** over 523 trials — six trials |
+| both gates | 30 rules, 10 items over 350 questions — **0.03 per question** |
+| arms | none 53.71%, full 49.14% (−4.57pp, p=0.0070), full-verified 54.86% (+1.14pp), full-transferred 53.71% (0.00pp) |
+
+**Two predictions failed, both in the informative direction.** The rate was predicted ≤6% and measured
+7.3%; "at most four rules repair anything" was predicted and thirty did. Single-correction distillation
+produces knowledge that generalises — rarely, and with a price the design had never priced at this
+resolution: half of the questions that needed no help came back wrong once a rule was in the prompt.
+
+**What the failure of both refutation clauses means.** The pre-registration said ≥15% would send the
+next stage to "more data" and ≤1% to "a new substrate". The measurement sits between them, so neither
+clause fires and the middle outcome is the finding: repairs and damage are the same order of magnitude.
+The arithmetic that follows is small enough to publish — `0.42 rules/question × 7.3% ≈ 0.03 repairs per
+question`, against a measured arm of +1.14pp, half the estimate and the same sign.
+
+**Consequence.** R14 changes the substrate rather than growing it: render the pair (question, failed
+query, corrected query, failure) instead of a sentence about it, and submit it to the same probe with
+the same admission rule. Growth would need two to four times the store for a resolvable cell and would
+carry the break side with it.
+
+**One question opened, not answered.** The own-case rate measured 19.9% here against 12.2% in R12. Both
+the learn sample (64 → 128) and the correction population changed at once, so the difference is
+recorded as a question: does a denser store reproduce more of its own corrections, or is 12% simply the
+rate on one population and 20% the rate on another? One dispatch holding the population fixed settles
+it.
+
+**Green.** `pnpm check` — 1,860 tests, 103 files, coverage 99.98 / 99.61 / 100 / 99.98; the dispatch
+2,679 calls, 1 retry, 0 timeouts, every gate pass including `V13`, `V15`, `V17` and `V33`.

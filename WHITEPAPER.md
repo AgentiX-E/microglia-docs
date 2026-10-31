@@ -1010,6 +1010,75 @@ one measurement this design makes possible and has not yet taken — whether an 
 *different* question in the *same* database, which is the only form of transfer this project still
 claims.
 
+### 3.6.14 The rule travels, and it breaks as often as it repairs
+
+The last claim the design still made and had never measured: does a rule that reproduced its own case
+repair a **different** question in the **same** database? §3.6.13 established that a correction read
+into a sentence usually cannot reproduce itself. This measures whether what does reproduce is
+knowledge or a lookup table with one row.
+
+Each admitted rule is pointed at up to eight other *corrected* questions from its own database — a
+target that was never wrong has nothing to repair — and each pair costs one call, because whether a
+bare retry repairs the target is a property of the target, measured once and reused by every rule
+pointed at it. 523 pairs over 98 rules, inside a 2,679-call dispatch on the same 350-question split.
+
+| Reading | Value |
+|---|---|
+| admitted rules pointed at foreign cases | 98 of 118 (20 had no home database) |
+| trials | 523 — 0 unmeasured, 0 control holes |
+| informative (a bare retry could not fix the target) | 467 — 89.3% |
+| repaired | **34 — 7.3% of informative** |
+| targets that needed nothing | 56 |
+| broken by the rule | **28 — 50.0%** |
+| net marginal effect over all trials | **+1.15pp — six trials of 523** |
+| rules with at least one repair | 30 of 576 |
+| what survives both gates | **10 items over 350 questions — 0.03 per question** |
+| the `full-transferred` arm | 53.71% against 53.71% — **0.00pp**, p = 1.00 |
+
+**The two numbers are the finding, and they have to be read together.** Among the questions that
+genuinely needed help, a rule repaired one in fourteen. The rules are therefore *not* empty, which is
+what the pessimistic reading of §3.6.13 predicted they would be. But among the questions that needed
+nothing, the same rules destroyed half. The ratio that flatters — 7.3% — excludes by construction
+every trial where a rule can do damage; the marginal net effect, which does not, is six trials out of
+523 and is not resolvable. This is the asymmetry §3.6.8 measured in the aggregate (3.52% conditional
+repair beside 42.6% breakage of targets that were already right), now measured at the level of one
+rule and one question, and it is the mechanism of the negative memory effect this project set out to
+explain: **a plausible rule about the neighbouring question is followed, and it is wrong.**
+
+**One prediction failed in the informative direction.** We pre-registered "at most four admitted
+rules repair anything"; thirty did. Whatever else is true, a rule distilled from one correction
+generalises — rarely, and at a price. The other failed prediction was the rate itself: ≤6% predicted,
+7.3% measured. Both failures point the same way, and neither is large enough to license a reward.
+
+**The product consequence is arithmetic, and it is not encouraging.** At 0.42 admitted rules per
+question and 5.34 trials per rule, the measured net is +0.0115 trials per trial, which works out at
+≈ 0.026 questions per question — nine of 350. The arm that actually injects 0.42 rules per question
+measured **+1.14pp** (four questions) against the same baseline in the same run: half the arithmetic
+estimate, the same sign, and inside its own interval. A three-point cell would need two to four times
+this store, and it would bring two to four times the break side with it — which is the argument for
+changing the substrate rather than growing it, and it is now an argument from three measured numbers
+instead of a preference.
+
+**What the store proves, exactly.** The intersection of the two gates keeps thirty rules, and those
+thirty put ten items into 350 prompts. Ten items is 0.03 rules per question: the arm is the baseline
+under another name, and it scored the baseline's number to the digit. A filter that leaves nothing is
+not a filter, and no claim in this document rests on `full-transferred`.
+
+**One thing that moved without being asked to.** The own-case probe measured **19.9% `supplied`** on
+296 corrected cases here, against 12.2% on 156 in §3.6.13 — the dispatch doubled `learn_sample` from
+64 to 128 to give the transfer draw a pool worth sampling, so the correction population and the store
+both changed at once. The change is recorded as a question, not as a finding: whether a denser store
+really reproduces more of its own corrections is testable in one dispatch that holds the population
+fixed, and until then 12–20% is the honest bracket for "a correction can reproduce itself".
+
+**Where this leaves the memory thesis.** Four iterations closed retrieval, budget, injection point and
+schema boundary; §3.6.13 located the deficit in the extraction; §3.6.14 shows what survives extraction
+travels weakly and damages easily. Per-correction prose is therefore not the substrate the product
+needs, and the next construction is not another arm on top of it: it renders the **pair** — question,
+failed query, corrected query, and the failure that separated them — instead of a sentence about the
+pair, and submits itself to the same probe. The instrument that produced this reading is the one that
+will judge the successor, which is what makes it an iteration rather than a search.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

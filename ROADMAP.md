@@ -2081,3 +2081,48 @@ whether the pack is any good.
 measured is *in-database* transfer of an **admitted** rule: does it repair a different question in the
 same database? The ledger exists (`transfer`, four calls per rule — 152 for 38 survivors) and was
 disabled here because R11 closed the cross-database question and this dispatch asked one thing.
+
+### R13 — the rule travels, and it breaks as often as it repairs (2026-10-31)
+
+**Built.** The transfer measurement that `rule-probe.ts` had carried since it was written and that no
+run had ever dispatched. Each admitted rule is pointed at up to eight other corrected questions from
+its own database; the target's blank is measured once and reused. Pre-registration:
+`prereg/R13-admitted-transfer.md`, written before the dispatch. Two defects were fixed on the way in,
+both of which would have made the reading unreadable rather than merely wrong:
+
+1. A control call that never returned was stored as `false`, which is the informative set — a rule
+   repairing such a target was credited with work nobody measured.
+2. The pairs were written into the fold record, which the artefact does not serialise, so the rate
+   would have been published without the rows behind it. `transferLedgerOf` projects them where the
+   artefact reads and `V33-transfer-ledger` (blocking) refuses a file that carries one without the
+   other.
+
+**Reading** (Mini-Dev, k=5, 350 questions, `learn_sample` 128, 2,679 calls, 523 trials):
+
+| Reading | Value | Predicted |
+|---|---|---|
+| informative trials | 467 of 523 | ≥ 200 ✅ |
+| transfer rate | **7.3%** (34 repairs) | ≤ 6% ❌ |
+| rules that repaired anything | **30 of 576** | ≤ 4 ❌ |
+| break rate on targets that needed nothing | **50.0%** (28 of 56) | — |
+| net marginal effect | **+1.15pp** — six trials | — |
+| what survives both gates | 10 items / 350 questions — 0.03 per question | ≤ 0.10 ✅ |
+| `full-transferred` arm | 53.71% vs 53.71% — **0.00pp** | — |
+| `full-verified` arm | 54.86% — **+1.14pp**, p = 0.34 | \|Δ\| ≤ 3pp ✅ |
+
+**Both refutation clauses missed, and the middle outcome is the finding.** The pre-registration said
+≥15% would mean "more data" and ≤1% would mean "a new substrate". The measurement is 7.3% repair
+beside 50% breakage: a rule that fixes one question in fourteen also destroys half of the questions
+that already worked. The design had never priced the second half at this granularity — §3.6.8 saw it
+aggregated — and it is the mechanism of the negative memory effect rather than a defect in retrieval.
+
+**Consequence for the next stage, with the arithmetic attached.** Repairs per question is
+`0.42 × 7.3% ≈ 0.03`; the arm measured +1.14pp against the same baseline in the same run, half the
+arithmetic estimate and the same sign. A resolvable three-point cell needs two to four times the store
+and brings two to four times the break side. **R14 therefore changes the substrate, not the size**:
+render the pair (question, failed query, corrected query, failure) instead of a sentence about it, and
+submit it to the same probe with the same admission rule.
+
+**Cost.** 2,679 calls, 20 minutes, 1 retry, 0 timeouts. Artefact:
+`eval/results/poc-sota-bird-transfer.json` (dispatch 41157635856). `pnpm check` — 1,860 tests, 103
+files, coverage 99.98 / 99.61 / 100 / 99.98.

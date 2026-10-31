@@ -173,3 +173,32 @@ The freeze commit `c55cff1` adds the recorded artefacts of the replication run; 
    are now rules for every lane.
 6. **Nine questions remain open** (§19.3 of the technical design). Each has a POC, a number and a stopping
    condition; none is a requirement ambiguity, and none is hidden behind a green build.
+
+## 8. Addendum — R13 (2026-10-31)
+
+Three claims needed adjusting after the transfer measurement, and both of the defects it found were in
+the instrument rather than the product.
+
+**8.1 A measurement defect, closed with a gate.** The transfer trial's control (`blankCorrect`) was a
+`boolean`, so a blank call that never returned was recorded as "the retry alone was wrong" — the exact
+set that makes a repair attributable to a rule. The field is now `boolean | undefined`, both halves of
+a pair must have returned, and `V15` prints the control-side holes (`unmeasuredBlank`). The trial count
+reconciles either way, which is why the defect was invisible: only the *composition* of the informative
+set was wrong.
+
+**8.2 A field that never reached the artefact.** The transfer pairs were written into the fold record,
+which `report.ts` does not serialise. The run would have published a rate with no rows behind it. The
+projection is now a tested function (`transferLedgerOf`) applied where the artefact reads, and
+`V33-transfer-ledger` is blocking: a file that carries the summary and not the pairs fails the run. The
+rule this addendum records is the one §7.5 already made twice: **a claim is only as good as the
+artefact that carries it, and a field nobody checks can be absent.**
+
+**8.3 Claims that change, and claims that do not.**
+
+| Claim | Status after R13 |
+|---|---|
+| "The pack is an in-database prompt" | **stands, with a mechanism attached**: inside its own database a rule repairs 7.3% of the questions that need help and breaks 50% of those that do not, so the boundary the three earlier measurements found is real and the content inside it is weak |
+| "Two corrections in three cannot reproduce themselves" (§3.6.13) | **brackets to 12–20%**: the same probe measured 19.9% at `learn_sample` 128 against 12.2% at 64, with the population changing at the same time; no document may quote 12.2% as a constant |
+| "An admitted store is harmless but inert" (§3.6.13) | **narrowed**: harmless at 0.42 rules per question (+1.14pp, p=0.34), and inert once the transfer gate is intersected with it (0.03 rules per question, 0.00pp) |
+| C20–C23 (knowledge that transfers is convention) | unchanged; R13 measures within-database transfer on a benchmark whose gold has no convention, so it neither supports nor contradicts them |
+| Any SOTA claim | unchanged: stopped on BIRD (§2), and R13 removes the last memory-axis hypothesis that would have reopened it without new data |

@@ -3579,3 +3579,64 @@ supports unmeasured is *in-database* transfer: whether an admitted rule repairs 
 question in the **same** database. The probe already carries that ledger (`transfer`), it was disabled
 on this dispatch because cross-database transfer closed in R11 and this run asked one question, and it
 costs four calls per admitted rule — 152 calls for the 38 survivors.
+
+### 17.47 The control that was missing on both sides of a paired trial
+
+**The measurement.** §17.46 left one claim unmeasured: whether an admitted rule repairs a *different*
+question in the *same* database. The instrument existed in `rule-probe.ts` (`TransferTrial`,
+`transferSummary`, `transferTargets`, `transferringItemIds`) and had never been dispatched, because
+every run before had either no admitted store or one question to ask. R13 asked it: `prereg/R13-admitted-transfer.md`,
+`SOTA_ARMS=full-verified,full-transferred`, `SOTA_TRANSFER_TARGETS=8`, `SOTA_LEARN_SAMPLE=128`, 350
+questions, 5 folds, 2,679 calls, dispatch `41157635856`, artefact
+`eval/results/poc-sota-bird-transfer.json`.
+
+**Defect 1 — a hole on the control side became a denominator.** `TransferTrial.blankCorrect` was a
+`boolean`, so a blank call that never returned was recorded as "the retry alone was wrong". That is
+exactly the informative set: a rule that then repaired the target was credited with a repair nobody
+measured, in the one direction this statistic must not be able to move. The field is
+`boolean | undefined`, `transferSummary` requires both halves to have returned, and
+`transferringItemIds` needs an explicit `false` before it calls anything a repair. `unmeasuredBlank`
+says how many of the holes are on the control side, and `V15-transfer-reconciles` prints it. The
+trial count reconciles either way — which is precisely why the old reading was invisible.
+
+**Defect 2 — the ledger never reached the file.** The pairs were written into the fold record, and
+`report.ts` serialises a fixed projection of a fold that does not include it: the run published a rate
+with no rows behind it. `transferLedgerOf(folds)` is now the projection, it is applied where the
+artefact reads (`metrics.rule_transfer.ledger`, one `[rule, target, blank, withRule]` row per trial),
+and **`V33-transfer-ledger` is blocking**: a run whose file carries the summary and not the pairs fails
+rather than publishing. A field nobody checks is a field that can be absent.
+
+**Sample sizing, decided before the run.** Transfer draws targets from the corrected cases of the
+rule's own database *within its own fold*, because both halves of a pair must be learn rows. At 64
+learn rows per fold that pool is ~31 corrections over 11 databases — 2.8 per database — and 38
+admitted rules cannot reach the 100 informative trials the resolvability floor asks for. `learn_sample`
+128 doubles it; `transfer_targets` 8 replaces the four that were sized for a 294-rule store. Both are
+dispatch properties and both are recorded in the artefact's `config`.
+
+| Reading | Value |
+|---|---|
+| own-case probe | 296 corrected cases; `supplied` 59 (19.9%), `redundant` 40, `broke` 7, `useless` 190; blank-fix 15.9% |
+| admission | 118 kept of 576 (20.5%), 444 unsupported, 14 broke their source, 0 unprobed — `V13` 576/576 |
+| transfer | 98 rules pointed (20 had no home database), 523 trials, 467 informative, **34 repaired (7.3%)** |
+| damage | 56 targets needed nothing, **28 broken (50.0%)** |
+| net | **+1.15pp** over 523 measured trials — six trials |
+| both gates | 30 rules with a repair, 10 injected items over 350 questions (0.03/question) |
+| arms | none 53.71%, full 49.14% (−4.57pp, p=0.0070), full-verified 54.86% (+1.14pp, p=0.34), full-transferred 53.71% (0.00pp) |
+
+**Two predictions failed, and they define the next stage.** `rate` ≤ 6% predicted, 7.3% measured; "at
+most four rules repair anything" predicted, thirty did. So single-correction distillation does produce
+knowledge that generalises, rarely. What it also produces is damage at the same order of magnitude:
+half of the targets that needed nothing came back wrong once a rule was in the prompt. The prerun's
+two-sided refutation (≥15% → more data; ≤1% → new substrate) did not fire; the middle outcome is the
+finding, and it is the one the risk model did not name.
+
+**Why the next iteration changes the substrate rather than the store size.** Repairs per question is
+`0.42 admitted rules × 7.3% ≈ 0.03`, and the measured arm at that density moved +1.14pp, half the
+arithmetic estimate, same sign. A resolvable three-point cell needs two to four times the store and
+brings the break side with it. The extraction is therefore not underfed — it is the wrong shape: a
+sentence about a correction loses the query pair that made the correction mechanical. R14 renders the
+pair (question, failed query, corrected query, failure) and submits it to the same probe, with the
+same admission rule, so that the successor is judged by the instrument that produced this reading.
+
+**Cost.** 2,679 calls, 20 minutes, 1 retry, 0 timeouts, 0 call failures; the probe is 592 of those
+calls and the transfer 523. Every gate passes, including the two blocking ones this iteration touched.
