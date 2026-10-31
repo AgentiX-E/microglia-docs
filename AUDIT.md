@@ -437,7 +437,7 @@ the count quoted as the ceiling on every transfer reading has no unexplained thi
 | "Permission to ignore the note recovers part of its cost" (R17's hypothesis) | **refuted**, at a pre-registered interval |
 | "An instruction is a cheap intervention" (MemTrapBench's framing, as applied in §3.6.18 of the whitepaper) | **refuted for this lane**: the instruction's carrier costs 2.00pp on its own |
 | "The negative register is what makes a note expensive" | **not supported**: the register moves the cell by 0.57pp |
-| "`full` costs about three points" (six dispatches) | **stands**: seventh dispatch −4.00pp, p = 0.0201, mean −3.2pp |
+| "`full` costs about three points" (four draws pooled in R16) | **stands**: −4.00pp here, p = 0.0201; the five draws at the shipped budget read −3.71, −3.14, −2.00, −2.57, −4.00pp |
 | "Framing is a channel worth varying" | **closed**, with content, quantity and position |
 | "Selection is the next step because framing failed" (R17's own refutation clause) | **withdrawn**: R16 measured the loss complete at the first item, so choosing which item arrives cannot remove it |
 
@@ -447,7 +447,7 @@ the count quoted as the ceiling on every transfer reading has no unexplained thi
    in the record and the only positive sign in it; `full-anchored` has never been run beside a second pass
    with no pack. R18 is that control, and it is registered with its resolution stated in advance.
 2. **Whether the word tax is a property of instructions or of this prompt.** 2.00pp is one cell, in one
-   position, with one sentence of 172 characters. A length-matched neutral filler would separate "words
+   position, with one sentence of 235 characters. A length-matched neutral filler would separate "words
    cost" from "this instruction costs", and no such arm exists; that is the same defect R17 was built to
    avoid in its own controls and did not close in its own most interesting number.
 3. **Whether the store's domain-free items come from the door or from widening.** V44 shows the count is
@@ -458,3 +458,71 @@ the count quoted as the ceiling on every transfer reading has no unexplained thi
 artefact `eval/results/poc-sota-bird-framing.json`, dispatch `41185616121` (success, 2,110 calls, 5
 retries, 0 timeouts, 0 call failures, eleven gates pass). `pnpm check`: 1,919 tests, 104 files, coverage
 99.98 / 99.61 / 100 / 99.98.
+
+## 13. Addendum — R18 (2026-10-31)
+
+R18 asked whether the anchored cell's +2.86pp belongs to the note or to the second pass. It belongs to
+neither: the second pass on its own **costs 4.00pp**, and the note buys back exactly that and nothing
+more. The project's only positive mechanism is a repair, and the repair cannot yet be attributed between
+the block and the clause that permits the draft to stand.
+
+**13.1 The registered prediction is refuted, in the direction nobody wrote down.** `anchor-blank` — the
+same draft, the same revision request, no block and no instruction about one — was predicted 1 to 3pp
+*above* no memory. It is **4.00pp below** it: 50.00% against 54.00%, 12 gained and 26 lost, CI
+[−7.43, −0.57], p = 0.0336, and the fold signs are −7.14, −4.29, −2.86, −4.29, −1.43pp — one sign in five.
+This is the third pre-registered refutation in this audit and the first that inverts a prediction rather
+than weakening it.
+
+**13.2 The anchored cell is at exactly no memory, and its advantage is a repair of the control.** 54.00%
+against 54.00%, 4 gained and 4 lost, p = 1.0000. Paired difference over `anchor-blank`: **+4.00pp**, 27
+gained and 13 lost, 40 discordant, p = 0.0385. The two numbers are the same number with opposite readings,
+and only the paired one is pre-registered as confirmatory: the note restores what being asked to revise
+removed.
+
+**13.3 The published +2.86pp was priced against a `full` that was costing −4.00pp.** In this run the
+anchored cell is +0.57pp against `full`, not +2.86pp against a pooled pair. Both are true and only one is
+about the note: most of the published gap was the harm injection does. Every document that credits the
+anchored arm with a gain is narrowed in this commit — including the whitepaper's product sentence, which
+now says the store is *not measurably harmful* in this position rather than that it helps.
+
+**13.4 `full` broke its own streak and the draw is kept.** −0.57pp [−3.14, +2.00], p = 0.8318: the sign
+held, the size did not, and this is the first of six draws at the shipped budget that is not
+distinguishable from zero. Nothing in the iteration touched that prompt. Five draws averaged −3.08pp; six
+average −2.67pp. A record that reports only the draws agreeing with its own average is not a record, so
+the sentence "`full` costs about three points" is now "`full` costs about two and a half on six draws, and
+one of them is zero".
+
+**13.5 The instrument answered a question it was built for, and the answer was one of two branches.**
+`V44-domain-accounted` reports `184 item(s) with no domain, 184 arrived unscoped, 0 widened`. Not one
+domain-free item in the store became domain-free through generalisation, so the 14.6% is the interpreter
+declining to scope at the door: the fix is a prompt change, not a tightening of the widening policy. This
+is the decision the single count could not support, and it was made by an inequality that could have
+failed in the other direction.
+
+**13.6 Claims that change.**
+
+| Claim | Status after R18 |
+|---|---|
+| "The anchored arm is the record's only gain" | **withdrawn**: it is +0.00pp against no memory; the +4.00pp it shows is over a control that loses 4.00pp |
+| "A second pass is worth about a point" (from `retry-blank` and `full-onretry`) | **does not transfer**: at anchor the same shape costs 4.00pp. Those second passes carry a failure; this one carries a draft |
+| "The note at anchor is worth the permission it carries" | **hypothesis, not result**: the control and the mechanism differ in the block *and* the clause, and R20 is the 2×2 that separates them |
+| "`full` costs about three points" | **narrowed**: six draws, −2.67pp mean, one of them at zero |
+| "Deviation by generalisation is a live cause of domain-free items" | **refuted for this store**: 0 of 184 |
+
+**13.7 What is still not verified.**
+
+1. **Which half of the anchored prompt does the work.** The block or the licence to stop; R18's design
+   cannot separate them and R20's four cells can. Until it runs, the product sentence is the weaker one.
+2. **Whether the word tax is a property of instructions or of this prompt** (carried over from R17). The
+   `hold` sentence is 143 characters against the advisory sentence's 235, so R20 will report two
+   sentences of comparable length in two positions, which is a second draw on the same question and not
+   an answer to it: no length-matched neutral filler exists in this record.
+3. **Whether 4.00pp is the price of a revision request or the price of *this* revision request.** The
+   control's prompt is one sentence long and identical in the other three cells, so the size is a
+   property of being asked, not of what is asked — untested, and cheap to test once the square exists.
+
+**13.8 Reproducibility.** `prereg/R18-anchored-control.md` (prediction, refutation and Outcome), artefact
+`eval/results/poc-sota-bird-anchor.json`, dispatch `41188122217` (success, 1,762 calls, 6 retries, 0
+timeouts, 0 call failures, eleven gates pass). `pnpm check`: 1,924 tests, 104 files, coverage
+99.98 / 99.61 / 100 / 99.98. `prereg/R20-anchored-hold.md` is validated by the protocol check against the
+arm union before its dispatch.

@@ -22,7 +22,8 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R15 Repair-substrate transfer | **closed** — 6.21% against the sentence's 6.28%: a tie on 720 informative trials, so an 18pp reproduction advantage buys no transfer. Four content forms are now inert within ±3pp and the extraction axis is closed | R16: the dose, in both directions |
 | R16 Injection dose | **closed** — the curve is a step at the first item: 0.29 items per question costs +0.00pp, 1.00 costs −3.14pp (iteration 86's cell), 1.83 −2.57pp, 2.97 −4.00pp and 4.16 −2.86pp; no point is above `none` and the whole spread equals the sample's own floor | R17: framing |
 | R17 Framing | **closed** — permission to ignore the block does not recover its cost (−0.57pp against `full`, CI [−3.14, +2.00], the registered refutation firing); the sentence costs 2.00pp with no block, and the error register moves the cell by 0.57pp | R18: the anchored control |
-| R18 Anchored control | **open** — pre-registered; `anchor-blank` is the arm `full-anchored` never had, so the record's only positive sign (+2.86pp pooled) can be assigned to the note or to the second pass | the run |
+| R18 Anchored control | **closed** — the control is worse than the mechanism: a blind revision costs 4.00pp (p = 0.0336, one sign in five folds) and the anchored cell sits at *exactly* no memory, so its +4.00pp over that control (p = 0.0385) is a repair rather than a gain | R20: the 2×2 that separates the block from the permission it carries |
+| R20 Anchored hold | **open** — pre-registered and instrumented; `full-anchored-hold` and `anchor-hold` complete the (block) × (instruction) square so the permission and the block get main effects instead of an attribution | the run |
 
 ## Iteration log
 
@@ -6421,9 +6422,10 @@ trauma mechanism, run *forward* — if a memory that records an error makes a mo
 so should hurt more — produced a direction and no size. What the block says about itself is not what
 makes it expensive.
 
-**`full` is negative for the seventh time.** −4.00pp at p = 0.0201, and the mean across seven dispatches
-is −3.2pp. Six axes have now been varied one at a time with a matched store, matched characters and
-matched questions, and every one of them left the sign alone.
+**`full` is negative again, and significant on its own for the third time.** The five draws at the
+shipped budget read −3.71, −3.14, −2.00, −2.57 and −4.00pp: one sign, five draws, mean −3.08pp. Six
+axes have now been varied one at a time with a matched store, matched characters and matched questions,
+and every one of them left the sign alone.
 
 **The instrument passed the check built for it.** `V43-framing-delivered` reports
 `none: 0/350, full: 0/350, full-advisory: 350/350, none-advisory: 350/350, full-prohibitive: 350/350`.
@@ -6454,3 +6456,93 @@ difference) stated before the run.
 `prereg.ts` and `distill/*` at 100 on all four dimensions. Dispatch 2,110 calls, 5 retries, 0 timeouts,
 0 call failures, eleven gates pass and the header that names them is the one the artefact is checked
 against.
+
+### 127 — The second pass is not free, and the note is worth the permission it carries
+
+**Question.** R17 left exactly one mechanism in this record with a positive sign: `full-anchored`, the
+pack delivered as an objection to the model's own draft in a second call, **+2.86pp against `full`**
+pooled over 700 questions (p = 0.0205). It had been measured against `full` and never against a second
+pass with no pack, and this project already knows what that omission costs — at retry, once
+`retry-blank` existed, the note's contribution was zero. R18 is that control: the same draft, the same
+revision request, nothing added.
+
+**What was not built.** No new arm beyond `anchor-blank`, no new gate. The two gates that could
+disagree with the arms already existed: `V43-framing-delivered` is inactive here (no arm declares a
+standing, and a standing in this pair would put a second sentence about the same block into a cell
+whose variable is the block) and `V44-domain-accounted` reconciles the store's domain-free items
+against the two paths that produce them. `anchorPromptFor` already rendered the empty pack as no
+block *and* no instruction about one, so the two arms differ in one block of text and nothing else.
+
+**Reading** (350 questions, 5 folds, 1,762 calls, 6 retries, 0 timeouts, 0 call failures, eleven gates
+pass, dispatch `41188122217`, artefact `eval/results/poc-sota-bird-anchor.json`; `none` at 54.00%):
+
+| Arm | Items | Characters | ACC | Δ vs `none` | 95% CI | gained / lost | p |
+|---|---|---|---|---|---|---|---|
+| `anchor-blank` | 0.00 | 0 | 50.00% | **−4.00pp** | [−7.43, −0.57] | 12 / 26 | 0.0336 |
+| `full-anchored` | 1.85 | 1,088 | 54.00% | **+0.00pp** | [−1.71, +1.71] | 4 / 4 | 1.0000 |
+| `full` | 1.85 | 1,088 | 53.43% | −0.57pp | [−3.14, +2.00] | 10 / 12 | 0.8318 |
+
+Paired exact McNemar, which is the comparison the iteration was registered on: `anchor-blank` − `none`
+**−4.00pp** (38 discordant, p = 0.0336); `full-anchored` − `none` +0.00pp (8 discordant, p = 1.0000);
+`full-anchored` − `anchor-blank` **+4.00pp** (27 gained, 13 lost, 40 discordant, p = 0.0385).
+
+**The first registered prediction is refuted and the refutation is the finding.** `anchor-blank` was
+predicted 1 to 3pp *above* `none`, on the grounds that a second look at the same question is worth
+something — at retry it had been worth about a point. It came back **4.00pp below**, with one sign in
+all five folds (−7.14, −4.29, −2.86, −4.29, −1.43pp). Being shown your own draft and asked to revise it,
+with nothing added and nothing saying the draft may stand, costs about what the note costs: the same
+−4.00pp `full` itself produced in R17. A revision request is not a free look at the question, and the
+corpus of "second pass" results in this project — `retry-blank`, `full-onretry` — does not transfer to
+the anchored position, because those second passes carry a failure rather than a draft.
+
+**The note buys back exactly what the revision took, and therefore buys nothing.** `full-anchored` sits
+at *exactly* no memory (54.00% on both arms, 8 discordant pairs) while `anchor-blank` sits 4.00pp under
+it, so the cell this record has credited as its only gain is a repair: put the note into a blind
+revision and the loss disappears, leaving no surplus. Read against `full` in the same run, the anchored
+arm is +0.57pp, not the pooled +2.86pp — those dispatches compared it against a `full` that was itself
+costing −4.00pp in one of them, so most of the published gap was the harm injection does rather than a
+benefit anchoring confers. Both statements are true and only one of them is about the note.
+
+**What is left is a two-way ambiguity, and it is measured next rather than argued.** `anchor-blank`
+lacks two things relative to `full-anchored`: the block, and the block's closing clause — "if none
+applies, return the first attempt unchanged" — which `anchorPromptFor` deletes along with the block
+because an instruction that refers to an absent block is a different question. R18 cannot separate
+them, and the reading that survives its numbers is the one that makes a testable claim: *the note at
+anchor is worth the permission it carries to stop.* So this iteration also ships the instrument for
+R20, a 2×2 over (block) × (instruction):
+
+|  | conservative clause | permissive clause |
+|---|---|---|
+| **block** | `full-anchored` | `full-anchored-hold` |
+| **no block** | `anchor-blank` | `anchor-hold` |
+
+`AnchorMode` gains `hold` — *"change the first attempt only if it is wrong, and only in the way that
+makes it right. If it already answers the question, return it unchanged"* — which is addressed to the
+draft rather than to items, and therefore renders when the pack is empty; the other two modes stay
+suppressed on an empty pack. That one predicate is the whole implementation, and it is what makes the
+permission a cell instead of an absence. `prereg/R20-anchored-hold.md` registers the four cells with
+`none` and `full` as anchors: the confirmatory claim is `anchor-hold` − `anchor-blank` (+3 to +5pp,
+paired), the product claim is `full-anchored-hold` ≈ `full-anchored` within ±2pp, and the interaction is
+reported with its interval and not tested, because four cells at 350 questions do not give this lane the
+resolution for one.
+
+**`full` broke its own streak, and the record keeps the draw.** It was predicted around −3pp for the
+seventh consecutive dispatch and came back −0.57pp [−3.14, +2.00], p = 0.8318 — the sign held, the size
+did not, and this is the first of six draws at the shipped budget that is not distinguishable from zero.
+Nothing in this iteration touched its prompt, so the reading is that five draws with a −3.08pp mean have
+a spread wide enough to produce one of these (six-draw mean −2.67pp); it is recorded because a record
+that reports only the draws that agree with its own average is not a record.
+
+**The instrument answered a question it was built for and nobody had asked.** `V44-domain-accounted`
+reports `184 item(s) with no domain, 184 arrived unscoped, 0 widened`. The inequality it checks is an
+equality only because one of its two paths is doing all the work: **not one domain-free item in this
+store became domain-free by generalisation widening a scoped claim.** The 14.6% of the store without a
+domain is the interpreter declining to scope at the door, so the fix is a prompt change and not a
+tightening of the widening policy — which is the decision the single number could not support four
+iterations ago and the four numbers can.
+
+**Green.** `pnpm check` — 1,924 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98, `sota.ts`,
+`prereg.ts` and `distill/*` at 100 on all four dimensions. Dispatch 1,762 calls, 6 retries, 0 timeouts,
+0 call failures, eleven gates pass, and the prereg agreement check now covers twelve files —
+`R20-anchored-hold.md` is validated against the arm union before its first run, which is the first time
+a registered design has been type-checked before being dispatched.

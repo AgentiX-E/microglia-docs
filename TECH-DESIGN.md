@@ -3046,6 +3046,63 @@ to equal the no-memory prompt plus the sentence; the composition order with `cri
 positionally. Gates V43 and V44 each have tests for pass, both failure directions, and absence. The
 distiller's counter has a test for the counted and the refused case.
 
+### 17.52 A 2×2 over block and instruction, and an instruction that renders with no block
+
+**The problem the design inherits.** R18 measured `full-anchored` − `anchor-blank` at +4.00pp
+(p = 0.0385) and the two cells differ in two things at once: the block, and the instruction that closes
+the prompt. `anchorPromptFor` deletes both when the pack is empty, on the grounds that an instruction
+saying "apply that item" over a prompt with no items is not a weaker version of the arm but a different
+question. That rule is right and it is also why the attribution cannot be made from R18.
+
+**The type.** `AnchorMode` gains a third member, and the whole implementation is the string beside it:
+
+```ts
+export type AnchorMode = 'conservative' | 'conditional' | 'hold';
+
+const ANCHOR_INSTRUCTION: Record<AnchorMode, string>;
+```
+
+`hold` is addressed to the draft — *change the first attempt only if it is wrong, and only in the way
+that makes it right; if it already answers the question, return it unchanged* — and therefore never
+mentions items, which is what makes it renderable with an empty pack. The render predicate in the
+builder becomes:
+
+```ts
+input.pack === '' && mode !== 'hold' ? '' : ANCHOR_INSTRUCTION[mode],
+```
+
+**Why the exception lives in the builder.** The lane passes `pack: ''` for every non-injecting arm and
+knows nothing else; the rule "an instruction that refers to items cannot render without items" is a
+property of the instruction, not of the call site. Putting the exception where the table lives keeps a
+future mode from needing every caller updated, and it keeps the failure mode visible: a mode whose text
+names a block it was not given is a control that silently stops being a control.
+
+**The square.** `ANCHORED` gains two rows and no new code path — the dispatch loop already reuses the
+`none` answer as the draft and already keys the second round by `position:arm`:
+
+|  | `conservative` | `hold` |
+|---|---|---|
+| `injects: true` | `full-anchored` | `full-anchored-hold` |
+| `injects: false` | `anchor-blank` | `anchor-hold` |
+
+Three of the four cells had existed for two iterations without anyone noticing that they compose into a
+factorial; the fourth costs +2 calls per question, about 700 calls on the standard panel. The 2×2 is what
+converts R18's single difference into two main effects, and it is the difference between the product
+sentence *show the note* and *show the note and tell the model it may decline*.
+
+**Why `hold` is not a `PackStanding`.** The standing axis (§17.51) appends a sentence about the block to
+an arm that reads the block before the question. In this family the instruction *is* the variable: a
+standing on `full-anchored-hold` would put a second sentence about the same block into a cell whose
+variable is the sentence, and the pair would differ in two things again. The anchored arms declare no
+standing, V43 stays inactive for them, and a test pins that silence rather than leaving it to convention.
+
+**Tests.** The permissive prompt is asserted to render with an empty pack, and the two other modes are
+asserted not to; the pair of permissive prompts is asserted to be *the same prompt plus the block* —
+filtering the block paragraph out of one must reproduce the other, block for block — which is the
+property that makes a row of the square a one-variable comparison. `ARM_STANDING` is asserted to contain
+no anchored arm, and the arm union and `OPTIONAL_ARM_TABLE` are held to a list so that adding a cell
+cannot be a silent edit inside a `Record`.
+
 ---
 
 ## 18. Acceptance criteria

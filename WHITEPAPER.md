@@ -1252,8 +1252,9 @@ memory is the luckier of two identical prompts, every delta in the table oversta
 Six axes have now been varied one at a time with a matched store, matched characters and matched
 questions: what the block contains, how much of it arrives, whether it sits before or after the
 question, which item it holds, and — in R17 — how the prompt frames it. Every one of them left the
-sign alone. `full` is negative for the seventh consecutive dispatch, at −4.00pp in the run that closed
-the framing axis and −3.2pp on the mean.
+sign alone. `full` is negative again — −4.00pp in the run that closed the framing axis, the third time
+the cell is significant on its own, and the five draws that measured it at the shipped budget read
+−3.71, −3.14, −2.00, −2.57 and −4.00pp.
 
 R17 tested the last lever in the literature with a published ablation: MemTrapBench's finding that a
 memory framework's damage is partly the model failing to question its own recall, and its mitigation —
@@ -1296,6 +1297,53 @@ written, +2.86pp against plain injection pooled over 700 questions at p = 0.0205
 measured against a second pass with no pack, and the project's own retry experiment shows why the
 omission matters: once `retry-blank` existed, the note's contribution at retry was exactly zero. R18 is
 that control.
+
+### 3.6.19 The second pass is not free, and the note is worth the permission it carries
+
+The control R18 ran is one line of prompt design and it moved the project's only positive number twice.
+`anchor-blank` shows the model its own draft, asks it to revise, and adds nothing; `full-anchored` does
+the same and puts the note in. Both write twice, both score the second call, and the two differ in one
+block of text.
+
+| Arm | Items | ACC | Δ vs `none` | 95% CI | gained / lost | p |
+|---|---|---|---|---|---|---|
+| `anchor-blank` | 0.00 | 50.00% | **−4.00pp** | [−7.43, −0.57] | 12 / 26 | 0.0336 |
+| `full-anchored` | 1.85 | 54.00% | **+0.00pp** | [−1.71, +1.71] | 4 / 4 | 1.0000 |
+| `full` | 1.85 | 53.43% | −0.57pp | [−3.14, +2.00] | 10 / 12 | 0.8318 |
+
+**A revision request is not a free look at the question.** The pre-registered prediction was that
+`anchor-blank` would sit 1 to 3pp *above* no memory, because a second pass is worth something — at retry
+it had been worth about a point. It came back **4.00pp below**, with one sign in all five folds. The
+folds do not disagree, and the effect is the size of the note's own cost. What the retry experiments
+measured was a second attempt at a *failed* query; what this cell asks for is a second attempt at a
+complete answer, with nothing to move it and no statement that it may stand.
+
+**The anchored cell is a repair and not a gain.** `full-anchored` sits at exactly no memory — 54.00% on
+both arms, eight discordant pairs — while the blind revision sits 4.00pp under it. The paired
+difference between them, over the questions both answered, is **+4.00pp (27 gained, 13 lost, 40
+discordant, p = 0.0385)**: the note, in the one position where it does no harm, buys back precisely what
+being asked to revise took away. Read against `full` in the same run it is +0.57pp, not the +2.86pp that
+two earlier dispatches pooled — those priced it against a `full` that was itself costing −4.00pp in one
+of them — so most of the published gap was the harm injection does rather than a benefit anchoring
+confers. Both numbers are true; only the second is about the note.
+
+**What is left is a two-way ambiguity, and it is now an experiment rather than an interpretation.**
+`anchor-blank` lacks two things: the block, and the block's closing clause, *if none applies, return the
+first attempt unchanged*. The clause is the only text in the anchored prompt that speaks about the draft
+rather than about the note, and it is the most plausible carrier of the 4.00pp. R20 completes the square
+over (block) × (clause), with `full-anchored-hold` and `anchor-hold` as the permissive row, so that the
+permission and the block get main effects instead of an attribution. The instrument is one predicate in
+`anchorPromptFor`: the permissive sentence is addressed to the draft and therefore renders when the pack
+is empty, which is what turns "the permission with nothing to permit" into a cell rather than an
+absence.
+
+**Two numbers from the run that were not asked for.** `full` broke a five-draw streak at −0.57pp
+(p = 0.8318), the first of six draws at the shipped budget not distinguishable from zero — the sign held
+and the size did not, and nothing in the iteration touched its prompt. And `V44-domain-accounted`, the
+gate built to tell "the interpreter declined to scope" from "generalisation widened", reported
+`184 item(s) with no domain, 184 arrived unscoped, 0 widened`: **not one domain-free item in this store
+became domain-free by widening.** The 14.6% is a prompt defect, not a policy defect, which is a decision
+the single count could not support four iterations ago and the four numbers settle.
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 

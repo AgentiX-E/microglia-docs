@@ -2300,14 +2300,14 @@ the trauma mechanism run forward), `none` and `full` as controls.
 +2.5pp bar. Permission is not the channel. Two further numbers came with it: the sentence costs
 **2.00pp on its own** (`none-advisory`, p = 0.0923), so in this prompt words cost about what the note
 costs; and the error register moves the cell by 0.57pp against the advisory one, so what the block says
-about itself is not what makes it expensive. `full` was negative for the seventh consecutive dispatch
-(−4.00pp, p = 0.0201).
+about itself is not what makes it expensive. `full` was negative again (−4.00pp, p = 0.0201), the third
+time that cell has been significant on its own.
 
 **Instrument.** `V43-framing-delivered` counts per arm and per fold how many prompts carried the framing
 the arm declares, and fails in both directions. It reported `0/350` for the two reference arms and
 `350/350` for each of the three that declare a standing.
 
-### R18 — the one positive result has never had a control (open)
+### R18 — the one positive result has never had a control (closed)
 
 **Why, and why it is not selection.** R17's refutation named selection as its successor, and R16 cancels
 it: the loss is complete at the **first** item, so choosing *which* item arrives cannot remove a cost the
@@ -2336,6 +2336,25 @@ commit. `full-anchored` 2pp below `anchor-blank` means the note hurts even as an
 the two outcomes the iteration distinguishes; a null on both revision arms is pre-registered as
 "inconclusive at this n", not as "no effect".
 
+**Result** (`prereg/R18-anchored-control.md` Outcome, dispatch `41188122217`). The first prediction is
+refuted and the refutation is the finding:
+
+| Arm | Items | ACC | Δ vs `none` | 95% CI | gained / lost | p |
+|---|---|---|---|---|---|---|
+| `anchor-blank` | 0.00 | 50.00% | **−4.00pp** | [−7.43, −0.57] | 12 / 26 | 0.0336 |
+| `full-anchored` | 1.85 | 54.00% | **+0.00pp** | [−1.71, +1.71] | 4 / 4 | 1.0000 |
+| `full` | 1.85 | 53.43% | −0.57pp | [−3.14, +2.00] | 10 / 12 | 0.8318 |
+
+A blind revision — the same draft, the same request, nothing added — costs **4.00pp**, one sign in all
+five folds. The anchored cell sits at *exactly* no memory, and its paired difference over that control is
+**+4.00pp** (27 gained, 13 lost, p = 0.0385). So the record's only positive mechanism is a repair, not a
+gain, and against `full` in the same run it is +0.57pp rather than the pooled +2.86pp — those dispatches
+priced it against a `full` that was itself costing −4.00pp. `full` also broke its own streak at −0.57pp
+(p = 0.8318), the first of six draws at the shipped budget not distinguishable from zero.
+
+`anchor-blank` lacks the block *and* the clause that tells the model the draft may stand, and this design
+cannot separate them. That ambiguity is R20.
+
 ### R19 — the mechanisms the literature has and this record does not
 
 Three published mechanisms remain untried, and each changes *when* or *whether* knowledge arrives rather
@@ -2354,7 +2373,44 @@ carries the evidence grading):
    property of the moment rather than of the item. Its ablation is the sharpest published statement of
    this project's own failure: naive injection fails catastrophically, gated injection is safe.
 
-**Blocked on.** R18: if the note earns its +2.86pp at anchor, R19.1 (reconstruction at anchor) is the
-cheapest next measurement; if it does not, R19.2 (utility clearance with no added text) is the only
-remaining candidate that does not pay the word tax.
+**Blocked on.** Nothing now; R18 resolved the branch. It did not resolve it the way either branch
+expected: the note earns nothing above no memory at anchor, but it does earn +4.00pp over a blind
+revision, and that gain is indistinguishable from a licence to stop. Both remaining candidates change
+*when* knowledge arrives rather than *how it reads*, and R20 (below) tests the licence before either is
+built, because a mechanism that adds a sentence now has a measured price and a measured credit.
+
+### R20 — the square: is the permission the ingredient, or the block? (open)
+
+**Why.** R18 put the anchored cell on the control it never had and the control was worse than the
+mechanism: a blind revision is 4.00pp below no memory, the anchored cell is at exactly no memory, and the
+paired difference is +4.00pp (p = 0.0385). That leaves two things varying at once. `anchor-blank` lacks
+the block *and* the block's closing clause — "if none applies, return the first attempt unchanged" —
+which `anchorPromptFor` deletes with the block because an instruction about an absent block is a
+different question. The clause is the only text in the anchored prompt that speaks about the draft rather
+than about the note, and it is the most plausible carrier of R18's number.
+
+**Arms** (`prereg/R20-anchored-hold.md`). Four cells, one store, one budget, all writing twice:
+
+|  | conservative clause | permissive clause |
+|---|---|---|
+| **block** | `full-anchored` | `full-anchored-hold` |
+| **no block** | `anchor-blank` | `anchor-hold` |
+
+**Instrument.** `AnchorMode` gains `hold`, whose instruction is addressed to the draft and therefore
+renders on an empty pack; the other two modes stay suppressed there. One predicate, three arms, no new
+gate.
+
+**Prediction.** `anchor-hold` at or above `anchor-blank` by 3 to 5pp (the confirmatory claim);
+`full-anchored-hold` within ±2pp of `full-anchored` (the product claim — if the block already carries its
+own licence, the extra sentence is decoration and is dropped); the interaction reported with its interval
+and not tested, because four cells at 350 questions do not give this lane the resolution for one.
+
+**Refutation.** `anchor-hold` within 1pp of `anchor-blank` means the permission is not the ingredient and
+the block alone is worth +4.00pp — the first positive reading for memory *content* in this record, and one
+that would be re-dispatched before anything is written about it. `anchor-hold` 2pp *below* `anchor-blank`
+means words cost more than the harm they repair, which closes the prompt-intervention family and leaves
+utility clearance (R19.2) as the only untried mechanism.
+
+**Resolution.** The paired `anchor-hold` − `anchor-blank` is the only cell that gets a verdict; R18
+resolved 4.00pp with 40 discordant pairs.
 
