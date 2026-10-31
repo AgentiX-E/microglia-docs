@@ -1439,6 +1439,54 @@ next iteration injects the correction event itself — the question asked, the q
 the query that fixed it, verbatim — against the same store's recall and a foreign-event control of the
 same size, with a gate that fails the run if a single payload line was rewritten.
 
+### 3.6.22 The event is not the lesson either, and the task is now the suspect
+
+If the interpretation is the loss, then removing the interpretation should pay. The last arm this record
+could build tests exactly that: the correction event itself, whole and unedited — the question that was
+asked, the query that came back wrong, the query that fixed it — retrieved by the same recall, rendered
+under the same 1,200-character budget, in the same position, with a control that carries the same form
+filled with other questions' SQL from the same database.
+
+**It does not pay.** `full-raw` is **−0.86pp** against the distilled note (20 gained, 23 lost, exact
+p = 0.7608, 95% CI [−4.57, +2.86]) and **−3.43pp** against no memory. The control is the sharper reading:
+`full-raw` sits **1.43pp below the arm that shows other questions' corrections**, so the subject of the
+correction does not matter — what the arm measures is form, length and SQL vocabulary, not knowledge about
+the question in front of it.
+
+Two sentences have to be said together about the confirmatory claim, because the registration binds this
+record to both. The registered effect was +1pp and it is −0.86pp, so the claim is **not confirmed**. The
+clause written in advance for a null required the interval to *exclude* +1pp, and this interval contains
+it, so the registration does not license the sentence "the substrate is not the loss" either. What it
+licenses is the arithmetic that should have been done before the run: at 350 questions the paired interval
+is **±3.7pp** wide, so a 1pp claim was below the lane's resolution when it was written. This is the second
+time in three iterations that this record has written a claim smaller than its own instrument.
+
+What survives is the shape of the negative result, and it is now consistent across every form this record
+can render. Ordering the three text arms by characters — 763, 864, 1,083 — does not order them by accuracy
+(52.00%, 50.57%, 51.43%), the largest pairwise difference is 1.43pp with every p > 0.54, and each sits
+2.0–3.4pp under no memory. Pooled over the three arms and 1,050 arm-question cells, **showing any text
+costs −2.67pp at exact p = 0.0091** — reported as exploratory, because pooling arms inside a question is
+not independent and because the registration spent its resolution elsewhere.
+
+**What has not been tested, and should have been first.** Every arm in this record — including the control
+— ships the question's BIRD `evidence` in the prompt: about **142 characters of curated, per-question,
+human-written knowledge**, which the benchmark itself vouches for. It is the one piece of text on this
+task whose usefulness is not in question, and it has never been ablated. Until it is, this record cannot
+distinguish three readings that its twenty-two iterations have treated as one: that *text* cannot help on
+a task whose question already carries its schema, that *retrieved* text cannot help because it is written
+for a different question, or that our text cannot help because we write it badly. The first would close
+the memory line as a mechanism that improves accuracy; the second would say the loss is in retrieval and
+not in storage; the third is not a claim about memory at all.
+
+The instrument that measured the raw arm cost a dispatch, and the diagnosis came from the artefact rather
+than from the log: the gate reported 1,103 of 1,632 payload lines byte-identical, and that ratio is exactly
+the 1,088 question and correction lines plus the 15 single-line attempts — every multi-line SQL query read
+as a rewritten one, because the check split the payload on newlines. The unit is now the block, which is
+strictly stronger than what was registered: a payload whose three lines each appear somewhere but in the
+wrong order fails, and so does one whose blocks sit under another question's heading. A verbatim arm is
+only as good as the check that certifies it, and this is the third time the record has caught a failure in
+its own instrument rather than in its treatment.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

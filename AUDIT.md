@@ -647,3 +647,79 @@ behind the current line, not applied mid-experiment.
 `eval/results/poc-sota-bird-clearance.json`, dispatch `41203470612` (success, 4,378 calls, 6 retries, 0
 timeouts, 0 call failures, twelve gates pass, 26 minutes). `pnpm check`: 1,959 tests, 104 files, coverage
 99.98 / 99.61 / 100 / 99.98.
+
+## 16. Addendum — R22 (2026-10-31)
+
+R22 asked the last content question this record can ask — does the correction have to be *interpreted* to
+cost? — and the answer is that the interpretation is not the cost, the absence of interpretation is not the
+cost, and the only text on this task that nobody has priced is the 142 characters the benchmark itself
+supplies. **`full-raw` − `full` = −0.86pp** (20 gained, 23 lost, p = 0.7608, 95% CI [−4.57, +2.86]), and the
+raw arm sits **1.43pp below its own shuffled control**.
+
+**16.1 The confirmatory claim failed and the null clause did not fire, and the gap between those two facts is
+the audit's finding.** The registration predicted +1pp or more; the measurement is −0.86pp. The null clause
+required a difference within ±1pp **with an interval excluding +1pp**; this interval contains +1pp, so the
+registration licenses neither the confirmation nor the sentence "the substrate is not the loss". What it
+licenses is arithmetic that was available before the run: 43 discordant pairs at n = 350 give a paired
+standard error of 1.87pp, so the interval is ±3.7pp wide and a 1pp claim was **below the design's resolution
+when it was written**. R21 made the same mistake one iteration earlier (1–3pp against a 4.46pp minimum
+detectable effect). The rule this audit adopts: **a confirmatory claim must exceed `1.96·sqrt(discordant)/n`,
+estimated from the arms' expected disagreement before dispatch, or the iteration is exploratory by
+construction.**
+
+**16.2 The clause that fires is the control clause, and it disposes of the arm's content claim.**
+`full-raw` − `full-raw-shuffled` = −1.43pp (19/24, p = 0.5424, bootstrap CI [−5.14, +2.29]). The shuffled arm
+shows real SQL from the same database about other questions; the treatment shows this question's own
+correction. They are indistinguishable, with the treatment nominally lower. Whatever the arm measures, it is
+not knowledge about the question in front of it.
+
+**16.3 Three text forms, one reading.** Ordered by characters the arms are shuffled 763, raw 864, distilled
+1,083; ordered by accuracy they are 52.00%, 50.57%, 51.43%. The largest pairwise difference is 1.43pp with
+every p > 0.54, and each sits 2.0–3.4pp under `none`. Pooled against `none` the three arms gained 40 and lost
+68 over 1,050 arm-question cells — **−2.67pp, exact p = 0.0091** — reported as **exploratory**, since pooling
+arms inside a question is not independent and the registration spent its resolution on the paired claim.
+
+**16.4 One instrument failed and the artefact diagnosed it.** The first dispatch `41205745555` ran to
+completion (1,754 calls, 640 corrections, every other gate green) and failed `V46-raw-is-verbatim` at
+`1103/1632`. The ratio decomposes exactly: 544 rendered events × 3 lines = 1,632 cells; 1,088 question and
+correction lines plus 15 single-line attempts = 1,103. The check split the payload on newlines and compared
+each line to a field, so **every multi-line SQL query read as a rewritten one** — 346 of 350 replies write SQL
+over several lines. The unit is now the block, the check is strictly stronger than the registered one (a
+reordered block that the line split would have credited now fails), and the gate prints the first rejected
+span. The run was not read, per the clause that says so in advance.
+
+**16.5 The generalisation instrument widened nothing, for the fourth dispatch running.** `V44-domain-accounted`
+reports `156 item(s) with no domain, 156 arrived unscoped, 0 widened`. Four dispatches, four zeros, and the
+repair is identified; it is queued behind the current line because it would change the store under every
+number in this addendum.
+
+**16.6 Claims that change.**
+
+| Claim | Status after R22 |
+|---|---|
+| "The interpretation is what costs, so raw evidence should pay" (Raw-RAG, arXiv 2610.30755) | **refuted on this task**: −0.86pp against the distilled note, with the interval containing the registered +1pp |
+| "Raw evidence is the strongest memory baseline" | **does not transfer** to a setting where the question carries its schema, its evidence and its database |
+| "A raw pack whose subject changes is a weaker treatment" | **refuted**: the shuffled control is 1.43pp *above* the treatment |
+| "Selection is the lever on this object" (R21) | remains refuted, and is now joined by the object itself |
+| "The deficit is two to four points and all prompt-level repairs leave it standing" | **extended to a fifth axis** — the substrate — and the pooled cost of any text is −2.67pp at p = 0.0091 |
+
+**16.7 What is still not verified.**
+
+1. **Whether any text can help on this task at all.** Every arm, including `none`, ships the question's BIRD
+   `evidence`: about 142 characters of curated, per-question, human-written knowledge. It has never been
+   ablated, and until it is, "text cannot help here" and "retrieved text cannot help here" are the same
+   sentence. This is R23 and it is the cheapest experiment in the record: no store, no retrieval, one block
+   removed from two arms.
+2. **Whether abstention recovers the loss.** The product decision R22 named in advance is to show nothing by
+   default; making that a policy rather than a default needs a per-question gate and a control that abstains
+   on the same number of questions chosen at random, and it is worth running only if R23 shows text has any
+   value to gate.
+3. **Whether the 350-question panel can resolve anything smaller than 2pp.** It cannot, and the two
+   pre-registrations that asked it to are the evidence. A panel large enough to resolve 1pp is a different
+   budget line, not a different analysis.
+
+**16.8 Reproducibility.** `prereg/R22-raw.md` (prediction, refutation, instrument correction and Outcome),
+artefact `eval/results/poc-sota-bird-raw.json`, dispatch `41213200296` (success, 1,755 calls, 2 retries, 0
+timeouts, 0 call failures, twelve gates pass, 90 minutes). The first dispatch `41205745555` is recorded above
+as an instrument failure, not as a result. `pnpm check`: 1,965 tests, 104 files, coverage
+99.98 / 99.61 / 100 / 99.98.

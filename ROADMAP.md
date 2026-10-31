@@ -2495,7 +2495,7 @@ filtered at most 22.8% of this store; the filter was not wrong, the object gave 
 future clearance: **dose must be matched on characters, or the comparison restricted in advance to the
 questions where the packs differ.**
 
-### R22 — the substrate goes back to raw (in flight — dispatched 2026-10-31)
+### R22 — the substrate goes back to raw (closed — refuted, and the control is the reading)
 
 **Why this is the last content axis and it is not a content axis at all.** Seven axes have been varied on
 one store: content (rule, repair, procedure), substrate (rule against repair, both distilled), quantity,
@@ -2538,3 +2538,61 @@ different name, and the arm's entire claim is that nothing was interpreted.
 **Blocked on.** R21's result only for the interpretation, not for the build: if clearance works, raw is
 run as `full-raw-cleared` instead of `full-raw` and the two questions compose; if it does not, raw runs
 alone. The build itself is a pack renderer over `output`/`signal.after`, which the lane already stores.
+
+**Result (2026-10-31).** `full-raw` − `full` = **−0.86pp** (20 gained, 23 lost, 43 discordant, p = 0.7608,
+95% CI [−4.57, +2.86]); against `none` the raw arm is −3.43pp on 864 characters and the distilled note is
+−2.57pp on 1,083. The registered claim was +1pp and the null clause required an interval excluding +1pp;
+this interval contains it, so the iteration is **neither confirmed nor refuted in the registered terms** —
+it is an underpowered panel measured against a claim smaller than its own resolution (±3.7pp at 350
+questions).
+
+The clause that fires is the control clause: **`full-raw` sits 1.43pp below `full-raw-shuffled`** (19/24,
+p = 0.5424, CI [−5.14, +2.29]), so the subject of the correction does not matter and the arm measured form,
+length and vocabulary. All three text arms are indistinguishable (largest pairwise difference 1.43pp,
+every p > 0.54) and all three sit 2.0–3.4pp under no memory; pooled over 1,050 arm-question cells, showing
+any text costs **−2.67pp at exact p = 0.0091** — exploratory, and the first significant number in this
+line.
+
+The first dispatch (`41205745555`) is recorded as an instrument failure, not a result: `V46` reported
+`1103/1632` on a fully verbatim payload because the check split the payload into lines and the `Attempt:`
+field is multi-line SQL. The unit is now the block, which is strictly stronger than what was registered,
+and the gate prints the span it rejected. The second dispatch (`41213200296`) passes all twelve gates with
+**557/557 rendered events byte-identical** and 81 of 638 events skipped whole rather than truncated.
+
+### R23 — what the benchmark's own hint is worth (designed, the next registration)
+
+**Why this is the question R22 created rather than the one it answered.** Every arm in this record ships
+the question's BIRD `evidence` in the prompt: **142 characters on average** of curated, per-question,
+human-written knowledge that the benchmark itself vouches for, present in `none` as much as in `full`. The
+record has never removed it. Until it does, three readings remain fused: that *text* cannot help on a task
+whose question already carries its schema, that *retrieved* text cannot help because it was written for a
+different question, and that our text cannot help because we write it badly. The first closes the memory
+line as a mechanism that improves accuracy; the second says the loss is in retrieval rather than storage;
+the third is not a claim about memory at all.
+
+**The design, and it is deliberately the cheapest in the record.** No store, no retrieval, no distillation:
+four arms over the existing panel, one variable, the presence of the evidence block.
+
+1. **`none`** — as shipped, evidence present. This is the control and it is also the number every previous
+   arm was measured against, so nothing in the record moves.
+2. **`none-noevidence`** — the same prompt with the evidence line removed. The confirmatory comparison is
+   `none` − `none-noevidence`: what 142 curated characters are worth on this task.
+3. **`full` and `full-noevidence`** — the 2×2's other half, which answers the substitution question R20
+   raised for licence and note: if the pack and the hint are substitutes for the same thing, removing the
+   hint costs less where a pack is present.
+4. **One new gate, `V47-evidence-ablated`.** The ablation arm must actually carry no evidence line on every
+   question that had one, and the control must carry it on every question that had one. An arm that failed
+   to remove it is `none` under a second name, and this record has caught that failure twice.
+
+**Prediction, stated so that it can fail.** If `none` − `none-noevidence` ≥ 2pp, text *can* help when it is
+written for the question at hand, and the entire memory line's deficit is the price of relevance rather
+than of attention — the first explanation in twenty-two iterations that this record has not already
+tested, and one that would reopen retrieval as the object. If it is within ±1pp with an interval excluding
++1pp, no text can help on this benchmark, the memory line's honest product is a store a human reads, and
+the remaining work is the audit surface rather than the injection.
+
+**Resolution, computed before the run rather than after it.** The panel is 350 questions; the evidence
+block is present on all of them. The paired half-width is `1.96·sqrt(discordant)/350`, and the arms are
+expected to disagree on 30–50 questions, so the half-width is 1.6–2.1pp. **The confirmatory claim is
+therefore stated at ≥2pp**, which is what this design can resolve, and the audit's new rule is applied to
+it rather than discovered afterwards.

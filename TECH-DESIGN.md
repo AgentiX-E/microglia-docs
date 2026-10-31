@@ -3196,6 +3196,83 @@ absence, pass, a mismatch, and the all-identical failure. The lane's own numbers
 a clearance that silently dropped a different count would produce a plausible delta.
 
 
+### 17.55 A verbatim arm is only as good as the check that certifies it
+
+**The arm.** R22's `full-raw` renders, for each recalled item, the correction event behind it: the question
+that was asked, the query that came back wrong, the query that fixed it. Three labelled lines whose payloads
+are the event's own strings, joined by newlines, under the shipped 1,200-character budget and in the shipped
+position. `full-raw-shuffled` renders the same form from other questions on the same database, drawn at a
+deterministic offset into the fold's corpus order and matched on *event count* rather than on characters,
+because the control's job is to hold the vocabulary and change the subject.
+
+```
+    type RawEvent = { taskId, question, attempt, fixed }        # one per unsatisfied learn row
+
+    rawEventBlock(e) = "Question: " + e.question
+                     + (e.attempt == "" ? "" : "\nAttempt: " + e.attempt)
+                     + "\nCorrection: " + e.fixed
+
+    renderRawPack(events, budget) =
+        greedy in recall order, whole blocks only: an event that does not fit is *skipped and counted*,
+        never truncated, because half an event is a question with no correction
+```
+
+**Why skipping and not truncating.** The budget is the axis R16 measured as live, and every other arm spends
+it by admitting whole items. A raw arm that cut a query to make it fit would produce a payload that reads
+like a correction and is not one — which is the exact misreading the form exists to avoid. The artefact
+therefore reports three numbers: events collected, events rendered, events skipped. R22's run: 638, 557, 81
+(12.7% refused).
+
+**Leakage is structural, not filtered.** Both arms draw from the fold's *learn* rows, indexed twice — by the
+question each event was learned from (`rawByTask`, for the treatment) and by the database it was learned on
+(`rawByDb`, for the control). An eval question's own correction was never learned, so it cannot be in either
+index. Nothing checks this at run time; the construction is the guarantee, and `V2-fold-partition` covers the
+partition it rests on.
+
+**The check, and the dispatch it cost.** `V46-raw-is-verbatim` fails the run unless every rendered block is
+byte-identical to the event it came from, and unless the arm rendered at least one. The first version split
+the payload on newlines and matched each line against the corresponding field of any event — which cannot
+represent a value that is itself multi-line, and the `Attempt:` field is SQL. Dispatch `41205745555` therefore
+reported `1103/1632` on a payload that was fully verbatim: 1,632 = 3 × 544 rendered events, and 1,103 = 1,088
+question and correction lines plus the 15 attempts that happened to be single-line. That ratio is the
+diagnosis; no log was needed to read it.
+
+The unit is now the **block**: `rawEventVerbatim` walks the payload and requires each position to start with
+a whole block the renderer was given; a span that does not match is counted **once** however many lines it
+holds, and the scan resynchronises at the next known block start.
+
+```
+    at = 0 ; cells = 0 ; verbatim = 0 ; sample = None
+    while at < len(payload):
+        if payload.startswith(block_of_some_event, at):
+            cells += 1 ; verbatim += 1 ; at += len(block) ; skip one join newline
+        else:
+            next = first index > at where a block starts and the previous char is a newline
+            cells += 1 ; sample ??= first line of payload[at:next] ; at = next
+```
+
+Three properties follow, and each is a test: a multi-line query is credited (the property the line split
+could not express), a one-character change inside it is not, and a block whose three lines are all present
+but reordered is not — which the line split *would* have credited, so the corrected check is strictly
+stronger than the registered one. `sample` is the first rejected span, cut to 120 characters; the gate prints
+it and nothing branches on it, because a count is a verdict and a sample is a diagnosis, and the first version
+of this gate could only produce the former.
+
+**What the arm measured, as a matter of design rather than of result.** `full-raw` − `full` = −0.86pp
+[−4.57, +2.86]; `full-raw` − `full-raw-shuffled` = −1.43pp [−5.14, +2.29]. The paired interval is ±3.7pp at
+350 questions, which is what the pre-registration's 1pp claim was measured against — a registration error
+this document records as a rule: **a confirmatory claim has to exceed the paired half-width the design can
+deliver, and that half-width is `1.96 · sqrt(discordant) / n`, computable before the run from the arms'
+expected disagreement rate.** For R22, 43 expected discordant pairs at n = 350 gives 1.87pp per standard
+error, so nothing below ~2pp should have been registered.
+
+**Tests.** `rawEventBlock` for the empty-attempt omission and the three-line form; `renderRawPack` for
+whole-events-only, the skip count, order preservation, and the empty case; `rawEventVerbatim` for an honest
+pack, a reformatted query, a truncated one, a multi-line query, a modified multi-line query, a reordered
+block, a heading above the pack, an empty pack and a line that is not an event; `V46` for absence, pass,
+one block rewritten, the printed sample, and an arm that rendered nothing.
+
+
 ## 18. Acceptance criteria
 
 Two kinds of gate, kept apart: **project stages** (a phase of the roadmap) and **release gates** (what a

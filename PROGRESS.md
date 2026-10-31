@@ -25,7 +25,7 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R18 Anchored control | **closed** — the control is worse than the mechanism: a blind revision costs 4.00pp (p = 0.0336, one sign in five folds) and the anchored cell sits at *exactly* no memory, so its +4.00pp over that control (p = 0.0385) is a repair rather than a gain | R20: the 2×2 that separates the block from the permission it carries |
 | R20 Anchored hold | **closed** — the licence and the note are **substitutes**: the permissive clause is +2.00pp where there is no block and −0.57pp where there is one (interaction −2.57pp), so the explicit sentence is dropped and the shipped prompt keeps the clause it had; the blind revision reproduced to the question (−4.00pp, 12/26, p = 0.0336) | R21: utility clearance, the only mechanism that adds no text |
 | R21 Utility clearance | **closed** — the pair is +0.00pp (6/6, p = 1.0000) and 311 of 350 questions rendered the *same* pack, so the treatment was absent where it should have been strongest; underneath it, 77% of the store has no counterfactual record and the pass produced 104 decisive questions from 1,400 learn rows | R22: the object, not the filter |
-| R22 Raw substrate | **in flight** — `full-raw` against `full-raw-shuffled`, `V46-raw-is-verbatim`, registered and dispatched as `41205745555`; the same corrections injected as the event rather than as a lesson | the run |
+| R22 Raw substrate | **closed** — the raw event is **not** better than the distilled note (`full-raw` − `full` = −0.86pp, p = 0.7608, CI [−4.57, +2.86]) and sits **1.43pp below its own shuffled control**, so the subject of the correction does not matter; the confirmatory +1pp claim was below the lane's ±3.7pp paired resolution before the run, and the pooled cost of *any* text against no memory is −2.67pp at exact p = 0.0091 | R23: what a 142-character curated hint is worth, measured by removing it |
 
 ## Iteration log
 
@@ -6690,29 +6690,113 @@ the run if a single payload line was rewritten. Registered as `prereg/R22-raw.md
 `validation.ts` at 100 on all four; the protocol check validates twelve pre-registrations against the arm
 union, including R22 before its first run.
 
+### 130 — The raw evidence is not the lesson
+
+**Question.** Every arm this record has run injects an *interpretation* — a rule, a repair note, a
+procedure — written by a distiller that read one correction. Seven axes have been varied on the store that
+prose makes and none of them reaches no memory. R22 is the last content axis and the only one that changes
+the object rather than a filter over it: Raw-RAG (arXiv 2610.30755) ranks naive dense retrieval over raw
+history first in six of seven benchmark-model settings and reports that even *complete* access to a
+transformed store leaves an accuracy gap against raw evidence. The prediction, written before the run, was
+that the interpretation is what costs, so removing it should pay.
+
+**What was built.** `full-raw` renders the event behind each recalled item — the question that was asked,
+the query that came back wrong, the query that fixed it — whole and unedited under the shipped
+1,200-character budget, in the shipped position. `full-raw-shuffled` is the same form filled with other
+questions' SQL from the same database, which is the only control that separates "this question's
+correction" from "raw SQL". `V46-raw-is-verbatim` fails the run if a single rendered block differs from
+the event it came from. Leakage is impossible by construction: both arms draw from the fold's learn rows,
+so an eval question's own correction is never in the index.
+
+**The instrument cost one dispatch, and the number it printed was the diagnosis.** Dispatch
+`41205745555` ran to completion and failed `V46` at `1103/1632`. The arithmetic in that artefact explains
+it exactly: 544 events rendered (626 collected, 82 skipped as too long) at three lines each is 1,632
+cells, of which 1,088 question and correction lines plus **15** single-line attempts is 1,103. The checker
+had split the payload on newlines and matched each line against a field — and the `Attempt:` field is SQL,
+which 346 of 350 replies write over several lines, so every verbatim query read as a rewritten one. The
+unit is now the **block**: `rawEventVerbatim` walks the payload and requires each position to start with a
+whole event it was given, counts a rejected span once however many lines it holds, and returns its first
+line as a sample the gate prints and never interprets. That is strictly stronger than the registered
+criterion, and the correction is recorded in `prereg/R22-raw.md` before the re-dispatch.
+
+**Reading** (350 questions, 5 folds, 1,755 calls, 2 retries, 0 timeouts, 0 call failures, twelve gates
+pass, dispatch `41213200296`, artefact `eval/results/poc-sota-bird-raw.json`; `none` at 54.00%):
+
+| Arm | Events | Chars | ACC | Δ vs `none` | 95% CI | gained / lost | p |
+|---|---|---|---|---|---|---|---|
+| `full` | 1.82 | 1,083 | 51.43% | −2.57pp | [−5.43, +0.00] | 8 / 17 | 0.1078 |
+| `full-raw-shuffled` | 1.39 | 763 | 52.00% | −2.00pp | [−5.43, +1.43] | 15 / 22 | 0.3240 |
+| `full-raw` | 1.59 | 864 | 50.57% | −3.43pp | [−7.14, +0.29] | 17 / 29 | 0.1038 |
+
+`full-raw` − `full` = **−0.86pp** (20 gained, 23 lost, 43 discordant, p = 0.7608, CI [−4.57, +2.86]);
+`full-raw` − `full-raw-shuffled` = **−1.43pp** (19/24, p = 0.5424, bootstrap CI [−5.14, +2.29]);
+`full-raw-shuffled` − `full` = +0.57pp (19/17, p = 0.8679).
+
+**The confirmatory claim is not supported and the null clause does not fire, and both sentences are the
+result.** The registered difference was +1pp; the measured one is −0.86pp. The clause written down in
+advance for a null was "within ±1pp **with an interval that excludes +1pp**", and this interval contains
++1pp — so the registration licenses neither the confirmation nor the sentence "the substrate is not the
+loss". What it does license is narrower and more useful: at 350 questions the paired interval is ±3.7pp
+wide, so **the claim was below this lane's resolution before the run started**. That is a registration
+error of this record's own making, and it is the second time in three iterations that a 1–3pp claim has
+been measured against a 4pp instrument.
+
+**The clause that fires is the second one, and it names what the arm measured.** `full-raw` sits 1.43pp
+*below* its own shuffled control: the subject of the correction does not matter. Real SQL about other
+questions on the same database did no worse than this question's own correction, so the deltas are about
+form, length and vocabulary rather than knowledge. Dose does not rescue it either: raw carried 864
+characters and shuffled 763 against `full`'s 1,083, and ordering the three by characters does not order
+them by accuracy (763 → 52.00, 864 → 50.57, 1,083 → 51.43).
+
+**Pooled, and labelled exploratory because the registration did not ask for it.** Against `none` the three
+text arms gained 40 questions and lost 68 over 1,050 arm-question cells — **−2.67pp, exact p = 0.0091**.
+It is the first significant number in this line and its sign is negative: any text, distilled or raw or
+foreign, costs about two and a half points on this benchmark with this model. Pooling arms inside a
+question is not independent, so it is an observation and not a verdict.
+
+**Three instrument readings.** `V46`: **557/557 rendered events byte-identical**, 81 of 638 events
+(12.7%) skipped whole rather than truncated. `V32`: 640 corrections, 0 unanswered, 4 distillation failures
+(0.3%). `V44-domain-accounted`: `156 item(s) with no domain, 156 arrived unscoped, 0 widened` — the fourth
+dispatch in a row in which generalisation widened nothing.
+
+**Green.** `pnpm check` — 1,965 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98, `sota.ts` and
+`validation.ts` at 100 on all four; the protocol check validates fifteen pre-registrations against the
+arm union, and `eval/results/poc-sota-bird-raw.json` against its twelve declared gates, every one emitted
+and none unannounced.
+
+**What this changes.** The substrate question is closed with a number: the interpretation is not what
+costs, and neither is the absence of interpretation. The product decision that follows is the one the
+registration named in advance — **abstention by default** — and the next registration has to say which
+half of "text costs" it is testing, because this one measured the object and found it innocent.
+
 ## What is left, in order (current)
 
-The six axes are closed — content, quantity, position, substrate, framing, and now the delivery order
-itself — and the store has no positive result left except one that is really a repair. What remains
-separates experiments that are registered from work that waits on something outside this repository.
+Eight axes are closed — content, quantity, position, substrate, framing, delivery order, membership at a
+fixed dose, and now the substrate itself — and **every arm this record can render is at or below no
+memory**. What remains separates one experiment that is designed from work that waits on something
+outside this repository.
 
 | # | Item | State | Blocks |
 |---|---|---|---|
-| 1 | **R21 — utility clearance** (MeClear) | registered, not built; the only candidate that adds **no** prompt text, and prompt text is now measured three times (2.00pp for the advisory sentence, −0.57pp for the explicit licence, 143 characters spent) | the next result |
-| 2 | **R19.1 — reconstruction at anchor** (MemHarness) | not built; pays the word tax before it earns anything, and R20 measured a second sentence at zero or worse wherever a first one exists | — |
+| 1 | **R23 — what the benchmark's own hint is worth** | designed, not registered: `none` already carries the question's BIRD `evidence` (mean 142 characters of curated, per-question knowledge) in every arm, so the one text this task vouches for has never been ablated. Removing it measures the ceiling on *any* retrieved text, cheaply (2×2 arms, no store) | the next result |
+| 2 | **Abstention as a policy** | the product decision R22 named in advance, not yet an experiment: a per-question gate that shows nothing unless the evidence says otherwise, with a control that abstains on the same number of questions chosen at random | R23's number, which says whether text is worth seeking at all |
 | 3 | **R19.3 — adaptive injection** (ε-MemEvo) | not built; `gated` and `full-corroborated` are static filters, not per-question decisions | the gate's inputs, which the pool already collects |
-| 4 | **The interpreter's domain prompt** | decision confirmed twice: `V44` reports 184/184 and 168/168 domain-free items arrived unscoped, 0 widened in either run | the ceiling on every transfer number |
+| 4 | **The interpreter's domain prompt** | decision confirmed three times: `V44` reports 184/184, 168/168 and 156/156 domain-free items arrived unscoped, 0 widened in every run | the ceiling on every transfer number |
 | 5 | **S1a — ambiguity on public annotations** | unblocked and unbuilt (BIRD-Interact carries the annotations) | — |
 | 6 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
 | 7 | **S3 — the SOTA push** | gated by its own rule: it starts only if S2b moves accuracy, and S2b's gate was missed | R10-family work, not a bypass |
 | 8 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 9 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
-Items 1, 2, 3, 4 and 5 are ours to run. Items 6–9 wait on an annotation set, a gate, a decision and a
-toolchain respectively. None of them blocks the S0 result, and none is hidden behind the green build:
-each is either an experiment that has not run or a dependency that has not shipped.
+Items 1–5 are ours to run. Items 6–9 wait on an annotation set, a gate, a decision and a toolchain
+respectively. None of them blocks the S0 result, and none is hidden behind the green build: each is either
+an experiment that has not run or a dependency that has not shipped.
 
-**What this list changed this iteration.** The anchored delivery order is now the best cell this record
-has and it is still 1.14pp below no memory; the part of it that is knowledge is about +0.86pp and the
-part that is permission is about +2.00pp. So the next mechanism is chosen for being the one that adds no
-text at all, and the sentence that would have been added to the shipped prompt is not added.
+**What this list changed this iteration.** The last content axis closed with a number and the number is a
+null that points at the task rather than at the store: the interpretation is not what costs, the absence
+of interpretation is not what costs, and the only thing left that both could be measured against is the
+142 characters of curated knowledge the benchmark already gives the model for free. If removing *that*
+costs nothing, then on this benchmark no text can help and the memory line's honest product is a store
+you read yourself. If it costs two points, then text can help when it is written for the question at
+hand, and every arm in this record has been adding text that was written for a *different* question —
+which is the first explanation in twenty-two iterations that this record has not already tested.

@@ -454,6 +454,18 @@ generators; we use a closed API. Four things are nonetheless ours to win:
 | SPLICE: utility of extracted knowledge varies with how the same experience is analysed; consistency across views selects the candidates | arXiv 2610.30790 | medium — abstract read; not implemented here |
 | Huang et al.: intrinsic self-correction degrades accuracy without external feedback; GPT-3.5 GSM8K 75.9% → 74.7% over two rounds; revisions break about as often as they repair | ICLR 2024, arXiv 2310.01798 | high — the numbers are read from the paper's own tables and the direction is widely replicated; the one figure this project quotes against it (12 repaired / 26 broken) is our own measurement |
 
+**What this record now knows about the field's strongest memory baseline.** Raw-RAG's result — naive dense
+retrieval over raw history ahead of the strongest agentic memory in six of seven settings — is the most-used
+justification for storing events instead of lessons, and R22 tested it here: **it does not transfer.**
+`full-raw` is −0.86pp against the distilled note (p = 0.7608, CI [−4.57, +2.86]) and **1.43pp below its own
+shuffled control**, so the correction's subject contributed nothing measurable. The row above already
+records why the two settings differ — the benchmarks are conversation tasks where the retrieved evidence is
+the provenance of the answer, while a SQL question arrives with its schema, its database and 142 characters
+of curated hint attached — and that difference is now a measurement rather than a caveat. Two consequences
+for this file: the row's grade stays *medium* because the paper is not wrong, it is scoped; and any future
+comparison this project makes against a memory framework has to be made on a task where the retrieved text
+is not competing with a hint the benchmark already supplies.
+
 Numbers we intend to reproduce ourselves, because they change a decision: the M-Schema delta on
 DeepSeek (one arm), the CHASE-style pool ceiling under heterogeneous generators (R7.1), and the
 per-signal discrimination of execution signatures (R7.2a).
