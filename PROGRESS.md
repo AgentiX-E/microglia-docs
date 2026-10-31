@@ -6870,11 +6870,11 @@ per-question knowledge that the benchmark supplies for free, and losing.**
 
 | # | Item | State | Blocks |
 |---|---|---|---|
-| 1 | **R24 — the same 2×2 on `dev`** | **registered and dispatched**: 1,534 questions instead of 350, `learn_sample=280` so the store is the same size and the split is the only difference. Buys three things at once — comparability with the competitors' own split, a resolvable ≥2pp claim on the pack's value without the hint, and three difficulty levels for the shape prediction minidev could not test | the run |
+| 1 | **R24 — the same 2×2 on `dev`** | **re-dispatched as `41245819288`** after `41226847922` published nothing: the same four arms, the same `learn_sample=280`, with the judging phase now running every statement in a child process under a 20 s deadline (§132). Buys three things at once — comparability with the competitors' own split, a resolvable ≥2pp claim on the pack's value without the hint, and three difficulty levels for the shape prediction minidev could not test | the run |
 | 1b | **R25 — how much of the 24.86pp can the database supply?** | designed, deferred behind R24: the `values` (+0.29pp, iteration 95) and `linked` (−7.43pp) channels measured where the competitor is absent. It waits because its natural claim is ≤3pp, which is below even dev's floor, and this record has now registered a claim smaller than its instrument three times | R24's dev floor |
 | 2 | **Abstention as a switch** | no longer a research programme: R23 says abstain where the question carries curated knowledge and inject where it does not, and the condition is observable per deployment. What remains is instrumenting the condition, not testing the policy | R24, if value annotation makes the note's job redundant too |
 | 3 | **R19.3 — adaptive injection** (ε-MemEvo) | not built; `gated` and `full-corroborated` are static filters, not per-question decisions | the gate's inputs, which the pool already collects |
-| 4 | **The interpreter's domain prompt** | decision confirmed four times: `V44` reports 184/184, 168/168, 156/156 and 168/168 domain-free items arrived unscoped, 0 widened in every run | the ceiling on every transfer number |
+| 4 | **The interpreter's domain prompt** | **built, not yet measured**: `LlmInterpreterOptions.domainOf` lets the host supply the field the prompt forbids the model to guess, behind `SOTA_DOMAIN_SCOPE` (off by default, because a scoped item is a different item). What it repairs is now stated as two dead mechanisms rather than one: widening cannot fire with nothing to widen, and domain-filtered recall admits everything. Needs a registered arm | the ceiling on every transfer number |
 | 5 | **The panel's resolution** | measured, not assumed: MDE 4.87pp at n=350, and the positive control at 24.86pp proves the instrument works at that scale. Anything below ~5pp stays unresolved here, and the full 1,534-question split is the only way to change that | a budget line, not an analysis |
 | 6 | **S1a — ambiguity on public annotations** | unblocked and unbuilt (BIRD-Interact carries the annotations) | — |
 | 7 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
@@ -6900,3 +6900,53 @@ value-indexing gap: RSL-SQL and CHESS lose 12.7 and 14.4 points to the same abla
 reading a hint. **The next question is therefore not what a memory should contain but how much of the hint
 the database can replace** — and if the answer is most of it, the memory line's honest product is the
 residue.
+
+### 132 — The judging phase could stop the lane for two hours, and said nothing
+
+**The dispatch published nothing, and the hypothesis was never the problem.** `41226847922` ran the
+registered R24 design — `split=dev`, `learn_sample=280`, the same four arms, 1,534 questions — and produced
+no artefact, no partial record and no number. Its last progress line is `fold 3/5 eval 1228/1228` at
+19:17:48; the next line in the log is the runner's own timeout at 21:15:44. Three hours and twenty minutes
+of wall clock, roughly 4,100 model calls and about 6,000 statements, published as nothing.
+
+**The log names the phase without any inference.** A fold is four phases and three of them print: learning
+every sixteen questions, distillation every four replies, evaluation every twenty calls. The fourth —
+judging, which executes the statement the model wrote and compares its rows to gold — printed nothing. The
+gaps between the end of a fold's evaluation and its fold line are the whole story:
+
+| fold | evaluation ended | fold line | gap |
+|---|---|---|---|
+| 1 | 18:00:53 | 18:06:39 | 5.8 min |
+| 2 | 18:10:47 | 19:14:01 | **63.2 min** |
+| 3 | 19:17:48 | never | **118+ min, to the step timeout** |
+
+**Why it can take two hours.** `DatabaseSync` is synchronous. A statement that is slow to answer blocks the
+process inside a native call: no timer fires, and the lane's own 130-minute deadline is checked between
+model calls, of which there are none during judging. A three-way cross join over two thousand rows is a
+billion-row nested loop, and a model that names one table twice writes one about as often as it writes a
+correct answer. The run did not hang because it was waiting; it hung because it was computing.
+
+**The container was chosen by measuring both candidates**, since the only interruption available for a
+synchronous call is the death of the thread running it:
+
+| container | kill latency | spawn cost |
+|---|---|---|
+| worker thread, stuck in the driver | **50.5 s** | ~10 ms |
+| child process, `SIGKILL` | **0 ms** | 19 ms |
+
+V8 honours `terminate()` only when the native call returns, so a 250 ms deadline still cost 50.5 seconds. The
+child was chosen; the deadline is 20 s (`SOTA_SQL_DEADLINE_MS`) and the row cap 10,000
+(`SOTA_SQL_ROW_CAP`), applied inside SQLite so unread rows are never materialised.
+
+**A deadline is not a wrong answer, and the instrument says so.** `V48-statements-answered` is blocking: at
+least 99% of executed statements must answer inside the deadline, the counts go into the artefact, and zero
+statements fails — `0/0` as a share would pass every run that never reached judging. Judging now prints every
+200 plans, so the phase that caused this is no longer the only silent one.
+
+**Green.** `pnpm check` — 1,995 tests, 104 files, coverage 99.98 / 99.60 / 100 / 99.98, `sql-exec.ts` at 100
+on all four dimensions, `sql-guard.ts` at 100 / 97.87 / 100 / 100. Eleven tests for the guard, four for the
+gate. `prereg/R24-dev-split.md` carries Amendment 1: nothing was read, the design is unchanged, and the run
+it describes has still never been executed.
+
+**Re-dispatched** as `41245819288` on `5ceee75`, the same inputs, with the judging phase now printing and the
+statement deadline in place.

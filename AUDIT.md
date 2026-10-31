@@ -805,3 +805,72 @@ from expected discordance, the prediction, five refutation clauses and the Outco
 `eval/results/poc-sota-bird-evidence.json`, dispatch `41223844474` (success, 1,758 calls, 8 retries, 0
 timeouts, 0 call failures, twelve gates pass, 16 minutes). `pnpm check`: 1,975 tests, 104 files, coverage
 99.98 / 99.62 / 100 / 99.98, `sota.ts` and `validation.ts` at 100 on all four.
+
+## 18. Addendum — R24's first dispatch, and the phase that could stop the lane for two hours (2026-11-01)
+
+**18.1 The dispatch published nothing, and it was not the hypothesis.** `41226847922` ran the registered
+R24 design (`split=dev`, `learn_sample=280`, four arms, 1,534 questions) and produced no artefact at all.
+Last progress line 19:17:48, step timeout 21:15:44, nothing in between. The event is `failure` on step 11,
+and steps 12, 19 and 20 failed behind it because there was no artefact to attribute, publish or upload. The
+step that uploads `poc-sota-bird-dev.partial` succeeded and found no file, because the lane never reached its
+own stop path — it was killed by the runner, not by its own budget or its own clock.
+
+**18.2 The log localises it to one phase, without inference.** The lane prints during three phases of a fold
+and not during the fourth:
+
+| fold | learning | distillation | evaluation | judging | fold line |
+|---|---|---|---|---|---|
+| 1 | prints every 16 | prints every 4 | prints every 20 | **prints nothing** | 18:06:39 |
+| 2 | prints every 16 | prints every 4 | prints every 20 | **prints nothing** | 19:14:01 |
+| 3 | prints every 16 | prints every 4 | prints every 20 | **prints nothing** | never |
+
+Every printing phase was healthy; the fold-1 evaluation pass finished at 18:00:53 and its fold line arrived
+5.8 minutes later, and the fold-2 pair is 18:10:47 → 19:14:01, a 63.2-minute silence. Fold 3's evaluation
+ended at 19:17:48 and the fold line never came. The unnamed phase is judging: execute the statement the model
+wrote, compare its rows to gold, per plan.
+
+**18.3 Why a phase can spend two hours without the lane's own deadline noticing.** `DatabaseSync` is
+synchronous, so a slow statement blocks the process inside a native call. The lane's wall-clock limit is
+checked between model calls, and there are none during judging; timers do not run either, because the event
+loop is the thing being blocked. A three-way cross join over two thousand rows is a billion-row nested loop,
+and a model that joins one table twice writes one about as often as it writes a correct answer.
+
+**18.4 The mechanism was chosen by measurement, not by preference.** Both candidates were timed against a
+statement that does not finish:
+
+| container | kill latency | spawn cost |
+|---|---|---|
+| `worker_threads`, stuck in the driver | **50.5 s** | ~10 ms |
+| child process, `SIGKILL` | **0 ms** | 19 ms |
+
+A worker's `terminate()` can only be honoured when the native call returns, so a 250 ms deadline still cost
+50.5 seconds of wall clock — and a fold has a thousand statements. The child was chosen and the deadline was
+set to 20 s, two orders of magnitude above a healthy statement on this data.
+
+**18.5 What was built.** `packages/eval/src/sql-guard.ts` (`BoundedSql`): a pool of child processes, one
+statement at a time each, a deadline that ends a statement by killing its process, a row cap applied inside
+SQLite (`SELECT * FROM (…) LIMIT cap + 1`, so unread rows are never materialised), and a replacement child for
+the next caller. `outcomeOf` and `unexecuted` moved into `sql-exec.ts` so the guarded path and the synchronous
+path describe a result identically — a second description would have been a second thing to be wrong.
+
+**18.6 The instrument that says whether the fix is working.** `V48-statements-answered` is blocking: at least
+99% of statements must answer inside the deadline, and the artefact carries
+`statements: { statements, deadlines, truncations, deadline_ms, row_cap }`. Zero statements fails: `0/0` as a
+share would pass a run that never reached judging. The judging phase prints every 200 plans, so the phase that
+caused this is no longer the only silent one.
+
+**18.7 Two dead branches were removed rather than covered.** An `error` listener on the child was dropped
+because a failed spawn emits `error` and then `exit`, and the `exit` listener was itself unreachable in every
+test and every shutdown path: a child that is already gone makes `send` fail first, and that callback is what
+reports the death. A child that dies *after* the message is written is bounded by the deadline instead — one
+rare event, mislabelled as a deadline, in exchange for no handler whose ordering decides a label.
+
+**18.8 What this changes about R24, and what it does not.** `prereg/R24-dev-split.md` carries Amendment 1:
+the first dispatch produced no number, so no claim in the file was tested by it; the deadline and V48 are added
+to the gates, and the design, arms, sample and predictions are unchanged. **The run this file describes has
+still never been executed**, which is the only defensible thing to say about a dispatch that reached 82
+minutes of a 130-minute budget without publishing a fold.
+
+**18.9 Reproducibility.** Guard: 11 tests. Gate: 4 tests (absent, pass, fail on a rate, fail on zero).
+`pnpm check`: 1,995 tests, 104 files, coverage 99.98 / 99.60 / 100 / 99.98 with `sql-exec.ts` at 100 in all
+four dimensions and `sql-guard.ts` at 100 / 97.87 / 100 / 100.

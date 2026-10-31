@@ -4230,3 +4230,129 @@ it was written for and silently empty in the case that was added later.
 transfer and 2,490 for R14's two-substrate probe. The second substrate's transfer is 416 trials — one
 blank per target reused across items, one treatment per pair — and the shared control is the same
 mechanism §17.48 introduced for the own-case probe.
+
+### 17.57 The scope field the model is forbidden to guess now has an owner
+
+**The contradiction.** The distillation prompt carries two sentences that point in opposite directions.
+The event payload is rendered whole, and `learn` writes `input: { question, domain: db_id, schemaDigest:
+db_id }` — so the database is in front of the model on every call. The instruction list then says *"Omit
+scope keys the event does not establish. Never guess a domain."* A model that follows the instruction
+omits `scope.domain` on every claim it returns, because the only way it could fill the field is by copying
+the payload, and the instruction can be read as forbidding exactly that.
+
+**What that cost, measured four times.** `V44-domain-accounted` reported `184/184`, `168/168`, `156/156`
+and `168/168` — items with no domain, every one of them *arrived* unscoped, `0 widened` in all four
+dispatches. The counter that exists to split the two causes (`DistillReport.incomingWithoutDomain`) never
+had anything to split: the door was the only path, for four runs.
+
+**Two mechanisms were inert because of it, and neither was the one the gate was watching.**
+
+1. **Widening cannot fire.** `canGeneralize` widens a claim scoped to one domain onto a scope that covers
+   two, and it requires the endorsing evidence to come from *distinct* domains. With no domain on any
+   item, there is nothing to widen away and no second domain to endorse — so `generalized` was zero by
+   construction, not by policy.
+2. **Domain-conditioned recall could not condition anything.** `scopeMatches` treats a filter on `domain`
+   as a restriction only when the item has one: an item with `scope.domain === undefined` passes every
+   domain filter. The `full-validated` arm re-reads the store with `{ scope: { domain: row.db_id } }` and
+   counts how many packs that pruned, and the wrong-scope control rotates to the *next* database. On a
+   store with no domains both are the same query as `full`, which is the definition of an arm that is one
+   condition under two names.
+
+**The repair.** `LlmInterpreterOptions.domainOf` is the second host-supplied scope field, after
+`reasonCodeOf`, and it has the opposite precedence on purpose. The reason code is a fallback: the model saw
+the failure, so its own code wins and the host's classifier fills a gap. The domain is not: the host wrote
+it into the payload, so any other value the model returns is a guess, and the instruction that bans guesses
+is the one being obeyed. The host's string therefore overrides whatever the model wrote.
+
+**Re-keyed, not patched.** `parseDistillResponse` computes `dedupeKey` before either host field exists, and
+identity includes `scopeKey` — which contains the domain. Filling the scope without re-keying would leave
+every claim carrying a key that names a different scope than the claim has, and the first thing the
+distiller does with that key is `pool.find((item) => dedupeKeyOf(item) === key)`: two databases' copies of
+one rule would merge into a single item on whichever scope arrived first, which is the precise opposite of
+the state that lets a claim widen later. `createLlmInterpreter` recomputes the key from the finished scope.
+
+**Why it ships off.** `SOTA_DOMAIN_SCOPE` defaults to `false`, and it has to: a scoped item *is* a
+different item, so the store every published number was measured on changes shape — eleven databases'
+copies of one rule become eleven claims rather than one — the moment it is on. The switch exists so that an
+arm measures the difference. What `V44` will report with it on is the reading the gate was built for: a
+`storedWithoutDomain` near zero and, for the first time, a non-zero `widenedIn`.
+
+**Tests.** Five: the field is filled when the model omits it; a guessed domain is overridden; an absent
+host domain leaves the scope byte-identical; two databases produce two distinct `dedupeKey`s from the same
+statement (the re-key, which is the failure that would otherwise be silent); and both host fields compose
+into one scope without either dropping the other.
+
+### 17.58 The judging phase could stop the lane for two hours, and said nothing
+
+**The incident.** `41226847922`, the first dev-split dispatch of R24, ran the registered design and published
+nothing. Its last progress line was at 19:17:48 — `fold 3/5 eval 1228/1228` — and the next line in the log is
+the step's own timeout at 21:15:44. No artefact, no partial record, no number, 3.4 hours of wall clock and
+roughly 4,100 model calls.
+
+**Where the time went, from the log alone.** Folds are phases, and the log separates them: a fold's *learning*
+pass prints every sixteen questions, its *distillation* pass every four replies, and its *evaluation* pass every
+twenty calls. All three were healthy. The fold-completion line is the only line after them, and the gaps
+between "eval finished" and "fold finished" are the whole story:
+
+| fold | evaluation ended | fold line printed | gap |
+|---|---|---|---|
+| 1 | 18:00:53 | 18:06:39 | 5.8 min |
+| 2 | 18:10:47 | 19:14:01 | **63.2 min** |
+| 3 | 19:17:48 | never | **118+ min, to the step timeout** |
+
+The gap is the judging phase: for every plan, execute the SQL the model wrote and compare the result to gold.
+It takes 5.8 minutes when the statements behave, and it has no progress line, so there is nothing between
+"evaluation finished" and the fold line to say whether it is working.
+
+**Why it can take two hours.** `DatabaseSync.prepare(sql).all()` is synchronous. A statement that is slow to
+answer — a three-way cross join over two thousand rows is a billion-row nested loop, which is the easiest
+mistake for a model to make — blocks the process *inside a native call*. No timer fires, no callback runs, and
+every deadline the lane owns is checked between model calls, so the lane's own 130-minute wall clock could not
+end it either. The run did not hang because it was waiting: it hung because it was computing, and the only
+interruption available for a synchronous call is the death of the thread running it.
+
+**Two candidate mechanisms, measured rather than assumed.** A worker thread is the obvious container, and it is
+the wrong one:
+
+| mechanism | kill latency | spawn cost |
+|---|---|---|
+| worker thread, stuck inside the driver | **50.5 s** | ~10 ms |
+| child process, `SIGKILL` | **0 ms** | 19 ms |
+
+V8 can only honour `terminate()` when the native call returns, so a one-second deadline still costs a minute of
+wall clock per pathological statement — and a fold has a thousand of them. A child process is killed
+immediately, and spawning one is 19 ms, which is cheaper than the difference between the two designs. So every
+statement runs in a child, in `packages/eval/src/sql-guard.ts`, with three properties:
+
+1. **A deadline** (20 s, `SOTA_SQL_DEADLINE_MS`). The child is `SIGKILL`ed when it expires and the statement is
+   reported as `deadline: true`, which is *not* a wrong answer: a query that cannot answer in twenty seconds on
+   a laptop-sized database tells us nothing about the model's knowledge, and counting it as an error would
+   silently turn an instrument defect into an accuracy number.
+2. **A row cap** (10,000, `SOTA_SQL_ROW_CAP`). The statement is wrapped as `SELECT * FROM (…) LIMIT cap + 1`, so
+   a runaway result set cannot exhaust memory on its way to being discarded; the extra row is what
+   distinguishes "exactly at the cap" from "over it", and truncation is reported.
+3. **A replacement.** A killed child holds no state that outlives one statement, so the slot is respawned for
+   the next caller. The pool is a queue of slots, not a pool of connections.
+
+**One execution path, not two.** The lane previously had two ways to describe a result — `executeQuery` in the
+package and a private `execute` in the lane — and a guarded path would have made three. `outcomeOf(rows)` and
+`unexecuted(error)` now build the encodings in the package, and both the synchronous path and the guarded one
+call them, so gold and prediction are compared through identical code.
+
+**`V48-statements-answered`.** A blocking gate: at least 99% of executed statements must answer inside the
+deadline, and the artefact carries `statements: { statements, deadlines, truncations, deadline_ms, row_cap }`.
+The bar is one percent because a pathological statement appears once or twice in a panel of a thousand; above
+that share it is a systematic property of the lane — a database it cannot query, or a deadline set below the
+machine's speed — and the number underneath is not the model's. Zero statements fails too: `0/0` read as a
+share would pass every run that never reached judging.
+
+**The judging phase now prints.** Every two hundred plans, with the deadline count. A phase that prints nothing
+is a phase whose silence is indistinguishable from a hang — which is the general form of this defect, and the
+second time this project has paid for it.
+
+**Tests.** Eleven for the guard: rows returned, trailing semicolon accepted and two statements refused, an empty
+statement refused without paying for a spawn, a statement that does not prepare reported as an error rather than
+a deadline, the cap applied and reported, a result exactly at the cap *not* reported as truncated, a pathological
+statement killed inside the deadline with the pool still working afterwards, more statements than the pool's
+width served through the queue, a replacement handed to a waiter after a kill, a statement whose process dies
+before answering, and refusal after close. Four for the gate: absent, pass, fail on a rate, and fail on zero.

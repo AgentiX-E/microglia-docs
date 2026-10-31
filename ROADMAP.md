@@ -2652,7 +2652,7 @@ survives a second observation. A new instrument fact: the anchors moved between 
 **cross-dispatch cells carry one to two points of store variance** and a cross-dispatch delta under two
 points is not a result.
 
-### R24 — the same 2×2 on the split every comparison was measured on (registered and dispatched 2026-11-01)
+### R24 — the same 2×2 on the split every comparison was measured on (registered 2026-11-01, first dispatch published nothing, re-dispatched 2026-11-01)
 
 **Why the database question is not the next one.** R23's headline is 24.86pp on `minidev`, and every number it
 invites comparison with — 12.71 (RSL-SQL), 14.36 (CHESS), 18.37 (DAIL-SQL), 20.01 (GPT-4) — was measured on
@@ -2692,6 +2692,16 @@ zero demotes the competition reading from a mechanism to a single-run observatio
 the line back to selection work rather than forward. A flat gradient across three levels drops the difficulty
 story instead of leaving it as a caveat. A run truncated by the deadline before five folds is read as partial
 and makes no confirmatory claim.
+
+**Amendment 1, and the two hours it cost.** The first dispatch (`41226847922`) ran this design exactly as
+written and published nothing: last progress line 19:17:48, step timeout 21:15:44, 3.4 hours and ~4,100 calls
+for an empty directory. The judging phase executes every statement the model wrote through a synchronous
+driver, so a slow statement stopped the process inside a native call where neither a timer nor the lane's own
+deadline could run; the log localises it to the gap between each fold's evaluation and its fold line — 5.8,
+63.2 and never minutes. Every statement now runs in a child process with a 20 s deadline and a 10,000-row cap
+(a worker thread takes 50.5 s to die inside the driver, a child takes 0 ms), `V48-statements-answered` is
+blocking at a 1% deadline share, and judging prints every 200 plans. Nothing about the design, arms, sample or
+predictions changed, and nothing was read from the failed dispatch.
 
 ### R25 — how much of the 24.86pp can the database supply? (designed, deferred behind R24)
 
