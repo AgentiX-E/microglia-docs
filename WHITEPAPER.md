@@ -1487,6 +1487,51 @@ wrong order fails, and so does one whose blocks sit under another question's hea
 only as good as the check that certifies it, and this is the third time the record has caught a failure in
 its own instrument rather than in its treatment.
 
+### 3.6.23 The deficit was a competition, and the competitor was the benchmark
+
+Twenty-two iterations reported that a retrieved note does not help. Not one of them had ever checked that
+the instrument could detect help, because the only manipulations it had run were its own. R23 ran one whose
+answer the field already knows.
+
+BIRD attaches a curated, human-written `evidence` sentence to every question — on this panel **350 of 350**,
+25 to 468 characters, mean 142. The shipped prompt has always carried it, so **every number this project has
+published was measured on top of it**. Three independent records price its removal: BIRD's own GPT-4
+ablation at −20.01pp, Companion Agents at −12.7 to −18.4 across three systems, SEED at −8.4 to −20.9. Seven
+cells, four systems, one direction, mean −15.2pp.
+
+**The control passes.** `none` 54.57%, `none-noevidence` 29.71%: **+24.86pp**, 96 questions gained against 9
+lost, exact p below 1e-4, interval [19.71, 30.00]. The registration asked for ≥8pp. The panel did not merely
+detect the effect; it found one three times larger than the bar it was set — so the twenty-two nulls above it
+are nulls about memory, not about sensitivity, and that question is now closed rather than assumed.
+
+**The prediction the run refuted is the finding.** The registration said the pack would still cost points
+without the hint, "because its 2–4 point cost is not something a smaller prompt removes". It does not. With
+the sentence present the pack is **−4.86pp and significant** (p = 0.0076); with the sentence removed the same
+pack is **+1.14pp** and indistinguishable from zero — the first cell in this record that is not negative. The
+interaction is **−6.00pp [−10.57, −1.71]**, excluding zero: a retrieved note absorbs **24.1%** of the
+sentence's value and loses the competition for the remaining 75.9%.
+
+Read backwards, that reattributes eight iterations of negatives. The note was never too irrelevant, too
+poorly scoped, too long, too raw, too badly framed, too badly ordered or too badly selected — each of those
+was varied and each came back null. It was **competing for a job that was already being done, by text the
+benchmark supplies for free**, and when the competitor is taken away the note becomes mildly useful.
+
+**Two consequences for the product, and one for the research plan.** The deployment rule stops being a
+policy and becomes a switch: abstain where the incoming question carries curated per-question knowledge,
+inject where it does not, and the condition is observable at runtime. The memory line also acquires its first
+measurable ceiling — **4.6% of one curated sentence** — which is low, honest, and the number any future store
+has to beat. And the 24.86pp itself becomes the target rather than the backdrop, because it is mostly *not*
+memory's job: this lane's prompt has no worked examples, no schema linking and no value index, while the two
+systems that lose 12.7 and 14.4 points to the same ablation recover the difference from the database itself.
+**What looked like a memory deficit is, in the largest part, a schema-linking and value-indexing deficit**, and
+that is a question a database can answer without any memory at all.
+
+**One instrument reading worth carrying forward.** The anchors moved between dispatches on identical
+questions — `none` 54.00 → 54.57, `full` 51.43 → 49.71 — because the store is rebuilt by a live distillation
+pass each time (632 corrections here, 640 before). Cross-dispatch comparisons on this lane carry one to two
+points of store variance, which is larger than several deltas this record has published. Every claim in this
+section is within a single run.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

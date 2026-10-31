@@ -723,3 +723,82 @@ artefact `eval/results/poc-sota-bird-raw.json`, dispatch `41213200296` (success,
 timeouts, 0 call failures, twelve gates pass, 90 minutes). The first dispatch `41205745555` is recorded above
 as an instrument failure, not as a result. `pnpm check`: 1,965 tests, 104 files, coverage
 99.98 / 99.61 / 100 / 99.98.
+
+## 17. Addendum — R23 (2026-11-01)
+
+R23 was not an experiment about memory. It was the positive control this record had never run, and it came
+back at **+24.86pp**: `none` 54.57% against `none-noevidence` 29.71%, 96 questions gained and 9 lost, exact
+p below 1e-4, interval [19.71, 30.00], on a manipulation three independent papers price at 8 to 21 points.
+The instrument is calibrated. **The twenty-two nulls above it are nulls about memory, not about sensitivity,
+and that is now measured rather than assumed.**
+
+**17.1 The control was available in the prompt the whole time.** BIRD attaches a curated, human-written
+`evidence` sentence to every question — 350 of 350 here, 25 to 468 characters, mean 142. The shipped prompt
+always carried it, so every published number in this repository was measured on top of a block whose removal
+the field already prices. Twenty-two iterations varied the note and none varied its competitor. The lesson is
+an audit rule: **before reporting a null, find the largest manipulation the baseline contains and remove it.**
+
+**17.2 The registration's claim held and one of its predictions failed, and the failure is the finding.** The
+bar was ≥8pp with a point estimate near 12; the effect is 24.86pp, above the interval's own lower bound of
+19.71. The prediction that `full-noevidence` would remain below `none-noevidence` — "the pack's 2–4 point
+cost is not something a smaller prompt removes" — is refuted: **+1.14pp**, p = 0.5847, the first non-negative
+cell in the record. With the hint present the same pack is −4.86pp, p = 0.0076.
+
+**17.3 The interaction is the mechanism and it is registered, not fished.** `(full − full-noevidence) − (none
+− none-noevidence)` = **−6.00pp**, bootstrap 95% CI [−10.57, −1.71], 19 questions up, 37 down, 294 flat. It
+excludes zero and clears the pre-declared |DiD| ≥ 4pp bar, and it says the pack absorbs **24.1%** of the
+hint's value. Read against the two pack contrasts — −4.86pp with the competitor, +1.14pp without — the
+substitution is one-directional and complete enough to explain the whole deficit this record has chased:
+**the cost of showing a note is not a property of the note.**
+
+**17.4 What this retroactively says about eight earlier iterations.** R12 (irrelevance), R13 (scope), R14
+(substrate), R16 (dose), R17 (framing), R18/R20 (order and permission), R21 (selection) and R22 (raw form)
+each priced one axis of the note and each landed at or below no memory. None of them is contradicted here;
+all of them are **re-scoped**. Each was measured in a competition the note was losing for reasons none of
+them could see, and their nulls are statements about that competition rather than about the axis. The correct
+summary of the eight is not "none of these help" but "none of these helps *against a curated hint*".
+
+**17.5 The two predictions the panel could not test.** Moderate `n = 248` at +25.00pp and challenging
+`n = 102` at +24.51pp — 0.49pp apart, with no simple questions on this panel at all because `poolOf` drops
+the easiest third. The literature's difficulty gradient spans three levels and this panel has two, so the
+shape prediction is **unresolved**, and the audit records it as unresolved rather than as a flat effect. The
+second is the record's own resolution: MDE 4.87pp at n = 350 means nothing below ~5pp can be concluded here,
+and 24.86pp proves the instrument works at the scale it can reach.
+
+**17.6 A new instrument fact: the anchors are not reproducible across dispatches.** `none` 54.00 → 54.57 (2
+questions) and `full` 51.43 → 49.71 (6 questions) on identical questions between R22 and R23, because the
+store is rebuilt by a live distillation pass each time — 632 corrections and 1.79 items per question here,
+640 and 1.82 there. **Cross-dispatch cells carry one to two points of store variance.** This is larger than
+several deltas the record has published (R22's −0.86pp, R20's +0.57pp, R18's −1.14pp). The rule the audit
+adopts: **a cross-dispatch delta below two points is not a result**, and a run that wants to compare to an
+earlier one must re-measure the anchor in the same dispatch. Every claim in this addendum is within-dispatch.
+
+**17.7 Claims that change.**
+
+| Claim | Status after R23 |
+|---|---|
+| "Showing any text costs about two and a half points" (R22) | **conditional**: −4.86pp against a baseline that carries curated knowledge, +1.14pp against one that does not; the cost belongs to the competition |
+| "The deficit is 2–4 points and every prompt-level repair leaves it standing" | **re-attributed**: it is not a deficit of the note but of the note's job, which was already done |
+| "Abstain by default" (R22's product decision) | **becomes a switch**: abstain where the question carries curated knowledge, inject where it does not |
+| "This lane's numbers are nulls about memory" | **confirmed** — the positive control fires at 3× its registered bar, so the nulls are not an artefact of an insensitive instrument |
+| "Every arm in the record is at or below no memory" | **false as stated**: `full-noevidence` is +1.14pp above its own baseline |
+| "The panel resolves 2pp" | **false, and now measured**: MDE 4.87pp; the 24.86pp control proves the instrument works at the scale it can reach |
+
+**17.8 What is still not verified.**
+
+1. **How much of the 24.86pp the database can supply.** This lane's prompt has no worked examples, no schema
+   linking and no value index, while RSL-SQL and CHESS lose 12.7 and 14.4 points to the same ablation. The
+   gap between 24.86 and ~14 is plausibly schema-and-value extraction, and `valuesDdl` already exists to
+   test it — it has simply only ever been run on the unablated prompt, where the hint was doing its job.
+   This is R24 and it is the largest measurable question in the repository.
+2. **Whether the +1.14pp cell survives a second observation.** It is 13 gained against 17 lost; the direction
+   is right, the significance is not there, and the record has been wrong before about a single small cell.
+3. **Whether the interaction holds at another dose.** −6.00pp was measured at 1.79 items and 1,067
+   characters. A pack at half the size, or at twice, would say whether substitution is a fixed transfer or a
+   function of how much text is offered.
+
+**17.9 Reproducibility.** `prereg/R23-evidence.md` (the literature table, the 2×2, the resolution computed
+from expected discordance, the prediction, five refutation clauses and the Outcome), artefact
+`eval/results/poc-sota-bird-evidence.json`, dispatch `41223844474` (success, 1,758 calls, 8 retries, 0
+timeouts, 0 call failures, twelve gates pass, 16 minutes). `pnpm check`: 1,975 tests, 104 files, coverage
+99.98 / 99.62 / 100 / 99.98, `sota.ts` and `validation.ts` at 100 on all four.

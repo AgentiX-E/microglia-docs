@@ -2559,40 +2559,136 @@ field is multi-line SQL. The unit is now the block, which is strictly stronger t
 and the gate prints the span it rejected. The second dispatch (`41213200296`) passes all twelve gates with
 **557/557 rendered events byte-identical** and 81 of 638 events skipped whole rather than truncated.
 
-### R23 — what the benchmark's own hint is worth (designed, the next registration)
+### R23 — the positive control this record has never run (closed — confirmed at 3× its bar)
 
 **Why this is the question R22 created rather than the one it answered.** Every arm in this record ships
 the question's BIRD `evidence` in the prompt: **142 characters on average** of curated, per-question,
-human-written knowledge that the benchmark itself vouches for, present in `none` as much as in `full`. The
-record has never removed it. Until it does, three readings remain fused: that *text* cannot help on a task
-whose question already carries its schema, that *retrieved* text cannot help because it was written for a
-different question, and that our text cannot help because we write it badly. The first closes the memory
-line as a mechanism that improves accuracy; the second says the loss is in retrieval rather than storage;
-the third is not a claim about memory at all.
+human-written knowledge that the benchmark itself vouches for, present in `none` as much as in `full`, on
+350 of 350 questions (25 to 468 characters, median 135). The record has never removed it. Until it does,
+three readings remain fused: that *text* cannot help on a task whose question already carries its schema,
+that *retrieved* text cannot help because it was written for a different question, and that our text cannot
+help because we write it badly.
 
-**The design, and it is deliberately the cheapest in the record.** No store, no retrieval, no distillation:
-four arms over the existing panel, one variable, the presence of the evidence block.
+**What changed the framing between the design and the registration.** The first version of this entry
+proposed a 2pp claim. Three independent records price the same ablation far above that, which turns an
+ordinary ablation into the only thing this lane has never had: a manipulation with a known answer.
 
-1. **`none`** — as shipped, evidence present. This is the control and it is also the number every previous
-   arm was measured against, so nothing in the record moves.
-2. **`none-noevidence`** — the same prompt with the evidence line removed. The confirmatory comparison is
-   `none` − `none-noevidence`: what 142 curated characters are worth on this task.
-3. **`full` and `full-noevidence`** — the 2×2's other half, which answers the substitution question R20
-   raised for licence and note: if the pack and the hint are substitutes for the same thing, removing the
-   hint costs less where a pack is present.
-4. **One new gate, `V47-evidence-ablated`.** The ablation arm must actually carry no evidence line on every
-   question that had one, and the control must carry it on every question that had one. An arm that failed
-   to remove it is `none` under a second name, and this record has caught that failure twice.
+| Source | System | With | Without | Δ |
+|---|---|---|---|---|
+| BIRD (Li et al., NeurIPS 2023) | GPT-4 | 54.89 | 34.88 | **−20.01pp** |
+| Companion Agents (arXiv 2601.08838) | RSL-SQL / qwen-plus | 64.67 | 51.96 | −12.71pp |
+| " | CHESS / qwen-plus | 62.14 | 47.78 | −14.36pp |
+| " | DAIL-SQL / qwen-plus | 57.89 | 39.52 | −18.37pp |
+| SEED (arXiv 2506.07423) | CHESS | — | — | −8.35 to −12.73pp |
+| " | CodeS | — | — | −15.11 to −15.26pp |
+| " | DAIL-SQL | — | — | −20.86pp |
 
-**Prediction, stated so that it can fail.** If `none` − `none-noevidence` ≥ 2pp, text *can* help when it is
-written for the question at hand, and the entire memory line's deficit is the price of relevance rather
-than of attention — the first explanation in twenty-two iterations that this record has not already
-tested, and one that would reopen retrieval as the object. If it is within ±1pp with an interval excluding
-+1pp, no text can help on this benchmark, the memory line's honest product is a store a human reads, and
-the remaining work is the audit surface rather than the injection.
+Seven cells, four systems, three papers, two model families: **8 to 21 points, mean 15.2**, and Companion
+Agents' per-difficulty breakdown gives the gradient (Simple −10.3 to −11.4, Moderate −15.5 to −18.9,
+Challenging −19.3 to −20.2). No arm in this record has ever been measured without the block it removes, so
+**the panel has never been shown to detect an effect of a size the field agrees on** — and every null in
+twenty-two iterations rests on that untested assumption.
 
-**Resolution, computed before the run rather than after it.** The panel is 350 questions; the evidence
-block is present on all of them. The paired half-width is `1.96·sqrt(discordant)/350`, and the arms are
-expected to disagree on 30–50 questions, so the half-width is 1.6–2.1pp. **The confirmatory claim is
-therefore stated at ≥2pp**, which is what this design can resolve, and the audit's new rule is applied to
-it rather than discovered afterwards.
+**The design.** A 2×2 factorial over the two blocks a prompt can carry, with the anchors already shipped:
+
+| | + evidence | − evidence |
+|---|---|---|
+| **no pack** | `none` (shipped) | `none-noevidence` |
+| **+ pack** | `full` (shipped) | `full-noevidence` |
+
+1. **`none-noevidence`** — the shipped `none` prompt with `evidenceBlockOf('')` in place of the sentence.
+   Planned through the same `call()` the anchor uses with one argument different, which is the whole
+   guarantee that the cells differ by the block and nothing else.
+2. **`full-noevidence`** — the same pack `full` carries, on the prompt `none-noevidence` sends: same recall,
+   same 1,200-character budget, same position.
+3. **One implementation point.** `ARM_DROPS_EVIDENCE` is the only thing the ablation touches, and
+   `promptFor`, `retryPromptFor` and `anchorPromptFor` all render through `evidenceBlockOf`, so there is one
+   place a label could drift and one place a check can look.
+4. **`V47-evidence-ablated`**, blocking, reads the prompts that were sent: it fails if a shipped arm missed a
+   question that had a sentence, if an ablated arm carried one anyway (an ablation that removed nothing is
+   `none` under a second name), or if the ablation reached fewer questions than the arm it ablates.
+5. **The manipulation check is not a gate.** `V3` measures `full`'s parse rate, not the ablated arms', so the
+   registration carries its own rule: the effect is read as a knowledge effect only if the ablated arms
+   produce SQL at within 5pp of the arm they ablate. A dangling dependency in a prompt is a different task,
+   not less knowledge.
+
+**Prediction.** `none` − `none-noevidence` **≥ 8pp**, point estimate near 12: the literature's low end rather
+than its mean, because this model reasons better than 2023 GPT-4 and `minidev` is a different slice. The
+effect is **larger on harder questions** — a prediction about the shape, not the size, so it is a second
+independent way for the run to be wrong. `full-noevidence` is still below `none-noevidence`, because the
+pack's 2–4 point cost is not something a smaller prompt removes.
+
+**Resolution, computed before the run.** The audit's rule from R22 is applied rather than discovered: a
+claim must exceed `1.96·sqrt(discordant)/n`. For a 10pp effect at n = 350 that is ~35 flipped questions; the
+literature's asymmetry puts b ≈ 40 and c ≈ 5, so discordant ≈ 45, standard error 1.92pp, half-width
+**±3.8pp**. **The confirmatory claim is therefore ≥8pp** — 2.4 standard errors — and the interaction
+`(full − full-noevidence) − (none − none-noevidence)` is secondary, read only if the main effect clears 8pp,
+with a bar of |DiD| ≥ 4pp and a bootstrap interval excluding zero.
+
+**Refutation, with an ordering the record commits to now.** If the ablation lands within ±1pp with an
+interval excluding +1pp, a manipulation worth 8–21 points is invisible here, **the panel is the finding,
+every null above it becomes unreadable**, and the next iteration rebuilds the panel rather than building
+another arm. If the ablation is *above* `none` by ≥2pp with an interval excluding −1pp, the baseline every
+published number was measured against has been costing points and the whole line has to be re-anchored at
+`none-noevidence`. If `V47` fails, the run is not read. If the parse rate moves by more than 5pp, the effect
+is not attributable to knowledge.
+
+**Result (2026-11-01).** `none` 54.57% (191/350), `none-noevidence` 29.71% (104/350): **+24.86pp**, 96 gained,
+9 lost, exact p below 1e-4, CI [19.71, 30.00]. Registered bar was ≥8pp with a point estimate near 12, so the
+panel is **three times more sensitive than the record asked it to be**, and the refutation clause that would
+have retired the instrument does not fire. `full` 49.71% (174/350) is −4.86pp against `none`, p = 0.0076.
+
+The prediction the run refuted is the mechanism. `full-noevidence` was registered to remain below
+`none-noevidence`; it is **+1.14pp above it** (13/17, p = 0.5847), the first non-negative cell in the record,
+against **−4.86pp for the same pack on the unablated prompt**. The interaction — pre-declared, read only if
+the main effect cleared 8pp, with a |DiD| ≥ 4pp bar — is **−6.00pp [−10.57, −1.71]**: the pack absorbs
+**24.1%** of the hint's value. **The deficit was a competition, and the competitor was the benchmark's own
+curated sentence.**
+
+Unresolved and recorded as such: the difficulty-shape prediction (moderate +25.00 at n=248, challenging
++24.51 at n=102 — 0.49pp apart, and no simple questions exist on this panel), and whether the +1.14pp cell
+survives a second observation. A new instrument fact: the anchors moved between dispatches (`none` 54.00 →
+54.57, `full` 51.43 → 49.71) because the store is rebuilt by a live distillation pass each time, so
+**cross-dispatch cells carry one to two points of store variance** and a cross-dispatch delta under two
+points is not a result.
+
+### R24 — how much of the 24.86pp can the database supply? (designed, the next registration)
+
+**Why this is the question R23 created.** R23 established that the memory line's deficit was never about the
+note: with the benchmark's curated `evidence` sentence present, a pack costs 4.86 points; with it removed the
+same pack is worth +1.14 points. The 24.86 points the sentence is worth are therefore the target, and most of
+them are **not memory's job**. Three comparisons say so: this lane loses 24.86 points to the ablation, RSL-SQL
+loses 12.71 and CHESS 14.36 (Companion Agents, Table 1), and the two that lose less are the two whose pipelines
+extract columns and cell values from the database before generating. The difference between 24.86 and ~14 is
+**schema linking and value indexing**, not knowledge about past questions.
+
+**The design, and it reuses an arm that already exists.** A 2×2 over evidence {present, absent} × value
+annotation {present, absent}:
+
+1. **`none`** — the shipped baseline, evidence present, no annotation. Every published number's anchor.
+2. **`none-noevidence`** — measured in R23 at 29.71%; the cell that says how much is missing.
+3. **`values`** — the existing arm: `valuesDdl` annotates each column with the values it holds. It has only
+   ever been run on the *unablated* prompt, where the evidence sentence was already supplying exactly that
+   information, which is why its cell has always read as a null.
+4. **`values-noevidence`** — the cell that matters: the same annotation on the prompt that has lost the hint.
+   `values − none-noevidence` is the **fraction of the 24.86pp the database can supply by itself**, and
+   `values-noevidence` against `none` is how much of the lost ground is recovered without any hint at all.
+
+**Prediction.** `values-noevidence − none-noevidence` ≥ 6pp: a quarter of the gap or more, because a
+column-value index supplies the two things the sentence most often supplies (which column, which literal).
+`values − none` ≈ 0, because the annotation is redundant where the hint is present — the R23 interaction.
+And the recovered fraction should be larger on the questions whose evidence sentence is a *value mapping*
+(`... refers to ... = '...'`) than on those whose sentence is a definition of arithmetic.
+
+**Resolution.** Both contrasts are two-cell pairs on the same 350 questions. At the discordance R23 measured
+(a value annotation should move 25–40 questions), the paired half-width is 3.4–4.2pp, so the confirmatory
+claim is stated at **≥6pp** — above the instrument's floor by construction, which is the rule AUDIT 17.5
+adopts.
+
+**Refutation.** If `values-noevidence − none-noevidence` is within ±1pp with an interval excluding +1pp, then
+the 24.86pp is not schema-or-value information and the next suspect is the sentence's role as a *problem
+statement* rather than a fact — which would move the line to how a question is restated, not what is retrieved.
+If the annotation recovers more than 15pp, then most of this record's "memory deficit" was a missing value
+index, and the memory line's scope needs rewriting in the documentation rather than in code. If `values` is
+*below* `none` by ≥2pp with an interval excluding −1pp, the annotation competes the same way the pack does and
+the competition finding generalises to any added text — which would be the strongest result available here.

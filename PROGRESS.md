@@ -26,6 +26,7 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R20 Anchored hold | **closed** — the licence and the note are **substitutes**: the permissive clause is +2.00pp where there is no block and −0.57pp where there is one (interaction −2.57pp), so the explicit sentence is dropped and the shipped prompt keeps the clause it had; the blind revision reproduced to the question (−4.00pp, 12/26, p = 0.0336) | R21: utility clearance, the only mechanism that adds no text |
 | R21 Utility clearance | **closed** — the pair is +0.00pp (6/6, p = 1.0000) and 311 of 350 questions rendered the *same* pack, so the treatment was absent where it should have been strongest; underneath it, 77% of the store has no counterfactual record and the pass produced 104 decisive questions from 1,400 learn rows | R22: the object, not the filter |
 | R22 Raw substrate | **closed** — the raw event is **not** better than the distilled note (`full-raw` − `full` = −0.86pp, p = 0.7608, CI [−4.57, +2.86]) and sits **1.43pp below its own shuffled control**, so the subject of the correction does not matter; the confirmatory +1pp claim was below the lane's ±3.7pp paired resolution before the run, and the pooled cost of *any* text against no memory is −2.67pp at exact p = 0.0091 | R23: what a 142-character curated hint is worth, measured by removing it |
+| R23 Evidence ablation (positive control) | **closed** — the hint is worth **+24.86pp** (96/9, p < 0.0001, CI [19.71, 30.00]), three times the registered bar, so the panel is calibrated and the twenty-two nulls above it stand; and the pack is **−4.86pp with the hint present but +1.14pp without it**, with an interaction of **−6.00pp [−10.57, −1.71]**, so the cost was always the competition and never the note | R24: how much of the 24.86pp can the database itself supply |
 
 ## Iteration log
 
@@ -6769,34 +6770,132 @@ costs, and neither is the absence of interpretation. The product decision that f
 registration named in advance — **abstention by default** — and the next registration has to say which
 half of "text costs" it is testing, because this one measured the object and found it innocent.
 
+### 131 — The deficit is a competition, and the competitor is the benchmark's own hint
+
+**Question.** Twenty-two iterations varied seven axes on a distilled store and every one landed at or below
+no memory. Not one of them ran a manipulation the literature already agrees about, of a size the panel could
+see. So the record's summary sentence — *"showing any text costs about two and a half points"*, published at
+exact p = 0.0091 over 1,050 arm-cell pairs — rested on an instrument that had never been shown to detect
+anything. R23 supplied that control, and it cost no store, no retrieval and no distillation, because the
+manipulation was already in the prompt.
+
+**What was in the prompt.** BIRD attaches a curated, human-written `evidence` sentence to every question: on
+this panel **350 of 350**, 25 to 468 characters, mean **142**, median 135. Two examples are `Excellence rate
+= NumGE1500 / NumTstTakr` and `2016 season refers to season = '2015/2016'`. The shipped `none` prompt has
+always carried it, so **every number this project has ever published was measured on top of it**, and no
+iteration had removed it. Three independent records price the removal: BIRD's own GPT-4 ablation at
+−20.01pp, Companion Agents (arXiv 2601.08838) at −12.7/−14.4/−18.4 across RSL-SQL/CHESS/DAIL-SQL, SEED
+(arXiv 2506.07423) at −8.4 to −20.9. Seven cells, four systems, one direction, mean −15.2pp.
+
+**What was built.** A 2×2 factorial over the two blocks a prompt can carry: `none`, `none-noevidence`,
+`full`, `full-noevidence`. `ARM_DROPS_EVIDENCE` is the only thing the ablation touches and both new cells are
+planned through the same `call()` as the anchors with one argument changed; `promptFor`, `retryPromptFor` and
+`anchorPromptFor` all render through a single `evidenceBlockOf`, so there is one constant a label could drift
+in and one place a check can look. `V47-evidence-ablated` counts the prompts that were **actually sent** — not
+the flag that built them — and fails the run if a shipped arm missed a question that had a sentence, if an
+ablated arm carried one anyway, or if the ablation reached fewer questions than the arm it ablates.
+
+**Reading** (350 questions, 5 folds, 1,758 calls, 8 retries, 0 timeouts, 0 call failures, twelve gates pass,
+dispatch `41223844474`, artefact `eval/results/poc-sota-bird-evidence.json`; minimum detectable effect
+4.87pp):
+
+| Cell | ACC | vs `none` |
+|---|---|---|
+| `none` | 54.57% (191/350) | — |
+| `full` | 49.71% (174/350) | −4.86pp [−8.29, −1.43], p = 0.0076 |
+| `full-noevidence` | 30.86% (108/350) | −23.71pp [−29.14, −18.57] |
+| `none-noevidence` | 29.71% (104/350) | −24.86pp [−30.00, −19.71] |
+
+| Contrast | Δ | 95% CI | gained / lost | p |
+|---|---|---|---|---|
+| evidence, no pack | **+24.86pp** | [+19.71, +30.00] | 96 / 9 | < 0.0001 |
+| evidence, with pack | **+18.86pp** | [+14.00, +24.00] | 80 / 14 | < 0.0001 |
+| pack, with evidence | +4.86pp | [+1.43, +8.29] | 27 / 10 | 0.0076 |
+| pack, no evidence | **−1.14pp** | [−4.29, +2.00] | 13 / 17 | 0.5847 |
+| interaction | **−6.00pp** | [−10.57, −1.71] | 19 up / 37 down / 294 flat | — |
+
+**The positive control passes by three times its own bar.** The registration asked for ≥8pp with a point
+estimate near 12 — the literature's low end, chosen because this model reasons better than 2023 GPT-4. The
+measurement is **+24.86pp**, with the interval entirely above the bar's upper end. The panel is not
+insensitive; it is *more* sensitive than the record assumed. **The refutation clause that would have retired
+it — "if a manipulation worth 8–21 points returns zero, the panel is the finding" — does not fire, and the
+twenty-two nulls above it stay readable as nulls about memory.**
+
+**The refuted prediction is the discovery.** The registration said `full-noevidence` would sit *below*
+`none-noevidence`, "because the pack's 2–4 point cost is not something a smaller prompt removes". It sits
+**1.14pp above it** — the first cell in this record that is not negative — while the same pack on the
+unablated prompt costs 4.86pp, significantly. The interaction is **−6.00pp [−10.57, −1.71]**, excluding
+zero and clearing the registered |DiD| ≥ 4pp bar: a retrieved note absorbs **24.1%** of the hint's value and
+loses the competition for the remaining 75.9%.
+
+That reattributes eight iterations of negative results. A note written for one question does not cost points
+because it is irrelevant (R12), badly scoped (R13), wrongly framed (R17), too long (R16), too raw (R22),
+badly delivered (R18/R20) or wrongly selected (R21) — all seven were varied and all seven came back null. It
+costs points **because it competes with curated per-question knowledge for the same job, and loses**; remove
+the competitor and the cost vanishes.
+
+**The prediction the panel cannot answer.** Moderate `n = 248` at +25.00pp [18.95, 31.05] and challenging
+`n = 102` at +24.51pp [14.71, 34.31] — 0.49pp apart, and **there are no simple questions on this panel at
+all**, because `poolOf` drops the easiest third. The literature's gradient spans three levels; this panel has
+two and they are flat. Reported as unresolved rather than as a shape.
+
+**A second reading, unplanned: the anchors move between dispatches.** `none` 54.00 → 54.57 (2 questions) and
+`full` 51.43 → 49.71 (6 questions) against R22, on identical questions, because the store is rebuilt by a
+live distillation pass each time — 632 corrections and 1.79 items per question here, 640 and 1.82 there.
+**Cross-dispatch cells carry one to two points of store variance**, which is larger than several deltas this
+record has published. Every claim in this entry is within-dispatch and unaffected, and the rule that follows
+is: compare inside a run, or re-measure the anchor.
+
+**Manipulation check.** Both ablated arms produced SQL on 350 of 350 prompts (100%), against `full`'s parse
+rate of 100% and execution rate of 99.43%. The 24.86pp is knowledge that left the prompt, not coherence.
+
+**Green.** `pnpm check` — 1,975 tests, 104 files, coverage 99.98 / 99.62 / 100 / 99.98, `sota.ts` and
+`validation.ts` at 100 on all four dims; the protocol check validates sixteen pre-registrations and six
+artefacts, every declared gate emitted and none unannounced.
+
+**What this changes.** The product rule is now a switch rather than a policy: abstain where the question
+arrives with curated knowledge, inject where it does not. The memory line has its first measurable ceiling —
+**4.6% of one curated sentence** — and the record's largest remaining number, 24.86pp, is now known to be
+mostly *not* memory's job: this lane's `none` prompt has no examples, no schema linking and no value index,
+and the systems that report a smaller evidence dependence get it by extracting the same information from the
+database. The next registration therefore replaces the hint rather than the note.
+
 ## What is left, in order (current)
 
-Eight axes are closed — content, quantity, position, substrate, framing, delivery order, membership at a
-fixed dose, and now the substrate itself — and **every arm this record can render is at or below no
-memory**. What remains separates one experiment that is designed from work that waits on something
-outside this repository.
+Nine runs are closed and the sentence that summarised them has changed. Eight axes were varied on a
+distilled store — content, quantity, position, substrate, framing, delivery order, membership at a fixed
+dose, and the substrate itself — and every one landed at or below no memory. The ninth shows why: **the
+store's arms were never competing with nothing. They were competing with 142 characters of curated,
+per-question knowledge that the benchmark supplies for free, and losing.**
 
 | # | Item | State | Blocks |
 |---|---|---|---|
-| 1 | **R23 — what the benchmark's own hint is worth** | designed, not registered: `none` already carries the question's BIRD `evidence` (mean 142 characters of curated, per-question knowledge) in every arm, so the one text this task vouches for has never been ablated. Removing it measures the ceiling on *any* retrieved text, cheaply (2×2 arms, no store) | the next result |
-| 2 | **Abstention as a policy** | the product decision R22 named in advance, not yet an experiment: a per-question gate that shows nothing unless the evidence says otherwise, with a control that abstains on the same number of questions chosen at random | R23's number, which says whether text is worth seeking at all |
+| 1 | **R24 — how much of the 24.86pp can the database supply?** | designed, not registered: a 2×2 of evidence {present, absent} × value annotation {present, absent}, using the `valuesDdl` arm that already exists and has only ever been run on the *unablated* prompt, where the hint was doing its job for it. Success is a **fraction of a measured effect**, not a delta against no memory | the next dispatch |
+| 2 | **Abstention as a switch** | no longer a research programme: R23 says abstain where the question carries curated knowledge and inject where it does not, and the condition is observable per deployment. What remains is instrumenting the condition, not testing the policy | R24, if value annotation makes the note's job redundant too |
 | 3 | **R19.3 — adaptive injection** (ε-MemEvo) | not built; `gated` and `full-corroborated` are static filters, not per-question decisions | the gate's inputs, which the pool already collects |
-| 4 | **The interpreter's domain prompt** | decision confirmed three times: `V44` reports 184/184, 168/168 and 156/156 domain-free items arrived unscoped, 0 widened in every run | the ceiling on every transfer number |
-| 5 | **S1a — ambiguity on public annotations** | unblocked and unbuilt (BIRD-Interact carries the annotations) | — |
-| 6 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 7 | **S3 — the SOTA push** | gated by its own rule: it starts only if S2b moves accuracy, and S2b's gate was missed | R10-family work, not a bypass |
-| 8 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
-| 9 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
+| 4 | **The interpreter's domain prompt** | decision confirmed four times: `V44` reports 184/184, 168/168, 156/156 and 168/168 domain-free items arrived unscoped, 0 widened in every run | the ceiling on every transfer number |
+| 5 | **The panel's resolution** | measured, not assumed: MDE 4.87pp at n=350, and the positive control at 24.86pp proves the instrument works at that scale. Anything below ~5pp stays unresolved here, and the full 1,534-question split is the only way to change that | a budget line, not an analysis |
+| 6 | **S1a — ambiguity on public annotations** | unblocked and unbuilt (BIRD-Interact carries the annotations) | — |
+| 7 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
+| 8 | **S3 — the SOTA push** | gated by its own rule: it starts only if S2b moves accuracy, and S2b's gate was missed | R10-family work, not a bypass |
+| 9 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
+| 10 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
-Items 1–5 are ours to run. Items 6–9 wait on an annotation set, a gate, a decision and a toolchain
+Items 1–6 are ours to run. Items 7–10 wait on an annotation set, a gate, a decision and a toolchain
 respectively. None of them blocks the S0 result, and none is hidden behind the green build: each is either
 an experiment that has not run or a dependency that has not shipped.
 
-**What this list changed this iteration.** The last content axis closed with a number and the number is a
-null that points at the task rather than at the store: the interpretation is not what costs, the absence
-of interpretation is not what costs, and the only thing left that both could be measured against is the
-142 characters of curated knowledge the benchmark already gives the model for free. If removing *that*
-costs nothing, then on this benchmark no text can help and the memory line's honest product is a store
-you read yourself. If it costs two points, then text can help when it is written for the question at
-hand, and every arm in this record has been adding text that was written for a *different* question —
-which is the first explanation in twenty-two iterations that this record has not already tested.
+**What this list changed this iteration, and it is the largest change since the line started.** The record
+has spent eight iterations asking what is wrong with the note — its content, its scope, its length, its
+register, its substrate, its order, its selection — and R23 says nothing was wrong with it. With the hint
+removed the same pack is worth +1.14pp instead of −4.86pp, and the interaction that separates those two
+numbers is −6.00pp with an interval that excludes zero. **The deficit was a competition, and the competitor
+was the benchmark.**
+
+That makes the remaining 24.86pp the most valuable number in the repository, because it is now a *target*
+rather than a backdrop. It is also, on the evidence of three competitor systems, mostly a schema-linking and
+value-indexing gap: RSL-SQL and CHESS lose 12.7 and 14.4 points to the same ablation where this lane loses
+24.86, and they get the difference by extracting columns and cell values from the database instead of
+reading a hint. **The next question is therefore not what a memory should contain but how much of the hint
+the database can replace** — and if the answer is most of it, the memory line's honest product is the
+residue.

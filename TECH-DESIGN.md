@@ -3272,6 +3272,111 @@ pack, a reformatted query, a truncated one, a multi-line query, a modified multi
 block, a heading above the pack, an empty pack and a line that is not an event; `V46` for absence, pass,
 one block rewritten, the printed sample, and an arm that rendered nothing.
 
+### 17.56 An ablation is a treatment only if the instrument can see it
+
+**The block.** `none` renders four things: the task instruction, the schema, the question, and BIRD's
+per-question `evidence` sentence. That last field is not ours — it is curated, human-written, per-question
+domain knowledge shipped with the benchmark, and on this panel it is present on **350 of 350** questions at
+25 to 468 characters (mean 142, median 135). Every number this project has published was measured on top of
+it, and no iteration in twenty-two had ever removed it.
+
+**Why removing it is the control rather than the experiment.** Three independent records price the same
+manipulation: BIRD's own GPT-4 ablation at −20.01pp, Companion Agents (arXiv 2601.08838) at −12.7 to −18.4
+across three systems, SEED (arXiv 2506.07423) at −8.4 to −20.9. Seven cells, four systems, one direction,
+mean −15.2pp. A lane that has reported twenty-two nulls, all on a panel whose paired resolution is ±3.7pp,
+and none of them against a manipulation anyone else has measured, has not shown that text does not help. It
+has shown that it cannot tell. This is the first iteration where the expected answer is known before the
+call is made.
+
+**One implementation point, and it is the whole ablation.**
+
+```
+    ARM_DROPS_EVIDENCE = { 'none-noevidence': true, 'full-noevidence': true }
+
+    promptFor({ ..., evidence })          ->  evidenceBlockOf(evidence)
+    retryPromptFor({ ..., evidence })     ->  evidenceBlockOf(evidence)
+    anchorPromptFor({ ..., evidence })    ->  evidenceBlockOf(evidence)
+
+    evidenceBlockOf(e) = e == "" ? "" : EVIDENCE_LABEL + "\n" + e
+```
+
+`call()` is the single planner for every non-anchored arm, and it passes
+`ARM_DROPS_EVIDENCE[arm] ? "" : row.evidence`. The two new cells are therefore planned by the same function
+as the anchors with one argument changed — not by a second prompt builder that could drift. The label lives
+in exactly one constant, which matters because `V47` searches the *sent prompt* for it.
+
+**Why the check reads the prompt and not the flag.** This record has published a number computed from a
+flag twice, and both times the flag was right and the rendering was not: a framing arm whose sentence never
+arrived, a verbatim arm whose payload was mis-split. `V47-evidence-ablated` therefore counts, per arm, how
+many of the prompts that were actually sent contain `EVIDENCE_LABEL + "\n" + the row's own sentence`, over
+the questions whose row has one, and fails the run on any of three conditions:
+
+1. **A shipped arm missed a question that had a sentence.** Every published number is a statement about a
+   baseline that carries this block; an arm that silently dropped it is not that baseline.
+2. **An ablated arm carried one anyway.** An ablation that removed nothing is `none` under a second name,
+   and its difference from `none` would be published as "the evidence costs nothing".
+3. **The ablated arm reached fewer questions than the arm it ablates.** 0 of 300 is a perfect ablation of a
+   smaller experiment, and a count alone cannot see it.
+
+Plans with an empty prompt are excluded, because they are case-assembly registrations rather than calls:
+counting them would report an arm as having dropped a block it never had a chance to send.
+
+**The manipulation check that is not a gate.** `V3` measures `full`'s parse rate. A prompt that has lost half
+of what told the model which values exist may read as a different *task* rather than as less knowledge, and
+a 20-point accuracy drop caused by unparseable replies would be a measurement of prompt coherence. The
+registration therefore carries its own rule — the effect counts as a knowledge effect only if the ablated
+arms produce SQL at within 5pp of the arm they ablate — and the artefact reports per-arm production counts
+so the rule is computable from the file.
+
+**The 2×2 and the interaction.** Four cells: `none`, `none-noevidence`, `full`, `full-noevidence`. The
+primary contrast is `none − none-noevidence`. The secondary contrast is the difference in differences,
+`(full − full-noevidence) − (none − none-noevidence)`, which is negative if a retrieved pack substitutes for
+the curated hint and zero if the two are independent. It is read only if the main effect clears the
+registered bar, because a four-cell difference in differences has roughly twice the variance of a two-cell
+contrast at the same n and a null on it at 350 questions is uninformative by construction.
+
+**Resolution.** With the literature's asymmetry (b ≈ 40, c ≈ 5 at a true 10pp effect on 350 questions), the
+discordant count is ≈ 45, the paired standard error is `sqrt(45)/350 = 1.92pp`, and the half-width is
+±3.8pp. The confirmatory claim is registered at **≥8pp**, 2.4 standard errors — the audit's rule from R22
+applied before dispatch rather than after.
+
+**Tests.** `evidenceBlockOf` for the label-plus-sentence form, the empty case (no dangling heading), the
+single-rendering-point property, and the no-trace property; `V47` for absence, the clean 2×2, an ablation
+that kept the block, a shipped arm that lost it, an ablation that reached fewer questions, and a 2×2 in
+which nothing carried the block at all.
+
+**What the 2×2 returned.** Dispatch `41223844474`, twelve gates, `V47` at `none 350/350, full 350/350,
+none-noevidence 0/350, full-noevidence 0/350`.
+
+```
+    none              54.57%   (191/350)
+    full              49.71%   (174/350)   -4.86pp  [-8.29, -1.43]   27/10  p = 0.0076
+    full-noevidence   30.86%   (108/350)
+    none-noevidence   29.71%   (104/350)
+
+    evidence, no pack    +24.86pp  [19.71, 30.00]   96/9    p < 1e-4
+    evidence, with pack  +18.86pp  [14.00, 24.00]   80/14   p < 1e-4
+    pack, no evidence     -1.14pp  [-4.29, +2.00]   13/17   p = 0.5847
+    interaction           -6.00pp  [-10.57, -1.71]  19 up / 37 down / 294 flat
+```
+
+The design worked as a design and one of its predictions failed, which is the intended use of the file. The
+registered bar was ≥8pp and the effect is 24.86pp, so the panel is three times more sensitive than it was
+asked to be; the registered claim that the pack would still cost points without the hint was wrong, and its
+being wrong is the mechanism. The interaction's interval excludes zero and clears the declared |DiD| ≥ 4pp
+bar, which is why the substitution reading is stated as a result rather than as a hint.
+
+**What the ablation taught the technique.** Two things generalise beyond this lane.
+
+1. **A positive control has to be a manipulation the literature has already priced, not one the lane invented.**
+   Everything this record could vary about a note had an unknown true effect, so a null was ambiguous between
+   "no effect" and "no sensitivity" for twenty-two iterations. The evidence sentence was the only candidate in
+   the prompt with seven published cells behind it, and using it converted an ambiguity into a calibration.
+2. **A factorial beats two one-variable tests whenever the baseline contains text.** The record had compared
+   every arm against `none` and reported the deficit as a property of the arm. The fourth cell showed the
+   deficit belongs to the *pair*: the same arm is −4.86pp against one baseline and +1.14pp against another.
+   A lane whose treatment is added text and whose baseline already contains text owes itself the fourth cell.
+
 
 ## 18. Acceptance criteria
 

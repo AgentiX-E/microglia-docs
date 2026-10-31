@@ -466,6 +466,24 @@ for this file: the row's grade stays *medium* because the paper is not wrong, it
 comparison this project makes against a memory framework has to be made on a task where the retrieved text
 is not competing with a hint the benchmark already supplies.
 
+**Ablation we can now compare ourselves against, in the same units.** The evidence ablation is the one
+manipulation every text-to-SQL system reports, which makes it the only place in this file where our number
+and theirs are the same quantity. R23 measured it at **24.86pp** on this lane; Companion Agents (arXiv
+2601.08838) tabulates **12.71** for RSL-SQL, **14.36** for CHESS and **18.37** for DAIL-SQL on the same
+benchmark and model family, and BIRD's original GPT-4 ablation was 20.01. Our dependence is the largest of
+the five, and the ordering is informative: the two systems that lose least are the two whose pipelines
+extract columns and cell values from the database before generating, and the one that loses most is the one
+whose prompt does the least extraction. **That is a schedule, not a coincidence**: it prices schema linking
+and value indexing at roughly 10 points of the 24.86, and it is why R24 replaces the hint with a value index
+rather than with a better note.
+
+The second thing this comparison yields is a calibration for every other row in this file. A number from a
+system whose evidence dependence is 12 points is being measured in a regime where the model already knows
+where to look; ours is measured in one where it does not. **Cross-system deltas in this table are not
+comparable across this boundary**, and any future row here should carry the system's evidence dependence
+beside its accuracy.
+
+
 Numbers we intend to reproduce ourselves, because they change a decision: the M-Schema delta on
 DeepSeek (one arm), the CHASE-style pool ceiling under heterogeneous generators (R7.1), and the
 per-signal discrimination of execution signatures (R7.2a).
