@@ -468,14 +468,40 @@ is not competing with a hint the benchmark already supplies.
 
 **Ablation we can now compare ourselves against, in the same units.** The evidence ablation is the one
 manipulation every text-to-SQL system reports, which makes it the only place in this file where our number
-and theirs are the same quantity. R23 measured it at **24.86pp** on this lane; Companion Agents (arXiv
-2601.08838) tabulates **12.71** for RSL-SQL, **14.36** for CHESS and **18.37** for DAIL-SQL on the same
-benchmark and model family, and BIRD's original GPT-4 ablation was 20.01. Our dependence is the largest of
-the five, and the ordering is informative: the two systems that lose least are the two whose pipelines
-extract columns and cell values from the database before generating, and the one that loses most is the one
-whose prompt does the least extraction. **That is a schedule, not a coincidence**: it prices schema linking
-and value indexing at roughly 10 points of the 24.86, and it is why R24 replaces the hint with a value index
-rather than with a better note.
+and theirs are the same quantity. R23 measured it at **24.86pp** on this lane's 350-question minidev panel;
+R24 re-measured the same 2×2 on the split every other row in this file was measured on, 1,534 questions, and
+read **17.60pp [15.38, 19.82]**. Companion Agents (arXiv 2601.08838) tabulates **12.71** for RSL-SQL, **14.36**
+for CHESS and **18.37** for DAIL-SQL on the same benchmark and model family, and BIRD's original GPT-4 ablation
+was 20.01.
+
+| system | evidence dependence | panel | schema linking / value index |
+|---|---|---|---|
+| BIRD GPT-4 (original ablation) | 20.01 | dev, 1,534 | none |
+| **microglia (R24)** | **17.60** | dev, 1,534 | none |
+| DAIL-SQL | 18.37 | dev, 1,534 | partial |
+| CHESS | 14.36 | dev, 1,534 | full column + value extraction |
+| RSL-SQL | 12.71 | dev, 1,534 | full + bidirectional linking |
+| microglia (R23) | 24.86 | minidev, 350 | none — **not admissible here** |
+
+**The minidev row is not comparable and is shown only to explain itself.** 24.86 was measured on a panel from
+which the easiest third had been removed; within the R24 dispatch, restricted to the same moderate-and-
+challenging mixture, the effect is **22.99pp [19.21, 26.77]**. That is the number to quote against a system
+evaluated on moderate-and-challenging questions, and 17.60 is the number to quote against one evaluated on the
+whole split. **R23's 24.86 was never an inflation; it was a different population** — a distinction this file
+had been getting wrong in both directions.
+
+The ordering across systems is informative and it survives the correction: the two systems that lose least are
+the two whose pipelines extract columns and cell values from the database before generating, and the two that
+lose most — BIRD's GPT-4 baseline and this lane — do the least extraction. **That prices schema linking and
+value indexing at roughly 5 to 7 points of the ladder** (17.60 − 12.71 = 4.89 for this lane against RSL-SQL;
+20.01 − 12.71 = 7.30 for the GPT-4 baseline against it), **not the 10 this file previously inferred** from the
+24.86-based arithmetic — and it is a
+smaller number than the 24.86-based arithmetic gave. The inference it supported — that the gap is addressable
+from the database — is now weaker than this file claimed, and R24 removed its second premise as well: the
+pack's cost was attributed to a *competition* with the evidence sentence (interaction −6.00pp), and at 1,534
+questions that interaction is **−1.30pp [−3.06, +0.46]** and the pack is null both with and without the hint.
+**Cross-system comparison in this file therefore rests on 17.60 alone, and the substitution story is demoted to
+a single-run observation.**
 
 The second thing this comparison yields is a calibration for every other row in this file. A number from a
 system whose evidence dependence is 12 points is being measured in a regime where the model already knows

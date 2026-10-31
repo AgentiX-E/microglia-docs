@@ -1532,6 +1532,63 @@ pass each time (632 corrections here, 640 before). Cross-dispatch comparisons on
 points of store variance, which is larger than several deltas this record has published. Every claim in this
 section is within a single run.
 
+### 3.6.24 The difference was the population, not the measurement
+
+R23 left the record holding a number it could not compare. 24.86pp was measured on 350 questions from which
+the easiest third had been removed; every published ablation it invites comparison with — 20.01 for BIRD's own
+GPT-4, 12.71 for RSL-SQL, 14.36 for CHESS, 18.37 for DAIL-SQL — was measured on the full 1,534. The
+registration for R24 named the risk explicitly: a dev interval that excludes 24.86 would mean *minidev
+inflates the effect*, and dev would become the headline.
+
+**It excludes it, and the explanation is wrong.** Both were registered, and both failed together. On 1,534
+questions the hint is worth **+17.60pp [15.38, 19.82]**, 315 gained against 45 lost, p < 1e-4 — an interval
+2.14pp wide, half of what minidev could produce, and it does not contain 24.86. The registration's reading of
+that fact is refuted by the same dispatch: **restricted to the mixture minidev actually keeps — moderate and
+challenging, n = 609 — the effect is +22.99pp [19.21, 26.77], which does contain 24.86.** A larger sample did
+not shrink the effect; it *re-weighted* it. Dev is 60% `simple` questions, where the sentence is worth
+**14.05pp**, and minidev has none of those. **24.86 was never inflated. It was a different population.**
+
+That makes the two numbers a decomposition rather than a contradiction, and it settles which one is quotable.
+**22.99 is the number for moderate-and-challenging questions and only for them; 17.60 is the whole-split
+number, and it is the one a cross-system comparison must use**, because every system it would be compared
+with reports on the whole split. Against that instrument — 20.01, 12.71–18.37, 8.35–20.86 — 17.60 is the top
+of the published range and not an outlier, which is a stronger position than 24.86 ever was, since 24.86 was
+being compared to quantities it had no right to be compared to.
+
+**The gradient underneath the gap is monotone, and it was measured for the first time.** `simple` n=925
+**+14.05pp** [11.24, 16.86], `moderate` n=464 **+22.63pp** [18.32, 27.16], `challenging` n=145 **+24.14pp**
+[15.86, 32.41]. The simple-to-moderate step is **+8.58pp ± 5.24** and resolved. The moderate-to-challenging
+step is **+1.51pp ± 9.38** and not: at 145 questions the hardest third cannot separate from the middle, so the
+gradient's top end is an open question rather than a finding. What the gradient does say is that the hint's
+value is roughly *knowledge the model lacked* — the same 142 characters buy less as the question gets easier,
+which is what a substitution story predicts and what no memory experiment in this record ever produced.
+
+**And the pack is null — in both conditions, on the split that matters.** With the hint, showing a pack is
+**+0.59pp [−0.91, +2.09]**; without it, the same pack is **−0.72pp [−2.15, 0.72]**. Both intervals contain
+zero and neither reaches the 2.14pp the design can detect. R23's +1.14pp cell — the only cell in this record
+that was ever not negative, and the one that reversed its conclusion — **does not replicate on 4.4× the
+sample**. Twenty-three iterations have varied the pack along eight axes: substrate, dose, framing, ordering,
+scoping, selection, clearance, and now presence or absence of a competitor. The correct statement, after all
+of them, is that **the pack is zero**. Not that it pays a little. Zero.
+
+**Three consequences, and the first is a withdrawn mechanism.** The interaction is **−1.30pp [−3.06, +0.46]**,
+against −6.00pp on minidev, same four cells, same split the competitors use. R24's own refutation clause said
+an interval containing zero demotes the competition reading from a *mechanism* to a *single-run observation*.
+It has fired, and the honest record now carries R23's substitution story as one dispatch's observation rather
+than as an account of why memory has failed for twenty-two iterations. **Second, the research line turns.**
+The reason to ask whether a value index could replace the hint was that the pack was losing a competition, and
+at 1,534 questions it is not in one; the next question is therefore about selecting better notes, not about
+replacing them with a database. **Third, the product's deployment switch survives but loses its sharpest
+claim.** Abstain where the question carries curated per-question knowledge, inject where it does not — that is
+still right, and it is now justified by "the pack is inert where the hint is present" rather than by "the pack
+is negative there". A null still is not a cost. It is also no longer a gain.
+
+**One methodological note worth generalising.** The ±1.7pp store variance this record has flagged since
+AUDIT 17.6 shows up here as per-fold spreads of **14.98 to 21.50pp** for the evidence effect and **−2.28 to
++3.26pp** for the pack, across five stores rebuilt from identical corrections. That band is wider than several
+deltas the project has published, and it is why a −6.00pp and a −1.30pp cannot be reconciled by subtracting
+them: they are not measured on the same object. Every claim in this section is within one dispatch.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

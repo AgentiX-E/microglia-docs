@@ -4356,3 +4356,98 @@ a deadline, the cap applied and reported, a result exactly at the cap *not* repo
 statement killed inside the deadline with the pool still working afterwards, more statements than the pool's
 width served through the queue, a replacement handed to a waiter after a kill, a statement whose process dies
 before answering, and refusal after close. Four for the gate: absent, pass, fail on a rate, and fail on zero.
+
+### 17.59 A restriction recomputed inside a dispatch is a measurement; the same restriction in a new dispatch is a different object
+
+**The problem R24 created for itself.** Its registered predictions were falsifiable in two directions and both
+directions fired at once: the dev interval `[15.38, 19.82]` excludes R23's 24.86pp, *and* the registered
+reading of that exclusion — "minidev inflates the effect by dropping the simple third" — is refuted by the
+same artefact. Two hypotheses died on one table, which leaves a question the registration did not ask: was the
+difference between 24.86 and 17.60 an **error** (a small panel overstating an effect) or a **population** (two
+panels describing different questions)?
+
+**Why a second dispatch cannot answer it.** The obvious design — run the 2×2 again on moderate-and-challenging
+questions only — would be a *different object*, not a re-measurement. The store is rebuilt by a live
+distillation pass on every dispatch, so the anchors move between runs (`none` 54.00 → 54.57 → 57.63 across
+three, `full` 51.43 → 49.71), and the per-fold spread within a single dispatch is already 14.98 to 21.50pp.
+Comparing a new restricted run against the old whole-split run would confound the population with one to two
+points of store variance — the exact error this record made twice in R21 and R22 and named there.
+
+**What is admissible is a restriction of the same dispatch.** Every plan already carries its question's
+difficulty, the paired test is paired by question, and the bootstrap resamples discordant pairs. Restricting
+*both* sides of a paired comparison to a subset of questions therefore preserves the estimator, the pairing and
+the store: it is the same 609 questions judged by the same five stores, with the same statements executed. The
+restricted estimate is a **decomposition of a measured quantity**, not a new claim, and it is labelled as
+descriptive: the confirmatory p-values belong to the registered whole-split contrast, and the subset intervals
+are reported to say how much of the gap is composition.
+
+| restriction | n | effect | 95% CI |
+|---|---|---|---|
+| whole split | 1,534 | **+17.60pp** | [15.38, 19.82] |
+| `simple` | 925 | +14.05pp | [11.24, 16.86] |
+| `moderate` | 464 | +22.63pp | [18.32, 27.16] |
+| `challenging` | 145 | +24.14pp | [15.86, 32.41] |
+| moderate + challenging | **609** | **+22.99pp** | [19.21, 26.77] |
+| minidev (R23, different dispatch) | 350 | 24.86pp | [19.71, 30.00] |
+
+The restricted interval contains 24.86 and the whole-split one does not, from **one** set of 1,534 plans. The
+difference is therefore arithmetic rather than inferential: the whole split adds 925 questions worth 14.05pp to
+609 worth 22.99pp, and the two shares reproduce the measured effect exactly —
+`925/1534 × 14.05 + 609/1534 × 22.99 = 8.47 + 9.13 = 17.60`.
+
+**The step-size rule, and where it stops.** Two adjacent levels are reported as *resolved* only when the
+difference of their effects exceeds its own combined standard error; otherwise the gradient is reported as
+monotone with an open top. `simple → moderate` is **+8.58pp ± 5.24**, resolved. `moderate → challenging` is
+**+1.51pp ± 9.38**, not resolved at 145 questions — so the shape is three ordered points, not a fit, and the
+record does not claim the hardest third is harder than the middle one for the hint.
+
+**What this costs and what it buys.** The cost is one dispatch. The benefit is that a line which had been
+quoting a 350-question number against whole-split competitors now carries both numbers with their populations
+attached, and can say which one is admissible for which comparison. **17.60 is what a cross-system comparison
+must use; 22.99 is what a moderate-and-challenging claim may use; 24.86 stands as R23's estimate on its own
+population and is not evidence of anything else.**
+
+### 17.60 An artefact's name is an address, and two designs wrote to the same one
+
+**The defect, found by a gate rather than by a reader.** R24's dispatch wrote its result to
+`eval/results/poc-sota-bird-dev.json`, which was the correct path under the rule the lane had: the file was
+named after the *split*, and there was one design per split. R24 is the second design on `dev` — R8.3b measured
+the reproduction cell there in iteration 128 — so the write replaced the artefact that `eval:protocol`
+recomputes the `reproduced` row from. Nothing failed. What landed is a valid artefact of the same lane over the
+same 1,534 questions, differing only in the store it rebuilt and therefore in `none` (57.63 → 57.43). The
+displacement surfaced in `pnpm check` as the cell arithmetic no longer matching the recorded comparison.
+
+**Why a warning is the wrong fix.** The failure mode is silent by construction: every artefact is valid, every
+schema check passes, and the only reader that notices is the one that re-derives a published number instead of
+quoting it. A guard that refused the write would make the next dispatch red for having done the ordinary thing —
+running a new design on the split everyone else used — and the operator's way out would be a flag that disables
+the guard. So the rule moves the address instead.
+
+**The rule.** `artefactWriteIdOf(split, prereg)` in `packages/eval/src/artefacts.ts`:
+
+| run | file |
+|---|---|
+| no pre-registration (by hand) | `poc-sota-bird-dev.json` — unchanged |
+| `SOTA_PREREG=R8.3b-dev-split` | `poc-sota-bird-dev-R8.3b-dev-split.json` |
+| the same pre-registration again | the same file — one design, one measurement |
+| `SOTA_PREREG=R24-dev-split` | `poc-sota-bird-dev-R24-dev-split.json` |
+
+Three properties are load-bearing. The suffix is the pre-registration's **own id**, not a slug derived from it,
+so the workflow can spell the name in one expression without re-implementing the rule — and the expression lives
+at workflow level in `sota.yml`, where both the write path and every upload path read it. The id is **compared
+after normalisation** (`prereg/R24-dev-split.md` → `R24-dev-split`), because `SOTA_PREREG` arrives as an id and
+is recorded as a path; a rule comparing raw strings would suffix every name and no re-dispatch would ever hit
+its own file. And an id that contains a separator or a `..` is **refused**, because a name that climbs out of the
+results directory is a run writing its evidence where no reader and no gate looks — the general form of the
+defect this section is about.
+
+**Where the logic lives.** In `artefacts.ts` rather than in the lane, for the same reason the split id lives
+there: the lane is a CLI entry point excluded from coverage, and a naming rule that decides whether evidence
+survives should not be the one piece of logic no test can reach. Five tests cover it — the named file, one design
+one file across two spellings, a hand-run left alone, two path-shaped ids refused, and the id read out of a
+recorded path.
+
+**What was restored, and what is claimed.** R8.3b's artefact is back byte-for-byte at the canonical path, and
+its cell row is unchanged (`reproduced` at +4.11pp). R24's artefact is committed beside it under the derived
+name, and the pre-registration's Outcome says why. The numbers in neither file moved: the defect was in the
+address, not the measurement.

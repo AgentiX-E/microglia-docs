@@ -874,3 +874,92 @@ minutes of a 130-minute budget without publishing a fold.
 **18.9 Reproducibility.** Guard: 11 tests. Gate: 4 tests (absent, pass, fail on a rate, fail on zero).
 `pnpm check`: 1,995 tests, 104 files, coverage 99.98 / 99.60 / 100 / 99.98 with `sql-exec.ts` at 100 in all
 four dimensions and `sql-guard.ts` at 100 / 97.87 / 100 / 100.
+
+## 19. Addendum — R24's verdict: composition, not inflation, and a mechanism withdrawn (2026-11-01)
+
+**19.1 The dispatch.** `41245819288` on `5ceee75`, 32 minutes, 1,534 questions, 5 folds, 6,571 calls, 0 call
+failures, 0 timeouts, 13 gates pass. `V48-statements-answered` read **16 of 10,160 statements at the 20 s
+deadline (0.16%)** and 130 results truncated at the row cap (1.28%) — the instrument added after 18.1 did its
+job on its first run, on a dispatch that would otherwise have been indistinguishable from the one that
+published nothing. `V47-evidence-ablated` certified the manipulation in both directions: `none` 1386/1386 and
+`full` 1386/1386 carrying the sentence, `none-noevidence` 0/1386 and `full-noevidence` 0/1386, with the 148
+questions whose row carries no evidence skipped in both.
+
+**19.2 The four cells and the five contrasts.**
+
+| cell | accuracy | n |
+|---|---|---|
+| `none` | **57.43%** | 881/1534 |
+| `none-noevidence` | 39.83% | 611/1534 |
+| `full` | 56.84% | 872/1534 |
+| `full-noevidence` | 40.55% | 622/1534 |
+
+| contrast | pp | 95% CI | discordant | p |
+|---|---|---|---|---|
+| evidence, no pack | **+17.60** | [+15.38, +19.82] | 315/45 | <1e-4 |
+| evidence, with pack | **+16.30** | [+14.14, +18.58] | 300/50 | <1e-4 |
+| pack, with evidence | +0.59 | [−0.91, +2.09] | 73/64 | 0.4944 |
+| pack, no evidence | −0.72 | [−2.15, +0.72] | 60/71 | 0.3824 |
+| interaction (DiD) | −1.30 | [−3.06, +0.46] | 86 up / 105 down / 1343 flat | — |
+
+**19.3 Two predictions held, two failed, and one failure took its own explanation with it.** Main effect ≥8pp
+held at 17.60. `none` between 50% and 58% held at 57.43. `pack, no evidence ≥ 2pp` **failed** at −0.72. The
+interaction **≤ −4pp** failed at −1.30 with an interval containing zero. And the registered prediction that the
+dev interval would *contain* 24.86 failed — `[15.38, 19.82]` excludes it — **while the registered explanation
+for that failure also failed**: restricting the same dispatch to moderate-and-challenging (n = 609) gives
+**+22.99pp [19.21, 26.77]**, which contains 24.86. The registration had assumed an exclusion would mean minidev
+overstates; it in fact means the two panels describe different populations.
+
+**19.4 The composition was verified arithmetically, not argued.** The whole split is 925 `simple` questions at
+**+14.05pp** and 609 moderate-or-challenging at **+22.99pp**; `925/1534 × 14.05 + 609/1534 × 22.99 = 17.60`,
+the measured number to two decimals. No free parameter. The three levels are monotone (`+14.05`, `+22.63`,
+`+24.14`) and both end levels fall inside their pre-registered bands (5–15, 18–30). The simple-to-moderate step
+is **+8.58pp ± 5.24** and resolved; moderate-to-challenging is **+1.51pp ± 9.38** and **not** resolved, so the
+gradient's top end is reported as open rather than fitted.
+
+**19.5 A mechanism is withdrawn from the record.** R24's refutation clause read: *"an interaction whose
+interval contains zero demotes the competition reading from a mechanism to a single-run observation, and that
+outcome would send the line back to selection work rather than forward."* The interval contains zero. The clause
+fires against this project's own R23 conclusion, and the record now carries substitution as **one dispatch's
+observation** (−6.00pp, n = 350) rather than as an account of twenty-two iterations of negatives. The
+downstream consequence is recorded in ROADMAP: **R25's premise was that the pack was losing a competition, and
+at 1,534 questions it is not in one**, so the database-substitution design is withdrawn from the queue and the
+line turns to selection.
+
+**19.6 What the pack's two nulls do and do not license.** +0.59pp [−0.91, +2.09] with the hint and −0.72pp
+[−2.15, +0.72] without it are both indistinguishable from zero and both below the 2.14pp the design detects.
+The one cell in this record that was ever not negative — R23's +1.14pp, 13 gained against 17 lost — **does not
+replicate at 4.4× the sample**. The admissible statement is *the pack is null in both conditions*; "the pack
+pays without a competitor" is withdrawn, and the product's abstention switch is now justified by inertia rather
+than by a penalty. A null is not a cost, and it is also not a gain.
+
+**19.7 Store variance, disclosed in the artefact's own units.** Per-fold, the evidence effect runs **14.98 to
+21.50pp** and the pack's runs **−2.28 to +3.26pp** across five stores rebuilt from identical corrections — the
+±1.7pp band of 17.6, now visible per fold. R23's −6.00 and R24's −1.30 are **not** reconcilable by subtraction:
+the stores differ. Every claim in sections 19.2–19.6 is within this dispatch.
+
+**19.8 Reproducibility.** `pnpm check`: 2,000 tests, 105 files, coverage **99.98 / 99.60 / 100 / 99.98**;
+`sql-exec.ts` 100 in all four dimensions, `sql-guard.ts` 100 / 98.07 / 100 / 100; `V48` covered by four tests
+(absent, pass, fail on a rate, fail on zero). Artefact `eval/results/poc-sota-bird-dev-R24-dev-split.json` is
+committed; `prereg/R24-dev-split.md` carries the Outcome section, and the number a cross-system comparison must
+use is **17.60pp**, not 24.86pp.
+
+**19.9 The dev artefact was the address of two designs, and the second write deleted the first's evidence.**
+The dispatch wrote `eval/results/poc-sota-bird-dev.json` because the artefact's name was the *split's* name and
+this is the second design to run on `dev`. The first is R8.3b, and its run is the file `eval:protocol`
+recomputes the `reproduced` cell from — 57.63% against the published 53.52, +4.11pp, inside the 4.97pp
+tolerance. Copying R24's artefact in replaced it. Nothing failed at the write: what landed is a valid artefact
+of the same lane on the same 1,534 questions, with a different store and a different `none` (57.43%). The
+displacement was found by `pnpm check`, in the one gate that recomputes the cell instead of quoting it —
+`the recorded comparison differs from the arithmetic (indicative at 0.19pp, reproduced at 3.91pp)` — which is
+the whole reason that gate exists, and it is the third time this record can thank a derivation for a defect
+it would otherwise have documented as a number.
+
+The fix is a naming rule, not a warning. `artefactWriteIdOf` in `packages/eval/src/artefacts.ts` names the file
+after the *design* as well as the split: a run that names a pre-registration appends that id to the split's
+own (`poc-sota-bird-dev-R24-dev-split.json`), a re-dispatch of the same pre-registration writes the same file,
+and a run with no pre-registration keeps the split's name exactly as before. The rule lives in a tested module rather than in the
+lane, an id that is a path is refused, and `sota.yml` spells the same expression once at workflow level so a
+dispatch's write path and its upload path cannot disagree. R8.3b's artefact is restored byte-for-byte, R24's is
+committed beside it, and five tests cover the rule (named file, one design one file, hand-run unchanged, two path-shaped
+ids refused, id read from either spelling).

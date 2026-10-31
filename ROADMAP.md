@@ -2652,7 +2652,7 @@ survives a second observation. A new instrument fact: the anchors moved between 
 **cross-dispatch cells carry one to two points of store variance** and a cross-dispatch delta under two
 points is not a result.
 
-### R24 — the same 2×2 on the split every comparison was measured on (registered 2026-11-01, first dispatch published nothing, re-dispatched 2026-11-01)
+### R24 — the same 2×2 on the split every comparison was measured on (**closed** 2026-11-01: composition, not inflation; the competition mechanism withdrawn)
 
 **Why the database question is not the next one.** R23's headline is 24.86pp on `minidev`, and every number it
 invites comparison with — 12.71 (RSL-SQL), 14.36 (CHESS), 18.37 (DAIL-SQL), 20.01 (GPT-4) — was measured on
@@ -2703,21 +2703,86 @@ deadline could run; the log localises it to the gap between each fold's evaluati
 blocking at a 1% deadline share, and judging prints every 200 plans. Nothing about the design, arms, sample or
 predictions changed, and nothing was read from the failed dispatch.
 
-### R25 — how much of the 24.86pp can the database supply? (designed, deferred behind R24)
+**Outcome (dispatch `41245819288`, 32 minutes, 13 gates, 0 failures).** `none` 57.43%, `none-noevidence`
+39.83%, `full` 56.84%, `full-noevidence` 40.55%. Evidence without the pack **+17.60pp [15.38, 19.82]**
+(315/45); with the pack **+16.30pp [14.14, 18.58]** (300/50); the pack **+0.59pp** with the hint and
+**−0.72pp** without it, neither interval excluding zero; the interaction **−1.30pp [−3.06, +0.46]**.
 
-**The question R24 does not answer.** R23 priced the note's deficit as a competition and left the target at
-24.86pp. Whether that target is *addressable from the database alone* is the next question, and the two
-channels are already in the lane: `valuesDdl` annotates columns with the values they hold, and `linkSchema`
-prunes the schema to the tables the question names. Both were measured only on the unablated prompt, where the
-evidence sentence was doing their job — `values` read +0.29pp (12/11, p = 1.00, iteration 95) and `linked`
-read **−7.43pp** (7/33, p < 1e-4), so the two channels have opposite histories and neither has been measured
-where the competitor is absent.
+Four of the five registered predictions resolved, two of them against the registration:
 
-**Why it waits.** Its natural claims are ≤3pp for the value channel and ≈−7pp for the pruning channel, and the
-first is below even dev's floor. Registering it now would repeat the mistake this record has now made three
-times: a claim smaller than its instrument. R24's dev run either raises the floor to ~2pp — in which case the
-value channel becomes testable — or shows the effect is split-dependent, in which case the question changes.
+| prediction | bar | read | verdict |
+|---|---|---|---|
+| main effect ≥8pp | 8pp | +17.60 | **held** |
+| interval contains 24.86 | contain | [15.38, 19.82] | **falsified** |
+| pack without hint ≥2pp | 2pp | −0.72 | **falsified** |
+| interaction ≤ −4pp | −4pp | −1.30, CI contains 0 | **falsified** |
+| effect rises across three levels | monotone, 5–15 / 18–30 | 14.05 / 22.63 / 24.14 | **held** |
+| `none` within 50–58% | band | 57.43 | **held** |
 
-**The design, for the record.** Four cells: `none-noevidence`, `values-noevidence`, `linked-noevidence`, and
-`none` as the anchor. The linker reads the question and **not** the evidence on both cells, because a pruner
-that reads the hint reintroduces the thing being ablated. `V47` covers all three ablated arms unchanged.
+**The falsification of 24.86 is a composition, and it takes the registered explanation with it.** Restricted to
+the mixture minidev actually keeps — moderate and challenging, n = 609 — the same dispatch gives **+22.99pp
+[19.21, 26.77]**, which contains 24.86. `925/1534 × 14.05 + 609/1534 × 22.99 = 17.60` exactly. So minidev never
+inflated anything; it described a different population. **17.60 is the whole-split number and the only one
+admissible in a cross-system comparison; 22.99 is the moderate-and-challenging number; 24.86 stays R23's
+estimate on its own population.**
+
+**The interaction's own refutation clause fired.** The registration said an interval containing zero would
+demote the competition reading from a mechanism to a single-run observation and send the line back to selection
+work rather than forward. It does. **The pack is null in both conditions** — the +1.14pp cell that reversed this
+record's conclusion in R23 does not replicate at 4.4× the sample — and the deployment switch survives as
+inertia rather than as a penalty.
+
+### R25 — the substitution design is withdrawn; the selection question replaces it (redesigned 2026-11-01)
+
+**What R24 removed.** R25 was designed on R23's conclusion that the pack's cost was a *competition* with the
+curated sentence — a retrieved note losing, by 24.1%, a job the benchmark already does for free — and its
+question followed directly: if the note cannot win that competition, can the database supply the same value
+instead? **On 1,534 questions the competition is not there.** The interaction is −1.30pp with an interval that
+contains zero, and the pack is +0.59pp with the hint and −0.72pp without it. R24's refutation clause fires:
+substitution is a single-run observation at n = 350, not a mechanism. **The design below is therefore archived
+rather than queued** — it answers a question whose premise no longer holds, and re-registering it would spend a
+dispatch to explain a −6.00pp that 4.4× the sample does not reproduce.
+
+**What replaces it, and why selection is the only line still carrying evidence.** Every axis the pack has been
+varied along — substrate, dose, framing, ordering, scoping, clearance, and now competitor presence — has come
+back null, which leaves exactly one measured quantity that is not null: **the retrieval is selecting the wrong
+notes**. The record already contains the evidence and has never acted on it. R13 measured that an admitted rule
+repairs 7.3% of the questions that need help and breaks 50% of those that do not; R21 measured that 311 of 350
+questions rendered the *same* pack, so the treatment was absent where it should have been strongest; R15
+measured a tie on 720 informative trials between two substrates, meaning the content is not the axis. A null
+everywhere except in *which* note arrives is a selection problem, and R24's flat interaction is what a
+selection-limited store looks like: it neither helps nor hurts because it is not being used differentially.
+
+**The question R25 now asks.** Given a fixed store, a fixed substrate and a fixed budget of one to four items,
+does **per-question admission** — a decision made per question, on evidence computed for that question — beat
+**global ranking** — the current order, identical for every question? The two conditions are already both
+implementable: `buildPack` takes an option, and the store carries enough per-item history (R21's 77% of items
+with no counterfactual record is itself part of the answer) to admit or refuse per question.
+
+**Resolution, computed before the run.** The paired design at 1,534 questions gives ±2.14pp, and the smallest
+effect worth claiming is the one R21 and R13 both failed to reach: **≥2pp**. That is now registrable, which it
+was not on minidev — this is the first design in the line that R24's larger split makes *possible* rather than
+merely cheaper.
+
+**Refutation.** Per-question admission within ±2pp of global ranking closes the selection axis and leaves the
+pack line with no live mechanism; it would then be recorded as a *closed* product decision (inject only where
+the question carries no curated knowledge, which is now an inertia argument, not a penalty) rather than as a
+research programme. An admission rule that is worse than global ranking by more than 2pp says the per-item
+history is not informative and retires the counterfactual-record requirement.
+
+**Archived: the substitution design as registered before R24.**
+
+> **The question as it stood.** Whether R23's 24.86pp target was *addressable from the database alone*, using
+> the two channels already in the lane: `valuesDdl`, which annotates columns with the values they hold, and
+> `linkSchema`, which prunes the schema to the tables the question names. Both were measured only on the
+> unablated prompt, where the evidence sentence was doing their job — `values` read +0.29pp (12/11, p = 1.00,
+> iteration 95) and `linked` read **−7.43pp** (7/33, p < 1e-4), so the two channels have opposite histories and
+> neither had been measured where the competitor is absent.
+>
+> **Why it waited, and why it is now withdrawn.** Its natural claims were ≤3pp for the value channel and ≈−7pp
+> for the pruning channel. The first was below minidev's floor; R24 raised the floor to ±2.14pp, which would
+> have made it testable — and then removed its premise, because the competition the value index was meant to
+> win does not reproduce. The mechanism design, preserved: four cells (`none-noevidence`, `values-noevidence`,
+> `linked-noevidence`, `none`); the linker reads the question and **not** the evidence on both ablated cells,
+> because a pruner that reads the hint reintroduces the thing being ablated; `V47` covers all three ablated
+> arms unchanged.

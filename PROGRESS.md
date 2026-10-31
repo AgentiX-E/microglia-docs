@@ -26,7 +26,8 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R20 Anchored hold | **closed** — the licence and the note are **substitutes**: the permissive clause is +2.00pp where there is no block and −0.57pp where there is one (interaction −2.57pp), so the explicit sentence is dropped and the shipped prompt keeps the clause it had; the blind revision reproduced to the question (−4.00pp, 12/26, p = 0.0336) | R21: utility clearance, the only mechanism that adds no text |
 | R21 Utility clearance | **closed** — the pair is +0.00pp (6/6, p = 1.0000) and 311 of 350 questions rendered the *same* pack, so the treatment was absent where it should have been strongest; underneath it, 77% of the store has no counterfactual record and the pass produced 104 decisive questions from 1,400 learn rows | R22: the object, not the filter |
 | R22 Raw substrate | **closed** — the raw event is **not** better than the distilled note (`full-raw` − `full` = −0.86pp, p = 0.7608, CI [−4.57, +2.86]) and sits **1.43pp below its own shuffled control**, so the subject of the correction does not matter; the confirmatory +1pp claim was below the lane's ±3.7pp paired resolution before the run, and the pooled cost of *any* text against no memory is −2.67pp at exact p = 0.0091 | R23: what a 142-character curated hint is worth, measured by removing it |
-| R23 Evidence ablation (positive control) | **closed** — the hint is worth **+24.86pp** (96/9, p < 0.0001, CI [19.71, 30.00]), three times the registered bar, so the panel is calibrated and the twenty-two nulls above it stand; and the pack is **−4.86pp with the hint present but +1.14pp without it**, with an interaction of **−6.00pp [−10.57, −1.71]**, so the cost was always the competition and never the note | R24: how much of the 24.86pp can the database itself supply |
+| R23 Evidence ablation (positive control) | **closed** — the hint is worth **+24.86pp** (96/9, p < 0.0001, CI [19.71, 30.00]), three times the registered bar, so the panel is calibrated and the twenty-two nulls above it stand; and the pack is **−4.86pp with the hint present but +1.14pp without it**, with an interaction of **−6.00pp [−10.57, −1.71]**, so the cost was always the competition and never the note | R24: the same 2×2 in the literature's units |
+| R24 Dev 2×2 (n = 1,534) | **closed** — the hint is worth **+17.60pp [15.38, 19.82]** on the whole split and **+22.99pp [19.21, 26.77]** on the moderate-and-challenging mixture minidev keeps, so 24.86 was **composition, not inflation**; the pack is **+0.59pp** with the hint and **−0.72pp** without it, both indistinguishable from zero and from each other; and the interaction is **−1.30pp [−3.06, +0.46]**, so the competition mechanism is **demoted to a single-run observation** under R24's own clause | R25: redirected to selection work — the substitution question lost its premise |
 
 ## Iteration log
 
@@ -6950,3 +6951,82 @@ it describes has still never been executed.
 
 **Re-dispatched** as `41245819288` on `5ceee75`, the same inputs, with the judging phase now printing and the
 statement deadline in place.
+
+### 133 — 17.60 was never an inflation, and the pack was null in both directions
+
+**The dispatch published thirteen gates and five contrasts in thirty-two minutes.** `41245819288` ran the
+registered R24 design on `dev` — 1,534 questions, 5 folds, 6,571 calls, 0 call failures, 16 of 10,160
+statements hitting the 20 s deadline (0.16%), 130 results truncated at the row cap (1.28%). The four cells:
+
+| cell | accuracy | n |
+|---|---|---|
+| `none` | **57.43%** | 881/1534 |
+| `none-noevidence` | 39.83% | 611/1534 |
+| `full` | 56.84% | 872/1534 |
+| `full-noevidence` | 40.55% | 622/1534 |
+
+| contrast | pp | 95% CI | discordant | p |
+|---|---|---|---|---|
+| evidence, no pack | **+17.60** | [+15.38, +19.82] | 315/45 | <1e-4 |
+| evidence, with pack | **+16.30** | [+14.14, +18.58] | 300/50 | <1e-4 |
+| pack, with evidence | +0.59 | [−0.91, +2.09] | 73/64 | 0.4944 |
+| pack, no evidence | −0.72 | [−2.15, +0.72] | 60/71 | 0.3824 |
+| interaction | −1.30 | [−3.06, +0.46] | 86 up / 105 down / 1343 flat | — |
+
+**Two of six predictions held, and the two that failed are worth more than the ones that passed.** The main
+effect cleared its 8pp bar at 17.60 with an interval 2.14pp wide, half of what minidev could produce. But the
+interval **[+15.38, +19.82] excludes 24.86** — and so does the registered explanation for that exclusion,
+because the registration said an exclusion would mean minidev inflates the effect by dropping the simple
+third. **Restricted to the mixture minidev actually keeps — moderate and challenging, n = 609 — the same
+dispatch gives +22.99pp [+19.21, +26.77], which contains 24.86.** The gap between 24.86 and 17.60 is
+**composition, not inflation**: 60% of dev is `simple`, where the sentence is worth 14.05pp, and minidev
+contains none of it. Both numbers are now correct and they answer different questions — 22.99 for
+moderate-and-challenging questions, **17.60 for the whole split and for any cross-system comparison**.
+
+**The pack is null in both conditions, and that retires a mechanism.** Prediction 3 asked for
+`full-noevidence − none-noevidence ≥ 2pp` and measured **−0.72pp [−2.15, +0.72]**: the +1.14pp cell that
+reversed this record's conclusion in R23 does not replicate on 4.4× the sample. With the hint it is +0.59pp.
+Neither interval excludes zero and neither reaches the 2.14pp the design can detect. Twenty-three iterations
+have now varied the pack along eight axes; this is the first that measured it with an instrument able to
+resolve 2pp **and** with the competitor both present and removed. **The honest statement is that the pack is
+zero, not that it pays.**
+
+**The interaction that motivated R25 did not replicate, and its own clause fired.** −1.30pp [−3.06, +0.46]
+against R23's −6.00pp [−10.57, −1.71], on the split the competitors used, same four cells. The registered
+refutation clause reads: *"an interaction whose interval contains zero demotes the competition reading from a
+mechanism to a single-run observation."* It fired. **The reason to ask whether a value index could substitute
+for the hint was that the pack was losing a competition, and on the larger panel it is not in one** — so the
+line goes to selection work, not to the database.
+
+**The difficulty story held, and it is the first time its shape was testable.** `simple` n=925 **+14.05pp**
+[+11.24, +16.86], `moderate` n=464 **+22.63pp** [+18.32, +27.16], `challenging` n=145 **+24.14pp**
+[+15.86, +32.41]. Monotone, and both ends inside their registered bands (5–15, 18–30). The simple-to-moderate
+step is **+8.58pp ± 5.24**, resolved; moderate-to-challenging is **+1.51pp ± 9.38**, not resolved, so the
+gradient's top end stays open. Prediction 6 held at 57.43% for `none`: the environment did not move.
+
+**Store variance, for the ninth time.** The evidence effect per fold runs **14.98 to 21.50pp** and the pack's
+runs **−2.28 to +3.26pp** across five stores rebuilt from the same corrections — the ±1.7pp band AUDIT 17.6
+recorded, and the reason every claim here is within-dispatch. Cross-dispatch comparisons on this lane carry
+one to two points of store variance, which is why R23's −6.00 and R24's −1.30 cannot be reconciled by
+subtracting them.
+
+**The instrument is what made the run exist.** `V48-statements-answered` read 16 of 10,160 (0.16%). Without
+the deadline there is no R24: the previous dispatch spent 118 minutes inside one fold's judging phase and
+published nothing. The gate is the difference between "the lane is slow" and "the lane is describing its own
+timeout" being a number in the artefact.
+
+**A second defect, found by the gate that re-derives instead of quoting.** The dispatch wrote the dev artefact's
+canonical path, because the lane named its file after the *split* and there used to be one design per split. R24
+is the second design on `dev`: the file at that address is R8.3b's, the run `eval:protocol` recomputes the
+`reproduced` cell from, and copying R24's artefact in replaced it. Nothing failed at the write — the new file is
+a valid artefact of the same lane over the same 1,534 questions, with a rebuilt store and `none` at 57.43%
+instead of 57.63% — and `pnpm check` said so in one line: *the recorded comparison differs from the arithmetic
+(indicative at 0.19pp, reproduced at 3.91pp)*. R8.3b's artefact is restored, R24's is committed under its own
+name, and the lane now names a file after the design as well as the split (`artefactWriteIdOf`, five tests, the
+same rule spelled once at workflow level so a dispatch's write path and its upload path cannot disagree).
+
+**Green.** `pnpm check` — 2,000 tests, 105 files, four dimensions 99.98 / 99.60 / 100 / 99.98, `artefacts.ts`
+at 100 in all four after the naming rule. The artefact is
+committed at `eval/results/poc-sota-bird-dev-R24-dev-split.json`; `prereg/R24-dev-split.md` carries the Outcome
+section with all five contrasts, the six prediction verdicts, the composition decomposition and the per-fold
+spread.
