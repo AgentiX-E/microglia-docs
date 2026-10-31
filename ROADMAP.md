@@ -2379,7 +2379,7 @@ revision, and that gain is indistinguishable from a licence to stop. Both remain
 *when* knowledge arrives rather than *how it reads*, and R20 (below) tests the licence before either is
 built, because a mechanism that adds a sentence now has a measured price and a measured credit.
 
-### R20 — the square: is the permission the ingredient, or the block? (open)
+### R20 — the square: is the permission the ingredient, or the block? (closed)
 
 **Why.** R18 put the anchored cell on the control it never had and the control was worse than the
 mechanism: a blind revision is 4.00pp below no memory, the anchored cell is at exactly no memory, and the
@@ -2413,4 +2413,48 @@ utility clearance (R19.2) as the only untried mechanism.
 
 **Resolution.** The paired `anchor-hold` − `anchor-blank` is the only cell that gets a verdict; R18
 resolved 4.00pp with 40 discordant pairs.
+
+**Result** (`prereg/R20-anchored-hold.md` Outcome, dispatch `41190894667`). `none` 54.57%, `full` 50.29%
+(−4.29pp, p = 0.0107):
+
+| | conservative clause | permissive clause |
+|---|---|---|
+| **block** | `full-anchored` 53.43% (−1.14pp) | `full-anchored-hold` 52.86% (−1.71pp) |
+| **no block** | `anchor-blank` 50.57% (−4.00pp) | `anchor-hold` 52.57% (−2.00pp) |
+
+The clause is worth **+2.00pp** with no block (15/8, p = 0.2100) and **−0.57pp** with one (7/9,
+p = 0.8036): an interaction of **−2.57pp**, the opposite sign to the prediction. They are **substitutes**,
+not complements — `full-anchored`'s conservative instruction already ends with a licence to stop, so an
+explicit one is redundant where a note is present and is the only licence where there is none. The
+registered product criterion fired: the extra sentence is inside the ±2pp band and is **dropped**. The
+blind revision reproduced to the question (−4.00pp, 12/26, 38 discordant, p = 0.0336), and over both
+dispatches the block is worth **+3.43pp against it** (53 gained, 29 lost, 700 pairs, p = 0.0106). The
+content half, `full-anchored` − `anchor-hold`, is +0.86pp and untestable at this n.
+
+### R21 — utility clearance, because the deficit is not made of words (open)
+
+**Why.** Every prompt-level lever has now been measured, three of them twice: content, substrate, quantity,
+position, framing, and the delivery order with and without a licence. No cell in either square reaches no
+memory; the best is `full-anchored` at −1.14pp, and the parts of its effect are about two points of
+permission and about one of knowledge. R17 measured a paragraph at 2.00pp, R20 measured a sentence at
+−0.57pp where another already existed, and the two together say the same thing: **the next mechanism has
+to add nothing to the prompt.**
+
+**The mechanism.** MeClear (arXiv 2609.09115) decides *per query, from outcomes*: attribute the retrieved
+set's contribution (cooperative Shapley over the pack), screen each item by leave-one-out utility, and
+suppress the ones with negative downstream utility for this question only. Every gate in this project is a
+property of an item decided before the question arrives; this is a property of the pair decided from what
+happened. The `sample-*` arms and the candidate pool already collect the signal it needs.
+
+**Sketch, not a registration.** The lane already runs a per-question pack; the arm would record, for the
+candidate pool, which items were in the pack when an answer was wrong and which were in it when an answer
+was right, and drop the items whose credit is negative before the pack is rendered. Two arms follow: the
+clearance arm and a shuffle control that drops the same *number* of items chosen at random, because
+"fewer items" is not "better items" and R16 already showed the difference is worth 1.43pp at most.
+
+**Gate.** Same eleven, plus the existing `V1-pack-not-empty` floor restated for a shrunken pack: a
+clearance arm that empties its own pack has measured `none` under a second name.
+
+**Blocked on.** Nothing but the build. `prereg/R21-*.md` is written when the arm exists, since the protocol
+check validates a registration against the arm union before dispatch.
 

@@ -526,3 +526,60 @@ failed in the other direction.
 timeouts, 0 call failures, eleven gates pass). `pnpm check`: 1,924 tests, 104 files, coverage
 99.98 / 99.61 / 100 / 99.98. `prereg/R20-anchored-hold.md` is validated by the protocol check against the
 arm union before its dispatch.
+
+## 14. Addendum — R20 (2026-10-31)
+
+R20 closed the square R18 opened and the answer was neither of the two on offer. The permission is not the
+block's carrier and the block is not the permission's: **they are substitutes for the same thing**, and
+once either is present the other is worth nothing. The note's content, measured for the first time
+against a control that holds the licence constant, is about +0.86pp and indistinguishable from zero.
+
+**14.1 The interaction has the opposite sign to the prediction and is the iteration's result.** The
+permissive clause is **+2.00pp** against a blind revision with no block (15 gained, 8 lost, p = 0.2100) and
+**−0.57pp** with a block (7 gained, 9 lost, p = 0.8036). Interaction −2.57pp. The reading is substitution:
+`full-anchored`'s conservative instruction already closes with "if none applies, return the first attempt
+unchanged", which is a licence to stop, so an explicit one is redundant where a note is present and is the
+only licence available where one is not.
+
+**14.2 The confirmatory claim is half-confirmed at half the registered size.** `anchor-hold` −
+`anchor-blank` was registered at +3 to +5pp; it is +2.00pp at p = 0.2100. The refutation clause does not
+fire — the difference is not within 1pp — so the permission does something, and this lane has established
+a direction without establishing a size.
+
+**14.3 The product decision fired exactly as pre-registered.** `full-anchored-hold` − `full-anchored` =
+−0.57pp, inside the ±2pp band named before the run as the criterion for dropping the sentence. The shipped
+anchored prompt gains nothing: 143 characters, half a point the wrong way. This is the second time in this
+audit that a pre-registered band produced a decision rather than a discussion.
+
+**14.4 R18's control reproduced to the question, on a different store.** `anchor-blank` is −4.00pp again
+with 12 gained, 26 lost, 38 discordant and p = 0.0336 — identical to R18, whose fold learn produced 648
+corrections against this run's 640, and 184 domain-free items against 168. Both accuracies moved by two
+questions; the paired counts did not move. Pooled over the two dispatches the block is worth **+3.43pp
+against a blind revision** (53 gained, 29 lost, 700 question-pairs, exact McNemar p = 0.0106).
+
+**14.5 Claims that change.**
+
+| Claim | Status after R20 |
+|---|---|
+| "The note at anchor earns its +4.00pp" (R18's reading of its own paired difference) | **narrowed to +3.43pp pooled**, and decomposed: ~2.00pp permission, ~0.86pp content |
+| "The licence and the note are complements — the note carries a permission the block cannot" | **refuted**: they substitute, and the block's own instruction is where the permission already lives |
+| "An explicit permission improves a prompt that already has a conditional clause" | **refuted at ±2pp**: −0.57pp, and the sentence is dropped |
+| "A blind revision costs about 4pp" | **reproduced exactly**, twice, on independently distilled stores |
+| "`full` costs about two and a half points on six draws" | **updated to seven**: −2.90pp mean, five of seven significant, R18's −0.57 the outlier |
+
+**14.6 What is still not verified.**
+
+1. **Whether any prompt-level intervention can reach no memory.** No cell in either square does. The best
+   is `full-anchored` at −1.14pp here, which is the delivery order already shipped, and the deficit has
+   survived every text-level change this record has made.
+2. **Whether the content half is zero or just small.** +0.86pp with no test; separating 0.86pp needs about
+   four times the panel, and the pre-registration declined to spend it before a mechanism that adds no text
+   has been tried.
+3. **Whether the 2.00pp permission covers the same questions as the 3.43pp block effect.** The two edges
+   are measured against different baselines (`anchor-blank` and `full-anchored` respectively) and no
+   question-level join between them exists in the artefact.
+
+**14.7 Reproducibility.** `prereg/R20-anchored-hold.md` (prediction, refutation and Outcome), artefact
+`eval/results/poc-sota-bird-square.json`, dispatch `41190894667` (success, 2,460 calls, 8 retries, 0
+timeouts, 0 call failures, eleven gates pass, 72 minutes). `pnpm check`: 1,924 tests, 104 files, coverage
+99.98 / 99.61 / 100 / 99.98.

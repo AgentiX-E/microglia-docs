@@ -23,7 +23,8 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R16 Injection dose | **closed** — the curve is a step at the first item: 0.29 items per question costs +0.00pp, 1.00 costs −3.14pp (iteration 86's cell), 1.83 −2.57pp, 2.97 −4.00pp and 4.16 −2.86pp; no point is above `none` and the whole spread equals the sample's own floor | R17: framing |
 | R17 Framing | **closed** — permission to ignore the block does not recover its cost (−0.57pp against `full`, CI [−3.14, +2.00], the registered refutation firing); the sentence costs 2.00pp with no block, and the error register moves the cell by 0.57pp | R18: the anchored control |
 | R18 Anchored control | **closed** — the control is worse than the mechanism: a blind revision costs 4.00pp (p = 0.0336, one sign in five folds) and the anchored cell sits at *exactly* no memory, so its +4.00pp over that control (p = 0.0385) is a repair rather than a gain | R20: the 2×2 that separates the block from the permission it carries |
-| R20 Anchored hold | **open** — pre-registered and instrumented; `full-anchored-hold` and `anchor-hold` complete the (block) × (instruction) square so the permission and the block get main effects instead of an attribution | the run |
+| R20 Anchored hold | **closed** — the licence and the note are **substitutes**: the permissive clause is +2.00pp where there is no block and −0.57pp where there is one (interaction −2.57pp), so the explicit sentence is dropped and the shipped prompt keeps the clause it had; the blind revision reproduced to the question (−4.00pp, 12/26, p = 0.0336) | R21: utility clearance, the only mechanism that adds no text |
+| R21 Utility clearance | **open** — registered, not built; decide per question from observed outcome rather than per item from attributes, and add no prompt text | the build |
 
 ## Iteration log
 
@@ -436,8 +437,7 @@ roughly 12,000 calls — twelve times the Mini-Dev budget, for 4.4 times the que
 at 100 on all four dimensions. The dev dispatch runs on the runner, not here: the benchmark lane is
 required to be a GitHub workflow, and this keeps that rule even when the sandbox could run it.
 
-## What is left, in order
-
+## What was left after iteration 13, in order (superseded — the current list is at the end of this file)
 The list used to be short because everything on it had been declared blocked, and one of those
 declarations was wrong: "the dev split is not reachable from this environment" was a probe of one
 host reported as a property of the environment. It is reachable, the lane measures it, and the
@@ -6546,3 +6546,97 @@ iterations ago and the four numbers can.
 0 call failures, eleven gates pass, and the prereg agreement check now covers twelve files —
 `R20-anchored-hold.md` is validated against the arm union before its first run, which is the first time
 a registered design has been type-checked before being dispatched.
+
+### 128 — The licence and the note are substitutes, and the note is worth about a point
+
+**Question.** R18 left two things varying at once. `anchor-blank` (revise, nothing added) costs 4.00pp
+against no memory and `full-anchored` (revise, note, and the clause "if none applies, return the first
+attempt unchanged") sits at no memory — but the control lacks the block *and* the clause, so the +4.00pp
+could be either. R20 is the 2×2: the permissive clause says the same thing without referring to items,
+so it renders on an empty pack and the square closes.
+
+**What was built.** `AnchorMode` gains `hold`; two arms use it (`full-anchored-hold`, same block and
+permissive sentence; `anchor-hold`, no block and permissive sentence). The render predicate is one line —
+`input.pack === '' && mode !== 'hold' ? '' : ANCHOR_INSTRUCTION[mode]` — and it lives in the builder
+because "this instruction names a block" is a property of the instruction, not of whoever calls it. No
+new gate; R20's prereg is validated against the arm union before dispatch, which is the first time a
+registered design has been type-checked before it was run.
+
+**Reading** (350 questions, 5 folds, 2,460 calls, 8 retries, 0 timeouts, 0 call failures, eleven gates
+pass, dispatch `41190894667`, artefact `eval/results/poc-sota-bird-square.json`; `none` at 54.57%):
+
+| Arm | Items | ACC | Δ vs `none` | 95% CI | gained / lost | p |
+|---|---|---|---|---|---|---|
+| `anchor-blank` | 0.00 | 50.57% | −4.00pp | [−7.43, −0.57] | 12 / 26 | 0.0336 |
+| `anchor-hold` | 0.00 | 52.57% | −2.00pp | [−4.57, +0.57] | 7 / 14 | 0.1892 |
+| `full-anchored` | 1.83 | 53.43% | −1.14pp | [−3.14, +0.86] | 4 / 8 | 0.3877 |
+| `full-anchored-hold` | 1.83 | 52.86% | −1.71pp | [−4.57, +1.14] | 9 / 15 | 0.3075 |
+| `full` | 1.83 | 50.29% | −4.29pp | [−7.43, −1.14] | 8 / 23 | 0.0107 |
+
+The edges, paired exact McNemar: clause without block **+2.00pp** (15/8, p = 0.2100); clause with block
+**−0.57pp** (7/9, p = 0.8036); block under the conservative clause +2.86pp (26/16, p = 0.1641); block
+under the permissive clause +0.29pp (15/14, p = 1.0000).
+
+**The interaction has the opposite sign to the prediction and it is the result.** The clause was expected
+to matter more with a block in front of it; it matters only without one, so the interaction is −2.57pp.
+The reading is substitution rather than failure: `full-anchored`'s conservative instruction already ends
+with a licence to stop, so an explicit one changes nothing, and where there is no block the explicit
+sentence is the only licence in the prompt. **Adding a second sentence to a prompt that already contains
+the first is not a second improvement** — which is the same wall the word tax put in front of R17, seen
+from the other side.
+
+**The confirmatory claim is half-confirmed and the registered size is missed.** `anchor-hold` −
+`anchor-blank` was registered at +3 to +5pp and is +2.00pp at p = 0.2100. The refutation clause (within
+1pp of the blind revision) does not fire, so the permission does something; but at this n the direction
+is all that is established.
+
+**The product claim fired and a sentence is dropped.** `full-anchored-hold` − `full-anchored` = −0.57pp,
+inside the ±2pp band registered before the run. Where a note is present the explicit permission is
+decoration: 143 characters, half a point in the wrong direction. The shipped anchored prompt keeps the
+clause it already had and gains nothing.
+
+**The blind revision reproduced to the question.** `anchor-blank` is −4.00pp again — 12 gained, 26 lost,
+38 discordant, p = 0.0336 — against 12/26/38/p = 0.0336 in R18, whose fold learn produced 648 corrections
+against this run's 640 and 184 domain-free items against 168. Both accuracies moved by two questions and
+the paired counts did not move at all. Over both dispatches the block is worth **+3.43pp against a blind
+revision, 53 gained and 29 lost on 700 question-pairs, p = 0.0106** — real, and 0.57pp smaller than the
+first reading.
+
+**What the square says about the note's content, which is not much.** `full-anchored` − `anchor-hold` is
++0.86pp: the part of the anchored effect that is knowledge rather than permission. Seven axes have been
+varied on this store and the only movement this record has produced in a positive direction is a sentence
+telling the model it may leave its answer alone.
+
+**`full` came back.** −4.29pp at p = 0.0107, the fifth significant draw of seven at the shipped budget
+(−3.71, −3.14, −2.00, −2.57, −4.00, −0.57, −4.29; mean −2.90pp). R18's −0.57 was the outlier.
+
+**Green.** `pnpm check` — 1,924 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98; the protocol check
+validates `prereg/R20-anchored-hold.md` against `eval/results/poc-sota-bird-square.json` at eleven
+declared gates, every one emitted and none unannounced.
+
+## What is left, in order (current)
+
+The six axes are closed — content, quantity, position, substrate, framing, and now the delivery order
+itself — and the store has no positive result left except one that is really a repair. What remains
+separates experiments that are registered from work that waits on something outside this repository.
+
+| # | Item | State | Blocks |
+|---|---|---|---|
+| 1 | **R21 — utility clearance** (MeClear) | registered, not built; the only candidate that adds **no** prompt text, and prompt text is now measured three times (2.00pp for the advisory sentence, −0.57pp for the explicit licence, 143 characters spent) | the next result |
+| 2 | **R19.1 — reconstruction at anchor** (MemHarness) | not built; pays the word tax before it earns anything, and R20 measured a second sentence at zero or worse wherever a first one exists | — |
+| 3 | **R19.3 — adaptive injection** (ε-MemEvo) | not built; `gated` and `full-corroborated` are static filters, not per-question decisions | the gate's inputs, which the pool already collects |
+| 4 | **The interpreter's domain prompt** | decision confirmed twice: `V44` reports 184/184 and 168/168 domain-free items arrived unscoped, 0 widened in either run | the ceiling on every transfer number |
+| 5 | **S1a — ambiguity on public annotations** | unblocked and unbuilt (BIRD-Interact carries the annotations) | — |
+| 6 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
+| 7 | **S3 — the SOTA push** | gated by its own rule: it starts only if S2b moves accuracy, and S2b's gate was missed | R10-family work, not a bypass |
+| 8 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
+| 9 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
+
+Items 1, 2, 3, 4 and 5 are ours to run. Items 6–9 wait on an annotation set, a gate, a decision and a
+toolchain respectively. None of them blocks the S0 result, and none is hidden behind the green build:
+each is either an experiment that has not run or a dependency that has not shipped.
+
+**What this list changed this iteration.** The anchored delivery order is now the best cell this record
+has and it is still 1.14pp below no memory; the part of it that is knowledge is about +0.86pp and the
+part that is permission is about +2.00pp. So the next mechanism is chosen for being the one that adds no
+text at all, and the sentence that would have been added to the shipped prompt is not added.

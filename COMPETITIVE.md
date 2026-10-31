@@ -309,6 +309,37 @@ the quantity axis and R17 tests the framing axis; both are properties of the not
 clearance and adaptive injection are the same idea — score the pair — and that is the axis this record has
 never varied.
 
+### Intrinsic self-correction: the published baseline for what a second pass costs
+
+R18 measured a blind revision — show the model its own draft, ask for a revision, add nothing — at
+**−4.00pp** against answering once (12 repaired, 26 broken, p = 0.0336). That is not a new phenomenon; it
+is the SQL instance of a result the reasoning literature already has, and the comparison is worth stating
+because the sizes agree.
+
+| Source | Setting | Result |
+|---|---|---|
+| Huang et al., *Large Language Models Cannot Self-Correct Reasoning Yet* (ICLR 2024, arXiv 2310.01798) | intrinsic self-correction — no external feedback, model critiques and revises its own answer — on GSM8K, CommonSenseQA, HotpotQA, GPT-3.5/4 and Llama-2-70b | accuracy does not improve and sometimes **degrades**; GPT-3.5 GSM8K 75.9% → 74.7% after two rounds; models convert correct answers into incorrect ones about as often as the reverse |
+| **R18, this project** | one blind revision of a SQL draft, n = 350, cross-fitted, matched store and matched questions | **−4.00pp**, 12 repaired against 26 broken (1 : 2.2), one sign in five folds |
+
+Three things this project adds to that literature, and one it does not:
+
+1. **The ratio is worse in SQL than the "about as often" summary suggests.** 2.2 broken per repaired, on a
+   task where the draft is executable and the gold is checked by execution — the revision has more to
+   check than a reasoning chain does, and it still breaks more than it fixes.
+2. **The cost is not the second pass; it is the request.** `full-anchored` writes a second pass over the
+   same draft and sits at *exactly* no memory (54.00% both arms). The difference between the two cells is
+   one paragraph of text, so whatever the revision costs is recoverable by a sentence — which is a
+   narrower claim than "self-correction does not work" and a more useful one.
+3. **A memory mechanism can look like a gain by repairing a cost it introduced.** The anchored arm was
+   published here as +2.86pp against plain injection, and R18 shows that in the run that measured it
+   `full` was itself costing −4.00pp: the note's apparent contribution was mostly the harm of the
+   comparison arm. Any paper that reports a delivery-order or self-refinement gain without a
+   blank-revision control is reporting the same composite number, and this is the one place where a
+   competitor's published lift can be checked against a control the field does not usually run.
+4. **Nothing here says self-correction is impossible.** Huang et al.'s title says "yet", and the R20
+   square is exactly the question of what external signal the second pass needs — a block, a licence to
+   stop, or both.
+
 ---
 
 ## 4. What we are missing, ranked by evidence strength and cost
@@ -379,6 +410,7 @@ generators; we use a closed API. Four things are nonetheless ours to win:
 | MemHarness: reconstruction between retrieval and action, GRPO-trained, reported to reduce negative transfer and beat static-memory baselines out of distribution | arXiv 2607.28272 | medium — mechanism and abstract read; the training half is out of scope here, the inference-time half is not |
 | MeClear: cooperative Shapley attribution + LOO screening for negative downstream utility, query-scoped clearance, 82.3% task recovery | arXiv 2609.09115 | **low — secondary summary read; the primary has not been read and no number from it is used, only its mechanism** |
 | ε-MemEvo: adaptive injection gate, naive injection fails catastrophically while gated injection is safe across five ablations. | arXiv 2608.12522 | medium — abstract and ablation summary read; the setting is program evolution rather than SQL, so only the gate's *shape* transfers |
+| Huang et al.: intrinsic self-correction degrades accuracy without external feedback; GPT-3.5 GSM8K 75.9% → 74.7% over two rounds; revisions break about as often as they repair | ICLR 2024, arXiv 2310.01798 | high — the numbers are read from the paper's own tables and the direction is widely replicated; the one figure this project quotes against it (12 repaired / 26 broken) is our own measurement |
 
 Numbers we intend to reproduce ourselves, because they change a decision: the M-Schema delta on
 DeepSeek (one arm), the CHASE-style pool ceiling under heterogeneous generators (R7.1), and the

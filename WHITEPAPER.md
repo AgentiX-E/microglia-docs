@@ -1337,6 +1337,16 @@ permission and the block get main effects instead of an attribution. The instrum
 is empty, which is what turns "the permission with nothing to permit" into a cell rather than an
 absence.
 
+**The result is not new to the field, and the sizes agree.** Huang et al. (*Large Language Models Cannot
+Self-Correct Reasoning Yet*, ICLR 2024) measured intrinsic self-correction — no external feedback, the
+model critiques and revises its own answer — and found accuracy does not improve and sometimes degrades,
+with GPT-3.5 on GSM8K falling from 75.9% to 74.7% over two rounds. R18's −4.00pp is the SQL instance of
+that result, with a worse ratio (2.2 broken per repaired) on a task where the gold is checked by
+execution. What this record adds is the decomposition: the cost is not the second pass, because the
+anchored cell writes one and lands at no memory, but the *request*, because one paragraph closes the gap.
+It also adds a warning about the literature the field does publish — an apparent gain from a new delivery
+order can be mostly the harm of the arm it was compared against, and no blank-revision control is standard.
+
 **Two numbers from the run that were not asked for.** `full` broke a five-draw streak at −0.57pp
 (p = 0.8318), the first of six draws at the shipped budget not distinguishable from zero — the sign held
 and the size did not, and nothing in the iteration touched its prompt. And `V44-domain-accounted`, the
@@ -1344,6 +1354,53 @@ gate built to tell "the interpreter declined to scope" from "generalisation wide
 `184 item(s) with no domain, 184 arrived unscoped, 0 widened`: **not one domain-free item in this store
 became domain-free by widening.** The 14.6% is a prompt defect, not a policy defect, which is a decision
 the single count could not support four iterations ago and the four numbers settle.
+
+### 3.6.20 The licence and the note are substitutes, and the note is worth about a point
+
+R18's control was worse than its mechanism, but it left two variables moving together: the block, and the
+clause that tells the model the draft may stand. R20 closes the square by adding a sentence addressed to
+the draft rather than to items — *change the first attempt only if it is wrong … if it already answers the
+question, return it unchanged* — so that all four cells can be run in one dispatch.
+
+| | conservative clause | permissive clause |
+|---|---|---|
+| **block** | `full-anchored` 53.43% (−1.14pp) | `full-anchored-hold` 52.86% (−1.71pp) |
+| **no block** | `anchor-blank` 50.57% (−4.00pp) | `anchor-hold` 52.57% (−2.00pp) |
+
+`none` is 54.57%; `full` is 50.29% (−4.29pp, p = 0.0107). The edges, paired: the clause is worth
+**+2.00pp** with no block (15 gained, 8 lost, p = 0.2100) and **−0.57pp** with one (7 gained, 9 lost,
+p = 0.8036).
+
+**The interaction is the result and it has the wrong sign.** The clause was expected to matter more when
+there was a block in front of it; it matters only when there is none, so the interaction is −2.57pp. That
+is not a failure of the permission — it is **substitution**. `full-anchored`'s conservative instruction
+already ends with "if none applies, return the first attempt unchanged", which *is* a licence to stop, so
+replacing it with an explicit one changes nothing measurable. Where there is no block, no licence exists
+in the prompt at all and the permissive sentence recovers half of the blind revision's cost. Adding a
+second sentence to a prompt that already contains the first is not a second improvement — the same wall
+the word tax put in front of R17, met from the other side.
+
+**The registered product decision fired.** `full-anchored-hold` − `full-anchored` = −0.57pp, inside the
+±2pp band the pre-registration named before the run as the criterion for dropping the sentence. So the
+shipped anchored prompt keeps the clause it already had and gains 143 characters of nothing.
+
+**The blind revision reproduced to the question.** `anchor-blank` is −4.00pp again: 12 gained, 26 lost, 38
+discordant, p = 0.0336 — the same four numbers as R18, on a store whose fold learn produced 640
+corrections against 648 and 168 domain-free items against 184. Both accuracies moved by two questions and
+the paired counts did not move at all. Over both dispatches the block is worth **+3.43pp against a blind
+revision** (53 gained, 29 lost, 700 question-pairs, p = 0.0106): real, and 0.57pp smaller than the first
+reading.
+
+**What the square says about the note's content is not flattering.** The two arms that differ in content
+but not in licence differ by +0.86pp, which is the knowledge half of the anchored effect, and it is inside
+nothing this lane can resolve. The permission half is about two points. Seven axes have now been varied on
+one store with matched characters and matched questions — content, substrate, quantity, position, framing,
+and the delivery order twice — and the only movement this record has ever produced in a positive direction
+is a sentence telling the model it may leave its answer alone.
+
+**`full` returned to −4.29pp** (p = 0.0107), the fifth significant draw of seven at the shipped budget
+(−3.71, −3.14, −2.00, −2.57, −4.00, −0.57, −4.29; mean −2.90pp). R18's −0.57 was the outlier, and the
+sentence the product has to survive is unchanged.
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 

@@ -3103,6 +3103,42 @@ property that makes a row of the square a one-variable comparison. `ARM_STANDING
 no anchored arm, and the arm union and `OPTIONAL_ARM_TABLE` are held to a list so that adding a cell
 cannot be a silent edit inside a `Record`.
 
+
+### 17.53 Reporting an interaction the lane cannot test
+
+**The defect this design answers.** R20 is a 2×2 and the number it was registered for is the difference
+of two differences: `(hold − conservative | block) − (hold − conservative | no block)`. This lane resolves
+about 4.5pp on a marginal cell and about 3pp on a paired difference with 40 discordant pairs; a difference
+of differences over four cells of 350 questions has a variance that none of those figures describes. The
+pre-registration therefore states, before the run, that the interaction is **reported with its interval
+and not tested**, and the reader script prints it under that label rather than computing a p-value for it.
+
+**What is printed instead.** Four edges, each a paired exact McNemar over the questions both arms
+answered, plus the cell accuracies in a 2×2 with the clause effect on each row. Every number in the
+prose of `prereg/R20-anchored-hold.md` is one of those, so a reader can recompute the interaction from the
+artefact without trusting a summary:
+
+```
+  block     conservative 53.43   permissive 52.86   clause effect  -0.57pp
+  no block  conservative 50.57   permissive 52.57   clause effect  +2.00pp
+  interaction (clause effect with block - without) = -2.57pp
+    reported with no test: four cells at n=350 do not resolve it
+```
+
+**Why the interactive decomposition is worth an arm budget at all.** The mechanism question is not "does
+the anchored cell work" — R18 answered that — but "which of its two texts does". A main-effect design
+would have needed two dispatches and still could not have said which cell the effect lived in. The
+factorial costs two arms and answers all four edges from one set of folds, and it produced an interaction
+with the opposite sign to the prediction, which is the kind of result a single-difference design cannot
+even express.
+
+**The counterfactual cost of getting this wrong.** If the interaction had been assumed absent — the usual
+implicit assumption when a second sentence is added to a prompt — the permissive sentence would have been
+shipped as a free improvement, and the measurement says it is worth −0.57pp where a licence already
+exists. The ±2pp band for that row was registered in advance precisely so that "no better" would be a
+decision rather than an opinion.
+
+
 ---
 
 ## 18. Acceptance criteria
