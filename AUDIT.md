@@ -962,4 +962,6 @@ and a run with no pre-registration keeps the split's name exactly as before. The
 lane, an id that is a path is refused, and `sota.yml` spells the same expression once at workflow level so a
 dispatch's write path and its upload path cannot disagree. R8.3b's artefact is restored byte-for-byte, R24's is
 committed beside it, and five tests cover the rule (named file, one design one file, hand-run unchanged, two path-shaped
-ids refused, id read from either spelling).
+ids refused, id read from either spelling). One more gap closed on the way: `eval:protocol` was in the local
+check and not in `ci.yml`, so the gate that recomputes the cell never ran on a push — it is a step now, and the
+defect that motivated it cannot land again by a path CI owns.
