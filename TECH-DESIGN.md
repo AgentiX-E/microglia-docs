@@ -2981,6 +2981,73 @@ searched for rather than assumed.
 
 ---
 
+### 17.51 Standing as a property of the arm, and two gates that count what a prompt carried
+
+**The type.** A pack is *what* is injected; R17 needed a second axis, *how it is addressed*. Three
+`SqlArm` members were added and one `PromptInput` field:
+
+```ts
+export type PackStanding = 'advisory' | 'prohibitive';
+
+/** One sentence, byte-identical in every arm that carries it. */
+export const ADVISORY_SENTENCE: string;
+/** The heading that classifies the block as error records. */
+export const PROHIBITIVE_HEADING: string;
+/** The standing each arm delivers under, keyed by the arm itself. */
+export const ARM_STANDING: Partial<Record<SqlArm, PackStanding>>;
+```
+
+`standing` is optional and absent means the shipped wording, because every published number was produced
+with it. `advisory` appends `ADVISORY_SENTENCE` after the block; `prohibitive` replaces the heading with
+`PROHIBITIVE_HEADING`. The two are mutually exclusive by type: an arm that both doubted and damned its
+block would measure neither. The sentence is phrased to hold when the block is absent ("any notes above"),
+which is the only way the control arm can carry the *identical* string rather than a variant — a control
+with different text is not a control, and the difference between `none-advisory` and `full-advisory` has
+to be the block and nothing else.
+
+**Why a table and not a parameter.** The standing is a property of the arm. A parameter at the call site
+would let one arm be told twice and be told two different things, which is the failure the pack-kind
+table was introduced to prevent. Living in `sota.ts` rather than in the lane also makes the rendering
+testable without a database: a dispatch costs two thousand calls, a rendering costs nothing, so the
+rendering is the part that gets checked before the run rather than after it.
+
+**Composition order.** `standingBlock` is emitted *after* the critique instruction, not before it: that
+instruction says "each item in that block", and a paragraph inserted between the block and the
+instruction would leave it pointing at prose. For every other arm it lands immediately after the block
+and immediately before the question, which is what the advisory cell is testing — the last thing read is
+permission to disagree.
+
+**V43-framing-delivered.** The arms differ from their controls by one paragraph, and an arm whose table
+entry silently failed to match would measure the control under a second name and report the difference as
+zero. `FramingDelivery` carries, per arm, the prompts it sent and how many carried the framing it
+declares; the gate fails in both directions — a declared arm that misses one prompt, and an undeclared
+arm that carries one. It is emitted only when some arm declares a standing, because a gate that always
+passes is a comment.
+
+**V44-domain-accounted.** `scope.domain` is the one scope field the host knows and the model only echoes,
+and an item without one can never be pointed at a foreign question — so the count is the ceiling on every
+transfer number a store can produce. Two paths produce such an item and they call for opposite fixes: the
+interpreter declined to scope the claim at the door, or generalisation widened the domain away. The
+distiller now counts the first (`DistillReport.incomingWithoutDomain`, counted after the host's `accept`
+filter and before the store, because a refused claim can never explain an item), and the lane reports
+both beside the stored counts. The gate is an inequality rather than an identity — `storedWithoutDomain ≤
+unscopedIn + widenedIn` — so a surplus fails the run, and a surplus is exactly an item that lost its
+domain somewhere nobody instrumented.
+
+**`anchor-blank`.** The `ANCHORED` table gained a third field, `injects`, because the mechanism's headline
+number never had its control: `anchor-blank` writes the same second pass with no block, so
+`full-anchored` − `anchor-blank` is the note rather than the revision. `anchorPromptFor` already renders
+the empty pack as no block *and* no instruction about one, so the control needed no new prompt builder.
+
+**Tests.** `promptFor` is held to a literal for the shipped prompt, so adding a field cannot move the
+baseline; the advisory cell is asserted to add exactly one paragraph to the same prompt; the prohibitive
+cell is asserted to change exactly one paragraph rather than add one; the empty-pack advisory is asserted
+to equal the no-memory prompt plus the sentence; the composition order with `critique` is asserted
+positionally. Gates V43 and V44 each have tests for pass, both failure directions, and absence. The
+distiller's counter has a test for the counted and the refused case.
+
+---
+
 ## 18. Acceptance criteria
 
 Two kinds of gate, kept apart: **project stages** (a phase of the roadmap) and **release gates** (what a

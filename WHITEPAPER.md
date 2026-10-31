@@ -1247,6 +1247,56 @@ Everything at or below seven flips is noise here, which includes the 600 cell's 
 memory is the luckier of two identical prompts, every delta in the table overstates the harm by up to
 1.43pp: the sign does not depend on it, the size does.
 
+### 3.6.18 Permission is not the missing ingredient, and words are not free
+
+Six axes have now been varied one at a time with a matched store, matched characters and matched
+questions: what the block contains, how much of it arrives, whether it sits before or after the
+question, which item it holds, and — in R17 — how the prompt frames it. Every one of them left the
+sign alone. `full` is negative for the seventh consecutive dispatch, at −4.00pp in the run that closed
+the framing axis and −3.2pp on the mean.
+
+R17 tested the last lever in the literature with a published ablation: MemTrapBench's finding that a
+memory framework's damage is partly the model failing to question its own recall, and its mitigation —
+an inference-time instruction restoring the reader's standing to disagree. Three cells, one store, one
+budget, one difference each:
+
+| Arm | What changed | ACC | Δ vs `none` | Δ vs `full` | 95% CI (vs `full`) |
+|---|---|---|---|---|---|
+| `none-advisory` | the sentence, no block | 52.86% | −2.00pp | +2.00pp | [−1.14, +5.14] |
+| `full` | the block, unchanged | 50.86% | −4.00pp | — | — |
+| `full-advisory` | the block plus the sentence | 50.29% | −4.57pp | **−0.57pp** | [−3.14, +2.00] |
+| `full-prohibitive` | the block, classified as error records | 49.71% | −5.14pp | −1.14pp | [−4.00, +1.71] |
+
+**Two results, and the second one is the useful one.**
+
+The first is a refutation. Permission does not recover the block's cost: the paired difference is
+−0.57pp and its interval's upper bound is +2.00pp, under the +2.5pp bar the pre-registration set before
+the dispatch. This is the first time in this record that the *refuting interval* was itself
+pre-registered, which is what makes "framing is not the channel" a finding rather than an absence.
+
+The second is that **the sentence has a price, and the price is the size of the effect it was meant to
+buy.** The sentence with no block to act on still costs 2.00pp. Against a block whose measured cost is
+−2.86pp on four dispatches, a paragraph of instruction that was supposed to recover two thirds of it
+came back at −2.00pp on its own. The two costs do not add — the block-plus-sentence cell is −4.57pp
+where additivity would predict −6.00pp, so the interaction is +1.43pp — but a 1.43pp interaction is
+inside this lane's resolution, and the reading that survives is the simpler one: **in this prompt, words
+cost about what the note costs.** Every mitigation that works by adding text has to clear a bar as high
+as the harm it repairs, and so far none has.
+
+R17 also ran MemTrapBench's trauma mechanism *forward* rather than as a mitigation: the same items,
+classified as records of mistakes rather than as facts about the workspace. If a memory that records an
+error makes a model over-cautious past the case that produced it, saying so should hurt more. It did —
+1.14pp more than the reference heading — and inside the interval. What the block says about itself is
+not what makes it expensive.
+
+**What this leaves.** Not a longer prompt, not a smaller one, not a better-worded one. The remaining
+candidates all change *when* knowledge arrives or *whether* it arrives at all, and the record already
+contains the only one with a positive sign: the note as an objection to a draft the model has already
+written, +2.86pp against plain injection pooled over 700 questions at p = 0.0205. That cell was never
+measured against a second pass with no pack, and the project's own retry experiment shows why the
+omission matters: once `retry-blank` existed, the note's contribution at retry was exactly zero. R18 is
+that control.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

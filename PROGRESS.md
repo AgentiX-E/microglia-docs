@@ -21,7 +21,8 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R14 Substrate comparison | **closed** — the pair reproduces 53.8% of its own corrections against the sentence's 30.7% (+23.10pp, p = 1e-14), and the arm built from it moves the product by one question of 350 (−0.29pp); the extraction is no longer a live explanation | R15: does the pair *transfer*? |
 | R15 Repair-substrate transfer | **closed** — 6.21% against the sentence's 6.28%: a tie on 720 informative trials, so an 18pp reproduction advantage buys no transfer. Four content forms are now inert within ±3pp and the extraction axis is closed | R16: the dose, in both directions |
 | R16 Injection dose | **closed** — the curve is a step at the first item: 0.29 items per question costs +0.00pp, 1.00 costs −3.14pp (iteration 86's cell), 1.83 −2.57pp, 2.97 −4.00pp and 4.16 −2.86pp; no point is above `none` and the whole spread equals the sample's own floor | R17: framing |
-| R17 Framing | **open** — pre-registered; `full-advisory` (standing permission to ignore a note), `none-advisory` as its control, and `full-prohibitive` for the trauma mechanism run forward | the run |
+| R17 Framing | **closed** — permission to ignore the block does not recover its cost (−0.57pp against `full`, CI [−3.14, +2.00], the registered refutation firing); the sentence costs 2.00pp with no block, and the error register moves the cell by 0.57pp | R18: the anchored control |
+| R18 Anchored control | **open** — pre-registered; `anchor-blank` is the arm `full-anchored` never had, so the record's only positive sign (+2.86pp pooled) can be assigned to the note or to the second pass | the run |
 
 ## Iteration log
 
@@ -6364,3 +6365,92 @@ same facts classified as recorded errors, which is MemTrapBench's trauma mechani
 at 100 on all four dimensions after the agreement check replaced a `??` fallback that could never run.
 Dispatch 2,263 calls, 1 retry, 0 timeouts, 0 call failures; ten gates pass and the header that names them
 is the one the artefacts are checked against.
+
+### 126 — Permission is not the missing ingredient, and words are not free
+
+**Question.** R16 closed quantity, R14 the substrate, R13 the content, and R11/R12 the position. What
+every one of those left standing is the same shape: the block arrives as an assertion the model did not
+ask for, with nothing saying when it stops applying. MemTrapBench's mitigation — an inference-time
+instruction that restores the reader's standing to disagree — is the last lever in the literature with a
+published ablation, and R17 is that lever run on this store: the same pack, the same budget, one sentence
+of permission beside it, and the sentence with no pack as the control that makes a recovery attributable.
+
+**What was built.** Three arms in the `SqlArm` union, keyed by a table on the arm itself
+(`ARM_STANDING`) rather than by a parameter at the call site, so an arm renders exactly one way and the
+rendering can be tested without a database: `full-advisory` appends
+`ADVISORY_SENTENCE`; `none-advisory` sends the identical string with an empty pack; `full-prohibitive`
+replaces the block's heading with `PROHIBITIVE_HEADING`, classifying the same statements as records of
+mistakes rather than as facts about the workspace. One new gate, `V43-framing-delivered`, counts per arm
+and per fold how many prompts carried the framing the arm declares and fails in both directions — a
+declared arm that misses one prompt is its own control under a second name, and an undeclared arm that
+carries one has the tables disagreeing. The pre-registration was amended **before** the dispatch, because
+R16 had just measured this lane's resolution at 4.00pp and four of its clauses were written at 1–2pp.
+
+**Reading** (350 questions, 5 folds, 2,110 calls, dispatch `41185616121`, artefact
+`eval/results/poc-sota-bird-framing.json`; `none` at 54.86%, `full` at 50.86%):
+
+| Arm | Items | Characters | ACC | Δ vs `none` | 95% CI | gained / lost | p |
+|---|---|---|---|---|---|---|---|
+| `none-advisory` | 0 | 0 | 52.86% | −2.00pp | [−4.00, +0.00] | 3 / 10 | 0.0923 |
+| `full` | 1.81 | 1,078 | 50.86% | −4.00pp | [−7.14, −0.86] | 9 / 23 | 0.0201 |
+| `full-advisory` | 1.81 | 1,078 | 50.29% | −4.57pp | [−7.71, −1.71] | 7 / 23 | 0.0052 |
+| `full-prohibitive` | 1.81 | 1,078 | 49.71% | −5.14pp | [−8.29, −2.00] | 7 / 25 | 0.0021 |
+
+Paired against `full`, which is what the decision rule was written on: `full-advisory` **−0.57pp**
+[−3.14, +2.00] p = 0.832; `full-prohibitive` −1.14pp [−4.00, +1.71] p = 0.541; `none-advisory` +2.00pp
+[−1.14, +5.14] p = 0.281.
+
+**The refutation fired, and it was written to be able to.** The amended clause required the interval on
+`full-advisory` − `full` to have an upper bound below +2.5pp before framing could be called not-the-channel;
+the bound is +2.00pp. So the sentence does not recover the block's cost, and the datum excludes any
+recovery large enough to have been worth writing it. This is the third time a pre-registered refutation
+has fired in this record, and the first time the refuting interval was pre-registered as well.
+
+**The sentence has a price, and it is the size of the effect it was meant to buy.** `none-advisory` sits
+2.00pp below no memory (p = 0.0923). Four dispatches put the default block's cost at −2.86pp; a paragraph
+of instruction against a block of 1,078 characters cost 2.00pp on its own. The two costs do not add —
+pack plus sentence would be −6.00pp and the cell is −4.57pp, so the interaction is +1.43pp — and this
+lane cannot resolve an interaction that size, so the honest reading is the simpler one: **in this prompt,
+words cost about what the note costs.** That is a general statement about mitigations, and it is the
+one result here that changes how the next mechanism is chosen: anything that repairs the harm by adding
+text has to clear a bar as high as the harm.
+
+**The register is not the harm.** `full-prohibitive` classifies the same 1.81 items as recorded failures
+and lands 0.57pp below the advisory cell (1.14pp below `full`), inside its interval. MemTrapBench's
+trauma mechanism, run *forward* — if a memory that records an error makes a model over-cautious, saying
+so should hurt more — produced a direction and no size. What the block says about itself is not what
+makes it expensive.
+
+**`full` is negative for the seventh time.** −4.00pp at p = 0.0201, and the mean across seven dispatches
+is −3.2pp. Six axes have now been varied one at a time with a matched store, matched characters and
+matched questions, and every one of them left the sign alone.
+
+**The instrument passed the check built for it.** `V43-framing-delivered` reports
+`none: 0/350, full: 0/350, full-advisory: 350/350, none-advisory: 350/350, full-prohibitive: 350/350`.
+This is the first run in this record where a prompt-level treatment's *delivery* is itself a gate — and
+it was built because this stage's own defect history (R12's admission, R13's ledger, R15's V14/V17, R16's
+wrong header) is a history of fields that were right when written.
+
+**Where the next iteration went, and why it is not where the clause pointed.** The refutation named
+selection as the successor. R16, written into this record one iteration earlier, measured that the loss
+is complete at the **first** item, so choosing *which* item arrives cannot remove a cost the first item
+already incurs; selection is cancelled by evidence rather than by preference. What the record does
+support is the opposite shape — the note as an objection to a draft the model has already written —
+which is the only mechanism here with a positive sign: `full-anchored`, +2.86pp against `full` pooled
+over 700 questions at p = 0.0205 (24 lost, 44 gained), and indistinguishable from no memory in the run
+that measured it. It was never measured against a second pass with no pack. `full-onretry` shows what
+that omission costs: once `retry-blank` existed, the note's contribution at retry was **zero**, and
+`retry-keyed` — the right note, by the right key, at the right moment — was identical to the blank
+retry question for question.
+
+**So R18 is a control, not a new idea.** `prereg/R18-anchored-control.md` registers `anchor-blank`: the
+same draft, the same revision request, no pack and no instruction about one. `full-anchored` −
+`anchor-blank` is the note's contribution at anchor. Either the second pass owns the +2.86pp and the
+record's only positive number is demoted in that commit, or the note earns it at exactly one moment —
+and both outcomes are pre-registered, with the resolution (this lane separates ~3pp on a paired
+difference) stated before the run.
+
+**Green.** `pnpm check` — 1,919 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98, `sota.ts`,
+`prereg.ts` and `distill/*` at 100 on all four dimensions. Dispatch 2,110 calls, 5 retries, 0 timeouts,
+0 call failures, eleven gates pass and the header that names them is the one the artefact is checked
+against.

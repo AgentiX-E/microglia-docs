@@ -392,3 +392,69 @@ first thing the new check accepts.
 `eval/results/poc-sota-bird-dose.json`, dispatch `41177896801` (success, 2,263 calls, 1 retry, 0
 timeouts, 0 call failures, ten gates pass). `pnpm check`: 1,897 tests, 104 files, coverage
 99.98 / 99.61 / 100 / 99.98, `prereg.ts` and `sota.ts` 100 on all four dimensions.
+
+## 12. Addendum — R17 (2026-10-31)
+
+R17 asked whether the block's cost is the absence of permission to reject it. It is not, and the run
+produced a second number that matters more than the answer: in this prompt, adding words costs about what
+the note costs.
+
+**12.1 The refutation fired on the criterion registered before the run.** `full-advisory` − `full` is
+−0.57pp (10 gained, 12 lost, CI [−3.14, +2.00], p = 0.832). The amendment to that pre-registration, written
+before the dispatch, required the interval's **upper bound** to sit below +2.5pp before "framing is not the
+channel" could be asserted; it is +2.00pp. This is the first refutation in this audit whose refuting
+interval was itself pre-registered, and it is the difference between a finding and an absence.
+
+**12.2 The sentence has a price of the size of the effect it was meant to buy.** `none-advisory` — the
+advisory sentence with no pack — is 2.00pp below no memory [−4.00, +0.00], 3 gained and 10 lost,
+p = 0.0923. It is the most important cell in the run, because it bounds what any prompt-level mitigation
+can achieve: the intervention was written to recover two thirds of a −2.86pp cost and its carrier costs
+2.00pp by itself. Additivity fails (pack −4.00 plus sentence −2.00 would predict −6.00; the cell is
+−4.57), and the interaction is +1.43pp — inside this lane's resolution, so it is recorded as a number and
+not used as an argument. **Anyone quoting `full-advisory` as "the sentence cost us 4.57pp" is wrong, and
+anyone quoting it as "the sentence recovered 1.43pp" is quoting a difference this instrument cannot
+resolve.**
+
+**12.3 The register is a 0.57pp variable.** `full-prohibitive` classifies the same 1.81 items as records
+of mistakes rather than as workspace facts and lands 0.57pp below the advisory cell (1.14pp below `full`,
+CI [−4.00, +1.71]). The prediction "not better than `full`" holds and the prediction "within 1pp" is
+missed by 0.14pp, which at this resolution is a direction with no size. MemTrapBench's trauma mechanism,
+run forward, is therefore **not demonstrated** in this lane; what is demonstrated is that it does not
+help.
+
+**12.4 The instrument was the point.** Three arms differ from their controls by one paragraph, which is
+the exact geometry in which a table entry that fails to match silently turns the treatment into the
+control. `V43-framing-delivered` counts delivery per arm per fold and reported
+`none: 0/350, full: 0/350, full-advisory: 350/350, none-advisory: 350/350, full-prohibitive: 350/350`.
+`V44-domain-accounted` (added in the same iteration, first exercised here) reconciles the store's
+domain-free items against the two paths that produce them; it passed, which is the first evidence that
+the count quoted as the ceiling on every transfer reading has no unexplained third source.
+
+**12.5 Claims that change.**
+
+| Claim | Status after R17 |
+|---|---|
+| "Permission to ignore the note recovers part of its cost" (R17's hypothesis) | **refuted**, at a pre-registered interval |
+| "An instruction is a cheap intervention" (MemTrapBench's framing, as applied in §3.6.18 of the whitepaper) | **refuted for this lane**: the instruction's carrier costs 2.00pp on its own |
+| "The negative register is what makes a note expensive" | **not supported**: the register moves the cell by 0.57pp |
+| "`full` costs about three points" (six dispatches) | **stands**: seventh dispatch −4.00pp, p = 0.0201, mean −3.2pp |
+| "Framing is a channel worth varying" | **closed**, with content, quantity and position |
+| "Selection is the next step because framing failed" (R17's own refutation clause) | **withdrawn**: R16 measured the loss complete at the first item, so choosing which item arrives cannot remove it |
+
+**12.6 What is still not verified.**
+
+1. **Whether the +2.86pp anchored result is the note or the revision.** This is the largest open question
+   in the record and the only positive sign in it; `full-anchored` has never been run beside a second pass
+   with no pack. R18 is that control, and it is registered with its resolution stated in advance.
+2. **Whether the word tax is a property of instructions or of this prompt.** 2.00pp is one cell, in one
+   position, with one sentence of 172 characters. A length-matched neutral filler would separate "words
+   cost" from "this instruction costs", and no such arm exists; that is the same defect R17 was built to
+   avoid in its own controls and did not close in its own most interesting number.
+3. **Whether the store's domain-free items come from the door or from widening.** V44 shows the count is
+   accounted for, not how it splits. The split is what decides whether the fix is a prompt or a widening
+   policy, and it will be read on R18's artefact.
+
+**12.7 Reproducibility.** `prereg/R17-framing.md` (with the pre-dispatch amendment and the Outcome),
+artefact `eval/results/poc-sota-bird-framing.json`, dispatch `41185616121` (success, 2,110 calls, 5
+retries, 0 timeouts, 0 call failures, eleven gates pass). `pnpm check`: 1,919 tests, 104 files, coverage
+99.98 / 99.61 / 100 / 99.98.

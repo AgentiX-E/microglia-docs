@@ -2283,43 +2283,78 @@ mean of four disjoint dispatches — −3.71, −3.14, −2.00, −2.57pp — **
 **Cost.** 2,263 calls, 1 retry, 0 timeouts, 0 call failures; ten gates pass. `pnpm check` — 1,897 tests,
 104 files, coverage 99.98 / 99.61 / 100 / 99.98.
 
-### R17 — does permission to ignore the note recover what the note costs? (open)
+### R17 — does permission to ignore the note recover what the note costs? (closed)
 
 **Why.** R16 removed the last structural explanation. The loss is complete at the first item, so no
-budget can recover it, and content, substrate and dose are all closed with a sign of zero or below. What
-has never been varied is the pack's *standing*: the notes arrive as reference data from an authority the
-model did not ask for, carrying no statement that they may not apply. The one arm family this project has
-ever measured as non-negative is the one that asks the model differently rather than giving it different
-text — `full-onretry` +1.43pp with 5 gained and 0 lost, `retry-blank` +0.57pp with 2 gained and 0 lost.
+budget can recover it, and content, substrate and dose were all closed with a sign of zero or below. What
+had never been varied is the pack's *standing*: the notes arrive as reference data from an authority the
+model did not ask for, carrying no statement that they may not apply. MemTrapBench's mitigation is an
+inference-time instruction, not an architecture change, which is the cheapest published lever left.
 
-**Hypothesis** (`prereg/R17-framing.md`, written before the dispatch): the harm is not the item's content
-but the absence of permission to reject it. MemTrapBench reports that every memory framework it tests
-sits below its no-memory baseline and that its mitigation is an inference-time instruction, not an
-architecture change; this project's own repair-pair arms, which record an error rather than a fact,
-were worse than the rule arms in every dispatch that measured both.
+**Arms.** `full-advisory` (one sentence beside the unchanged pack), `none-advisory` (the same sentence,
+no pack, so a recovery is attributable), `full-prohibitive` (the same facts classified as recorded errors,
+the trauma mechanism run forward), `none` and `full` as controls.
 
-**Arms.** `full-advisory` — one sentence beside the unchanged pack granting the model standing to ignore
-a note whose condition does not hold; `none-advisory` — the same sentence with no pack, so a recovery is
-attributable to the sentence rather than to 200 extra characters; `full-prohibitive` — the same facts
-classified as recorded errors, which is the trauma mechanism run forward instead of mitigated;
-`none` and `full` as controls.
+**Result** (`prereg/R17-framing.md` Outcome, dispatch `41185616121`). The registered refutation fired:
+`full-advisory` is **−0.57pp against `full`** with an interval of [−3.14, +2.00], under the pre-registered
++2.5pp bar. Permission is not the channel. Two further numbers came with it: the sentence costs
+**2.00pp on its own** (`none-advisory`, p = 0.0923), so in this prompt words cost about what the note
+costs; and the error register moves the cell by 0.57pp against the advisory one, so what the block says
+about itself is not what makes it expensive. `full` was negative for the seventh consecutive dispatch
+(−4.00pp, p = 0.0201).
 
-**Prediction.** `full-advisory` at least 2pp above `full` and no more than 1pp below `none`;
-`full-prohibitive` within 1pp of `full`; `none-advisory` within ±1.5pp of `none`; no arm 2pp above `none`.
+**Instrument.** `V43-framing-delivered` counts per arm and per fold how many prompts carried the framing
+the arm declares, and fails in both directions. It reported `0/350` for the two reference arms and
+`350/350` for each of the three that declare a standing.
 
-**Refutation.** `full-advisory` within 1pp of `full` means framing is not the channel, and the next
-iteration is selection — a pack that picks the highest-ranked item that fits instead of stopping at the
-first that does not — with relevance strata as its readout. `full-advisory` 2pp above `none` is the first
-positive read on this lane in nineteen iterations and is not called a gain until a second dispatch
-reproduces the sign.
+### R18 — the one positive result has never had a control (open)
 
-### R18 — a pack that chooses instead of truncating (planned, gated on R17)
+**Why, and why it is not selection.** R17's refutation named selection as its successor, and R16 cancels
+it: the loss is complete at the **first** item, so choosing *which* item arrives cannot remove a cost the
+first item already incurs. What the record does support is the opposite shape — the note as an objection
+to a draft the model has already written — which is the only mechanism here with a positive sign:
+`full-anchored`, **+2.86pp against `full`** pooled over 700 questions (McNemar p = 0.0205, 24 lost and 44
+gained), and indistinguishable from no memory in the run that measured it.
 
-**Why.** R16's instrument failure is a mechanism defect, not a budget defect: `renderPack` walks rank
-order and returns an empty pack when the top item does not fit, so "one item" is unrepresentable at any
-budget smaller than the item. A selection rule — take the highest-ranked item that fits, rather than the
-highest-ranked item or nothing — makes the one-item dose measurable at full coverage, which is the cell
-every framing result in R17 has to be read against.
+**And that number has never been controlled.** `full-anchored` was measured against `full`, never against
+a second pass with no pack. The project already knows what that omission costs: at retry, once
+`retry-blank` existed, the note's contribution was **zero**, and `retry-keyed` — the right note by the
+right key at the right moment — was identical to the blank retry question for question.
 
-**Blocked on.** R17's outcome: if the advisory sentence recovers the harm, the pack's size stops being
-the open question and selection follows framing; if it does not, selection precedes it.
+**Arms** (`prereg/R18-anchored-control.md`). `full-anchored` (incumbent), `anchor-blank` (the same draft,
+the same revision request, no pack and no instruction about one), `full` and `none` as the run's anchors
+to its own baseline.
+
+**Prediction.** `anchor-blank` above `none` (+1 to +3pp); `full-anchored` − `anchor-blank` ≥ 0;
+`full` negative, around −3pp.
+
+**Refutation.** `anchor-blank` within 1pp of `full-anchored` while both sit at or below `none` means the
++2.86pp was neither the note nor the second pass, and the record's only positive sign is demoted in that
+commit. `full-anchored` 2pp below `anchor-blank` means the note hurts even as an objection to a draft.
+
+**Resolution.** This lane separates about 3pp on a paired difference, which is the size of the gap between
+the two outcomes the iteration distinguishes; a null on both revision arms is pre-registered as
+"inconclusive at this n", not as "no effect".
+
+### R19 — the mechanisms the literature has and this record does not
+
+Three published mechanisms remain untried, and each changes *when* or *whether* knowledge arrives rather
+than *how it reads*, which is the axis every closed iteration here has in common (COMPETITIVE.md §3
+carries the evidence grading):
+
+1. **Reconstruction** (MemHarness, arXiv 2607.28272) — the model critiques the retrieved experience
+   against the current context and rewrites it into a directive before answering. The inference-time half
+   needs no training. Blocked by R17's second finding: a paragraph of prompt cost 2.00pp, so any
+   reconstruction arm pays that toll before it can earn anything.
+2. **Utility clearance** (MeClear, arXiv 2609.09115) — query-scoped suppression of memories whose
+   measured downstream utility is negative, decided from outcomes rather than from item attributes. This
+   is the only candidate that adds **no** prompt text, and the `sample-*` and pool machinery already
+   collects the signal it needs.
+3. **Adaptive injection** (ε-MemEvo, arXiv 2608.12522) — whether to inject at all, and how strongly, as a
+   property of the moment rather than of the item. Its ablation is the sharpest published statement of
+   this project's own failure: naive injection fails catastrophically, gated injection is safe.
+
+**Blocked on.** R18: if the note earns its +2.86pp at anchor, R19.1 (reconstruction at anchor) is the
+cheapest next measurement; if it does not, R19.2 (utility clearance with no added text) is the only
+remaining candidate that does not pay the word tax.
+
