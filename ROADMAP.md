@@ -2652,43 +2652,62 @@ survives a second observation. A new instrument fact: the anchors moved between 
 **cross-dispatch cells carry one to two points of store variance** and a cross-dispatch delta under two
 points is not a result.
 
-### R24 — how much of the 24.86pp can the database supply? (designed, the next registration)
+### R24 — the same 2×2 on the split every comparison was measured on (registered and dispatched 2026-11-01)
 
-**Why this is the question R23 created.** R23 established that the memory line's deficit was never about the
-note: with the benchmark's curated `evidence` sentence present, a pack costs 4.86 points; with it removed the
-same pack is worth +1.14 points. The 24.86 points the sentence is worth are therefore the target, and most of
-them are **not memory's job**. Three comparisons say so: this lane loses 24.86 points to the ablation, RSL-SQL
-loses 12.71 and CHESS 14.36 (Companion Agents, Table 1), and the two that lose less are the two whose pipelines
-extract columns and cell values from the database before generating. The difference between 24.86 and ~14 is
-**schema linking and value indexing**, not knowledge about past questions.
+**Why the database question is not the next one.** R23's headline is 24.86pp on `minidev`, and every number it
+invites comparison with — 12.71 (RSL-SQL), 14.36 (CHESS), 18.37 (DAIL-SQL), 20.01 (GPT-4) — was measured on
+`dev`, 1,534 questions. Minidev also drops the easiest third, so the 24.86pp is a moderate-and-challenging
+estimate being quoted against whole-split ones, which is exactly the comparison this project's own
+admissibility rule calls `indicative`. Three of R23's claims are weaker than its headline for that reason, and
+one run fixes all three:
 
-**The design, and it reuses an arm that already exists.** A 2×2 over evidence {present, absent} × value
-annotation {present, absent}:
+1. **The headline is not in the literature's units.** Moving to `dev` makes 24.86 comparable to 12.71.
+2. **The +1.14pp cell is below the instrument's floor.** 13 gained against 17 lost; the direction is the
+   finding and at 350 questions the significance cannot exist.
+3. **The difficulty-shape prediction had nothing to test.** Minidev has no `simple` questions at all.
 
-1. **`none`** — the shipped baseline, evidence present, no annotation. Every published number's anchor.
-2. **`none-noevidence`** — measured in R23 at 29.71%; the cell that says how much is missing.
-3. **`values`** — the existing arm: `valuesDdl` annotates each column with the values it holds. It has only
-   ever been run on the *unablated* prompt, where the evidence sentence was already supplying exactly that
-   information, which is why its cell has always read as a null.
-4. **`values-noevidence`** — the cell that matters: the same annotation on the prompt that has lost the hint.
-   `values − none-noevidence` is the **fraction of the 24.86pp the database can supply by itself**, and
-   `values-noevidence` against `none` is how much of the lost ground is recovered without any hint at all.
+**The design, with no code change.** The same four cells, `split=dev`, and `learn_sample=280` so each fold
+distils from exactly as many rows as it did on minidev — the store size is held and **the split is the only
+difference**. `learnPool` is a prefix of a list already interleaved across databases, so the sample covers
+every database rather than whichever one sorts first. Full learning on dev would be ~12,000 calls and would
+confound the split with a memory four times larger.
 
-**Prediction.** `values-noevidence − none-noevidence` ≥ 6pp: a quarter of the gap or more, because a
-column-value index supplies the two things the sentence most often supplies (which column, which literal).
-`values − none` ≈ 0, because the annotation is redundant where the hint is present — the R23 interaction.
-And the recovered fraction should be larger on the questions whose evidence sentence is a *value mapping*
-(`... refers to ... = '...'`) than on those whose sentence is a definition of arithmetic.
+**Resolution, computed before the run.** At R23's measured discordance (105 and 94 of 350), the scaled paired
+half-widths on 1,534 questions are about **±2.7pp** for both the main effect and the interaction, against
+±3.8pp and ±4.4pp on minidev. That is what makes a **≥2pp** claim on `full-noevidence − none-noevidence`
+registrable at all; on minidev it would have been below the floor, which is the error this record made twice
+in R21 and R22.
 
-**Resolution.** Both contrasts are two-cell pairs on the same 350 questions. At the discordance R23 measured
-(a value annotation should move 25–40 questions), the paired half-width is 3.4–4.2pp, so the confirmatory
-claim is stated at **≥6pp** — above the instrument's floor by construction, which is the rule AUDIT 17.5
-adopts.
+**Prediction.** Main effect ≥8pp with the interval containing 24.86 — falsifiable in both directions, since a
+dev interval that excludes 24.86 means minidev inflated it and dev becomes the headline. The pack's value
+without the hint **≥2pp**, the first testable statement of the cell that reversed the record's conclusion. The
+interaction **≤ −4pp**. And the effect **rising across three difficulty levels**, with `simple` between 5 and
+15pp and `challenging` between 18 and 30pp.
 
-**Refutation.** If `values-noevidence − none-noevidence` is within ±1pp with an interval excluding +1pp, then
-the 24.86pp is not schema-or-value information and the next suspect is the sentence's role as a *problem
-statement* rather than a fact — which would move the line to how a question is restated, not what is retrieved.
-If the annotation recovers more than 15pp, then most of this record's "memory deficit" was a missing value
-index, and the memory line's scope needs rewriting in the documentation rather than in code. If `values` is
-*below* `none` by ≥2pp with an interval excluding −1pp, the annotation competes the same way the pack does and
-the competition finding generalises to any added text — which would be the strongest result available here.
+**Refutation.** A main effect below 12pp with an interval excluding 24.86 demotes the headline to a
+moderate-and-challenging estimate and moves every cross-system comparison to dev. A pack effect below zero
+with an interval excluding −2pp withdraws the claim that a note *pays* anything — the product switch survives,
+because a null is still not a cost, but the +1.14pp cell becomes noise. An interaction whose interval contains
+zero demotes the competition reading from a mechanism to a single-run observation, and that outcome would send
+the line back to selection work rather than forward. A flat gradient across three levels drops the difficulty
+story instead of leaving it as a caveat. A run truncated by the deadline before five folds is read as partial
+and makes no confirmatory claim.
+
+### R25 — how much of the 24.86pp can the database supply? (designed, deferred behind R24)
+
+**The question R24 does not answer.** R23 priced the note's deficit as a competition and left the target at
+24.86pp. Whether that target is *addressable from the database alone* is the next question, and the two
+channels are already in the lane: `valuesDdl` annotates columns with the values they hold, and `linkSchema`
+prunes the schema to the tables the question names. Both were measured only on the unablated prompt, where the
+evidence sentence was doing their job — `values` read +0.29pp (12/11, p = 1.00, iteration 95) and `linked`
+read **−7.43pp** (7/33, p < 1e-4), so the two channels have opposite histories and neither has been measured
+where the competitor is absent.
+
+**Why it waits.** Its natural claims are ≤3pp for the value channel and ≈−7pp for the pruning channel, and the
+first is below even dev's floor. Registering it now would repeat the mistake this record has now made three
+times: a claim smaller than its instrument. R24's dev run either raises the floor to ~2pp — in which case the
+value channel becomes testable — or shows the effect is split-dependent, in which case the question changes.
+
+**The design, for the record.** Four cells: `none-noevidence`, `values-noevidence`, `linked-noevidence`, and
+`none` as the anchor. The linker reads the question and **not** the evidence on both cells, because a pruner
+that reads the hint reintroduces the thing being ablated. `V47` covers all three ablated arms unchanged.

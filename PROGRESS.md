@@ -6855,10 +6855,10 @@ artefacts, every declared gate emitted and none unannounced.
 
 **What this changes.** The product rule is now a switch rather than a policy: abstain where the question
 arrives with curated knowledge, inject where it does not. The memory line has its first measurable ceiling —
-**4.6% of one curated sentence** — and the record's largest remaining number, 24.86pp, is now known to be
-mostly *not* memory's job: this lane's `none` prompt has no examples, no schema linking and no value index,
-and the systems that report a smaller evidence dependence get it by extracting the same information from the
-database. The next registration therefore replaces the hint rather than the note.
+**4.6% of one curated sentence** — and the record's largest remaining number, 24.86pp, becomes the target.
+R24 is the same 2×2 on `dev`, because three of the claims above are weaker than the headline and one run fixes
+all three: the 24.86pp is quoted against competitor numbers measured on a split that keeps the easiest third,
+the +1.14pp cell is below the instrument's floor, and the difficulty prediction had nothing to test.
 
 ## What is left, in order (current)
 
@@ -6870,7 +6870,8 @@ per-question knowledge that the benchmark supplies for free, and losing.**
 
 | # | Item | State | Blocks |
 |---|---|---|---|
-| 1 | **R24 — how much of the 24.86pp can the database supply?** | designed, not registered: a 2×2 of evidence {present, absent} × value annotation {present, absent}, using the `valuesDdl` arm that already exists and has only ever been run on the *unablated* prompt, where the hint was doing its job for it. Success is a **fraction of a measured effect**, not a delta against no memory | the next dispatch |
+| 1 | **R24 — the same 2×2 on `dev`** | **registered and dispatched**: 1,534 questions instead of 350, `learn_sample=280` so the store is the same size and the split is the only difference. Buys three things at once — comparability with the competitors' own split, a resolvable ≥2pp claim on the pack's value without the hint, and three difficulty levels for the shape prediction minidev could not test | the run |
+| 1b | **R25 — how much of the 24.86pp can the database supply?** | designed, deferred behind R24: the `values` (+0.29pp, iteration 95) and `linked` (−7.43pp) channels measured where the competitor is absent. It waits because its natural claim is ≤3pp, which is below even dev's floor, and this record has now registered a claim smaller than its instrument three times | R24's dev floor |
 | 2 | **Abstention as a switch** | no longer a research programme: R23 says abstain where the question carries curated knowledge and inject where it does not, and the condition is observable per deployment. What remains is instrumenting the condition, not testing the policy | R24, if value annotation makes the note's job redundant too |
 | 3 | **R19.3 — adaptive injection** (ε-MemEvo) | not built; `gated` and `full-corroborated` are static filters, not per-question decisions | the gate's inputs, which the pool already collects |
 | 4 | **The interpreter's domain prompt** | decision confirmed four times: `V44` reports 184/184, 168/168, 156/156 and 168/168 domain-free items arrived unscoped, 0 widened in every run | the ceiling on every transfer number |

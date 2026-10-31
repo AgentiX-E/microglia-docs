@@ -786,13 +786,16 @@ earlier one must re-measure the anchor in the same dispatch. Every claim in this
 
 **17.8 What is still not verified.**
 
-1. **How much of the 24.86pp the database can supply.** This lane's prompt has no worked examples, no schema
-   linking and no value index, while RSL-SQL and CHESS lose 12.7 and 14.4 points to the same ablation. The
-   gap between 24.86 and ~14 is plausibly schema-and-value extraction, and `valuesDdl` already exists to
-   test it — it has simply only ever been run on the unablated prompt, where the hint was doing its job.
-   This is R24 and it is the largest measurable question in the repository.
-2. **Whether the +1.14pp cell survives a second observation.** It is 13 gained against 17 lost; the direction
-   is right, the significance is not there, and the record has been wrong before about a single small cell.
+1. **Whether 24.86pp survives the split every competitor used.** Minidev drops the easiest third, so the
+   headline is a moderate-and-challenging estimate quoted against whole-split numbers (12.71, 14.36, 18.37,
+   20.01). R24 re-runs the identical 2×2 on `dev` at 1,534 questions with the store size held at 280 learn
+   rows per fold, which also brings the +1.14pp cell and the difficulty gradient inside the instrument's
+   reach. It is dispatched and its claims are registered in `prereg/R24-dev-split.md`.
+2. **How much of the 24.86pp the database can supply.** The two channels exist and have opposite histories:
+   `values` read +0.29pp with the hint present, `linked` read −7.43pp, and neither has been measured where
+   the competitor is absent. It is deferred behind R24 because its natural claim (≤3pp) sits below even the
+   dev floor — which is the same defect, a claim smaller than its instrument, that this audit has now
+   recorded three times.
 3. **Whether the interaction holds at another dose.** −6.00pp was measured at 1.79 items and 1,067
    characters. A pack at half the size, or at twice, would say whether substitution is a fixed transfer or a
    function of how much text is offered.
