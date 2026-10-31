@@ -24,7 +24,8 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R17 Framing | **closed** — permission to ignore the block does not recover its cost (−0.57pp against `full`, CI [−3.14, +2.00], the registered refutation firing); the sentence costs 2.00pp with no block, and the error register moves the cell by 0.57pp | R18: the anchored control |
 | R18 Anchored control | **closed** — the control is worse than the mechanism: a blind revision costs 4.00pp (p = 0.0336, one sign in five folds) and the anchored cell sits at *exactly* no memory, so its +4.00pp over that control (p = 0.0385) is a repair rather than a gain | R20: the 2×2 that separates the block from the permission it carries |
 | R20 Anchored hold | **closed** — the licence and the note are **substitutes**: the permissive clause is +2.00pp where there is no block and −0.57pp where there is one (interaction −2.57pp), so the explicit sentence is dropped and the shipped prompt keeps the clause it had; the blind revision reproduced to the question (−4.00pp, 12/26, p = 0.0336) | R21: utility clearance, the only mechanism that adds no text |
-| R21 Utility clearance | **open** — registered, not built; decide per question from observed outcome rather than per item from attributes, and add no prompt text | the build |
+| R21 Utility clearance | **closed** — the pair is +0.00pp (6/6, p = 1.0000) and 311 of 350 questions rendered the *same* pack, so the treatment was absent where it should have been strongest; underneath it, 77% of the store has no counterfactual record and the pass produced 104 decisive questions from 1,400 learn rows | R22: the object, not the filter |
+| R22 Raw substrate | **in flight** — `full-raw` against `full-raw-shuffled`, `V46-raw-is-verbatim`, registered and dispatched as `41205745555`; the same corrections injected as the event rather than as a lesson | the run |
 
 ## Iteration log
 
@@ -6613,6 +6614,81 @@ telling the model it may leave its answer alone.
 **Green.** `pnpm check` — 1,924 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98; the protocol check
 validates `prereg/R20-anchored-hold.md` against `eval/results/poc-sota-bird-square.json` at eleven
 declared gates, every one emitted and none unannounced.
+
+### 129 — The clearance had nothing to clear
+
+**Question.** Seven axes closed and every one of them varied a *distilled* store: content, substrate,
+quantity, position, framing, delivery order, and the anchored square twice. The one axis left is
+membership at a fixed size — is a pack of items *measured* to hurt worse than the same number of items
+chosen at random? R21 is that pair, and it is the last selection experiment the literature prescribes for
+this object: Xiong et al. (arXiv 2505.16067) delete by observed utility, MeClear (arXiv 2609.09115)
+reports 82.3% recovery from a Shapley/leave-one-out clearance, and this record had only ever built the
+retirement half of that.
+
+**What was built.** `full-cleared` scores every rule by counterfactual on the fold's learn rows — with it,
+without it, credited only where the outcome changed — and removes the rules whose record shows more harms
+than helps, keeping every rule it has no record of. `full-cleared-sampled` drops the same *count* from the
+same pack over a seeded Fisher–Yates stream, order preserved. `V45-clearance-dose-matched` fails the run
+when any question's two arms carried a different number of items after the character budget, and again
+when no pack changed at all. `validateMemory` was refactored to return its credit rather than deleting from
+it, so the clearance leaves the store alone and `full` still means what it meant in the run before.
+
+**Reading** (350 questions, 5 folds, 4,378 calls, 6 retries, 0 timeouts, 0 call failures, twelve gates
+pass, dispatch `41203470612`, artefact `eval/results/poc-sota-bird-clearance.json`; `none` at 54.00%):
+
+| Arm | Items | Chars | ACC | Δ vs `none` | 95% CI | gained / lost | p |
+|---|---|---|---|---|---|---|---|
+| `full` | 1.83 | 1,089 | 52.00% | −2.00pp | [−5.14, +1.14] | 12 / 19 | 0.2810 |
+| `full-cleared-sampled` | 1.51 | 905 | 51.71% | −2.29pp | [−5.43, +0.57] | 10 / 18 | 0.1849 |
+| `full-cleared` | 1.51 | 907 | 51.71% | −2.29pp | [−5.43, +0.86] | 11 / 19 | 0.2005 |
+
+**The registered claim is refuted, and the refutation clause fires.** `full-cleared` −
+`full-cleared-sampled` is **+0.00pp, 6 gained and 6 lost, p = 1.0000**. The pre-registration said in
+advance what that would mean: the utility score carries no usable signal at this store size, and the
+record stops attacking selection.
+
+**Why it is zero, and the reason is the finding rather than an excuse.** `V45` passed on the dose — 0
+mismatched of 350 — and reported **311 identical**: on 88.9% of questions the two arms rendered *the same
+pack*. The store's own shape explains it. A pack carries 1.83 items; when the clearance removes the one
+item a single-item pack holds it leaves nothing, and a control that must drop the same count has only that
+item to drop. The pair therefore coincided **exactly where the clearance acted most strongly**, differed
+on 39 questions, and split 6–6 on those. The registered resolution was 3pp on 350 question-pairs; 39 is
+not a sample that could have met it.
+
+**The number underneath is worth more than the delta.** The counterfactual pass answered **104 decisive
+questions out of 1,400 learn rows (7.4%)**, because a question is decisive only when the outcome *changes*
+between the pack and no pack, and most questions are right both ways or wrong both ways. Those 104
+credited **143 of the 628 scored rules**, so **77% of the store has no counterfactual record at all** and
+the ones that do average 1.2 comparisons. A *perfect* clearance could have filtered at most 22.8% of this
+store. Selection is not the lever on this object, and the reason is a property of the corpus rather than
+of the filter: one observation per item is not enough to measure an item.
+
+**What the arm did measure agrees with the dose axis.** Both clearance arms carry 0.33 items fewer than
+`full` and land 0.29pp worse — a third of an item, a third of a point, which is the noise the dose
+experiments already priced. The clearance moved accuracy by nothing because it moved the pack by nothing.
+
+**Two instrument readings.** `V44-domain-accounted` reports `180 item(s) with no domain, 180 arrived
+unscoped, 0 widened` — the third consecutive dispatch in which generalisation widened nothing, which
+retires the widening branch of that decision for good. `V32` reports 644 corrections from 1,400 learn rows,
+0 unanswered, 4 distillation failures (0.3%).
+
+**A design defect is recorded for the next clearance experiment**, and it was invisible until the pair
+ran: a control matched on item count is degenerate on single-item packs. Dose has to be matched on
+characters, or the comparison restricted in advance to the questions where the two packs differ — a subset
+that must be declared before the run rather than selected after it.
+
+**The conclusion is what R22 acts on, and R22 is already built and dispatched.** Every arm here varies a
+distilled store; the one substrate nobody injected is the correction itself. Raw-RAG (arXiv 2610.30755)
+ranks naive retrieval over raw history first in six of seven benchmark-model settings and reports that
+even complete access to a transformed store leaves a gap against raw evidence, because summarising drops
+the relations an answer is derived from. `full-raw` renders the event — question, wrong query, fixing
+query, verbatim — with `full-raw-shuffled` as the foreign-event control and `V46-raw-is-verbatim` failing
+the run if a single payload line was rewritten. Registered as `prereg/R22-raw.md`, dispatched as
+`41205745555` before this entry was written.
+
+**Green.** `pnpm check` — 1,959 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98, `sota.ts` and
+`validation.ts` at 100 on all four; the protocol check validates twelve pre-registrations against the arm
+union, including R22 before its first run.
 
 ## What is left, in order (current)
 

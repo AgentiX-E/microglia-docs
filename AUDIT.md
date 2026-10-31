@@ -583,3 +583,67 @@ against a blind revision** (53 gained, 29 lost, 700 question-pairs, exact McNema
 `eval/results/poc-sota-bird-square.json`, dispatch `41190894667` (success, 2,460 calls, 8 retries, 0
 timeouts, 0 call failures, eleven gates pass, 72 minutes). `pnpm check`: 1,924 tests, 104 files, coverage
 99.98 / 99.61 / 100 / 99.98.
+
+## 15. Addendum — R21 (2026-10-31)
+
+R21 asked whether a smaller pack of *better* items beats a smaller pack, and the answer is that this
+store cannot tell the two apart: **the clearance and its control rendered the same prompt on 88.9% of
+questions**, so the pair differed on 39 questions and split 6–6. The confirmatory claim is refuted and the
+pre-registered refutation clause fires: selection stops here. The number worth keeping is the one under
+the null — **77% of the store has no counterfactual record at all**.
+
+**15.1 The pair is exactly zero and the zero is structural.** `full-cleared` − `full-cleared-sampled` =
+**+0.00pp**, 6 gained, 6 lost, 12 discordant, exact McNemar p = 1.0000. `V45-clearance-dose-matched`
+passed on dose (0 mismatched of 350) and its second reading is the finding: **311 of 350 identical**. A
+pack carries 1.83 items; where the clearance removed the only item in a single-item pack, the control had
+only that item to remove, so the two cells coincide precisely where the treatment acted most strongly. The
+registration's resolution was 3pp on 350 pairs; it was never available on 39.
+
+**15.2 The instrument under the null: the counterfactual pass is starved, not the filter wrong.** The pass
+answered **104 decisive questions across 1,400 learn rows (7.4%)**, because a question is decisive only
+when the outcome *changes* between pack and no pack and most questions are right both ways or wrong both
+ways. Those 104 questions credited **143 of 628 scored rules (22.8%)**; the credited rules average 1.2
+comparisons each. A perfect clearance could have filtered at most 22.8% of this store. The cleared set
+was 93 of 628 rules (14.8%), 115 items over 350 questions, 0.33 per question.
+
+**15.3 Both clearance arms are dose, and they say so.** `full-cleared` and `full-cleared-sampled` sit at
+**51.71% on 1.51 items and 907 / 905 characters**; `full` sits at 52.00% on 1.83 items and 1,089
+characters; `none` at 54.00%. A third of an item less text and a third of a point worse is the dose axis's
+own noise, reproduced a fourth time. Against `full` the two arms are each −0.29pp (5/6 and 3/4, p = 1.0000
+both).
+
+**15.4 A design defect this audit now carries forward.** A control matched on **item count** is degenerate
+on single-item packs, and this was invisible until the pair ran. Any future clearance experiment must
+match dose on **characters**, or restrict the comparison in advance to the questions where the two packs
+differ — a subset declared before the run, never selected after it. `V45`'s "identical" count is the
+instrument that would have caught the second case; it caught the first.
+
+**15.5 The generalisation instrument widened nothing, for the third dispatch running.** `V44-domain-accounted`
+reports `180 item(s) with no domain, 180 arrived unscoped, 0 widened`. The repair is identified and queued
+behind the current line, not applied mid-experiment.
+
+**15.6 Claims that change.**
+
+| Claim | Status after R21 |
+|---|---|
+| "Deleting by measured utility beats deleting by age" (Xiong et al., MeClear) | **not transferable at this store size**: 77% of the store has no counterfactual record, so the utility estimate exists for a quarter of the object |
+| "A pack of items measured to hurt is worse than the same count chosen at random" | **unmeasured here**, and the reason is mechanical: the two arms coincided where the claim would have been tested |
+| "The deficit is a property of which rule is shown" | **third independent negative**, after the relevance audit and `full-shuffled` |
+| "Selection is the lever" | **refuted for this object**, which is what R22 exists to test by changing the object |
+| "Dose is worth about two points and arrives with the first item" | **fourth reproduction**, now across cleared packs as well |
+
+**15.7 What is still not verified.**
+
+1. **Whether a utility score carries signal with more than one observation per item.** The premise of a
+   per-item effect is a second observation of that item, and this record has 1.2 per credited rule. The
+   claim "clearance does not work" and the claim "this lane cannot estimate a per-item effect" differ by
+   exactly that quantity, and the registration declined to conflate them.
+2. **Whether the 39 questions where the packs differed contain the effect.** They split 6–6, which is
+   uninformative in both directions at that size, and no post-hoc subset reading is licensed.
+3. **Whether raw evidence is the missing substrate.** That is R22, registered and dispatched in the same
+   iteration, and it is the only arm in this record that changes the object rather than a filter over it.
+
+**15.8 Reproducibility.** `prereg/R21-clearance.md` (prediction, refutation and Outcome), artefact
+`eval/results/poc-sota-bird-clearance.json`, dispatch `41203470612` (success, 4,378 calls, 6 retries, 0
+timeouts, 0 call failures, twelve gates pass, 26 minutes). `pnpm check`: 1,959 tests, 104 files, coverage
+99.98 / 99.61 / 100 / 99.98.

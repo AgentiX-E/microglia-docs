@@ -2431,7 +2431,7 @@ blind revision reproduced to the question (−4.00pp, 12/26, 38 discordant, p = 
 dispatches the block is worth **+3.43pp against it** (53 gained, 29 lost, 700 pairs, p = 0.0106). The
 content half, `full-anchored` − `anchor-hold`, is +0.86pp and untestable at this n.
 
-### R21 — utility clearance, because the deficit is not made of words (open)
+### R21 — utility clearance, because the deficit is not made of words (closed — refuted, and the refutation is the finding)
 
 **Why.** Every prompt-level lever has now been measured, three of them twice: content, substrate, quantity,
 position, framing, and the delivery order with and without a licence. No cell in either square reaches no
@@ -2455,6 +2455,86 @@ clearance arm and a shuffle control that drops the same *number* of items chosen
 **Gate.** Same eleven, plus the existing `V1-pack-not-empty` floor restated for a shrunken pack: a
 clearance arm that empties its own pack has measured `none` under a second name.
 
-**Blocked on.** Nothing but the build. `prereg/R21-*.md` is written when the arm exists, since the protocol
-check validates a registration against the arm union before dispatch.
+**Built and dispatched (2026-10-31).** `prereg/R21-clearance.md`; arms `full-cleared` and
+`full-cleared-sampled`; dispatch `41203470612`. What changed from the sketch above, and why:
 
+1. **The control is an arm, not a footnote.** `full-cleared-sampled` drops the same number of rules from
+   the same pack, uniformly and seeded, retrieval order preserved. Without it the delta is dose as much
+   as content.
+2. **The clearance is a minority drop, not an admission filter.** A rule is removed when its record shows
+   **more harms than helps**; a rule with no record is kept. Admitting only what was measured to help is
+   what `full-verified` does, and it leaves 0.44 items per pack — a dose experiment wearing a filter's
+   name.
+3. **The credit is measured on learn rows, per rule, by counterfactual**, and `validateMemory` now returns
+   that record instead of deleting from it: the arm that names deletion does the deleting, so a run that
+   asks for clearance alone leaves the store alone and `full` still means what it meant before.
+4. **`V45-clearance-dose-matched` is the new gate**, and it is the one thing standing between this pair
+   and an inference this record has already had to withdraw once. It fails the run when any question's
+   two arms carried a different number of items, or when no question's pack changed at all — and it reads
+   **post-budget** counts, because `makePack` admits whole items and two packs with the same survivors can
+   render a different number of them.
+5. **The reading is fixed in advance.** Confirmation needs `full-cleared` above the control by 1–3pp; a
+   difference within ±1pp with an interval excluding +1pp means the utility score carries nothing at this
+   store size, and the next iteration changes the object instead of the filter (R22).
+
+**Result (2026-10-31).** `full-cleared` − `full-cleared-sampled` = **+0.00pp** (6 gained, 6 lost, 12
+discordant, exact McNemar p = 1.0000): the registered refutation clause fired and this lane **stops
+attacking selection**. Both clearance arms sit at 51.71% on 1.51 items (−2.29pp, p = 0.2005 / 0.1849) and
+`full` at 52.00% on 1.83 items (−2.00pp, p = 0.2810) against `none`'s 54.00%. `V45` passed on dose (0
+mismatched of 350) and reported **311 identical packs**: on 88.9% of questions the two arms rendered the
+same prompt, because a control matched on item count is degenerate on single-item packs — where the
+clearance removed the only item, the control had only that item to remove, so the pair coincided exactly
+where the treatment acted most strongly. The pair therefore differed on 39 questions and split 6–6, and
+the registered 3pp resolution was never available on 39 pairs.
+
+The number underneath is the deliverable: the counterfactual pass found **104 decisive questions in 1,400
+learn rows (7.4%)**, those credited **143 of 628 rules (22.8%)**, so **77% of the store has no
+counterfactual record** and the rules that do average 1.2 comparisons. A perfect clearance could have
+filtered at most 22.8% of this store; the filter was not wrong, the object gave it nothing to filter.
+`V44` reported `180 unscoped, 0 widened` for the third dispatch running. Design defect recorded for any
+future clearance: **dose must be matched on characters, or the comparison restricted in advance to the
+questions where the packs differ.**
+
+### R22 — the substrate goes back to raw (in flight — dispatched 2026-10-31)
+
+**Why this is the last content axis and it is not a content axis at all.** Seven axes have been varied on
+one store: content (rule, repair, procedure), substrate (rule against repair, both distilled), quantity,
+position, framing, delivery order, and — in R21 — membership at a fixed dose. Every one of them is a
+variation *within* a distilled store, and the field has spent the last month saying that the distillation
+is the thing to doubt: Raw-RAG (arXiv 2610.30755) ranks naive dense retrieval over raw history first in
+six of seven benchmark-model settings and reports that **even complete access to a transformed memory store
+leaves an accuracy gap against raw evidence**, because summarising and extracting throw away the relations
+and dependency paths an answer has to be derived from. Our items are 500–824 characters of prose distilled
+from a single correction, and the record's own attribution instrument says the content in them is worth
+about +0.9pp while the harm of showing them is −2 to −4pp.
+
+**The arm.** `full-raw`: the pack is the verbatim correction event — the question that was asked, the
+query that failed, the query that fixed it — retrieved by the same recall, rendered under the same
+1,200-character budget, in the same position. No prose, no interpretation, nothing phrased as a convention
+for the reader to imitate. Every character is something the database actually said.
+
+**Controls, and they are the whole design.** Three of them, because three different explanations have to be
+excluded before a delta means anything:
+
+1. **`full-raw-sampled`** — the same number of *characters* of raw event drawn from the same corrections in
+   a different order, so "raw evidence is longer" is not the treatment. R16 established that the character
+   budget is the axis that moves, and a raw pack will be longer per item than a rule: whatever the arms
+   disagree about must not be length.
+2. **`full` on the same questions** — the same corrections, distilled. This is the comparison the paper
+   makes and the one this project can make on a benchmark where a correction has an exact referent.
+3. **`none`** — the baseline, as always.
+
+**What it would settle.** If `full-raw` ≥ `none` and above `full`, the memory line has been optimising the
+wrong object for twenty iterations: the product is a log with good retrieval, not a lesson, and every
+distillation step in `packages/core/src/distill` is a lossy convenience rather than a contribution. If
+`full-raw` is not better, the Raw-RAG mechanism does not transfer to a setting where the correction's
+subject and the question's subject are the same schema, and this record says so with a number — which is
+worth as much, because it is the only claim in the field currently being generalised without a SQL test.
+
+**Gate.** A new `V46-raw-is-verbatim`: every injected raw cell must be byte-present in the correction
+record it claims to come from. A renderer that paraphrased would make the arm a third distiller with a
+different name, and the arm's entire claim is that nothing was interpreted.
+
+**Blocked on.** R21's result only for the interpretation, not for the build: if clearance works, raw is
+run as `full-raw-cleared` instead of `full-raw` and the two questions compose; if it does not, raw runs
+alone. The build itself is a pack renderer over `output`/`signal.after`, which the lane already stores.

@@ -1402,6 +1402,43 @@ is a sentence telling the model it may leave its answer alone.
 (−3.71, −3.14, −2.00, −2.57, −4.00, −0.57, −4.29; mean −2.90pp). R18's −0.57 was the outlier, and the
 sentence the product has to survive is unchanged.
 
+### 3.6.21 The store cannot be filtered, because it cannot be measured
+
+The obvious repair after §3.6.20 is to keep only the notes that work. That is what the literature
+prescribes — deletion by observed utility (Xiong et al., arXiv 2505.16067), clearance by leave-one-out and
+Shapley attribution (MeClear, arXiv 2609.09115) — and this record had only ever built the retirement half
+of it, under a threshold loose enough that it removed a third of the store and moved accuracy by −0.57pp.
+So the last selection experiment was run properly: score every rule by counterfactual on the rows the fold
+learned from, remove the rules whose record shows more harms than helps, keep every rule with no record,
+and compare against a control that removes the same number from the same pack at random.
+
+**It came back at exactly nothing: +0.00pp, 6 gained and 6 lost, p = 1.0000.** The artefact explains why,
+and the explanation is the result. On **311 of 350 questions the two arms rendered the same pack**. A pack
+carries 1.83 items; when the clearance removes the one item a single-item pack holds it leaves nothing, and
+a control that must drop the same count has only that item to drop — so the two cells coincide precisely
+where the treatment was supposed to bite. It differed on 39 questions and split 6–6 there.
+
+Underneath that lies the number worth keeping. The counterfactual pass asked 1,400 learn questions twice
+and only **104 of them were decisive** — 7.4% — because a question tells you something about a note only
+when the answer *changes* depending on whether the note is there, and most questions are right both ways
+or wrong both ways. Those 104 questions credited **143 of 628 rules**, so **77% of the store has no
+counterfactual record at all**, and the ones that do average 1.2 comparisons. A perfect clearance could
+have filtered at most 22.8% of this store.
+
+That is a statement about the object rather than about the filter. A store of one-observation items cannot
+be scored per item, because the score needs the item to have been tried on enough questions for its record
+to mean anything — and the whole design stores one correction per item. Retiring a rule for safety, as the
+previous iteration did, is possible at that sparsity; *selecting* for utility is not.
+
+The consequence is the one the pre-registration committed to in advance: **change what is stored rather
+than how it is filtered.** Every arm in this record injects an interpretation — a rule, a repair, a
+procedure — and the field's current answer is that the interpretation is the loss. Raw-RAG
+(arXiv 2610.30755) ranks naive retrieval over raw history first in six of seven benchmark-model settings
+and reports that even *complete* access to a transformed store leaves a gap against the raw evidence. The
+next iteration injects the correction event itself — the question asked, the query that came back wrong,
+the query that fixed it, verbatim — against the same store's recall and a foreign-event control of the
+same size, with a gate that fails the run if a single payload line was rewritten.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

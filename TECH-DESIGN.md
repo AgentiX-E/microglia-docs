@@ -3141,6 +3141,61 @@ decision rather than an opinion.
 
 ---
 
+### 17.54 A clearance is a treatment only if its control removes the same amount
+
+**The defect this design answers.** R21 asks whether a pack of items *measured* to hurt is worse than the
+same number of items chosen at random, and the naive implementation of that experiment is one arm against
+`full` — which moves two variables at once. The record has already been burned by this twice: `full-grounded`
+against `full` differed in which rules survived *and* how many, and the control that fixed it
+(`full-sampled`) is the reason the grounded result could be read at all. Dose is not a nuisance parameter
+here — R16 put the entire loss at the first item and 1.43pp of movement across a fourfold range above it —
+so a filtered pack that lands above `full` is as likely to be reporting a smaller pack as a better one.
+
+**The pair.** `full-cleared` removes the rules whose counterfactual record shows more harms than helps;
+`full-cleared-sampled` removes the same *count* from the same pack, uniformly, over a seeded Fisher–Yates
+permutation. Retrieval order is preserved in both, so the two prompts differ in item identity only.
+
+```
+    for each held-out question:
+        pack      = recall(question)                       # identical for both arms
+        dropped   = pack.items where record.harmed > record.helped
+        cleared   = pack.items - dropped
+        control   = pack.items - sample(pack.items, |dropped|, stream(seed + position))
+        score(cleared) ; score(control)
+```
+
+**Where the dose can still move, and the gate that catches it.** `makePack` spends a **character** budget
+and admits whole items, so two packs with the same number of survivors render a different number of items
+whenever the survivors differ in length — a 500-character rule and an 824-character one are not
+interchangeable at 1,200. That is not a hypothetical: it is the exact way the pair could stop being matched
+without anyone noticing, because both arms would still look like "a smaller pack". So the counts the gate
+reads are **post-budget** — `clearedPack.ids.length` against `controlPack.ids.length`, per question — and
+`V45-clearance-dose-matched` fails the run on the first mismatch, and again if no question's pack changed
+at all (two names, one condition).
+
+**The decision rule, and why a tie is kept.** `clearanceFromDecisive` removes a rule when `harmed > helped`,
+with a floor of one decisive comparison. A tie is kept: a 1–1 record is a measurement of exactly nothing,
+and dropping on it would be asserting "unmeasured is bad" inside an argument that claims to be about
+utility. That is the deliberate difference from `retireeFromDecisive`, which retires at a two-thirds harm
+share precisely because retirement is a *safety* decision and clearance is a *filtering* one; the two
+functions are tested against each other on the only input where they disagree.
+
+**Why the credit pass had to be refactored rather than duplicated.** `validateMemory` used to call
+`host.forget` itself, which made clearance impossible without either a second three-hundred-line copy or
+a pruning of the store the arm was supposed to leave alone. It now takes its credit mode as a parameter
+and returns the counterfactual record; `full-validated` is the caller that deletes. One consequence is
+worth stating because it changes an artefact field: the mode is recorded as `validation_credit` from the
+pass that actually ran, not from the environment variable, because clearance forces `counterfactual` —
+the absolute score answers "was this rule present when the answer was wrong", which iteration 76 showed is
+a question about the question's difficulty (single binomial across rules, p = 0.296).
+
+**Tests.** `clearanceFromDecisive` for net harm, net help, a tie (asserted against its sibling), no record,
+the floor, and sort order; `doseMatchedDrop` for exact count, reproducibility under a fixed stream,
+without-replacement membership, over-asking, empty input, negative input and fractional input; `V45` for
+absence, pass, a mismatch, and the all-identical failure. The lane's own numbers cannot test any of this —
+a clearance that silently dropped a different count would produce a plausible delta.
+
+
 ## 18. Acceptance criteria
 
 Two kinds of gate, kept apart: **project stages** (a phase of the roadmap) and **release gates** (what a
