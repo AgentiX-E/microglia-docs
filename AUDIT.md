@@ -241,3 +241,69 @@ for the other** — the same discipline §8.3 applied to the conditional transfe
 | "An admitted store is inert" (§3.6.13, §3.6.14) | **stands for a third content form**: `full-verified` +1.14pp, `full-repair-verified` −0.29pp, both on stores whose reproduction rates differ by 23pp |
 | Any SOTA claim | unchanged: stopped on BIRD (§2). R14 removes the last content-axis hypothesis that could have reopened it without new data, which narrows rather than widens what a next dispatch could claim |
 | `scope.domain` as a transfer ceiling | **new and quantified**: 16.3% of rule items and 10.6% of repair items have no home database, so no transfer measurement can speak for the whole store. Filling it is deferred because it would change the `full` baseline; the ceiling is published first |
+
+## 10. Addendum — R15 (2026-10-31)
+
+R15 asked the one question R14 could not: whether the substrate that reproduces half of what it was
+learned from also repairs questions it was **not** learned from. It does not.
+
+**10.1 A claim refuted at the resolution it was made.** The prediction was a transfer rate above the
+sentence's 7.28%, expected 10–20%. The measurement is 6.21% against 6.28% — 0.07pp on 720 informative
+trials, smaller than the standard error of either rate. The paired substrate comparison, re-measured in
+the same run, repeated R14 (+18.24pp, p = 1.83e-11). **Reproduction is not transfer**, and the two
+iterations together establish it in both directions: reproduction does not bound the product (R14), and
+an 18pp advantage in reproduction buys nothing in transfer (R15).
+
+**10.2 Two instrument defects, both found by a run that could not pass them.** The first dispatch
+(`41169086124`) measured every fold and refused its own artefact on neither of its numbers:
+
+1. **V17 compared a two-decimal publication against exact arithmetic.** Unifying the artefact and the
+   gates on one projection handed the gate `net_pp` as the file carries it, `0.41`, and the gate
+   demanded equality to 1e-9 of `(29 − 27) / 483 = 0.4141...`. Only a ratio that terminates at two
+   decimals could pass. The tolerance is now half the published step, the criterion states it, and a
+   test pins both sides.
+2. **V14/V38 measured an arm instead of a gate.** The pack comparison lived inside the arm's guard, so a
+   dispatch that bought the probe for the transfer measurement reported "0 of 350 questions changed" —
+   the reading the pre-registration names as invalidating. The comparison now runs whenever the probe
+   ran; only the model call is conditional.
+
+Both are the same class this audit has recorded three times now (§2, §8.1, §9.3): state that is correct
+in the case it was written for and silently empty in the case added later. Neither was caught by 1,891
+unit tests, and both were caught by the first run that asked the instrument a question its author had
+not.
+
+**10.3 Two predictions were written on the wrong base, and the record keeps them so.**
+
+| Prediction | Predicted | Measured | Why it is recorded as written |
+|---|---|---|---|
+| informative trials | ≥ 400 | 354 | The base was R13's 467 trials from 98 pointable rules; this run admitted 100 rules, of which 78 carried a domain, and the trial count follows the pointable set |
+| items without `scope.domain` | ≤ 12% | 23.5% (24 of 102 admitted) | Stated as a share of *items* and measured against *admitted* items, which is not the denominator R14 used for its 10.6% |
+
+**10.4 Claims that change.**
+
+| Claim | Status after R15 |
+|---|---|
+| "A better extraction is a better store" (§3.6.15) | **refuted as a product claim**: +18.24pp of reproduction, 0.07pp of transfer, and an arm that answers what no memory answers |
+| "The sentence travels at 7.3% and breaks half" (§3.6.14) | **stands, and now has a sibling**: 6.28% and 0.600 for the sentence, 6.21% and 0.516 for the pair, in one run on the same targets |
+| "The extraction is not what limits this design" (§3.6.15) | **strengthened**: four content forms are now inert within ±3pp, and the one measurement that could have reopened the axis came back a tie |
+| "`net_pp` answers whether memory helps" | **weakened to a per-run reading**: the two dispatches of this measurement disagree on its sign (+0.41/+1.20pp, then −1.68/−2.40pp) at 416 trials, which is the honest size of the noise and the reason the next iteration varies one quantity rather than reading a cell |
+| `scope.domain` as a transfer ceiling | **quantified a second time, and it is larger**: 22 of 100 admitted sentence rules and 24 of 102 admitted accounts could not be pointed at any foreign question. The published transfer rates are rates over the domain-bound subset — the claims that travelled least |
+
+**10.5 What is still not verified.**
+
+1. **The artefact does not carry its own pre-registration id.** `41175676367` was produced before the
+   lane recorded one, so the link from numbers to prediction is the dispatch record, not the file. The
+   field exists from this iteration on and the next run will be checkable from the artefact alone.
+2. **Whether the domain-less items are omissions or promotions.** `parseScope` in the distiller starts
+   from `{ task }` and copies only the keys the model wrote, and `generalize.ts` clears `domain` on
+   purpose at three endorsing tasks. Both produce the same shape, and no counter currently separates
+   them; a transfer rate over the domain-bound subset cannot say which defect it is measuring.
+3. **Whether the observed harm is dose, relevance or framing.** `full` is negative in both dispatches
+   (−2.00pp, p = 0.31; −3.71pp, p = 0.02) and no arm has yet varied one of those three with the other two
+   fixed. R16 does the first.
+
+**10.6 Reproducibility.** `prereg/R15-repair-transfer.md`, artefact
+`eval/results/poc-sota-bird-transfer-repair.json`, dispatch `41175676367` (green) and `41169086124` (the
+instrument-defect run, kept for §10.2). `pnpm check`: 1,891 tests, 104 files, coverage
+99.98 / 99.61 / 100 / 99.98, `sota.ts` 100 on all four dimensions. CI: `8875708` (fixes) and `d3bee4d`
+(result and documentation) both green.

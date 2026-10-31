@@ -254,6 +254,31 @@ None of them shows a sentence about one schema being handed to another schema un
 working. That is what our layer did for eleven iterations, and it is the defect R10 attacks — not
 by storing different content, but by binding the same content at the moment it is used.
 
+### The literature on memory that hurts, and what it says to do about it
+
+Four external results matter to the negative cells this project keeps measuring, and none of them is
+about SQL — which is why they were missed for eleven iterations:
+
+| Source | Finding | What it predicts for us |
+|---|---|---|
+| Context-poisoning analysis (softmax retrieval abstraction) | the decisive-evidence score is capped while the strongest distractor's score grows with the number of distractors; holding accuracy above chance requires the evidence margin to grow as Ω(√log N) in the **effective distractor count**, not in context length | harm is a function of **how many items** compete, and the loss is steep while N is small — a dose curve, not a content axis |
+| **UTILMEM** (arXiv 2608.30508) | with evidence recall fixed at 1.0, strong semantically similar distractors drop quality; the largest loss is in the **first two to eight**, then it plateaus, and fewer than ~2.5 strong distractors suffice for a 25% reduction | our default injects 1.78 items — inside the window where the loss is nearly complete, which is why every filtered arm sits above `full` |
+| **MemTrapBench** (arXiv 2608.20202) | across two model families and five memory frameworks, **every memory strategy is below its no-memory setting**, the strongest by more than 10pp; the trap strength scales with memory length; the degradation is driven by memory *semantics* rather than length alone | our −2.00 and −3.71pp are not an anomaly; a memory layer that is merely faithful is expected to be negative. Its two trap classes — reasoning fixation and belief distortion — name what an injected correction can do to a query |
+| **Lost in the middle** (Liu et al., 2024) | retrieved context is not an unconditional asset; under adversarial placement it can fall below answering with no context | our packs are always before the question, so placement is the one axis this protocol has never varied |
+
+MemTrapBench's mitigation, **AdaptiveMem**, is an inference-time instruction — four named risks the
+model is told to weigh before it uses a retrieved memory — and it recovers 14.9pp on one framework
+without touching the architecture. That is a cheaper intervention than anything this project has tried,
+and it is the source of R17's hypothesis.
+
+The sharpest of those hypotheses is not the instruction but what it names: **"trauma" — negative
+feedback in memory causes a model to avoid a strategy it was punished for, in later and unrelated
+contexts.** Every item this store holds is distilled from a *correction*, i.e. from negative feedback,
+and every rule is phrased as what the attempt got wrong. If the trauma mechanism transfers to this
+setting, the store is teaching avoidance as much as it is teaching technique, and no amount of scope
+filtering or gate admission would show it — the phrasing would have to change while the content stayed
+fixed.
+
 ---
 
 ## 4. What we are missing, ranked by evidence strength and cost
@@ -317,6 +342,10 @@ generators; we use a closed API. Four things are nonetheless ours to win:
 | Agent Workflow Memory induction and reuse | arXiv 2409.07429 | medium — mechanism only; no line-level audit of the released code |
 | ODIS in-domain SQL distribution (+1.1 / +11.8) | arXiv 2310.06302 | high — the construction R10 implements |
 | SQL-Exchange structure-preserving schema mapping | arXiv 2508.07087, PVLDB 2026 | high — the construction R10 implements |
+| UTILMEM: evidence-recall ceiling, distractor window of two to eight, <2.5 strong distractors for a 25% drop | arXiv 2608.30508 | medium — abstract and results read, numbers not re-run here |
+| MemTrapBench: every memory framework below no-memory, >10pp for the strongest, trap strength scales with length, AdaptiveMem +14.9pp on one framework | arXiv 2608.20202 | medium — abstract, result tables and method read; nothing re-run here |
+| Context poisoning: Ω(√log N) margin in the effective distractor count | secondary analysis of a softmax-retrieval abstraction | **low — preprint summary, primary not read; the shape is what R16 uses, not the constant** |
+| Lost in the middle: mid-context evidence can fall below closed-book | Liu et al., 2024 (TACL) | high — widely replicated; placement is fixed in every arm here |
 
 Numbers we intend to reproduce ourselves, because they change a decision: the M-Schema delta on
 DeepSeek (one arm), the CHASE-style pool ceiling under heterogeneous generators (R7.1), and the

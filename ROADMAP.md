@@ -2169,8 +2169,75 @@ that were probed reproduce 12–31% (sentence, three runs) and 53.8% (pair) of t
 **Consequence.** R15 measures the repair substrate's *transfer* with R13's instrument, because the one
 question R14 cannot answer is the one that decides the product: whether a store that reproduces twice as
 much also repairs questions it was not written from, at better than R13's 7.3% repair against 50%
-damage. R16 then fills `scope.domain` from the run input, which 16.3% of rule items and 10.6% of repair
-items are currently missing — a field the host knows and the model merely echoes.
+damage.
 
 **Cost.** 2,490 calls, 22 minutes, 1 retry, 0 timeouts; every gate pass. `pnpm check` — 1,889 tests, 104
 files, coverage 99.98 / 99.61 / 100 / 99.98; `probe-pair.ts` 100 on all four dimensions.
+
+### R15 — the pair keeps what it was shown and loses what it was not (2026-10-31)
+
+**Why.** R14 left one measurement unspent. A store that reproduces 47.97% of its own corrections is
+either knowledge or a longer lookup table, and the instrument that distinguishes them is R13's: point
+each admitted item at a different corrected question from the same database and see whether it repairs
+it. R13 ran it on the sentence and got 7.28% repair against 50% damage; it had never been run on the
+pair. Pre-registration: `prereg/R15-repair-transfer.md`.
+
+**What was built.** `full-repair-transferred` is R13's arm for the second substrate. `transferGates`
+holds both substrates to the same four checks with the ids as arguments (V39–V42 beside
+V15/V16/V17/V33), because a repair measured by a lighter rule cannot be set beside a rule.
+`transferArtefact` returns a typed projection that the gates read through `transferGateInput`, so the
+file and the gates cannot disagree. Both transfer arms now request their own probe —
+`full-transferred` had been consuming one that only `full-verified` paid for, which would have made a
+transfer-only dispatch `none` under a second name.
+
+**Reading** (350 questions, 5 folds, 3,298 calls, dispatch `41175676367`):
+
+| | sentence | pair |
+|---|---|---|
+| reproduced its own corrections | 29.73% | **47.97%** |
+| trials / informative | 416 / 366 | 416 / 354 |
+| repaired | 23 (6.28%) | 22 (6.21%) |
+| `break_rate` | 0.600 | 0.516 |
+| `net_pp` | −1.68 | −2.40 |
+| items left after both gates | 10 of 622 | 19 of 350 |
+| arm | `full-transferred` 54.00% | `full-repair-transferred` 53.71% |
+
+Substrate pair, re-measured in the same run: 296 paired, **+18.24pp, p = 1.83e-11**. `full` was 51.71%
+against 53.71% — −2.00pp, p = 0.3105.
+
+**The refutation clause fired.** 6.21% against 6.28% is a tie: 0.07pp on 720 informative trials, smaller
+than the standard error of either rate. An 18pp advantage in reproduction buys nothing in transfer, so
+the two properties are separate in both directions. Two things survive: the pair's break rate is lower
+in both dispatches that measured it (0.516 vs 0.600; 0.304 vs 0.509), and both nets are negative here.
+**Four content forms are now inert within ±3pp and the extraction axis is closed.**
+
+Two instrument defects were found by the first dispatch, which measured every fold and then refused its
+own artefact: V17 compared a two-decimal publication against exact arithmetic to 1e-9, and V14/V38
+reported zero pack changes for a probe whose arm was not named. Both were fixed before the second
+dispatch; the facts that exposed them are in the prereg's Outcome.
+
+**Consequence.** The only effect left to explain is the delivery's: `full` is negative in both
+dispatches and every arm that injects fewer items sits above it. R16 measures the dose in both
+directions.
+
+**Cost.** 3,298 calls, 20 minutes, 1 retry, 0 timeouts; every gate pass. `pnpm check` — 1,891 tests, 104
+files, coverage 99.98 / 99.61 / 100 / 99.98.
+
+### R16 — the dose, in both directions (open)
+
+**Why.** R15 closed the extraction axis. The store is injected at 1.78 items per question, `full` is
+negative in both dispatches that measured it (−2.00pp, p = 0.31; −3.71pp, p = 0.02), and every arm that
+injects fewer items sits above it. The pack layer adds whole items, and this store renders one at 500 to
+824 characters, so the existing dose arms — 150, 300, 600, 900 — are `none`, `none`, one item and one
+and a half: every dose experiment this project could have run would have found that harm shrinks as the
+pack empties, which is true by construction. `chars-1800` and `chars-2400` make the axis 0, 1, 2, 3, 4
+items so that harm can be tested as a function of quantity rather than only recovered at the empty end.
+
+**Prediction** (`prereg/R16-injection-dose.md`): the curve falls as the dose rises, `chars-600` is
+within ±2pp of no memory, `chars-2400` is below it, and no point beats no memory by 2pp or more. The
+literature predicts the shape: the distractor-count bound makes the loss steep while N is small and flat
+after, and UTILMEM measures the largest loss in the first two to eight distractors.
+
+**Refutation.** Flat across 600–2,400 means quantity is not the variable and the next iteration is
+relevance or framing (R17) rather than a budget; rising with the dose means the negative cells were
+dispatch artefacts and the next measurement is a gate that keeps enough items to matter.

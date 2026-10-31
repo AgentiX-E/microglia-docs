@@ -19,6 +19,9 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | R12 Own-case probe | **closed** — 12.2% of corrections are reproduced with their own rules, 66% not reproduced at all; the deficit is the extraction | R13: does an admitted rule repair a different question? |
 | R13 Admitted-rule transfer | **closed** — 7.3% of the questions that need help are repaired, 50% of those that do not are broken; both gates leave 10 items over 350 questions | R14: render the pair instead of the sentence |
 | R14 Substrate comparison | **closed** — the pair reproduces 53.8% of its own corrections against the sentence's 30.7% (+23.10pp, p = 1e-14), and the arm built from it moves the product by one question of 350 (−0.29pp); the extraction is no longer a live explanation | R15: does the pair *transfer*? |
+| R15 Repair-substrate transfer | **closed** — 6.21% against the sentence's 6.28%: a tie on 720 informative trials, so an 18pp reproduction advantage buys no transfer. Four content forms are now inert within ±3pp and the extraction axis is closed | R16: the dose, in both directions |
+| R16 Injection dose | **open** — pre-registered; 0/1/2/3/4 items, the first dose experiment whose points are not `none` by construction | the run |
+| R17 Framing | **planned** — negative-feedback memory ("this was wrong") against a neutral statement of the same content; MemTrapBench's trauma result is the hypothesis | R16's outcome |
 
 ## Iteration log
 
@@ -6202,3 +6205,72 @@ changes which rules `full` injects and would make every cell in this file incomp
 **Green.** `pnpm check` — 1,889 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98, `probe-pair.ts`
 100 on all four dimensions; the dispatch 2,490 calls, 1 retry, 0 timeouts, every gate pass including
 V34, V35, V36, V37 and V38.
+
+### 124 — The pair keeps what it was shown and loses what it was not
+
+**Question.** R14 put a second substrate under the probe and found the largest difference this project
+has measured: a pair-rendered repair reproduces 53.80% of its own correction against a sentence's
+30.69%, +23.10pp. It also found the arm built from that store inert. The question it deferred is the one
+the product turns on: a store that reproduces half of what it was learned from is either knowledge or a
+longer lookup table, and the instrument that distinguishes them is R13's — point each admitted item at a
+*different* corrected question from the same database. R13 ran it on the sentence (7.28% repair, 50%
+damage) and never on the pair.
+
+**What was built.** `full-repair-transferred`, R13's arm for the second substrate. `transferGates` holds
+both substrates to the same four checks with the ids as arguments (V39–V42 beside V15/V16/V17/V33),
+because a repair measured by a lighter rule cannot be set beside a rule. `transferArtefact` returns a
+typed projection that the gates read through `transferGateInput`, so the file and the gates cannot
+disagree. Both transfer arms now buy their own probe — `full-transferred` had been consuming one that
+only `full-verified` paid for, which would have made a transfer-only dispatch `none` under a second name.
+Pre-registration: `prereg/R15-repair-transfer.md`.
+
+**Reading** (350 questions, 5 folds, 3,298 calls, dispatch `41175676367`):
+
+| | sentence | pair |
+|---|---|---|
+| store items | 580 | 296 |
+| reproduced its own corrections | 29.73% | **47.97%** |
+| admitted by its own gate | 100 | 102 |
+| trials / informative | 416 / 366 | 416 / 354 |
+| repaired | 23 (6.28%) | 22 (6.21%) |
+| broke a working target | 30 | 32 |
+| `break_rate` | 0.600 | 0.516 |
+| `net_pp` | −1.68 | −2.40 |
+| items left after both gates | 10 of 622 | 19 of 350 |
+| arm | `full-transferred` 54.00% (+0.29pp) | `full-repair-transferred` 53.71% (0.00pp) |
+
+Substrate pair, re-measured in the same run: 296 shared, 0 holes, 0 exclusive; both 80, only-rule 8,
+only-repair 62, neither 146; **+18.24pp, p = 1.83e-11**, five folds positive. `full` was 51.71% against
+53.71% — −2.00pp, p = 0.3105, 14 gained and 21 lost at 1.78 items per question.
+
+**The refutation clause fired, and it was written to end the line rather than weaken it.** 6.21% against
+6.28% is 0.07pp on 720 informative trials, smaller than the standard error of either rate. An 18pp
+advantage in reproduction buys nothing in transfer. R14 said reproduction is a property of the extraction
+and an accuracy cell is a property of the extraction's worth on unseen questions; R15 says the same thing
+on the axis that decides deployment, and the two together close the content axis in both directions.
+
+**Two predictions missed, and both were stated on the wrong base.** The informative trial count was
+predicted from R13's 467, which came from 98 pointable rules; this run admitted 100 rules of which 78
+carried a domain, and the trials follow the pointable set (354). The domain-omission prediction was
+written as a share of items and measured against admitted items (24 of 102, 23.5%), which is not the
+denominator R14 used for its 10.6% and cannot be compared with it. Both are recorded as written.
+
+**Two instrument defects, found by the dispatch that could not pass them.** The first run
+(`41169086124`) measured all five folds and refused its own artefact on neither of its numbers. V17
+compared the two-decimal publication of `net_pp` against exact arithmetic to 1e-9 — `(29−27)/483` is
+`0.4141...`, published as `0.41` — which only ratios terminating at two decimals could pass. V14/V38
+reported "0 of 350" for a probe that ran and an arm that was not named, which reads as "the gate
+admitted nothing": the one reading the pre-registration says invalidates the run. Both were fixed, both
+have tests, and the facts that exposed them are kept in the prereg's Outcome because they are what the
+defect looked like from outside.
+
+**What is left to explain is the delivery.** `full` is negative in both dispatches (−2.00pp, p = 0.31;
+−3.71pp, p = 0.02) and every arm that injects fewer items sits above it. The pack layer adds whole
+items and this store renders one at 500 to 824 characters, so the existing dose arms — 150, 300, 600,
+900 — are `none`, `none`, one item and one and a half: every dose experiment this project could have run
+would have found that harm shrinks as the pack empties, which is true by construction. R16 adds
+`chars-1800` and `chars-2400` to make the axis 0/1/2/3/4 items, and is pre-registered.
+
+**Green.** `pnpm check` — 1,891 tests, 104 files, coverage 99.98 / 99.61 / 100 / 99.98, `sota.ts` 100 on
+all four dimensions. Dispatch 3,298 calls, 1 retry, 0 timeouts, every gate pass including V14, V38, V17,
+V39–V42, all four of which failed or could have failed on the first attempt.

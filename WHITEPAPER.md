@@ -1125,7 +1125,69 @@ already fixed are counted; the pair reaches 53.8%. Every arm built from any of t
 repair store's carry no `scope.domain`, so they cannot be pointed at a foreign question at all — R13
 lost 20 of 118 admitted rules to a field the host knows and the model merely echoes. It is reported
 rather than repaired here, because filling it changes which rules `full` injects and would make every
-earlier cell incomparable; the repair is R16's, with the ceiling measured first.
+earlier cell incomparable.
+
+### 3.6.16 The pair keeps what it was shown and loses what it was not shown
+
+§3.6.15 left one measurement unspent, and it was the one the product rests on. A store that reproduces
+half of its own corrections is either knowledge or a lookup table with more rows than the sentence
+had; the instrument that separates the two is R13's — point each admitted item at a **different**
+corrected question from the same database and see whether it repairs it. R13 ran it on the sentence and
+got 7.28% repair against 50% damage. It had never been run on the pair.
+
+R15 runs it on both, in one dispatch, with the same foreign targets and one shared blank control per
+source question.
+
+| | sentence | pair |
+|---|---|---|
+| reproduced its own corrections | 29.73% | **47.97%** |
+| items pointed at a foreign question | 78 | 78 |
+| trials / informative | 416 / 366 | 416 / 354 |
+| repaired | 23 (**6.28%**) | 22 (**6.21%**) |
+| broke a target that already worked | 30 | 32 |
+| `break_rate` | 0.600 | 0.516 |
+| net marginal effect | **−1.68pp** | **−2.40pp** |
+| items left after both gates | 10 of 622 | 19 of 350 |
+| arm built from them | +0.00pp | +0.00pp |
+
+The substrate comparison, re-measured in the same run as a by-product, repeated §3.6.15 at 296 paired
+cases: **+18.24pp, p = 1.8e-11**, five folds out of five positive.
+
+**A 0.07pp difference on 720 informative trials is not a difference.** Whatever the account keeps that
+the sentence loses — and it keeps 18pp more of it — it does not keep it *across* questions. This is the
+same separation §3.6.15 named, now measured on the axis that decides deployment: **reproduction is a
+property of the extraction, and transfer is a property of the product, and the first does not imply the
+second.**
+
+Two things survive the tie, and both are worth keeping precise.
+
+**The pair damages less.** Its break rate is lower in both dispatches that measured it — 0.516 against
+0.600 here, 0.304 against 0.509 before — and a lower break rate at the same repair rate is a better
+net: −2.40pp against −1.68pp is the opposite ordering, because the two runs disagree on the sign of a
+six-trial difference and 416 trials cannot resolve it. Two dispatches of the same measurement disagree
+on `net_pp`'s sign (+0.41 and +1.20pp in the first, −1.68 and −2.40pp in the second), and that
+disagreement is the honest size of the noise.
+
+**The store's most general claims cannot be asked.** 22 sentence rules and 24 accounts carried no
+`scope.domain` and were skipped; `full` still injects them. The instrument's denominator is chosen by a
+field the host knows and the model only echoes, and the widening path that legitimately clears it
+(`generalize.ts`, three endorsing tasks) produces the same shape. A transfer rate over the domain-bound
+subset is a rate over the claims that travelled *least*.
+
+**Two instrument defects, found by the run that could not pass them.** The first dispatch measured every
+fold and refused its own artefact: V17 compared the two-decimal publication of `net_pp` against an
+exact recomputation to 1e-9, which only ratios that terminate at two decimals can satisfy, and V14/V38
+reported "0 of 350" for a probe that ran and an arm that was not named — the one reading the
+pre-registration says would invalidate the run. Both were fixed before the second dispatch and the
+facts that exposed them are recorded in `prereg/R15-repair-transfer.md`, because a gate that fails
+correctly is worth less than a gate that fails for the right reason.
+
+**Consequence.** Four content forms — sentence, procedure, pair, and the pair under its own gates — are
+now inert within ±3pp, and the two that were probed reproduce 12–30% and 48% of their own corrections.
+The extraction axis is closed. What remains is quantity and placement: the store is injected at 1.78
+items per question, `full` is negative in both dispatches that measured it (−2.00pp, p = 0.31;
+−3.71pp, p = 0.02), and every arm that injects fewer items sits above it. R16 measures the dose
+directly, in both directions, and is pre-registered before its dispatch.
 
 ### 3.7 The gap has a scale, and it is not the one we assumed
 

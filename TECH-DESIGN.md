@@ -3706,3 +3706,84 @@ construction pays local store writes and one distillation, not another 128 calls
 calls for two substrates — 303 controls paid once, then 303 treatments each — against 592 for a single
 substrate: the shared control is what makes the second substrate cost one call per case rather than
 two, and it keeps the endpoint's own re-sampling out of the difference.
+
+### 17.49 The second substrate's transfer, and the two gates that had to be wrong first
+
+**The question §17.48 left.** R14 separated reproduction from the product and, in doing so, named the
+measurement that decides it: R13 put the sentence at 7.28% repair against 50% damage, and no one had
+ever pointed the account at a foreign question. A store that reproduces half of what it was learned
+from is either knowledge or a longer lookup table, and the only instrument that distinguishes them is
+the one that produced 7.28%. Pre-registration: `prereg/R15-repair-transfer.md`, written before the
+dispatch; outcome recorded in the same file.
+
+**One function, four ids.** `transferGates` in `sota.ts` is the four checks every transfer measurement
+is held to — reconcile the 2×2, resolve above the floor, carry one ledger row per trial, reconcile the
+net effect with its own counts — written once and applied twice. The repair substrate exists only to be
+compared with the rule one, so a second substrate measured by a lighter rule would produce a number
+that cannot be set beside the first. The gate ids are arguments (`V15/V16/V17/V33` and
+`V39/V40/V41/V42`), which is what stops a refactor of the shared body from renaming the four that were
+already published.
+
+**One projection, two readers.** `transferArtefact` returns a typed `TransferProjection` and
+`transferGateInput` translates it for the gates, so the file and the validity gates read the same
+totals rather than each recomputing them. The block it replaced was 107 lines of inline `reduce`s in
+two places — exactly the shape in which a published rate and the gate meant to pin it can disagree.
+
+**Both consuming arms buy their own probe.** `full-transferred` consumed `probe.transfer` while only
+`full-verified` paid for the probe, and `full-repair-transferred` consumed `probeRepair.transfer` while
+only `full-repair-verified` bought it. A dispatch naming only the transfer arm would have injected the
+transferred set of a probe that never ran: an empty pack, `none` under a second name, reported as a
+reading. `wantsRuleProbe` and `wantsRepairProbe` are now derived from the arms that read them, and the
+gate measurement itself (does the admission rule change a held-out pack?) runs whenever the probe ran,
+independently of whether an arm asked for the injection.
+
+**The reading.** Dispatch `41175676367`, artefact `eval/results/poc-sota-bird-transfer-repair.json`:
+350 questions, 5 folds, 3,298 calls, 1 retry, 0 timeouts, 0 call failures, every gate pass.
+
+| | sentence | pair |
+|---|---|---|
+| store items | 580 | 296 |
+| reproduced its own corrections | 29.73% (296) | **47.97%** (296) |
+| admitted by its own gate | 100 | 102 |
+| items with a home database | 78 | 78 |
+| trials / informative | 416 / 366 | 416 / 354 |
+| repaired | 23 (6.28%) | 22 (6.21%) |
+| broke a working target | 30 | 32 |
+| `break_rate` | 0.600 | 0.516 |
+| `net_pp` | −1.68 | −2.40 |
+| verdict | `no-transfer` | `no-transfer` |
+| pack after both gates | 10 of 622 | 19 of 350 |
+
+Substrate pair, same run: 296 shared, 0 holes, 0 exclusive; both 80, only-rule 8, only-repair 62,
+neither 146; **+18.24pp, p = 1.83e-11**. Arms: `none` 53.71%, `full` 51.71% (−2.00pp, p = 0.3105,
+1.78 items), `full-transferred` 54.00% (0.03 items), `full-repair-transferred` 53.71% (0.05 items).
+
+**What the tie says.** 0.07pp on 720 informative trials is smaller than the standard error of either
+rate. An 18pp advantage in reproduction buys nothing in transfer, so the two properties are separate in
+both directions: the extraction is not the constraint on reproduction (R14), and reproduction is not a
+proxy for the product (here). Two things do survive — the pair's break rate is lower in both dispatches
+that measured it (0.516 against 0.600; 0.304 against 0.509), and both nets are negative in this run, so
+the effect that remains to explain is the delivery's.
+
+**The two defects the first dispatch found.** `41169086124` measured every fold and refused its own
+artefact, twice, neither time on a number:
+
+1. **V17 compared a publication against a computation.** Routing the gate through the projection gave
+   it `net_pp` at the two decimals the file carries; the gate demanded equality to 1e-9 of
+   `(repaired − broke) / measured`. `(29 − 27) / 483 = 0.4141...` published as `0.41` therefore failed,
+   and only a ratio that terminates at two decimals could pass. The tolerance is now half the published
+   step, the criterion says so, and a test pins both sides — the rounding passes, a figure off by more
+   than one step still fails.
+2. **V14 and V38 measured an arm rather than a gate.** The pack comparison lived inside
+   `if (ARMS.has('full-verified'))`, so a dispatch that bought the probe for the transfer measurement
+   answered "0 of 350 questions changed" — which reads as "the gate admitted nothing", the one reading
+   the pre-registration says invalidates the run. The comparison now runs whenever the probe ran; only
+   the model call is conditional on the arm.
+
+Both are the class of defect this project keeps finding: instrument state that is correct in the case
+it was written for and silently empty in the case that was added later.
+
+**Cost.** 3,298 calls, 20 minutes, 1 retry, 0 timeouts, against 2,679 for R13's single-substrate
+transfer and 2,490 for R14's two-substrate probe. The second substrate's transfer is 416 trials — one
+blank per target reused across items, one treatment per pair — and the shared control is the same
+mechanism §17.48 introduced for the own-case probe.
