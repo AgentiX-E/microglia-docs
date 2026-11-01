@@ -4711,3 +4711,78 @@ still a null at n = 68 with a design that can only see 21pp, and no iteration ma
 that memory transfers. The one thing stage 2 licenses is narrower and checkable: **a second scenario is measured
 by the same function, the same publication order and the same artefact schema, with no edit to a gate** — and
 the report says which gates fired, which were vacuous, and which experiment each of the rest would need.
+
+### 17.66 Resolution is a property of the design, and the record had never put its deltas on that scale
+
+**The defect this section records is arithmetic, not modelling.** Every iteration since the first has reported a
+paired delta — `helped − harmed` over `n` questions — and argued about whether it was big. Nobody computed the
+other half of the sentence: **the smallest delta that sample could distinguish from zero.** A 350-question
+comparison at this corpus's discordance can see about 4.5pp; a 1,534-question one can see about 2.0pp. Six
+iterations produced point estimates between −2.57 and −4.86pp on the first kind of sample and read them as
+findings about the mechanism. Three of the six are inside the interval of the other three.
+
+**Two widths, and they are not interchangeable.** For a paired design with `b` helped and `c` harmed among `n`:
+
+```
+SE          = sqrt(b + c) / n           the concordant pairs cancel; only the discordant ones carry information
+half-width  = 1.96  · SE                a 95% interval around the observed delta
+resolution  = 2.802 · SE                the smallest true delta this design detects 80% of the time
+```
+
+The ratio is `2.802 / 1.96 = 1.43`, which is why a report that says "±4.5pp" and a gate that reads "6.4pp" are not
+contradicting each other — they are different questions. `V5-resolution` reads the second; §138 priced the τ² lane
+at 21.41pp against its 6pp bar with the first nowhere in sight. **Both now travel in every artefact that carries a
+paired comparison**, and `pairedWidths` (`packages/eval/src/power.ts`) is the single function that produces them, so
+a bucket in the stratification and a row in the audit cannot disagree about the same forty questions.
+
+**Sample size follows from the effect you refuse to miss, and it is not a small number.**
+
+```
+n ≥ z² · d / δ²        z = 2.802, d = share of discordant pairs, δ = the delta to resolve
+
+dev split, d = 8.4%, δ = 1pp   →  n ≥ 6,603 questions
+values arm, d = 7.2%, δ = 1.17pp (its own observed effect)  →  n ≥ 4,100 questions
+```
+
+BIRD's dev split is 1,534 questions. The sharpest design in the entire record — `poc-sota-bird-dev.json`, 1,534
+questions, 115 discordant — resolves **1.96pp**. The mechanism's best positive reading is **+1.17pp**. **The
+effect the project has spent twenty-six iterations arguing about is 61% of the smallest effect its best sample
+could have confirmed**, and every other sample in the record is coarser: the thirteen 350-question artefacts
+resolve 3.76pp to 4.87pp.
+
+| what the record has | what it can see | what it claimed |
+|---|---|---|
+| 13 artefacts at n = 350 | 3.76 – 4.87pp | −2.00 to −4.86pp |
+| 4 artefacts at n = 1,534 | 1.96 – 2.14pp | −1.37 to +0.33pp |
+| 1 arm inside an artefact (`values`) | 1.91pp | **+1.17pp** |
+| BIRD train, never used | — (9,428 questions) | — |
+
+**The audit is a table, not a new test, and the distinction has to be stated because it is easy to abuse.**
+`resolvable = |delta| > 2.802 · SE` is a monotone function of the same discordant counts as McNemar's test, so it
+can never disagree with a p-value about direction and it does not add evidence. What it adds is a **scale**: the
+`evidence` artefact at −4.86pp is `significant95 = true` and `resolvable = false`, and a design that reported only
+its p-value would have had to call that either a finding or a null when it is neither. Both flags travel in
+`poc-power-audit.json` for exactly this reason — a row quoted on the looser bar alone would be a different claim
+than the same row quoted on the stricter one.
+
+**What the stratification adds, and what it removes.** `packages/eval/src/strata.ts` buckets the committed record
+by an outcome-blind overlap statistic — the maximum of `queryCoverage` over the rules a question was actually
+shown, which is the store's own `minCoverage` function and not a second definition of the same quantity. Four
+buckets, edges fixed in the registration, and five criteria: is the minimum in the middle, does it survive the
+difficulty control, are the buckets populated, does the shape survive a character 4-gram tokeniser, and does the
+gap around the minimum exceed its own resolution.
+
+The fifth is an amendment and it is the one that decided the reading. Without it, a bucket holding 18 questions and
+4 discordant pairs is the minimum of four and the shape is whatever a reader wants it to be; with it, the gap of
+18.55pp is measured against a 32.23pp resolution and the honest sentence is *not estimable*, not *the harm
+concentrates at the top*. `S2` gets the same treatment: the registered wording let a three-question cell decide
+whether a difficulty band keeps its minimum in the middle, which is a coin flip wearing the costume of a control.
+**The general rule this round contributes: a criterion that can be decided by a cell smaller than its own
+resolution is not a criterion, and every one of the five is now held to that.**
+
+**What the stratification eliminates is worth more than what it measured.** 90.9% of the corpus sits below 0.4
+overlap, and across those 1,395 questions the memory effect is +0.00pp and −0.30pp. The 139 questions above 0.4
+carry the whole of whatever signal exists, and they cannot resolve it. Combined with §62's embedding result — hurt
+rules are not more dissimilar to their question than helped rules, 0.254 against 0.226, p = 0.12 — the conclusion
+is that **relevance is not the axis**, and that the next hypothesis must be about what a rule does to the query
+rather than where it sits in similarity space.

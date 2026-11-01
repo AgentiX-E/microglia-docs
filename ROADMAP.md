@@ -2987,6 +2987,23 @@ channels were spent on a null.
 **Cost.** Zero calls. One offline pass over committed artefacts, reproducible in CI, with the pre-registration
 committed before the numbers are read.
 
+**Outcome (2026-11-01, §139).** All four criteria **fail**, and the reading is refuted in sign. The four buckets
+read +0.00, −0.30, +7.44 and −11.11pp: the minimum is at the *top* bucket rather than in the middle, the top two
+buckets hold 139 questions between them, the `moderate` band puts its minimum at the bottom, and the ordering moves
+under a character 4-gram tokenisation (`3 < 1 < 0 < 2` becomes `0 < 1 < 3 < 2`). The gap around the minimum is
+18.55pp against a minimum detectable difference of 32.23pp, so even the shape that *was* observed is not a
+measurement.
+
+Two amendments were made **after** the run and are disclosed in the artefact rather than folded into this text: a
+fifth criterion (`S5`, the gap must exceed its own resolution) and a ten-discordant-pair floor on `S2`. The
+registration as written could be decided by a three-question cell, which is a defect of the same class §138 found
+in `V5-resolution`.
+
+What the iteration *did* establish is an elimination: across 90.9% of the corpus the overlap predicts nothing, and
+the second covariate (§62's embedding similarity) points the other way. **Relevance is not the axis.** The
+measurement that made that readable — the power audit of all seventeen committed artefacts — was not in the
+registration and is the round's larger result: see §139 and R30.
+
 ### R29 — the τ² lane's first arm that is not a re-scoring (**registered** 2026-11-01)
 
 **Why this rather than stage 3 or the pool.** Stage 3 (moving the eight SQL modules into `eval-sql` and splitting
@@ -3027,3 +3044,56 @@ so. If stage 2 produces a positive effect above +5pp, the first thing to audit i
 
 **Cost.** One τ² environment dispatch through `sota.yml`, no new dataset, no new model family. Stage 1 is offline
 and can be reviewed before stage 2 is paid for.
+
+### R30 — what a rule does to the query, and the sample that can see it (**registered** 2026-11-01)
+
+**The premise, measured last round rather than assumed.** One of seventeen published paired deltas exceeds its own
+minimum detectable difference. The mechanism's best positive reading, +1.17pp, is 61% of what its own design could
+resolve (1.91pp), and that design — 1,534 questions — is the sharpest the project has. Resolving a 1pp effect at
+dev's 8.4% discordance needs **6,603 paired questions**; BIRD's dev split is 1,534 and its train split is 9,428.
+Every conclusion in this document about the mechanism is therefore either unreadable or about a sample too small to
+carry it, and two rounds of mechanism work (R26's channels, R28's strata) have now gone into covariates that
+explain nothing.
+
+R30 is two stages, and the order matters: the cheap one first, because it can make the expensive one unnecessary.
+
+| stage | work | cost | what it buys |
+|---|---|---|---|
+| **1** | classify, for every committed case, **what the pack did to the query** — an identifier imported from a rule that the question and evidence do not contain, a decision repeated that the baseline already made correctly, a table or column the rule named that the schema had pruned — by diffing `predictedSql` against `baselineSql` | **zero calls**, offline | a covariate that is not similarity, and a per-question label for the 129 discordant cases the record has never read |
+| **2** | one arm at **n ≈ 6,600** on the train split, two arms (`none`, `full`), the same protocol | ~14,000 calls | a 1pp resolution at 80% power, which is the first sample in this project that could confirm or refute the mechanism at its claimed size |
+
+**Registered predictions.**
+
+1. **The identifier covariate separates help from harm, and it is the largest split the record has.** STRATA
+   (arXiv 2610.19386) and Anti-Persistence (arXiv 2610.27406) both name the mechanism as *what the rule makes the
+   query do*, not how near it is. If it does not separate, then the defect is not in the storage either, and the
+   next candidate is that the pack changes the query in ways that are correct but not what the evaluator rewards.
+2. **Stage 1 finds that most discordant cases have no identifiable cause in the query diff.** The 129 discordant
+   cases come from 1,534 questions where the pack is 1.75 rules on average; a category called *unexplained* is
+   expected to be the largest single bucket, and its size is the honest ceiling on what a per-question analysis can
+   ever attribute.
+3. **Stage 2 resolves the mechanism, in either direction, and the answer is not +1.17pp.** At n ≈ 6,600 the
+   resolution is about 1pp; the observed discordance is 8.4%, and a re-run at that discordance will either put the
+   delta outside ±1pp or put it inside — both are results. A delta that lands within 0.2pp of +1.17pp would be
+   evidence that the earlier samples were unbiased rather than noisy, which is itself worth knowing.
+4. **Stage 2 is not possible on the train split without a driver change, and the first thing it must do is prove
+   the split loads.** The harness has only ever run `dev`; `config.split` is a string, not a validated enum, and a
+   run that silently fell back to dev would report 1,534 questions under a train-split name. **This is the
+   prediction most likely to fail and the cheapest to check**, so it is checked before anything is spent.
+
+**Refutation.**
+
+- **Stage 1's identifier covariate is flat across both halves.** Then what a rule does to the query does not
+  explain the effect either, and the honest position becomes: this mechanism produces effects below the resolution
+  of everything the project can afford to run, and the product claim should be withdrawn rather than narrowed.
+- **Stage 2 cannot load the train split and no larger corpus is available.** Then the resolution purchase is not
+  affordable and every future mechanism claim must be stated as *below this design's resolution*. That is not a
+  failure of the experiment; it is the answer, and it would retire a claim the record has made for twenty-six
+  iterations.
+- **Stage 2 shows a delta outside ±1pp in either direction.** Then the mechanism is real and its sign is known,
+  which no sample in the record has ever established, and R31 is a mechanism iteration with a working instrument
+  for the first time.
+
+**What a positive stage 1 would license.** One read-time filter and one distiller change, specified by the covariate
+that separates, and nothing else. It would not license a SOTA claim: the effect being explained is ~1pp on BIRD dev,
+and the competitive gap is 4.11pp to the reproduced baseline and 25pp to the leaderboard.

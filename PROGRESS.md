@@ -7430,3 +7430,98 @@ the committed arms, reproduces `1.4706pp`, fires `V5-resolution` at 21.41pp agai
 process to exit non-zero — then checks the audit's shape: four fired, two vacuous, thirty-five absent, nine
 supplyable, thirty arm-indexed. A green step here would mean the protocol had been tuned to pass, which is the
 failure the registration was written to catch.
+
+### 139 — Every published delta put beside the difference its own sample could resolve
+
+**This round ran two measurements and neither of them is a new model call.** The first is R28, the stratification
+that was registered last round. The second is an audit the project has never run on itself: for each of the
+seventeen artefacts that carries a paired per-question comparison, its delta beside the smallest difference that
+artefact's own sample could have detected. The second was not planned. It was computed because the first could not
+be read without it.
+
+**R28 is refuted, in sign, and the refutation is not a near miss.**
+
+| bucket | questions | helped / harmed | delta | 95% half-width | minimum detectable |
+|---|---|---|---|---|---|
+| `[0, 0.2)` | 725 | 27 / 27 | **+0.00pp** | ±1.99 | 2.84 |
+| `[0.2, 0.4)` | 670 | 28 / 30 | **−0.30pp** | ±2.23 | 3.18 |
+| `[0.4, 0.6)` | 121 | 11 / 2 | **+7.44pp** | ±5.84 | 8.35 |
+| `[0.6, 1]` | 18 | 1 / 3 | **−11.11pp** | ±21.78 | 31.13 |
+
+MEMTRIM (arXiv 2610.07311) predicts that harm concentrates at *intermediate* overlap and is small at both ends.
+The minimum here is at the **top** bucket, the maximum is in the middle, and the whole shape is worth 18.55pp
+against a minimum detectable difference of **32.23pp**. `S1` fails (the minimum is at an end bucket), `S3` fails
+(two buckets are thin — the top one holds 18 questions and 4 discordant pairs), the difficulty control `S2` fails
+because the `moderate` band puts its minimum at the bottom, and `S4` fails because the ordering moves when the
+tokeniser does: `3 < 1 < 0 < 2` under words, `0 < 1 < 3 < 2` under character 4-grams.
+
+**The registered criteria were missing a power floor, and running them is what showed it.** As written, `S2` lets
+a three-question cell decide whether a difficulty band keeps its minimum in the middle — a coin flip wearing the
+costume of a control. And nothing in the four criteria asked whether the minimum is far enough below its
+neighbours to *be* a minimum. `S5` is that check, added as a disclosed amendment rather than slipped in: **a gap
+is only a gap if it exceeds its own resolution**, and this one does not. The same amendment applies a floor of ten
+discordant pairs to `S2`, which turns `challenging` into an honest *undecided* rather than an accidental
+agreement. Neither amendment changes a number; both change what the number is allowed to be called.
+
+**The stratification's real yield is what it eliminates.** For 90.9% of the corpus — the 1,395 questions whose
+best rule shares under 40% of their content terms — the overlap explains nothing: +0.00pp and −0.30pp, on buckets
+that carry ±2pp intervals. The remaining 9% is where any signal would have to be, and it holds 139 questions
+between them. **Relevance, measured lexically at the question level, is not the axis on which this memory helps or
+hurts.** That is now the second such measurement: the embedding probe of §62 found that hurt rules and helped rules are
+*not* separated by cosine similarity either (0.254 against 0.226, p = 0.12), and in the opposite direction from
+the lexical bucket reading here. **Two covariates, two different signs, neither resolvable** — which is a stronger
+statement than either alone: whatever makes a rule help or hurt, it is not how similar the rule is to the question.
+
+**Then the audit, which is the reason this round matters more than its own null.**
+
+| the record, sorted by resolution | n | helped / harmed | delta | 95% half-width | minimum detectable |
+|---|---|---|---|---|---|
+| `poc-sota-bird-dev.json` | 1,534 | 47 / 68 | −1.37pp | ±1.37 | **1.96** |
+| `poc-sota-bird-dev-R25-dose-and-admission.json` | 1,534 | 60 / 61 | −0.07pp | ±1.41 | 2.01 |
+| `poc-sota-bird-dev-R26-channels.json` | 1,534 | 67 / 62 | +0.33pp | ±1.45 | 2.07 |
+| `poc-sota-bird-dev-R24-dev-split.json` | 1,534 | 64 / 73 | −0.59pp | ±1.50 | 2.14 |
+| `poc-sota-bird-anchor.json` | 350 | 10 / 12 | −0.57pp | ±2.63 | 3.76 |
+| …eight more at n = 350… | 350 | — | −2.00 to −4.29pp | ±2.80 to ±3.17 | 4.00 to 4.53 |
+| `poc-sota-bird-transfer.json` | 350 | 8 / 24 | **−4.57pp** | ±3.17 | 4.53 — **the only resolvable row** |
+
+**One of seventeen published deltas exceeds its own minimum detectable difference. Five exceed their own 95%
+half-width, and all five are negative.** The record has measured harm and never measured help. Six iterations of
+prompt-side channel work — framing, evidence, dose, probe, raw, square — produced point estimates between −2.57
+and −4.86pp, and not one of them is distinguishable from zero at the bar the project's own `V5-resolution` gate
+applies to a single comparison. Those were not nulls either; they were *unreadable*, and the difference matters
+because a null licenses "the channel does not help" while unreadable licenses only "we do not know".
+
+**The number that reorganises the rest: the mechanism's best positive reading is smaller than the sharpest design
+the project has ever run.** The `values` channel returns **+1.17pp** on 1,534 questions, 64 helped against 46
+harmed, 95% interval `[−0.13, +2.48]`, p = 0.1046. That comparison's own minimum detectable difference is
+**1.91pp**. The effect is 61% of what its design could resolve — and that design is the best in the record. To
+resolve a 1.17pp effect at the observed 7.2% discordance takes **4,100 paired questions**; to resolve a round 1pp
+at the dev split's 8.4% takes **6,603**. BIRD's dev split is 1,534. Its train split is 9,428. **The corpus that
+would settle this question exists and the project has never run on it.**
+
+**What this says about the standing hypothesis, stated carefully.** The hypothesis entering this round was that
+the negative effects come from what is stored and how it is used. That is still the best hypothesis available and
+nothing here refutes it — but the audit changes what "we do not know" means: six iterations of the record compared
+effects of 1–5pp on samples that could see 3.8–4.9pp, so the *evidence that the storage is wrong* has never been
+separated from the evidence that the **instrument** was too coarse to see either answer. Relevance is now excluded
+as the axis by two independent covariates. What remains is a family the record has never tested, and every member
+of it is a property of what a rule **does to the query** rather than of how near it is to the question: whether it
+supplies an identifier the question does not contain, whether it repeats a decision the model already made
+correctly, whether it names a table the schema already ruled out. Those are readable from `predictedSql` against
+`baselineSql` in the committed artefacts — the same offline, zero-call substrate this round used — and they are
+the subject of R30's first stage rather than a reading list.
+
+**Two defects, neither on the round's list.** The registration's missing power floor is one, and it is the third
+time in four rounds that a criterion was found to be decidable by cells too small to decide anything (§138's
+`V5-resolution` is the second). The other belongs to the audit itself: it covers whole-artefact deltas, and an arm
+inside an artefact is not a row — so the record's one positive reading, the `values` channel at +1.17pp, is not in
+the table above and had to be looked up by hand. **The audit undercounts positives rather than overcounting them**,
+which is the direction that matters, and the gap is written into the artefact's `notes` rather than left for a
+reader to find.
+
+**Green.** `pnpm check` — typecheck, `typecheck:lanes` under `--strict`, **2,191 tests over 112 files**, four
+coverage dimensions at **99.98 / 99.63 / 100 / 99.98** with `strata.ts` and `power.ts` at **100 on all four**;
+`audit:repo`, six offline lanes, `eval:protocol` (13 pre-registrations, 10 gate-list agreements, 2 cell
+recomputations), two new workflow steps that recompute `poc-harm-strata.json` and `poc-power-audit.json` byte for
+byte, `bench` (blocking gates PASS) and `bundle:size` all green. No published artefact changed except the two this
+round added.

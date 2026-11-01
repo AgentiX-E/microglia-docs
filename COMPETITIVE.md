@@ -655,3 +655,51 @@ best terrain — has had a published explanation available for a month and no te
 their own benchmarks with their own backbones, and the grade column says so. What transfers is the *shape of the
 prediction*: each mechanism implies a different pattern in a dataset we already own, and a pattern is cheaper to
 look for than a rewrite is to abandon.
+
+## Appendix B — what the memory literature can resolve, and why the audit changes the comparison
+
+Appendix A named four published mechanisms for memory *harm*. This appendix asks the question the audit of
+§139 makes unavoidable, and asks it of the competitor set rather than of ourselves: **on what sample, and with
+what resolution, is any of these effects actually shown?**
+
+The arithmetic is the one `packages/eval/src/power.ts` applies to our own record. For a paired comparison with
+`b` helped and `c` hurt among `n`, the effect is `(b − c)/n` and its standard error is `sqrt(b + c)/n`. The
+minimum detectable difference at 80% power is `2.802 · SE`. Applied downward to the numbers the field publishes:
+
+| design | the claim | the sample | what the sample can resolve | grade |
+|---|---|---|---|---|
+| RPMS (arXiv 2603.17831) | memory-only +5.2pp, rules-only +14.9pp (p = 0.008), full +23.9pp on Llama 3.1 8B | 134 unseen ALFWorld games, single trial | a paired delta of ~5pp is about **7 games**; at the discordance those ablations imply (~26 games), SE ≈ 3.8pp and the resolution ≈ **10.6pp** | medium-low (ablation read second-hand) |
+| MemArbiter (arXiv 2608.02113) | +20.90pp over the strongest flat-retrieval baseline at a 500-token budget | 134 unseen ALFWorld games | no interval published; 20.90pp clears any resolution at this `n`, so the headline is resolvable and the *decomposition* is not | medium (headline, no interval) |
+| MemHarness (independent write-up) | +4.2pp for a weak actor, +1.4pp at frontier | 134 unseen games, 16 rescued / 10 cost | **p = 0.164, reported as inconclusive by its author** — the one source in this table that states its own resolution | medium |
+| MEMTRIM (arXiv 2610.07311) | harm largest at intermediate overlap | qualitative ordering across four systems | no per-cell `n` published | medium |
+| **microglia, this project** | the mechanism is bounded inside ±1.4pp and its best point estimate is +1.17pp | 1,534 questions, 110 discordant | **1.91pp** — the effect is 61% of the resolution | measured, `poc-power-audit.json` |
+
+**Three things follow, and only the third is comfortable.**
+
+**1. The field's memory numbers are, almost without exception, at or below their own resolution.** A +5.2pp
+memory ablation on 134 games is seven games. That is not a criticism of the paper — it reports the rules arm with
+a p-value, which is the arm whose effect is large enough to carry one — but it means **"memory helps by 5pp" is
+not a finding that transfers**, and any product decision built on it is built on a number the design could not
+have distinguished from zero. The one source that says so out loud reports p = 0.164.
+
+**2. Our own null is therefore not an outlier, it is the field's best-measured instance of the same null.** The
+project has been reading its +1.17pp as evidence of a broken mechanism. On the scale this appendix builds, +1.17pp
+at n = 1,534 is *better measured than any memory-side number in the table* and it still cannot confirm anything.
+The competitor set is not ahead of us on this axis; it has not measured the axis.
+
+**3. The product claim survives the audit; the mechanism claim does not.** These are different comparisons and the
+audit touches only one of them. The evidence cell — our **57.63** against XiYan's published **53.52** on the same
+1,534-question split with the same generator and schema form — is a difference of 4.11pp between two independent
+samples, whose unpaired standard error is 1.27pp. That is 3.2 standard errors, and it is resolvable. So the table in
+§1 stands: we are **+4.11pp over the baseline it reproduces**, and **25.32pp behind the leaderboard's 82.95**, and
+the distance to the top is a generator-and-pool difference that no amount of memory will close (see §2's pricing).
+What the audit removes is the *explanation* of our 4.11pp: it cannot be attributed to the mechanism, because the
+mechanism's own effect is below the resolution of the sample that produced it.
+
+**What would change the competitive picture, stated as a number.** Not a better rule. The 4.11pp we hold over the
+baseline is already resolvable; everything above it requires a different generator or a candidate pool, and §2 puts
+the pool at 13.95pp of headroom that this harness has already failed to spend (R7.1: four heterogeneous generators
+collapsed to 1.56 distinct answers and every arm lost individually). The only competitive move this project has
+made that is both resolvable and attributable is the one in the table's `control` rows, and the audit's contribution
+is to say so precisely: **the number we can defend is the one that differs from a published cell by 3.2 standard
+errors, and it is not the memory number.**

@@ -1260,3 +1260,56 @@ on the signature rule — is mechanical and open; it changes no number. The τ²
 so `V46-raw-is-verbatim` and `V47-evidence-ablated` are unreachable for a driver change rather than a gate
 change. And five of the nine supplyable gates need a field the driver has never written: until R29 stage 1, the
 lane's ceiling is nine and its floor is four, and every report says which.
+
+## 25. Addendum — the record's deltas were never on a common scale (2026-11-01)
+
+**25.1 One of seventeen published paired deltas exceeds its own minimum detectable difference.** Across every
+committed artefact that carries a per-question paired comparison — seventeen of them, 350 and 1,534 questions —
+exactly one delta is larger than the smallest difference its own sample could detect at 80% power:
+`poc-sota-bird-transfer.json` at −4.57pp against a 4.53pp resolution. Five exceed their own 95% half-width, and
+**all five are negative**. This is not a new test; it is the arithmetic the project already applies to a single
+comparison (`V5-resolution`) applied to the record it wrote. The audit is `poc-power-audit.json`, recomputed byte
+for byte in CI.
+
+**25.2 The mechanism's best positive reading is smaller than the sharpest design in the record.** The `values`
+channel returns +1.17pp on 1,534 questions (64 helped, 46 harmed, `[−0.13, +2.48]`, p = 0.1046). Its own minimum
+detectable difference is 1.91pp. **The effect is 61% of what its design could resolve, and that design is the best
+one the project has ever run** — the other four 1,534-question artefacts resolve 1.96 to 2.14pp and the thirteen
+350-question ones resolve 3.76 to 4.87pp. Resolving +1.17pp at the observed discordance takes 4,100 paired
+questions; resolving a round 1pp at dev's discordance takes 6,603. BIRD dev is 1,534 and BIRD train is 9,428.
+
+**25.3 Six iterations were spent comparing effects smaller than their samples could see.** The framing, evidence,
+dose, probe, raw and square arms produced deltas of −2.57 to −4.86pp at n = 350, against resolutions of 4.00 to
+4.87pp. None reached the bar; four reached the looser 95% bar; all pointed the same way. The record read them as a
+sequence of findings about the prompt channel and then closed the channel. **The correct reading is that the
+channel was never measured**, and the closure cannot be revisited until a sample exists that can measure it.
+
+**25.4 The R28 criteria had no power floor, which is the third occurrence of one defect class.** §138 found
+`V5-resolution` advisory while passing 17 of 17. This round found `S2` decidable by a three-question cell and no
+criterion at all asking whether a minimum is far enough below its neighbours to be a minimum. Both are the same
+failure: **a validity condition that a zero-information cell can satisfy.** `S5` and a ten-discordant floor on `S2`
+are the repair, and they are marked as amendments to the registration in the artefact rather than presented as part
+of it.
+
+**25.5 The stratification is refuted in sign, and the ordering does not survive the tokeniser.** The four buckets
+read +0.00, −0.30, +7.44, −11.11pp. MEMTRIM predicts a minimum in the middle; the minimum is at the top bucket,
+which holds 18 questions. Under a character 4-gram tokenisation the ordering changes from `3 < 1 < 0 < 2` to
+`0 < 1 < 3 < 2`, so the *shape* is a property of the tokeniser and not of the corpus. The gap around the minimum is
+18.55pp against a resolution of 32.23pp.
+
+**25.6 Relevance is now excluded as the axis by two independent covariates.** Lexically, at the question level,
+the effect is flat across the 90.9% of the corpus below 0.4 overlap. Semantically, at the rule level, hurt rules
+are not more dissimilar to their question than helped rules (0.254 against 0.226, p = 0.12, §62) — and the two
+measurements point in *opposite* directions, which is what two underpowered covariates of a non-signal look like.
+Whatever makes a rule help or hurt, it is not its similarity to the question, and the next hypothesis has to be
+about what the rule does to the query.
+
+**25.7 What the audit does not cover.** It audits whole-artefact deltas. An arm inside an artefact is not a row, so
+the record's one positive reading — the `values` channel — had to be looked up by hand, and any artefact that
+carries several arms understates its own positives. This is written into the artefact's `notes`. Closing it needs an
+arm-level table, which is a different reader over `arms` and `contrasts` rather than a parameter of this one.
+
+**25.8 Carried forward.** R30 stage 1 is an offline classifier of what a rule did to the query — identifier
+imported, decision repeated, table ruled out — readable from `predictedSql` against `baselineSql` in the committed
+artefacts at zero model cost. R30 stage 2 is the resolution purchase: one arm at n ≈ 6,600 on BIRD train, which is
+the only corpus in reach that can see a 1pp effect at 80% power.
