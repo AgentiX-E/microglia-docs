@@ -1645,3 +1645,98 @@ first two were found by reading data rather than code; the third by looking at a
 at a diff. That is the pattern worth carrying: a defect in this repository is more likely to be a
 plausible number than a crash, so the checks that matter are the ones that compare a number against
 something that must be true of it independently.
+
+## 30. Addendum — a reading that denied its own corpus, an interval on the wrong unit, and a registration that declared a gate its own text rules out (2026-11-01)
+
+Three defects from the round that finally ran the out-of-sample test. None of them changed a sign.
+All three were found by comparing a statement against the thing it was a statement about, and two of
+them were in prose that no test looked at.
+
+### 30.1 The stability reading asserted, over train, that nothing in it could be out of sample
+
+`gate-stability.ts` carried three constants: the title `Whether the read-time gate's +1.30pp is a
+property of the gate or of one database`, a note beginning `because dev has eleven databases`, and an
+`unmeasured` entry whose reason read *"every question here was in the corpus that produced §140, so no
+split of it is out of sample"*.
+
+The file was then pointed at the train split — the one corpus in this project for which that sentence
+is exactly false, and for which the whole dispatch was paid. The artefact produced the right number
+(+0.51pp) under a heading that asserted a different one, and a caveat that denied the measurement's
+only claim to novelty.
+
+| | the artefact said | what was true |
+|---|---|---|
+| title | `the gate's +1.30pp` | 0.98pp on dev, 0.51pp on train |
+| databases | `dev has eleven` | 58 on train |
+| `unmeasured` | `no split of it is out of sample` | the split *is* the out-of-sample one |
+
+**Why no test caught it.** The reading's numbers were tested; its self-description was a string
+concatenation in a file excluded from coverage because it is a CLI entry point. The project rule that
+covers this — *a naming rule that decides a verdict should not be the one piece of logic no test can
+reach* — was written in `artefacts.ts` and applied to split names, and had not been applied to
+anything else.
+
+**Fixed** by making every corpus-dependent clause a function of the corpus: `splitOfName` reads the
+artefact's own `dataset` field (and answers `unknown` rather than defaulting to `dev`, because a
+missing field must not inherit an out-of-sample claim), and `stabilityFramingOf` builds the title from
+the number that was read, the note from the database count that was counted, and picks the *causal*
+gap over an out-of-sample corpus because the in-sample caveat would be a lie there. Seven tests pin
+it, including that the title does not contain a number the reading did not produce.
+
+### 30.2 The headline interval resampled questions while the record's own standard says clusters
+
+The out-of-sample result is written into the artefact as `paired`, produced by `comparePaired`, which
+resamples individual values. Sixty lines below it in the same file, `clusterBootstrapCI`'s docstring
+says why that is wrong for this corpus: a rule shown on twenty questions inside one database
+contributes twenty correlated observations, and resampling them as independent shrinks the interval
+by about the square root of the cluster size.
+
+The same mistake had already been named and corrected in §143, which closed R32's first axis by
+refusing a database-level claim from a question-level test.
+
+**The correction changes nothing here, and that is the point.** Recomputed with the database as the
+unit: dev [−0.63, +1.36] against [−1.11, +1.76], train **[−1.27, −0.18]** against [−1.30, −0.13]. The
+train interval moves 0.03pp on its lower bound and 0.05pp on its upper, and the verdict is identical.
+A defect that changes no conclusion is exactly the kind that survives forever.
+
+**Fixed** by making the clustered interval the reported one: `eval:out-of-sample` computes it for both
+corpora, prints both, and CI asserts that the train interval excludes zero *as a clustered interval*.
+The question-level interval stays in the source artefact, where it is now labelled as such.
+
+### 30.3 A pre-registration declared a gate that its own prose says cannot apply
+
+The protocol gate rejected the train artefact after the run:
+
+```
+FAIL eval/results/poc-sota-bird-train.json — prereg/R30-stage2.md: declares V31, which the run never
+emitted; does not name V1, V2, V3, V4, V5, V6, V7, V8, V12, V48, V44, which the run emitted
+```
+
+`V31` is `cell-comparison`: it re-derives a recorded comparison against a published cell. The
+registration's own *What this run cannot say* opens by stating that BIRD publishes no test cell for
+train and that the split is named so `compareCell` cannot file it as a reproduction. The front matter
+had been copied from a dev registration, and the contradiction between the front matter and the prose
+sat in the same file, forty lines apart, because one is read by a program and the other is not.
+
+**Why no test caught it.** No test can: a pre-registration is prose plus six fields, and the only
+instrument that can read both is the protocol gate — which did, one run later than it should have.
+
+**Fixed** by Amendment 2 in `prereg/R30-stage2.md`, naming the twelve gates the lane actually emits.
+The predictions are untouched, and the amendment says so with the run's own output beside it. This is
+the second amendment to this registration and both were about the harness: the first was a cap 14%
+too low, this one a gate that cannot apply. Neither is a change to the hypothesis, and neither was
+made quietly.
+
+### 30.4 What the three have in common with §29
+
+All six defects in the last two rounds are **statements about data that were never checked against
+the data**: an id that was not a key, a cap that was not the count, a resample that was not the
+estimator, a title that was not the reading, an interval on the wrong unit, a gate that was not in
+the run. Not one of them raised an exception. Every one of them produced a number or a sentence that
+looked as though it had been measured.
+
+The check that catches this class is not more tests over the same objects. It is a second, independent
+route to the same claim: the same delta computed from two units, the same title computed from the
+number rather than typed beside it, the same gate list read from the run rather than copied from a
+sibling registration. **All three fixes in this section are that shape**, which is why they were worth
+more than the numbers they corrected.

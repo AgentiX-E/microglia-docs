@@ -8136,35 +8136,191 @@ rest of R32 and runs in `pnpm check`; CI recomputes it, compares bytes and asser
 including that the simple and moderate strata each independently refuse the prediction. `referent.ts`
 is at **100 on all four coverage dimensions**; 2,412 tests; `99.98 / 99.63 / 100 / 99.98`.
 
+## 146 — Out of sample, memory costs 0.71pp and the gate recovers 72% of it
+
+R30 stage 2 ran on 2026-11-01 (`41296776252`, 10:18Z–11:25Z, **14,479 model calls**, 2 retries, 0
+timeouts) over **7,000 questions in 58 databases that neither dev nor Mini-Dev contains**. Every
+prediction in `prereg/R30-stage2.md` was written before the dispatch. Four of the five arrived; the
+one that did not is the most informative thing in this section.
+
+**The run is measurable, and that is the first thing to check rather than the last.** All twelve
+gates passed: 7,000 of 7,000 questions evaluated exactly once with no leaks, gold 100% executable,
+parse 99.97%, execution 98.19%, minimum detectable effect **0.82pp** against the 0.94pp registered.
+The instrument did what it was bought for. Nothing below is a measurement of the harness.
+
+| | dev (in-sample) | **train (out of sample)** |
+|---|---|---|
+| questions | 1,534 | **7,000** |
+| databases | 11 | **58** |
+| accuracy, no memory | 57.43% | 58.21% |
+| accuracy, with memory | 57.76% | 57.50% |
+| **delta** | **+0.33pp** | **−0.71pp** |
+| interval, questions resampled | [−1.11, +1.76] | [−1.30, −0.13] |
+| **interval, databases resampled** | **[−0.63, +1.36]** | **[−1.27, −0.18]** |
+| lost / gained | 62 / 67 | **237 / 187** |
+| McNemar p | 0.7249 | **0.0172** |
+
+**The clustered interval is the one that decides this.** §143 closed R32's first axis by insisting
+that questions inside a database are not independent, and the headline of this round had never been
+through that check: `comparePaired` resamples questions. Recomputed with the database as the unit,
+the interval is [−1.27, −0.18] — narrower on this corpus, not wider, and still excluding zero. The
+harm survives the correction that killed the earlier claim, which is the only reason it is reported
+as harm rather than as an unresolved wobble.
+
+**Five folds, five negatives.** −1.21, −0.93, −0.50, −0.71, −0.21. Each fold learns its own store
+from its own 280 questions and never sees the questions it is scored on, so these are five nearly
+independent replications and not one measurement split five ways. The exact two-sided sign test is
+**p = 0.0625**, which is the floor a five-fold test can reach: unanimity cannot clear 0.05 at this
+number of folds. That is a limit of the design, recorded rather than rounded away, and it is why the
+bootstrap interval rather than the sign test carries the claim.
+
+### The harm is not spread over the corpus; it is in 7.8% of it
+
+`F1` — the memory query imported a name that neither the question nor the baseline query mentions —
+is the covariate §140 found and §141 tried to explain. On train it is **548 questions, 7.8% of the
+corpus**, and the arithmetic of the whole round sits in one row:
+
+| cohort | n | helped | harmed | net | delta |
+|---|---|---|---|---|---|
+| imported a name | 548 (7.8%) | 40 | 76 | **−36** | **−6.57pp** |
+| left the query alone | 6,452 (92.2%) | 147 | 161 | −14 | −0.22pp |
+| whole corpus | 7,000 | 187 | 237 | **−50** | −0.71pp |
+
+**72% of the net harm is carried by 7.8% of the questions.** The gap between the cohorts is −6.35pp
+against a clustered interval of [−10.99, −1.92], p = 0.0158: it resolves out of sample, on a corpus
+whose databases dev has never seen. That is the strongest single result this project has produced,
+and it is a result about a *failure*, not a success.
+
+### The gate recovers most of it, and the product still does not pay
+
+Discarding those 548 questions and scoring each from the no-memory query the record already holds —
+a column, not a prediction — moves the arm from **−0.71pp to −0.20pp**: the filter is worth
+**+0.51pp**. It is stable on all three readings: leave-one-database-out 0.45pp to 0.62pp across 58
+databases, split-half 0.68pp / 0.34pp, and a permutation null of 0.06pp [−0.10, 0.21] at
+**p = 0.0002**. Discarding the same number of questions at random buys 0.06pp; the placement is what
+the gate is.
+
+And then the number that matters for the product: **−0.20pp is not distinguishable from zero.** On
+dev the gated arm read +1.30pp. On train it reads −0.20pp, so *memory plus the gate is not better
+than not using memory at all*, and memory without the gate is measurably worse.
+
+> **The product statement on dev was "the read-time filter turns a wash into +1.30pp". Out of sample
+> it is "the filter recovers 72% of what memory costs, leaving no net gain".** That is the honest
+> sentence and it is the sentence the documentation now carries.
+
+### Four predictions held and the fifth is the interesting one
+
+| | registered | observed | verdict |
+|---|---|---|---|
+| **P1** | the run is measurable | 12/12 gates, gold 100%, mde 0.82pp | **held** |
+| **P2** | the full arm is not positive **and not significantly different** from none | −0.71pp, clustered [−1.27, −0.18] | **refuted** |
+| **P3** | the gate is worth between +0.2pp and +2.0pp | **+0.51pp** | held, at the low end |
+| **P4** | shrinkage of less than half: a point estimate in [0.49, 0.98] | **+0.51pp**, 52% retained | **held** |
+| **P5** | an imported identifier is still a negative covariate | −6.57pp against −0.22pp | **held** |
+
+**P2 was written to be the safe prediction and it is the one that failed.** On dev the mechanism
+never moved raw accuracy — +0.33pp [−1.11, +1.76] — and the registration expected that to hold. It
+does not: out of sample the memory arm is *worse*, and the interval excludes zero. The prediction was
+not about a mechanism this project had not tested; it was about a number this project had measured
+once and generalised. That is what an out-of-sample test is for, and it cost one line of a
+pre-registration to make the failure legible.
+
+**P4 landed with 0.02pp of margin.** The registration said a point estimate below +0.49pp would mean
+the dev figure was carried by the corpus, and anything in [0.49, 0.98] would be shrinkage of the size
+an out-of-sample test is supposed to produce. The reading is **+0.51pp**. A narrower band would have
+refuted; a wider one would have proved nothing. It is the one prediction in this record whose
+boundary was set tightly enough to have failed and did not.
+
+### The explanation does not survive, and the filter does
+
+§141 said the damage is where the *pack's own text* introduced the name. That account does not
+replicate, and the three numbers that say so are independent of each other:
+
+| | dev | train |
+|---|---|---|
+| imported names the pack's text accounts for (exact) | 60 of 155, **38.7%** | 107 of 548, **19.5%** |
+| the same, forgiving spelling (flattened) | 81 of 155, **52.3%** | 163 of 548, **29.7%** |
+| pack stratum against schema stratum | −8.33pp vs −9.57pp | −6.54pp vs −5.83pp |
+| gap between those strata | −1.24pp, unresolved | **−0.72pp ± 10.76, unresolved** |
+| share of the gate's +0.51pp from questions the pack named | — | **0.10pp of 0.51pp (19.4%)** |
+
+**The attribution halves and the mechanism splits stop resolving.** On train, 75% of the imported
+names are real schema columns the question never asked for: the model reached into the schema it was
+shown, not into the rule text. Only a fifth of the gate's benefit comes from questions whose pack
+named anything at all.
+
+**So the filter is a property of the query, not of the pack.** That is a correction to §141 and it is
+the useful one: the gate does not need to know what the rules said, only what the generated query
+did. A rule that names nothing can still push the model into over-specifying, and the case where the
+pack named the column is the minority of the harm rather than its definition.
+
+### This is the field's failure mode, not this project's
+
+The negative effect is not idiosyncratic. Three external results say the same thing with different
+machinery, and they were found after the measurement rather than used to design it:
+
+- **CTIM-Rover** (Lindenbauer, Groh & Schütze, `arXiv:2505.23422`) added cross-task memory to
+  AutoCodeRover and reported resolution falling from 42% to 31% in its memory-only configuration on a
+  45-issue SWE-bench Verified subset. Its diagnosis is that memory acts as surface-level noise
+  biasing the agent's first steps — supported by the fact that inserting an arbitrary item
+  ("GRANDMA LIKES PASTA") *restored* success, which rules out "the memory was wrong" and leaves
+  "the memory was there".
+- **Xiong et al. (2025)** name the mechanism *experience-following*: the more similar a new task is to
+  a retrieved memory, the more the output resembles that memory's output. Benefit and harm both come
+  from the same reflex.
+- **LongMemEval** (Wu et al., ICLR 2025) measures commercial assistants losing about 30% on tasks that
+  require updating a remembered fact, and **MemEvoBench** (Xie et al., 2026) calls the drift *memory
+  misevolution*, finding static prompt-level defences insufficient — the fix has to be structural.
+
+**What microglia adds to that list is a magnitude and a location.** The field says cross-task memory
+can hurt; this record says by how much (0.71pp of execution accuracy at 7,000 questions), where it
+sits (7.8% of questions, 72% of the net harm), what it looks like in the output (a name the question
+never asked for), and how much a query-level filter recovers (72% of the cost, stable at p = 0.0002).
+CTIM-Rover's "surface-level noise" and this record's "the pack does not have to name the column" are
+the same claim from two directions, and this one has a per-question footprint.
+
+### Two defects, both caught by looking at an output rather than at a diff
+
+**The stability reading described itself wrongly when pointed at the new corpus.** Its title was a
+constant — `Whether the read-time gate's +1.30pp is …`, which is dev's number — and its `unmeasured`
+block asserted that *"every question here was in the corpus that produced §140, so no split of it is
+out of sample"*. True of dev; the exact negation of what the train split is for. The artefact then
+reported a correctly measured 0.51pp under a heading that denied the measurement, and no check looked
+at prose. Fixed by deriving every corpus-dependent clause from the corpus: `splitOfName` reads the
+artefact's own `dataset` field, `stabilityFramingOf` builds the title from the number it read and the
+database count it counted, and the caveat becomes the *causal* one over an out-of-sample split
+because the in-sample one would be false. Seven tests pin the construction, including that the title
+does not contain a number the reading did not produce.
+
+**The headline interval did not match the unit of observation.** `comparePaired` resamples questions
+while §143's own lesson, quoted three sections earlier in this file, is that questions inside a
+database are not independent. The out-of-sample claim is now reported with the database as the
+resampling unit; the question-level interval is kept in the source artefact and the difference is
+0.03pp, which is why it changes nothing here — and is exactly why it would have gone unnoticed.
+
+**Both are the same shape as the three in AUDIT §29:** not a crash, a plausible number. 2,445 tests
+and 99.98 / 99.64 / 100 / 99.98 coverage did not catch either, because both were statements about a
+corpus rather than computations over one.
+
 ## What is left, in order (current)
 
-**The covariate question is answered, the mechanism question is open, and the sample is now one dispatch away.** After R26 (channels), R28 (overlap) and
-R30 stage 1 (what the rule did to the query), exactly one covariate separates help from harm, with a gap of
-−11.13pp against its own 7.61pp half-width and a stratified damage rate 7.8× the rest of the corpus. Everything
-that remains on this list is either the sample that can confirm it, the one field that would make the third
-registered category measurable, or a line the previous rounds registered and nobody has run.
+**Three questions this page has been organised around, and all three are now answered.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), and the gate's benefit shrinks to half while the product stops paying. What remains is no longer "confirm the mechanism". It is "decide what to ship, given that the filter works and the memory does not", plus the four items that can run in parallel with that decision.
 
 | # | Item | State | Blocks |
 |---|---|---|---|
-| 1 | **R30 stage 2 — the sample that can see 1pp** | **dispatched, running.** §142 made the split load; the first dispatch (`41294945557`) stopped on fold 1 because the cap was 14% low, which §144 records as Amendment 1 with the cap raised to 20,000 and nothing else changed. The second dispatch (`41296776252`) is the one that will count | the confirmation of §140 — now of the *query-level* gate, since §141 withdrew the rule-level one — and the first out-of-sample test of a gate this project has estimated in-sample |
-| 2 | **R32 — if the damage is not lexical, what is it?** | **closed, three negatives.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both a declarative and a procedural marker (§144). Axis 3 is refuted in the other direction: the questions that name none of their required columns are destroyed at 1.33% against 8.41% where most are named (§145). R32's own refutation clause applies and the product statement narrows to the read-time check with no account of its cause | nothing further — the mechanism is not attributable from this corpus's structure, and a fourth structural account would need a corpus this one does not contain |
-| 3 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | the evidence for the claim §138 salvaged: that the protocol's *shared* machinery, and not only its gates, is scenario-agnostic |
-| 4 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; it is the last third of the generality refactor |
-| 5 | **The arm-level audit gap (§25.7)** | still open: `eval:power` audits whole-artefact deltas, and an arm inside an artefact is not a row. The values channel at +1.17pp lives in an arm, so the audit undercounts positives rather than overcounting them | a schema decision — whether an arm is an artefact |
-| 6 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer; both are described in §24.7 | the driver |
-| 7 | **S1a — ambiguity on public annotations** | unblocked and unbuilt; the highest-value unbuilt *product* item. §141 makes it more valuable, not less: the damage is a query that reaches for a column the question did not name, and ambiguity is the mechanism that would produce exactly that | — |
-| 8 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 9 | **S3 — the SOTA push** | entry condition needs re-adjudication, not a bypass. It was gated on "the mechanism moves accuracy on dev"; R24, R25, §140 and §141 all return ≤ +1.30pp there with an instrument that resolves 2.01pp | a decision |
-| 10 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
-| 11 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
+| 1 | **R30 stage 2 — the sample that can see 1pp** | **done, and it refuted the product claim.** Run `41296776252`, 14,479 calls, 7,000 questions, 58 databases, all 12 gates green (§146). Memory costs −0.71pp [−1.27, −0.18] clustered, 5 of 5 folds negative; the read-time gate recovers +0.51pp and leaves −0.20pp | nothing — this *was* the critical path, and it is closed with a negative |
+| 2 | **R33 — what ships, now that the filter pays and the memory does not** | **not registered, and it is the new critical path.** Three shapes are on the table: ship the filter alone as a query-level validity check on a single-shot generator; ship memory with the filter and state −0.20pp; or test whether the 92.2% clean cohort gains anything at all under a *weaker* injection | the product claim, and every decision downstream of it |
+| 3 | **R32 — if the damage is not lexical, what is it?** | **closed, three negatives.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both marker kinds (§144). Axis 3 is refuted in the other direction (§145) | nothing further — a fourth structural account would need a corpus this one does not contain |
+| 4 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | §138's claim that the protocol's shared machinery, not only its gates, is scenario-agnostic |
+| 5 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; the last third of the generality refactor |
+| 6 | **The arm-level audit gap (§25.7)** | still open: `eval:power` audits whole-artefact deltas, and an arm inside an artefact is not a row | a schema decision — whether an arm is an artefact |
+| 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |
+| 8 | **S1a — ambiguity on public annotations** | unblocked and unbuilt. §146 makes it *less* urgent than §145 thought: ambiguity was refuted as the mechanism, so this is now a product feature rather than an explanation | — |
+| 9 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
+| 10 | **S3 — the SOTA push** | entry condition now needs re-adjudication for a second reason: the mechanism does not merely fail to move accuracy, it moves it backwards out of sample | a decision |
+| 11 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
+| 12 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
-**Two items left the list this round, and neither left by being finished.** R31 — the `names` field — was
-*withdrawn*: its premise is false in 61% of the flagged questions and false in the direction that matters, and
-the one pre-generation test in this record had already returned the wrong sign. R30 stage 1b — the pruned names —
-was *done*, in the lane, and becomes readable on the next dispatch. The first is the more valuable of the two.
+**What the list looks like now.** Item 1 is finished and it did not say what the programme wanted. Item 2 is a decision rather than a computation, and it is the only thing on the page that can move the product claim — but it needs a registration before it needs a model call, because the last time this project decided what to ship without one, it shipped a paragraph that an out-of-sample test deleted in an afternoon. Items 3 and 4–5 are registered work that changes no claim. Four items wait on a decision (2, 6, 10, 11), two on an artefact that does not exist (7, 9), one on a toolchain (12). **Nothing on this page is waiting on an idea, and nothing is waiting on compute except item 4.**
 
-**What the list looks like now.** Nothing is waiting on an idea. Item 1 is the only one that needs compute and the
-only one that can move the product claim. Item 2 is the only one that can explain the mechanism, and it is free.
-Items 3 and 4 are registered work that changes no claim. Three items wait on a decision (5, 9, 10), two on an
-artefact that does not exist (6, 8), one on a toolchain (11). **The critical path is one dispatch, and everything
-else on this page can run beside it.**
+**One thing this list no longer contains, and it should be said plainly.** For twenty rounds the plan was "measure the mechanism, then scale it". The mechanism has now been measured, out of sample, and it is a cost: memory makes the product worse, the filter makes it no worse, and the combination is a wash. Every item above is downstream of accepting that, including the ones marked "mechanical".

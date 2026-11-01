@@ -3045,7 +3045,7 @@ so. If stage 2 produces a positive effect above +5pp, the first thing to audit i
 **Cost.** One τ² environment dispatch through `sota.yml`, no new dataset, no new model family. Stage 1 is offline
 and can be reviewed before stage 2 is paid for.
 
-### R30 — what a rule does to the query, and the sample that can see it (**stage 1 read**, **stage 2 ready** 2026-11-01)
+### R30 — what a rule does to the query, and the sample that can see it (**both stages read**, 2026-11-01)
 
 **The premise, measured last round rather than assumed.** One of seventeen published paired deltas exceeds its own
 minimum detectable difference. The mechanism's best positive reading, +1.17pp, is 61% of what its own design could
@@ -3252,7 +3252,7 @@ All three pass. **This is a stability check and not an out-of-sample test:** bot
 hypothesis was formed on, so the shrinkage an unseen sample would show is still unmeasured. R30 stage 2 remains
 the only reading that can measure it, and it is now the single item on the critical path.
 
-### R30-stage2 — the out-of-sample split, verified without a dispatch (**ready** 2026-11-01)
+### R30-stage2 — the out-of-sample split, verified without a dispatch (**run and read**, 2026-11-01)
 
 The registered prediction 4 said this dispatch is the one most likely to fail. It was checked first,
 and the check is now a program: `pnpm eval:split-precheck` loads a split through the lane's own
@@ -3286,6 +3286,34 @@ and the 15% wall-clock margin is the reason it is 7,000 rather than the 7,829 av
 most: the train accuracy is **not comparable to any leaderboard row**, because BIRD publishes no test
 cell for train and the split's name in the artefact is chosen so that `compareCell` cannot file it as
 a reproduction.
+
+#### Result — run `41296776252`, 14,479 calls, and the product claim does not survive
+
+| | registered | observed | verdict |
+|---|---|---|---|
+| P1 measurable | required | 12/12 gates, gold 100%, mde 0.82pp | **held** |
+| P2 not positive and not significant | required | −0.71pp, clustered [−1.27, −0.18] | **refuted** |
+| P3 gate worth +0.2 to +2.0pp | required | +0.51pp | held, at the low end |
+| P4 shrinkage to [0.49, 0.98] | required | +0.51pp, 52% retained | **held**, 0.02pp of margin |
+| P5 imported name still negative | required | −6.57pp against −0.22pp | **held** |
+
+**Memory costs 0.71pp out of sample and the read-time gate recovers 0.51pp of it.** Five of five
+folds are negative; the clustered interval excludes zero; 72% of the net harm sits in the 7.8% of
+questions whose generated query imported a name nobody mentioned; and the gated arm's −0.20pp is not
+distinguishable from no memory at all. The dev reading of +1.30pp for the gated product was a
+property of the dev corpus.
+
+**The mechanism account of §141 also fails out of sample** — the share of imported names attributable
+to the pack's own text halves, from 38.7% to 19.5%, and only 19.4% of the gate's recovery comes from
+questions the pack named. The filter is a property of the query, not of the pack. Full reading in
+`PROGRESS.md` §146; the two defects it exposed are `AUDIT.md` §30.
+
+**Corroboration from three outside results, found after the measurement.** CTIM-Rover
+(`arXiv:2505.23422`) reports cross-task memory taking AutoCodeRover from 42% to 31% in its
+memory-only configuration and argues the memory acts as surface-level noise; Xiong et al. (2025)
+name the reflex *experience-following*; LongMemEval (ICLR 2025) measures a ~30% drop on
+knowledge-update tasks. **This record's addition is magnitude and location**: 0.71pp at 7,000
+questions, 72% of it in 7.8% of the corpus, with a per-question footprint in the output query.
 
 ### R32 — if the damage is not lexical, what is it? (**closed** 2026-11-01, three negatives)
 
