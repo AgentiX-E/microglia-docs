@@ -1558,3 +1558,90 @@ the failure would have looked like a runner problem rather than an arithmetic on
   that stops itself writes its folds; a run that is killed does not.
 - **The 8.9 GB download on a runner is estimated, not measured.** The arithmetic is 2.3× dev's call
   budget against dev's measured wall clock; the transfer time is unknown and is inside the margin.
+
+## 29. Addendum — a rule id that is not a rule, a cap that was 14% low, and a bootstrap that drifted from its own point estimate (2026-11-01)
+
+Three defects, found three different ways. The first was found by building a classifier and noticing
+that its input was not what the schema said; the second by a runner refusing to continue; the third
+by comparing a confidence interval's centre against the number it was bracketing.
+
+### 29.1 A rule id names a slot, not a rule — and the per-rule reading was over the wrong corpus
+
+`items` in a committed run holds 1,066 rows. Every round of this record read that as 1,066 rules.
+It is 1,066 rows: **271 sentences over 229 id slots**, each slot reused across folds and naming an
+unrelated rule in each. `k_01hf7uaqrd_550r9` is numeric literals in `california_schools` in fold 0,
+integer division in `toxicology` in fold 1, a foreign-key filter in fold 2 and `NOT LIKE` status
+text in fold 3.
+
+`query-diff.ts` built `ruleById` as `new Map(items.map((entry) => [entry.id, entry]))`. With a
+reused key that map holds 229 entries and the last fold to be read wins, so every lookup answered
+with **fold 4's sentence** while the question being classified came from any of the five.
+
+| | keyed by `id` | keyed by `fold:id` |
+|---|---|---|
+| rows naming an identifier | 138 (12.95%) | 149 (13.98%) |
+| questions flagged at rule level | 385 (25.1%) | 407 (26.5%) |
+| Δ on flagged | +2.86pp | +0.49pp |
+| Δ on the rest | −0.52pp | +0.27pp |
+| precision / recall against F1 | 13.0% / 32.3% | 11.3% / 29.7% |
+
+**Why no test caught it.** The fixture in `query-diff.test.ts` generated ids that were unique, so
+the map never collapsed. A test can only catch a reused key if the fixture reuses one, and the
+fixture was written from the same mental model as the code.
+
+**Why it looked like a result.** The defect made the rule-level gate separate by 3.38pp. It actually
+separates by 0.22pp. The conclusion — that a rule's text cannot predict the damage, and that the
+gate is the wrong sign for a product — was reached before the defect and is now reached more
+cleanly, but the margin it was argued from was the defect's.
+
+**Fixed** by keying on `fold:id`, and **guarded** by two CI assertions on the pool counts and on the
+agreement of the two naming shares. The counts are also in the artefact, so the difference between
+271 sentences and 1,066 rows is visible rather than inferable.
+
+### 29.2 The call cap was 14% below what the lane needed, and the run said so
+
+`prereg/R30-stage2.md` registered "about 15,000 model calls" against a cap of 16,000. The lane
+stopped after fold 1 and printed the arithmetic itself:
+
+```
+[sota] fold 1/5: eval=1400 learn=280 edited=95 unanswered=0 distillFailed=0 active=184 calls=3175
+[sota] budget forecast after fold 1/5: the run needs about 17145 calls, the cap is 16000 (short by 1145)
+```
+
+The estimate was made in questions and the meter counts calls: 1,400 questions over two arms is
+2,800 generations, the 280-question learning pass is 280 more prompts, and the 95 edited queries
+were re-asked rather than dropped. **3,175 against 3,000 per fold.** Amendment 1 raises the cap to
+20,000 and changes nothing else; the aborted run's fold is discarded rather than reported, because
+the fold that fits in an undersized cap is the first one.
+
+**Why no test caught it.** A budget forecast is an arithmetic claim about a run that has not
+happened. The lane's own forecast is the only instrument that can catch it, and it fired correctly —
+the defect was in the registration, not in the code.
+
+### 29.3 A bootstrap that disagreed with its own point estimate
+
+`resampleDelta` was first written to average each drawn database's mean and then average those, so
+every database weighed the same however many questions it carried. The point estimate it was
+supposed to bracket weights questions, not databases. The mismatch moved the lower bound of a gap
+from **0.25pp to −0.19pp** — enough to turn a resolved gap into an unresolved one.
+
+**Found by** printing the interval beside the point estimate and noticing the centre had moved when
+only the resampling loop had. **Fixed** by pooling the drawn databases and dividing by their
+question count, which is what `cellOf` computes.
+
+**Why no test caught it.** Every test in the file asserted either the point estimate or the interval,
+never that the interval contains the point estimate. That assertion now exists, and it was verified
+by re-injecting the defect rather than by watching it pass: with the per-database average back in
+place the test fails on a group whose point estimate is **−85.19pp** and whose interval starts at
+**−44.44pp**. A first attempt at the test passed under both implementations because the fixture had
+one database per group and the two weightings coincided — which is the same class of mistake as the
+defect, so the fixture now puts 100 questions in one database and 8 in eight others.
+
+### 29.4 What these three have in common
+
+None of them produced a wrong sign. All three produced a **number that looked like it had been
+measured**, in a record whose stated standard is that a number is either measured or absent. The
+first two were found by reading data rather than code; the third by looking at an output rather than
+at a diff. That is the pattern worth carrying: a defect in this repository is more likely to be a
+plausible number than a crash, so the checks that matter are the ones that compare a number against
+something that must be true of it independently.

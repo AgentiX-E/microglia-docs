@@ -7942,6 +7942,131 @@ unmeasurable has not finished R32.
 `diff-corpus.ts` exists because the fourth reading of one artefact was about to acquire its own copy
 of the same four-line construction.
 
+## 144 — The rule's id was reused across folds, and the per-rule result was a different corpus
+
+Three things happened in this round and only one of them was planned. The dispatch stopped on a
+parameter I set, the first R32 axis turned out to be unmeasurable for a reason stronger than the one
+§143 guessed, and — found while building the classifier for that axis — **a rule id is not a rule**.
+
+### The dispatch stopped after one fold, and the number was mine
+
+Run `41294945557` finished fold 1 of 5 and refused to go on:
+
+```
+[sota] fold 1/5: eval=1400 learn=280 edited=95 unanswered=0 distillFailed=0 active=184 calls=3175
+[sota] budget forecast after fold 1/5: the run needs about 17145 calls, the cap is 16000 (short by 1145)
+```
+
+`prereg/R30-stage2.md` had registered "about 15,000 model calls", and 15,000 was 7,000 × 2 arms plus
+a guess at learning. The guess was made in questions and the meter counts calls: a fold of 1,400
+questions over two arms is 2,800 generations before any learning, its 280-question learning pass is
+another 280 prompts, and the 95 edited queries were re-asked rather than dropped. That is 3,175
+against a 3,000 estimate — 5.8% per fold, 14% over five.
+
+**Amendment 1** raises the cap to 20,000 and changes nothing else: same `limit`, same arms, same
+folds, same deadline, same five predictions and five refutations. A cap is a safety valve, not a
+parameter of the design. Fold 1's numbers are **discarded** rather than reported — a run that
+stopped because of a parameter I set is a truncated run, and the fold it finished is the first fold,
+so quoting it would be reading the one fold that happened to fit. The re-dispatch (`41296776252`) is
+the run this record will report.
+
+### Axis 1 was not unmeasurable for the reason §143 gave
+
+§143 closed axis 2 and left axis 1 with an impression: *the 1,066 rules are almost all written in
+the same conditional–action form, so the two classes may not exist here as syntactic objects*. That
+impression is wrong, and testing it produced a stronger reason.
+
+**There are not 1,066 rules.** There are 1,066 *rows*, and they are **271 sentences over 229 id
+slots**, of which 220 slots are cited by at least one question. Every count this record has quoted
+about "the 1,066 committed rules" was a count of rows across five folds. A single run carries about
+**210 rules**, not 1,066.
+
+**The two forms do not separate, and they fail by 8 points rather than by inspection.** Classifying
+each distinct sentence by whether it carries a declarative marker (asserts a state or consequence)
+and a procedural marker (instructs a construction):
+
+| | sentences | share |
+|---|---|---|
+| carry **both** marker kinds | 157 | **57.9%** |
+| procedural only | 68 | 25.1% |
+| declarative only | 43 | 15.9% |
+| neither | 3 | 1.1% |
+
+The bar is the one R32 prediction 2 already registered for a sibling question — **fewer than half** —
+and 57.9% is over it. The failure is not a threshold artefact: a first, looser marker set that also
+counted `when`, `which` and `so` as declarative put the same share at **65.7%**. A verdict that
+survives a change of markers is a verdict; this one does.
+
+The reason is in the sentences themselves. *"A query that joins a one-to-many table and filters on
+an aggregate of the many side must deduplicate the projected entity column, because each matching
+child row otherwise produces a duplicate parent row"* states a consequence and gives a construction
+in one breath, and that is the normal shape here rather than an outlier.
+
+**What the leftovers show, reported as leftovers.** The 111 pure-form sentences still classify 817
+questions, 100 of them mixed, 617 of them with no pure rule at all. On what remains:
+
+| group | n | Δ vs no memory |
+|---|---|---|
+| packs whose pure rules are procedural | 487 | **+1.64pp** |
+| packs whose pure rules are declarative | 330 | **−2.12pp** |
+| packs holding both | 100 | +3.00pp |
+| packs with no pure rule | 617 | +0.16pp |
+
+The gap is **+3.76pp [0.25, 7.76]**, and it is larger where no ungrounded name was imported —
+**+5.15pp [2.44, 7.97]** over the 716 questions in these two groups whose query introduced no name
+(1,379 questions introduced none at all; the rest carry no pure rule). **That is the opposite of
+what prediction 3 said**: the registration expected the procedural rules to be the damaged ones, on
+the reasoning that a pack's names would be the mechanism only if the declarative ones were harmful.
+The declarative pack is the harmed one.
+
+**And it does not survive the database.** The gap is positive in 6 of the 11 databases, negative in
+4, and exactly zero in one — so 6 of 10 non-zero signs, which a two-sided sign test puts at
+**p = 0.754**. The pooled +3.76pp is not a direction the corpus holds: `financial` gives −7.69pp and
+`european_football_2` gives +10.38pp, and both are the same classifier applied to the same form in
+two databases.
+Two readings that disagree this cleanly are the reading that the axis is not usable and the reading
+that it is — and the census already decided that, so nothing here is promoted. It is recorded
+because the next round's question is why the declarative direction keeps coming back, not whether
+this round resolved it.
+
+### The defect: an id names a slot, not a rule
+
+`query-diff.ts` looked a rule up by its `id`, and the id is reused across folds. `k_01hf7uaqrd_550r9`
+names four unrelated rules — numeric literals in `california_schools` in fold 0, integer division in
+`toxicology` in fold 1, a foreign-key filter in fold 2, `NOT LIKE` status text in fold 3. A `Map`
+keyed by id collapses 1,066 rows into 229 keys and answers with whichever fold was read last, so
+every per-rule reading in §141 was being taken over **fold 4's sentences** while the questions were
+spread over all five.
+
+The lookup is now `fold:id`, and the rule-level read changed:
+
+| | keyed by `id` | keyed by `fold:id` |
+|---|---|---|
+| rows naming an identifier | 138 (12.95%) | **149 (13.98%)** |
+| questions flagged at rule level | 385 (25.1%) | **407 (26.5%)** |
+| Δ on flagged | +2.86pp | **+0.49pp** |
+| Δ on the rest | −0.52pp | **+0.27pp** |
+| precision / recall against F1 | 13.0% / 32.3% | **11.3% / 29.7%** |
+
+**The direction of §141's conclusion is unchanged and its margin was inflated.** Before the fix the
+rule-level gate looked like it separated by 3.38pp; after it, by 0.22pp. The gate was always the
+wrong sign for a product and is now also visibly flat — which is what §141 argued and what the
+defect had been hiding behind a number that looked like a signal.
+
+The shares over rows and over sentences now sit beside each other in the artefact (13.98% and
+14.0%), which is the check that the counting unit does not decide the verdict. It does not.
+
+**Green.** `pnpm eval:rule-form` writes `poc-rule-form.json` from the same committed artefact as
+§140, §141 and §143, calls no model, and runs in `pnpm check`. `rule-form.ts` and the extended
+`diff-corpus.ts` are at **100 on all four coverage dimensions**; 2,397 tests; `99.98 / 99.66 / 100
+/ 99.98`. CI asserts the two new pool counts and the agreement of the two naming shares, so an
+id-keyed lookup cannot come back quietly.
+
+**One rule the audit caught on me.** The new reading printed with `console.log`, which this
+repository forbids in non-test code and enforces with `pnpm audit:repo`. It failed the build, which
+is the check working; the fix was `process.stdout.write`, and the delete-the-guard-that-cannot-run
+rule was applied to a `throw` in the same file rather than covering it with a test.
+
 ## What is left, in order (current)
 
 **The covariate question is answered, the mechanism question is open, and the sample is now one dispatch away.** After R26 (channels), R28 (overlap) and
@@ -7952,8 +8077,8 @@ registered category measurable, or a line the previous rounds registered and nob
 
 | # | Item | State | Blocks |
 |---|---|---|---|
-| 1 | **R30 stage 2 — the sample that can see 1pp** | **ready to dispatch, and nothing else is missing.** §142 did the part that could be done without model calls: the split loads, its 58 databases open with 3.05M rows, its two copies of the gold agree on all 9,428 rows, and the precheck says `ready` on all three splits. `limit=7000` over two arms is ~15,000 calls in a 340-minute step, and `prereg/R30-stage2.md` is written with five predictions and five refutations. Five defects were found and fixed before the dispatch; four of them failed *after* the 8.9 GB download | the confirmation of §140 — now of the *query-level* gate, since §141 withdrew the rule-level one — and the first out-of-sample test of a gate this project has estimated in-sample. **The dispatch is the entire remaining distance** |
-| 2 | **R32 — if the damage is not lexical, what is it?** | registered in `ROADMAP.md`, zero calls, offline. Three candidate axes over the committed corpus: procedural vs declarative rules, whether the pack changed the table set (F4 at −10.39pp, p = 0.0499 — the next-closest feature to resolution), and schema ambiguity resolved in the wrong direction | nothing; it is the only account of the mechanism that is consistent with §141, and it can run in parallel with item 1 |
+| 1 | **R30 stage 2 — the sample that can see 1pp** | **dispatched, running.** §142 made the split load; the first dispatch (`41294945557`) stopped on fold 1 because the cap was 14% low, which §144 records as Amendment 1 with the cap raised to 20,000 and nothing else changed. The second dispatch (`41296776252`) is the one that will count | the confirmation of §140 — now of the *query-level* gate, since §141 withdrew the rule-level one — and the first out-of-sample test of a gate this project has estimated in-sample |
+| 2 | **R32 — if the damage is not lexical, what is it?** | **two of three axes closed, both negative.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both a declarative and a procedural marker, over the registered 50% bar (§144). The residual reads declarative packs at −2.12pp and procedural at +1.64pp, but the sign flips in 4 of 11 databases, so nothing is promoted | axis 3 — schema ambiguity resolved in the wrong direction — is the only account left, and it is the one no reading has touched |
 | 3 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | the evidence for the claim §138 salvaged: that the protocol's *shared* machinery, and not only its gates, is scenario-agnostic |
 | 4 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; it is the last third of the generality refactor |
 | 5 | **The arm-level audit gap (§25.7)** | still open: `eval:power` audits whole-artefact deltas, and an arm inside an artefact is not a row. The values channel at +1.17pp lives in an arm, so the audit undercounts positives rather than overcounting them | a schema decision — whether an arm is an artefact |
