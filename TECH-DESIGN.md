@@ -4910,3 +4910,51 @@ the gate's improvement in each half tests whether the effect survives a differen
 cannot test reproduction, because both halves were in the corpus the hypothesis was formed on — and the artefact
 carries that sentence in an `unmeasured` block rather than trusting a reader to supply it. The distinction is the
 whole difference between §140's estimate and R30 stage 2.
+
+### 17.69 A split is a manifest, and the second one taught the interface what it had assumed
+
+Adding a third split to a lane that had two looked like a constant. It was five assumptions, and every
+one of them was invisible because both existing splits happened to satisfy it.
+
+**The interface the two splits share, written down after the fact.**
+
+| concern | where it lives now | the assumption it replaced |
+|---|---|---|
+| where the archive is, and its digest | `manifest.url` / `bytes` / `sha256` | — (already correct) |
+| which file holds the questions | `manifest.questions` | — (already correct) |
+| whether the archive nests its databases | `manifest.nested` + `nestedRoot`, read as a pair | the name was hard-coded to `dev_databases.zip` |
+| where databases are found after extraction | `resolveDatabase(dir, id, roots)` | three layouts were built in, and a fourth was not |
+| which questions a split scores | `poolOf(rows, split)` | the tier field was required, and one split does not have it |
+| which databases a split measures | `manifest.databases` | the field described the archive, not the measurement |
+| where the artefact goes | `ARTEFACT_IDS: Record<Split, string>` | a two-way expression in YAML answered the wrong name |
+
+**`manifest.databases` changed meaning, and the change is the design.** For `dev` and `minidev` it
+listed every database the question file uses, so it read like a description. For `train` it lists 58
+of 69, because the other eleven cost 30 GB and carry 1,599 questions — so the field now means *the
+databases this split measures*, and the questions that reference anything else are dropped with a
+count rather than silently. That is a better interface for the same field: a description can only be
+wrong, a selection can be argued with. `withinDatabases` returns the dropped count and the declared
+databases no question uses, and the lane prints both — a 7,829 next to a file of 9,428 is an
+explained number, and an unexplained one is what a reader would otherwise have to reverse-engineer.
+
+**The tier field is the interesting assumption, because `poolOf` was right.** Its rule — filter the
+easiest third on `minidev`, keep everything on `dev` — encodes a real measurement decision and the
+comment says why. What it also encoded, invisibly, was that a question *has* a tier. Train does not
+have one: 9,428 rows carrying `SQL`, `db_id`, `question` and `evidence`, and no `difficulty` on any
+of them. The fix is not a null check at the call site; it is a named question — `isSimple(difficulty:
+unknown)` — whose answer for a value that is not a string is **no**. A question with no stated tier
+is not one to drop, and that sentence belongs to the rule rather than to the caller.
+
+**The precheck is a first-class artefact, not a debugging aid.** `bin/split-precheck.ts` loads a
+split through the same manifest reader, the same question parser, the same pool rule, the same
+selection and the same population check as the lane, and stops before the first model call. It
+returns `ready` or `blocked` with the reasons, and it is the only thing in this repository that can
+answer *can this split be measured* without spending a dispatch. Its value was demonstrated before
+it was trusted: pointed at `minidev` it reported **350 questions**, a number it was not given and
+which every transfer experiment in the record uses — the pool rule reproduced it from the file.
+
+**The general form.** A lane that has only ever run one dataset has an interface with that dataset
+baked into it, and the baking is not in the types — it is in the assumptions the types are satisfied
+by. The way to find them is not more tests over the same data, because the data is what is wrong; it
+is to run the loader against a second dataset and stop before the expensive part. Five defects came
+out of that, four of them after the download.

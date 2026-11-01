@@ -7793,9 +7793,102 @@ coverage dimensions at **99.98 / 99.65 / 100 / 99.98** with all four new modules
 and `eval:stability` all green. `poc-query-diff.json` changed in exactly two places — one float in the last bit
 from the closed form that replaces a difference of two bootstraps, and the `unmeasured` note for `pruned-name`.
 
+## 142. The out-of-sample split exists, and finding out cost five defects and no model calls
+
+**This round did not measure the mechanism. It made the measurement possible, and it found out that
+the measurement would have failed five times.** R30 stage 2 is the only reading left that can test
+§140's gate out of sample, and its own registered prediction 4 said the dispatch is the one most
+likely to fail. So the round was a precheck: load the split exactly as the lane will, stop before the
+first model call, and report what would have stopped a run.
+
+**The two cheaper exits are closed, and one of them closed this round.** Mini-Dev cannot serve as a
+second sample, because **496 of its 500 questions are dev questions**. The record already used that
+fact correctly without naming it — R24's decomposition `925/1534 × 14.05 + 609/1534 × 22.99 = 17.60`
+treats Mini-Dev as a slice of dev, not as an independent corpus — so nothing is withdrawn here. What
+is new is that the alternative to a second sample is now a measured statement rather than an
+assumption: a fresh split of dev is in-sample by construction, and Mini-Dev is a subset of dev. BIRD
+train is the only remaining source: 9,428 questions over 69 databases that neither split touches.
+
+**The precheck, on the real archive.**
+
+| reading | train | dev (control) | mini-dev (control) |
+|---|---|---|---|
+| questions in the file | 9,428 | 1,534 | 500 |
+| after the split's pool rule | 9,428 | 1,534 | **350** |
+| after the manifest's selection | **7,829** | 1,534 | 350 |
+| databases used | 58 | 11 | 11 |
+| databases empty or unreadable | 0 | 0 | 0 |
+| two copies of the gold disagree | **0 of 9,428** | — | — |
+| verdict | **ready** | ready | ready |
+
+The mini-dev column reading **350** is the check on the checker. 350 is the number every transfer
+experiment in this repository calls that slice — it is in `ROADMAP.md` and in nine readings — and the
+precheck was not told it. It fell out of applying the same pool rule to the same file, which is the
+only reason to believe the train column is a reading rather than a coincidence.
+
+**Five defects, none of which a dev run could have found.** Each would have consumed a dispatch, and
+four of the five fail *after* the 8.9 GB download:
+
+1. **`poolOf` read a field train does not have.** `row.difficulty.toLowerCase()` is a `TypeError` on
+   9,428 rows that carry `SQL`, `db_id`, `question` and `evidence` and nothing else. The lane would
+   die at startup, after the download and the unpack.
+2. **The download buffered the archive.** `arrayBuffer()` puts the whole file in one allocation —
+   346 MB for dev, which worked, and 8.9 GB for train, which is most of a runner's memory before the
+   databases exist. It is now a stream to a `.part` file and a rename, which is also the reason an
+   interrupted transfer cannot leave a truncated file under the name the size check trusts.
+3. **The extractor looked for `dev_databases.zip`.** Train ships `train_databases.zip`, so the nested
+   archive would not be found and every question would fail with "No database file" — the same
+   failure mode as the second dev dispatch, one archive later. The nested pair is now a manifest
+   field, read as a pair or not at all.
+4. **`resolveDatabase` knew three database roots and not `train_databases`.** It now takes the root
+   the caller's manifest declares, so a new archive layout is a manifest field rather than a fourth
+   guess in a shared function.
+5. **`SOTA_ARTEFACT` would have overwritten Mini-Dev.** The expression was
+   `split == 'dev' && A || B`, which answers B for train — and B is `poc-sota-bird.json`. This is
+   precisely the loss that variable was introduced to prevent, reappearing as a two-way choice that
+   grew a third arm.
+
+**The selection is a bytes-per-question decision, and it is nearly free.** The archive unpacks its
+databases to **32.4 GB**, four of them over 4 GB each — but the questions are spread over the small
+ones: `works_cycles` carries 474 questions in 115 MB, `retail_world` 373 in 0.1 MB, while `donor`
+carries 160 in 4.5 GB.
+
+| | databases | questions | unpacked |
+|---|---|---|---|
+| whole archive | 69 | 9,428 | 32.4 GB |
+| the manifest's selection | **58** | **7,829** | **2.4 GB** |
+
+Eleven databases cost 30.0 GB and 1,599 questions, so the selection keeps **83.0% of the questions
+for 7.4% of the bytes**. The lane prints the number and carries it in the artefact, so a smaller `n`
+is explained rather than discovered.
+
+**`limit=7000`, and the reason is a measured wall clock rather than a preference.** Dev at 1,534
+questions over four arms is 6,504 calls in 130 minutes. Seven thousand questions over two arms is
+about 15,000 calls, 2.3× that, against a six-hour job limit and a 340-minute step timeout: a 15%
+margin. The cost in resolution is 6% — dev resolves 2.01pp at 1,534, so 7,000 resolves 0.94pp and
+7,829 would resolve 0.89pp — and both can see the +0.98pp effect the dispatch exists to test.
+
+**The analysis path was also broken for a second corpus, and now is not.** The three readings that
+produced §140 and §141 each read one hard-coded artefact and wrote one hard-coded name, so a train
+run would have had no analysis or would have overwritten the dev evidence CI compares byte for byte.
+`POC_RESULT_SUFFIX` writes `poc-query-diff-train.json` beside its dev sibling; the dev artefacts are
+byte-unchanged this round, which is how the mechanism was checked.
+
+**Green.** `pnpm check` — typecheck, `typecheck:lanes` under `--strict`, **2,353 tests over 118
+files**, four coverage dimensions at **99.98 / 99.66 / 100 / 99.98** with `bird-rows.ts` at **100 on
+all four**; `audit:repo`, six offline lanes, `eval:protocol`, `eval:harm`, `eval:power`,
+`eval:query-diff`, `eval:mediation` and `eval:stability` all green, and all three dev artefacts
+byte-identical. `prereg/R30-stage2.md` is written with its five predictions and its five refutations
+before the dispatch, which is the only thing that makes the eventual number a test.
+
+**What is still not measured.** Everything §142 enabled and did not do: the gate has no out-of-sample
+number, the imported-name covariate has no second corpus, and the train accuracy is not comparable to
+any leaderboard row — BIRD publishes no test cell for it. One dispatch is the whole remaining
+distance, and it is the next item on the list.
+
 ## What is left, in order (current)
 
-**The covariate question is answered and the sample question is not.** After R26 (channels), R28 (overlap) and
+**The covariate question is answered, the mechanism question is open, and the sample is now one dispatch away.** After R26 (channels), R28 (overlap) and
 R30 stage 1 (what the rule did to the query), exactly one covariate separates help from harm, with a gap of
 −11.13pp against its own 7.61pp half-width and a stratified damage rate 7.8× the rest of the corpus. Everything
 that remains on this list is either the sample that can confirm it, the one field that would make the third
@@ -7803,7 +7896,7 @@ registered category measurable, or a line the previous rounds registered and nob
 
 | # | Item | State | Blocks |
 |---|---|---|---|
-| 1 | **R30 stage 2 — the sample that can see 1pp** | **next**, and the only item on the critical path. n ≈ 6,600 on BIRD train, two arms (`none`, `full`), ~14,000 calls. Its registered prediction 4 says it is the most likely to fail and the cheapest to check: the harness has only ever run `dev`, and a run that silently fell back would report 1,534 questions under a train-split name. `splitFrom` refuses an unknown split since R24, so what is unproven is that the **train archive loads and passes its population check**, not that the name is validated. §R31-stability narrowed what it has to prove: the gate is stable across databases, placement and halves, so the only thing left is shrinkage on an unseen sample | the confirmation of §140 — now of the *query-level* gate, since §141 withdrew the rule-level one — and the first out-of-sample test of a gate this project has estimated in-sample |
+| 1 | **R30 stage 2 — the sample that can see 1pp** | **ready to dispatch, and nothing else is missing.** §142 did the part that could be done without model calls: the split loads, its 58 databases open with 3.05M rows, its two copies of the gold agree on all 9,428 rows, and the precheck says `ready` on all three splits. `limit=7000` over two arms is ~15,000 calls in a 340-minute step, and `prereg/R30-stage2.md` is written with five predictions and five refutations. Five defects were found and fixed before the dispatch; four of them failed *after* the 8.9 GB download | the confirmation of §140 — now of the *query-level* gate, since §141 withdrew the rule-level one — and the first out-of-sample test of a gate this project has estimated in-sample. **The dispatch is the entire remaining distance** |
 | 2 | **R32 — if the damage is not lexical, what is it?** | registered in `ROADMAP.md`, zero calls, offline. Three candidate axes over the committed corpus: procedural vs declarative rules, whether the pack changed the table set (F4 at −10.39pp, p = 0.0499 — the next-closest feature to resolution), and schema ambiguity resolved in the wrong direction | nothing; it is the only account of the mechanism that is consistent with §141, and it can run in parallel with item 1 |
 | 3 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | the evidence for the claim §138 salvaged: that the protocol's *shared* machinery, and not only its gates, is scenario-agnostic |
 | 4 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; it is the last third of the generality refactor |

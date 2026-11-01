@@ -1470,3 +1470,91 @@ the count is zero, which is itself worth knowing: the field existed and was popu
 - **The pruned names.** `schema-link.ts` now records them (R30 stage 1b), but the committed artefact predates the
   field, so the registration's third category is still `unmeasured` for this record.
 - **Shrinkage.** The split-half is a stability check; both halves were in the corpus the hypothesis came from.
+
+## 28. Addendum — five defects that no unit test could have found, because the tests use the same data (2026-11-01)
+
+### 28.1 The finding, stated as a limit of the method rather than a list of bugs
+
+This repository has 2,353 tests, four coverage dimensions above 99.6%, and a rule that every branch
+must be reachable. None of that found any of the five defects below, and the reason is structural
+rather than an oversight: **every test loads a fixture, and every fixture was written against the
+same split the code was written against.** A field that exists in `dev.json` and not in
+`train.json` is invisible to a suite whose corpus has the field.
+
+What found them was a **precheck** — a program that loads a second split through the same code and
+stops before the first model call. It is worth being precise about why that is not just "more
+testing". A test asks *does this function do what its author intended*; the precheck asks *does the
+intention hold for the data this code will actually be given*, and the second question has an answer
+only when the data is different in a way nobody chose.
+
+The five defects, in the order they would have failed:
+
+| # | defect | when it would have fired | what it would have cost |
+|---|---|---|---|
+| 1 | `poolOf` read `row.difficulty.toLowerCase()` | at startup, on the first of 9,428 rows | the download and the unpack, then a `TypeError` |
+| 2 | the download buffered the archive with `arrayBuffer()` | during the download, at 8.9 GB | the run, as an out-of-memory kill with no artefact |
+| 3 | the extractor looked for `dev_databases.zip` | during the unpack | the run, then 7,829 identical "No database file" errors |
+| 4 | `resolveDatabase` did not know `train_databases` | at the first database check | the run, at the same point |
+| 5 | `SOTA_ARTEFACT` answered the Mini-Dev name for `train` | at the upload, after a successful run | **the Mini-Dev evidence**, overwritten |
+
+Defect 5 is the one that would not have announced itself. The other four cost a dispatch; the fifth
+would have destroyed a committed artefact and been discovered by whichever CI gate recomputes it —
+which is how R24 lost a cell, and the reason `SOTA_ARTEFACT` exists at all. The expression that
+replaced it was `split == 'dev' && A || B`, a two-way choice that silently grew a third arm when a
+third split was added. **A two-way conditional is a data structure with no room for a third value,
+and it fails by answering rather than by erroring.**
+
+### 28.2 The tests that were written afterwards, and what they are worth
+
+Each defect got a regression test, and none of them is the kind that would have caught it:
+
+- `poolOf` now has a test that passes rows with **no `difficulty` field**, which is the exact shape
+  of a `train.json` row. That test is a fixture written from the finding, not from the code — which
+  is the only way this class of defect is ever caught after the fact.
+- the streaming download has no test. It cannot have one worth having: the failure is an allocation
+  of 8.9 GB, and a test that allocated it would be the failure. What replaced the test is a `.part`
+  file and a rename, so the failure mode that *can* be tested — a truncated file under the trusted
+  name — is now impossible by construction rather than by assertion.
+- the nested archive pair is a manifest field tested for both halves and for half a declaration,
+  because the half case extracts the databases to a path nothing opens.
+- `resolveDatabase` takes the caller's root and is tested with a root the built-in list does not
+  contain.
+- `SOTA_ARTEFACT` has no test at all. Workflow expressions are not unit-testable here, and the
+  honest mitigation is the one applied: `ARTEFACT_IDS` is a `Record<Split, string>`, so the
+  TypeScript half of the same rule cannot be extended without a value. The YAML half is checked by
+  reading it, which is what this section is.
+
+### 28.3 Mini-Dev is a subset of dev, and the record had already used that fact without stating it
+
+Measured this round: **496 of Mini-Dev's 500 questions are dev questions** (by exact question text),
+and 486 are the same question with the same gold. It is a slice, not a second sample.
+
+This is not a correction. R24's decomposition — `925/1534 × 14.05 + 609/1534 × 22.99 = 17.60` —
+treats Mini-Dev as exactly what it is: the moderate-and-challenging third of dev. Every reading that
+quoted a Mini-Dev number and a dev number as two pieces of evidence would have been wrong, and none
+did. What the measurement adds is the closure of an exit: **there is no cheap out-of-sample split in
+this benchmark, and the record can now say so with a number instead of an assumption.**
+
+### 28.4 Two claims about the archive that had to be measured rather than read
+
+The published description of the train archive is a size. What a run needs is a shape, and the shape
+was obtained without downloading 8.9 GB: HTTP range requests against the zip's central directory,
+which is 1,118 bytes at the end of the file, and per-member extraction of the three small members
+(`train.json`, `train_gold.sql`, `train_tables.json`, 840 KB compressed) by inflating each member's
+own deflate stream from its own local-header offset. Two of those members are needed by the precheck
+and one of them — `train_gold.sql` — turned out to be a second copy of the gold, which is a free
+cross-check the other two splits do not offer.
+
+The measurement that mattered most was neither of those. It was the **unpacked** size: 32.4 GB, four
+databases over 4 GB each, against a runner's ~14 GB. A run that assumed the archive's 8.9 GB was the
+cost would have failed at the unpack with a disk error, one step after the download succeeded — and
+the failure would have looked like a runner problem rather than an arithmetic one.
+
+### 28.5 What this round did not verify, and cannot from here
+
+- **The workflow change is unexecuted.** The free-disk step, the 340-minute timeout and the
+  `SOTA_ARTEFACT` chain are reasoned from measured numbers and have not run on a runner. The first
+  train dispatch is their test, and it is why `deadline_min` is set below the step timeout: a run
+  that stops itself writes its folds; a run that is killed does not.
+- **The 8.9 GB download on a runner is estimated, not measured.** The arithmetic is 2.3× dev's call
+  budget against dev's measured wall clock; the transfer time is unknown and is inside the margin.

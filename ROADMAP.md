@@ -3045,7 +3045,7 @@ so. If stage 2 produces a positive effect above +5pp, the first thing to audit i
 **Cost.** One τ² environment dispatch through `sota.yml`, no new dataset, no new model family. Stage 1 is offline
 and can be reviewed before stage 2 is paid for.
 
-### R30 — what a rule does to the query, and the sample that can see it (**registered** 2026-11-01)
+### R30 — what a rule does to the query, and the sample that can see it (**stage 1 read**, **stage 2 ready** 2026-11-01)
 
 **The premise, measured last round rather than assumed.** One of seventeen published paired deltas exceeds its own
 minimum detectable difference. The mechanism's best positive reading, +1.17pp, is 61% of what its own design could
@@ -3251,6 +3251,41 @@ of the same size (5,000 draws, without replacement), and a split by database bal
 All three pass. **This is a stability check and not an out-of-sample test:** both halves were in the corpus the
 hypothesis was formed on, so the shrinkage an unseen sample would show is still unmeasured. R30 stage 2 remains
 the only reading that can measure it, and it is now the single item on the critical path.
+
+### R30-stage2 — the out-of-sample split, verified without a dispatch (**ready** 2026-11-01)
+
+The registered prediction 4 said this dispatch is the one most likely to fail. It was checked first,
+and the check is now a program: `pnpm eval:split-precheck` loads a split through the lane's own
+manifest reader, question parser, pool rule, selection and population check, and stops before the
+first model call.
+
+**Result on the real archive.** Train: 9,428 questions, **7,829 after the manifest's selection**, 58
+databases, 0 empty or unreadable, 3.05M rows, and its two copies of the gold agreeing on **all 9,428
+rows**. Verdict `ready`. Dev and Mini-Dev: `ready`, and Mini-Dev reads **350** — the number every
+transfer experiment in this record uses, reproduced by the pool rule from the file rather than
+supplied to the precheck.
+
+**Five defects stood between the prediction and a dispatch, and none of them was visible from dev.**
+A required tier field that train does not have; a download that buffered 8.9 GB in one allocation; a
+nested archive name hard-coded to `dev_databases.zip`; a database-root list without
+`train_databases`; and an `SOTA_ARTEFACT` expression that answers the Mini-Dev name for `train` — the
+fifth would have overwritten the Mini-Dev evidence after a successful run. All five are fixed, each
+with the regression test its class admits, and `AUDIT.md` §28 records which of them a unit test could
+have found (none).
+
+**The selection is a bytes-per-question decision.** The archive unpacks to 32.4 GB; eleven databases
+cost 30.0 GB and hold 1,599 questions, and the remaining 58 hold 7,829 in 2.4 GB. The manifest now
+declares the selection, the lane prints what it costs, and `withinDatabases` reports both directions.
+
+**Dispatch parameters, fixed in `prereg/R30-stage2.md` before the run:** `split=train`,
+`limit=7000`, `arms=` (none and full), `max_calls=16000`, `deadline_min=300`. Seven thousand
+questions resolve 0.94pp against dev's 2.01pp at 1,534, which is the whole return on the dispatch —
+and the 15% wall-clock margin is the reason it is 7,000 rather than the 7,829 available.
+
+**Predictions P1–P5 and refutations are in the pre-registration**, including the one that matters
+most: the train accuracy is **not comparable to any leaderboard row**, because BIRD publishes no test
+cell for train and the split's name in the artefact is chosen so that `compareCell` cannot file it as
+a reproduction.
 
 ### R32 — if the damage is not lexical, what is it? (**registered** 2026-11-01)
 
