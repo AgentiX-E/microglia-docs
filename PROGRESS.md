@@ -7886,6 +7886,62 @@ number, the imported-name covariate has no second corpus, and the train accuracy
 any leaderboard row — BIRD publishes no test cell for it. One dispatch is the whole remaining
 distance, and it is the next item on the list.
 
+## 143. The second-closest feature was the first one counted twice
+
+**R32 registered three candidate explanations for damage that is not lexical. The first one is
+gone, and it cost nothing to remove.** The registration named the table-set feature as its second
+axis on the strength of a number: F4 — the memory query reads a table the baseline did not — reads
+−10.39pp at p = 0.0499, the next-closest feature to resolving after F1's −11.13pp. That is exactly
+what a shadow of F1 looks like, so §R32 prediction 2 fixed the test before the numbers were read:
+`both / left < 0.5`, and then the reading the bar cannot give — *is F4 still harmful on the questions
+F1 does not cover*.
+
+**The contingency table, on the same 1,534 questions.**
+
+| | F4 present | F4 absent |
+|---|---|---|
+| **F1 present** | 70 | 85 |
+| **F1 absent** | 7 | 1,372 |
+
+The overlap is **45.2%**, inside the registered bar of 50%. On the reading that matters, F4 is not a
+second cause: on the **7 questions that add a table without importing a name, the net effect is
+exactly 0.00pp**. The −10.39pp the registration quoted is carried entirely by the 70 questions where
+both features are present, which means the two labels describe one event — a query that reached for
+something the question did not supply, sometimes a column and sometimes a whole table.
+
+**The same reading applied to the narrowing direction.** F5 — at least one added conjunction, the
+direction whose *kind* average is +6.80pp — overlaps F1 by only **7.7%** (12 shared of 155), so the
+two are genuinely different populations. But outside the overlap F5 is worth **−3.57pp on 28
+questions**, against a half-width it does not clear. It is `inert` for the same reason F4 is: a label
+that names a consequence of the mechanism without adding anything to it.
+
+| pair | both | left only | right only | overlap | right outside left |
+|---|---|---|---|---|---|
+| F1 / F4 (table added) | 70 | 85 | 7 | 45.2% | **0.00pp** (n=7) |
+| F1 / F5 (conjunction added) | 12 | 143 | 28 | 7.7% | −3.57pp (n=28) |
+
+**Why the criterion needed two questions and not one.** The registered bar —
+`both / left < 0.5` — is satisfied by *both* pairs, and taken alone it would have said F4 and F5 are
+distinct findings. They are distinct as *sets* and empty as *causes*, and the vocabulary this round
+added says so: `shadow` (overlap ≥ 50%, the same finding twice), `independent` (small overlap and
+still harmful outside it), `inert` (small overlap, nothing outside). The bar measures description;
+the outside reading measures mechanism. A registration that fixed only the first would have licensed
+a claim the second refutes.
+
+**What this leaves of R32.** Axis 2 is closed. Axis 1 — procedural versus declarative rules — has a
+problem the registration did not anticipate: the 1,066 rules are almost all written in the same
+conditional–action form (*"A query that X returns Y rather than Z"*), so the two classes the axis
+names may not exist in this corpus as syntactic objects. Axis 3 — schema ambiguity resolved in the
+wrong direction — is untouched and is now the only one of the three that could explain the mechanism.
+Both are recorded as open rather than done; a round that closed one axis and found a second
+unmeasurable has not finished R32.
+
+**Green.** `pnpm eval:feature-overlap` is recomputed from the same committed artefact as §140 and
+§141, writes `poc-feature-overlap.json` beside them, and runs in `pnpm check`. The two new modules —
+`feature-overlap.ts` and `diff-corpus.ts` — are at **100 on all four coverage dimensions**, and
+`diff-corpus.ts` exists because the fourth reading of one artefact was about to acquire its own copy
+of the same four-line construction.
+
 ## What is left, in order (current)
 
 **The covariate question is answered, the mechanism question is open, and the sample is now one dispatch away.** After R26 (channels), R28 (overlap) and
