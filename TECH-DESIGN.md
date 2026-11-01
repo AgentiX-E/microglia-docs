@@ -5065,3 +5065,51 @@ every zero denominator, the admission estimator's two scales, the kNN score's th
 all six gate predicates including the conjunction's borrowed floor, and each of the seven verdicts in both
 directions — including the three that were **vacuous** before a test found them (`every` over an empty
 control, an oracle identity over an empty corpus, and "neither gate cleared" over no gates).
+
+### 17.72 The ledger instrument: a null that holds the pack fixed, and a reliability that decides a prune
+
+`packages/eval/src/ledger.ts`. Four readings over the artefact §146 already paid for, no model call, and
+one design constraint that shapes the rest: **attribution is not exclusive**, so the unit is the injection
+and every statistic is defined on it.
+
+**The dispersion null is the module's whole correctness argument.** `dispersionOf(cases, {permutations,
+seed})` computes `Σ (r_k − n_k p)² / (n_k p (1 − p))` over rules and compares it against a distribution
+produced by permuting the *case-level outcome labels* — repair / break / neither — across questions while
+every rule keeps the question set `packIdList` gave it. Three consequences, all of them tested:
+two rules that are always injected together cannot be separated by any permutation (statistic exactly
+zero, p = 1); a corpus whose flips all sit on one rule produces the maximum statistic; and the empirical p
+is `(1 + exceed) / (1 + permutations)` so a run never reports a resolution it does not have. The count of
+permutations, the null mean and the null's 99th percentile all travel in the artefact, because a p-value
+without its null is not reproducible.
+
+**`replicationOf` spends the split on databases, not questions.** `splitByDatabase` deals 29/29 by a stable
+FNV-1a hash with the id appended, so the deal is a function of the corpus rather than of the order it was
+read in, and R34's split is reused rather than re-derived — the function was generalised to
+`<T extends { dbId: string }>` so both readings share one definition of "the halves". The correlation is
+computed over rules shown at least five times **in each half**; below two common rules it returns `null`
+rather than a number, and the Fisher interval is withheld below four. `reliability` is Spearman–Brown and
+returns `null` when `1 + r ≤ 0`: a ledger whose halves anti-agree does not become reliable by being longer,
+and −0.309 is the value that says so.
+
+**`screeningOf` is the only actionable form and it is tested as such.** Flag = negative net over at least
+ten showings in the discovery half; the confirmation questions are grouped by whether their pack carried
+*any* flagged rule, so a two-rule pack is attributed to the flag without a decomposition the instrument
+cannot do. Both arms are netted per question and the difference is bootstrapped **over databases**:
+`clusteredContrastPp` resamples clusters, skips draws where either arm is empty, and refuses an interval
+below two clusters — the same refusal `clusteredGapOf` and `admissionGainOf` already carry, now in one
+place. A question-level bootstrap on this corpus produces intervals roughly a third as wide as the data
+supports.
+
+**`packSizeOf` exists because the corpus, counted properly, had a structural variable nobody had used.**
+423 of 7,000 questions carry one rule and 6,576 carry two. The cells are reported on their own bases
+(repairable / repaired, breakable / broken) rather than as two rates, and the contrast is the difference of
+the two nets, because the singleton questions are harder and a rate comparison would confound difficulty
+with pack size.
+
+**Coverage, and the four branches it found.** The module is 100% on all four dimensions from 40 tests. It
+started at 86.98% branches, and the missing 13% was four guards whose condition could never be false —
+`pearson`'s small-n check, `perHundred`'s zero-denominator check, `armOf`'s `usable` skip, and every
+cast a `boolean` predicate forced on its callers. Making `usable` a type predicate
+(`entry is LedgerCase & { packIdList: readonly string[] }`) deleted five casts and one dead guard at once;
+`AUDIT` §33.2 records the family. The one genuine gap — the `high < 0` arm of `excludesZero` — needed a
+corpus where the pairs beat the singles, and got a test rather than a comment.

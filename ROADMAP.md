@@ -3483,3 +3483,65 @@ unreachable; P3's tolerance (0.15pp) sat below the sampling error at the smalles
 computed on the corpus rather than on the admitted set; and P7 was written for a positive discovery gain
 and is recorded as refuted for a reason that is not its content. `AUDIT.md` §32 collects them with §31.2
 as one family, and names the one that no amount of arithmetic would have caught.
+
+### R35 — does the store have per-item value? (**registered, run and read** 2026-11-02, with no model call)
+
+**Why.** §149 closed the population and left one product item: the store. Its only operational form is
+**prune** — drop the rules that break, keep the ones that repair — and pruning presupposes that a rule has
+a net value that travels from the questions where it was measured to the questions where it will be shown.
+No round had tested that, and the answer decides whether the store can be maintained at all.
+
+**Design (as registered in `prereg/R35-ledger.md`).** Four readings on the 7,000-question artefact §146
+paid for, 203 rules and 13,578 injections: a χ² dispersion against a null that **permutes outcomes across
+questions** while every rule keeps its question set (the only null that separates a rule's effect from the
+pack it travelled in); a split-half correlation over 29/29 database deals, extrapolated to a full-length
+reliability by Spearman–Brown; an out-of-sample test of a coarse prune flag (negative net, ≥ 10 showings);
+and the pack-size contrast that fell out of counting the corpus. **Cost: zero model calls.**
+
+**Result — the rules differ, and the difference is not theirs.**
+
+| | value |
+|---|---|
+| dispersion χ² (null mean, 99th percentile) | **293.3** (209.6, 280.4), p = **0.0047** |
+| split-half correlation over 135 rules | **−0.134** [−0.296, +0.036] |
+| sign agreement over the 53 rules that moved twice | **49.1%** |
+| Spearman–Brown reliability | **−0.309** |
+| prune flag: 58 rules, 2,545 questions | **−0.55pp** vs −0.49pp, difference **−0.06pp** [−1.97, +1.56] |
+
+The store has real structure — the first this programme has found — and it is an **interaction between a
+rule and a database**, not a quantity attached to the rule. A prune built on the ledger removes rules at
+random; the coarse flag that a deployment could actually run is not a weaker signal but no signal.
+
+**The one variable that moves is not the content.**
+
+| pack | questions | repaired | broken | net |
+|---|---|---|---|---|
+| one rule | 423 | 12.50% (25/200) | 5.38% (12/223) | **+3.07pp** |
+| two rules | 6,576 | 5.94% (162/2,725) | 5.84% (225/3,851) | −0.96pp |
+
+**+4.03pp [+0.76, +6.62]**, clustered by database. Positive on all five artefacts above a thousand
+questions, negative on all twelve 350-question pilots — a split a sample-size explanation predicts exactly,
+since the pilots hold 33–78 singleton questions against 97–423 in a full split. **A lead, not a finding.**
+
+**What it closes.** The fifth and strongest route: a store cannot be improved by editing its items one at
+a time. Two levers remain and both are designs — the **grain** at which memory is written, and the
+**number of items a prompt carries**. R36 is the second, and it is the cheapest arm this programme has
+ever had: one rule per prompt halves the prompt tokens of the run it replaces.
+
+**One process defect.** The registration carries a **Disclosure** section: the direction was chosen after
+an exploratory pass, so P2, P3 and P7 are replications rather than predictions and only P1, P4, P5 and P6
+were blind. `AUDIT.md` §33.1 records the cost; §33.2 records four branches that no input could reach.
+
+### R36 — one rule per prompt, assigned rather than observed (**registered next**, one dispatch)
+
+**The question.** Does the pack-size contrast survive assignment? R35 measures it on questions retrieval
+happened to serve one rule; those questions are harder (47.3% unanswerable by the bare model against
+41.4%), and every 350-question pilot reverses the sign. An arm that sets the pack to one rule on the same
+split, against the bare arm already paid for, separates the mechanism from the corpus.
+
+**Design sketch.** `sota.yml` on the dev split (1,534 questions) with the pack capped at one rule; the
+bare arm is cached, so the cost is one generation per question — about half the prompt tokens of the R25
+run on the same split. Registered outcomes: the exchange rate inside the arm against 0.789, the repair and
+break rates against the 8.10% / 4.59% break-even targets, and the net against the 2.67pp admission
+ceiling. **A null result closes the last lever; a positive one is the first result in this programme that
+a competitor's number could be compared to.**

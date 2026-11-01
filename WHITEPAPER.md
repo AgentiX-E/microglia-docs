@@ -1853,6 +1853,66 @@ breaks, or breaks from 5.82% to **4.59%** at fixed repairs. Nothing this program
 a percentage point of either, and the next claim will be measured against that arithmetic rather than
 against a wash.
 
+### 3.6.30 The store's items have a value, and it is not a value that travels
+
+§3.6.29 closed the population and left the store. The store has exactly one operational form: **prune**
+the rules that break and keep the ones that repair. Pruning presupposes that a rule has a net value which
+travels from the questions where it was measured to the questions where it will be shown, and that had
+never been tested. It is false — and testing it produced the first real structure this project has found
+in its own store, which is worth stating because the structure turns out to be worthless.
+
+**The unit first.** Attribution is not exclusive: a flip is credited to every rule in the prompt, so 7,000
+questions are **13,578 injections** — 349 naming a repaired question, 462 a broken one, against 424 flips.
+Everything below is per injection.
+
+**The rules genuinely differ.** A χ² over per-rule counts, against a null that permutes *outcomes across
+questions* while every rule keeps exactly the questions it was shown on, comes out at **293.3** against a
+null mean of **209.6** and a 99th percentile of **280.4** — p = **0.0047**. The null matters: packs of two
+make rules move together, and a binomial null would have reported the pack structure as heterogeneity.
+
+**And none of it transfers.** Measuring each rule twice on disjoint sets of databases:
+
+| | value |
+|---|---|
+| rules compared (≥ 5 showings in each half) | 135 |
+| correlation of the two measurements | **−0.134** [−0.296, +0.036] |
+| sign agreement over the 53 rules that moved twice | **49.1%** |
+| Spearman–Brown, full length | **−0.309** |
+
+A negative reliability is not the absence of a signal; it is a signal whose second measurement would be
+better inverted. **The store's heterogeneity is an interaction between a rule and a database** — 203 rules
+against 58 schemas, 11,774 cells over 424 flips — not a property of the rule.
+
+**The deployable version fails on its own terms.** A flag a system could actually run — negative net over
+at least ten showings — selects 58 rules covering 2,545 of the 3,770 confirmation questions, and those
+returned **−0.55pp** against **−0.49pp** for the rest. A 0.06pp difference on [−1.97, +1.56] is not a noisy
+ledger; it is no ledger.
+
+**What does move is how many rules the prompt carries.**
+
+| pack | questions | repair | break | net |
+|---|---|---|---|---|
+| one rule | 423 | 12.50% | 5.38% | **+3.07pp** |
+| two rules | 6,576 | 5.94% | 5.84% | −0.96pp |
+
+**+4.03pp [+0.76, +6.62]**, clustered by database. It is reported as a lead rather than a result because
+retrieval assigns pack size — the single-rule questions are harder, 47.3% unanswerable by the bare model
+against 41.4% — and because the same contrast recomputed on every committed artefact is positive on all
+five with more than a thousand questions and negative on all twelve 350-question pilots.
+
+**What this does to the product statement.** It removes the last place a maintenance engineer could look.
+The five negatives now form a closed set:
+
+> The item's content does not decide the sign (§3.6.28), its quantity does not (§3.6.25), the read-time
+> filter realises a sixth of its own ceiling and does not pay (§3.6.28), the population cannot be
+> reselected because the signal that predicts failure predicts instability (§3.6.29), and **the store's
+> items have no per-item value that transfers** (§3.6.30). A store cannot be improved by editing its
+> items one at a time.
+
+Two levers remain, and both are design decisions rather than tuning: **the grain at which memory is
+written**, and **the number of items a prompt carries**. The second one has a number (+4.03pp), a
+condition (it reverses on small corpora), and an experiment that costs less than the run it replaces.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

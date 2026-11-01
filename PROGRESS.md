@@ -8609,9 +8609,92 @@ store: R13's 22 of 100 admitted rules, R15's 24 of 102 with no home database, R3
 traceable to a rule. **The measurement that would send the programme back there with a number now exists, and
 it is 43% away from break-even rather than 21%.**
 
+## 150 — The store's items have no value that travels, and the pack size is the only lever left
+
+**R35 cost no model call and closed the store.** §149 closed the population and left one item on the
+product list: whether the store's *rules* are worth different amounts, which is what any pruning
+intervention presupposes. The answer is that they are different and that the difference does not travel,
+and the round found the first real structure in the store while proving it worthless.
+
+### The unit, before the question
+
+Attribution is not exclusive — a flip is credited to every rule in the prompt — so 7,000 questions are
+**13,578 injections**: 349 naming a repaired question, 462 a broken one, against 424 flips. Every number
+below is per injection, and `store-report.ts` had already written the unit down for the same reason.
+
+### Heterogeneity is real, and the null is the design
+
+| | value |
+|---|---|
+| rules that reached a prompt | 203 |
+| injections | 13,578 |
+| χ² dispersion, repair counts | **293.3** |
+| permutation null: mean / 99th percentile | **209.6** / 280.4 |
+| p | **0.0047** |
+
+The null permutes *outcomes across questions* while every rule keeps exactly the questions it was shown
+on. That is the only null that separates "this rule is different" from "these two rules shared a prompt",
+and it is why the result is a finding rather than an artefact of pack size.
+
+### And it does not replicate, which is the whole story
+
+| | value |
+|---|---|
+| rules compared (≥ 5 showings in each half) | 135 |
+| split-half correlation of per-rule net rate | **−0.134** [−0.296, +0.036] |
+| sign agreement, over the 53 rules that moved twice | **49.1%** |
+| Spearman–Brown, full length | **−0.309** |
+
+A **negative** reliability is not "no signal" — it is a signal whose second measurement would be better
+inverted. So the heterogeneity is an interaction between a rule and a database: 203 rules × 58 schemas is
+11,774 cells over 424 flips, and that is not a table anyone can learn from 7,000 questions.
+
+**The actionable form fails too.** A flag a deployment could actually run — negative net over at least
+ten showings — selects 58 rules covering 2,545 of the 3,770 confirmation questions, and those returned
+**−0.55pp** against **−0.49pp** for the rest: a difference of **−0.06pp** on [−1.97, +1.56]. Not a weaker
+ledger; no signal.
+
+### The one variable that moves is not the content
+
+| pack | questions | repaired | broken | net |
+|---|---|---|---|---|
+| one rule | 423 | 25 / 200 = 12.50% | 12 / 223 = 5.38% | **+3.07pp** |
+| two rules | 6,576 | 162 / 2,725 = 5.94% | 225 / 3,851 = 5.84% | −0.96pp |
+
+**+4.03pp [+0.76, +6.62]**, clustered by database. It is registered as a lead, not a finding, for two
+reasons that are both in the artefact: retrieval assigns pack size (the singleton questions are harder —
+47.3% unanswerable by the bare model against 41.4%), and the same contrast recomputed on every committed
+artefact is negative in **12 of 17**:
+
+| corpus | questions | single-rule questions | difference | interval |
+|---|---|---|---|---|
+| train | 6,999 | 423 | **+4.03pp** | [+0.76, +6.62] |
+| dev, R24 split | 1,534 | 343 | +4.14pp | [+0.83, +6.28] |
+| dev, R25 dose | 1,534 | 401 | +3.13pp | [+0.62, +5.23] |
+| dev, R26 channels | 1,534 | 380 | +0.62pp | [−1.74, +2.95] |
+| dev | 1,534 | 97 | +0.36pp | [−2.40, +3.45] |
+| twelve 350-question pilots | 350 each | 33–78 | −1.55 to −13.98pp | 3 of 12 exclude zero, negatively |
+
+Every artefact above a thousand questions is positive, every pilot is negative, and the split is what a
+**sample-size** explanation predicts exactly: the pilots hold 33–78 singleton questions, the full splits
+97–423. Three pilot intervals do exclude zero in the negative direction, which is why this stays a lead
+rather than being dismissed.
+
+### What it changes
+
+Four routes had been closed while holding the corpus fixed. This is the fifth, and it is the strongest
+form the negative has taken: **a rule has no per-item value that transfers, so a store cannot be improved
+by editing its items one at a time.** Two levers remain and both are designs — the **grain** at which
+memory is written, and the **number of items a prompt carries**. R36 is the second one, and it is cheap:
+the arm assigns pack size instead of observing it, and one rule per prompt halves the prompt tokens of
+the run it replaces.
+
+Sealed by 2,572 tests (40 new), four coverage dimensions at 99.98 / 99.66 / 100 / 99.98 with the new
+module at 100% on all four, 24 new CI assertions, and three gates (`V59`–`V61`).
+
 ## What is left, in order (current)
 
-**Every question this page has been organised around is now answered, and §149 answered the last one without a model call.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), the gate's benefit shrinks to half while the product stops paying (§147), the check is differential and cannot stand alone (§148), and the question §148 left open — whether a *weaker injection* exists — turned out to be the wrong question: the memory is 43% short of break-even, and the half that could have been rescued, the population, cannot be selected by anything measurable before generation (§149). **Nothing ships, and the reason is now four-layered rather than one.** What is left is one blocked measurement, one research direction, and eight mechanical or blocked items.
+**Every question this page has been organised around is now answered, and §150 answered the last one without a model call.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), the gate's benefit shrinks to half while the product stops paying (§147), the check is differential and cannot stand alone (§148), and the question §148 left open — whether a *weaker injection* exists — turned out to be the wrong question: the memory is 43% short of break-even, and the half that could have been rescued, the population, cannot be selected by anything measurable before generation (§149). **Nothing ships, and the reason is now five-layered rather than one.** §150 added the fifth layer and it is the strongest: the store's items have no per-item value that transfers, so the store cannot be pruned by evidence either. What is left is one arm that would settle the only positive lead, one blocked measurement, and eight mechanical or blocked items.
 
 | # | Item | State | Blocks |
 |---|---|---|---|
@@ -8624,7 +8707,7 @@ it is 43% away from break-even rather than 21%.**
 | 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |
 | 8 | **S1a — ambiguity on public annotations** | unblocked and unbuilt. §146 makes it *less* urgent than §145 thought: ambiguity was refuted as the mechanism, so this is now a product feature rather than an explanation | — |
 | 9 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 10 | **S3 — the SOTA push** | entry condition restated again by §149, and for the third time narrowed: not "does the mechanism help", not "does an injection exist", but "can the store be made to repair 8.10% instead of 6.39%, or to break 4.59% instead of 5.82%". Every route that keeps the store fixed is now measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149) | a registration that targets the store, which is a different programme from this one |
+| 10 | **S3 — the SOTA push** | entry condition restated by §150, and for the fourth time narrowed: not "does the mechanism help", not "does an injection exist", not "can the store be pruned", but **"does one rule per prompt exchange better than two when pack size is assigned rather than observed"**. Five routes that keep the corpus fixed are now measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149), the store's items (§150) | **R36** — one dispatch with the pack set to a single rule, which halves prompt tokens |
 | 11 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 12 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
@@ -8634,6 +8717,8 @@ turned the negative into an arithmetic bound: the filter's ceiling on this corpu
 last open shape without a model call, by pointing the rule at one query instead of at a difference: it flags
 94.8% of everything, its Youden index is a quarter of the anchored filter's, and the only thing it does
 measurably well is detect what the pack does (5.8% of clean questions acquire an imported name). **So the
-critical path is no longer a decision — and it is no longer even a registration.** Item 10's entry condition is now a statement about the store, and the store has been the ceiling since R13: 22 of 100 admitted rules, 24 of 102 with no home database, and 19.5% of flagged names traceable to a rule. That is a different research programme, not the next iteration of this one, and starting it by pretending it is R35 would be the same error R33 made about shape 3. Items 4–5 are registered work that changes no claim. Three items wait on a decision (6, 10, 11), two on an artefact that does not exist (7, 9), one on a toolchain (12). **Nothing on this page is waiting on an idea, and nothing is waiting on compute except item 4.**
+critical path is no longer a decision — and it is no longer even a registration.** Item 10's entry condition is now a statement about the store, and the store has been the ceiling since R13: 22 of 100 admitted rules, 24 of 102 with no home database, and 19.5% of flagged names traceable to a rule. That is a different research programme, not the next iteration of this one, and starting it by pretending it is R35 would be the same error R33 made about shape 3. Items 4–5 are registered work that changes no claim. Three items wait on a decision (6, 10, 11), two on an artefact that does not exist (7, 9), one on a toolchain (12). **Nothing on this page is waiting on an idea, and nothing is waiting on compute except items 4 and 10.**
+
+**And §150 removed the item that was supposed to be next.** The critical path after §149 was "target the store"; the store turned out to be unprunable by evidence, and what survives is not a store question at all but a **usage** question — how many rules a prompt carries — with one number in its favour (+4.03pp [+0.76, +6.62] on 7,000 questions) and one condition against it (negative on every 350-question pilot, so its sign tracks the corpus). That is exactly the shape of question an arm answers and no further reading of committed artefacts can.
 
 **One thing this list no longer contains, and it should be said plainly.** For twenty rounds the plan was "measure the mechanism, then scale it". The mechanism has now been measured, out of sample, and it is a cost: memory makes the product worse, the filter makes it no worse, and the combination is a wash. Every item above is downstream of accepting that, including the ones marked "mechanical".

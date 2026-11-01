@@ -1867,3 +1867,67 @@ all four are statements about a *corpus* rather than computations over one. The 
 what they were built to catch — `V55`–`V58` confirm the corpus, the split, the oracle identities and the
 control — and none of them could see a sentence in a markdown file that no code reads. The registration is
 the only artefact in this repository with no test, and it is the one that has now failed four times.
+
+## 33. Addendum — the first registration written after the data, and four branches no input could reach (2026-11-02)
+
+R35 asked whether a stored rule has a value, and answered no. It also produced the first registration in
+this programme that was **not** written blind, and four dead branches that only a coverage run could find.
+Both are recorded because both are process defects rather than findings.
+
+### 33.1 The disclosure, and what it costs
+
+`prereg/R35-ledger.md` carries a **Disclosure** section that no earlier registration needed, and it is
+there because the round's direction was chosen after an exploratory pass over the corpus:
+
+| what was computed before the file existed | what it produced |
+|---|---|
+| pack-size distribution and per-size flip rates | P7's table, and the direction of the round |
+| home-database versus foreign-database flip rates | nothing — dropped, and not registered |
+| the χ² dispersion statistic | P2 |
+| one split-half correlation, under one particular hash split | P3's bar |
+
+**P2, P3 and P7 are therefore replications, not predictions**, and the honest count of blind tests in the
+file is four: P1, P4, P5 and P6. The one that matters is **P5** — the out-of-sample behaviour of a coarse
+prune flag — because it is the only actionable form of the question and nothing about it had been
+computed before the file was committed.
+
+The cost is that this round cannot claim a surprise. The value is that the confirmatory half of the split
+was not consulted for P5, and the flag failed there on a 0.06pp difference whose interval is
+[−1.97, +1.56] — a result that would have been recorded whichever way it came out.
+
+**The rule this leaves behind.** An exploratory pass is legitimate; an exploratory pass reported as a
+preregistration is not. From R36, either the file is written before the first number is computed, or it
+carries this section. The programme has now spent four registrations on thresholds that were wrong before
+the data (AUDIT §31.2, §32.1) and one on a direction that was not blind; the failure mode has moved from
+arithmetic to provenance, which is progress of a sort.
+
+### 33.2 Four branches no input could reach
+
+`ledger.ts` shipped at 100% statements and lines and **86.98%** branches on its first full run. The
+missing 13% was not untested behaviour — it was four guards whose condition could never be false, and each
+one had been written as if it were protecting something:
+
+| guard | why it could never fire | what replaced it |
+|---|---|---|
+| `pearson`: `if (n < 2) return null` | the only caller requires two pairs or returns before calling | deleted |
+| `perHundred`: `whole === 0 ? null : …` | both callers test for the empty case before calling | deleted; the helper returns a number |
+| `armOf`: `if (!usable(entry)) continue` | both call sites filter with the same predicate first | the parameter type became the filtered type |
+| `usable()` returning `boolean` and every caller casting | a type guard removes the cast and the guard together | `entry is LedgerCase & { packIdList: readonly string[] }` |
+
+The last one is the general lesson: **a predicate written as `boolean` forces every caller to re-check or
+to cast, and both of those are branches that do not exist.** Making `usable` a type guard deleted five
+casts and one dead guard at once. The remaining 1.6% was a genuine gap — the `high < 0` arm of
+`excludesZero`, which needed a corpus where the pairs beat the singles — and it was closed with a test
+rather than with a comment.
+
+### 33.3 What the gates caught, and what they structurally cannot
+
+`V59`–`V61` confirm the corpus (7,000 questions, 58 databases, 203 rules, 13,578 injections), the split
+(29 databases each, 3,230 + 3,770 = 7,000) and the family (17 artefacts, every row with a sign). The 24
+workflow assertions confirm every number the round reports, including the ones that make it negative.
+
+What they cannot catch is the thing this round turned on: **whether the contrast is a mechanism or a
+corpus effect.** No assertion over a committed artefact can answer that, because the answer depends on
+which questions a retrieval threshold happened to serve one rule — a fact the artefact records but does
+not control. That is why the pack-size result is registered as a lead and why the next step is an arm
+rather than another reading.

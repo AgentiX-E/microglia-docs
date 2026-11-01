@@ -851,3 +851,57 @@ the table does not is a **break-even arithmetic** (repairs ≥ 8.10% at fixed br
 repairs) derived from its own corpus and falsifiable by anyone who builds a better store: **80/100 rules never
 earn admission (R13), 24 of 102 have no database to apply to (R15), and the target those failures have to clear
 is now a number rather than a wash.**
+
+## Appendix F — the item-level ledger: the mechanism every self-improving-context system ships, tested on a store it was not built for (2026-11-02)
+
+**The leaderboard did not move.** AskData remains SOTA at **83.40 test / 78.49 dev**; microglia's no-memory
+cell is **57.63 dev** on the same split, a 20.86pp gap that is a generator-and-pool difference (§2) rather
+than a memory effect, and it is **not ranked**. What R35 tests is not a leaderboard number but the
+maintenance mechanism that the strongest recent self-improving-context systems depend on.
+
+### The contrast that matters
+
+| system | how it decides an item's fate | what this round measured on microglia's store |
+|---|---|---|
+| **ACE** (Zhang et al., 2025, arXiv:2510.04618) | each bullet carries `helpful` / `harmful` counters annotated during generation; the curator prunes on them ("`harmful_count=5, helpful_count=1` → remove") and ranks retrieval by them | the same quantity, measured the strict way — paired counterfactual flips rather than self-reported tags — has a **split-half reliability of −0.31** and a coarse flag with **−0.06pp** out-of-sample discrimination [−1.97, +1.56] |
+| **Dynamic Cheatsheet** (Suzuki et al., 2025) | append-only memory of strategies, retrieved by similarity, no per-item scoring | not testable here: the artefact records packs, not the cheatsheet's retrieval rank |
+| **SKR** (Wang et al., 2023) | decides whether to retrieve at all, per question | measured in R34 and refuted for this store: 62.4% precision, **−0.05pp** (§149) |
+| **Self-RAG / CRAG / SIM-RAG** | reflection tokens or a trained critic score each retrieved passage | not testable: needs training, and this project's constraint is a headless SDK with no fine-tuning |
+| **ExpeL / Agent Workflow Memory** | distill insights and keep them; pruning, where it happens, is by similarity de-duplication rather than by measured effect | de-duplication is orthogonal — this round's question is whether *effect* can be measured at all, and the answer is that it cannot be, at this corpus size, in this store |
+
+**Why the same mechanism is load-bearing there and absent here, stated as a difference in the signal
+rather than in the system.** ACE's counter is assigned on the trajectory that produced it: the model marks
+the bullets *it used* as helpful or harmful while solving that task, in one distribution, one episode. This
+round's ledger is the stronger version of the same idea — it compares two generations on the same question
+with and without the pack — and even that version **does not survive a change of database**. If the strict
+instrument fails, the self-reported one has no reason to do better, and that is a claim anyone can check
+against their own counters: split the corpus by schema and correlate the two halves.
+
+### The one place the literature predicts what this round found
+
+The pack-size result — one rule **+3.07pp**, two rules **−0.96pp**, **+4.03pp [+0.76, +6.62]** — is the
+memory-side counterpart of in-context learning saturation: attention dilution as demonstrations grow
+(Zhou et al.), the "ICL paradox" where more demonstrations make a model less attentive to the query
+(Elazar et al.), and order/selection sensitivity large enough to swing accuracy between near-SOTA and near
+chance (Lu et al., 2022). Those papers ask how many *examples* to show; this round asks how many *rules*
+to show, in a setting where the rules are retrieved rather than sampled, and gets a difference of the same
+sign and a similar order of magnitude.
+
+**What is not claimed.** The contrast is observed, not assigned: retrieval served one rule to questions
+that are harder (47.3% unanswerable by the bare model against 41.4%), and every 350-question pilot in this
+repository reverses the sign. The literature predicts the direction; it does not settle whether the size
+survives randomisation. That is R36's arm, and it is the first experiment in this programme whose result a
+competitor's number could be put beside directly.
+
+### Where microglia stands, as a rank rather than a vibe
+
+- **On the BIRD leaderboard: not ranked.** 57.63 dev against AskData's 78.49 dev on the same split; the
+  gap is the generator and the pool, and no memory result in this repository closes it.
+- **On the memory-mechanism axis: the only entry whose published numbers are negative out of sample**
+  (−0.71pp, §146) and whose best selective-retrieval gate is indistinguishable from zero (+0.11pp of a
+  2.67pp ceiling, §149), and whose per-item ledger has a **negative reliability** (§150).
+- **What it has that the table does not:** the reliability test itself. A system that prunes on item
+  counters can run the same split-half check in an afternoon — deal the databases in two, correlate the two
+  ledgers, and apply Spearman–Brown. If the number comes back near zero, the pruning is decoration; if it
+  comes back high, this round's negative is a property of *this* store rather than of the method, and the
+  difference between the two is what a benchmark of memory quality should be measuring.
