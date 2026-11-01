@@ -4860,3 +4860,53 @@ The measured gap is −11.13pp ±7.61 with a clustered interval that excludes ze
 deliberately looser grounding rule gives −10.78pp ±8.37. Both clear; the refutation does not fire. What remains
 unconfirmed is not the separation but its **size out of sample**: the gate's +1.30pp was chosen by looking at the
 same 1,534 questions, and R30 stage 2 is the sample that can say whether it survives.
+
+### 17.68 An explanation is not a mechanism, and the difference costs one substring test
+
+§17.67 admitted a covariate that is post-treatment but not post-outcome, and §140 installed one: *a query that
+imports an ungrounded name is damaged*. A covariate answers *what predicts the sign*. It does not answer *why*, and
+this record has been careless about the distance between the two — an explanation that predicts is not a mechanism,
+and the product statement §140 drew from it ("a rule may not put a name into the query the question does not
+contain") is a claim about a cause.
+
+**The space is small enough to enumerate.** A name that is in the generated query and in neither the question nor
+the baseline query came from exactly one of three places:
+
+| source | how it is decided | what it implies |
+|---|---|---|
+| the pack's text | the rendered rule text contains it | a rule named the column; a write-path filter can refuse it |
+| the schema | it is not in the pack, and the query executed | the model took a real column out of the DDL; no write-path filter can see it |
+| neither | it is not in the pack, and the query did not execute | unverifiable — a failed statement may have named a real column and failed on something else |
+
+The first row is decided by a substring test, the second by a column of the record (`execOk`) that exists for a
+different reason, and the third is what is left. All three are exhaustive, none of them needs a model call, and the
+question "is the filter aimed at the right object" is answered by comparing the first two.
+
+**Result.** 60 pack-supplied against 94 schema-supplied, damaged identically (−8.33pp against −9.57pp, gap 1.24pp
+with a 14.74pp half-width), so the cause is not the pack naming anything. The generic form: **a post-treatment
+covariate's mechanism is a separate question, it is usually answerable from what the pipeline already records, and
+answering it can withdraw a product statement that the covariate alone licensed.**
+
+**Why the decomposition is exact.** A gate that discards a set of questions and falls back to the no-memory query
+changes the paired delta by exactly `−Σ signed(discarded) / n`, because the fallback outcome is a column rather
+than a prediction. That makes the improvement *additive over any partition of the discarded set*, so the buckets
+the mediation already computes can be priced: +0.33pp from pack-supplied questions, +0.59pp from schema-supplied,
++0.07pp from unverifiable. No second analysis and no bootstrap — the accounting is a column sum, and a test
+asserts it against the full `cellOf` it is an identity of.
+
+**Two conventions the round needed and wrote down.**
+
+- *Permutation without replacement.* The null for "does the gate's placement matter" redraws which questions are
+  discarded, keeping the number fixed. Drawing with replacement would let one question be picked twice, which
+  makes the null describe a *smaller* subset than the gate discards — a wider null, and a p-value that flatters
+  the gate. Partial Fisher–Yates over an index array, seeded.
+- *The null is not centred on zero.* Discarding a random 10% of a corpus whose own mean outcome is +0.33pp still
+  removes 10% of that mean, so the null's centre is **−0.03pp** — the corpus average scaled by the discard share,
+  with the sign flipped because the improvement is the negative of what is removed. A test that asserted a
+  zero-centred null would fail on a correct permutation and pass on a broken one.
+
+**What the split-half is for, and what it is not.** Balancing the eleven databases by question count and reading
+the gate's improvement in each half tests whether the effect survives a different mixture of the same material. It
+cannot test reproduction, because both halves were in the corpus the hypothesis was formed on — and the artefact
+carries that sentence in an `unmeasured` block rather than trusting a reader to supply it. The distinction is the
+whole difference between §140's estimate and R30 stage 2.

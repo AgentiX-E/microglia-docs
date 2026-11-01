@@ -3172,3 +3172,130 @@ implementable at write time*, which is a real answer and would end the write-pat
 
 **Sequencing.** R31 is offline except for one store rebuild, so it runs in parallel with R30 stage 2's data check;
 neither blocks the other.
+
+### R31 — withdrawn before it was run, on its own premise (2026-11-01)
+
+R31 registered a store rebuild: add `names` to `LearnedItem`, validate it against the schema, re-measure the
+admission filter. The premise was that the representation loses the names 928 of 1,066 rules never spell out, and
+that a field which carried them would make the write-path filter work.
+
+The premise is answerable from the record that already exists, at zero calls, because §140's corpus stores the
+rendered text of every rule that reached the prompt. Two readings were taken of it (`PROGRESS.md` §141): the
+three-way attribution in §R31-precondition and the gate's fragility in §R31-stability. The first one closes R31.
+
+**The attribution.** Every one of the 155 importing questions is placed in exactly one bucket: the pack's text
+names the identifier, it does not and the query executed (so the name is a real column the model took from the
+DDL), or it does not and the query never ran.
+
+| bucket | questions | Δ vs no memory | already-correct queries destroyed |
+|---|---|---|---|
+| the pack names it | 60 (38.7%) | −8.33pp | 36.36% |
+| the pack does not, and the query ran | 94 (60.6%) | −9.57pp | 34.04% |
+| the pack does not, and the query never ran | 1 (0.6%) | — | — |
+
+**The two buckets are damaged by the same amount** — 1.24pp apart, against a 14.74pp half-width — so a question a
+rule named a column for is not more damaged than one it named nothing for. The gate's own +0.98pp decomposes
+0.33 / 0.59 / 0.07 across the three buckets: **a third of what the read-time filter recovers comes from questions
+the pack named, and 60% from questions it never named.**
+
+**Why that ends the write-path line rather than delaying it.** A `names` field improves the *resolution* of a
+filter whose *targeting* is wrong. Even at perfect coverage it would refuse rules that are no more harmful than
+the rules it keeps, and the only pre-generation test in this record already measured that version at +2.86pp with
+the wrong sign (precision 13.0%, recall 32.3%, §140). Two independent measurements, one about coverage and one
+about sign, now say the same thing: **the write-path filter has no target.**
+
+**What the withdrawal is not.** It is not a claim that the distiller cannot name a column — it surely can. It is
+the claim that naming it does not identify the damage, which is a statement about the mechanism and not about the
+representation. R32 registers the question that replaces it.
+
+**Cost avoided.** One `sota.yml` dispatch (~1,900 calls) and a contract change across the distillation path.
+
+### R31-precondition — where the imported name came from (**read** 2026-11-01, from the committed record)
+
+Not a dispatch: a reading of `poc-sota-bird-dev-R26-channels.json`, which carries the pack text per question and
+the query it produced. `pnpm eval:mediation` reproduces it and the workflow asserts every number below.
+
+**Predictions, written before the numbers were read.**
+
+1. `M1` the pack's text supplies the identifier in at least 30% of the 155 flagged questions;
+2. `M2` it supplies it in at least 60% once spelling differences are forgiven;
+3. `M3` the pack-named bucket is damaged more than the schema bucket, and the gap clears its own half-width;
+4. `M4` the pack-named bucket carries at least half of what the gate buys.
+
+**Result.** M1 passes (38.7% exact; 79 of 285 names), M2 fails (52.3%), **M3 fails**, M4 fails (33.3%). The
+product statement §140 licensed — *a rule may not put a name into the query the question does not contain* — is
+**withdrawn**, and what replaces it is narrower and true: *a generated query that names something neither the
+question nor the pack mentions should not be executed as written.*
+
+**Disclosure.** M3 was first written as a point comparison (`36.36% > 34.04%`) and passed. The same run printed
+the gap's interval, which is twelve times the gap, so the criterion was tightened to require resolution **before
+the verdict was accepted**, and it then failed. The tightening is recorded because it changed the answer, in
+`AUDIT.md` §27. A criterion that is loosened after a result is not a criterion; one that is tightened after a
+result is also a decision, and it is only defensible if it is written down.
+
+**Refutation.** Nothing in the reading is a claim about the world beyond this corpus: the buckets are exhaustive
+by construction, the detectors' two biases point in opposite directions and are both reported, and the 60/94 split
+is a property of these 11 databases. R30 stage 2 must reproduce it on a second mixture.
+
+### R31-stability — is the gate's estimate a property of the gate? (**read** 2026-11-01)
+
+Three readings of the same estimate, all offline: leave-one-database-out, a permutation null of random discards
+of the same size (5,000 draws, without replacement), and a split by database balanced on question count.
+
+| reading | result |
+|---|---|
+| leave-one-out | +0.77pp to +1.25pp over 11 databases; never zero or below |
+| permutation | observed +0.98pp against a null of −0.04pp [−0.46, 0.39]; p = 0.0002 |
+| split-half | A +0.76pp (n=794, 77 discarded), B +1.22pp (n=740, 78 discarded) |
+
+All three pass. **This is a stability check and not an out-of-sample test:** both halves were in the corpus the
+hypothesis was formed on, so the shrinkage an unseen sample would show is still unmeasured. R30 stage 2 remains
+the only reading that can measure it, and it is now the single item on the critical path.
+
+### R32 — if the damage is not lexical, what is it? (**registered** 2026-11-01)
+
+**Why.** §R31-precondition leaves one mechanism standing: the pack changes what the model writes, and the imported
+name is the symptom of that change, not its cause. Sixty percent of the damage happens where the pack said nothing
+about the column. Everything this record has measured about the pack so far has been about its *content* —
+relevance, overlap, embedding similarity, channel, names. None of those is the axis, and the axis is now visible
+in the query diff: the pack's edited queries are classifiable, and the classes have very different effects.
+
+**The observation that registers it.** From §140's own table, the corpus's edited queries split by effect, and the
+split is not what a "the pack adds noise" story predicts:
+
+| what the pack did to the query | n | Δ vs no memory |
+|---|---|---|
+| added a narrowing condition | 103 | **+6.80pp** |
+| widened the query | 108 | **+4.63pp** |
+| reshaped it both ways | 58 | **+12.07pp** |
+| rewrote it with no direction | 345 | +0.00pp |
+| imported an ungrounded name | 155 | **−9.68pp** |
+
+Structural edits help; the loss is concentrated where a name appears. So the question is what makes a generated
+query *reach* for a name the question did not supply, and there are three candidates the record can separate
+without a new dispatch:
+
+1. **the rule is procedural rather than declarative** — it tells the model how to build the query rather than
+   what the answer depends on, and a procedural rule can change the plan without naming anything;
+2. **the pack changed the table set** — F4 (a table added) is −10.39pp over 77 questions at p = 0.0499, which is
+   the next-closest feature to resolution and overlaps the imported-name bucket only partly;
+3. **the question is one the schema can answer two ways** — an ambiguity the pack resolves in the wrong direction.
+
+**Predictions.**
+
+1. **The procedural/declarative split separates at least as well as the imported-name split** (|gap| > its own
+   half-width), because a rule that says "always cast before comparing" changes the shape of every query it
+   touches and the ledger shows shape changes are where the variance is.
+2. **The table-set feature and the imported-name feature overlap by less than half** (`both / importing < 0.5`),
+   which is what makes them different questions rather than one question measured twice.
+3. **Within the pack-named bucket, the procedural rules are the damaged ones** — if the pack's names were the
+   mechanism, the declarative rules that name a column would be the harmful ones, and the mediation says they
+   are not.
+
+**Refutation.** If no feature separates, the honest conclusion is that this corpus cannot attribute the damage to
+anything in the pack, and the product statement narrows to the read-time check with no account of its cause —
+which is a usable product and an incomplete science, and would be reported as both.
+
+**Cost.** Zero calls: all three are classifications over `per_case` and `items`, which are already committed.
+
+**Sequencing.** R32 is offline and independent of R30 stage 2, which remains the next dispatch.

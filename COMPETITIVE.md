@@ -94,8 +94,9 @@ reproduction, and a genuine reproduction needs the dev split (recorded as R8.3b)
 | R³-SQL | **competitor** | undisclosed | — | multi | 75.03 (dev) | +21.51 |
 | Databricks RLVR-32B | **competitor** | Qwen2.5-Coder-32B, RL-trained | — | 1 / 7 | 73.56 single, 75.68 (7-SC) test | +20.04 |
 | Gemini-SQL2 | **competitor** | Gemini 3.1 Pro | — | many | 80.04 (test) | +26.52 |
-| GrainSQL | **competitor** | undisclosed | — | — | 82.95 (test) | +29.43 |
-| Human (data engineers) | ceiling | — | — | — | 92.96 | +39.44 |
+| AskData (AT&T CDO / DSAIR) | **competitor, current SOTA** | GPT-4o + proprietary pipeline | — | — | **83.40 (test), 78.49 (dev)** | +29.88 / +20.86 |
+| GrainSQL | **competitor** | undisclosed | — | — | 82.95 (test), 77.77 (dev) | +29.43 / +20.14 |
+| Human (data engineers) | ceiling | — | — | — | 92.96 (dev) | +39.44 |
 
 **Correction (2026-11-01, §139).** An earlier revision of this table carried one row for this project,
 annotated `1 (+ memory pack)`, quoting **57.63**. That number is the **no-memory** cell: `compareCell` reads
@@ -537,7 +538,7 @@ own 24.86pp deficit and moves the remaining work to the candidate pool, the sele
 | CAPER 84.53 / 90.60 / +0.7–1.6 | arXiv 2606.03327 | medium |
 | AgentSM 44.8 / 57.6 / −25% / −35% | arXiv 2601.15709 | medium |
 | R³-SQL 75.03 dev | arXiv 2604.25325 | medium (preprint, unsigned review) |
-| BIRD leaderboard rows (82.95 GrainSQL, 80.04 Gemini-SQL2, 92.96 human, 67.41 no-evidence) | bird-bench.github.io, read 2026-10-29 | medium (leaderboards move; the 67.41 threshold is the benchmark's own statement) |
+| BIRD leaderboard rows (83.40 AskData, 82.95 GrainSQL, 80.04 Gemini-SQL2, 92.96 human, 67.41 no-evidence) | bird-bench.github.io, read 2026-11-01; the same rows read 2026-10-29 carried 82.95 as the top | medium (leaderboards move — they moved by 0.45pp in the three days between the two reads, and the 67.41 threshold is the benchmark's own statement) |
 | Spider 2.0 59% / 38–45% / 40%; 21.3% at launch | secondary round-ups | **low — not independently verified here** |
 | BIRD 52.8% / Spider 2.0-Snow 66.1% annotation errors | secondary summary of a CIDR/VLDB 2026 audit | **low — primary not read** |
 | Mem0 fact extraction, dedupe and retrieval | arXiv 2504.19413, mechanism section; our baseline reimplements it | medium — mechanism from the paper, baseline ours |
@@ -729,18 +730,19 @@ an omission.**
 
 | position | system | BIRD EX | split | vs ours (dev, no memory) |
 |---|---|---|---|---|
-| 1 | GrainSQL | **82.95** | test | +25.32 |
-| 2 | Gemini-SQL2 | 80.04 | test | +22.41 |
-| 3 | Databricks RLVR-32B (7-SC) | 75.68 | test | +18.05 |
-| 4 | R³-SQL | 75.03 | dev | **+17.40** |
-| 5 | XiYan-SQL (full) | 71.58 / 75.63 | dev / test | +13.95 / +18.00 |
-| 6 | CHASE-SQL | 73.01 / 73.0 | dev / test | +15.38 / +15.37 |
+| 1 | AskData (AT&T CDO / DSAIR) | **83.40** | test | +25.77 |
+| 2 | GrainSQL | 82.95 | test | +25.32 |
+| 3 | Gemini-SQL2 | 80.04 | test | +22.41 |
+| 4 | Databricks RLVR-32B (7-SC) | 75.68 | test | +18.05 |
+| 5 | R³-SQL | 75.03 | dev | **+17.40** |
+| 6 | XiYan-SQL (full) | 71.58 / 75.63 | dev / test | +13.95 / +18.00 |
+| 7 | CHASE-SQL | 73.01 / 73.0 | dev / test | +15.38 / +15.37 |
 | — | XiYan-SQL, same generator as ours | 53.52 | dev | −4.11 |
 | — | **microglia, no memory** | **57.63** | dev | — |
 | — | **microglia, memory arm** | **56.26** | dev | −1.37 |
 | — | Human (data engineers) | 92.96 | test | +35.33 |
 
-**We are not on the leaderboard and this round does not put us there.** The gap to the leader is 25.32pp and §2
+**We are not on the leaderboard and this round does not put us there.** The gap to the leader is 25.77pp and §2
 prices it as a generator-and-pool difference: XiYan's own ablation puts its fine-tuned generator at −2.91 and its
 selection model at −2.74, neither of which this harness can buy without weights or a GPU. What we hold is the
 control row — +4.11pp over the same model on the same split with a better harness — and R30 changes nothing about
@@ -769,3 +771,45 @@ larger candidate pool: 13.95pp of headroom that this harness has already failed 
 memory line is 6,600 paired questions**, which is R30 stage 2, and the largest number it could establish is about
 1pp. Those are the only two moves on the board, and this round made the second one cheaper by giving it something
 specific to confirm.
+
+## Appendix D — R31: the leaderboard moved, and the literature's mechanism got a second test (2026-11-01)
+
+**The leaderboard moved and it is not us.** Read 2026-11-01: **AskData (AT&T CDO / DSAIR) is the current SOTA at
+83.40 test / 78.49 dev**, displacing GrainSQL (82.95 / 77.77) to second. Human performance is 92.96 dev. Our
+no-memory cell is **57.63 dev**, so the honest same-split gap is **20.86pp** (dev-to-dev against AskData), and the
+cross-split figure this document quotes elsewhere is 25.77pp. Both are stated because they answer different
+questions and only one of them is a comparison.
+
+| | BIRD test | BIRD dev | dev gap to us |
+|---|---|---|---|
+| AskData (SOTA) | **83.40** | 78.49 | **+20.86** |
+| GrainSQL | 82.95 | 77.77 | +20.14 |
+| DataGallery-Text2SQL | 82.39 | 78.10 | +20.47 |
+| microglia, no memory | — | **57.63** | — |
+
+**Nothing in this round moves that, and the round is still the most useful one in the memory line.** The gap is a
+generator-and-pool difference (§2) and a memory mechanism worth +0.98pp on a 1,534-question dev split does not
+address it. What the round does is retire a claim that would otherwise have been sold as a product feature.
+
+**Against the literature, this round converts one borrowed explanation into a measurement — and it corrects it.**
+The paper closest to our finding is the experience-following study (Xiong et al., arXiv 2505.16067, 2025): agents
+reproduce the *output* of a similar retrieved record, so a bad record propagates, `add-all` is worse than no memory,
+and selective addition plus deletion buys ~10% absolute. Three of its claims are now testable on our ledger:
+
+| their statement | our measurement |
+|---|---|
+| high input similarity to a stored record produces high output similarity, and the output is what propagates | **confirmed in the direction they predict and refuted in the mechanism they imply.** The damaged queries reproduce a *shape*: 60.6% of them name a column no rule mentioned, taken from the same DDL the baseline saw |
+| `add-all` is worse than no addition | **reproduced**: memory arm 56.26 against no-memory 57.63 on dev (−1.37pp) |
+| selective addition + deletion recovers ~10pp absolute | **not the same experiment, and ours is smaller**: the read-time filter is worth +0.98pp in-sample and +0.77 to +1.25pp across leave-one-out, which is two orders of magnitude less than their corpus allows because our corpus is one task, not three agents |
+
+**The competitive asset this round adds is a negative result about a fix everyone would try.** Every framework that
+ships a memory store has the same obvious improvement available: ask the distiller to record the schema names each
+rule depends on, then refuse rules that name something the request did not. That is what R31 registered. It cannot
+work here, and the record now says why with two independent measurements — the names are absent from the pack's own
+text in 60.6% of the damaged questions, and the pre-generation version of the filter measured +2.86pp with the
+**wrong sign** (precision 13.0%, recall 32.3%, §140). **A competitor who ships that filter ships a regression**,
+and we can say so without having run it.
+
+**What we still cannot claim.** Any position on the leaderboard, any statement about memory mechanisms outside
+text-to-SQL, and any out-of-sample number for the read-time gate — the last of which is R30 stage 2 and remains the
+only reading on the critical path.

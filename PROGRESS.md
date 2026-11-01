@@ -7712,6 +7712,87 @@ testable: *a rule may not put a name into the query that the question does not c
 decides whether that is a result is whether it reproduces at n ≈ 6,600, which is R30 stage 2 and the only
 remaining item on the critical path.
 
+## 141. The pack does not put the name there, and the gate does not depend on one database
+
+**The question this round answers was not on the list, and it retires an item that was.** R31 registered a store
+rebuild — a `names` field on `LearnedItem` — on the premise that the representation loses the identifiers 928 of
+1,066 rules never spell out. That premise is answerable from the record that already exists, because the lane
+stores the rendered text of every rule that reached the prompt: if the pack's text does not contain the name, a
+field that names it more precisely cannot change anything.
+
+**The attribution, in three buckets that are exhaustive by construction.** Every one of the 155 questions §140
+flags is placed in exactly one: the pack names the identifier; it does not and the query executed, which is what
+licenses calling the name real — a statement that ran cannot have named a column its table does not have; or it
+does not and the query never ran, which is *unverifiable* rather than *invented*, because a failed statement may
+have named a real column and failed on a date format.
+
+| bucket | questions | Δ vs no memory | already-correct queries destroyed | baseline accuracy |
+|---|---|---|---|---|
+| the pack names the identifier | 60 (38.7%) | −8.33pp | 36.36% | 36.7% |
+| the pack does not, and the query ran | 94 (60.6%) | −9.57pp | 34.04% | 50.0% |
+| the pack does not, and the query never ran | 1 (0.6%) | — | — | 100.0% |
+
+**The two buckets are damaged by the same amount.** The gap is **1.24pp against its own 14.74pp half-width**, and
+the point estimate runs *opposite* to the hypothesis: the questions a rule named a column for are the *less*
+damaged ones. Per name the picture is the same and slightly worse: 79 of 285 imported names are spelled out by a
+rule (27.7%), and forgiving every spelling difference reaches 101 (35.4%).
+
+**What that does to §140's product statement.** It is withdrawn. *A rule may not put a name into the query that
+the question does not contain* describes a cause the pack has in 38.7% of the flagged questions and does not have
+in 60.6%, and the 38.7% is not the damaged part. The mechanism that survives is the one the data states plainly:
+**the pack changes what the model writes, and the imported name is the symptom of that change.** What replaces the
+statement is narrower, still actionable, and no longer about how a rule is worded: *a generated query that names
+something neither the question nor the pack mentions should not be executed as written.*
+
+**The number that makes the withdrawal quantitative rather than rhetorical.** The read-time gate's +0.98pp
+decomposes exactly across the buckets, because the fallback query is a column rather than a prediction:
+
+| bucket | contribution to the gate |
+|---|---|
+| questions the pack named | **+0.33pp** |
+| questions it never named | **+0.59pp** |
+| statements that never ran | +0.07pp |
+
+A third of what the filter recovers comes from the bucket an admission filter could reach and 60% from the bucket
+it could never see. R31's cost — one dispatch and a contract change across distillation — buys a better-resolved
+view of the third.
+
+**The gate itself, taken apart three ways.** The estimate that motivated stage 2 is not a property of one database,
+of the discard *size*, or of one half of the corpus:
+
+| reading | result |
+|---|---|
+| leave-one-database-out | +0.77pp to +1.25pp over 11 databases; the weakest is `financial`, and it is still positive |
+| permutation, 5,000 draws without replacement | observed +0.98pp against a null of −0.04pp [−0.46, 0.39]; **p = 0.0002** |
+| split by database, balanced on count | A +0.76pp (n=794, 77 discarded), B +1.22pp (n=740, 78 discarded) |
+
+The permutation null is not centred on zero and should not be: a random 10% of this corpus still discards damaged
+questions in proportion, so it is worth something on its own. What the test says is that the gate's *placement*
+beats random placement by four null standard deviations, which is the claim a filter has to make.
+
+**What the split-half cannot say, written into the artefact rather than left to a reader.** Both halves were in
+the corpus the hypothesis was formed on, so a split of it is a stability check and never an out-of-sample test.
+The shrinkage an unseen sample would show is unmeasured, and R30 stage 2 is the only reading that can measure it.
+
+**The first run of this round passed, and the criterion was tightened anyway.** `M3` was first written as a point
+comparison — 36.36% greater than 34.04% — and it passed. The same run printed the interval around that difference,
+which is twelve times its size, so the criterion was rewritten to require that the gap clear its own half-width
+*before its verdict was accepted*, and it then failed. Both facts are recorded: the tightening changed the answer,
+and a criterion that is adjusted after a result is only defensible if the adjustment and its direction are written
+down. The direction here was towards the stricter bar; the round would have looked better without it.
+
+**Two zero-cost readings, one dispatch avoided, and one claim withdrawn.** `pnpm eval:mediation` and
+`pnpm eval:stability` both run in `pnpm check`; the workflow recomputes both artefacts byte for byte and asserts
+34 facts about them, including the withdrawal itself. `schema-link.ts` now records the names the pruner removed
+(R30 stage 1b), so the registration's third category becomes readable on the next dispatch.
+
+**Green.** `pnpm check` — typecheck, `typecheck:lanes` under `--strict`, **2,320 tests over 117 files**, four
+coverage dimensions at **99.98 / 99.65 / 100 / 99.98** with all four new modules (`corpus.ts`,
+`pack-mediation.ts`, `gate-stability.ts`, and the refactored `query-diff.ts`) at **100 on all four**;
+`audit:repo`, six offline lanes, `eval:protocol`, `eval:harm`, `eval:power`, `eval:query-diff`, `eval:mediation`
+and `eval:stability` all green. `poc-query-diff.json` changed in exactly two places — one float in the last bit
+from the closed form that replaces a difference of two bootstraps, and the `unmeasured` note for `pruned-name`.
+
 ## What is left, in order (current)
 
 **The covariate question is answered and the sample question is not.** After R26 (channels), R28 (overlap) and
@@ -7722,22 +7803,25 @@ registered category measurable, or a line the previous rounds registered and nob
 
 | # | Item | State | Blocks |
 |---|---|---|---|
-| 1 | **R30 stage 2 — the sample that can see 1pp** | **next**, and the only item on the critical path. n ≈ 6,600 on BIRD train, two arms (`none`, `full`), ~14,000 calls. Its registered prediction 4 says it is the most likely to fail and the cheapest to check: the harness has only ever run `dev`, and a run that silently fell back would report 1,534 questions under a train-split name. `splitFrom` refuses an unknown split since R24, so what is unproven is that the **train archive loads and passes its population check**, not that the name is validated | the confirmation of §140, and the first out-of-sample test of a gate this project has estimated in-sample |
-| 2 | **R30 stage 1b — record the pruned schema names** | one field in `per_case`. Until it exists, the registration's third category (*a name the pruning removed*) is reported as `unmeasured` rather than approximated by `F4` | nothing; it makes one registered category readable and is a two-line change to the lane that writes `per_case` |
+| 1 | **R30 stage 2 — the sample that can see 1pp** | **next**, and the only item on the critical path. n ≈ 6,600 on BIRD train, two arms (`none`, `full`), ~14,000 calls. Its registered prediction 4 says it is the most likely to fail and the cheapest to check: the harness has only ever run `dev`, and a run that silently fell back would report 1,534 questions under a train-split name. `splitFrom` refuses an unknown split since R24, so what is unproven is that the **train archive loads and passes its population check**, not that the name is validated. §R31-stability narrowed what it has to prove: the gate is stable across databases, placement and halves, so the only thing left is shrinkage on an unseen sample | the confirmation of §140 — now of the *query-level* gate, since §141 withdrew the rule-level one — and the first out-of-sample test of a gate this project has estimated in-sample |
+| 2 | **R32 — if the damage is not lexical, what is it?** | registered in `ROADMAP.md`, zero calls, offline. Three candidate axes over the committed corpus: procedural vs declarative rules, whether the pack changed the table set (F4 at −10.39pp, p = 0.0499 — the next-closest feature to resolution), and schema ambiguity resolved in the wrong direction | nothing; it is the only account of the mechanism that is consistent with §141, and it can run in parallel with item 1 |
 | 3 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | the evidence for the claim §138 salvaged: that the protocol's *shared* machinery, and not only its gates, is scenario-agnostic |
 | 4 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; it is the last third of the generality refactor |
 | 5 | **The arm-level audit gap (§25.7)** | still open: `eval:power` audits whole-artefact deltas, and an arm inside an artefact is not a row. The values channel at +1.17pp lives in an arm, so the audit undercounts positives rather than overcounting them | a schema decision — whether an arm is an artefact |
 | 6 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer; both are described in §24.7 | the driver |
-| 7 | **S1a — ambiguity on public annotations** | unblocked and unbuilt; the highest-value unbuilt *product* item, and untouched by this round | — |
+| 7 | **S1a — ambiguity on public annotations** | unblocked and unbuilt; the highest-value unbuilt *product* item. §141 makes it more valuable, not less: the damage is a query that reaches for a column the question did not name, and ambiguity is the mechanism that would produce exactly that | — |
 | 8 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 9 | **S3 — the SOTA push** | entry condition needs re-adjudication, not a bypass. It was gated on "the mechanism moves accuracy on dev"; R24, R25 and §140 all return ≤ +1.30pp there with an instrument that resolves 2.01pp | a decision |
+| 9 | **S3 — the SOTA push** | entry condition needs re-adjudication, not a bypass. It was gated on "the mechanism moves accuracy on dev"; R24, R25, §140 and §141 all return ≤ +1.30pp there with an instrument that resolves 2.01pp | a decision |
 | 10 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 11 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
-**What this round changed, and it is the first time an item moved off the list by being *explained* rather than
-eliminated.** Three covariates are now dead — query–rule overlap (R28), embedding similarity (§62) and the channel
-a rule arrived on (R26) — and the fourth is alive with a resolution it clears. That reframes the remaining list:
-items 1 and 2 are the confirmation and the completion of one measurement, not two new research lines, and item 3
-is the only registered experiment in this programme that has never been dispatched. **Nothing on the list is
-waiting on an idea.** Three items wait on a decision (5, 9, 10), two on an artefact that does not exist (6, 8),
-one on a toolchain (11), one on a key (3), and the first two wait only on compute.
+**Two items left the list this round, and neither left by being finished.** R31 — the `names` field — was
+*withdrawn*: its premise is false in 61% of the flagged questions and false in the direction that matters, and
+the one pre-generation test in this record had already returned the wrong sign. R30 stage 1b — the pruned names —
+was *done*, in the lane, and becomes readable on the next dispatch. The first is the more valuable of the two.
+
+**What the list looks like now.** Nothing is waiting on an idea. Item 1 is the only one that needs compute and the
+only one that can move the product claim. Item 2 is the only one that can explain the mechanism, and it is free.
+Items 3 and 4 are registered work that changes no claim. Three items wait on a decision (5, 9, 10), two on an
+artefact that does not exist (6, 8), one on a toolchain (11). **The critical path is one dispatch, and everything
+else on this page can run beside it.**

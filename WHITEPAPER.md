@@ -1688,6 +1688,52 @@ pruner that binds only when the question names tables — and it passed on its f
 **Had the pruner fired on no question, its −9.26pp would have been published as `full`'s +0.33pp and read as
 "pruning is inert".**
 
+### 3.6.27 The pack does not put the name there, and that retires the fix everyone would ship
+
+§3.6.26 closed the schema-and-value channel. This one closes the explanation that replaced it. The most recent
+iteration had found, on all 1,534 dev questions, that the pack's damage concentrates on the 155 whose generated
+query names something the question never mentioned — −9.68pp there against +1.45pp elsewhere, with the repair rate
+flat and the destruction rate 7.8× the rest of the corpus. The obvious product feature followed: a rule may not
+put a name into the query that the request does not contain, and a filter at distillation time could refuse such
+rules for free.
+
+**The record already held the test, in a field nobody had read for this purpose.** Every rule's rendered text is
+stored per question, so a name in the query is either in that text or it is not. It is in it for **60 of the 155**
+(38.7%; 79 of 285 names, 27.7%), and the other 94 — the ones where the pack said nothing resembling the name and
+the query still executed, so the name is a real column — are **not more damaged. They are, if anything, more
+damaged.**
+
+| where the imported name came from | questions | Δ vs no memory | already-correct queries destroyed |
+|---|---|---|---|
+| the pack's text names it | 60 (38.7%) | −8.33pp | 36.36% |
+| the pack does not, and the query executed | 94 (60.6%) | −9.57pp | 34.04% |
+
+The difference is **1.24pp against a 14.74pp half-width**, which is not a difference. **The harm is not a rule
+naming a column, and a filter on rules cannot reach most of it.** What it is, in the only reading consistent with
+everything this record has measured, is the pack changing what the model *writes*: the query reaches for a real
+column the question did not ask about, and the imported name is the symptom rather than the cause. That is
+consistent with the experience-following account in the literature (Xiong et al., arXiv 2505.16067) and it is a
+sharper statement than the one it replaces, because it says which object the defect lives in.
+
+**The filter that does survive is the one on the query.** Discarding a generated statement that names something
+neither the question nor the pack mentions would have been worth **+0.98pp** on this split, and the estimate is
+not fragile: removing any one of the eleven databases leaves it between **+0.77 and +1.25pp**, both halves of a
+balanced database split gain (**+0.76** on 794 questions and **+1.22** on 740), and the gate's placement beats a
+permutation null of random discards of the same size at **p = 0.0002**. It is still not shipped, and the reason is
+unchanged: it was chosen on the corpus it improves, and its gated delta of +1.30pp misses that corpus's own
+80%-power bar of 1.77pp.
+
+**Two of those three readings are about the corpus rather than about the world, and the document says which.**
+The split-half is a stability check; both halves were in the corpus the hypothesis came from. The permutation
+test says the gate finds damaged questions rather than paying the variance of dropping ten percent. **Neither is
+an out-of-sample test, and the out-of-sample number remains the only measurement this line still owes.**
+
+**What the round costs and what it buys.** Two readings over a committed artefact, no model calls, no database:
+`pnpm eval:mediation` and `pnpm eval:stability`, both recomputed byte for byte in CI with 34 assertions on the
+numbers above. What it buys is the withdrawal of a feature that would have shipped as a regression, and the
+narrowest true statement this project has been able to make about its own mechanism: **the pack damages a query by
+changing its shape, not by dictating its names.**
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

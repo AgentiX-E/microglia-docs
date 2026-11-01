@@ -1391,3 +1391,82 @@ documentation quotes — so the only thing that would have caught the drift was 
 to the measured values. The general form is worth recording because it is the same class as §139's row error: **a
 number in prose that no build step reads is a number that will be wrong, and the fix is to read it, not to be
 careful.**
+
+## 27. Addendum — R31: one criterion tightened after it passed, three unreachable branches, and a fixture that was wrong three times (2026-11-01)
+
+### 27.1 The criterion that passed and was tightened anyway
+
+`M3` — the mechanism criterion — was first written as a point comparison: `destroyed(pack) > destroyed(schema)`,
+i.e. `36.36% > 34.04%`. On the real corpus it passed. The same run printed the interval around the gap between the
+two buckets, which is **14.74pp for a 1.24pp difference**, and an interval twelve times its own point estimate is
+not evidence of anything: it is a sample that cannot tell the two buckets apart.
+
+The criterion was rewritten to require that the gap clear its own half-width before the verdict is accepted, and
+it then failed. **Both facts are recorded, because the second one is only meaningful given the first.** A
+criterion adjusted after a result is a criterion chosen by its result in either direction; the direction here was
+towards the stricter bar, which makes the round look worse rather than better, and that is the only reason the
+adjustment is defensible at all. The general form of the rule this round re-learned: **a criterion stated on point
+estimates is not a criterion, it is a coin with a decimal point.** Every other criterion in this record — `Q1`,
+`Q3`, `Q4`, `V5-resolution`, `S1`, `S2`, `S3` — already carried a width; `M3` was written without one and the
+omission is why the first draft passed.
+
+### 27.2 A difference of two bootstraps replaced by a closed form, and the artefact moved by one bit
+
+`gateReadingOf` reported `improvementPp` as `gated.deltaPp − measured.deltaPp`, two floats each produced by a
+1,534-case `cellOf`. That difference is identically `−Σ signed(discarded) / n`, and the round needed the identity
+rather than the subtraction: the permutation test evaluates it 5,000 times, and a `cellOf` per draw would run a
+10,000-resample bootstrap inside every one of them.
+
+The closed form is `improvementOf`, and after the swap `poc-query-diff.json` differed in exactly two places: one
+float in its last bit (`0.9778357235984354` → `…355`) and the `unmeasured` note for `pruned-name`. The byte
+comparison caught both, which is what it is for. A test asserts the identity against `gateReadingOf` in both
+grounding modes, so the two implementations cannot drift apart silently.
+
+### 27.3 Three branches that no input could take
+
+Coverage work on the new modules found three `null`/fallback arms that were unreachable, and each was removed
+rather than exempted:
+
+- `halvesOf` looked rows up per database with `bySide.get(dbId) ?? []`, but every id in `side.databases` came
+  from the same entries, so the miss cannot happen. The rewrite partitions in one pass and has no fallback.
+- the jackknife criterion printed `(jackknifeMaxPp ?? 0)`, but max is null exactly when min is null and that arm
+  is already handled by the ternary above it. Both extrema now come from one local that handles the empty case
+  once — a report of "−Infinity to Infinity over zero databases" is exactly the reading this project keeps
+  removing.
+- the split-half criterion tested `weakestHalf === null`, but `halvesOf` always returns two halves. `Math.min` of
+  two empty improvements is `0`, which is the reading `S3` should give for a corpus with nothing in it.
+
+### 27.4 A hand-computed fixture that was wrong in three different ways
+
+The mediation tests were written before the module was run, and the first three assertions were wrong — each for a
+different reason, and each caught by the arithmetic rather than by review:
+
+1. the two-half split was expected as `[big+small | mid]`; greedy-by-size actually produces `[big | mid+small]`,
+   which is the same 5/5 balance and a different partition. The test was describing an algorithm that was not
+   implemented;
+2. `improvementOf` was asserted as `−25pp` on a corpus whose two destroyed questions give `+50pp`: the sign of
+   `−Σ signed` was inverted in the comment, not in the code;
+3. the contribution decomposition was asserted as `2/7` and `4/7` while the bucket holds two destructions and one
+   repair, i.e. `1/7` and `2/7`. The repair was in the corpus and not in the arithmetic.
+
+All three are the same defect wearing different clothes: **a hand-computed expectation is a second implementation
+of the function under test, and it can be wrong in exactly the ways the function can.** The corrections were made
+against the module, and each test now states the count it relies on ("two destroyed and one repaired") so a reader
+can check it without running anything.
+
+### 27.5 What the pack text is, and why the provenance is a field
+
+`corpus.ts` prefers `injected` — the rendered text the lane wrote into the prompt — and falls back to resolving
+`packIdList` against `items`. The two are not the same claim: `items` is what the store says *now*, and an item
+edited after the run would reconstruct a pack the model never saw. The loader therefore returns `packTextSource`
+per case and counts reconstructions in the artefact, so a reading can say which of the two it used. On this corpus
+the count is zero, which is itself worth knowing: the field existed and was populated for all 1,534 cases.
+
+### 27.6 What this round did not measure, stated in the artefact
+
+- **Synonyms.** A rule that says "the county column" and a model that writes `County Name` are indistinguishable
+  from a rule that says nothing. The generous detector closes spelling and punctuation; it does not close this,
+  and `M4` is a bound rather than a second measurement.
+- **The pruned names.** `schema-link.ts` now records them (R30 stage 1b), but the committed artefact predates the
+  field, so the registration's third category is still `unmeasured` for this record.
+- **Shrinkage.** The split-half is a stability check; both halves were in the corpus the hypothesis came from.
