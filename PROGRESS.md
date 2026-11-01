@@ -7188,3 +7188,142 @@ because annotation is unconditional. **Had the pruner fired on nothing, its −9
 dimensions after six new gate tests. Both artefacts are committed (`poc-sota-bird-dev-R26-channels.json` and the pilot
 `poc-sota-bird-R26-channels.json`), and `pnpm eval:protocol` re-derives both against `prereg/R26-channels.md`
 and its thirteen declared gates.
+
+### 136 — The competitor was a control, and the "general" protocol has one user
+
+**This entry is an architecture audit, not a run.** No dispatch, no model call, no new number: it re-reads the
+repository against the claim the repository makes about itself, because the claim and the code had drifted and
+the drift had been shaping which experiments got designed.
+
+**The category error, fixed first because everything else followed from it.** Twenty-six iterations have been
+designed against systems listed in `COMPETITIVE.md`, and that file never said what "competitor" meant. It now
+does (§0): a **product competitor** builds the artefact we would ship and is comparable only on EX; a
+**same-unit control** published one manipulation we also performed and is comparable only on Δpp; a
+**methodology peer** is comparable only on whether a claim is admissible. **RSL-SQL sits in the second row and
+had been read as the first.** Its 12.71pp schema-linking ablation is the same quantity as our 17.60pp evidence
+ablation on the same 1,534 questions; its leaderboard row is not comparable to our EX at all, because the two
+differ in the generator's training, the candidate pool and the schema form simultaneously. The correction is
+not cosmetic: a competitor's number says where to spend engineering on the product, a control's number says
+which of *our own* components is mispriced, and three of this file's past misreadings came from running the
+second kind of comparison through the first kind of question.
+
+**The product consequence is larger than the table.** None of the first-row systems is an alternative to this
+project, because this project ships no text-to-SQL system: it ships a library that turns a host's corrections
+into scoped knowledge, and text-to-SQL is one host — `nl2charts` is the one in the README, τ²-bench is the one
+with a second harness. The XiYan/CHASE row is therefore a **host that could embed us**, and the honest
+competitive question about it is not "do we beat 71.58 EX" but "would its pipeline improve if our pack were
+injected", which R26 answered for the two prompt-side channels and which is not a leaderboard position.
+
+**What the coupling audit found, in lines.** The claim under test was that the library had been absorbed into
+one application scenario. It has not been, at the level that matters:
+
+| layer | lines | scenario words in production code | verdict |
+|---|---|---|---|
+| `core` | 7,074 | **0** — every hit is in `__tests__` (`task: 'sql.generate'` is a free-form scope string) | clean |
+| `eval` measurement protocol / statistics | 19,125 (60.4%) | none | general in name |
+| `eval` `sota-bird.ts` lane | 6,635 (21.0%) | all text-to-SQL | scenario |
+| `eval` `sota.ts` | 3,090 (9.8%) | 31 gates + `PROMPT_VERSION='sql-prompt/3'` + `extractSql` + `SqlArm` | **mixed, not separated** |
+| `eval` eight SQL modules | 2,039 (6.4%) | all text-to-SQL | scenario |
+| `eval` τ²/l4 second scenario | 754 (2.4%) | tool calling | scenario |
+
+**11,764 lines, 37.2%, are text-to-SQL, and none of them are in `core`.** The library is genuinely
+scenario-agnostic: its subpath exports let a host take `core/apply` and `core/memory` without the distiller, and
+two hosts already embed it (`node` 1,312 lines, `browser` 301).
+
+**The coupling is in the reuse table, not the line count.** The measurement layer only looks general because
+it has one customer:
+
+| check | reading |
+|---|---|
+| call sites of `buildValidityGates` (31 gates) | **`sota-bird.ts` only** |
+| gates the τ²-bench lane uses | **3, written beside it**: `l4-paired` (delta ≥ 0), `l4-resolution` (half-width ≤ 5pp), `l4-same-split` |
+| that lane's `l4-resolution` verdict | **failed — 14.98pp half-width against a 5pp bar, at n = 68** |
+
+**So the second scenario never used the protocol; it wrote a weaker one and one of its three gates failed.** The
+31 gates were invented by, tuned by and validated against a single benchmark, and the only evidence that they
+are a protocol rather than a habit is that a second lane would have reused them. It did not. The failure was
+recorded as a note in `poc-l4-pair.json` rather than as a verdict, which is the second half of the defect: a
+non-blocking gate that fails and is narrated is a gate that does not exist.
+
+**The sub-package answer, and why the obvious split is wrong.** Isolating SQL into `microglia-sql` would
+produce a repository whose *product* is general and whose *measurements* are scenario-specific — which is
+exactly the shape that makes the generality untestable. The split that buys something is between **protocol and
+adapter**, cut on one rule: *does the function signature mention a scenario type?* Gates, paired statistics,
+artefact validation, pre-registration and the arm contract do not; `sql-exec`, `schema-link`, `m-schema`,
+`value-samples`, `bird-data` and the SQL half of `sota.ts` do. The target graph is `core ← protocol ←
+eval-sql / eval-tau2`, with the adapter contract (`LaneAdapter`: load / prompt / parse / score / strata) as the
+seam, and §17.64 carries the design.
+
+**"A general flywheel" is not too ambitious; "general" was being asserted at the wrong level.** Three claims
+have to be separated and only the first is currently true: **architecture-general** (yes — 7,074 lines, zero
+scenario words, two hosts embedded), **mechanism-general** (no — scenario 1 is 26 iterations with one +1.17pp
+point that its own clause closed, scenario 2 is n = 68 with a 15pp half-width), **commercially-general** (not
+touched — no scenario has produced a deliverable effect). And the sharpest version of the objection comes from
+our own data: **SQL generation is the most favourable terrain this theory has** — a correction is executable, a
+rule is testable, transfer is measurable, the schema is stable — and here it produced 1.17pp. A weaker
+scenario should be expected to produce less, not more. That is an argument for demoting the claim from
+assertion to hypothesis and for making the **next experiment a test of generality** rather than another SQL
+ablation, which is what R27 is.
+
+**What this entry changes about the queue.** The previous plan put R27 on the candidate pool because CHASE's
+13.95pp pool headroom is the largest unpriced gap in the file. That stands, but it is now second: the first
+question worth buying is whether the protocol layer is a protocol, and it can be answered by running the second
+scenario through the first scenario's gates — no new dataset, no new model, one dispatch. **An architecture that
+cannot be shown to be general from the outside is not general; it is a single application with good module
+hygiene.**
+
+### 137 — The protocol is a package, and the estimate that produced its scope was wrong by fifteen gates
+
+**R27 stage 1 is closed.** `packages/protocol` exists, holds all 39 validity gates, the 39-id publication order
+as data, the `LaneAdapter` contract and the transfer reconciliation, and has **no runtime dependency**: it
+cannot name a scenario even if someone wanted it to. `sota.ts` keeps `buildValidityGates` as its named entry
+point and delegates; the lane is otherwise unchanged.
+
+| what moved | lines | where it lives now |
+|---|---|---|
+| `FrameDelivery`, `EvidenceDelivery`, `ValidityGate` | 31 | `protocol/src/gates.ts` |
+| `ProtocolGateInput` (the required fields) + `ScenarioGateInput` (2 optional) | 300 | `protocol/src/gates.ts` |
+| the 31 gates, the transfer helper and its 8 ids | 510 | `protocol/src/gates.ts` |
+| `GATE_ORDER` + `inGateOrder` | 55 | `protocol/src/gates.ts` |
+| `LaneAdapter`, `mergeGates`, `blockingFailure` | 145 | `protocol/src/adapter.ts` |
+| `SUBSTRATE_FLOOR`, `NET_PUBLISHED_STEP` | 8 | `protocol/src/gates.ts` (re-exported by `probe-pair`) |
+
+**The scoping estimate in §136 was 22 gates on the protocol side and 9 on the adapter's, and it was wrong by
+fifteen.** The first pass read gate *names*: `parse-rate` sounded like a parser's gate, `pool-complete` like a
+candidate pool's, `channel` like a schema channel's. Re-deriving the split from the `input.*` fields each gate
+actually reads gave **29 of 31**, and counting the eight transfer ids — passed *into* `transferGates` as
+arguments rather than written beside an object literal, so a scan for `id:` misses them entirely — gave **39
+gates, 37 of which depend on nothing scenario-specific**. The two that do (`V4`, `V10`) read an *optional* field
+and are **absent** rather than green when a lane cannot supply it.
+
+**The wrong number stays in the record on purpose.** A name-based cut would have parked nine gates in the adapter
+that had no scenario in them, which is the fork this design exists to prevent; the estimate was produced by
+intuition and the correction by measurement, and the second is the only part worth reusing.
+
+**Two real defects were found while moving, and neither was the one being looked for.**
+
+1. **`V51` passed a channel that never fired, if its floor was zero.** The gate read `share >= floor`, and a
+   floor of `0` makes `0/100` pass — so a lane could declare "I do not care how often this happens" and buy a
+   green tick for a manipulation that never occurred, which is the exact failure the gate was built to catch.
+   `applied > 0` is now an invariant of the gate rather than a consequence of a floor: the floor answers *how
+   often must this happen*, and zero is not an answer to that question. No published artefact changed.
+2. **`typecheck:lanes` was not running under `--strict`.** The library compiles under the full `tsconfig.base`
+   (`exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`); the six CLI lanes were checked by a command line
+   with neither. Turning `--strict` on surfaced **four real defects** in code that had passed every run since it
+   was written: `relevanceFor` and `reconcile` accepted the `none` arm and indexed a `Partial<Record<…>>` that
+   has no such key, and `scale.ts` wrote `intent: string | undefined` into a `KnowledgeScope` whose optional
+   field does not admit an explicit `undefined`. All four fixed by narrowing the parameter to
+   `Exclude<ArmName, 'none'>` and by conditional spreads; the gate is now as strict as the library.
+
+**The regression is the point, and it is unusually strong for a move this size.** `pnpm eval:protocol` re-derives
+every one of the **31 committed artefacts** — thirteen pre-registrations, their declared gate lists in both
+directions, and the cell comparisons — and it passed on the first run after the extraction. Byte identity was
+preserved through two structural changes that could have broken it: `V4` moved out of the array literal into a
+conditional push (the publication order is now explicit data, which is what keeps it in fourth position), and
+`V51`'s floors moved out of the gate into the entries (each entry carries its own `floor` and `expects`, so the
+gate never learns a channel's name and the published sentence still reads *"values at least 95% of prompts,
+linked at least 1%"*).
+
+**Green.** `pnpm check` — typecheck, `typecheck:lanes` under `--strict`, 2,090 tests over 109 files, four
+coverage dimensions at **99.98 / 99.61 / 100 / 99.98**, with `protocol/src` and `sota.ts` both at **100 on all
+four**; `audit:repo`, six offline lanes, `eval:protocol` and `bench` (blocking gates PASS) all green.

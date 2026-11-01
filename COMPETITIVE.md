@@ -10,6 +10,39 @@ a leaderboard table read on one day (medium), and several are from a secondary r
 table nobody here has opened (low, marked). The project's standing rule holds: a number we have not
 reproduced is a hypothesis with a citation, not evidence.
 
+## 0. Three roles, and the one that was being read as the wrong one
+
+This document is titled *competitive anatomy* and every system it names arrives through that door, which
+produced a category error worth correcting before anything else: **a system appears here for one of three
+reasons that have nothing to do with each other, and only the first is a competitor.**
+
+| Role | What it means | What can be compared | Members |
+|---|---|---|---|
+| **Product competitor** | builds the same artefact we would ship, and would be the alternative in a buying decision | **EX on the same task**, and nothing else | XiYan-SQL, CHASE-SQL, R³-SQL, Databricks-RLVR, Gemini-SQL2, GrainSQL |
+| **Same-unit control** | publishes one manipulation we also performed, so the two numbers are the same quantity | **Δpp from an ablation**, which is the only unit in this file where our number and theirs are comparable | BIRD-GPT-4, DAIL-SQL, CHESS, **RSL-SQL** |
+| **Methodology peer** | publishes enough about its own measurement — interval, sample, resolution — that the *quality of the claim* can be compared | **whether a reading is admissible**, not its value | the competitor's ablation tables, and nobody's intervals but ours |
+
+**RSL-SQL is in the second row, and reading it as the first is what this section fixes.** It has never been
+a product alternative: it is a bidirectional-linking text-to-SQL system whose published value to us is that
+its Table reports a **12.71pp schema-linking ablation on BIRD dev, 1,534 questions** — the same benchmark,
+the same model family, and the same *kind* of measurement as our own evidence ablation. Quoting 17.60 against
+12.71 is a comparison of two ablation deltas; quoting our 57.63 EX against its leaderboard row would be a
+comparison of two systems that differ in a dozen ways at once, and this document does not do that.
+
+**The distinction is not pedantry, because the two roles license opposite actions.** A product competitor's
+number tells us where to spend engineering on the thing we ship; a same-unit control's number tells us which
+of *our own* components is mispriced. §4's table is the second kind, §1's is the first kind, and mixing them
+produced the three misreadings this file has already had to correct: the "same cell, 0.09pp apart" claim
+(§1, corrected 2026-10-30), the "20 points come from schema linking" inference (§2, demoted in R24), and a
+24.86pp effect quoted against systems measured on a different population (§4, corrected in R24).
+
+**And a product-level note that the roles make obvious.** None of the first-row systems is an alternative to
+this project, because this project does not ship a text-to-SQL system: it ships a **library that turns a
+host's corrections into scoped knowledge**, and text-to-SQL is one host among several — `nl2charts` is the
+one in the README, τ²-bench is the one with a second harness. The first-row systems are therefore *hosts that
+could embed us*, and the honest competitive question about them is not "do we beat their EX" but "would their
+pipeline improve if our pack were injected" — which is R26's finding and not a leaderboard.
+
 ---
 
 ## 1. The finding that reframes everything
@@ -32,18 +65,24 @@ published baseline for the same model and schema form, so the gap to a 73–75% 
 an artefact of a badly built harness. It is a claim about consistency inside a ±7.7pp band, not a
 reproduction, and a genuine reproduction needs the dev split (recorded as R8.3b).
 
-| System | Generator | Schema form | Candidates | BIRD dev / test EX | Gap from 53.5 |
-|---|---|---|---|---|---|
-| **microglia (ours)** | DeepSeek, API | DDL | 1 (+ memory pack) | **57.63 dev (n=1,534)**, 53.71 Mini-Dev (n=350) | +4.11 (reproduced) |
-| XiYan-SQL baseline | DeepSeek | DDL | 1 | 53.52 (dev, n=1,534) | −0.19 (indicative) |
-| XiYan-SQL + M-Schema | DeepSeek | M-Schema | 1 | 55.15 (dev) | +1.63 |
-| XiYan-SQL, full | FT + ICL ensemble | M-Schema | 5–21 | 71.58 (dev), 75.63 (test) | +18.06 / +22.11 |
-| CHASE-SQL | Gemini 1.5 Pro | DDL + values | 21 (3×7) | 73.01 (dev), 73.0 (test) | +19.49 |
-| R³-SQL | undisclosed | — | multi | 75.03 (dev) | +21.51 |
-| Databricks RLVR-32B | Qwen2.5-Coder-32B, RL-trained | — | 1 / 7 | 73.56 single, 75.68 (7-SC) test | +20.04 |
-| Gemini-SQL2 | Gemini 3.1 Pro | — | many | 80.04 (test) | +26.52 |
-| GrainSQL | undisclosed | — | — | 82.95 (test) | +29.43 |
-| Human (data engineers) | — | — | — | 92.96 | +39.44 |
+| System | Role | Generator | Schema form | Candidates | BIRD dev / test EX | Gap from 53.5 |
+|---|---|---|---|---|---|---|
+| **microglia (ours)** | — | DeepSeek, API | DDL | 1 (+ memory pack) | **57.63 dev (n=1,534)**, 53.71 Mini-Dev (n=350) | +4.11 (reproduced) |
+| XiYan-SQL baseline | control | DeepSeek | DDL | 1 | 53.52 (dev, n=1,534) | −0.19 (indicative) |
+| XiYan-SQL + M-Schema | control | DeepSeek | M-Schema | 1 | 55.15 (dev) | +1.63 |
+| XiYan-SQL, full | **competitor** | FT + ICL ensemble | M-Schema | 5–21 | 71.58 (dev), 75.63 (test) | +18.06 / +22.11 |
+| CHASE-SQL | **competitor** | Gemini 1.5 Pro | DDL + values | 21 (3×7) | 73.01 (dev), 73.0 (test) | +19.49 |
+| R³-SQL | **competitor** | undisclosed | — | multi | 75.03 (dev) | +21.51 |
+| Databricks RLVR-32B | **competitor** | Qwen2.5-Coder-32B, RL-trained | — | 1 / 7 | 73.56 single, 75.68 (7-SC) test | +20.04 |
+| Gemini-SQL2 | **competitor** | Gemini 3.1 Pro | — | many | 80.04 (test) | +26.52 |
+| GrainSQL | **competitor** | undisclosed | — | — | 82.95 (test) | +29.43 |
+| Human (data engineers) | ceiling | — | — | — | 92.96 | +39.44 |
+
+**The `control` rows are the only ones in this table whose comparison this document stands behind**, and they
+are labelled for that reason: XiYan's own `DeepSeek + DDL` cell is our no-memory baseline, and its M-Schema
+cell is a one-component manipulation of that baseline. Every row marked `competitor` differs from us in the
+generator's training, the candidate pool, or both — three things §2 prices at more than the memory line has
+ever claimed — so the right-hand column is a **scale**, not a gap we are trying to close by prompting harder.
 
 Two caveats that change how the right-hand column should be read, both from the benchmark's own
 documentation: **every BIRD test row above 67.41% uses the per-question evidence hint**, and a
@@ -515,14 +554,14 @@ read **17.60pp [15.38, 19.82]**. Companion Agents (arXiv 2601.08838) tabulates *
 for CHESS and **18.37** for DAIL-SQL on the same benchmark and model family, and BIRD's original GPT-4 ablation
 was 20.01.
 
-| system | evidence dependence | panel | schema linking / value index |
-|---|---|---|---|
-| BIRD GPT-4 (original ablation) | 20.01 | dev, 1,534 | none |
-| **microglia (R24)** | **17.60** | dev, 1,534 | none |
-| DAIL-SQL | 18.37 | dev, 1,534 | partial |
-| CHESS | 14.36 | dev, 1,534 | full column + value extraction |
-| RSL-SQL | 12.71 | dev, 1,534 | full + bidirectional linking |
-| microglia (R23) | 24.86 | minidev, 350 | none — **not admissible here** |
+| system | role | evidence dependence | panel | schema linking / value index |
+|---|---|---|---|---|
+| BIRD GPT-4 (original ablation) | same-unit control | 20.01 | dev, 1,534 | none |
+| **microglia (R24)** | — | **17.60** | dev, 1,534 | none |
+| DAIL-SQL | same-unit control | 18.37 | dev, 1,534 | partial |
+| CHESS | same-unit control | 14.36 | dev, 1,534 | full column + value extraction |
+| RSL-SQL | same-unit control | 12.71 | dev, 1,534 | full + bidirectional linking |
+| microglia (R23) | — | 24.86 | minidev, 350 | none — **not admissible here** |
 
 **The minidev row is not comparable and is shown only to explain itself.** 24.86 was measured on a panel from
 which the easiest third had been removed; within the R24 dispatch, restricted to the same moderate-and-

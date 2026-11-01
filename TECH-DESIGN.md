@@ -4550,3 +4550,92 @@ share, so 34.9% is visible to a reader instead of being compressed into a boolea
 **What it costs.** One DDL string comparison per question per channel arm, both values already computed and
 cached by path. The gate adds no model call, and the pilot that validated it (350 questions, 1,759 calls) is
 committed under its own name so the reading is re-derivable rather than quoted.
+
+### 17.64 The adapter contract, and the measurement that corrected the estimate
+
+**The problem this solves is not modularity, it is testability of a claim.** The repository asserts it is a
+general flywheel. Generality is only visible from the outside: it is the property that a second scenario can use
+the first scenario's measurement apparatus without rewriting it. §136 records that this never happened — τ²-bench
+wrote three gates beside itself and reused none of the thirty-one. So the work is to make the reuse *possible*
+and then to *measure* whether it occurs, and those are two different deliverables.
+
+**The cut rule is a single question about a signature.** *Does the function mention a scenario type?* A gate that
+reads `pack.admitted`, `arms[].discordant` or `folds[].partition` does not. A gate that reads `gold` executable
+against SQLite, or that parses a fenced ```` ```sql ```` block, does. Applying it to the 31 gates:
+
+| kind | gates | belongs to |
+|---|---|---|
+| scenario-agnostic (**37**) | every gate except the two below, including the eight transfer ids | `protocol` |
+| scenario-bound (**2**) | `V4` gold-executable · `V10` convention-executable | `protocol`, reading an optional scenario field |
+
+**The estimate going in was 22 and 9, and it was wrong by fifteen gates.** The first pass classified gates by
+their *names* — `parse-rate` looked like a parser's gate, `pool-complete` like a candidate pool's, `channel` like
+a schema channel's. Classifying by the fields each gate actually reads produced **29 of 31**, and after the
+eight transfer ids were counted (they arrive as arguments to `transferGates` rather than as object keys, so a
+scan for `id:` misses them) the set is **39 gates of which 37 depend on nothing scenario-specific at all**. Only
+two gates read a scenario field, both read an *optional* one, and both are absent rather than green when it is
+missing.
+
+**The correction matters more than the number.** A name-based cut would have moved nine gates into the adapter
+and left the adapter owning gates that had no scenario in them — which is exactly the fork this design exists to
+prevent. The rule survives; the intuition that produced the first estimate did not, and the record keeps the
+wrong number here because the correction is the evidence that the rule was applied rather than quoted.
+
+**The contract is five methods and one reason for each.** Anything smaller pushes a decision into the lane;
+anything larger makes a lane's job copying.
+
+```ts
+export interface LaneAdapter<Task, Candidate> {
+  /** The tasks this lane scores, in a stable order: the fold partition downstream assumes it. */
+  load(): Promise<readonly Task[]>;
+  /** The prompt for one task, with the pack rendered into it by the adapter, not by the protocol. */
+  prompt(task: Task, pack: Pack): string;
+  /** A reply that cannot be read is not a wrong answer; returning undefined is how the lane says so. */
+  parse(raw: string): Candidate | undefined;
+  /** Correctness is the lane's, because only the lane can execute or judge. */
+  score(task: Task, candidate: Candidate): Promise<boolean>;
+  /** Outcome-blind strata, computed from inputs alone: no arm's result may enter this function. */
+  strata(task: Task): readonly string[];
+}
+```
+
+**Three properties are load-bearing, and each has a failure it prevents.**
+
+1. **`parse` returning `undefined` is a value, not a throw.** `V3-parse-rate` is the gate that separates "the model
+   could not answer" from "the model answered wrongly", and a lane that throws on a malformed reply converts the
+   first into a crash that takes a fold with it. The prototype is `plugin.ts`, where the same rule is already
+   enforced: *a failure is a value*.
+2. **`score` is the lane's, not the protocol's.** This is what makes the protocol scenario-agnostic at all: the
+   protocol never learns what correctness means, only whether the caller said yes. A protocol that scored would
+   have to know about SQL execution or tool-call matching, and would then be a second `sota-bird.ts`.
+3. **`strata` may not read an outcome.** §135's rule, now structural: conditioning on "failed without the hint" and
+   then contrasting inside that stratum measures regression to the mean. The signature enforces it — `strata`
+   receives a `Task` and nothing else, so there is no arm to condition on.
+
+**What the protocol owns, and why each piece had to move.** Gates (22), the paired statistics they read
+(`mcnemar`, `bootstrap`, `dose`, `passk`, `resolution`), the artefact schema and its validator, the
+pre-registration format and its gate-agreement check, and the arm contract with `armPairBetween`. None of these
+mentions a scenario type, all of them were written inside one lane, and the artefact validator's arithmetic is
+the reason a lane cannot be trusted to report its own numbers.
+
+**Dependency direction, enforced rather than described.** `core ← protocol ← eval-sql / eval-tau2`. The `protocol`
+package may not import an adapter, and a lint rule states it: an adapter import inside `protocol/src` fails the
+build. Without that rule the seam is a comment, and a comment does not survive the first urgent patch.
+
+**The migration is staged so that each stage is independently green.** Stage 1 moves all 39 gates and the
+statistics into `protocol` and has `sota-bird.ts` import them — no behaviour change, and the existing 31-gate
+reading is the regression test. Stage 2 defines `LaneAdapter` and makes the τ² lane implement it, replacing its
+three bespoke gates with the 22; **this is the experiment**, and its outcome is which of the 22 are meaningful in
+a second scenario and which are not. Stage 3 moves the SQL modules into `eval-sql` and splits `sota.ts` on the cut
+rule above — mechanical, deferred until stage 2 says the seam holds.
+
+**What stage 2 can prove, and what it cannot.** It proves that the protocol admits a second scenario without
+editing gates, which is the whole content of the generality claim. It does **not** prove that memory helps a
+second scenario: τ² at n = 68 has a 15pp half-width, and the honest reading after stage 2 is still "no result".
+Separating those two is the point — this iteration's claim is about the apparatus, and conflating it with an
+effect claim is how a repository ends up asserting generality it has not measured.
+
+**Coverage.** Every new `protocol` module arrives with tests at the same bar as the lane it left (four
+dimensions ≥ 95%, and 100% for the gate table), because a moved function that loses its tests is a rewrite
+pretending to be a move. The stage-1 regression is unusually strong: 31 committed artefacts are re-validated by
+`pnpm eval:protocol` on every push, so a behaviour change in a moved gate fails offline in about a second.

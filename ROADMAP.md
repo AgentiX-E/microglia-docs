@@ -2887,3 +2887,44 @@ too (§135), and `linked` is recorded as a **product rule**: never prune the sch
 (`41263187629`) exercised `V51` first and read 100.0% / 34.9%, which is why the gate's floors were chosen from a
 measurement rather than a guess; the pilot also read `full` at −4.00pp where the registered run reads +0.33pp,
 the ninth minidev pack reading that does not survive the split.
+
+### R27 — protocol / adapter, or: the generality claim's first test (**open** 2026-11-01)
+
+**Why this replaced the candidate pool as the next experiment.** The pool's 13.95pp headroom is still the
+largest unpriced gap in the record and still worth buying, but §136 found something more urgent underneath it:
+**the measurement apparatus has one customer.** Thirty-one gates validate every number this project publishes,
+they are called from one file, and the only second scenario in the repository wrote three of its own instead —
+one of which failed and was recorded as a note. A project that asserts generality has to be able to show that a
+second scenario can be measured by the same apparatus; otherwise the assertion is about module hygiene.
+
+**The three stages, each independently green.**
+
+| stage | work | regression test | claim it licenses |
+|---|---|---|---|
+| **1** | move all 39 gates + paired statistics + artefact validator + prereg into `packages/protocol`; `sota-bird.ts` imports | the 31 committed artefacts re-validated by `pnpm eval:protocol` — a behaviour change fails offline in ~1s | none; this is a move |
+| **2** | define `LaneAdapter` (load / prompt / parse / score / strata); make the τ² lane implement it and replace its 3 bespoke gates with the 39 | the τ² artefact must now pass 22 gates it never saw, and `l4-resolution` becomes blocking | **the protocol admits a second scenario without editing a gate** — the generality claim, tested |
+| **3** | move the 8 SQL modules into `eval-sql`; split `sota.ts` on the signature cut rule | coverage per dimension must not regress; four dimensions ≥ 95% | none; mechanical |
+
+**Registered predictions for stage 2.**
+
+1. **At least 15 of the 39 gates are evaluable on τ² without a signature change.** If fewer than 15 are, the
+   "scenario-agnostic" set was miscalibrated and the cut rule is wrong — which is itself the finding, and the
+   more valuable one.
+2. **`l4-resolution` becomes blocking and the run fails it.** τ² at n = 68 has a 15pp half-width against a 5pp
+   bar, and the whole point of making it blocking is that the run should then refuse to publish a delta. A stage 2
+   that reports "39 gates pass" while the resolution gate passes too would mean the gate list was tuned to pass.
+3. **No gate changes its threshold during the move.** Any threshold edited in stage 1 or 2 is a rewrite, and the
+   31-artefact regression is what catches it.
+4. **The τ² effect estimate does not move by more than 1pp.** The gates certify a reading, they do not produce
+   one; if the delta changes materially, a gate was doing arithmetic somewhere it should not have been.
+
+**Refutation.** If stage 2 shows that fewer than 15 of the 39 gates survive a second scenario, **the generality
+claim is withdrawn from the positioning text** rather than qualified: the library would then be a
+scene-specific tool with clean modules, and it would say so. If stage 2 passes, the claim upgrades from
+hypothesis to a demonstrated property **of the apparatus**, and explicitly not of the mechanism — τ² remains a
+null at n = 68, and no iteration may quote stage 2 as evidence that memory transfers.
+
+**What is deliberately not in R27.** No new model calls beyond the τ² re-run, no new dataset, no new arm. The
+temptation is to fold the pool question in and answer two things in one dispatch; they are separate claims with
+separate instruments, and this record's three smallest effects were all produced by an instrument that had been
+asked two questions at once.

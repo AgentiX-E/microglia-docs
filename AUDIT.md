@@ -1109,3 +1109,98 @@ pilot that proved the gate before the registered dispatch, with `values` +1.43pp
 that does not survive the split, against two channel readings that do. `pnpm eval:protocol` re-derives both
 against `prereg/R26-channels.md` and its thirteen declared gates. `pnpm check`: **2,050 tests, 107 files,
 99.98 / 99.61 / 100 / 99.98**, `sota.ts` at 100 on all four dimensions.
+
+## 22. Addendum — the protocol audit: a claim about itself that the code did not support (2026-11-01)
+
+**22.1 What was audited, and why it was not a run.** No dispatch, no call, no new number. The object under
+audit was the repository's own positioning sentence — *a general feedback flywheel* — against the code that is
+supposed to make it true. Five defects, none of them a wrong number, all of them the kind that shape which
+experiments get designed.
+
+**22.2 D1 — "competitor" was never defined, and one control was read as one.** `COMPETITIVE.md` listed systems
+from three unrelated roles under one title. RSL-SQL has never been a product alternative; it is a
+bidirectional-linking text-to-SQL system whose published value to this project is a **12.71pp schema-linking
+ablation on the same 1,534 questions** — the same unit as our 17.60pp evidence ablation, and not the same unit as
+our EX. Consequences observed in the file's own history: the "same cell, 0.09pp apart" misreading (§1, corrected
+R8.3), the "20 points come from schema linking" inference (§2, demoted in R24), and a 24.86pp effect quoted
+against systems measured on a different population (§4, corrected in R24). **Three misreadings, one cause: a
+control's Δpp being answered as though it were a competitor's EX.** Fixed by §0 of that file, and by a `role`
+column on both tables.
+
+**22.3 D2 — thirty-one gates, one caller.** `buildValidityGates` is called from `sota-bird.ts` and nowhere else.
+The τ²-bench lane, which is the only second scenario in this repository, does not import it and writes three
+gates inline. The measurement layer therefore has the *shape* of a protocol and the *customer count* of a habit.
+This is the load-bearing defect: every claim in this record about rigour is a claim about those 31 gates, and
+none of them has ever been applied to anything but BIRD dev.
+
+**22.4 D3 — a failing gate that narrated itself instead of stopping the run.** The τ² lane's own
+`l4-resolution` gate requires a 95% half-width ≤ 5pp; the measured value is **14.98pp** at n = 68. The gate is
+marked `blocking: false` and the failure is written into `notes` rather than into a verdict, so the artefact
+records a +1.47pp delta as if the design could see one. **A non-blocking gate that fails and is narrated is a
+gate that does not exist** — the same defect class as R25's `V49`, where the fix was to make the reading
+blocking. `V5-resolution` on the SQL lane is blocking for exactly this reason.
+
+**22.5 D4 — the artefact's own arithmetic was the only defence, and it covers one lane.** `artifact-schema.ts`
+validates that a run's numbers reconcile: arms sum to n, discordant pairs match the delta, shares sum to one. The
+τ² artefact passes because it is a different shape, and nothing validates it. The protocol package takes the
+validator, which is the point: **a lane that reports its own arithmetic is a lane that can be wrong in a way
+nobody checks.**
+
+**22.6 D5 — an outcome-blind rule that lived in prose.** §135 established that a stratum defined by an arm's
+outcome measures regression to the mean, and the rule has held since by discipline alone: nothing in the type
+system prevented `strata` from receiving an outcome. The `LaneAdapter` signature fixes it structurally —
+`strata(task)` receives a task and nothing else — which is the difference between a rule and a convention.
+
+**22.7 The coupling measurement, for the record.** `core` 7,074 lines with **zero** scenario words in production
+code (every hit is in `__tests__`, where `task: 'sql.generate'` is a free-form scope string); `eval` 31,643 lines
+of which 11,764 (37.2%) are text-to-SQL — `sota-bird.ts` 6,635, `sota.ts` 3,090 (mixed: 31 gates plus
+`PROMPT_VERSION='sql-prompt/3'`, `extractSql`, `SqlArm`), eight SQL modules 2,039, τ² 754, the rest 19,125
+(60.4%) measurement and statistics. **The library is not coupled to the scenario; the measurement layer is
+unseparated from it.** Those are different repairs: the first would mean rewriting `core`, the second means
+drawing a boundary that already exists in the dependency graph and has never been enforced.
+
+**22.8 What is asserted after this audit, at the level the evidence supports.** Architecture-general: **yes** —
+7,074 lines, no scenario type in a signature, two hosts embedding it (`node` 1,312, `browser` 301), subpath
+exports that exclude the distiller. Mechanism-general: **no evidence** — scenario 1 is 26 iterations whose only
+positive point is +1.17pp and was closed by its own registered clause, scenario 2 is n = 68 with a 15pp
+half-width and a failing resolution gate. Commercially-general: **untouched**. The positioning sentence stays;
+the claim behind it is demoted from assertion to hypothesis, and R27 is the first experiment that tests it as a
+hypothesis rather than assuming it.
+
+## 23. Addendum — two defects found by moving code, and one estimate found by measuring (2026-11-01)
+
+**23.1 D6 — `V51` passed a channel that never fired.** The gate read `share >= floor`. A lane that declared a
+floor of `0` therefore turned `0/100` into a pass, and the manipulation it was supposed to certify — a value
+annotator that annotated nothing, a pruner that pruned nothing — became the control wearing the channel's name
+with a green tick beside it. **This is the exact failure the gate was written to catch**, and it survived because
+the only two floors in use (`0.95`, `0.01`) happen to be positive. Fixed by making `applied > 0` an invariant of
+the gate rather than a consequence of a floor: the floor answers *how often must this happen to be this arm*, and
+zero is not an answer to that question. No published artefact changed.
+
+**23.2 D7 — `typecheck:lanes` was not strict.** The library compiles under `tsconfig.base` with
+`exactOptionalPropertyTypes` and `noUncheckedIndexedAccess`. The six CLI lanes were checked by a bare
+`tsc --noEmit --target es2022 …` with neither, so the lanes were the least-typed code in a repository whose
+stated standard is that the lanes hold the decisions. Turning `--strict` on surfaced **four real defects**:
+`relevanceFor` and `reconcile` took an `ArmName`, which includes `none`, and indexed `item.arms[arm]` where
+`arms` is a `Partial<Record<…>>` with no `none` key — a lookup that reads `undefined` and quietly scores the
+no-memory arm as absent; and `scale.ts` wrote `intent: string | undefined` into a `KnowledgeScope` whose optional
+field does not admit an explicit `undefined`. All four are fixed by narrowing the parameter to
+`Exclude<ArmName, 'none'>` — which is also the true constraint, since a relevance split of a memory-less arm has
+nothing to split — and by conditional spreads. **The gate is now as strict as the library it gates.**
+
+**23.3 The scoping estimate was wrong by fifteen gates, and the error was the interesting part.** §136 divided
+the gates into 22 portable and 9 scenario-bound by reading their **names**. `parse-rate` sounds like a parser's
+gate, `pool-complete` like a candidate pool's, `channel` like a schema channel's. Re-deriving the split from the
+`input.*` fields each gate actually reads gave **29 of 31**; counting the eight transfer ids — passed *into*
+`transferGates` as arguments rather than written beside an object literal, so any `id:` scan misses them — gave
+**39 gates, 37 portable, 2 scenario-bound**, and both of those read an optional field. **A name-based cut would
+have parked nine portable gates in the adapter**, which is the fork the design exists to prevent. The wrong
+number stays in §136 and the correction stays here, because the correction is the only evidence that the rule
+was applied rather than quoted.
+
+**23.4 The regression that makes the move admissible.** `pnpm eval:protocol` re-derives all **31 committed
+artefacts** — thirteen pre-registrations in both directions, every rendered report, every cell comparison — and
+passed on the first run after the extraction. Byte identity held through two structural changes that could have
+broken it: `V4` left the array literal for a conditional push, and `V51`'s floors left the gate for per-entry
+data. Both were possible only because the publication order is now explicit data (`GATE_ORDER`, 39 ids) instead
+of the order the code happens to push objects in.
