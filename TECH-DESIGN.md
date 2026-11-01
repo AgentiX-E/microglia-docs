@@ -4639,3 +4639,75 @@ effect claim is how a repository ends up asserting generality it has not measure
 dimensions ≥ 95%, and 100% for the gate table), because a moved function that loses its tests is a rewrite
 pretending to be a move. The stage-1 regression is unusually strong: 31 committed artefacts are re-validated by
 `pnpm eval:protocol` on every push, so a behaviour change in a moved gate fails offline in about a second.
+
+### 17.65 A portable signature is not an evaluable gate, and the input type was all-or-nothing
+
+**§17.64 ends with a claim it could not test.** It measured portability by reading each gate's signature and
+concluded that 37 of 39 gates "depend on nothing scenario-specific at all". That count is correct and it answers
+a question nobody was asking. The question a lane's author asks is *will this gate fire for me*, and the answer
+depends on something the signature cannot show: whether the lane ran the experiment whose bookkeeping the gate
+reads. `V45-clearance-dose-matched` mentions no scenario type. It also cannot fire for a lane that never built a
+clearance arm and its dose-matched control, because the input it reads is produced by that pair and by nothing
+else.
+
+**So portability is indexical, and the index has to be data.** `packages/eval/src/tau2-gates.ts` holds two
+tables — nine gates the τ² lane's record type can feed, thirty that need an arm it never ran — plus a test that
+the two together are exactly `GATE_ORDER`, in both directions. The test is the load-bearing part: a gate that
+appears in neither table would vanish from the audit without appearing among the absences, which is the same
+silent-omission failure this record has repaired four times in other layers.
+
+| bucket | count | what it means for the report |
+|---|---|---|
+| supplyable | 9 | the lane's record type can carry the field |
+| arm-indexed | 30 | the field exists only inside an experiment τ² did not run |
+| informative | 2 | fires *and* reads a measurement (`V3`, `V5`) |
+| vacuous | 2 | fires, passes, certifies nothing (`V6`, `V7`) |
+
+**The vacuous bucket is not a curiosity; it is the majority of what has ever fired.** `V6-controls-inject`
+evaluates `every` over the list of pack-based control arms, and `every` over an empty list is true — so a lane
+with no such arm gets a green gate that says *"no pack-based controls configured"*. All seventeen published BIRD
+artefacts carry exactly that sentence; sixteen of seventeen carry `V7-channel` with *"no channel control was
+run"*. Two gates out of seven that fire on every run have never quantified anything in the published record.
+Deleting them would change seventeen committed files and would also delete a true statement about the run, so
+the design answer is neither deletion nor denial: the audit counts them separately, and any sentence that says
+"n gates" in this project now has to say which kind.
+
+**The defect the second scenario actually found was in the type, and it was all-or-nothing.** `ProtocolGateInput`
+declared eight fields mandatory. Two of them — `meanPackIds` and the call tally — are knowable only to a lane
+whose model runs in-process: τ²'s agent is a Python program behind a recall facade, and the calls belong to it.
+A lane that could not state those two could not call `buildProtocolGates`, so the four gates it could prove were
+never evaluated. **The requirement did not degrade the report; it withheld it.**
+
+```ts
+// before: a lane that cannot count its recalled items cannot be measured at all
+readonly meanPackIds: number;
+readonly callFailureRate: number;
+
+// after: absent gate, absent field, and a line in the report that names the missing fact
+readonly meanPackIds?: number;
+readonly callFailureRate?: number;
+```
+
+The rule this applies is the one the package already stated for its scenario half — *a gate that cannot fire must
+be absent rather than green* — extended from the optional fields to the required ones. It is not a loosening: a
+lane that supplies the fields (BIRD does, on all seventeen artefacts) gets the same thirty-nine gates and the same
+byte-identical output, which is what `pnpm eval:protocol` verifies on every push. What changes is the case where
+a lane cannot: it reports what it can prove, and the rest is named.
+
+**`V5-resolution` became blocking, and the evidence for the flag is that it had none.** Seventeen artefacts carry
+the gate; seventeen pass it, from 1.96pp to 4.87pp against a 6pp bar. Sixteen iterations of an advisory flag
+whose only failure case is the case it exists for is a flag that was recorded rather than enforced. The run that
+fails it is the second scenario: 68 paired tasks, 27 discordant, so `sqrt(2.802² × 0.3971 / 68) = 21.41pp`
+against a 6pp bar, and the lane had been publishing a 1.47pp delta on top of it.
+
+**The two statistics are not the same number, and the record had been quoting one of them.** The 95% half-width
+is `1.96·SE`; the minimum detectable difference at 80% power is `2.802·SE`. For the τ² comparison those are
+14.98pp and 21.41pp — a ratio of 1.43 — and a report that says "±15pp" while the gate reads 21.41 is not wrong,
+it is two different measurements sharing a name. Both now travel in the artefact, and the gate reads the one its
+criterion names.
+
+**What this does not license.** The apparatus claim survives; the mechanism claim does not gain anything. τ² is
+still a null at n = 68 with a design that can only see 21pp, and no iteration may quote conformance as evidence
+that memory transfers. The one thing stage 2 licenses is narrower and checkable: **a second scenario is measured
+by the same function, the same publication order and the same artefact schema, with no edit to a gate** — and
+the report says which gates fired, which were vacuous, and which experiment each of the rest would need.

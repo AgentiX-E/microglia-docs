@@ -7327,3 +7327,106 @@ linked at least 1%"*).
 **Green.** `pnpm check` — typecheck, `typecheck:lanes` under `--strict`, 2,090 tests over 109 files, four
 coverage dimensions at **99.98 / 99.61 / 100 / 99.98**, with `protocol/src` and `sota.ts` both at **100 on all
 four**; `audit:repo`, six offline lanes, `eval:protocol` and `bench` (blocking gates PASS) all green.
+
+### 138 — Four gates fire, two of them vacuously, and the protocol has never said no
+
+**R27 stage 2 is closed, and it refuted its own registration.** The stage was specified as "make the τ² lane
+implement `LaneAdapter` and replace its three bespoke gates with the thirty-nine", with four predictions written
+down in advance. The predictions were the point: a stage that could not fail would have been a refactor. What
+happened is that three of the four held in a way that closes one question, and the first one fell by a margin
+large enough to close a different one.
+
+| # | registered prediction | outcome |
+|---|---|---|
+| 1 | at least **15** of the 39 gates are evaluable on τ² without a signature change | **refuted: 4 fired, 2 of them vacuous, 9 is the lane's ceiling** |
+| 2 | `l4-resolution` becomes blocking and the run fails it | **held**, through `V5-resolution` rather than through a τ² copy of it |
+| 3 | no gate changes its threshold | **held** — 6pp stayed 6pp; the τ² lane's own 5pp bar was replaced by it, a disclosed 1pp loosening that both fail at 15pp |
+| 4 | the τ² effect does not move by more than 1pp | **held at 0.00pp**: 1.4706pp before, 1.4706pp after, same interval, same p |
+
+**The measurement, as three buckets rather than one number.** The stage produced an **arm index**
+(`packages/eval/src/tau2-gates.ts`) that accounts for all 39 ids in both directions — a test holds
+`supplyable ∪ armIndexed = GATE_ORDER` exactly — because a single count would have hidden the finding inside the
+number:
+
+| bucket | count | meaning |
+|---|---|---|
+| **supplyable** | **9** | the lane's record type can carry the enabling field |
+| ↳ informative on the committed record | **2** | `V3-parse-rate` (100%), `V5-resolution` (fails at 21.41pp) |
+| ↳ vacuous | **2** | `V6`, `V7` — they fire, pass, and certify nothing |
+| ↳ unrecorded | **5** | `V1`, `V2`, `V8`, `V32`, `V44`: the driver never wrote the field down |
+| **arm-indexed** | **30** | the field exists, but only an arm τ² never ran produces it |
+
+**Why prediction 1 mattered more than a count.** Stage 1 counted portability by asking each gate's signature one
+question — *does it mention a scenario type?* — and got 37 of 39, from which the claim "a second scenario is
+measured without editing a gate" was written. Stage 2 shows the question was about the wrong noun. A signature
+being scenario-free does not make a gate **evaluable**: `V45-clearance-dose-matched` names no scenario type at
+all and is unreachable for a lane that ran no clearance arm. **Portability is indexical — a gate is as portable as
+the arm behind it —** and the honest statement is narrower and more useful than the one it replaces: the
+*apparatus* is scenario-agnostic (τ² is scored by the same function, the same publication order and the same
+artefact schema with zero edits to a gate), while the *gate set* is a catalogue of validity conditions of which
+each lane instantiates the subset its arms support. The thirty absences are not a failure list; they are the
+conformance checklist the second scenario was worth buying, and every entry names the experiment that would make
+its gate fire.
+
+**The defect the stage did find is a type, and it cost the lane its entire report.** `ProtocolGateInput` made
+eight fields mandatory. Two of them — `meanPackIds` and the call tally — are knowable only to a lane whose model
+runs in this process; τ²'s agent is a Python program on the other side of a facade, and the calls are its. A lane
+that could not state those two **could not call `buildProtocolGates` at all**, so the four gates it *could* prove
+were never evaluated. The instrument was all-or-nothing: one unstated fact and the whole report is withheld, which
+is the opposite of the rule this package already applied to its scenario half — *a gate that cannot fire is
+absent rather than green*. All eight fields are optional now, and the second scenario fires four gates where it
+fired none.
+
+**Two gates had never certified anything, and the record shows it.** `V6-controls-inject` evaluates `every` over
+the list of pack-based control arms; with that list empty the predicate is vacuously true. Across the seventeen
+published BIRD artefacts it carries the sentence *"no pack-based controls configured"* **seventeen times**, and
+`V7-channel` carries *"no channel control was run"* sixteen times (the seventeenth is the oracle control at
+29.71pp). They are kept rather than deleted — the sentence is a true statement about the run, and removing it
+would rewrite seventeen committed files — but every count in this entry separates them from the gates that read a
+measurement, because a report that said "four gates" where two do work would be the same overstatement the stage
+was called to correct.
+
+**The number that is larger than all of the above: the protocol has never said no.** Across the seventeen
+committed BIRD artefacts, **34 distinct gate ids**, every gate that is carried **passes**, without exception. The
+valued range of `V5-resolution` over that record is 1.96pp to 4.87pp against a 6pp bar, so the one flag that
+could have stopped a run was never in a position to. The first red verdicts in the entire published record are
+the two this stage produced — `V5-resolution` and `l4-paired`, both blocking — and they arrived the moment a
+second scenario was measured rather than a second iteration of the first. **A validity suite whose published
+output has only ever been green is not a gate; it is a form**, and the way to tell the difference is to point it
+at a run that should fail. That is what the τ² re-scoring is.
+
+**`V5-resolution` is blocking because it was measured, not because it was decided.** Seventeen artefacts pass it;
+the run that fails it can resolve a 21.41pp difference at 80% power against a 6pp bar, and it published a 1.47pp
+delta anyway. The flag was carried from a period when a run could not estimate its own minimum detectable
+difference, and it had never been exercised since — a gate whose only failure case is the case it exists for is a
+gate that is recorded rather than enforced. The stage also put the two statistics side by side, because they are
+not the same number and the record has been quoting one of them: the **95% half-width** is `1.96·SE` = 14.98pp,
+the **minimum detectable difference** is `2.802·SE` = 21.41pp, and the ratio is 1.43. Both are in the artefact;
+the gate reads the one its own criterion names.
+
+**A third finding, about the contract rather than about the gates.** `LaneAdapter` reads as though a lane sees
+the model's raw reply. τ²'s does not: the agent runs in another process and the evaluator hands back a verdict
+with a decomposition. So `parse` parses **the receipt** and `score` reads the verdict out of it. That is not a
+workaround — no gate inspects a candidate's shape, only its outcome — but it does narrow what the contract's
+prose claimed, and the narrowing is recorded in `lanes/tau2.ts` beside the three functions it applies to. The
+consequence for the roadmap is concrete: `V46-raw-is-verbatim` and `V47-evidence-ablated` need a transcript-level
+manipulation, which means the τ² driver would have to receive the events rather than a verdict, and that is a
+driver change rather than a gate.
+
+**Refutation applied.** The registered consequence of falling below fifteen was that the generality claim is
+**withdrawn from the positioning text rather than qualified**. It is withdrawn: `COMPETITIVE.md` §0 and the
+README paragraph now say what was measured — apparatus agnostic, gate set arm-indexed — and neither says "a
+second scenario is measured by the same gates" any more. The stronger, chequeable version replaces it, and it is
+the version the code can be read against.
+
+**Green.** `pnpm check` — typecheck, `typecheck:lanes` under `--strict`, **2,142 tests over 110 files**, four
+coverage dimensions at **99.98 / 99.62 / 100 / 99.98** with `tau2.ts`, `tau2-gates.ts` and `protocol/src` all at
+**100 on all four**; `audit:repo`, six offline lanes, `eval:protocol` (13 pre-registrations, 10 gate-list
+agreements, 2 cell recomputations), `bench` (blocking gates PASS) and `bundle:size` all green. No published
+artefact changed except `poc-l4-pair.json`, which is the measurement.
+
+**The lane is red on purpose, and CI asserts that it is red for the right reason.** The τ² conformance step reads
+the committed arms, reproduces `1.4706pp`, fires `V5-resolution` at 21.41pp against a 6pp bar, and requires the
+process to exit non-zero — then checks the audit's shape: four fired, two vacuous, thirty-five absent, nine
+supplyable, thirty arm-indexed. A green step here would mean the protocol had been tuned to pass, which is the
+failure the registration was written to catch.

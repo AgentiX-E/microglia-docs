@@ -2888,7 +2888,7 @@ too (§135), and `linked` is recorded as a **product rule**: never prune the sch
 measurement rather than a guess; the pilot also read `full` at −4.00pp where the registered run reads +0.33pp,
 the ninth minidev pack reading that does not survive the split.
 
-### R27 — protocol / adapter, or: the generality claim's first test (**open** 2026-11-01)
+### R27 — protocol / adapter, or: the generality claim's first test (**stage 1 and 2 closed** 2026-11-01; stage 3 open)
 
 **Why this replaced the candidate pool as the next experiment.** The pool's 13.95pp headroom is still the
 largest unpriced gap in the record and still worth buying, but §136 found something more urgent underneath it:
@@ -2903,6 +2903,7 @@ second scenario can be measured by the same apparatus; otherwise the assertion i
 |---|---|---|---|
 | **1** | move all 39 gates + paired statistics + artefact validator + prereg into `packages/protocol`; `sota-bird.ts` imports | the 31 committed artefacts re-validated by `pnpm eval:protocol` — a behaviour change fails offline in ~1s | none; this is a move |
 | **2** | define `LaneAdapter` (load / prompt / parse / score / strata); make the τ² lane implement it and replace its 3 bespoke gates with the 39 | the τ² artefact must now pass 22 gates it never saw, and `l4-resolution` becomes blocking | **the protocol admits a second scenario without editing a gate** — the generality claim, tested |
+| **2** (outcome) | — | 4 gates fire, 2 vacuous, 35 absent, 9 supplyable, 30 arm-indexed; `V5-resolution` blocking and failing at 21.41pp | **the apparatus is scenario-agnostic; the gate set is arm-indexed** — the claim was narrowed, see §138 |
 | **3** | move the 8 SQL modules into `eval-sql`; split `sota.ts` on the signature cut rule | coverage per dimension must not regress; four dimensions ≥ 95% | none; mechanical |
 
 **Registered predictions for stage 2.**
@@ -2928,3 +2929,101 @@ null at n = 68, and no iteration may quote stage 2 as evidence that memory trans
 temptation is to fold the pool question in and answer two things in one dispatch; they are separate claims with
 separate instruments, and this record's three smallest effects were all produced by an instrument that had been
 asked two questions at once.
+
+**Outcome (2026-11-01, §138).** Stage 2 was run and the first prediction **fell**. The τ² lane now supplies the
+shared protocol through `tau2GateAudit`, and what fires is **four gates, two of them vacuously**, with nine
+supplyable and thirty arm-indexed. `V5-resolution` replaced `l4-resolution`, became blocking, and fails at
+21.41pp against a 6pp bar; the effect did not move (1.4706pp before and after, same interval, same p). The
+registered refutation was **applied rather than argued**: `COMPETITIVE.md` §0 and the README no longer claim that
+a second scenario is measured by the same gate set. They claim what was measured — the *apparatus* is
+scenario-agnostic, the *gate set* is arm-indexed — and the second claim is stronger because a reader can check it
+against `packages/eval/src/tau2-gates.ts`.
+
+Two defects came out with it and neither was on the stage's list. `ProtocolGateInput` made eight fields mandatory,
+two of which are unknowable to a lane whose model runs out of process, so the second scenario could not call the
+gate function at all: **the instrument was all-or-nothing and withheld four provable gates over two unstateable
+ones.** All eight are optional now. And `V5-resolution` had been advisory for sixteen iterations while passing
+**17 of 17** published artefacts, at 1.96pp to 4.87pp — a flag never once exercised, whose first failure case is
+the case it exists for.
+
+### R28 — is the harm at intermediate overlap? A stratification of 1,534 committed questions (**registered** 2026-11-01)
+
+**Why this is first, and why it costs nothing.** The longest-running unexplained fact in this record is the size
+of the mechanism: **+1.17pp** on the terrain most favourable to it, over 26 iterations, with one arm of −9.26pp.
+The standing suspicion has been that the defect is in *what is stored and how it is used*. Four published designs
+now name four different defects (COMPETITIVE.md appendix A), and one of them — MEMTRIM's partial-overlap
+over-reliance — makes a **sharp prediction about a dataset already in this repository**: if it is the mechanism,
+harm concentrates at *intermediate* overlap between a question and the rules it retrieved, and is small at both
+extremes. Every field that stratification needs is in
+`eval/results/poc-sota-bird-dev-R26-channels.json`: 1,534 rows of `correct`, `withoutMemoryCorrect`, `packIdList`,
+`injected`, `coverage`, `difficulty`, `schemaTables`.
+
+**The statistic, fixed before the run.** Overlap is `|tokens(question) ∩ tokens(rule)| / |tokens(question)|`
+maximised over the rules the question actually retrieved — **outcome-blind by construction**: it reads the
+question and the injected text, never a result, so the stratum cannot be conditioned on the outcome it is used to
+explain. Tokens are lower-cased, stop-worded and split on non-alphanumerics; identifiers keep their underscores.
+Bucket edges are fixed at `[0, 0.2)`, `[0.2, 0.4)`, `[0.4, 0.6)`, `[0.6, 1.0]`.
+
+| # | criterion | bar | refuted if |
+|---|---|---|---|
+| 1 | the harm is not monotone in overlap | middle-bucket delta is the minimum of the four, by at least 1pp | the minimum sits at an end bucket → over-reliance is not our failure mode |
+| 2 | the pattern survives the difficulty control | the minimum stays in a middle bucket within `simple`, `moderate` and `challenging` separately | it is produced by one difficulty band only |
+| 3 | the buckets are populated | every bucket has ≥ 100 questions and ≥ 10 discordant pairs | a bucket is a direction, not a measurement |
+| 4 | the reading is stable to the tokeniser | the ordering of the four buckets is unchanged under a second tokenisation (character 4-grams) | the pattern is an artefact of one tokeniser |
+
+**What a pass licenses and what it does not.** A pass licenses **one** read-time experiment (a scope-match filter
+that drops rules whose overlap with the question is below the fitted knee) and it licenses it *cheaply*, because
+the filter is a pure function over a pack that already exists. It does **not** license a change to the distiller,
+it does not license STRATA's contrast edges, and above all it does not license the claim that memory works: a
+mechanism for the harm is not a mechanism for the benefit, and the benefit is still 1.17pp.
+
+**Refutation.** If the harm is monotonically *increasing* in overlap — more overlap, more damage — the mechanism
+is closer to Anti-Persistence's error reproduction (a confidently-retrieved wrong abstraction) than to
+over-reliance, and the repair moves from the read path to the write path. If the delta is flat across buckets, none
+of the four published mechanisms describes this system, and that is the finding: the record's own negative effects
+would then be **noise at n = 1,534 with a 1.30pp interaction**, and the six iterations spent on prompt-side
+channels were spent on a null.
+
+**Cost.** Zero calls. One offline pass over committed artefacts, reproducible in CI, with the pre-registration
+committed before the numbers are read.
+
+### R29 — the τ² lane's first arm that is not a re-scoring (**registered** 2026-11-01)
+
+**Why this rather than stage 3 or the pool.** Stage 3 (moving the eight SQL modules into `eval-sql` and splitting
+`sota.ts` on the signature rule) is mechanical and can be done at any time; it changes no number. The candidate
+pool was bought and spent at R7.1, where four heterogeneous generators collapsed to 1.56 distinct answers and each
+arm lost individually (`gen-plan` −5.43pp, `gen-decompose` −3.14pp, `m-schema` ±0.00): the 13.95pp is a ceiling
+for a pool this harness cannot build, not an unspent budget. What is actually unspent is the **evidence for the
+one claim §138 salvaged**: that the apparatus is scenario-agnostic. That claim currently rests on four gates, two
+of which are vacuous, and none of which is the machinery anyone would worry about — the transfer gates, the
+substrate comparison and the probe are the ones a sceptic would say were built for BIRD.
+
+R29 therefore buys the cheapest arm that makes the protocol's *shared* machinery fire on a second scenario, and
+it is a single dispatch with two stages.
+
+| stage | work | the gates it makes fire |
+|---|---|---|
+| **1** | instrument `tau2-driver.ts` to record what the projection already reads: the split (`train`/`test`), `meanPackIds` from the facade's packs, the agent call tally, the correction bookkeeping, `domainOrigin` | `V1`, `V2`, `V8`, `V32`, `V44` — the supplyable ceiling rises from 4 to **9** |
+| **2** | one **cross-domain** arm: distil from τ²-retail, answer a held-out τ²-airline slice, with the same task set scored by a memory-free reference | `V15`–`V17`, `V33` — the four transfer gates, on a scenario they were not written for |
+
+**Registered predictions.**
+
+1. **Stage 1 fires nine gates and no more.** If it fires ten, the projection is reading a field nobody wrote; if
+   it fires eight, one of the five is not derivable from what the driver can see and the arm index is wrong.
+2. **`V33-transfer-ledger` fires and `V15` passes, or the transfer machinery is BIRD-shaped.** The ledger gate
+   exists because a rate was once published without its pairs; a second scenario that cannot carry one row per
+   trial would mean the gate encodes a BIRD artefact format rather than a property of transfer.
+3. **The cross-domain effect is a null, and this is a prediction rather than a hope.** §136 measured the
+   mechanism at +1.17pp on the terrain most favourable to it, and a foreign domain is strictly harder; anything
+   above +5pp would be more likely to be a leak in the split than a transfer.
+4. **`V16-transfer-resolvable` fails.** Retail-trained memory answering an airline slice has few informative
+   trials by construction, and the gate's hundred-trial floor is a floor, not a formality. A pass here would mean
+   the floor is being cleared by trials that are not informative.
+
+**Refutation.** If stage 2 shows that the transfer gates cannot be computed for a cross-domain τ² arm at all —
+because the driver cannot enumerate the trials the gates audit — then the apparatus claim narrows a second time,
+to *"the shape gates are portable and the accounting gates are not"*, and the protocol's own documentation says
+so. If stage 2 produces a positive effect above +5pp, the first thing to audit is the split, not the finding.
+
+**Cost.** One τ² environment dispatch through `sota.yml`, no new dataset, no new model family. Stage 1 is offline
+and can be reviewed before stage 2 is paid for.

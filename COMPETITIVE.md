@@ -43,6 +43,24 @@ one in the README, τ²-bench is the one with a second harness. The first-row sy
 could embed us*, and the honest competitive question about them is not "do we beat their EX" but "would their
 pipeline improve if our pack were injected" — which is R26's finding and not a leaderboard.
 
+**One positioning claim has been withdrawn rather than qualified, and it is recorded here because this is the
+document that makes positioning claims.** Until R27 stage 2, this section and the repository README described the
+measurement layer as a *scenario-agnostic protocol*: thirty-nine gates, thirty-seven of which name no scenario
+type, from which the project asserted that a second application scenario could be measured by the same gates
+without writing its own. **The signature count was correct and the inference was wrong.** When τ²-bench — the
+second harness this document has pointed at since §1 — was actually scored by those gates, **four fired, two of
+them vacuously, and thirty needed an experiment τ² had never run** (`V45` names no scenario type and cannot fire
+without a clearance arm). A gate is as portable as the arm behind it; the gates are a catalogue of validity
+conditions, and each lane instantiates the subset its arms support.
+
+What replaces it is narrower and checkable, and it is the version a sceptic can audit against code rather than
+prose: **the apparatus is scenario-agnostic.** τ² is measured by the same gate function, the same publication
+order and the same artefact schema **with no edit to a single gate**, and the one change the second scenario
+forced in the type went the other way — eight mandatory fields became optional, because two of them are
+unknowable to a lane whose model runs out of process. The stronger sentence the project used to write would have
+been a claim about a fixture's coverage. This one is a claim about a boundary, and
+`packages/eval/src/tau2-gates.ts` is where it is either true or false.
+
 ---
 
 ## 1. The finding that reframes everything
@@ -593,3 +611,47 @@ beside its accuracy.
 Numbers we intend to reproduce ourselves, because they change a decision: the M-Schema delta on
 DeepSeek (one arm), the CHASE-style pool ceiling under heterogeneous generators (R7.1), and the
 per-signal discrimination of execution signatures (R7.2a).
+
+## Appendix A — what the field has actually measured about memory *harm*, and which of it our data can settle
+
+This appendix exists because of a standing suspicion recorded in this project's own notes: **the negative
+effects come from what is stored and how it is used, not from the model failing to apply a good rule.** That is
+now a hypothesis with four published mechanisms behind it rather than a hunch, and this project's committed
+artefacts can discriminate between them **without a single model call**. Source grades follow the rule at the top
+of this document: a paper's own ablation is *high*, a headline number is *medium*, and anything read second-hand
+is *low*.
+
+| mechanism | the claim, in the authors' terms | the number they publish | grade |
+|---|---|---|---|
+| **Negative transfer from direction-opposite precedent** (STRATA, arXiv 2610.19386) | a superficially similar but *directionally opposite* experience is recalled and its concrete steps copied verbatim, actively harming the agent; repaired by typed **contrast edges** marking confusable, opposite pairs | ScienceWorld 78.7 → 96.7 within one system after the contrast edges | medium |
+| **Partial-overlap over-reliance** (MEMTRIM, arXiv 2610.07311) | memory helps when experience transfers whole and misleads when **only part** of the evidence transfers; harm is **largest at intermediate query–memory overlap**, reproduced by varying overlap with everything else fixed | largest harm at middle overlap, across Mem0 / A-Mem / MemGPT / Graphiti | medium |
+| **Error reproduction through abstraction** (Anti-Persistence, arXiv 2610.27406) | a wrong *abstraction* propagates by being retrieved, shaping the trajectory, and being re-abstracted; repaired by keeping trajectories and **reconstructing guidance on demand, discarding it afterwards** | higher held-out success and lowest call cost among the compared designs | medium |
+| **Stability–plasticity resurfaces at retrieval** ((k,v) study, arXiv 2604.27003) | under a bounded window old and new experience compete during retrieval; **negative transfer disproportionately harms the hard cases**, and finer-grained organisation buys forward transfer at the cost of forgetting | qualitative + controlled sequential-task experiments (ALFWorld, BabyAI) | low-medium |
+
+**Four mechanisms, four different repairs, and the difference matters commercially**: contrast edges are a
+write-time label, a scope-match filter is a read-time gate, on-demand reconstruction removes the stored
+abstraction entirely, and a forgetting policy is a maintenance job. Choosing the wrong one buys a rewrite that
+addresses nothing — which is exactly what R26 measured when the prompt-side annotation channel returned +1.17pp
+and the pruner returned a **−9.26pp harm**.
+
+**What our own record already discriminates, at zero cost.** No new run is needed to eliminate two of the four:
+
+| observation, already committed | what it rules out |
+|---|---|
+| the pack is injected as **rendered text**, not as steps the model is asked to copy (`V46-raw-is-verbatim` measures the verbatim arm separately, and it is an arm rather than the default) | STRATA's "concrete steps copied verbatim" is not our default condition — but *contrast edges* are still untested here |
+| **negative lessons exist and are stored** (`kind: 'negative'`, L2b) and L2b's holdout did not move | a missing contrast mechanism is not obviously the binding constraint |
+| 1,534 questions, `per_case` carries `correct`, `withoutMemoryCorrect`, `packIdList`, `injected`, `coverage`, `difficulty` and `schemaTables` per question | the partial-overlap question is **answerable from the committed artefact**, offline, with no model call |
+
+**The measurement that would settle it, and why it is the next iteration rather than a reading list.** MEMTRIM's
+finding makes a sharp, falsifiable prediction about data we already hold: **if over-reliance is our failure mode,
+the harm concentrates at intermediate overlap between the question and the rules it retrieved, and is small at
+both extremes.** That is a stratification of `correct − withoutMemoryCorrect` by an **outcome-blind** overlap
+statistic computed from the question text and the *injected* rule text — both of which are in
+`poc-sota-bird-dev-R26-channels.json` for all 1,534 questions. It is registered as R28 and it costs nothing to
+run, which is the point: the largest unexplained thing in this record — a mechanism that produces 1.17pp on its
+best terrain — has had a published explanation available for a month and no test against our own data.
+
+**What is *not* claimed here.** None of the four numbers transfers to this setting. They are designs measured on
+their own benchmarks with their own backbones, and the grade column says so. What transfers is the *shape of the
+prediction*: each mechanism implies a different pattern in a dataset we already own, and a pattern is cheaper to
+look for than a rewrite is to abandon.

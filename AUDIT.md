@@ -1204,3 +1204,59 @@ passed on the first run after the extraction. Byte identity held through two str
 broken it: `V4` left the array literal for a conditional push, and `V51`'s floors left the gate for per-entry
 data. Both were possible only because the publication order is now explicit data (`GATE_ORDER`, 39 ids) instead
 of the order the code happens to push objects in.
+
+## 24. Addendum — R27 stage 2: the protocol had never said no (2026-11-01)
+
+**24.1 The largest finding in this file is a count of zero.** Across the seventeen committed BIRD artefacts,
+**34 distinct gate ids**, every gate every artefact carries **passes**. Not one published artefact has ever
+carried a red verdict from the validity suite that exists to refuse them. The first failing gates in the whole
+published record are the two the second scenario produced in this stage (`V5-resolution`, `l4-paired`), and they
+arrived the moment a run that *should* fail was pointed at the apparatus.
+
+A suite whose published output has only ever been green cannot be distinguished from a form. Every defect listed
+in §22 and §23 was found by reading the code, not by a gate firing — `V51` passing a channel that never fired, the
+ledger that never reached the file, the `V5` flag that was advisory. **The gate layer's own history is the
+evidence that it was not enforcing anything**, and the repair is not a new gate; it is to measure a scenario the
+gates were not written for and let them fail.
+
+**24.2 A gate's signature being scenario-free does not make it evaluable, and the whole portability claim was
+measured on the wrong noun.** §23.3 established "39 gates, 37 portable, 2 scenario-bound" by reading the fields
+each gate touches. Stage 2 shows that count answers *does this gate belong to the protocol* and not *will this
+gate fire for a lane*. `V45-clearance-dose-matched` names no scenario type and cannot fire without a clearance
+arm and its dose-matched control. The measured answer for τ²: **9 supplyable, 30 arm-indexed, 4 firing, 2 of the
+4 vacuous.** The count that was quoted as evidence of generality is a statement about signature hygiene, and the
+generality claim it was attached to has been withdrawn from `COMPETITIVE.md` §0 and the README rather than
+qualified.
+
+**24.3 A required field that a lane cannot supply withholds the entire report.** `ProtocolGateInput` declared
+eight fields mandatory, two of which (`meanPackIds`, the call tally) are knowable only to a lane that runs its
+model in-process. τ²'s agent is a Python program and its calls are its own, so the lane could not call
+`buildProtocolGates` at all: **four provable gates were withheld over two unstateable fields.** This is the same
+class of defect as §22's `V51` and §23's `V4` — an instrument whose failure mode is silence — and it is repaired
+the same way, by making the absence expressible. All eight fields are optional; a gate whose field is missing is
+absent, and the artefact names the missing fact.
+
+**24.4 Two of the seven gates that fire on every run have never quantified anything.** `V6-controls-inject`
+evaluates `every` over an empty control list, which is true; it has printed *"no pack-based controls configured"*
+in **17 of 17** published artefacts. `V7-channel` has printed *"no channel control was run"* in **16 of 17**. Both
+are kept — the sentences are true, and deleting them rewrites seventeen committed files — but no count in this
+project may report them as evidence. The audit separates them, and the separation is tested.
+
+**24.5 `V5-resolution` had never been in a position to fail, which is why it was advisory.** Seventeen artefacts
+carry it; seventeen pass, from 1.96pp to 4.87pp against a 6pp bar. A flag whose only failure case is the case it
+exists for was carried for sixteen iterations without being exercised, and the run it should have stopped is the
+second scenario: 68 paired tasks, 27 discordant, minimum detectable difference **21.41pp**, publishing a **1.47pp**
+delta. The flag is now blocking, and no published artefact changes its verdict because none of them ever failed
+it. **The change is admissible only because it was measured first**, which is the order this file has been
+demanding since §12.
+
+**24.6 The two resolution statistics share a name and differ by 43%.** The record has been quoting the 95%
+half-width (14.98pp) while the gate reads the minimum detectable difference at 80% power (21.41pp); the ratio is
+`2.802/1.96 = 1.43`. Neither is wrong and a reader cannot tell which one a sentence means. Both now travel in
+`poc-l4-pair.json`, and the gate reads the one its own criterion names.
+
+**24.7 What is still not closed.** Stage 3 — moving the eight SQL modules into `eval-sql` and splitting `sota.ts`
+on the signature rule — is mechanical and open; it changes no number. The τ² lane cannot yet ingest a transcript,
+so `V46-raw-is-verbatim` and `V47-evidence-ablated` are unreachable for a driver change rather than a gate
+change. And five of the nine supplyable gates need a field the driver has never written: until R29 stage 1, the
+lane's ceiling is nine and its floor is four, and every report says which.
