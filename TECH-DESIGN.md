@@ -4451,3 +4451,74 @@ recorded path.
 its cell row is unchanged (`reproduced` at +4.11pp). R24's artefact is committed beside it under the derived
 name, and the pre-registration's Outcome says why. The numbers in neither file moved: the defect was in the
 address, not the measurement.
+
+### 17.61 A threshold fitted on the questions it decides for is a result wearing the name of a rule
+
+**What R25 needed and what the store could supply.** The pre-registration asks whether a decision made per
+question beats an order that is the same for every question, and every previous attempt at that question
+used *per-item* counterfactual credit: R12's probe, `full-verified`, `full-cleared`, `full-transferred`. All
+four read "did this item help on the learning rows it was injected into". R21 measured the supply: 77% of a
+store distilled from 280 corrections has no counterfactual record at all, and the whole learning pass prices
+about a hundred decisive rows out of 1,400. An admission rule fitted on that signal would fire almost never,
+and an arm that fires almost never is `full-one` under a second name — the failure mode this record has
+published as a null result before.
+
+**So the statistic is the one that is dense.** `dose.ts` fits a floor on the note's *coverage of the
+question* — the share of the question's content terms the note it would receive mentions — against the
+counterfactual verdict that row produced during the learning pass. Coverage is defined for every row, so the
+fit has 1,400 observations rather than 100, and it is the same number for a learning row and a held-out
+question because both are computed from the item the row actually received.
+
+**The three rules the fit obeys, and why each is one.**
+
+| rule | what it stops |
+|---|---|
+| maximise `helped − harmed` among rows at or above the floor | the objective is the one the arm is claimed to improve; a floor chosen for any other reason is a second hypothesis |
+| keep at least half the population | the net is maximised by keeping the single rescued question, which is a policy that admits nothing and reports a perfect record |
+| return the lowest floor among ties, and only a coverage that occurred | equal nets are equal evidence, and an interpolated threshold has an effect on the population nobody computed |
+
+**The defect its own tests caught.** The first version computed the minimum keep as
+`Math.ceil(Math.max(1, minKept) * total)` — which reads as "at least one question" and means "at least all of
+them". Every fit therefore returned the lowest floor, the admission arm would have been exactly `full-one`,
+and the dispatch would have reported a null about a treatment that never happened. Three of the module's own
+tests failed on the first run, which is the only reason it was found before a dispatch rather than after one.
+The parsing path was then given a validator that refuses a share outside (0, 1] instead of clamping silently,
+because a clamped setting is a policy nobody wrote.
+
+**Order is part of the claim.** The floor is fitted per fold, on `learnRows`, before any held-out question is
+scored. A floor fitted afterwards on the same questions that produced the number would be a threshold chosen
+by its own result — the defect this record has refused pre-dispatch three times (R10, R11, R21's second
+version) and would be least able to see here, because the arm's whole claim is that the threshold *is* the
+treatment.
+
+### 17.62 Two controls are not a ladder
+
+**The gap R25's registration exposed.** `arm_pairs` pairs every control arm against `full`, which is the right
+default: `full` is what the lane ships, and a control that costs nothing is evidence about the mechanism rather
+than about retrieval. R25 registers a contrast between two *controls* — `full-accepted` against `full-one` —
+because the question is whether the admission decision beats truncation, and `full` differs from both by an
+item. The artefact as it stood had no interval for that pair, and subtracting the two deltas would produce a
+point estimate with no error bar: the exact move this record had to withdraw in iteration 55 and again in R21.
+
+**`armPairBetween` is the general form, and the against-`full` pairing is its special case.** Both are paired
+McNemar over the questions the two arms actually answered, with the same bootstrap, and a test asserts the two
+agree on the pairs where both apply — two estimators over the same rows that disagree are a reader's problem,
+not a rounding artefact.
+
+**Computed where a reader can re-derive it.** `pnpm eval:arm-contrast --left … --right …` reads a committed
+artefact and writes `eval/results/poc-arm-contrast.json`. The record's rule is that a number computed after
+the run by a script outside the repository is a quotation rather than evidence, and this is the tool that keeps
+the registered contrast inside. Checked against R24's artefact it reproduces the published cell exactly —
+`−0.72pp [−2.15, 0.72] p = 0.3824`, 60 gained and 71 lost — which is a check of the tool and of the number it
+was pointed at.
+
+**And a parser that failed the first time it was used.** The first version scanned the argument list once per
+flag and refused any token that was not the flag it was looking for, so `--left a --right b` threw on
+`--right` and the tool could only ever hold one arm name. It is a small function, it failed on its first real
+invocation, and the fix was to move it out of the CLI entry point into a module with eight tests — which is
+where the rest of this record's decisions live for the same reason: a rule that no instrument can reach is a
+rule nobody has checked.
+
+**A missing pair is not a zero.** `armPairBetween` returns `undefined` when no question carries both arms.
+A fabricated interval around no data would be the most confident possible statement about nothing, and the
+tool refuses the invocation rather than writing one.

@@ -34,7 +34,7 @@ reproduction, and a genuine reproduction needs the dev split (recorded as R8.3b)
 
 | System | Generator | Schema form | Candidates | BIRD dev / test EX | Gap from 53.5 |
 |---|---|---|---|---|---|
-| **microglia (ours)** | DeepSeek, API | DDL | 1 (+ memory pack) | 53.71 (Mini-Dev, n=350) | — |
+| **microglia (ours)** | DeepSeek, API | DDL | 1 (+ memory pack) | **57.63 dev (n=1,534)**, 53.71 Mini-Dev (n=350) | +4.11 (reproduced) |
 | XiYan-SQL baseline | DeepSeek | DDL | 1 | 53.52 (dev, n=1,534) | −0.19 (indicative) |
 | XiYan-SQL + M-Schema | DeepSeek | M-Schema | 1 | 55.15 (dev) | +1.63 |
 | XiYan-SQL, full | FT + ICL ensemble | M-Schema | 5–21 | 71.58 (dev), 75.63 (test) | +18.06 / +22.11 |
@@ -413,6 +413,30 @@ generators; we use a closed API. Four things are nonetheless ours to win:
 4. **The negative results, published.** Twelve arms with one sign is a map of where not to spend. No
    competitor publishes theirs, which is why the field keeps re-discovering that prompt-injected
    lessons do not pay.
+
+**The comparison that reverses, in the unit the benchmark actually sells.** R25 closed the pack line with a
+null, which reads as a loss until the same table is drawn for everyone else. Every published ablation this
+document quotes is a **point estimate on a single dispatch with no interval, no minimum detectable effect and
+no noise floor** — so none of them can state a null, and none can say how large an effect would have had to
+be to be seen:
+
+| system | what it publishes | interval | MDE | can it report this null? |
+|---|---|---|---|---|
+| XiYan-SQL | 53.52 dev, ablations in Table 6 | — | — | no |
+| CHASE-SQL | 73.01 dev/test, 13.95pp pool ablation | — | — | no |
+| RSL-SQL | 12.71pp schema-linking ablation | — | — | no |
+| CHESS | 14.36pp column-selection ablation | — | — | no |
+| GradeSQL | +4.33 selection gain (reviewer flagged: no significance testing) | — | — | no |
+| **this project** | **17.60pp [+15.38, +19.82]**; pack **−0.33pp [−1.56, +0.85]** | **yes** | **2.01pp** | **yes, with a bound** |
+
+The last row is not a better score. It is the only row where the claim *"this mechanism is worth less than
+2.35pp on this benchmark"* is a measurement rather than an absence: two oracles computed with the answer key
+price the entire remaining pack upside at **+2.35pp** (drop every net-harmful item) and **+4.17pp** (keep the
+pack exactly where it helped), against a split that resolves **2.01pp** — and 507 questions were refused the
+note on a byte-identical prompt and moved 1.4%, which is the endpoint's own test–retest floor measured inside
+the dispatch. **A field that reports points without intervals cannot distinguish "the mechanism is inert" from
+"the mechanism is 3pp and the run was too small", and that is the distinction this record now spends its
+dispatches on.**
 
 ---
 

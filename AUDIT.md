@@ -965,3 +965,97 @@ committed beside it, and five tests cover the rule (named file, one design one f
 ids refused, id read from either spelling). One more gap closed on the way: `eval:protocol` was in the local
 check and not in `ci.yml`, so the gate that recomputes the cell never ran on a push — it is a step now, and the
 defect that motivated it cannot land again by a path CI owns.
+
+## 20. Addendum — R25: the dose was selection, and the instrument ran out first (2026-11-01)
+
+**20.1 The dispatch.** `41256898122` on `ee87629`, 33 minutes, 1,534 questions, 5 folds, **9,096 calls**, 0
+call failures, 0 timeouts, **14 gates pass**. `V48-statements-answered`: 18 of 12,774 statements at the 20 s
+deadline (0.14%), 172 truncated at the row cap (1.35%) — 4,000 fewer statements than R24 executed, because
+`full-accepted` empties the prompt on a third of the questions. Four arms, two of them new.
+
+**20.2 The arms and the eight contrasts.**
+
+| arm | accuracy | n | rules/question |
+|---|---|---|---|
+| `none` | 57.17% | 877/1534 | — |
+| `full` | 57.11% | 876/1534 | 1.74 |
+| `full-one` | 56.78% | 871/1534 | 1.00 |
+| `full-accepted` | **57.63%** | 884/1534 | 0.67 |
+
+| contrast | pp | 95% CI | discordant | p |
+|---|---|---|---|---|
+| `full-one` − `full` | **−0.33** | [−1.56, +0.85] | 42/47 | 0.6718 |
+| `full-one` − `none` | −0.39 | [−1.76, +0.91] | 52/58 | 0.6338 |
+| `full` − `none` | −0.07 | [−1.50, +1.30] | 60/61 | 1.0000 |
+| `full-accepted` − `full-one` | **+0.85** | [−0.13, +1.83] | 35/22 | 0.1112 |
+| `full-accepted` − `none` | +0.46 | [−0.78, +1.69] | 52/45 | 0.5426 |
+| `full-accepted` − `full` | +0.52 | [−0.85, +1.83] | 58/50 | 0.5008 |
+
+The lane's own `arm_pairs` recomputed `full-one − full` as −0.33 [−1.56, +0.85] p = 0.6718 and
+`full-accepted − full` as +0.52 [−0.85, +1.83] p = 0.5008; the CLI at `pnpm eval:arm-contrast` reproduced the
+first from the committed artefact to four decimals, and reproduced R24's `pack, no evidence` on R24's
+artefact exactly (−0.72 [−2.15, +0.72] p = 0.3824, 60/71). **Two implementations, one number.**
+
+**20.3 The dose effect does not survive being made causal.** The store had been reporting a dose reading for
+two iterations: dose-2 questions 4.13pp above dose-1 in R24's store, 3.12pp in this one (dose-1 n=401
+**+2.24pp**, dose-2 n=1,133 **−0.88pp**). The registered prediction was `full-one − full ≥ +2pp`. Measured:
+**−0.33pp**, with an interval excluding anything above +0.85. The observational reading was **selection** —
+the store allocated its second item to the questions it had more to say about, and those were the questions
+where a note of either length was worth more. **Two of six predictions are refuted by this arm**, and both
+were the ones the record had been relying on.
+
+**20.4 Per-question admission is the largest positive point estimate in the line and still not a result.**
+`full-accepted` fits a coverage floor per fold on that fold's learning rows, maximising `helped − harmed`
+subject to keeping ≥50% of rows and ≥8 decisive rows, then admits or refuses the one-item pack per question
+on the evaluation set. Measured **+0.85pp [−0.13, +1.83], 35 gained against 22 lost, p = 0.1112**, admitting
+**1,027 of 1,534 (66.9%)** at **0.67 rules/question**. `V50-admission-engaged` read `fitted` on five of five
+folds, floors **0.111–0.200**, kept **51–84%** of decisive-bearing rows. **The interval's lower bound excludes
+harm above 0.13pp — no pack arm in this record has ever had that — and it does not exclude zero**, which is
+what the registration predicted.
+
+**20.5 A free test–retest, and it is the run's main methodological product.** The 507 refused questions
+received a prompt byte-identical to `none`, and they moved **4 gained / 3 lost against `none`** — **1.4% of
+507**, inside the 1.4–2.6% band R17's `none-replica` arms established, measured here without a dedicated arm.
+The admission arm's +0.85pp is 3.4pp of gross movement on top of that floor. **Any future claim on this lane
+now has a noise floor the lane produces about itself**, which is what turns §20.7 from an argument into
+arithmetic.
+
+**20.6 The registered clause fired and the pack line is closed.** The clause: *"If `full-one − full` and
+`full-one − none` both have intervals containing zero, the pack line is closed at every budget."* Both do
+(+0.85 and +0.91 headroom). Recorded as closed at every budget, with the product statement *no pack before
+the question* — the behaviour iteration 90 shipped, now with a dev-scale interval around it.
+
+**20.7 The measurement ceiling, stated as a ratio.** `V5-resolution` MDE **2.01pp**. Two oracle ceilings on
+R24's artefact with the key in hand: **+2.35pp** dropping every net-harmful item, **+4.17pp** keeping the pack
+exactly where it helped. Every arm in this run is inside ±1pp. **The oracle's price for a perfect pack is
+1.17× the effect this instrument can detect**, so no further pack experiment on BIRD dev can produce a
+distinguishable result, whatever the mechanism does. This is a property of the split, not of the store, and
+it is now the binding constraint on the whole programme.
+
+**20.8 Two defects in the new tooling, both caught before the dispatch.** (a) `admissionFloor` computed its
+population floor as `Math.ceil(Math.max(1, policy.minKept) * total)` — the *share* clamped to 1 instead of 1%
+— so every fold returned the lowest threshold keeping at least everyone and `full-accepted` would have
+degenerated silently into `full-one`, publishing a null that was a bug. **Its own tests failed on first run**
+(`expected 0.5 / 0.9 to be …`); fixed to `Math.max(1, Math.ceil(policy.minKept * total))`, and
+`parseAdmissionPolicy` now **rejects** values outside (0, 1] rather than clamping them, because clamping a
+policy is how a configuration error becomes a scientific result. (b) `parseContrastArgs` failed on its first
+real call — `--left a --right b` threw `unknown flag: --right` because the single-value parser had only ever
+been read once per arm. Extracted to its own module, rewritten as one pass that collects both flags and pairs
+them by position, eight tests. **The first defect would have cost a 33-minute dispatch; the second would have
+cost one command.**
+
+**20.9 What held, and the fold picture.** `full − none` at −0.07pp [−1.50, +1.30] contains R24's −0.59pp, so
+the anchor is stable across two stores built from different learning passes. `V49-dose-truncated`: **1,133 of
+1,534 prompts (73.9%) differ from `full` and 0 exceeded one item** — the check that makes `full-one` a dose
+control rather than a duplicate of `full`, and it passed on its first run. Per fold, `full-accepted − full-one`
+ran **−0.33, +3.26, −1.30, +0.98, +1.63**; `full-one − full` ran **0.00, −1.30, +1.30, −1.63, 0.00**. By
+difficulty, `full-accepted − full-one` is `simple` **+0.65pp**, `moderate` **+2.16pp** (13/3), `challenging`
+**−2.07pp** (0/3 on three discordant questions). At n=145 the last cell is a shape and is recorded as one.
+
+**20.10 Verification.** `pnpm check` green: **2,044 tests, 107 files, 99.98 / 99.61 / 100 / 99.98**, with
+`dose.ts`, `arm-contrast.ts`, `artefacts.ts` and `sota.ts` at 100.00 on all four dimensions. Two branch gaps in
+`sota.ts` (2291, 2315 — the two zero-denominator guards on `V49` and `V50`) were found by the coverage gate and
+closed with two tests rather than an ignore. `pnpm eval:protocol` re-derives `R25-dose-and-admission` over
+`full-one, full-accepted` at n=1534 against V1…V50 from the committed artefact. Nothing in this addendum is
+quoted from a log: every number is read from `eval/results/poc-sota-bird-dev-R25-dose-and-admission.json`, and
+the contrasts are re-derivable by `pnpm eval:arm-contrast` from the file in the repository.

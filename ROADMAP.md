@@ -2786,3 +2786,47 @@ history is not informative and retires the counterfactual-record requirement.
 > `linked-noevidence`, `none`); the linker reads the question and **not** the evidence on both ablated cells,
 > because a pruner that reads the hint reintroduces the thing being ablated; `V47` covers all three ablated
 > arms unchanged.
+
+**The run, and the verdict (closed 2026-11-01).** `41256898122`, 33 minutes, 9,096 calls, 14 gates. Four arms
+— `none` 57.17%, `full` 57.11%, `full-one` 56.78%, `full-accepted` 57.63% — and eight contrasts:
+
+| contrast | pp | 95% CI | discordant | p |
+|---|---|---|---|---|
+| `full-one` − `full` | **−0.33** | [−1.56, +0.85] | 42/47 | 0.6718 |
+| `full-one` − `none` | −0.39 | [−1.76, +0.91] | 52/58 | 0.6338 |
+| `full` − `none` | −0.07 | [−1.50, +1.30] | 60/61 | 1.0000 |
+| `full-accepted` − `full-one` | **+0.85** | [−0.13, +1.83] | 35/22 | 0.1112 |
+| `full-accepted` − `none` | +0.46 | [−0.78, +1.69] | 52/45 | 0.5426 |
+| `full-accepted` − `full` | +0.52 | [−0.85, +1.83] | 58/50 | 0.5008 |
+
+1. **Prediction 1 refuted.** `full-one − full ≥ +2pp` measured **−0.33pp**. The 4.13pp dose effect the store
+   had been reporting since R24 is **selection**: the second item went to the questions that had more to say,
+   and those were the questions where any note was worth more. Prediction 2 went with it — one note alone is
+   −0.39pp against nothing.
+2. **Prediction 3 held, with a sign.** `full-accepted − full-one` landed inside ±2pp at **+0.85pp**, the
+   largest positive point estimate any pack arm has produced and the first whose lower bound excludes harm
+   above a tenth of a point. It still contains zero, and the run measured its own floor to say why: the 507
+   refused questions got a **byte-identical** prompt and moved **4 gained / 3 lost** — **1.4%**, the endpoint's
+   test–retest noise, measured inside the dispatch for free.
+3. **Predictions 4, 5 and 6 held.** `full − none` −0.07pp (anchor stable across two stores). `V49` first run:
+   1,133/1,534 prompts differ from `full`, **0 over one item**. `V50` first run: 5/5 folds `fitted`, floors
+   0.111–0.200, admitted 1,027/1,534 (66.9%).
+4. **The registered clause fired.** Both dose intervals contain zero → *"the pack line is closed at every
+   budget … the honest record is that the mechanism is inert rather than mis-sized."* **Closed.** Product
+   statement: **no pack before the question** — iteration 90's behaviour, now with a dev-scale interval.
+5. **And the ceiling is arithmetic, not opinion.** MDE **2.01pp**; oracle ceilings on R24's artefact
+   **+2.35pp** (drop every net-harmful item) and **+4.17pp** (keep the pack exactly where it helped). Every arm
+   in the run is inside ±1pp. **A perfect oracle prices the pack at 1.17× what this split can detect**, so no
+   further pack arm on BIRD dev can produce a distinguishable answer.
+
+**What the roadmap holds now.** The pack line is closed by measurement and the instrument is the binding
+constraint, so the next registered design has to change one of the two objects. **R26 narrows to the region the
+pack has never been tested in**: every null above was measured on questions that carry the benchmark's own
+142-character hint, and the two ablations that removed it (R24's `full-noevidence` −0.72pp, R17's framing arms)
+removed the *content* while leaving the questions unambiguous. `S1a` is the one unbuilt design that changes
+that: BIRD-Interact's underspecified questions are questions where the knowledge is missing rather than
+displaced, which is the only condition under which every theory this record has tested predicts that the store
+should pay. **The alternative — buying resolution with a larger benchmark — is not available on BIRD dev
+(test labels are withheld and dev is exhausted), and BIRD-Interact buys both at once**, which is why S1a moves
+from item 6 to the front of the queue while `S1b` (private vocabulary) stays blocked on its annotation set.
+

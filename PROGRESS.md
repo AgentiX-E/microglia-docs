@@ -6863,44 +6863,62 @@ the +1.14pp cell is below the instrument's floor, and the difficulty prediction 
 
 ## What is left, in order (current)
 
-Nine runs are closed and the sentence that summarised them has changed. Eight axes were varied on a
+Ten runs are closed and the sentence that summarised them has changed twice. Eight axes were varied on a
 distilled store — content, quantity, position, substrate, framing, delivery order, membership at a fixed
 dose, and the substrate itself — and every one landed at or below no memory. The ninth shows why: **the
 store's arms were never competing with nothing. They were competing with 142 characters of curated,
-per-question knowledge that the benchmark supplies for free, and losing.**
+per-question knowledge that the benchmark supplies for free, and losing.** The tenth removed that
+explanation — on the competitors' own split the competition is not there — and then removed the pack
+itself: **a fixed order, a one-item order and a per-question admission rule are all within ±1pp of each
+other and of nothing, and the instrument needs 2.01pp to see anything while a perfect oracle prices the
+whole pack line at 2.35pp.**
 
 | # | Item | State | Blocks |
 |---|---|---|---|
-| 1 | **R24 — the same 2×2 on `dev`** | **re-dispatched as `41245819288`** after `41226847922` published nothing: the same four arms, the same `learn_sample=280`, with the judging phase now running every statement in a child process under a 20 s deadline (§132). Buys three things at once — comparability with the competitors' own split, a resolvable ≥2pp claim on the pack's value without the hint, and three difficulty levels for the shape prediction minidev could not test | the run |
-| 1b | **R25 — how much of the 24.86pp can the database supply?** | designed, deferred behind R24: the `values` (+0.29pp, iteration 95) and `linked` (−7.43pp) channels measured where the competitor is absent. It waits because its natural claim is ≤3pp, which is below even dev's floor, and this record has now registered a claim smaller than its instrument three times | R24's dev floor |
+| 1 | **R24 — the same 2×2 on `dev`** | **closed** (`41245819288`, §133): composition, not inflation; 17.60pp for the whole split; the competition mechanism withdrawn | — |
+| 1b | **R25 — dose and admission** | **closed** (`41256898122`, §134): `full-one − full` **−0.33pp [−1.56, +0.85]** refutes the 4.13pp observational dose gap as selection; `full-accepted − full-one` **+0.85pp [−0.13, +1.83]** is the largest positive estimate in twenty-five iterations and still contains zero. The registered clause fired — **the pack line is closed at every budget** | — |
+| 1c | **The measurement ceiling** | the binding constraint, now a number: **MDE 2.01pp against a 2.35pp oracle ceiling**. BIRD dev has no more questions to buy resolution with, so the next registered claim on the pack's value cannot be made here at all. What changes the ceiling is a larger or more populated benchmark (BIRD test, BIRD-Interact) or dropping to the product face (S1a/S1b) | the next design |
 | 2 | **Abstention as a switch** | no longer a research programme: R23 says abstain where the question carries curated knowledge and inject where it does not, and the condition is observable per deployment. What remains is instrumenting the condition, not testing the policy | R24, if value annotation makes the note's job redundant too |
 | 3 | **R19.3 — adaptive injection** (ε-MemEvo) | not built; `gated` and `full-corroborated` are static filters, not per-question decisions | the gate's inputs, which the pool already collects |
 | 4 | **The interpreter's domain prompt** | **built, not yet measured**: `LlmInterpreterOptions.domainOf` lets the host supply the field the prompt forbids the model to guess, behind `SOTA_DOMAIN_SCOPE` (off by default, because a scoped item is a different item). What it repairs is now stated as two dead mechanisms rather than one: widening cannot fire with nothing to widen, and domain-filtered recall admits everything. Needs a registered arm | the ceiling on every transfer number |
-| 5 | **The panel's resolution** | measured, not assumed: MDE 4.87pp at n=350, and the positive control at 24.86pp proves the instrument works at that scale. Anything below ~5pp stays unresolved here, and the full 1,534-question split is the only way to change that | a budget line, not an analysis |
-| 6 | **S1a — ambiguity on public annotations** | unblocked and unbuilt (BIRD-Interact carries the annotations) | — |
+| 5 | **The panel's resolution** | measured twice, not assumed: MDE **4.87pp** at n=350 and **2.01pp** on the full 1,534-question split, against an oracle ceiling of 2.35pp on the same artefact. The instrument was bought as far as this benchmark will sell it | a budget line, not an analysis |
+| 6 | **S1a — ambiguity on public annotations** | unblocked and unbuilt (BIRD-Interact carries the annotations). Now the highest-value unbuilt item: with the mechanism lines closed by measurement, the remaining claims are about **where the store is asked**, which only an ambiguous-question split can test | — |
 | 7 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 8 | **S3 — the SOTA push** | gated by its own rule: it starts only if S2b moves accuracy, and S2b's gate was missed | R10-family work, not a bypass |
+| 8 | **S3 — the SOTA push** | **its entry condition needs re-adjudication, not a bypass**: it was gated on "the mechanism moves accuracy on dev", and R24 and R25 both return null on dev with an instrument that resolves 2pp. Either the gate is rewritten against a benchmark where the mechanism can be seen, or S3 is recorded as closed by the instrument rather than by the mechanism | a decision, and it is now the largest one on this list |
 | 9 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 10 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
-Items 1–6 are ours to run. Items 7–10 wait on an annotation set, a gate, a decision and a toolchain
-respectively. None of them blocks the S0 result, and none is hidden behind the green build: each is either
-an experiment that has not run or a dependency that has not shipped.
+Items 1c, 6, 7, 8 and 9 wait on a design, an annotation set, a second annotation set, a decision and a
+decision respectively. None of them blocks the S0 result, and none is hidden behind the green build: each
+is either an experiment that has not run or a dependency that has not shipped.
 
-**What this list changed this iteration, and it is the largest change since the line started.** The record
-has spent eight iterations asking what is wrong with the note — its content, its scope, its length, its
-register, its substrate, its order, its selection — and R23 says nothing was wrong with it. With the hint
-removed the same pack is worth +1.14pp instead of −4.86pp, and the interaction that separates those two
-numbers is −6.00pp with an interval that excludes zero. **The deficit was a competition, and the competitor
-was the benchmark.**
+**What this list changed this iteration, and it is the first time an item closed by arithmetic.** R24 left
+one live mechanism — per-question selection — on the argument that the store was not being *used
+differentially*. R25 tested it with a one-slot control so that the admission decision could be separated
+from the truncation it implies, and the answer came back in two pieces. **Truncating every question to one
+item costs nothing** (−0.33pp), which kills the whole dose reading the store had been reporting since R24.
+**Admitting per question is the best point estimate this record has ever produced for a pack arm**
+(+0.85pp, 35 gained against 22 lost) **and it is still not a result**, because the instrument needs 2.01pp
+and no arm here moves 1.
 
-That makes the remaining 24.86pp the most valuable number in the repository, because it is now a *target*
-rather than a backdrop. It is also, on the evidence of three competitor systems, mostly a schema-linking and
-value-indexing gap: RSL-SQL and CHESS lose 12.7 and 14.4 points to the same ablation where this lane loses
-24.86, and they get the difference by extracting columns and cell values from the database instead of
-reading a hint. **The next question is therefore not what a memory should contain but how much of the hint
-the database can replace** — and if the answer is most of it, the memory line's honest product is the
-residue.
+The registered clause read: *"if `full-one − full` and `full-one − none` both have intervals containing
+zero, the pack line is closed at every budget."* Both do, by a wide margin. **The pack line is closed**, and
+the product statement that follows is not a smaller pack — it is no pack before the question, which is what
+iteration 90 already shipped on weaker evidence and what this run now puts a dev-scale interval around.
+
+What that leaves is not a shortage of ideas but a shortage of instrument. **Two independent oracles on the
+same artefact — drop every net-harmful item, or keep the pack exactly where it helped — price the entire
+remaining pack upside at +2.35pp and +4.17pp**, and the split resolves 2.01pp. The honest next step is
+therefore not another pack arm: it is a benchmark where a 2pp mechanism can be seen, or a question about
+the store that is not a question about BIRD's own hint.
+
+The 24.86pp target it replaced is still the most valuable number in the repository, and it is still mostly a
+schema-linking and value-indexing gap on the evidence of three competitor systems: RSL-SQL and CHESS lose
+12.7 and 14.4 points to the same ablation where this lane loses 24.86, and they get the difference by
+extracting columns and cell values from the database instead of reading a hint. What R25 adds is a warning
+about how that gap is pursued: **the value-index question was the one designed to chase it, and it was
+withdrawn because its premise (a competition the note was losing) does not reproduce at 4.4× the sample.**
+Any successor design has to be measured on a split that can resolve what it claims.
 
 ### 132 — The judging phase could stop the lane for two hours, and said nothing
 
@@ -7030,3 +7048,93 @@ at 100 in all four after the naming rule. The artefact is
 committed at `eval/results/poc-sota-bird-dev-R24-dev-split.json`; `prereg/R24-dev-split.md` carries the Outcome
 section with all five contrasts, the six prediction verdicts, the composition decomposition and the per-fold
 spread.
+
+### 134 — The dose was selection, and the instrument ran out before the pack did
+
+**The dispatch published fourteen gates and eight contrasts in thirty-three minutes.** `41256898122` ran
+R25 on `dev` — 1,534 questions, 5 folds, 9,096 calls, 0 call failures, 18 of 12,774 statements hitting the
+20 s deadline (0.14%), 172 truncated at the row cap (1.35%). R24 left one live mechanism and this run was
+built to kill or confirm it, so it needed a control the record had never had: an arm that gets **one item**
+from the store's own order, so that the admission decision can be separated from the truncation it implies.
+Four arms, where every previous design had two:
+
+| arm | what it is | accuracy | n | rules/question |
+|---|---|---|---|---|
+| `none` | no injection | 57.17% | 877/1534 | — |
+| `full` | the store's own order, budget 4 | 57.11% | 876/1534 | 1.74 |
+| `full-one` | the same order, truncated to its first item | 56.78% | 871/1534 | 1.00 |
+| `full-accepted` | one item, and only on questions that admit it | **57.63%** | 884/1534 | 0.67 |
+
+| contrast | pp | 95% CI | discordant | p |
+|---|---|---|---|---|
+| `full-one` − `full` | **−0.33** | [−1.56, +0.85] | 42/47 | 0.6718 |
+| `full-one` − `none` | −0.39 | [−1.76, +0.91] | 52/58 | 0.6338 |
+| `full` − `none` | −0.07 | [−1.50, +1.30] | 60/61 | 1.0000 |
+| `full-accepted` − `full-one` | **+0.85** | [−0.13, +1.83] | 35/22 | 0.1112 |
+| `full-accepted` − `none` | +0.46 | [−0.78, +1.69] | 52/45 | 0.5426 |
+| `full-accepted` − `full` | +0.52 | [−0.85, +1.83] | 58/50 | 0.5008 |
+
+**The dose gap was selection, and truncating every question costs nothing.** `full-one − full` is
+**−0.33pp [−1.56, +0.85]**. The store had been reporting a dose effect since R24 — questions that received
+two items scored 4.13pp above questions that received one in R24's store, and 3.12pp in this one (dose-1
+n=401 **+2.24pp**, dose-2 n=1,133 **−0.88pp**) — and it does not survive being made causal. **The store gave
+its second item to the questions it had more to say about, and those were the questions where a note of
+either length was worth more.** Two of the six registered predictions were staked on the opposite and both
+are refuted: one note on its own is −0.39pp against nothing, not the +2pp the dose table implied.
+
+**Per-question admission is the only arm in twenty-five iterations to point up, and it does not get there.**
+`full-accepted − full-one` is **+0.85pp [−0.13, +1.83], 35 gained against 22 lost, p = 0.1112**. That is the
+largest positive point estimate any pack arm has produced and the tightest interval against harm — the lower
+bound excludes any loss larger than 0.13pp — and it still contains zero, which is what the registration said
+would happen. The decision it encodes is not decorative: 1,027 of 1,534 questions were admitted (66.9%),
+population 0.67 rules per question against `full`'s 1.74, and the gate that checks it (`V50`) read
+`fitted` on all five folds with floors between 0.111 and 0.200, keeping 51–84% of each fold's
+decisive-bearing learning rows.
+
+**The run contained its own test–retest, for free.** Of the 507 questions refused the note, 507 received a
+**byte-identical prompt** to `none` — and they moved **4 gained and 3 lost against `none`**. That is the
+endpoint's own noise floor measured inside the dispatch, at **1.4% of 507**, matching the 1.4–2.6% band the
+`none-replica` arms established in R17. Any effect below that is not visible on this lane, whatever its
+p-value, and the admission arm's +0.85pp is only 3.4pp of gross movement against a floor that produces 1.4%
+of the population for nothing.
+
+**The registered refutation clause fired.** It reads: *"If `full-one − full` and `full-one − none` both have
+intervals containing zero, the pack line is closed at every budget … the honest record is that the mechanism
+is inert rather than mis-sized."* Both intervals contain zero, the first by 0.85pp of headroom and the second
+by 0.91pp. **The pack line is closed.** The product decision that follows is not a smaller pack — it is no
+pack before the question, which is what iteration 90 already shipped on weaker evidence and what this run
+now puts a dev-scale interval around.
+
+**Why nothing further can be measured here, in two numbers.** `V5-resolution` reads a minimum detectable
+effect of **2.01pp** on this split. Two oracles computed on R24's artefact with the answer key in hand price
+the entire remaining pack upside at **+2.35pp** (drop every net-harmful item) and **+4.17pp** (keep the pack
+exactly where it helped). Every arm in this run lands inside **±1pp**. **An effect a perfect oracle prices at
+2.35pp cannot be resolved by an instrument that needs 2.01pp to see anything**, and the split has no more
+questions to buy resolution with. That is a statement about the instrument, not about the mechanism, and it
+is the reason the next design cannot be another pack arm on BIRD dev.
+
+**What held.** `full − none` at −0.07pp [−1.50, +1.30] reproduces R24's −0.59pp inside one interval, so the
+anchor is stable across two stores built from different learning passes. `V49-dose-truncated` and
+`V50-admission-engaged` both passed on their first run: 1,133 of 1,534 prompts (73.9%) differ from `full` and
+**0 exceeded one item**, which is the check that makes `full-one` a dose control rather than a second copy of
+`full`. Per fold, `full-accepted − full-one` ran **−0.33, +3.26, −1.30, +0.98, +1.63** and `full-one − full`
+ran **0.00, −1.30, +1.30, −1.63, 0.00** — the second is a coin, which is what a refuted mechanism looks like
+fold by fold. The admission effect is concentrated where the note is on the question: `moderate` **+2.16pp**
+(13/3), `simple` **+0.65pp**, `challenging` **−2.07pp** (0/3 aggregate, three discordant questions). At 145
+challenging questions that is a shape, not a result.
+
+**Two defects in the new tools, both caught by their own first real use.** `admissionFloor` computed its
+minimum population as `Math.ceil(Math.max(1, policy.minKept) * total)` — the share clamped to 1 instead of
+1% — so every fold returned the lowest threshold that kept at least everybody, and `full-accepted` would
+have silently degenerated into `full-one`. **The function's own tests failed on their first run with
+`expected 0.5 / 0.9 to be …`**, which is the entire argument for writing them before the dispatch. Separately,
+`parseContrastArgs` accepted `--left a --right b` by failing on the second flag: the single-value parser had
+only ever been called once per arm, and the first call that passed two flags threw `unknown flag`. The
+off-by-one in the arithmetic would have cost a 33-minute dispatch; the parser would have cost one command.
+
+**Green.** `pnpm check` — 2,044 tests, 107 files, 99.98 / 99.61 / 100 / 99.98, with `dose.ts`,
+`arm-contrast.ts`, `artefacts.ts` and `sota.ts` at 100 on all four dimensions. Committed:
+`eval/results/poc-sota-bird-dev-R25-dose-and-admission.json`, `eval/results/poc-arm-contrast.json` (the
+registered contrasts, re-derivable from the repository by `pnpm eval:arm-contrast`), and
+`prereg/R25-dose-and-admission.md` with the Outcome section and all six prediction verdicts.
+

@@ -1589,6 +1589,59 @@ AUDIT 17.6 shows up here as per-fold spreads of **14.98 to 21.50pp** for the evi
 deltas the project has published, and it is why a −6.00pp and a −1.30pp cannot be reconciled by subtracting
 them: they are not measured on the same object. Every claim in this section is within one dispatch.
 
+### 3.6.25 The dose was a selection, and the instrument ran out before the pack did
+
+R24 closed seven of the eight axes the pack has been varied along and left exactly one live reading: the
+store was not being *used differentially*. The evidence for that was a dose effect the lane had been
+reporting for two iterations — questions that received two items scored 4.13pp above questions that received
+one, and 3.12pp in R24's rebuilt store. If that gap were causal, then showing more notes to the questions
+that can hold them would be worth engineering, and the failure of every content, framing and ordering
+variant would be a failure of *allocation* rather than of the note.
+
+**It is not causal, and one arm settles it.** R25 added a control the record had never had: `full-one`, the
+store's own order truncated to its first item, measured against `full` on the same 1,534 questions in the
+same dispatch. **`full-one` − `full` is −0.33pp [−1.56, +0.85]** — truncating every question to one note
+costs nothing. The dose gap was **selection**: the store gave its second item to the questions it had more
+to say about, and those were the questions where a note of either length was worth more. The observational
+decomposition shows the shape and the error together — dose-1 n=401 **+2.24pp**, dose-2 n=1,133 **−0.88pp**
+— a sign split that only looks like a dose when you do not control what went where. Two of the run's six
+registered predictions were staked on the opposite and both are refuted.
+
+**The admission rule is the best point estimate this record has ever produced for a pack arm, and it is
+still not a result.** `full-accepted` shows one item, and only on questions whose query coverage clears a
+threshold fitted per fold on that fold's own learning rows: **+0.85pp [−0.13, +1.83] against `full-one`,
+35 gained against 22 lost, p = 0.1112**. It admits 66.9% of questions (1,027 of 1,534) at **0.67 rules per
+question** against `full`'s 1.74, so it is a real allocation decision and not a renaming — the floor landed
+between 0.111 and 0.200 across five folds while keeping 51–84% of each fold's decisive-bearing rows, and the
+gate that verifies the decision was taken (`V50`) passed on all five. The interval's lower bound excludes
+any harm larger than 0.13pp, which no previous pack arm could say. **It does not exclude zero**, and that is
+the registered prediction, not a disappointment discovered afterwards.
+
+**The run also measured its own noise floor for free, and this is the methodological contribution.** Of the
+507 questions the admission rule refused, all 507 received a prompt **byte-identical** to `none`. They moved
+**4 gained and 3 lost** — 1.4% of 507 — which is the endpoint's test–retest floor, measured inside the
+dispatch rather than assumed from R17's `none-replica` band. Two consequences follow. The +0.85pp above sits
+on top of a floor that produces 1.4% of a population for nothing, so its gross movement is 3.4pp against a
+1.4% floor. And **any** future claim on this lane can be checked against a number the lane produces about
+itself, which is what makes the next section arithmetic rather than opinion.
+
+**The registered clause fired, and the pack line is closed.** The registration said: *"If `full-one − full`
+and `full-one − none` both have intervals containing zero, the pack line is closed at every budget … the
+honest record is that the mechanism is inert rather than mis-sized."* Both do, with 0.85pp and 0.91pp of
+headroom. The product statement that follows is not a smaller pack: it is **no pack before the question**,
+which is what iteration 90 already shipped on weaker evidence and what R25 now puts a dev-scale interval
+around.
+
+**Why no further pack experiment can be run here.** `V5-resolution` reads a **2.01pp** minimum detectable
+effect on 1,534 questions. Two oracles computed on the same artefact with the answer key in hand — drop every
+net-harmful item; keep the pack exactly where it helped — price the *entire* remaining upside at **+2.35pp**
+and **+4.17pp**. Every arm in R25 landed inside ±1pp. **An upside a perfect oracle prices at 2.35pp cannot be
+resolved by an instrument that requires 2.01pp to see anything**, and there are no more dev questions to buy
+resolution with. This is a limit of the instrument rather than of the mechanism, and it is the single most
+consequential fact for what this programme can claim next: the successor design cannot be another pack arm on
+BIRD dev, and if the mechanism is to be seen at all it has to be seen on a benchmark with more headroom in
+its population, or on a question about the store that BIRD's own hint does not already answer.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on
