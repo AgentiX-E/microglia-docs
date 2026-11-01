@@ -1811,3 +1811,59 @@ never given a denominator.
 The check that catches this class is the same one §30 named, applied one level down: **ask the quantity
 what its own bounds are before asking it a question.** Ten missing rows and a 5.2% headroom are both
 bounds, and both were available before the number was.
+
+## 32. Addendum — four registered thresholds in two weeks, none of which a run could satisfy (2026-11-01)
+
+R34 asked whether the memory's failure is a property of the item or of the population, and answered it.
+It also produced four registered numbers that were wrong **before the data existed**, in three different
+ways, which makes them one defect rather than four accidents. They are collected here because the pattern
+is the finding: the registration process is now producing thresholds faster than it checks them.
+
+### 32.1 The family
+
+| | registration | defect | cost |
+|---|---|---|---|
+| §31.2, R33 P6 | the pack adds ≥ 5pp of flag rate | P2's floor of 60% left 5.2pp of room; the bar was arithmetically unreachable | a prediction that could not be tested |
+| R34 P1 | 240 of 424 discordant per half | two halves cannot hold 480 of 424 | as written, refuted by a split no hash could produce |
+| R34 P3 | within 0.15pp of `τ × net` | at 15% coverage the net's sampling error is ±0.26pp | a correct estimator recorded as broken |
+| R34 P5 | a gate needs 47.64% precision | the bar belongs to the *admitted set*, whose rates the gate changes | the round's headline prediction measured the wrong population |
+
+None of the four is a coding error. Each was a sentence in a file, written by the same hand in the same
+fortnight, and each would have been caught by one line of arithmetic **before the file was committed** —
+`2 × 240 > 424`, `0.15 < 0.26`, `b/(r+b) = 47.6%` computed on the corpus it would later be applied to.
+
+### 32.2 Why the fifth kind of defect was the interesting one
+
+Three of the four are arithmetic hygiene. **The fourth is not, and it is the one worth the section.** R34's
+central derivation was
+
+```
+net = τ · (q·r − (1−q)·b)   positive when   q > b / (r + b)
+```
+
+with `r` and `b` read off the corpus — 6.393% and 5.816% — and the resulting 47.64% written down as a bar
+"the gate" must clear. It is not a property of a gate. It is a property of the **admitted set**, and
+admission changes that set. On the confirmation half, across the self-knowledge sweep:
+
+| threshold | precision q | bar inside the set | gap |
+|---|---|---|---|
+| 0.10 | 41.8% | 46.5% | −4.7pp |
+| 0.30 | 50.8% | 52.3% | −1.5pp |
+| 0.50 | 62.4% | 63.3% | −0.9pp |
+
+The gate beat the registered bar by 20.6pp and still returned −0.05pp, because the bar rose 16.8pp to
+meet it. A registration can be arithmetically correct, internally consistent, written before the data, and
+still measure the wrong population — and unlike §32.1's three, no amount of checking the arithmetic would
+have found it. What would have found it is asking, of every rate in a derivation, *on which set is this
+rate measured, and does the intervention change that set?*
+
+That question is now the first line of the checklist for registering R35 and after, and §149's artefact
+reports the within-set bar beside every point so that the next reading cannot repeat it silently.
+
+### 32.3 What the gates did and did not catch
+
+2,532 tests and four coverage dimensions at 99.98 / 99.65 / 100 / 99.98 caught none of the four, because
+all four are statements about a *corpus* rather than computations over one. The instrument gates caught
+what they were built to catch — `V55`–`V58` confirm the corpus, the split, the oracle identities and the
+control — and none of them could see a sentence in a markdown file that no code reads. The registration is
+the only artefact in this repository with no test, and it is the one that has now failed four times.

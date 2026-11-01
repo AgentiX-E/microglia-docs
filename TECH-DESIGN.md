@@ -5015,3 +5015,53 @@ encoded "there are always two statements"; the moment a caller had one, the type
 mathematics was. The cheapest way to find that is to ask a question the current corpus cannot express and
 watch which types refuse — here three did, and one of them was refusing a case it had never been honestly
 able to answer.
+
+### 17.71 The selection instrument: a rate on the wrong base, and a bar that belongs to the admitted set
+
+`packages/eval/src/admission.ts`. Two design decisions and one defect the design exposed in its own
+registration, with no new model call and no new corpus — `per_case` holds everything needed, including the
+fields the gates read.
+
+**The estimator is defined on every question, not on the admitted subset.** `admissionGainOf(cases, admit,
+{resamples, seed})` pushes `(correct − withoutMemoryCorrect) · 1[admitted]` for every case and resamples
+databases, so `netPp`, `lowPp` and `highPp` are on the corpus's scale and comparable with §17.68's −0.71pp
+and the oracle's +2.67pp. The alternative — the gain among the admitted — is a hundred times larger and a
+different claim; `perAdmittedPp` carries it separately so the two can never be quoted for one another. A
+corpus with fewer than two databases reached gets no interval at all, the refusal §17.70 added to
+`clusteredGapOf` and this module reuses rather than re-derives.
+
+**`exchangeOf` reports the hurdle, which is a field the previous readings did not have.** `repairable` and
+`breakable` are the two bases; `hurdle = breakable / repairable`; `clearance = helpPerHarm / hurdle`. Naming
+the ratio that makes memory pay — rather than relying on a reader to compare against 1.0 — is what turned
+"close to a wash" into a 43% shortfall. `requiredRepairRatePp` and `requiredBreakRatePp` are the same
+arithmetic read as targets, and they are the only numbers in this record a future design can be held to.
+
+**The gate score is computed over the whole corpus and only the questions are split.** `selfKnowledgeOf`
+builds a Jaccard neighbour set per database, excludes the question itself, breaks ties by id, and returns
+`null` rather than `0` for a question with no neighbour — a gate that admits on "no evidence of failure"
+would admit every question in a one-question schema. `splitByDatabase` deals the databases by a stable FNV-1a
+hash with the id appended to the key, so the deal is a function of the corpus rather than of the order it was
+read in. Recomputing the neighbour set inside each half would have answered a different question on each side
+of the wall.
+
+**The defect: the precision bar was derived on the corpus and applied to a subset.** `b / (r + b)` is a
+property of *the set being admitted*; admitting questions changes their rates. On this corpus the gate
+reaches 62.4% precision against a registered 47.64% bar and returns −0.05pp, because inside its own
+population the break rate rises from 5.50% to 9.68% while the repair rate stays flat and the bar rises
+16.8pp to meet it. The artefact therefore reports `within` — the exchange of the admitted set — beside every
+point, and `precisionBarWithin` beside the frontier. This is `AUDIT` §32.2, and the general lesson is
+recorded there: every rate in a derivation needs the question *on which set is this measured, and does the
+intervention change that set?*
+
+**The control is a recorded arm.** Six seeded random admissions at fixed shares, each with the expected
+value `share × net` and its own interval; the control passes when the expectation lies inside that interval.
+The registration asked for a fixed 0.15pp tolerance, which at the 15% share is below the net's ±0.26pp
+sampling error — the third of R34's four unreachable thresholds, and the reason the criterion is the
+instrument this repository already uses everywhere else.
+
+**Coverage.** `admission.ts` is 100% on all four dimensions from 43 tests: the exchange arithmetic including
+every zero denominator, the admission estimator's two scales, the kNN score's three ways of being wrong
+(self-inclusion, cross-database leakage, an unspecified tie), the split's disjointness and order-independence,
+all six gate predicates including the conjunction's borrowed floor, and each of the seven verdicts in both
+directions — including the three that were **vacuous** before a test found them (`every` over an empty
+control, an oracle identity over an empty corpus, and "neither gate cleared" over no gates).

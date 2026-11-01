@@ -1789,6 +1789,70 @@ from the committed `per_case` with no further calls: `pnpm eval:out-of-sample`, 
 `eval:power`, and 36 + 22 + 17 assertions in CI that hold the numbers above against their artefacts. What
 it bought is a product answer that did not require shipping to obtain.
 
+### 3.6.29 The exchange rate was being compared to the wrong zero, and the population cannot be reselected
+
+§3.6.28 reported the two directions as 6.39% repaired against 5.82% broken, called it "0.79 repairs per
+break", and said "per question, help is the likelier outcome". **The last clause is wrong, and the
+correction is arithmetic rather than a re-measurement.** A repair can only happen on a question the bare
+model got wrong — 2,925 of them — and a break only on one it got right — 4,075. Equal *rates* on unequal
+*bases* is a loss, so the rate at which memory breaks even is not 1.0 but the **odds of the bare model
+being right**: 4,075 / 2,925 = **1.393**.
+
+| quantity | value |
+|---|---|
+| exchange rate | **0.789** |
+| break-even exchange rate (the hurdle) | **1.393** |
+| clearance | **0.566** — a **43%** shortfall |
+| repairs needed at fixed breaks | **8.10%** (+1.71pp) |
+| breaks needed at fixed repairs | **4.59%** (−1.23pp) |
+
+Every sentence in this record that called the memory "close to a wash" was measuring against parity. It is
+not close to a wash; it is 43% short of the bar, and the two routes to the bar are now numbers a design can
+be held to.
+
+**The asymmetry lives in the population, and that is where the last untested shape was.** A question the
+bare model already answered cannot be repaired; one it got wrong cannot be broken. Show the pack only to the
+second kind and the break rate is **zero by construction**, so the entire repair rate arrives as gain —
+**+2.67pp**, the largest figure in this record, and the mirror of the 3.39pp ceiling §3.6.28 priced. The
+gate does not have to be good, only better than random: it needs **47.6%** of its admitted questions to be
+future failures, against a 41.8% base rate.
+
+**A gate built on the published mechanism reached 62.4% precision and returned −0.05pp.** The signal is
+SKR's kNN, in lexical form — the share of a question's ten nearest neighbours in the same database that the
+bare model got wrong, leave-one-out. Five gates, thirty registered points, a 29/29 database split, and
+thresholds chosen on one half and evaluated on the other:
+
+| gate | coverage | precision (needs 47.6%) | gain | interval |
+|---|---|---|---|---|
+| self-knowledge | 35.6% | **62.4%** | −0.05pp | [−0.50, +0.45] |
+| coverage of the question, high | 25.6% | 44.9% | −0.11pp | [−0.55, +0.35] |
+| coverage, low | 23.2% | 28.3% | −0.19pp | [−0.55, +0.16] |
+| pack ≥ 2 items | 93.6% | 39.7% | −0.69pp | [−1.33, −0.08] |
+| conjunction | 18.4% | 54.0% | +0.08pp | [−0.30, +0.50] |
+| *best of all thirty* | *14.8%* | *58.5%* | ***+0.11pp*** | *[−0.19, +0.44]* |
+
+**The bar moved with the gate, and that is the finding.** The precision a gate must reach is `b / (r + b)`
+measured on **the set it admits**, not on the corpus; admitting questions changes their rates. Across the
+sweep precision climbs 20.6pp while the bar climbs 16.8pp to meet it, because the break rate *inside* the
+admitted questions goes from 5.50% to **9.68%** while the repair rate stays flat. A question whose
+neighbours failed is not one the pack can repair — it is one the model is **unstable** on, and an unstable
+answer breaks as easily as it is fixed. **The gate selects variance, and variance is symmetric**, which is
+the same property that made the memory a wash without any gate.
+
+**What this adds to the product statement.** §3.6.28 said nothing ships because the rules do not pay and
+the filter cannot add a repair. It now says more, and more usefully:
+
+> Four routes have been measured and closed — the item's content, its quantity, a read-time filter, and
+> the population that receives it. The memory is 43% short of break-even, and no signal computable before
+> generation selects the questions where it would help, because the signal that predicts failure also
+> predicts instability. **What is left is the store**: not how many rules, not how they are shown, but
+> what they say.
+
+**And the target is now a number.** Any future design has to move repairs from 6.39% to **8.10%** at fixed
+breaks, or breaks from 5.82% to **4.59%** at fixed repairs. Nothing this programme has built has come within
+a percentage point of either, and the next claim will be measured against that arithmetic rather than
+against a wash.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

@@ -3433,3 +3433,53 @@ than a feature to build.
 an operand rather than a subject (`AUDIT.md` §31.1); and P6's threshold was unreachable under P2's own
 floor, which is a registration defect rather than a corpus one (§31.2). Both are recorded with the
 number each one moved.
+
+### R34 — admission, not dose: is the memory wrong, or the population? (**registered, run and read** 2026-11-01, with no model call)
+
+**Why.** R33 left one shape open — a weaker injection — and §148 left it with the note that nothing
+measured suggested a dose which raises repairs without raising breaks. That note was about the wrong
+variable. A repair can only happen on a question the bare model got wrong and a break only on one it got
+right, so the exchange rate at which memory breaks even is **the bare odds of being right**, 4,075 / 2,925
+= **1.393**, not 1.0. The measured 0.789 is a **43%** shortfall rather than a near miss, and the same
+arithmetic says why the population and not the item is the remaining lever: admit memory only to questions
+the bare model would fail and the break rate is **zero by construction**, so the whole repair rate arrives
+as gain — **+2.67pp**, the mirror of §147's 3.39pp removal ceiling, and the two sum to a 6.06pp oracle.
+
+**Design (as registered in `prereg/R34.md`).** Five gates and a split, fixed before any number existed:
+SKR's kNN signal in lexical form (the share of a question's ten nearest neighbours **in the same database**
+that the bare model got wrong, leave-one-out, ties broken by id), the pack's coverage of the question in
+both directions, a two-item dose split, their conjunction, and a seeded random control. 58 databases dealt
+29/29 by a stable hash; thresholds swept over six quantiles on the discovery half only; the selected rule
+evaluated unchanged on the other. The bar is derived, not chosen: `q > b / (r + b)` = **47.64%** against a
+**41.79%** base rate, a 5.85pp lift — a far lower bar than the filter's Youden of 0.1068. **Cost: zero
+model calls.**
+
+**Result — the gate beat the bar and lost money, because selection moves the bar.**
+
+| gate | coverage | precision (needs 47.6%) | confirmation gain | interval |
+|---|---|---|---|---|
+| self-knowledge, t = 0.50 | 35.6% | **62.4%** | **−0.05pp** | [−0.50, +0.45] |
+| coverage-high, t = 0.182 | 25.6% | 44.9% | −0.11pp | [−0.55, +0.35] |
+| coverage-low, t = 0 | 23.2% | 28.3% | −0.19pp | [−0.55, +0.16] |
+| pack ≥ 2 items | 93.6% | 39.7% | −0.69pp | [−1.33, −0.08] |
+| conjunction, t = 0.30 | 18.4% | 54.0% | +0.08pp | [−0.30, +0.50] |
+| *best of all 30 points* | *14.8%* | *58.5%* | ***+0.11pp*** | *[−0.19, +0.44]* |
+
+**The precision bar belongs to the admitted set, not to the corpus, and the admitted set has its own
+rates.** Across the self-knowledge sweep precision climbs 20.6pp while the bar climbs 16.8pp to meet it,
+because the break rate *inside* the admitted questions goes from 5.50% to **9.68%** while the repair rate
+stays flat. A question whose neighbours failed is not one the pack can repair; it is one the model is
+**unstable** on, and an unstable answer breaks as easily as it is fixed. The gate selects variance, and
+variance is symmetric — the same property that makes memory a wash with no gate at all.
+
+**What it closes.** Shape 3 of R33, and not by dose. Five gates and thirty registered points reach
+**+0.11pp** of the 2.67pp ceiling out of sample — **4.0%**, on an interval covering zero — against the
+filter's 15.2% of its own ceiling, which also did not pay. Four routes are now closed by measurement:
+content (§145), quantity (§146, R16), the filter (§147–§148), the population (§149). What is left is the
+store, and the number to hit is now **8.10% repairs or 4.59% breaks** rather than "fewer breaks".
+
+**Four defects, all in the registration.** P1's discordant floor (240 of 424) was arithmetically
+unreachable; P3's tolerance (0.15pp) sat below the sampling error at the smallest share; P5's bar was
+computed on the corpus rather than on the admitted set; and P7 was written for a positive discovery gain
+and is recorded as refuted for a reason that is not its content. `AUDIT.md` §32 collects them with §31.2
+as one family, and names the one that no amount of arithmetic would have caught.

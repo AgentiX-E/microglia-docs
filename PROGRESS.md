@@ -8498,14 +8498,125 @@ was written and was not done.
 own. 2,489 tests and four coverage dimensions at 99.98 / 99.64 / 100 / 99.98 did not catch either,
 because both were questions about the corpus rather than computations over it.
 
+## 149 — The memory is not close to a wash; it is 43% short, and the population cannot be reselected either
+
+**R34 cost no model call and closed the last open shape.** §147 measured the exchange rate and §148 closed
+two of R33's three shapes, leaving "a weaker injection" as a research question. That framing was wrong, and
+the arithmetic says so before any new number: a repair can only happen on a question the bare model got
+wrong and a break only on one it got right, so the two rates sit on different bases and **the exchange rate
+at which memory breaks even is the odds of the bare model being right, not parity.**
+
+| quantity | value | derivation |
+|---|---|---|
+| repairable / breakable | 2,925 / 4,075 | §147 |
+| repaired / broken | 187 (6.393%) / 237 (5.816%) | §147 |
+| exchange rate | **0.789** | 187 / 237 |
+| **break-even exchange rate** | **1.393** | 4,075 / 2,925 |
+| clearance | **0.566** | 0.789 / 1.393 |
+| repairs needed at fixed breaks | **8.10%**, +1.71pp | 5.816% × 1.393 |
+| breaks needed at fixed repairs | **4.59%**, −1.23pp | 6.393% / 1.393 |
+
+**Every "close to a wash" in this record was measured against the wrong zero.** Twenty-one per cent short
+became forty-three, and the two ways out are now numbers rather than rhetoric: raise repairs to 8.10% at
+fixed breaks, or cut breaks to 4.59% at fixed repairs. Nothing this programme has built has come within a
+point of either.
+
+### The shape was mis-specified: the variable is the population, not the dose
+
+A question the bare model already answered cannot be repaired; a question it got wrong cannot be broken.
+Admit memory only to the second kind and the break rate is **zero by construction**, so the whole 6.39%
+repair rate arrives as net gain — **+2.67pp**, the largest figure in this record and the first one in front
+of the memory rather than behind it. That is a different mechanism from the read-time filter: the filter
+removes breaks *after* generation and is capped at 3.39pp; admission avoids them *before* it and is capped
+at the repair rate. The two ceilings are the halves of a **6.06pp** oracle, and §147 had published only the
+second half.
+
+The gate does not have to be good, only better than random. Net gain on the corpus is
+`τ · (q·r − (1−q)·b)`, positive when `q > b / (r + b)` = **47.64%** against a **41.79%** base rate — a
+5.85pp lift. That is a far lower bar than the filter's Youden of 0.1068, and it is why the shape was worth
+one more round rather than a concession.
+
+`prereg/R34.md` fixed five gates and a split before the numbers existed: SKR's kNN signal in lexical form
+(the share of a question's ten nearest neighbours **in the same database** that the bare model got wrong,
+leave-one-out, ties broken by id), the pack's coverage of the question in both directions, a two-item dose
+split, their conjunction, and a seeded random control. 58 databases dealt 29/29 by a stable hash; thresholds
+swept over six quantiles **on the discovery half only**; the selected rule evaluated unchanged on the other.
+
+### What the gate did, and the part the registration did not anticipate
+
+| gate | coverage | precision (needs 47.6%) | confirmation gain | interval |
+|---|---|---|---|---|
+| self-knowledge, t = 0.50 | 35.6% | **62.4%** | **−0.05pp** | [−0.50, +0.45] |
+| coverage-high, t = 0.182 | 25.6% | 44.9% | −0.11pp | [−0.55, +0.35] |
+| coverage-low, t = 0 | 23.2% | 28.3% | −0.19pp | [−0.55, +0.16] |
+| pack ≥ 2 items | 93.6% | 39.7% | −0.69pp | [−1.33, −0.08] |
+| conjunction, t = 0.30 | 18.4% | 54.0% | **+0.08pp** | [−0.30, +0.50] |
+| *best of all 30 points* | *14.8%* | *58.5%* | ***+0.11pp*** | *[−0.19, +0.44]* |
+
+**The primary gate beat the bar by 14.7pp and lost money.** 62.4% precision against 47.6% asked for, and
+−0.05pp on an interval that covers zero — a 20.6pp lift, three and a half times what the registration said
+would be enough, and nothing to show for it. The arithmetic was not wrong about the arithmetic. It was
+wrong about what the arithmetic is about.
+
+**The precision bar belongs to the admitted set, and selection moves it.**
+
+| threshold | coverage | precision q | bar `b/(r+b)` inside the set | gap | repair rate | break rate |
+|---|---|---|---|---|---|---|
+| 0.10 | 94.5% | 41.8% | 46.5% | −4.7pp | 6.32% | 5.50% |
+| 0.20 | 81.9% | 45.1% | 48.7% | −3.6pp | 6.39% | 6.07% |
+| 0.30 | 64.5% | 50.8% | 52.3% | −1.5pp | 6.23% | 6.84% |
+| 0.40 | 49.1% | 56.2% | 57.0% | −0.8pp | 5.86% | 7.77% |
+| 0.50 | 35.6% | 62.4% | 63.3% | −0.9pp | 5.61% | 9.68% |
+
+Precision climbs 20.6pp across the sweep; the bar climbs 16.8pp with it, and the gap narrows from 4.7pp to
+0.8pp and then stops. The reason is in the last two columns: **the break rate inside the admitted set nearly
+doubles while the repair rate does not move.** A question whose neighbours were answered wrongly is not a
+question the pack can repair — it is a question the model is *unstable* on, and an unstable answer is one
+the pack breaks as easily as it fixes. The gate is selecting **variance**, and variance is symmetric, which
+is the same property that makes memory a wash in the first place. Selecting on it cannot be a fix for it.
+
+### Two predictions refuted, one of them by the file rather than by the corpus
+
+P5 fails as registered: the interval covers zero and the precision clause is met and irrelevant. P7 —
+confirmation at most 70% of discovery — fails because the discovery gain is −0.19pp, so the inequality
+inverts and a *better* confirmation half is recorded as a failure. The prediction was written for a positive
+effect and no rule had one. It is left refuted rather than repaired: the meaningful content, that an
+in-sample rule loses most of its value out of sample, has nothing to test when there was no value to lose.
+
+**Three amendments, and all three are thresholds written without arithmetic.**
+
+| | registered | why it could not work | amended |
+|---|---|---|---|
+| **P1** | 240 of 424 discordant per half | two halves cannot hold 480 of 424 | 150; both halves clear at 208 and 216 |
+| **P3** | within 0.15pp of `τ × net` | at 15% coverage the net's sampling error is ±0.26pp | expected value inside the reading's own clustered interval; 6 of 6 pass |
+| **P5** | a gate needs 47.64% precision | the bar is the *admitted set's* `b/(r+b)`, not the corpus's | reported beside every point; verdict unchanged |
+
+That is §147's P6, §31.2's unreachable threshold, and these three — **four registered numbers in two weeks
+that no run could have satisfied or that measured the wrong population.** The registration process is now
+producing thresholds faster than it checks them, and AUDIT §32 names the family.
+
+### What it closes, and the only thing it leaves
+
+Admission puts 2.67pp above the memory; five gates and thirty registered points reach **+0.11pp** of it out
+of sample, **4.0%**, on an interval covering zero. §147's filter realised **15.2%** of its own ceiling and
+did not pay. So the removal route was four times as efficient, and both routes fail, for the same underlying
+reason: **the effect the intervention produces is symmetric, and every mechanism that could break the
+symmetry has to see something about the question that is not in the question.**
+
+Three of R33's shapes are now closed by measurement rather than by argument — the item's content (§145), its
+quantity (§146, R16), and the population's selection (§149). What is left is not a fourth gate. It is the
+store: R13's 22 of 100 admitted rules, R15's 24 of 102 with no home database, R33's 19.5% of flagged names
+traceable to a rule. **The measurement that would send the programme back there with a number now exists, and
+it is 43% away from break-even rather than 21%.**
+
 ## What is left, in order (current)
 
-**Three questions this page has been organised around, and all three are now answered.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), and the gate's benefit shrinks to half while the product stops paying. The question that followed — *decide what to ship, given that the filter works and the memory does not* — was answered in §147–§148 without a model call: **nothing ships**. What is left is one research question and seven mechanical or blocked items.
+**Every question this page has been organised around is now answered, and §149 answered the last one without a model call.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), the gate's benefit shrinks to half while the product stops paying (§147), the check is differential and cannot stand alone (§148), and the question §148 left open — whether a *weaker injection* exists — turned out to be the wrong question: the memory is 43% short of break-even, and the half that could have been rescued, the population, cannot be selected by anything measurable before generation (§149). **Nothing ships, and the reason is now four-layered rather than one.** What is left is one blocked measurement, one research direction, and eight mechanical or blocked items.
 
 | # | Item | State | Blocks |
 |---|---|---|---|
 | 1 | **R30 stage 2 — the sample that can see 1pp** | **done, and it refuted the product claim.** Run `41296776252`, 14,479 calls, 7,000 questions, 58 databases, all 12 gates green (§146). Memory costs −0.71pp [−1.27, −0.18] clustered, 5 of 5 folds negative; the read-time gate recovers +0.51pp and leaves −0.20pp | nothing — this *was* the critical path, and it is closed with a negative |
-| 2 | **R33 — what ships, now that the filter pays and the memory does not** | **closed in §148, and the answer is nothing.** Shape 1 (the check alone) is refuted: the rule is differential, and pointed at one query it flags 94.8% for a Youden of 0.0257 against the filter's 0.1068. Shape 2 (memory + filter) is bounded above by a wash (§147). Shape 3 (a weaker injection) is the only one left and it is a research question, not a feature: no measurement so far suggests a dose that raises repairs without raising breaks | nothing — the product line is closed, and what remains is a hypothesis to test rather than a decision to take |
+| 2 | **R33 — what ships, now that the filter pays and the memory does not** | **closed in §148–§149, and the answer is nothing.** Shape 1 (the check alone) is refuted: the rule is differential, and pointed at one query it flags 94.8% for a Youden of 0.0257 against the filter's 0.1068. Shape 2 (memory + filter) is bounded above by a wash (§147). Shape 3 was mis-specified as a weaker injection; restated as admission and measured in §149, it reaches 4% of a 2.67pp ceiling | nothing — the product line is closed on three independent measurements |
 | 3 | **R32 — if the damage is not lexical, what is it?** | **closed, three negatives.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both marker kinds (§144). Axis 3 is refuted in the other direction (§145) | nothing further — a fourth structural account would need a corpus this one does not contain |
 | 4 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | §138's claim that the protocol's shared machinery, not only its gates, is scenario-agnostic |
 | 5 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; the last third of the generality refactor |
@@ -8513,16 +8624,16 @@ because both were questions about the corpus rather than computations over it.
 | 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |
 | 8 | **S1a — ambiguity on public annotations** | unblocked and unbuilt. §146 makes it *less* urgent than §145 thought: ambiguity was refuted as the mechanism, so this is now a product feature rather than an explanation | — |
 | 9 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 10 | **S3 — the SOTA push** | entry condition restated by §147–§148: not "does the mechanism help" but "does an injection exist that raises the repair rate without raising the break rate". The filter that was meant to bridge the gap is differential and realises 15% of a 3.39pp ceiling | a registration for shape 3, and nothing else |
+| 10 | **S3 — the SOTA push** | entry condition restated again by §149, and for the third time narrowed: not "does the mechanism help", not "does an injection exist", but "can the store be made to repair 8.10% instead of 6.39%, or to break 4.59% instead of 5.82%". Every route that keeps the store fixed is now measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149) | a registration that targets the store, which is a different programme from this one |
 | 11 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 12 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
-**What the list looks like now.** Item 1 is finished and it did not say what the programme wanted. §147 then
+**What the list looks like now.** §149 removed the last item that could have changed the product without a model call, and it removed it by arithmetic rather than by argument: the break-even exchange rate is 1.393, the measured one is 0.789, and no gate on a question can see the difference. Item 1 is finished and it did not say what the programme wanted. §147 then
 turned the negative into an arithmetic bound: the filter's ceiling on this corpus is 3.39pp and it realises
 15% of it, so the option of shipping it *with* memory cannot beat a wash by construction. §148 closed the
 last open shape without a model call, by pointing the rule at one query instead of at a difference: it flags
 94.8% of everything, its Youden index is a quarter of the anchored filter's, and the only thing it does
 measurably well is detect what the pack does (5.8% of clean questions acquire an imported name). **So the
-critical path is no longer a decision — it is item 10's registration.** Item 2 is a decision rather than a computation, and it is the only thing on the page that can move the product claim — but it needs a registration before it needs a model call, because the last time this project decided what to ship without one, it shipped a paragraph that an out-of-sample test deleted in an afternoon. Items 3 and 4–5 are registered work that changes no claim. Four items wait on a decision (2, 6, 10, 11), two on an artefact that does not exist (7, 9), one on a toolchain (12). **Nothing on this page is waiting on an idea, and nothing is waiting on compute except item 4.**
+critical path is no longer a decision — and it is no longer even a registration.** Item 10's entry condition is now a statement about the store, and the store has been the ceiling since R13: 22 of 100 admitted rules, 24 of 102 with no home database, and 19.5% of flagged names traceable to a rule. That is a different research programme, not the next iteration of this one, and starting it by pretending it is R35 would be the same error R33 made about shape 3. Items 4–5 are registered work that changes no claim. Three items wait on a decision (6, 10, 11), two on an artefact that does not exist (7, 9), one on a toolchain (12). **Nothing on this page is waiting on an idea, and nothing is waiting on compute except item 4.**
 
 **One thing this list no longer contains, and it should be said plainly.** For twenty rounds the plan was "measure the mechanism, then scale it". The mechanism has now been measured, out of sample, and it is a cost: memory makes the product worse, the filter makes it no worse, and the combination is a wash. Every item above is downstream of accepting that, including the ones marked "mechanical".
