@@ -8148,6 +8148,13 @@ gates passed: 7,000 of 7,000 questions evaluated exactly once with no leaks, gol
 parse 99.97%, execution 98.19%, minimum detectable effect **0.82pp** against the 0.94pp registered.
 The instrument did what it was bought for. Nothing below is a measurement of the harness.
 
+**And the effect is smaller than that resolution.** 0.71pp against 0.82pp, so `eval:power` files this
+artefact as *within 95% but under 80% power* — the same category it gives four of the seventeen earlier
+runs, and the category this record has never upgraded for being the interesting one. The direction and
+the significance are established: the interval excludes zero, five folds agree, McNemar p = 0.0172.
+The **magnitude** sits at the edge of what 7,000 questions were sized to see, and a claim that quoted
+−0.71pp as though the sample had settled its size would be doing the thing §141 was withdrawn for.
+
 | | dev (in-sample) | **train (out of sample)** |
 |---|---|---|
 | questions | 1,534 | **7,000** |
@@ -8159,6 +8166,7 @@ The instrument did what it was bought for. Nothing below is a measurement of the
 | **interval, databases resampled** | **[−0.63, +1.36]** | **[−1.27, −0.18]** |
 | lost / gained | 62 / 67 | **237 / 187** |
 | McNemar p | 0.7249 | **0.0172** |
+| `eval:power` category | underpowered | **within 95% but under 80% power** |
 
 **The clustered interval is the one that decides this.** §143 closed R32's first axis by insisting
 that questions inside a database are not independent, and the headline of this round had never been
@@ -8302,6 +8310,93 @@ resampling unit; the question-level interval is kept in the source artefact and 
 and 99.98 / 99.64 / 100 / 99.98 coverage did not catch either, because both were statements about a
 corpus rather than computations over one.
 
+## 147 — The pack repairs almost as much as it breaks, and the filter realises 15% of what a perfect one would
+
+**"Memory costs 0.71pp" is one number, and the corpus contains two.** Split the same 7,000 questions by
+what memory *did* rather than by what it was worth, and the two directions turn out to be nearly the same
+size:
+
+| | questions | of which | rate |
+|---|---|---|---|
+| the bare attempt was wrong, memory repaired it | 2,925 | **187** | **6.39%** |
+| the bare attempt was right, memory broke it | 4,075 | **237** | **5.82%** |
+| net | 7,000 | **−50** | **−0.71pp** |
+
+**Per question, help is the likelier outcome. Per corpus, harm wins.** Both are true and the reason is
+the base: 4,075 questions could only be harmed and 2,925 could only be helped, so a lower rate on the
+larger base outweighs a higher rate on the smaller one. The exchange rate — repairs per break — is
+**0.79** out of sample.
+
+**This is not a shape that only appears out of sample, and that is the part that matters.** Dev repairs
+**10.26%** of 653 and breaks **7.04%** of 881; its exchange rate is **1.08**. Both rates are the same
+order of magnitude on both corpora, and both directions are present on both. What crossed one is the
+ratio, not the mechanism. §146 said the mechanism does not transfer; this sharpens it — the mechanism is
+*there* out of sample at full strength, in both directions at once, and it is losing by a base it does not
+control. A story where the rules stop working on a foreign corpus is wrong. A story where they work
+equally in both directions and the corpus happens to contain more right answers to break is what the
+matrix says.
+
+**Which moves the question from "is memory good" to "can a filter see the breaks".** A filter that removed
+exactly the 237 broken questions and none of the 187 repairs would be worth **3.39pp**. The read-time gate
+this record has been carrying since §140 removes **548** questions: it catches **76 of 237** breaks
+(**32.1%**) and gives up **40 of 187** repairs (**21.4%**), for a net **36** — **15.2 questions discarded
+per net error prevented**, and **15.2%** of the ceiling realised.
+
+**And it was never better than that in sample.** On dev the same filter spends **10.3** questions per net
+error and realises **24.2%** of a 4.04pp ceiling. The gate has been buying a fifth of its available gain
+for as long as this record has had a gate; the out-of-sample run did not introduce a pathology, it removed
+the corpus that was forgiving enough to hide one. §140's `+0.51pp` was always 15% of the thing it could
+have been.
+
+### What that does to the three shapes R33 is choosing between
+
+**"Ship memory plus the filter" is now bounded above by a wash, not merely measured at one.** Even a
+perfect filter can only remove the 237 breaks; it cannot add a repair. On this corpus that makes the best
+achievable product *exactly* no-memory accuracy, and the realised product is −0.20pp. The bound and the
+measurement agree, which means the −0.20pp is not a tuning shortfall — it is the shape of the mechanism.
+
+**"Ship the filter alone" does not depend on any of this, and that is now its main argument.** The filter
+is a query-level validity check: it discards a statement that imports a name the request never implied.
+Nothing about it requires the rules. 0.51pp of it was measured with memory present and the fallback
+*already written*, which is the corpus's convenience and not a deployment's — but the check itself is one
+comparison against text the caller already has.
+
+**"A weaker injection to raise the clean cohort" would move the wrong term.** §145 established that the
+damage concentrates on questions that said the least, and §146 established that the pack's benefit does
+not concentrate anywhere. Raising the repair rate is the only thing that would flip the exchange rate, and
+nothing in this matrix suggests a dose that raises repairs without raising breaks proportionally — the two
+rates have moved together on both corpora measured so far.
+
+### How it was almost missed, which is the transferable part
+
+The counts were in the artefact from the night of the run. `helped: 187, harmed: 237` sat in the same cell
+as `deltaPp: −0.71` in `poc-sota-bird-train.json` for as long as the run has existed, and §146 wrote four
+thousand words around that cell without dividing the two counts by their own bases — because the base for
+each is a *different* denominator, and the artefact reported one delta, so one denominator was all that was
+ever in view.
+
+> Two counts in one cell are not a comparison until somebody divides them by the two different things they
+> are counts *of*.
+
+The fix is the same as §145's and the same as §146's: make the reading the artefact carries be the reading
+the claim needs. `memoryDiscordanceOf` splits by outcome, divides each side by its own base, and prices the
+filter against the ceiling it could reach — and `realisedPp` is then `gate.improvementPp` computed from the
+confusion matrix instead of by re-reading the corpus with the fallback substituted. One number, two
+derivations, and a test that holds them equal: if the two accounts of the filter ever disagree, one of them
+is describing a different corpus.
+
+**Nothing in the literature this record compares against would have surfaced it either.** Aggregate deltas
+are the standard reporting unit — the memory systems tracked here report end-task accuracy before and after
+memory, which is exactly the number that cannot distinguish "repairs as much as it breaks" from "does
+nothing". This is not a criticism of those papers; none of them had a negative to explain. It is why the
+matrix belongs in the artefact: a mechanism whose two directions are within 0.6pp of each other is
+invisible in the only number most evaluations publish.
+
+**Where this leaves the programme.** Not with a better memory — with a precise statement of what a filter
+would have to do. The gate's problem was never coverage; it catches fewer than a third of the breaks and
+pays for each catch with a fifth of a repair. Any successor has to move precision, and the ceiling it is
+working against is 3.39pp, which is small enough that it should be decided before it is engineered.
+
 ## What is left, in order (current)
 
 **Three questions this page has been organised around, and all three are now answered.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), and the gate's benefit shrinks to half while the product stops paying. What remains is no longer "confirm the mechanism". It is "decide what to ship, given that the filter works and the memory does not", plus the four items that can run in parallel with that decision.
@@ -8309,7 +8404,7 @@ corpus rather than computations over one.
 | # | Item | State | Blocks |
 |---|---|---|---|
 | 1 | **R30 stage 2 — the sample that can see 1pp** | **done, and it refuted the product claim.** Run `41296776252`, 14,479 calls, 7,000 questions, 58 databases, all 12 gates green (§146). Memory costs −0.71pp [−1.27, −0.18] clustered, 5 of 5 folds negative; the read-time gate recovers +0.51pp and leaves −0.20pp | nothing — this *was* the critical path, and it is closed with a negative |
-| 2 | **R33 — what ships, now that the filter pays and the memory does not** | **not registered, and it is the new critical path.** Three shapes are on the table: ship the filter alone as a query-level validity check on a single-shot generator; ship memory with the filter and state −0.20pp; or test whether the 92.2% clean cohort gains anything at all under a *weaker* injection | the product claim, and every decision downstream of it |
+| 2 | **R33 — what ships, now that the filter pays and the memory does not** | **not registered, and it is the new critical path.** Three shapes are on the table: ship the filter alone as a query-level validity check on a single-shot generator; ship memory with the filter and state −0.20pp; or test whether the 92.2% clean cohort gains anything at all under a *weaker* injection. §147 collapses the middle option without a model call: a perfect filter can only remove the 237 breaks, so memory-plus-filter is bounded above by no-memory accuracy, and the bound and the −0.20pp measurement agree | the product claim, and every decision downstream of it |
 | 3 | **R32 — if the damage is not lexical, what is it?** | **closed, three negatives.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both marker kinds (§144). Axis 3 is refuted in the other direction (§145) | nothing further — a fourth structural account would need a corpus this one does not contain |
 | 4 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | §138's claim that the protocol's shared machinery, not only its gates, is scenario-agnostic |
 | 5 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; the last third of the generality refactor |
@@ -8321,6 +8416,9 @@ corpus rather than computations over one.
 | 11 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 12 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
-**What the list looks like now.** Item 1 is finished and it did not say what the programme wanted. Item 2 is a decision rather than a computation, and it is the only thing on the page that can move the product claim — but it needs a registration before it needs a model call, because the last time this project decided what to ship without one, it shipped a paragraph that an out-of-sample test deleted in an afternoon. Items 3 and 4–5 are registered work that changes no claim. Four items wait on a decision (2, 6, 10, 11), two on an artefact that does not exist (7, 9), one on a toolchain (12). **Nothing on this page is waiting on an idea, and nothing is waiting on compute except item 4.**
+**What the list looks like now.** Item 1 is finished and it did not say what the programme wanted. §147 then
+turned the negative into an arithmetic bound: the filter's ceiling on this corpus is 3.39pp and it realises
+15% of it, so the gate has always been a fifth of an idea and the option of shipping it *with* memory cannot
+beat a wash by construction. Item 2 is a decision rather than a computation, and it is the only thing on the page that can move the product claim — but it needs a registration before it needs a model call, because the last time this project decided what to ship without one, it shipped a paragraph that an out-of-sample test deleted in an afternoon. Items 3 and 4–5 are registered work that changes no claim. Four items wait on a decision (2, 6, 10, 11), two on an artefact that does not exist (7, 9), one on a toolchain (12). **Nothing on this page is waiting on an idea, and nothing is waiting on compute except item 4.**
 
 **One thing this list no longer contains, and it should be said plainly.** For twenty rounds the plan was "measure the mechanism, then scale it". The mechanism has now been measured, out of sample, and it is a cost: memory makes the product worse, the filter makes it no worse, and the combination is a wash. Every item above is downstream of accepting that, including the ones marked "mechanical".
