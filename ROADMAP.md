@@ -3287,7 +3287,7 @@ most: the train accuracy is **not comparable to any leaderboard row**, because B
 cell for train and the split's name in the artefact is chosen so that `compareCell` cannot file it as
 a reproduction.
 
-### R32 — if the damage is not lexical, what is it? (**registered** 2026-11-01)
+### R32 — if the damage is not lexical, what is it? (**closed** 2026-11-01, three negatives)
 
 **Why.** §R31-precondition leaves one mechanism standing: the pack changes what the model writes, and the imported
 name is the symptom of that change, not its cause. Sixty percent of the damage happens where the pack said nothing
@@ -3334,3 +3334,26 @@ which is a usable product and an incomplete science, and would be reported as bo
 **Cost.** Zero calls: all three are classifications over `per_case` and `items`, which are already committed.
 
 **Sequencing.** R32 is offline and independent of R30 stage 2, which remains the next dispatch.
+
+**Result — all three axes closed, all three negative.** Recorded here so the registration and its
+outcome sit together; the readings are in `PROGRESS.md` §143 (axis 2), §144 (axis 1) and §145
+(axis 3).
+
+| axis | verdict | the number that decided it |
+|---|---|---|
+| the pack changed the table set | **inert** — the imported name counted twice | 45.2% overlap with F1 and exactly 0.00pp on the 7 questions F1 does not cover |
+| the rule is procedural rather than declarative | **unmeasurable** — the classes are not distinct | 157 of 271 sentences (57.9%) carry both marker kinds, over the 50% bar this registration fixed, and a looser marker set only moves it to 65.7% |
+| the question is one the schema can answer two ways | **refuted** — the direction is backwards | 1.33% of already-correct queries destroyed where the question named none of its required columns, against 8.41% where it named most |
+
+**The refutation clause above is the outcome, and it was written before any of these numbers
+existed.** The corpus cannot attribute the damage to anything in the pack's structure, the product
+statement narrows to the read-time check, and no fourth structural account is proposed: three have
+been tested against a corpus that carries the pack text, the queries it produced and the reference
+queries, and a fourth would need a corpus this one does not contain — most plausibly a controlled
+one, where the pack is varied and the question held fixed, which is not something BIRD can supply.
+
+**Prediction 3 was refuted in the residual reading and is not promoted.** Procedural packs read
++1.64pp and declarative −2.12pp, and the gap is larger where no name was imported (+5.15pp) — but
+the sign holds in only 6 of 11 databases, which a sign test puts at p = 0.754. A direction that
+appears in 6 of 11 clusters is not a direction, and the registration's own standard is that a
+reading either resolves or is not reported as one.

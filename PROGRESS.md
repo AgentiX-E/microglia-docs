@@ -8067,6 +8067,75 @@ repository forbids in non-test code and enforces with `pnpm audit:repo`. It fail
 is the check working; the fix was `process.stdout.write`, and the delete-the-guard-that-cannot-run
 rule was applied to a `throw` in the same file rather than covering it with a test.
 
+## 145 — The question that said the least was damaged the least
+
+R32's third axis was the last candidate standing: *the question is one the schema can answer two
+ways — an ambiguity the pack resolves in the wrong direction*. Axes 1 and 2 were closed negatively,
+so this was the only account of the mechanism left, and the prediction was that a question which
+does not say which columns it needs is the kind a pack damages.
+
+**The measure.** For each question, take the columns the reference query requires and ask how many
+of them the question — or the benchmark's external-knowledge block, which a solver may also read —
+names outright. Star projections are dropped, because `SELECT count(*)` requires no column and
+counting its expansion would report a question as silent about something it never had to say. The
+result is four bands: names none of them (131 questions), fewer than half (444), most but not all
+(778), all of them (181).
+
+**The result is the opposite of the prediction.**
+
+| what the question named | n | Δ vs no memory | baseline correct | destroyed | repaired |
+|---|---|---|---|---|---|
+| **none of its columns** | 131 | **+4.58pp** | 57.3% | **1.33%** | 12.50% |
+| fewer than half | 444 | +0.90pp | 60.4% | 6.72% | 12.50% |
+| most but not all | 778 | −0.26pp | 53.5% | **8.41%** | 9.12% |
+| all of them | 181 | −1.66pp | 67.4% | 6.56% | 8.47% |
+
+The raw deltas fall monotonically across the four bands, which on its own reads like a finding and
+is not one: the baselines move with them, from 57.3% to 67.4%, and a question that starts correct
+has more to lose. `destroyed` is the conditional rate the comparison has to use — the share of
+already-correct queries the pack broke — and it reverses the picture. **The band that named nothing
+is destroyed at a sixth of the rate of the band that named most.** The ambiguity axis predicted the
+opposite and is refuted.
+
+**And it is not a difficulty effect, which is what the strata are for.** A question that names
+nothing is plausibly also a harder one, so every reading is taken inside the benchmark's own label:
+
+| difficulty | none | few | most | all |
+|---|---|---|---|---|
+| simple | 1.54% (107) | 7.34% (278) | 7.56% (412) | 6.52% (128) |
+| moderate | 0.00% (18) | 2.74% (130) | **10.53%** (273) | 8.00% (43) |
+| challenging | — (6) | 16.67% (36) | 6.67% (93) | — (10) |
+
+Both strata with enough questions say the same thing and the moderate one says it more loudly.
+Challenging has 6 questions in its smallest band and cannot be read; it is reported rather than
+dropped because dropping it would leave the impression that every stratum agreed.
+
+### What R32 leaves
+
+All three axes are closed and all three are negative:
+
+| axis | verdict | the number that decided it |
+|---|---|---|
+| the pack changed the table set | **inert** — the imported name counted twice | 45.2% overlap, 0.00pp outside it (§143) |
+| the rule is procedural rather than declarative | **unmeasurable** — the classes are not distinct | 57.9% of sentences carry both marker kinds (§144) |
+| the question is one the schema can answer two ways | **refuted** — the direction is backwards | 1.33% destroyed where nothing is named against 8.41% where most is (§145) |
+
+R32's own refutation clause applies, and it was written before any of these numbers existed: *if no
+feature separates, the honest conclusion is that this corpus cannot attribute the damage to anything
+in the pack, and the product statement narrows to the read-time check with no account of its cause —
+which is a usable product and an incomplete science, and would be reported as both.*
+
+That is what is reported. The one stable separation in this corpus is still §140's — a query that
+introduces an ungrounded name is worth −11.13pp and nothing else survives its own half-width — and
+§141 already showed that the rule's *text* cannot predict which queries those will be. Three
+structural accounts of the mechanism have now been tested and three have failed. **The mechanism is
+not attributable from this corpus's structure, and the read-time check remains the deliverable.**
+
+**Green.** `pnpm eval:referent` writes `poc-referent.json` from the same committed artefact as the
+rest of R32 and runs in `pnpm check`; CI recomputes it, compares bytes and asserts 11 numbers,
+including that the simple and moderate strata each independently refuse the prediction. `referent.ts`
+is at **100 on all four coverage dimensions**; 2,412 tests; `99.98 / 99.63 / 100 / 99.98`.
+
 ## What is left, in order (current)
 
 **The covariate question is answered, the mechanism question is open, and the sample is now one dispatch away.** After R26 (channels), R28 (overlap) and
@@ -8078,7 +8147,7 @@ registered category measurable, or a line the previous rounds registered and nob
 | # | Item | State | Blocks |
 |---|---|---|---|
 | 1 | **R30 stage 2 — the sample that can see 1pp** | **dispatched, running.** §142 made the split load; the first dispatch (`41294945557`) stopped on fold 1 because the cap was 14% low, which §144 records as Amendment 1 with the cap raised to 20,000 and nothing else changed. The second dispatch (`41296776252`) is the one that will count | the confirmation of §140 — now of the *query-level* gate, since §141 withdrew the rule-level one — and the first out-of-sample test of a gate this project has estimated in-sample |
-| 2 | **R32 — if the damage is not lexical, what is it?** | **two of three axes closed, both negative.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both a declarative and a procedural marker, over the registered 50% bar (§144). The residual reads declarative packs at −2.12pp and procedural at +1.64pp, but the sign flips in 4 of 11 databases, so nothing is promoted | axis 3 — schema ambiguity resolved in the wrong direction — is the only account left, and it is the one no reading has touched |
+| 2 | **R32 — if the damage is not lexical, what is it?** | **closed, three negatives.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both a declarative and a procedural marker (§144). Axis 3 is refuted in the other direction: the questions that name none of their required columns are destroyed at 1.33% against 8.41% where most are named (§145). R32's own refutation clause applies and the product statement narrows to the read-time check with no account of its cause | nothing further — the mechanism is not attributable from this corpus's structure, and a fourth structural account would need a corpus this one does not contain |
 | 3 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | the evidence for the claim §138 salvaged: that the protocol's *shared* machinery, and not only its gates, is scenario-agnostic |
 | 4 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; it is the last third of the generality refactor |
 | 5 | **The arm-level audit gap (§25.7)** | still open: `eval:power` audits whole-artefact deltas, and an arm inside an artefact is not a row. The values channel at +1.17pp lives in an arm, so the audit undercounts positives rather than overcounting them | a schema decision — whether an arm is an artefact |
