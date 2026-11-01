@@ -813,3 +813,41 @@ and we can say so without having run it.
 **What we still cannot claim.** Any position on the leaderboard, any statement about memory mechanisms outside
 text-to-SQL, and any out-of-sample number for the read-time gate — the last of which is R30 stage 2 and remains the
 only reading on the critical path.
+
+## Appendix E — R34: the selective-retrieval line, tested against a store it was not built for (2026-11-01)
+
+**The leaderboard did not move, and this round is not aimed at it.** AskData remains SOTA at **83.40 test /
+78.49 dev**; our no-memory cell is **57.63 dev**, a 20.86pp same-split gap that is a generator-and-pool
+difference (§2), not a memory one. What R34 does is take the mechanism the selective-retrieval literature
+reports the *largest* gains for and point it at this project's store.
+
+| system | mechanism | reported | our test of the same mechanism |
+|---|---|---|---|
+| **SKR** (Wang et al., 2023, Findings of EMNLP) | kNN over similar past questions decides whether to retrieve; splits the corpus into D+ (known) and D− (unknown) by running both arms | **+2.91pp** over full retrieval (InstructGPT), **+4.20pp** (ChatGPT), five benchmarks | **replicated in lexical form and refuted on this store**: 62.4% precision against a 47.64% bar, **−0.05pp** [−0.50, +0.45] on the confirmation half |
+| Self-RAG (Asai et al., 2024, ICLR) | reflection tokens decide retrieval and critique the passage | large gains on six tasks, adaptive-retrieval ablation is load-bearing | not testable here: reflection tokens need training, and this project's constraint is a headless SDK with no fine-tuning |
+| Adaptive-RAG (Jeong et al., 2024, NAACL) | routes on query complexity, then chooses how many retrieval rounds | beats single-round RAG on multi-hop sets | our nearest proxy — pack size, 1 vs ≥ 2 items — is the *worst* gate measured: **−0.69pp** [−1.33, −0.08] |
+| CRAG (Yan et al., 2024) | classifies retrieved documents correct / incorrect / ambiguous before generating | +gains on short- and long-form QA | our proxy is `coverage`; both directions fail, **−0.11pp** and **−0.19pp**, precision 44.9% and 28.3% |
+| SIM-RAG (Yang et al., 2025) | a trained sufficiency critic | improves over CRAG | not testable: needs a trained critic, i.e. the fine-tuning this project does not do |
+| FLARE / DRAGIN / SeaKR | trigger on token probability or internal uncertainty | retrieval frequency down 60–90% at equal accuracy | not testable on a committed artefact: the artefacts store queries and outcomes, not generation trajectories |
+
+**Why the same mechanism pays there and not here, in one sentence each.** Their D− set is a question the model
+*cannot answer* and the retriever *can*; the passage carries the missing fact, so admission converts directly
+into repairs. Our D− set is a question the model *can* answer wrongly for a reason no stored rule names — the
+store is 78% irrelevant by R13's admission ledger and 19.5% of the names in the damaged queries are traceable to
+a rule at all — so admission selects questions where the pack has nothing to supply and something to disturb.
+
+**The measurement that no competitor has published, and that they can check against their own numbers.** The
+precision a gate must reach is not a constant of the corpus: it is `b / (r + b)` **of the set the gate admits**.
+On this corpus the bar rises 16.8pp across a six-point sweep while the gate's precision rises 20.6pp, because
+the break rate inside the admitted set goes from 5.50% to 9.68% while the repair rate stays flat. Any system
+that reports "our router reaches X% precision" without the within-set bar has reported a number that cannot be
+compared across routers — and the router it flatters may be selecting variance rather than ignorance.
+
+**Where microglia stands, stated as a rank rather than a vibe.** On the memory mechanism axis, microglia is the
+only entry in this table whose published number is **negative out of sample** (−0.71pp, §146) and whose best
+selective-retrieval gate is **indistinguishable from zero** (+0.11pp of a 2.67pp ceiling, §149). On the BIRD
+leaderboard it is **not ranked** — the 20.86pp dev gap is unchanged by anything in this round. What it has that
+the table does not is a **break-even arithmetic** (repairs ≥ 8.10% at fixed breaks, or breaks ≤ 4.59% at fixed
+repairs) derived from its own corpus and falsifiable by anyone who builds a better store: **80/100 rules never
+earn admission (R13), 24 of 102 have no database to apply to (R15), and the target those failures have to clear
+is now a number rather than a wash.**
