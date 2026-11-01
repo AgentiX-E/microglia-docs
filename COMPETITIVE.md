@@ -721,3 +721,51 @@ collapsed to 1.56 distinct answers and every arm lost individually). The only co
 made that is both resolvable and attributable is the one in the table's `control` rows, and the audit's contribution
 is to say so precisely: **the number we can defend is the one that differs from a published cell by 3.2 standard
 errors, and it is not the memory number.**
+
+## Appendix C — R30 against the memory literature, and the leaderboard as it stands (2026-11-01)
+
+**The ranking did not move, and this appendix exists so that the absence of movement is a stated fact rather than
+an omission.**
+
+| position | system | BIRD EX | split | vs ours (dev, no memory) |
+|---|---|---|---|---|
+| 1 | GrainSQL | **82.95** | test | +25.32 |
+| 2 | Gemini-SQL2 | 80.04 | test | +22.41 |
+| 3 | Databricks RLVR-32B (7-SC) | 75.68 | test | +18.05 |
+| 4 | R³-SQL | 75.03 | dev | **+17.40** |
+| 5 | XiYan-SQL (full) | 71.58 / 75.63 | dev / test | +13.95 / +18.00 |
+| 6 | CHASE-SQL | 73.01 / 73.0 | dev / test | +15.38 / +15.37 |
+| — | XiYan-SQL, same generator as ours | 53.52 | dev | −4.11 |
+| — | **microglia, no memory** | **57.63** | dev | — |
+| — | **microglia, memory arm** | **56.26** | dev | −1.37 |
+| — | Human (data engineers) | 92.96 | test | +35.33 |
+
+**We are not on the leaderboard and this round does not put us there.** The gap to the leader is 25.32pp and §2
+prices it as a generator-and-pool difference: XiYan's own ablation puts its fine-tuned generator at −2.91 and its
+selection model at −2.74, neither of which this harness can buy without weights or a GPU. What we hold is the
+control row — +4.11pp over the same model on the same split with a better harness — and R30 changes nothing about
+it. **A memory mechanism worth +1.30pp on a 1,534-question dev split cannot close a 25-point gap, and any framing
+that suggests otherwise is the mistake §139 corrected.**
+
+**What R30 does change is our position in the memory literature, and it is a first rather than a best.**
+
+| source | what it says the defect is | what this project can now say about it |
+|---|---|---|
+| STRATA (arXiv 2610.19386) | memory helps when experience transfers whole, misleads when only part does; the mechanism is *what the rule makes the query do* | **operationalised and confirmed.** The query-level covariate is the first in this record to clear its own resolution: −11.13pp ±7.61, p = 0.0015 |
+| Anti-Persistence (arXiv 2610.27406) | a confidently retrieved wrong abstraction is reproduced rather than adapted | **the harm channel is damage, not missed repair**: 35.71% of already-correct queries destroyed against 4.56%, with the repair rate flat at 11.76 vs 10.04 |
+| MEMTRIM (arXiv 2610.07311) | harm peaks at *intermediate* query–memory overlap | **refuted on this corpus** (R28): the minimum sits at the top bucket, and the shape is 18.55pp against a 32.23pp resolution |
+| Companion Agents (arXiv 2601.08838), SEED (arXiv 2506.07423) | curated per-question knowledge is worth 12.7–20.9pp | **reproduced at the top of that range**: +17.60pp [15.38, 19.82] on dev, and it is the competitor the pack was losing to (R24) |
+
+**The competitive asset this round produced is not an accuracy number; it is a measurement nobody else has
+published.** Four systems have written down what they believe the memory failure is. None of them reports a
+per-question covariate of it with a resolution, a clustered interval, an exact test, a multiplicity correction and a
+stratified damage rate — and none reports the covariate's *failure to be computable before generation*, which is the
+finding that decides whether any of their write-path repairs can work. `ruleLevel` is that measurement: a
+pre-generation filter built on rule text flags 385 questions, moves the delta **+2.86pp in the wrong direction**, and
+agrees with the query-level covariate at 13.0% precision.
+
+**What would move the leaderboard, stated as a number, unchanged from §2 and from §139.** A different generator or a
+larger candidate pool: 13.95pp of headroom that this harness has already failed to spend once. **What would move the
+memory line is 6,600 paired questions**, which is R30 stage 2, and the largest number it could establish is about
+1pp. Those are the only two moves on the board, and this round made the second one cheaper by giving it something
+specific to confirm.

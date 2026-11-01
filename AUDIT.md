@@ -1328,3 +1328,66 @@ estimate.** Two independent samples cannot be paired, so the width is `sqrt(p₁
 4.11pp difference is **2.30 standard errors**: it clears the 95% bar (3.51pp) and **not** the 80%-power bar
 (5.02pp). The record had been quoting the estimate with neither, which is the same defect as §25.1 at the level of
 the positioning document rather than of an artefact.
+
+## 26. Addendum — R30 stage 1: two tokeniser defects, one of which inflated the finding (2026-11-01)
+
+**26.1 A value change was classified as a reordering, and the bucket it landed in has a zero delta by
+construction.** `relation` is decided by comparing two normalised forms: equality of the token stream means
+`unchanged`, equality of the *multiset* means `reworded`, and anything else is `edited`. The multiset was built from
+**word tokens only**, on the reasoning that a reordering is about words. It is not: `WHERE x = 1` against
+`WHERE x = 2` has the same words and a different answer, and fourteen committed cases were filed as `reworded`
+rather than `edited`. The consequence is not cosmetic. `reworded` is a bucket in which the two queries are the same
+query, so its delta is zero by construction, and every case wrongly placed there is a real edit removed from the
+ledger the round is drawn from. Found by a test that expected `rewritten` and got `reworded`; fixed by keying the
+multiset on **all** tokens, numbers and literals included.
+
+**26.2 A derived-table alias was counted as a column, which is the one defect direction that matters.** `FROM
+(SELECT …) AS s` registered `s` in the output-label set but `FROM (SELECT …) s` — no `AS` — registered nothing, so
+`s` fell through into `columns`, and any such name absent from the question became an "imported identifier" that no
+rule had mentioned. **This is a false positive in the covariate that the round is testing**, and a tokeniser that
+inflates its own hypothesis is the exact failure the audit exists to catch. A related leniency was removed at the
+same time: identifiers of a single character were being dropped as presumed aliases, which was a heuristic
+standing in for alias tracking the extractor now does properly. Between the two corrections `F1` moved from 151
+questions at a −11.38pp gap to 155 at −11.13pp — **the separation does not depend on either**, which is the result
+worth recording: the tokeniser was wrong and the finding survived it.
+
+**26.3 Two branches could not be reached by any input, and were removed rather than exempted.** `logGamma` carried
+the reflection formula a general implementation needs for arguments below 0.5; every call site passes `n + 1` from a
+binomial coefficient, so the argument is never below one. `logChoose` carried a range guard for `k ∉ [0, n]` while
+the one caller enumerates `x` over the hypergeometric support. Both were written first, both are branches no input
+can take, and both would have been `v8 ignore` candidates in a codebase that tolerated them. They are gone, with the
+invariant stated in the comment; the file measures 100 on all four dimensions rather than 99 with two suppressions.
+
+**26.4 A resolution of infinity was published as `null`, which reads as "not measured".** The 692 questions the
+pack left untouched have no discordant pair, and the minimum detectable difference of a comparison in which
+nothing changed is infinite. `detectableDelta` returns `Number.POSITIVE_INFINITY` correctly; `JSON.stringify`
+turns it into `null`; and `null` in this project means *unmeasured*. The artefact now states the distinction in its
+notes and carries `helped + harmed === 0` in the same row, and `CellReading.minDetectablePp` documents both causes.
+This is the mirror of the defect §139 recorded — there, a zero read as "measured, and exactly zero".
+
+**26.5 The registration asked for a category the record cannot compute, and it is reported as absent.** R30's third
+category is *a table or column the rule named that the schema had pruned*. `per_case` stores `schemaTables` as
+`{ kept, total, pruned }` — three numbers, no names — so the category is not computable from any committed
+artefact. `F4` (a table added to the query) is adjacent and is not the same question, and putting it in the third
+slot would have been a substitute answer under the original name. The artefact carries an `unmeasured[]` entry with
+the category, the reason, the nearest substitute and the difference; the fix is one field in stage 2's `per_case`.
+
+**26.6 The build caught a name collision that would have made the diff unreadable.** `shapeOf` and `gateOf` were
+already exported by `exec-signature.ts` and `signal-gate.ts`. Renamed to `sqlShapeOf` and `gateReadingOf` rather
+than re-exported under an alias: two functions with the same name that answer different questions is how a reader
+ends up quoting the wrong one, and the compile error is cheaper than the confusion.
+
+**26.7 What the audit did not find, stated so that its absence is on the record.** No case of the classifier
+reading the gold SQL, the gold result or any scorer field — the input type has four string fields and no way to
+reach the outcome. No non-determinism: two consecutive runs of the bin produced byte-identical artefacts, which is
+what the CI step compares. And no criterion that can be satisfied by a zero-information cell: `Q1` requires the gap,
+the analytic interval, the clustered interval and the exact test to agree, and each of the four fails independently
+when its own input is missing.
+
+**26.8 A quoted bundle size had drifted 568 bytes and nothing was comparing it to the build.** `README.md`
+stated **42,762 B raw / 14,533 B gzipped** for the core package; `pnpm bundle:size` measures **43,330 / 14,684**.
+The gate was green throughout, because the gate compares the bundle to its *ceiling* and not to the number the
+documentation quotes — so the only thing that would have caught the drift was a reader running the command. Fixed
+to the measured values. The general form is worth recording because it is the same class as §139's row error: **a
+number in prose that no build step reads is a number that will be wrong, and the fix is to read it, not to be
+careful.**

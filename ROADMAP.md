@@ -3097,3 +3097,78 @@ R30 is two stages, and the order matters: the cheap one first, because it can ma
 **What a positive stage 1 would license.** One read-time filter and one distiller change, specified by the covariate
 that separates, and nothing else. It would not license a SOTA claim: the effect being explained is ~1pp on BIRD dev,
 and the competitive gap is 4.11pp to the reproduced baseline and 25pp to the leaderboard.
+
+**Outcome, stage 1 (2026-11-01, §140). All four registered criteria for stage 1 pass and the refutation does not
+fire.** The classifier is `packages/eval/src/sql-diff.ts` + `query-diff.ts`, the artefact is
+`eval/results/poc-query-diff.json`, and the workflow recomputes it byte for byte and asserts nineteen facts.
+
+| prediction | registered | measured | |
+|---|---|---|---|
+| 1 — the identifier covariate separates help from harm and is the largest split the record has | a separation above its own resolution | gap **−11.13pp ±7.61**, clustered [−19.60, −2.63], exact p = 0.0015, on 155 of 1,534 | **confirmed** |
+| 2 — most discordant cases have no identifiable cause in the query diff | *unexplained* is the largest single bucket | **94 of 129 (72.9%)** unexplained | **confirmed** |
+| 3 — stage 2 resolves the mechanism, in either direction | not answerable offline | — | open |
+| 4 — stage 2 does not load the train split without a driver change | not answerable offline | — | open |
+
+**Prediction 1 needed a name the register did not give it.** The covariate that separates is *the memory query
+contains an identifier that neither the baseline query nor the question mentions*. Six features were tested; F1
+survives a Bonferroni threshold of `0.05/5 = 0.01` at p = 0.0015, and F2 — the same hypothesis under a deliberately
+looser grounding rule — clears its own interval but **misses the corrected threshold at p = 0.0102**. Both numbers
+are in the artefact. The mechanism is not "show the pack less" or "filter by relevance": it is that **the pack
+sometimes puts a schema name into the query that the question never asked for, and the query is then wrong 7.8
+times as often** — 35.71% of already-correct queries destroyed against 4.56%.
+
+**The registered licence is narrower than the registration assumed, and the difference was measured rather than
+argued.** The licence reads *one read-time filter and one distiller change*. The read-time filter works — it moves
+the paired delta from +0.33pp to +1.30pp by discarding 155 queries — but it requires the query to exist, so it is a
+**post-generation** check and not an admission rule. The pre-generation version was measured on the same corpus:
+an admission filter that refuses a rule whose *text* names an ungrounded identifier flags 385 questions, is worth
+**+2.86pp in the wrong direction**, and agrees with F1 at 13.0% precision and 32.3% recall. **The version of the
+gate that could ship is not the version that works.** The distiller change is therefore not optional: until a rule
+carries the names it requires, the write path cannot make this decision.
+
+Stage 2 is unchanged and is the only item on the critical path. Its first action is still the registered one —
+prove the train split loads and passes its population check before anything is spent — and its stop condition is
+unchanged: a delta outside ±1pp in either direction retires the twenty-six-iteration claim that this mechanism is
+below the resolution of everything the project can afford.
+
+### R31 — a rule that says which names it needs (**registered** 2026-11-01)
+
+**Why this rather than the sample alone.** R30 stage 1 established that the harm is a name imported into the query,
+and that the rule *text* does not predict which names will be imported. Two explanations survive, and they imply
+opposite repairs:
+
+- **the representation loses the names.** 928 of 1,066 rules say "a numeric code column" or "the filter column"
+  rather than naming one. If the names are recoverable at distillation time, an admission filter becomes possible
+  and the gate ships for free.
+- **the model chooses the names.** The rule is advice and the query is the model's composition; a rule that names
+  `frpm` and a model that writes `frpm` are not the same event. Then no write-path filter can exist and the only
+  implementable form is a post-generation check, which costs a second generation.
+
+**The work.** One field. `LearnedItem.names` — the schema identifiers the distiller asserts the rule depends on —
+written by the distillation prompt and validated against the schema candidate at admission:
+
+1. extend the distillation contract with `names: string[]`, required, empty permitted and **counted**;
+2. validate every name against the run's schema candidate and reject an item carrying a name the database does not
+   have (the R11 wall, now applied at write time rather than at read time);
+3. re-run the classifier over a committed corpus that carries the field, and re-measure
+   `ruleLevel.agreement`. **The registered bar: recall ≥ 0.7 and precision ≥ 0.5.** Below either, the
+   representation reading is refuted and the second reading stands.
+
+**Cost.** No new model calls for the validation and the re-measurement — the field is written by the distillation
+pass that already runs. One `sota.yml` dispatch on dev to regenerate the store, ~1,900 calls.
+
+**Registered predictions.**
+
+1. **Recall rises above 0.5 but not to 0.7.** The distiller can name the column a rule is about, and it cannot name
+   the ones the model will add on its own; the ceiling is the share of the harm that is rule-driven.
+2. **Validation rejects more than 5% of distilled items** against their own database, which would make the R11
+   vocabulary wall visible at write time for the first time since it was measured at read time.
+3. **The gate's out-of-sample benefit is smaller than the in-sample +0.98pp**, because the in-sample estimate was
+   chosen on the corpus it improves. A shrinkage of a quarter or more is the expectation.
+
+**Refutation.** If `names` is empty for more than 90% of items, the distiller cannot express the dependency and
+the representation reading is refuted outright — the product statement narrows to *this mechanism is not
+implementable at write time*, which is a real answer and would end the write-path line.
+
+**Sequencing.** R31 is offline except for one store rebuild, so it runs in parallel with R30 stage 2's data check;
+neither blocks the other.

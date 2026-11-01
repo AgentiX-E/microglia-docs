@@ -6861,7 +6861,7 @@ R24 is the same 2×2 on `dev`, because three of the claims above are weaker than
 all three: the 24.86pp is quoted against competitor numbers measured on a split that keeps the easiest third,
 the +1.14pp cell is below the instrument's floor, and the difficulty prediction had nothing to test.
 
-## What is left, in order (current)
+## What was left after R25, in order (superseded — the current list is at the end of this file)
 
 Ten runs are closed and the sentence that summarised them has changed twice. Eight axes were varied on a
 distilled store — content, quantity, position, substrate, framing, delivery order, membership at a fixed
@@ -7542,3 +7542,202 @@ coverage dimensions at **99.98 / 99.63 / 100 / 99.98** with `strata.ts` and `pow
 recomputations), two new workflow steps that recompute `poc-harm-strata.json` and `poc-power-audit.json` byte for
 byte, `bench` (blocking gates PASS) and `bundle:size` all green. No published artefact changed except the two this
 round added.
+
+### 140 — The harm is a name the question never mentioned, and it was in the record the whole time
+
+**Three rounds of covariates came back flat, and the fourth axis needed no new calls.** R26 varied the channels a
+rule travels through and bounded the annotator at +1.17pp. R28 stratified 1,534 committed questions by query–rule
+overlap and got a shape worth 18.55pp against a resolution of 32.23pp — not a shape. R30 stage 1 asked the
+question those two could not: not *how near the rule is* but *what the rule made the query do*. That quantity was
+already sitting in every committed case, in two fields nobody had read side by side: `predictedSql` and
+`baselineSql`, the same question answered by the same model with and without the pack.
+
+**What was built.** `packages/eval/src/sql-diff.ts` (a tokeniser, a shape extractor, and a diff), `query-diff.ts`
+(the join to the outcome, four tests and a counterfactual), and one bin that writes
+`eval/results/poc-query-diff.json` from one committed file. 1,307 lines with their comments, 69 tests, and **100
+on all four coverage dimensions for both modules**. The workflow recomputes the artefact and compares it byte for
+byte, then asserts the nineteen facts below, so a classifier change that flipped a verdict arrives as a named
+failure rather than as a diff nobody reads.
+
+**The taxonomy, and the first split that is not a similarity.**
+
+| label | n | share | helped / harmed | delta | 95% half-width | MDE | baseline acc |
+|---|---|---|---|---|---|---|---|
+| `unchanged` | 692 | 45.1% | 0 / 0 | **+0.00pp** | ±0.00 | ∞ | 65.3% |
+| `reworded` | 73 | 4.8% | 1 / 0 | +1.37 | ±2.68 | 3.84 | 64.4% |
+| `imported-name` | 155 | 10.1% | 10 / 25 | **−9.68pp** | ±7.48 | 10.69 | 45.2% |
+| `narrowed` | 103 | 6.7% | 16 / 9 | +6.80 | ±9.51 | 13.60 | 40.8% |
+| `widened` | 108 | 7.0% | 18 / 13 | +4.63 | ±10.10 | 14.45 | 43.5% |
+| `reshaped` | 58 | 3.8% | 11 / 4 | +12.07 | ±13.09 | 18.71 | 25.9% |
+| `rewritten` | 345 | 22.5% | 11 / 11 | +0.00 | ±2.66 | 3.81 | 60.3% |
+
+**The label is assigned by one rule with a stated precedence**: an ungrounded name outranks a direction, because a
+query can both narrow and import and the imported name is the part a filter could act on. `narrowed` means more
+conjunctions, more tables, more aggregates or a shorter select list; `widened` is its mirror; `reshaped` is both at
+once, which is what a rewrite rather than an adjustment looks like. Six of the seven labels sit at or above zero.
+**One sits eight points below it, and it is the one that names something the question never did.**
+
+| code | what it splits on | n | delta present | delta absent | gap | 95% | clustered 95% | Fisher |
+|---|---|---|---|---|---|---|---|---|
+| **F1** | memory query introduces a name neither the baseline nor the question contains | 155 | **−9.68pp** | +1.45pp | **−11.13** | ±7.61 | [−19.60, −2.63] | 0.0015 |
+| F2 | the same, morphological grounding | 114 | −9.65 | +1.13 | −10.78 | ±8.37 | [−21.78, −1.59] | 0.0102 |
+| F3 | introduces a name the question *does* contain | 24 | +12.50 | +0.13 | +12.37 | ±21.65 | [−4.29, +31.82] | 0.4426 |
+| F4 | adds a table the baseline did not read | 77 | −10.39 | +0.89 | −11.28 | ±11.47 | [−24.50, +1.87] | 0.0499 |
+| F5 | adds at least one conjunction | 40 | −7.50 | +0.54 | −8.04 | ±13.04 | [−21.18, +6.97] | 0.2599 |
+| F6 | changed the query at all | 842 | +0.59 | +0.00 | +0.59 | ±2.64 | [−1.15, +2.40] | 1.0000 |
+
+**F1 is the first covariate this record has measured that clears its own resolution.** The gap is 11.13pp against
+a 95% half-width of 7.61pp, the database-clustered interval excludes zero by 2.63pp, and the exact test gives
+p = 0.0015 on 155 against 1,379. F6 is the control that makes it a mechanism rather than a denominator: *changing
+the query at all* is worth +0.59pp ±2.64, so the effect is not "the pack moved something". F3 is the comparison
+half, and it points the other way: the 24 questions where the pack imported a name the question **did** contain
+gained 12.50pp, on a sample too small to resolve — the same direction the mechanism predicts, from the other side.
+
+**F2 is the robustness check, and the design of it matters.** The strict grounding rule is exact token membership,
+and it has a known false positive: `raceId` against "qualifying race No.903" is not a token of the question, though
+BIRD's own gold query filters on it. Under a looser rule — a question word of three letters is a prefix of the name
+— 41 of the 155 leave the group and the gap moves from −11.13pp to −10.78pp, still beyond its own ±8.37pp width.
+**The finding survives the rule that was chosen to break it**, which is what separates a tokeniser artefact from a
+measurement.
+
+**Six features were tested, and the multiplicity is reported rather than absorbed.** F1 and F2 are one hypothesis
+under two grounding rules, so the family is five distinct questions, and Bonferroni puts the threshold at
+`0.05 / 5 = 0.01`. **F1 survives it at p = 0.0015. F2 does not: p = 0.0102 misses 0.01 by two ten-thousandths**,
+and that is written here rather than rounded away, because the robustness check is exactly the place where a
+reader is entitled to know that the second rule's exact test lands just outside the corrected bar while its
+interval test clears. The registered criterion `Q1` keeps the 0.05 the registration named — a bar lowered after the
+result is not a bar — and the adjusted threshold travels beside it in the artefact.
+
+**The mechanism is damage, not missed repair, and stratifying on the baseline outcome is what shows it.**
+
+| | already-correct queries destroyed | already-wrong queries repaired |
+|---|---|---|
+| group that imports an ungrounded name (n=155) | **35.71%** | 11.76% |
+| everything else (n=1,379) | **4.56%** | 10.04% |
+
+The repair rate is flat — 11.76 against 10.04, one point apart on 155 questions. **The damage rate differs by a
+factor of 7.8.** That comparison is stratified on `withoutMemoryCorrect`, which is fixed before the treatment
+exists, so it is not the difficulty story: both cells are questions the model *already answered right* without
+memory, and in one of them the pack then broke seven times as many. The importing group is also the harder one
+(45.2% baseline accuracy against the corpus's 57.4%), and a harder question has *more* room to gain — so the
+difficulty confound points against the finding rather than for it. Both arguments are now in the artefact as `Q4`,
+and the rate is reported rather than the argument.
+
+**The registered predictions.** All five criteria pass; the refutation clause does not fire.
+
+| code | criterion | actual | |
+|---|---|---|---|
+| `Q1` | the identifier covariate separates help from harm, beyond its own width and at p < 0.05 | gap −11.13pp ±7.61, p = 0.0015 | pass |
+| `Q2` | most discordant cases have no identifiable cause in the query diff | **94 of 129 (72.9%)** unexplained, the largest bucket | pass |
+| `Q3` | the separation survives the looser grounding rule | gap −10.78pp ±8.37 over 114 | pass |
+| `Q4` | it is not a difficulty artefact | 35.71% vs 4.56% destroyed | pass |
+| `Q5` | a gate that discards every importing query would raise the delta | +0.33pp → **+1.30pp** | pass |
+
+**Q2 is the one that bounds the round.** The covariate describes 35 of the 129 discordant questions and no more.
+The other 94 flips — 72.9% — have no imported name in them, which is the registered prediction written down
+before the run ("a category called *unexplained* is expected to be the largest single bucket, and its size is the
+honest ceiling on what a per-question analysis can ever attribute"). It is also the answer to what a filter can
+buy: at most the 35.
+
+**The counterfactual, and the two reasons not to ship it.** For every question the gate would discard, the record
+already holds the no-pack query and its outcome, so the gated arm is read rather than predicted:
+
+| gate | discarded | measured | gated | 95% | MDE | McNemar p |
+|---|---|---|---|---|---|---|
+| strict grounding | 155 (10.1%) | +0.33pp | **+1.30pp** | ±1.24 | 1.77 | 0.0495 |
+| morphological | 114 (7.4%) | +0.33pp | +1.04pp | ±1.32 | 1.88 | 0.1448 |
+
+The gate almost quadruples the point estimate and, for the first time in this record, produces a pack arm whose
+95% interval excludes zero. **It is not shipped, for two reasons that the numbers themselves state.** It clears
+the 95% bar by 0.06pp and misses its own 80%-power bar by 0.47pp, so it is a detection at the edge of what the
+sample can see; and it was chosen by looking at these same 1,534 questions, so the improvement is in-sample by
+construction and an out-of-sample run would regress it toward zero by an amount nobody has measured. R30 stage 2
+is the sample that can confirm it. Until then the gate is a registered prediction with an estimate attached, not
+a behaviour.
+
+**The shippable form of the gate was measured too, and it fails, which is the round's second result.** `F1`
+reads the query, so it is post-treatment: it can describe what happened and it cannot be applied before a query
+exists. The version that *could* ship — an admission filter that refuses a rule whose text names something the
+question does not — is a different hypothesis, and it was measured on the same corpus with a detector that reads
+backticked identifiers and snake-case names:
+
+| | n | helped / harmed | delta | baseline acc |
+|---|---|---|---|---|
+| at least one injected rule names an ungrounded identifier | 385 (25.1%) | 19 / 8 | **+2.86pp** | 56.9% |
+| no rule does | 1,149 | 48 / 54 | −0.52pp | 57.6% |
+
+**It has the wrong sign.** And it is not finding what `F1` finds: of the 155 questions `F1` flags, the rule-level
+flag catches **50** (recall 32.3%) while flagging 335 that `F1` does not (precision 13.0%). The agreement table is
+`both 50 / query-only 105 / rule-only 335 / neither 1,044`. Two readings fit, and the artefact states both: the
+detector sees an identifier in only **138 of the 1,066 committed rules (13.0%)**, because the rest say "a numeric
+code column" rather than naming one — so either the rule text genuinely does not determine what the model writes,
+or the representation loses the names. Either way the conclusion for the product is the same and it is
+uncomfortable: **the version of this gate that could be applied before generation is not the version that works,
+and the version that works needs a query to have been written first.** R31 registers the field that would tell the
+two readings apart.
+
+**Two things the record cannot answer, reported as absent rather than approximated.** The registration's third
+category is *a table or column the rule named that the schema had pruned*, and the committed `per_case` stores the
+schema candidate as `schemaTables: { kept, total, pruned }` — three numbers, no names. The category is therefore
+**unmeasured**, and it is in the artefact under `unmeasured` with its reason, its nearest substitute (`F4`) and
+the difference between them. F4 says *a table was added*; the registration asked whether *the pruning removed the
+name the pack used*. Substituting one for the other would be a second question answered under the first one's
+name, which is the defect §138 spent a round removing. The fix is one field in stage 2's `per_case`.
+
+**The second absence is a number that reads as missing and is not.** The 692 untouched questions have a minimum
+detectable difference of **infinity** — nothing can be detected from a comparison in which nothing changed — and
+JSON writes infinity as `null`. `helped + harmed === 0` is what tells that apart from an empty group, and the
+artefact says so in its notes rather than leaving a reader to infer it from a zero.
+
+**One structural fact that changes how every rate in this record should be read.** 45.1% of the corpus is
+untouched by the pack, and those questions carry 65.3% baseline accuracy against 45.2% for the questions where it
+imports a name. **The pack moves the query exactly where the model was least sure**, which is why every
+intent-to-treat number this project has published is diluted by a stratum where the treatment cannot act and is
+selected on the model's own uncertainty. The 129 discordant cases therefore all live in the 50.1% that moved, and
+every rate above is quoted over the whole corpus rather than over that subset — conditioning on "the query moved"
+is conditioning on a post-treatment variable that correlates with difficulty by 20 points, and the honest
+denominator is the one the treatment was assigned to.
+
+**Green.** `pnpm check` — typecheck, `typecheck:lanes` under `--strict`, **2,260 tests over 114 files**, four
+coverage dimensions at **99.98 / 99.65 / 100 / 99.98** with `sql-diff.ts` and `query-diff.ts` at **100 on all
+four**; `audit:repo`, six offline lanes, `eval:protocol`, `eval:harm`, `eval:power` and the new `eval:query-diff`
+all green, plus a workflow step that recomputes `poc-query-diff.json` byte for byte and asserts nineteen facts.
+No published artefact changed except the one this round adds.
+
+**What this changes.** Three covariates are now eliminated and one is not. Relevance, embedding similarity and
+channel are dead as explanations; **what a rule makes the query name is alive**, with a gap that clears its own
+resolution for the first time in twenty-eight rounds, a stratified damage rate that differs by a factor of 7.8,
+and a pre-registered estimate of what removing it would buy. The product statement it licenses is narrow and
+testable: *a rule may not put a name into the query that the question does not contain* — and the thing that
+decides whether that is a result is whether it reproduces at n ≈ 6,600, which is R30 stage 2 and the only
+remaining item on the critical path.
+
+## What is left, in order (current)
+
+**The covariate question is answered and the sample question is not.** After R26 (channels), R28 (overlap) and
+R30 stage 1 (what the rule did to the query), exactly one covariate separates help from harm, with a gap of
+−11.13pp against its own 7.61pp half-width and a stratified damage rate 7.8× the rest of the corpus. Everything
+that remains on this list is either the sample that can confirm it, the one field that would make the third
+registered category measurable, or a line the previous rounds registered and nobody has run.
+
+| # | Item | State | Blocks |
+|---|---|---|---|
+| 1 | **R30 stage 2 — the sample that can see 1pp** | **next**, and the only item on the critical path. n ≈ 6,600 on BIRD train, two arms (`none`, `full`), ~14,000 calls. Its registered prediction 4 says it is the most likely to fail and the cheapest to check: the harness has only ever run `dev`, and a run that silently fell back would report 1,534 questions under a train-split name. `splitFrom` refuses an unknown split since R24, so what is unproven is that the **train archive loads and passes its population check**, not that the name is validated | the confirmation of §140, and the first out-of-sample test of a gate this project has estimated in-sample |
+| 2 | **R30 stage 1b — record the pruned schema names** | one field in `per_case`. Until it exists, the registration's third category (*a name the pruning removed*) is reported as `unmeasured` rather than approximated by `F4` | nothing; it makes one registered category readable and is a two-line change to the lane that writes `per_case` |
+| 3 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | the evidence for the claim §138 salvaged: that the protocol's *shared* machinery, and not only its gates, is scenario-agnostic |
+| 4 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; it is the last third of the generality refactor |
+| 5 | **The arm-level audit gap (§25.7)** | still open: `eval:power` audits whole-artefact deltas, and an arm inside an artefact is not a row. The values channel at +1.17pp lives in an arm, so the audit undercounts positives rather than overcounting them | a schema decision — whether an arm is an artefact |
+| 6 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer; both are described in §24.7 | the driver |
+| 7 | **S1a — ambiguity on public annotations** | unblocked and unbuilt; the highest-value unbuilt *product* item, and untouched by this round | — |
+| 8 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
+| 9 | **S3 — the SOTA push** | entry condition needs re-adjudication, not a bypass. It was gated on "the mechanism moves accuracy on dev"; R24, R25 and §140 all return ≤ +1.30pp there with an instrument that resolves 2.01pp | a decision |
+| 10 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
+| 11 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
+
+**What this round changed, and it is the first time an item moved off the list by being *explained* rather than
+eliminated.** Three covariates are now dead — query–rule overlap (R28), embedding similarity (§62) and the channel
+a rule arrived on (R26) — and the fourth is alive with a resolution it clears. That reframes the remaining list:
+items 1 and 2 are the confirmation and the completion of one measurement, not two new research lines, and item 3
+is the only registered experiment in this programme that has never been dispatched. **Nothing on the list is
+waiting on an idea.** Three items wait on a decision (5, 9, 10), two on an artefact that does not exist (6, 8),
+one on a toolchain (11), one on a key (3), and the first two wait only on compute.

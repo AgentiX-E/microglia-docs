@@ -4786,3 +4786,77 @@ carry the whole of whatever signal exists, and they cannot resolve it. Combined 
 rules are not more dissimilar to their question than helped rules, 0.254 against 0.226, p = 0.12 — the conclusion
 is that **relevance is not the axis**, and that the next hypothesis must be about what a rule does to the query
 rather than where it sits in similarity space.
+
+### 17.67 A covariate may be post-treatment and still be admissible; it may not be post-outcome
+
+**The design question R30 had to settle before it could be built.** The classifier reads the SQL the pack produced.
+That query exists only after the treatment, so every feature derived from it is post-treatment, and the reflex is
+to say a covariate must precede the treatment. The reflex is wrong and the reason is worth stating precisely,
+because the wrong version of it would have killed the only covariate in twenty-eight rounds that separated.
+
+The requirement is not *prior to treatment*. It is **not a function of the outcome**. A variable that is caused by
+the treatment and precedes the outcome is a mediator, and conditioning on a mediator does not estimate the total
+effect — it estimates a controlled direct effect, which is a different and still meaningful quantity. A variable
+that is caused by the outcome is a collider or a consequence, and conditioning on it manufactures an association
+that is not there. `predictedSql` is the first kind: the model writes it before anything is executed, and whether
+it is right is decided afterwards. So `F1` is reported as a moderator with that name attached, never as the total
+effect of the pack, and the total effect (+0.33pp) is reported beside it in the same artefact.
+
+**Two things follow, and both are in the code.** First, the classifier reads no gold SQL, no gold result and no
+scorer field — the constraint is enforced by the input type, which has exactly four string fields for the two
+queries, the question and the evidence. Second, the reading layer never restricts the analysis population to
+"cases where the query moved": `moved` correlates with the baseline being wrong (45.2% against 65.3%), so
+restricting to it would condition on a post-treatment variable that is a proxy for difficulty. Every rate is
+quoted over all 1,534 questions, and the moved-only figures are the ones that are *not* reported.
+
+**The estimator for a difference of two deltas, and why the clustered interval is reported beside it.**
+
+```
+group g:  b_g helped, c_g harmed, n_g pairs
+SE_g     = sqrt(b_g + c_g) / n_g
+gap      = delta_present − delta_absent
+half     = 1.96 · sqrt(SE_present² + SE_absent²)
+```
+
+The two groups are disjoint, so their standard errors add in quadrature; nothing is paired *across* the split. This
+is the same arithmetic `power.ts` uses for one delta, applied twice, which is why the reading layer imports
+`pairedWidths` rather than writing a second formula. It is also why the same three bars are available for the gap:
+`Δ > half` for a 95% separation, `Δ > 2.802 · SE` for 80% power, and `p` from the exact test.
+
+The eleven databases are not independent draws, and a question's neighbour in the same database shares its rules,
+its schema and its failure modes. `clusteredGap` resamples **databases** with replacement inside each group and
+reports the percentile interval, which for `F1` is [−19.60, −2.63] against the analytic ±7.61 — the same
+conclusion, reached without assuming 1,534 independent observations. Both travel in the artefact; a reader who
+wants the assumption-free version has it, and the assumption-dependent one is what every earlier round's numbers
+were computed with.
+
+**Fisher's exact test on a paired table is not exact, and the criterion says so.** The 2×2 that `F1` produces is
+`[[helped, harmed] × {present, absent}]`, whose cells are discordant pairs rather than independent draws, so
+Fisher's p is an approximation of a homogeneity test that assumes independence the data does not have. It is
+reported for three reasons: it is the number a reader can reproduce in any statistics package, it agrees with the
+two interval-based readings in sign and at 0.05, and `Q1` requires **all three** to agree before it passes. A
+criterion that rested on the p-value alone would be resting on the one number in the table with a broken
+assumption.
+
+**The gate is a measurement, not a behaviour, and the type system says which.** `gateKeepsMemoryQuery(delta)` is
+the predicate the registration licenses: discard a query that names something neither the question nor the
+evidence mentions. It is not wired to the read path. `gateReadingOf` computes what would have happened instead, and
+it can be exact rather than modelled only because the record already holds both arms — for a discarded question
+the fallback query and its outcome are columns, so the gated arm is *read*. That is also the limit of the
+estimate: a real deployment would have to write the fallback, and this corpus is the only place where someone
+already did.
+
+**Three absences that a less careful module would have filled with a zero.**
+
+| absence | why a zero would be wrong | what the artefact says |
+|---|---|---|
+| a group with no discordant pair | nothing changed, so nothing can be detected — the resolution is infinite, not zero | `minDetectablePp: null` plus `helped + harmed === 0`, stated in the notes |
+| a ground truth the record does not carry (`pruned-name`) | substituting the nearest available feature answers a different question | `unmeasured[]` with the category, the reason, the nearest substitute and the difference |
+| a gap where one group is empty | a gap needs two groups; zero would read as "measured, and exactly zero" | `gapPp: null`, and `Q1` fails rather than passing on a coincidence |
+
+**What would have made this a null.** The registration named it: if the identifier covariate were flat across both
+halves, the defect is not in the storage either and the product claim should be withdrawn rather than narrowed.
+The measured gap is −11.13pp ±7.61 with a clustered interval that excludes zero, and the same test under a
+deliberately looser grounding rule gives −10.78pp ±8.37. Both clear; the refutation does not fire. What remains
+unconfirmed is not the separation but its **size out of sample**: the gate's +1.30pp was chosen by looking at the
+same 1,534 questions, and R30 stage 2 is the sample that can say whether it survives.
