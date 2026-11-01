@@ -7511,13 +7511,30 @@ correctly, whether it names a table the schema already ruled out. Those are read
 `baselineSql` in the committed artefacts — the same offline, zero-call substrate this round used — and they are
 the subject of R30's first stage rather than a reading list.
 
-**Two defects, neither on the round's list.** The registration's missing power floor is one, and it is the third
-time in four rounds that a criterion was found to be decidable by cells too small to decide anything (§138's
-`V5-resolution` is the second). The other belongs to the audit itself: it covers whole-artefact deltas, and an arm
-inside an artefact is not a row — so the record's one positive reading, the `values` channel at +1.17pp, is not in
-the table above and had to be looked up by hand. **The audit undercounts positives rather than overcounting them**,
-which is the direction that matters, and the gap is written into the artefact's `notes` rather than left for a
-reader to find.
+**Three defects, none of them on the round's list, and the third is the one that matters commercially.**
+
+The first is the registration's missing power floor, and it is the third time in four rounds that a criterion was
+found to be decidable by cells too small to decide anything (§138's `V5-resolution` is the second). The second
+belongs to the audit itself: it covers whole-artefact deltas, so an arm inside an artefact is not a row — the
+record's one positive reading, the `values` channel at +1.17pp, is not in the table above and had to be looked up by
+hand. **The audit undercounts positives rather than overcounting them**, which is the direction that matters, and
+the gap is in the artefact's `notes` rather than left for a reader to find.
+
+**The third was found while checking the arithmetic of the claim this project has been making about itself.**
+`COMPETITIVE.md` §1 carried one row for this project, annotated `1 (+ memory pack)`, quoting **57.63** on BIRD dev.
+That number is the **no-memory** cell. `compareCell` reads `metrics.accuracy_without_memory` by construction, because
+the published cell it is compared against is a no-memory cell — so the row that says "+4.11 over the reproduced
+baseline" has always been a row about the harness. The memory arm of that same run is **56.26**, which means that on
+BIRD dev **the pack costs 1.37pp of execution accuracy** (paired, 1,534 questions, 47 helped against 68 harmed,
+resolution 1.96pp). The row is now split in two, and the numbers are what they are: the harness beats the published
+baseline by 4.11pp and the product feature subtracts from it. The loss is inside its own resolution, so the correct
+statement is not "memory hurts" — it is that **nothing on BIRD dev attributes any of our advantage to memory**, and
+the one number in this record that was read as a product win was reading the wrong arm.
+
+**The arithmetic that produced the correction, because it is the same arithmetic as everywhere else in this round.**
+57.63 against a published 53.52 is two *independent* samples — they cannot be paired, so the width is
+`sqrt(p₁(1−p₁)/n + p₂(1−p₂)/n) = 1.79pp`. The difference of 4.11pp is 2.30 standard errors: it clears the 95% bar
+(3.51pp) and **not** the 80%-power bar (5.02pp). The project had been quoting the point estimate without either.
 
 **Green.** `pnpm check` — typecheck, `typecheck:lanes` under `--strict`, **2,191 tests over 112 files**, four
 coverage dimensions at **99.98 / 99.63 / 100 / 99.98** with `strata.ts` and `power.ts` at **100 on all four**;

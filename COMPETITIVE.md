@@ -85,7 +85,8 @@ reproduction, and a genuine reproduction needs the dev split (recorded as R8.3b)
 
 | System | Role | Generator | Schema form | Candidates | BIRD dev / test EX | Gap from 53.5 |
 |---|---|---|---|---|---|---|
-| **microglia (ours)** | — | DeepSeek, API | DDL | 1 (+ memory pack) | **57.63 dev (n=1,534)**, 53.71 Mini-Dev (n=350) | +4.11 (reproduced) |
+| **microglia (ours), no memory** | control | DeepSeek, API | DDL | 1 | **57.63 dev (n=1,534)**, 53.71 Mini-Dev (n=350) | **+4.11 (reproduced)** |
+| **microglia (ours), memory arm** | — | DeepSeek, API | DDL | 1 + pack | **56.26 dev (n=1,534)** | +2.74 |
 | XiYan-SQL baseline | control | DeepSeek | DDL | 1 | 53.52 (dev, n=1,534) | −0.19 (indicative) |
 | XiYan-SQL + M-Schema | control | DeepSeek | M-Schema | 1 | 55.15 (dev) | +1.63 |
 | XiYan-SQL, full | **competitor** | FT + ICL ensemble | M-Schema | 5–21 | 71.58 (dev), 75.63 (test) | +18.06 / +22.11 |
@@ -95,6 +96,15 @@ reproduction, and a genuine reproduction needs the dev split (recorded as R8.3b)
 | Gemini-SQL2 | **competitor** | Gemini 3.1 Pro | — | many | 80.04 (test) | +26.52 |
 | GrainSQL | **competitor** | undisclosed | — | — | 82.95 (test) | +29.43 |
 | Human (data engineers) | ceiling | — | — | — | 92.96 | +39.44 |
+
+**Correction (2026-11-01, §139).** An earlier revision of this table carried one row for this project,
+annotated `1 (+ memory pack)`, quoting **57.63**. That number is the **no-memory** cell: `compareCell` reads
+`metrics.accuracy_without_memory` by construction, because the published cell it is compared against is a no-memory
+cell. The memory arm of the same run is **56.26**. The row above is split for that reason, and the split is not
+cosmetic — **on BIRD dev the pack costs 1.37pp of execution accuracy**, against a 1,534-question resolution of
+1.96pp. The gap to the published baseline is therefore entirely the harness, and the product feature's contribution
+to it is negative and inside its own resolution. This is the single most consequential correction in this document,
+and it changes nothing about the ranking: the row that reproduces a published cell only ever had to.
 
 **The `control` rows are the only ones in this table whose comparison this document stands behind**, and they
 are labelled for that reason: XiYan's own `DeepSeek + DDL` cell is our no-memory baseline, and its M-Schema
@@ -687,14 +697,22 @@ project has been reading its +1.17pp as evidence of a broken mechanism. On the s
 at n = 1,534 is *better measured than any memory-side number in the table* and it still cannot confirm anything.
 The competitor set is not ahead of us on this axis; it has not measured the axis.
 
-**3. The product claim survives the audit; the mechanism claim does not.** These are different comparisons and the
-audit touches only one of them. The evidence cell — our **57.63** against XiYan's published **53.52** on the same
-1,534-question split with the same generator and schema form — is a difference of 4.11pp between two independent
-samples, whose unpaired standard error is 1.27pp. That is 3.2 standard errors, and it is resolvable. So the table in
-§1 stands: we are **+4.11pp over the baseline it reproduces**, and **25.32pp behind the leaderboard's 82.95**, and
-the distance to the top is a generator-and-pool difference that no amount of memory will close (see §2's pricing).
-What the audit removes is the *explanation* of our 4.11pp: it cannot be attributed to the mechanism, because the
-mechanism's own effect is below the resolution of the sample that produced it.
+**3. The cell survives the audit; the attribution does not — and the attribution is the whole claim.** These are
+different comparisons and the audit touches only one of them. Our **no-memory** cell against XiYan's published
+**53.52** on the same 1,534-question split, same generator, same schema form, is a 4.11pp difference between two
+*independent* samples: the pairing that makes every other number in this document sharp is unavailable, so the width
+is the unpaired one, `sqrt(p₁(1−p₁)/n + p₂(1−p₂)/n) = 1.79pp`. That puts the cell at **2.30 standard errors** — it
+clears the 95% bar (3.51pp) and **not** the 80%-power bar (5.02pp).
+
+**And the memory arm of that same run is 56.26, not 57.63.** The pack contributes **−1.37pp** against a 1,534-question
+resolution of **1.96pp**: a loss, and a loss that is itself inside the resolution of the sample that would have to
+confirm it. So the 4.11pp we hold over the published baseline is three times the size of the pack's contribution,
+with the opposite sign, and **the feature this project exists to build is, on BIRD dev, subtracting from a harness
+that was already ahead without it.** That is the uncomfortable reading and it is the one the arithmetic supports.
+
+The ranking is unchanged by any of this: we are **+4.11pp over the published baseline we reproduce** (no memory) and
+**25.32pp behind the leaderboard's 82.95**, and the distance to the top is a generator-and-pool difference that no
+amount of memory will close (§2's pricing). What the audit removes is the story we told about the 4.11.
 
 **What would change the competitive picture, stated as a number.** Not a better rule. The 4.11pp we hold over the
 baseline is already resolvable; everything above it requires a different generator or a candidate pool, and §2 puts

@@ -1313,3 +1313,18 @@ arm-level table, which is a different reader over `arms` and `contrasts` rather 
 imported, decision repeated, table ruled out — readable from `predictedSql` against `baselineSql` in the committed
 artefacts at zero model cost. R30 stage 2 is the resolution purchase: one arm at n ≈ 6,600 on BIRD train, which is
 the only corpus in reach that can see a 1pp effect at 80% power.
+
+**25.9 The competitive row that was read as a product win was reading the wrong arm.** `COMPETITIVE.md` §1 carried
+one row for this project annotated `1 (+ memory pack)` and quoting **57.63** on BIRD dev. `compareCell` reads
+`metrics.accuracy_without_memory` by construction — the published cell it compares against is a no-memory cell — so
+57.63 is the **no-memory** result and the row has always been about the harness. The memory arm of the same run is
+**56.26**: on BIRD dev the pack costs **1.37pp** of execution accuracy (47 helped, 68 harmed, 1,534 questions,
+resolution 1.96pp). The row is split in two. Both halves are needed, and neither is comfortable: the harness is
++4.11pp over the published baseline and it is not the feature; the feature is a 1.37pp loss and it is inside its own
+resolution, so the honest sentence is *nothing attributes our advantage to memory*, not *memory hurts*.
+
+**25.10 The arithmetic behind that correction, stated because it is the difference between a claim and a point
+estimate.** Two independent samples cannot be paired, so the width is `sqrt(p₁(1−p₁)/n + p₂(1−p₂)/n) = 1.79pp`. The
+4.11pp difference is **2.30 standard errors**: it clears the 95% bar (3.51pp) and **not** the 80%-power bar
+(5.02pp). The record had been quoting the estimate with neither, which is the same defect as §25.1 at the level of
+the positioning document rather than of an artefact.
