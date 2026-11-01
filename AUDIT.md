@@ -1059,3 +1059,53 @@ closed with two tests rather than an ignore. `pnpm eval:protocol` re-derives `R2
 `full-one, full-accepted` at n=1534 against V1…V50 from the committed artefact. Nothing in this addendum is
 quoted from a log: every number is read from `eval/results/poc-sota-bird-dev-R25-dose-and-admission.json`, and
 the contrasts are re-derivable by `pnpm eval:arm-contrast` from the file in the repository.
+
+## 21. Addendum — R26: the pruner was the harm, and the annotator is bounded (2026-11-01)
+
+**21.1 The dispatch.** `41264432646` on `ba3310c`, 28 minutes, 1,534 questions, 5 folds, **6,504 calls**, 0 call
+failures, 0 timeouts, **13 gates pass**. `V48`: 14 of 10,135 statements at the 20 s deadline (0.14%), 126
+truncated (1.24%). `V5-resolution`: **2.07pp**. Four arms — `none`, `full`, `values`, `linked` — and the first
+run in which two of them manipulate the *prompt's knowledge* rather than the memory.
+
+**21.2 The arms.**
+
+| arm | accuracy | n | delta vs `none` | 95% CI | discordant | p |
+|---|---|---|---|---|---|---|
+| `none` | 57.43% | 881/1534 | — | — | — | — |
+| `full` | 57.76% | 886/1534 | +0.33 | [−1.11, +1.76] | 67/62 | 0.7249 |
+| `values` | **58.60%** | 899/1534 | **+1.17** | [−0.13, +2.48] | 64/46 | 0.1046 |
+| `linked` | **48.17%** | 739/1534 | **−9.26** | [−10.95, −7.63] | 24/166 | <1e-4 |
+
+The lane's own pairs are stricter and agree in direction: `values` +0.85pp [−0.78, +2.54] (87/74), `linked`
+−9.58pp [−11.54, −7.56] (55/202).
+
+**21.3 The gate is new and it passed on its first run.** `V51-channel-applied` read **`values` 1534/1534 =
+100.0%** and **`linked` 558/1534 = 36.4%**. The two floors differ by design — annotation is unconditional,
+pruning binds only when the question names tables — and the pruner's share is printed rather than thresholded,
+because a gate that encoded this record's guess about how often a linker binds would be a comment with a
+threshold. **Had `linked` fired on no question, its −9.26pp would have been `full`'s +0.33pp**, published as
+"pruning is inert". Six tests cover the gate: absence, pass, a sub-floor annotation, the exact 95% boundary
+(1458 vs 1457 of 1534), a pruner that never fired, and the zero denominator.
+
+**21.4 A registered clause fired against the better number.** Prediction 2 asked for `values − none` inside
+[−2, +2] with a half-width ≤ 1.6pp. The point estimate is +1.17pp and the half-width 1.31pp — the largest
+positive prompt-side estimate in twenty-six iterations — and the interval's upper bound is **+2.48**, outside
+the band. The refutation clause was registered on the interval: *"an interval containing zero and a half-width
+of at most 1.6pp closes the value channel as a prompt annotation."* **Both conditions hold and the channel
+closes.** The rule was written before the result was known, and the result is exactly the case the rule was
+written for: a positive point estimate that the instrument cannot separate from zero.
+
+**21.5 The pruner's harm replicated and grew.** R21's −7.43pp (7/33 at n=350) becomes −9.26pp [−10.95, −7.63]
+(24/166 at n=1,534) with the pilot at −7.71pp. This is the largest single-arm effect in the record, it is
+4.5× the split's floor, and its interval excludes zero by 7.6pp. Difficulty: `simple` −10.2pp, `moderate`
+−8.4pp, `challenging` −5.5pp — a pruner costs most where the question is easiest, which is what deleting the
+table the hint names does. **The lane's whole-DDL baseline was correct all along**, and the competitor
+ablations that price schema linking at 12.71pp measure systems that begin from a pruned schema.
+
+**21.6 Both artefacts are committed and both are re-derivable.** `eval/results/poc-sota-bird-dev-R26-channels.json`
+(5.0 MB) is the registered run; `eval/results/poc-sota-bird-R26-channels.json` (1.7 MB) is the 350-question
+pilot that proved the gate before the registered dispatch, with `values` +1.43pp [−1.43, +4.29] (15/10),
+`linked` −7.71pp [−11.14, −4.57] (4/31) and `full` **−4.00pp** [−7.14, −1.14] — the ninth minidev pack reading
+that does not survive the split, against two channel readings that do. `pnpm eval:protocol` re-derives both
+against `prereg/R26-channels.md` and its thirteen declared gates. `pnpm check`: **2,050 tests, 107 files,
+99.98 / 99.61 / 100 / 99.98**, `sota.ts` at 100 on all four dimensions.

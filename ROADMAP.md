@@ -2820,13 +2820,70 @@ history is not informative and retires the counterfactual-record requirement.
    further pack arm on BIRD dev can produce a distinguishable answer.
 
 **What the roadmap holds now.** The pack line is closed by measurement and the instrument is the binding
-constraint, so the next registered design has to change one of the two objects. **R26 narrows to the region the
-pack has never been tested in**: every null above was measured on questions that carry the benchmark's own
-142-character hint, and the two ablations that removed it (R24's `full-noevidence` −0.72pp, R17's framing arms)
-removed the *content* while leaving the questions unambiguous. `S1a` is the one unbuilt design that changes
-that: BIRD-Interact's underspecified questions are questions where the knowledge is missing rather than
-displaced, which is the only condition under which every theory this record has tested predicts that the store
-should pay. **The alternative — buying resolution with a larger benchmark — is not available on BIRD dev
-(test labels are withheld and dev is exhausted), and BIRD-Interact buys both at once**, which is why S1a moves
-from item 6 to the front of the queue while `S1b` (private vocabulary) stays blocked on its annotation set.
+constraint, so the next registered design has to change one of the two objects. **The S1a route is closed by
+the benchmark's own label policy, not by our tooling**: BIRD-Interact's public files carry the hidden SQL
+(`sol_sql`), the test cases and the ambiguity annotations, but the README states that ground truth and test
+cases *are not distributed with the data* and must be requested by email "to avoid data leakage by
+auto-crawling" — so no automated lane can score it, and its databases are PostgreSQL dumps served from
+Google Drive behind a Docker environment. Three probes from this workspace agree with that reading:
+`huggingface.co`, `drive.google.com` and `registry-1.docker.io` are all unreachable while `pypi.org`,
+`arxiv.org` and `api.github.com` answer normally, and no mirror of the dataset resolves either.
 
+**So the search for "where knowledge is missing" moved to a split we can score, and the first thing it found
+is that the record's two *channel* arms were never powered.** `values` (+0.29pp) was decided by 23 discordant
+questions and `linked` (−7.43pp) by 40, both on 350 questions whose floor is 4.87pp — one is a null that was
+never measurable and the other a harm that has never been replicated, and they are the direct analogues of the
+ablations competitors publish (CHESS 14.36pp column selection, RSL-SQL 12.71pp schema linking). **R26 therefore
+re-measures both channels at n = 1,534 with a gate (`V51`) that certifies the manipulation actually happened**,
+which is the one form of "memory changes what the model knows" this record has not tested at a resolvable
+scale. If the value channel is null there and its interval is tight, the last local explanation for our own
+24.86pp gap is gone and the difference has to live in candidate generation, selection or fine-tuning rather
+than in the prompt.
+
+
+
+### R26 — the two channels that change what the model knows (**closed** 2026-11-01: the pruner is a −9.26pp harm, the annotator is bounded at +1.17pp, and the prompt is not where the gap is lost)
+
+**Why it replaced S1a.** S1a was the natural home for "measure the store where knowledge is missing", and it is
+closed by the benchmark rather than by us: BIRD-Interact ships `amb_user_query`, `user_query_ambiguity` and
+`knowledge_ambiguity` in its public files but **withholds `sol_sql` and `test_cases`** — the README states they
+are sent by email only, "to avoid data leakage by auto-crawling" — so no automated lane can score it, and its
+databases are PostgreSQL dumps behind Docker. Three probes from this workspace agree (`huggingface.co`,
+`drive.google.com`, `registry-1.docker.io` all unreachable; `pypi.org`, `arxiv.org`, `api.github.com` fine).
+
+**What R26 asked instead, and why it is the same question.** The two arms that change the prompt's *knowledge*
+had each been measured once at n=350 with 23 and 40 discordant pairs, against a panel floor of 4.87pp. One was a
+null that could not have been measured and the other a harm that had never been replicated, and both are the
+direct analogue of the ablations competitors publish. Measuring them where they can be seen is the only form of
+"where the knowledge is missing" this record can score.
+
+**The result.**
+
+| arm | accuracy | delta vs `none` | 95% CI | discordant | p |
+|---|---|---|---|---|---|
+| `none` | 57.43% | — | — | — | — |
+| `full` | 57.76% | +0.33 | [−1.11, +1.76] | 67/62 | 0.72 |
+| `values` | **58.60%** | **+1.17** | [−0.13, +2.48] | 64/46 | 0.10 |
+| `linked` | **48.17%** | **−9.26** | [−10.95, −7.63] | 24/166 | <1e-4 |
+
+1. **Prediction 1 held.** `linked − none ≤ −2pp` measured −9.26pp, the largest single-arm effect in this
+   record, 4.5× the 2.07pp floor, interval excluding zero by 7.6pp. R21's −7.43pp was real and understated.
+2. **Prediction 2's point estimate held and its interval did not, and the registered clause fired.** +1.17pp
+   with a 1.31pp half-width, upper bound +2.48 — the largest positive prompt-side estimate in twenty-six
+   iterations, and the clause closes the value channel as a prompt annotation because it was written on the
+   interval, not the sign.
+3. **Prediction 3 held.** `full − none` +0.33pp [−1.11, +1.76]: the anchor's third store, all inside one
+   interval of R24's −0.07 and R25's −0.07.
+4. **Prediction 4 held.** `V51` passed on its first run — `values` 100.0%, `linked` 36.4% — inside the
+   registered 1–40% band, and the gate is what makes the other three readings mean anything.
+
+**What it settles and what it closes.** The 24.86pp gap to XiYan/CHASE is **not** being lost in the prompt: the
+value channel is bounded at about a point and the schema channel is nine points *negative*. The three positions
+this record has measured least are the ones left — **candidate pool, selector, generator** — and the next
+registered design has to be one of them. The pack line stays closed (§134), the value channel is now closed
+too (§135), and `linked` is recorded as a **product rule**: never prune the schema to the named tables.
+
+**Cost, and the pilot that paid for itself.** 28 minutes, 6,504 calls, thirteen gates. A 350-question pilot
+(`41263187629`) exercised `V51` first and read 100.0% / 34.9%, which is why the gate's floors were chosen from a
+measurement rather than a guess; the pilot also read `full` at −4.00pp where the registered run reads +0.33pp,
+the ninth minidev pack reading that does not survive the split.

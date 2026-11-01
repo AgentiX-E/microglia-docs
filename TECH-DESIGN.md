@@ -4522,3 +4522,31 @@ rule nobody has checked.
 **A missing pair is not a zero.** `armPairBetween` returns `undefined` when no question carries both arms.
 A fabricated interval around no data would be the most confident possible statement about nothing, and the
 tool refuses the invocation rather than writing one.
+
+### 17.63 A channel that rewrote nothing is the control wearing the channel's name
+
+**The defect this gate exists for has happened twice in this record and neither time was visible in the
+artefact.** `values` annotates every column with the values it holds and `linked` prunes the schema to the
+tables the question names; both are prompt manipulations, and both were measured once, on 350 questions, with
+12/11 and 7/33 discordant pairs. A gate that reads only the arm's *name* cannot tell those two runs apart from
+a run where the annotator annotated nothing — for `values` that happens when the value sampler returns no rows,
+and for `linked` when the linker's own guard declines to prune. The resulting delta is a clean null about the
+arm's name rather than about the channel, and it is indistinguishable, in the artefact, from a real one.
+
+**The counts therefore travel to the gate rather than to the log.** `noteChannel` increments a per-fold,
+per-arm counter at the moment the prompt is built — the DDL comparison is cheap there and impossible once the
+fold is scored — and `V51-channel-applied` sums those counters across folds. A reading that only exists in a
+log cannot refuse a claim; a reading that reaches `buildValidityGates` can, which is the same reason `V45`,
+`V49` and `V50` were built the way they were.
+
+**The two kinds need different floors, and the kind travels with the count.** Annotation is unconditional: if
+`values` fires it fires on every question, so 95% is a lenient floor and a run below it is a different arm.
+Pruning is not: a linker binds only when the question names tables, and the first pilot run measured **34.9%**
+of prompts rewritten. Thresholding that share at 95% would fail every correct run, and thresholding it at a
+"reasonable" 20% would encode this record's guess about how often a linker binds rather than a property of the
+manipulation. The gate therefore asks a pruner only to have fired at least once in a hundred — and *prints* the
+share, so 34.9% is visible to a reader instead of being compressed into a boolean.
+
+**What it costs.** One DDL string comparison per question per channel arm, both values already computed and
+cached by path. The gate adds no model call, and the pilot that validated it (350 questions, 1,759 calls) is
+committed under its own name so the reading is re-derivable rather than quoted.

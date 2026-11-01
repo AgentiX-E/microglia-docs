@@ -438,6 +438,23 @@ the dispatch. **A field that reports points without intervals cannot distinguish
 "the mechanism is 3pp and the run was too small", and that is the distinction this record now spends its
 dispatches on.**
 
+**The channel comparison, which used to be the explanation and is now a measurement.** Section 2 attributes
+most of the 20-point spread to schema linking and value indexing, on the strength of two published ablations.
+R26 put both channels into our own prompt at n = 1,534 and neither reproduces:
+
+| channel | what the competitor publishes | what it does in our prompt | reading |
+|---|---|---|---|
+| pruned schema to the named tables | RSL-SQL **12.71pp** (ablation, no interval) | deletes the table the evidence names | **−9.26pp [−10.95, −7.63]**, 24 gained / 166 lost |
+| schema annotated with column values | CHESS **14.36pp** (ablation, no interval) | adds a value sample under each column | **+1.17pp [−0.13, +2.48]**, 64/46, p = 0.10 — bounded, channel closed by its registered clause |
+
+The asymmetry is structural and it is the finding: **they ablate a component their pipeline already contains,
+so their number prices what they would lose by removing it; we added the same component to a prompt that never
+had it, so our number prices what we would gain by adding it.** Those are different quantities whenever the
+component interacts with the rest of the pipeline, and a system that starts from a pruned schema has something
+to lose by pruning it further while a system that starts from the whole DDL only has something to lose. **The
+gap is therefore not a prompt-engineering gap**, which removes the last explanation this document had for its
+own 24.86pp deficit and moves the remaining work to the candidate pool, the selector and the generator.
+
 ---
 
 ## 6. Sources and grades

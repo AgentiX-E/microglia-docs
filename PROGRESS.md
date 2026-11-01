@@ -8,7 +8,7 @@ An iteration is only recorded as closed when its CI is green and its artefacts a
 | Stage | State | Blocking item |
 |---|---|---|
 | S0 Mechanism | **closed** | — |
-| S1 Host shadow (nl2charts) | **split**: S1a public ambiguity, S1b private chart vocabulary | S1a unblocked by BIRD-Interact's annotated ambiguity; S1b still needs the 1,300-case set |
+| S1 Host shadow (nl2charts) | **split**: S1a public ambiguity, S1b private chart vocabulary | **S1a is closed by the benchmark's label policy**: BIRD-Interact does not ship ground-truth SQL or test cases with the public files (email request only, "to avoid data leakage by auto-crawling"), so no automated lane can score it; its databases are PostgreSQL dumps behind Docker. S1b still needs the 1,300-case set |
 | S2 Public benchmarks | **four reads: no benefit** (−2.84, −1.14, −0.57, −0.28pp); controls show the pack is inert | the knowledge that transfers is convention, which this benchmark has none of |
 | S2b Convention transfer | **first positive read**: +4.79pp (p=0.0156) on a rule the schema cannot reveal | replication; 44% of the stated ceiling is the gap to close |
 | S3 SOTA push | stopped on BIRD; starts only after S2b moves accuracy | — |
@@ -7138,3 +7138,53 @@ off-by-one in the arithmetic would have cost a 33-minute dispatch; the parser wo
 registered contrasts, re-derivable from the repository by `pnpm eval:arm-contrast`), and
 `prereg/R25-dose-and-admission.md` with the Outcome section and all six prediction verdicts.
 
+### 135 — Pruning the schema costs nine points, and the value index is closed on its largest sample
+
+**Two arms that change what the model knows, measured on 1,534 questions for the first time.** `41264432646`,
+28 minutes, 6,504 calls, 0 call failures, 13 gates pass, 14 of 10,135 statements at the 20 s deadline (0.14%),
+126 truncated (1.24%), `V5` minimum detectable **2.07pp**. Four arms: the control, the pack as the anchor, and
+the two channels this record had only ever measured on 350 questions with 12/11 and 7/33 discordant pairs.
+
+| arm | accuracy | n | delta vs `none` | 95% CI | discordant | p |
+|---|---|---|---|---|---|---|
+| `none` | 57.43% | 881/1534 | — | — | — | — |
+| `full` | 57.76% | 886/1534 | +0.33 | [−1.11, +1.76] | 67/62 | 0.7249 |
+| `values` | **58.60%** | 899/1534 | **+1.17** | [−0.13, +2.48] | 64/46 | 0.1046 |
+| `linked` | **48.17%** | 739/1534 | **−9.26** | [−10.95, −7.63] | 24/166 | <1e-4 |
+
+**The pruner is not a missing feature, it is an active harm.** −9.26pp [−10.95, −7.63] is 4.5 times the
+split's floor and the largest single-arm effect this record has measured in either direction. R21's −7.43pp
+was real; it also *understated*: at 4.4× the sample the harm grew. Restricting the DDL to the tables the
+question names deletes the table the evidence points at, and the decomposition says so: `simple` −10.2pp
+(61.8% → 51.6%), `moderate` −8.4pp (50.9% → 42.5%), `challenging` −5.5pp (50.3% → 44.8%) — the harm shrinks as
+the questions get harder, which is what deleting schema the question needs looks like on easy questions. **The baseline
+this lane has been running since iteration 1, the whole DDL, was the right prompt**, and the competitor
+ablations that price schema linking at 12.71pp are measuring a system that *starts* from a pruned schema and
+therefore has something to lose by pruning it further. We start where they end.
+
+**The value index is closed at the largest sample this benchmark offers, and it goes out positive.** +1.17pp,
+64 gained against 46 lost, p = 0.10 — the largest positive prompt-side estimate in twenty-six iterations — and
+the registered clause fires anyway, because it was written on the interval: *"an interval containing zero with a
+half-width of at most 1.6pp closes the value channel as a prompt annotation."* The interval is [−0.13, +2.48]:
+it contains zero and its half-width is 1.31pp. **The clause fires and the channel closes.** What that settles
+is the record's last local explanation for its own 24.86pp gap: the difference to XiYan and CHASE is not the
+column values in the prompt, because adding them is indistinguishable from zero here, and it is not the
+pruning, because pruning is nine points *down*.
+
+**The anchor held for the third store, and the pack's number moved for the ninth time.** `full − none` is
++0.33pp [−1.11, +1.76] where R24 and R25 read −0.07 and −0.07 — all three inside one interval of each other,
+which is what an anchor is for. The pilot on 350 questions read `full` at **−4.00pp**, and at 1,534 the same
+store reads +0.33: the ninth instance of a minidev pack reading that does not survive the split, and the reason
+every claim in this record is within-dispatch.
+
+**The gate this iteration added was proven before the registered run, not after it.** `V51-channel-applied`
+exists because a channel arm that rewrote nothing is the control wearing the channel's name, and this record
+has published a channel result without checking which of the two it had. The pilot read `values` 100.0% /
+`linked` 34.9% and the dev run 100.0% / 36.4% — inside the registered 1–40% band, and 100% for the annotator
+because annotation is unconditional. **Had the pruner fired on nothing, its −9.26pp would have been `full`'s
++0.33pp** and the record would have published "pruning is inert" as a finding.
+
+**Green.** `pnpm check` — 2,050 tests, 107 files, 99.98 / 99.61 / 100 / 99.98, `sota.ts` at 100 on all four
+dimensions after six new gate tests. Both artefacts are committed (`poc-sota-bird-dev-R26-channels.json` and the pilot
+`poc-sota-bird-R26-channels.json`), and `pnpm eval:protocol` re-derives both against `prereg/R26-channels.md`
+and its thirteen declared gates.

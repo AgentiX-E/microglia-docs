@@ -1642,6 +1642,52 @@ consequential fact for what this programme can claim next: the successor design 
 BIRD dev, and if the mechanism is to be seen at all it has to be seen on a benchmark with more headroom in
 its population, or on a question about the store that BIRD's own hint does not already answer.
 
+### 3.6.26 Pruning the schema costs nine points, and the value index closes on its largest sample
+
+Every arm this record has measured for twenty-five iterations changed what the model was told about its own
+past mistakes. R26 measured the two arms that change what the model *knows*, on the split that can see them,
+for the first time: the schema annotated with the values each column holds (`values`), and the schema pruned
+to the tables the question names (`linked`). Both had been measured once, on 350 questions, with 12/11 and
+7/33 discordant pairs — one reading that could not have resolved anything below the panel's 4.87pp floor, and
+one harm that had never been replicated.
+
+| arm | accuracy | delta vs `none` | 95% CI | discordant | p |
+|---|---|---|---|---|---|
+| `none` | 57.43% | — | — | — | — |
+| `full` (anchor) | 57.76% | +0.33 | [−1.11, +1.76] | 67/62 | 0.72 |
+| `values` | **58.60%** | **+1.17** | [−0.13, +2.48] | 64/46 | 0.10 |
+| `linked` | **48.17%** | **−9.26** | [−10.95, −7.63] | 24/166 | <1e-4 |
+
+**Schema pruning is not a feature we are missing; it is an action worth −9.26pp.** That is 4.5 times the
+split's 2.07pp floor and the largest single-arm effect anywhere in this record. The earlier −7.43pp was not a
+store artefact and understated the harm; the interval now excludes zero by 7.6pp. The mechanism is legible in
+the difficulty decomposition — `simple` −10.2pp, `moderate` −8.4pp, `challenging` −5.5pp — because a linker
+that keeps only the named tables deletes the table the evidence sentence points at, and the easiest questions
+are exactly the ones whose schema the hint names.
+
+**And the value annotation is closed while carrying the record's largest positive prompt-side estimate.** At
+**+1.17pp** (64 gained against 46 lost, p = 0.10) it is the only prompt intervention in this record that has
+pointed up by more than a point, and the pre-registered clause still fires, because the clause was written on
+the interval rather than the point: an interval containing zero with a half-width of at most 1.6pp closes the
+channel as a prompt annotation, and this one is [−0.13, +2.48] with a half-width of 1.31pp. **The distinction
+between "we found nothing" and "we bounded it" is the whole point of registering the rule before the run.**
+
+**Together those two readings remove the last local explanation for this project's own gap.** The 24.86pp by
+which this lane trails XiYan-SQL and CHASE-SQL on the unablated prompt has usually been attributed to the
+schema-and-value channel: those systems read a pruned schema annotated with column values, their ablations
+price the two at 12.71pp and 14.36pp, and the arithmetic was attractive. **Neither half survives a dev-scale
+test.** Pruning is nine points down and annotating is bounded at a point up, so **the gap is not being lost in
+the prompt at all** — it lives in candidate generation, selection or the generator's own training, which are
+the three positions this record has measured least and which the next iteration has to attack.
+
+**One methodological note, because it decided the run's reading.** A channel arm can only report a delta about
+the channel if it rewrote the prompt, and this record had never checked: an annotator that annotated nothing
+is the control wearing the channel's name, and its clean null is a fact about a string. `V51-channel-applied`
+is the gate that refuses that, with a different floor per kind — 95% for an unconditional annotation, 1% for a
+pruner that binds only when the question names tables — and it passed on its first run at 100.0% and 36.4%.
+**Had the pruner fired on no question, its −9.26pp would have been published as `full`'s +0.33pp and read as
+"pruning is inert".**
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on
