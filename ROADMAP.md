@@ -3385,3 +3385,51 @@ one, where the pack is varied and the question held fixed, which is not somethin
 the sign holds in only 6 of 11 databases, which a sign test puts at p = 0.754. A direction that
 appears in 6 of 11 clusters is not a direction, and the registration's own standard is that a
 reading either resolves or is not reported as one.
+
+### R33 — what ships, when the filter is the only part that pays (**stage 0 registered, run and read** 2026-11-01, with no model call)
+
+**Why.** §146 measured the memory as a cost out of sample and the gate as a partial recovery; §147 split
+the corpus by what memory did and priced the gate at **15%** of a 3.39pp ceiling. Three shapes were left
+and none had evidence behind it: ship the filter alone, ship memory with the filter, or test a weaker
+injection. Only the first does not depend on the rules being worth anything, and it had never been
+measured — every reading of the filter so far compared two statements, so what had been shown is that
+the *difference* carries the signal.
+
+**Design (stage 0, as registered in `prereg/R33.md`).** Point the same grounding rule at a single query,
+anchored on the question alone, and read it on both committed artefacts — `per_case` stores the bare
+query and the served one. Two rules (strict, morphological), two arms (bare, served), two splits, six
+predictions, three instrument gates. **Cost: zero model calls.**
+
+**The bar was taken from the filter, not chosen.** Youden's index of the diff-anchored filter out of
+sample: `76/237 + 147/187 − 1 = 0.1068`. A question-only check that cannot beat the thing it would
+replace does not replace it.
+
+**Result — the check is differential, and shape 1 is refuted as specified.**
+
+| | flag rate | gap | Youden |
+|---|---|---|---|
+| train, bare, strict | **94.8%** | −12.58pp [−22.15, −2.92] | **0.0257** |
+| train, bare, morphological | 75.8% | −9.28pp | 0.0700 |
+| dev, bare, strict | 93.3% | −21.70pp [−31.03, −12.08] | 0.0556 |
+| *the diff-anchored filter* | *7.8%* | — | ***0.1068*** |
+
+The rule fires on almost everything because a correct query names tables and columns no question
+spells out; the gap it shows between its two leftovers is a difficulty proxy, and Youden — which removes
+the base rate — reads a quarter of the filter's. **P4, P5 and P6 are refuted; P1, P2 and P3 hold.** The
+morphological arm, registered before either number existed, forecloses "fix the tokeniser" for the
+price of a column: 19 points less flagging buys 0.044 of Youden.
+
+**The one positive result.** On the population the flag rate leaves room in — the questions the bare
+rule passes — the pack imports a name on **99 of 1,693 (5.8%)** out of sample and **24 of 395 (6.1%)** on
+dev. That is §146's imported-name finding reproduced under a second, independent rule, and it is what
+makes the negative credible.
+
+**What it closes.** Shape 2 is bounded above by a wash by arithmetic (§147); shape 1 is now refuted by
+measurement. **Nothing ships.** Shape 3 — whether an injection exists that raises the repair rate
+without raising the break rate — is the only open question, and it is a hypothesis to register rather
+than a feature to build.
+
+**Two defects.** Ten of 7,000 train rows carry no `baselineSql` and every reading treats that field as
+an operand rather than a subject (`AUDIT.md` §31.1); and P6's threshold was unreachable under P2's own
+floor, which is a registration defect rather than a corpus one (§31.2). Both are recorded with the
+number each one moved.

@@ -1740,3 +1740,74 @@ route to the same claim: the same delta computed from two units, the same title 
 number rather than typed beside it, the same gate list read from the run rather than copied from a
 sibling registration. **All three fixes in this section are that shape**, which is why they were worth
 more than the numbers they corrected.
+
+## 31. Addendum — ten rows that lost their baseline, and a threshold that could not be reached (2026-11-01)
+
+Two defects from R33 stage 0, the round that asked whether the filter survives without a baseline to
+anchor on. Neither changed a sign; one of them changed a verdict, and it is recorded here with the
+receipt.
+
+### 31.1 Ten of 7,000 rows out of sample carry no bare query
+
+`V53`, the gate that asks whether every case carries the query it was scored on, failed on first run:
+**12 of 7,000** train rows are missing one. Two of them are ordinary parse failures — `parseOk: false`,
+no served query, which is what a parse failure looks like. **The other ten are missing `baselineSql`**,
+the *bare* attempt, while being otherwise unremarkable: parsed, executed, and recorded as wrong in the
+bare arm.
+
+| field | rows missing it | are they consistent with their own arm |
+|---|---|---|
+| `baselineSql` | **10** | yes — all ten are `withoutMemoryCorrect: false` |
+| `predictedSql` | 2 | yes — both are `parseOk: false` |
+
+**Why nothing caught it.** Every reading that touches `baselineSql` — the imported-name covariate, the
+gate, the whole of §146 and §147 — reads it as the left-hand side of a *difference*. A row with no
+baseline contributes no added names, so it is scored as untouched and disappears into the corpus. The
+field is never the subject of a check, only an operand, and an empty operand produced a plausible zero.
+
+**What it cost.** A validity rule that judges one query has to decide what to do with a query that does
+not exist. Treating the ten as unflagged put ten known failures into the clean group and pulled the gap
+from −12.58pp to −10.71pp, which moved the clustered interval from `[−22.15, −2.92]` to
+`[−21.58, +0.44]` — **across zero**. One registration's verdict (P3) flipped on the treatment of ten
+rows, and the treatment is documented in `prereg/R33.md` Amendment 1 with both columns so a reader can
+disagree with it.
+
+**Fixed** by excluding a case from the arm it is missing a query for and carrying the count as
+`excluded` on every reading, and by restating `V53` as *no case is missing a query it claims to have
+answered* — a missing bare query must come with a bare arm recorded wrong, a missing served query with a
+parse failure. That gate now passes on both splits and would fail on the original defect. The ten rows
+themselves are not repaired: the queries were never stored, and only a re-run of the lane can produce
+them.
+
+### 31.2 A registered threshold that the registration's own prediction made unreachable
+
+P6 asked whether the pack still imports names when measured without a baseline anchor: the served query
+had to be flagged at least **5pp** more often than the bare one. P2, three bullets earlier, predicted
+that the same rule would flag **at least 60%** of bare attempts.
+
+Those two are not independent. If 95% of bare attempts are already flagged, the entire population P6 can
+move within is 5 points wide, and a 5-point bar is not a bar — it is the whole interval. The measurement
+returned **+0.42pp**, which is neither a finding about the pack nor a failure of one: it is the ceiling
+talking. The strict rule had already saturated on the schema vocabulary that every correct query carries.
+
+**Why the arithmetic was not done before the file was written.** Because P2's prediction was written as a
+floor (≥60%) and P6's as a difference, and the two were never multiplied: `1 − 0.60 = 0.40` was the
+smallest headroom P2 allowed, and 5pp inside 40pp is a different claim from 5pp inside 5pp. A prediction
+set is a system of constraints on the same corpus, and this one contained a pair that could only jointly
+hold under a flag rate the author did not expect.
+
+**Fixed** by reporting the quantity that does not saturate — among questions the *bare* query is not
+flagged, the share the *served* query is — and by leaving P6 refuted where it stands rather than
+re-reading it. The registration's own refutation clause covers the outcome: the question-only rule fires
+on surface-form noise, and the next step is a tokeniser or nothing.
+
+### 31.3 What these two have in common with §30
+
+Both are **a field treated as an operand and never as a subject**. `baselineSql` was subtracted from and
+never counted; the flag rate was reported and never compared against the room it had to move. §30's six
+were statements about data that were never checked against the data; these two are quantities that were
+never given a denominator.
+
+The check that catches this class is the same one §30 named, applied one level down: **ask the quantity
+what its own bounds are before asking it a question.** Ten missing rows and a 5.2% headroom are both
+bounds, and both were available before the number was.

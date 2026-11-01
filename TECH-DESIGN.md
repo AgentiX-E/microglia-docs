@@ -4958,3 +4958,60 @@ baked into it, and the baking is not in the types — it is in the assumptions t
 by. The way to find them is not more tests over the same data, because the data is what is wrong; it
 is to run the loader against a second dataset and stop before the expensive part. Five defects came
 out of that, four of them after the download.
+
+### 17.70 A rule that reads one query has no denominator, and the design that made it measurable
+
+The read-time filter is defined on two statements. Every reading of it through §17.68–§17.69 took that
+for granted, because `DiffCase` is a *pair*: the corpus it consumes was built by joining a bare attempt
+to a served one. R33 stage 0 asked what happens to the rule when a deployment has only one statement, and
+the answer required a small amount of new machinery and no new data.
+
+**The rule is not re-implemented; the anchor is removed.** `importedNamesOf(sql, question, evidence,
+rule)` calls `diffQueries('', sql, …)`. Against an empty baseline the diff reports every name the query
+uses, and the existing grounding test then decides which of those the text supports. A second
+implementation of "is this name implied" would have differed from the first by exactly the thing under
+test, so there is only one, and it lives where it always did.
+
+**`clusteredGapOf` was generalised, not duplicated.** It took `readonly DiffCase[]` because every caller
+was a diff. The three fields it actually reads — `dbId`, `correct`, `withoutMemoryCorrect` — are now the
+structural `ScoredRow`, and a validity reading passes rows whose second field is `false`, because with no
+baseline arm the paired difference of an attempt against nothing *is* its own correctness. That is what
+makes the bootstrap resample accuracy over databases rather than a contrast, and it is a comment, not a
+second estimator.
+
+**The change found a defect in the old code on its first use.** `clusteredGapOf` returned an interval
+whenever both groups were non-empty, including when the whole corpus sat in **one database** — where
+resampling returns the same cluster every draw and the interval collapses onto the point estimate, which
+reads as a resolved effect. `clusteredDeltaOf` had refused that case since §17.66. The two are quoted
+side by side, so they now agree about when a corpus has no interval to give, and the single-cluster case
+is pinned by a test that builds exactly that corpus.
+
+**Three readings, one type.**
+
+| field | what it answers | how it can be null |
+|---|---|---|
+| `flagged` / `clean` | the two halves the rule makes, each divided by its own base | the half is empty |
+| `gapPp`, `clustered` | whether the halves differ, resampled over databases | either half empty, or fewer than two databases |
+| `sensitivity`, `specificity`, `youdenJ` | whether the rule sorts at all once the base rate is removed | nothing wrong, or nothing right |
+| `excluded` | how many cases the rule could not be asked about | never — it is a count |
+
+**`excluded` is the field that carries the finding.** Ten of the 7,000 out-of-sample rows store no
+`baselineSql`. A predicate is undefined on the empty string, and the two possible treatments are not
+neutral: counting the empty row as unflagged puts a known failure into the clean group and pulls the gap
+toward zero. The count travels with every reading, `V53` polices the absences against the arm records
+that should accompany them, and `prereg/R33.md` Amendment 1 publishes the gap under both treatments
+(−12.58pp against −10.71pp, and the interval across zero for one of them) so the choice can be argued
+with rather than inferred.
+
+**One number had to be replaced because its denominator was saturated.** The registration asked whether
+the served query is flagged more often than the bare one; with 94.8% of bare attempts already flagged,
+that difference has 5.2 points to move in. `addedByPackOf` asks the same question on the population where
+it has room — of the questions the *bare* rule passes, the share the *served* rule fails — and returns
+**99 of 1,693 (5.8%)**. That is the same quantity §17.68 measured at 7.8% under the anchored covariate,
+reproduced under a rule that shares nothing with it but the tokeniser.
+
+**The general form.** A statistic inherits the assumptions of the corpus it was written for. `DiffCase`
+encoded "there are always two statements"; the moment a caller had one, the type was wrong before the
+mathematics was. The cheapest way to find that is to ask a question the current corpus cannot express and
+watch which types refuse — here three did, and one of them was refusing a case it had never been honestly
+able to answer.

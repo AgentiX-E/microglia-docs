@@ -1734,6 +1734,61 @@ numbers above. What it buys is the withdrawal of a feature that would have shipp
 narrowest true statement this project has been able to make about its own mechanism: **the pack damages a query by
 changing its shape, not by dictating its names.**
 
+### 3.6.28 The number §3.6.27 owed arrived, and it retired the product
+
+§3.6.27 ended on a debt: every reading behind it was measured on the 1,534 questions the hypothesis was
+formed on, and the out-of-sample number was the only measurement the line still owed. It was paid.
+
+**BIRD train, 7,000 questions over 58 databases none of which dev contains, five cross-fitted folds,
+14,479 model calls.** Memory costs **−0.71pp [−1.27, −0.18]** with the interval resampled over databases,
+five of five folds negative, exact McNemar p = 0.0172. The read-time gate recovers **+0.51pp** of it,
+leaving −0.20pp, which cannot be told from zero. The magnitude sits under the 0.82pp this sample was
+sized to resolve, so the run is filed as *within 95% but under 80% power* — the same category this
+project gives every other artefact, and not upgraded for being the one that mattered.
+
+**The single delta was hiding two directions of nearly the same size.** Of the 2,925 questions the bare
+attempt got wrong the pack repairs **6.39%**; of the 4,075 it got right it breaks **5.82%**. Per
+question, help is the likelier outcome; per corpus, harm wins, because there are 40% more right answers
+to break than wrong ones to repair — **0.79 repairs per break**. On dev the same two rates are 10.26% and
+7.04%, an exchange rate of 1.08. Both directions run at the same order on both corpora: what crossed
+one is the ratio, not the mechanism.
+
+**Which turned the gate into the only quantity that decided anything, and priced it.** A filter that
+could see every break would be worth **3.39pp**. This one discards 548 questions, catches a third of the
+breaks, gives up a fifth of the repairs, spends **15.2 questions per net error prevented**, and realises
+**15.2%** of the ceiling. In sample it was no better — 10.3 questions per net error, 24.2% of the
+ceiling — so the limit is the signal.
+
+**And the signal turned out to be a difference rather than a property of a query.** Point the same
+grounding rule at one statement, with the question alone as context and no bare attempt to subtract, and
+it flags **94.8%** of everything: a correct query names tables and columns no question spells out. Its
+Youden index — the statistic that removes the base rate — is **0.0257**, against **0.1068** for the
+anchored filter; loosening the rule for inflected identifiers lifts it only to 0.0700. What the check
+*can* do is detect the pack, and it does so under a second, independent rule: on the 1,693 questions the
+bare query passes, the pack's query imports a name on 99 of them (**5.8%**), against 24 of 395 on dev
+(**6.1%**).
+
+**The product statement, in full, is therefore a negative with three parts.**
+
+> Memory costs 0.71pp of execution accuracy on a corpus that is not yours. A query-level check recovers
+> half of that and can never add a repair, so the pair is bounded above by no-memory accuracy. And the
+> check is differential by construction: it needs a control statement to compare against, so a deployment
+> that wants it must generate twice. **Nothing here ships as a memory product.** What survives is the
+> measurement: the failure mode, its size, its location, the exchange rate between its two directions,
+> and the ceiling on any filter that tries to see it.
+
+**Why the record keeps the negatives.** Each of these was a product claim that would have shipped. The
+rule-naming filter (§3.6.27), the schema pruner (§3.6.26), the value index, the dose (§3.6.25), the
+population (§3.6.24) — every one of them was measured against a corpus it was chosen on and then against
+one it was not. The only claim that survived both is the one that costs the least to state: **a lesson
+and its case are one object**, and a corpus that repeats itself is the only place a memory of this kind
+can pay.
+
+**What it cost and what it bought.** 14,479 model calls once, and every reading since then recomputes
+from the committed `per_case` with no further calls: `pnpm eval:out-of-sample`, `eval:validity`,
+`eval:power`, and 36 + 22 + 17 assertions in CI that hold the numbers above against their artefacts. What
+it bought is a product answer that did not require shipping to obtain.
+
 ### 3.7 The gap has a scale, and it is not the one we assumed
 
 Our baseline on the split the published cell was measured on is **57.63%** execution accuracy on

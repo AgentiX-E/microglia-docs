@@ -8397,14 +8397,115 @@ would have to do. The gate's problem was never coverage; it catches fewer than a
 pays for each catch with a fifth of a repair. Any successor has to move precision, and the ceiling it is
 working against is 3.39pp, which is small enough that it should be decided before it is engineered.
 
+## 148 — Pointed at one query, the filter flags 95% of everything and sorts almost nothing
+
+**R33 stage 0 cost no model call, and it closed a product option.** §146 measured the filter as a
+difference between two statements; §147 priced that difference against its ceiling. Neither had asked
+the question a deployment without rules would ask: does the *query* carry the signal, or only the
+*difference*? `prereg/R33.md` was written before the number, with the rule, both grounding modes, and a
+bar taken from the filter itself — Youden's index, `76/237 + 147/187 − 1 = 0.1068`.
+
+| | flag rate | accuracy flagged | accuracy clean | gap | **Youden** |
+|---|---|---|---|---|---|
+| train, bare, strict | **94.8%** | 57.64% | 70.22% | −12.58pp [−22.15, −2.92] | **0.0257** |
+| train, served, strict | 95.2% | 56.91% | 69.44% | −12.52pp | 0.0235 |
+| train, bare, morphological | 75.8% | 56.05% | 65.33% | −9.28pp | 0.0700 |
+| dev, bare, strict | 93.3% | 55.97% | 77.67% | −21.70pp [−31.03, −12.08] | 0.0556 |
+| dev, bare, morphological | 74.3% | 52.59% | 71.39% | −18.80pp | 0.1470 |
+| *the diff-anchored filter* | *7.8%* | — | — | — | ***0.1068*** |
+
+**The rule fires on almost everything, for a reason that is structural rather than statistical.** A
+correct query names tables and columns that no question spells out — `u2base`, `movieid`, `rating` for
+"rated" — so a grounding rule anchored on the question alone is measuring the *schema vocabulary*, not
+an imported name. Where §146's covariate subtracted the bare query first, this one has nothing to
+subtract, and 94.8% of attempts are flagged.
+
+**The gap it shows is real and is not about the rule.** Flagged attempts are 12.58pp less accurate on an
+interval that excludes zero. But 94.8% of the corpus is inside that group, and the 5.2% outside it are
+the questions whose table names appear in their own text — which is a proxy for an easy question, not for
+a valid one. Youden is the statistic that removes the base rate, and it reads **0.0257**: a quarter of the
+filter it would replace, and below what a coin flip plus the base rate would be worth.
+
+**The morphological arm was the sensitivity analysis, written before the result.** Loosening the rule to
+accept inflected identifiers cuts the flag rate by 19 points and lifts Youden to **0.0700** — still under
+0.1068. That forecloses the obvious next move ("the tokeniser is the problem") for the price of a column
+in a table, which is the only reason to register a second rule before seeing either.
+
+### What the flag rate could not show, and the clean group could
+
+P6 asked whether the pack still imports names when the anchor is gone: served flagged minus bare flagged.
+It returned **+0.42pp** and it was never going to return anything else — with 94.8% of bare attempts
+already flagged, the entire population the difference can move within is 5.2 points wide. That is a
+defect in the registration, not in the corpus (AUDIT §31.2).
+
+Asked on the population that has room, it answers:
+
+| | questions the bare rule passes | the pack imports a name on | share |
+|---|---|---|---|
+| train | 1,693 | 99 | **5.8%** |
+| dev | 395 | 24 | **6.1%** |
+
+**That is §146's imported-name finding reproduced under a second, independent rule.** §146 found 7.8% of
+served queries importing a name the bare one did not; this finds 5.8% of the *clean* questions acquiring
+one from the pack, with the anchor removed and only the question as context. The mechanism is not an
+artefact of how the covariate was anchored. **It is the only positive result this stage produced**, and
+it is the reason the negative is credible: the same rule that fails as a standalone check succeeds at
+detecting what the pack does.
+
+### What it does to R33's three shapes
+
+| shape | before §147–§148 | now |
+|---|---|---|
+| 1. ship the check alone | the only option that does not depend on the rules | **refuted as specified.** The check is differential, so a deployment has to generate twice and compare. That is a real cost, and paying it buys a filter worth 0.51pp against a 3.39pp ceiling |
+| 2. ship memory + filter | measured at −0.20pp | **bounded above by a wash**: a perfect filter removes breaks and cannot add repairs (§147) |
+| 3. a weaker injection | untested | **still untested, and now the only open one** — but nothing measured suggests a dose that raises repairs without raising breaks |
+
+So the programme's product question is closed in the honest direction: **nothing ships.** The remaining
+work is not a product decision but a research one — whether an injection exists that moves the repair
+rate without moving the break rate — and it should be registered as such rather than resuming as a
+feature.
+
+### The six registrations, as adjudicated
+
+| | claim | verdict |
+|---|---|---|
+| P1 | both corpora load, every missing query is one the run records as a failure | **holds** — 10 bare and 2 served missing, all consistent (AUDIT §31.1) |
+| P2 | the strict rule flags ≥60% and the loose one ≥40% of bare attempts | **holds** — 94.8% and 75.8% |
+| P3 | flagged attempts are ≥5pp less accurate on an interval excluding zero | **holds** — −12.58pp [−22.15, −2.92] |
+| P4 | dev's gap is within 4pp of train's | **refuted** — −21.70pp against −12.58pp, same sign, nine points apart |
+| P5 | Youden clears the filter's 0.1068 on both splits | **refuted** — 0.0257 and 0.0556 |
+| P6 | the pack adds ≥5pp of flag rate | **refuted** — +0.42pp, and unreachable by construction |
+
+**Two predictions were refuted and one of them was unfalsifiable in practice.** P6's bar could not be
+reached under P2's own floor, which is the kind of thing a registration is supposed to prevent and did
+not: the mistake was writing a pair of predictions as independent claims about one corpus. That is
+recorded in AUDIT §31.2 rather than repaired in place, and the conditional quantity that replaces it —
+5.8% of clean questions — is in the artefact beside the number it corrects.
+
+### Two defects, both found by a gate written before the data was read
+
+**Ten of 7,000 rows out of sample carry no bare query.** `V53` failed on first run; the ten are ordinary
+rows that simply never stored `baselineSql`, and every reading that touches the field treats it as an
+operand rather than a subject, so an empty one produced a plausible zero. Their treatment moved the gap
+from −12.58pp to −10.71pp and the interval across zero — one verdict flipped on ten rows, which is why
+Amendment 1 publishes both columns.
+
+**A registered threshold the registration made unreachable.** P2's floor and P6's difference could not
+jointly hold at the flag rate the rule actually produces. The arithmetic was available before the file
+was written and was not done.
+
+**Both are the same shape** — a quantity never given a denominator, or a field never asked about on its
+own. 2,489 tests and four coverage dimensions at 99.98 / 99.64 / 100 / 99.98 did not catch either,
+because both were questions about the corpus rather than computations over it.
+
 ## What is left, in order (current)
 
-**Three questions this page has been organised around, and all three are now answered.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), and the gate's benefit shrinks to half while the product stops paying. What remains is no longer "confirm the mechanism". It is "decide what to ship, given that the filter works and the memory does not", plus the four items that can run in parallel with that decision.
+**Three questions this page has been organised around, and all three are now answered.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), and the gate's benefit shrinks to half while the product stops paying. The question that followed — *decide what to ship, given that the filter works and the memory does not* — was answered in §147–§148 without a model call: **nothing ships**. What is left is one research question and seven mechanical or blocked items.
 
 | # | Item | State | Blocks |
 |---|---|---|---|
 | 1 | **R30 stage 2 — the sample that can see 1pp** | **done, and it refuted the product claim.** Run `41296776252`, 14,479 calls, 7,000 questions, 58 databases, all 12 gates green (§146). Memory costs −0.71pp [−1.27, −0.18] clustered, 5 of 5 folds negative; the read-time gate recovers +0.51pp and leaves −0.20pp | nothing — this *was* the critical path, and it is closed with a negative |
-| 2 | **R33 — what ships, now that the filter pays and the memory does not** | **not registered, and it is the new critical path.** Three shapes are on the table: ship the filter alone as a query-level validity check on a single-shot generator; ship memory with the filter and state −0.20pp; or test whether the 92.2% clean cohort gains anything at all under a *weaker* injection. §147 collapses the middle option without a model call: a perfect filter can only remove the 237 breaks, so memory-plus-filter is bounded above by no-memory accuracy, and the bound and the −0.20pp measurement agree | the product claim, and every decision downstream of it |
+| 2 | **R33 — what ships, now that the filter pays and the memory does not** | **closed in §148, and the answer is nothing.** Shape 1 (the check alone) is refuted: the rule is differential, and pointed at one query it flags 94.8% for a Youden of 0.0257 against the filter's 0.1068. Shape 2 (memory + filter) is bounded above by a wash (§147). Shape 3 (a weaker injection) is the only one left and it is a research question, not a feature: no measurement so far suggests a dose that raises repairs without raising breaks | nothing — the product line is closed, and what remains is a hypothesis to test rather than a decision to take |
 | 3 | **R32 — if the damage is not lexical, what is it?** | **closed, three negatives.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both marker kinds (§144). Axis 3 is refuted in the other direction (§145) | nothing further — a fourth structural account would need a corpus this one does not contain |
 | 4 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | §138's claim that the protocol's shared machinery, not only its gates, is scenario-agnostic |
 | 5 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; the last third of the generality refactor |
@@ -8412,13 +8513,16 @@ working against is 3.39pp, which is small enough that it should be decided befor
 | 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |
 | 8 | **S1a — ambiguity on public annotations** | unblocked and unbuilt. §146 makes it *less* urgent than §145 thought: ambiguity was refuted as the mechanism, so this is now a product feature rather than an explanation | — |
 | 9 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 10 | **S3 — the SOTA push** | entry condition now needs re-adjudication for a second reason: the mechanism does not merely fail to move accuracy, it moves it backwards out of sample | a decision |
+| 10 | **S3 — the SOTA push** | entry condition restated by §147–§148: not "does the mechanism help" but "does an injection exist that raises the repair rate without raising the break rate". The filter that was meant to bridge the gap is differential and realises 15% of a 3.39pp ceiling | a registration for shape 3, and nothing else |
 | 11 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 12 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
 **What the list looks like now.** Item 1 is finished and it did not say what the programme wanted. §147 then
 turned the negative into an arithmetic bound: the filter's ceiling on this corpus is 3.39pp and it realises
-15% of it, so the gate has always been a fifth of an idea and the option of shipping it *with* memory cannot
-beat a wash by construction. Item 2 is a decision rather than a computation, and it is the only thing on the page that can move the product claim — but it needs a registration before it needs a model call, because the last time this project decided what to ship without one, it shipped a paragraph that an out-of-sample test deleted in an afternoon. Items 3 and 4–5 are registered work that changes no claim. Four items wait on a decision (2, 6, 10, 11), two on an artefact that does not exist (7, 9), one on a toolchain (12). **Nothing on this page is waiting on an idea, and nothing is waiting on compute except item 4.**
+15% of it, so the option of shipping it *with* memory cannot beat a wash by construction. §148 closed the
+last open shape without a model call, by pointing the rule at one query instead of at a difference: it flags
+94.8% of everything, its Youden index is a quarter of the anchored filter's, and the only thing it does
+measurably well is detect what the pack does (5.8% of clean questions acquire an imported name). **So the
+critical path is no longer a decision — it is item 10's registration.** Item 2 is a decision rather than a computation, and it is the only thing on the page that can move the product claim — but it needs a registration before it needs a model call, because the last time this project decided what to ship without one, it shipped a paragraph that an out-of-sample test deleted in an afternoon. Items 3 and 4–5 are registered work that changes no claim. Four items wait on a decision (2, 6, 10, 11), two on an artefact that does not exist (7, 9), one on a toolchain (12). **Nothing on this page is waiting on an idea, and nothing is waiting on compute except item 4.**
 
 **One thing this list no longer contains, and it should be said plainly.** For twenty rounds the plan was "measure the mechanism, then scale it". The mechanism has now been measured, out of sample, and it is a cost: memory makes the product worse, the filter makes it no worse, and the combination is a wash. Every item above is downstream of accepting that, including the ones marked "mechanical".
