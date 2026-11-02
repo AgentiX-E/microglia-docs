@@ -2686,3 +2686,52 @@ call. The first version of that reading carried the split's numbers under the na
 defect `AUDIT` §34.9 opens with: a correct computation about the wrong population, invisible to anyone reading
 the arithmetic and obvious to anyone reading the name.
 
+### 3.6.33 The ceiling is in the corpus's vocabulary, and it is measurable without a model
+
+§3.6.32 ended on a reach of 8.6% and an explanation that was a claim about corpora in general. R38 turns
+that claim into a measurement, and the measurement corrects it.
+
+**The counterfactual was already in the data.** BIRD ships an `evidence` block on 90.35% of its dev
+questions, and the block is not a note — it is a mapping from a phrase the question uses to the database
+vocabulary that phrase denotes:
+
+```
+  Eligible free rate for K-12 = `Free Meal Count (K-12)` / `Enrollment (K-12)`
+  driver reference name refers to driverRef
+```
+
+Those are the definitions a definitional memory would have to learn, written down by the corpus's authors.
+Read as key–value pairs (three shapes cover 91.3% of the blocks), they give 1,559 distinct keys, and
+ranking them by the questions they reach answers the question a single reach number cannot: **was the arm's
+8.6% the corpus's ceiling, or was it how the store was built?**
+
+**Ranked raw, the frontier is reached in two keys, and both are English.** `list` and `name` each cross a
+quarter of the split; each is annotated exactly once in 1,534 questions; each occurs in hundreds. A store
+built from such keys measures the frequency of the language, not the reach of a definition. The separator
+is the corpus's own judgement — how often a key is annotated, over how often its questions mention it — and
+applying it produces the round's finding:
+
+| keys by the number of questions that mention them | mean density |
+|---|---|
+| three or fewer | **0.967** |
+| fifty or more | **0.077** |
+
+**A phrase the corpus mentions once is annotated almost every time; a phrase it mentions fifty times is
+annotated one time in thirteen.** The corpus defines what it says once and leaves undefined what it says
+often, which is the exact inverse of the shape a definitional memory needs — and it explains every negative
+in this programme without appealing to wording, ordering, filtering, or distillation.
+
+**Both halves of §3.6.32's conclusion now have numbers, and one of them changes.** The ceiling is real:
+holding every key the corpus treats as vocabulary leaves **34.1%** of the split unreached at density 0.5 and
+**47.7%** at density 1.0, so no store of definable terms can render on half of this corpus. But the arm is
+exonerated: at its own 13 terms the frontier is **241 questions** against its licensed **132** — a factor of
+1.83, inside the band three thresholds produce (241 / 148 / 78). The store was not built badly; the frontier
+is simply low.
+
+**What a reader should take from the round is the instrument rather than the verdict.** Three things cost no
+model call and transfer to any store with keys: a reach curve as a function of store size, so a single reach
+number can be attributed rather than merely reported; a density separator computed from the corpus's own
+annotations, which distinguishes a term from a word without a stopword list; and a two-column agreement check
+between what a store licenses and what a renderer serves, which caught two scope errors in this reading
+before either became a paragraph.
+

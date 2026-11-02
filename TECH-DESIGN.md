@@ -5228,3 +5228,56 @@ cannot separate the grain from its retrieval: a term memory is recalled by its t
 grain is and also a second difference from the rule arm's relevance ranker. The next round that tries this should
 render the same entries under `full`'s recall and see how much of the effect was the retriever.
 
+### 17.75 The frontier instrument: reading a corpus's own definitions as a store
+
+R38 needed to answer a question about a corpus without buying a run, and the answer required turning
+something the corpus already ships into an instrument. `packages/eval/src/frontier.ts` is that instrument —
+roughly 380 lines, four coverage dimensions at 100% — and `packages/eval/src/bin/frontier.ts` is the reading,
+which formats and does not compute.
+
+**The parse is three regexes and a length rule, on purpose.** BIRD's `evidence` block uses exactly three
+shapes — `X refers to Y`, `X = Y`, `X means Y` — separated by `;` and newlines. `bridgesOf` splits on those,
+tries the shapes in order (`refers to` first, because one block mixes them), and drops a segment that matches
+none. `MIN_KEY = 3` and `MIN_VALUE = 2` exist because a one-character side is a fragment rather than a
+mapping. The narrowness is load-bearing: the round's second refutation clause says a key universe read from
+under half the annotations is the parser's rather than the corpus's, and `V68` computes that share (1,266 of
+1,386, 91.3%) rather than leaving the clause as prose.
+
+**Counting is quadratic, deliberately.** `keyStats` walks every key against every question. The alternative
+is an inverted index, whose correctness is a second implementation of `occursIn` — the predicate that decides
+whether a term memory can fire at all, already live in `lexicon.ts` with Unicode word boundaries and an
+optional plural. 1,559 keys over 1,534 questions is 2.4M matches and about a second, which is a cheap price
+for not having two matchers that can drift (`AUDIT` §34.9).
+
+**Density is the round's central statistic and it comes from the corpus.** `density = taught / questions`:
+how often a key is annotated, over how often its questions mention it. It is what separates a term from a
+word without a stopword list, and its distribution is the finding — 0.967 for keys mentioned in three
+questions or fewer, 0.077 for keys mentioned in fifty or more. `vocabularyKeys(stats, minDensity)` filters on
+it, and the reading publishes three thresholds (0.5, 0.8, 1.0) rather than one because a single threshold is
+a choice a reader cannot audit.
+
+**The curve is the deliverable, not any point on it.** `reachCurve(ordered, questions, stops)` returns
+`{keys, covered, share}` per store size, and `keysForShare` walks the ranking to the first crossing. Both are
+linear in the key set and neither assumes monotonicity — a bisection would be faster and would silently
+return a wrong answer on a curve that is not a curve, which is the failure `V66` exists to refuse.
+
+**Reconstructing the arm's store needs its scopes, and the scopes are the trap.** The lane keeps its lexicon
+per fold *and* per database (`lexiconByDomain.get(row.db_id)`), so a reading that reconstructs terms from
+rendered lines must key them the same way. Two versions of this reading did not, and each produced a
+plausible finding out of nothing: 201 licensed against 132 served reads as a store that lost a third of its
+reach to a character budget, and 141 against 132 reads as nine questions silently dropped. Scoped correctly
+it is 132 and 132. The structural guard is that the artefact publishes both columns, so the error appears as
+two numbers that should be equal and are not.
+
+**Three gates.** `V66-frontier-is-a-curve` (blocking) refuses an empty key set, an empty split, an empty
+curve, a curve that falls as keys are added, and a whole key set that reaches nothing.
+`V68-the-annotations-were-parsed` (blocking) refuses a key universe that came from the parser.
+`V67-the-store-was-redundant` (advisory) reports entries per distinct term — 179 on 13, so 13.77.
+
+**What it cannot do.** It cannot say what a learner would choose: the keys are the benchmark's annotations,
+which a distiller never sees, so the frontier is an **upper bound** on a store of that size rather than an
+estimate of what a learner achieves. It also cannot say what more reach would do to accuracy — the arm's own
+covered cells read 5 repairs against 4 breaks, and that is the sample a re-run would have to improve on. And
+it cannot read a definition the corpus states without a key-value shape; the 9% of blocks that are prose are
+counted as unparsed rather than guessed at.
+

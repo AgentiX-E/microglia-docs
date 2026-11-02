@@ -3629,3 +3629,49 @@ and both exchange rates from the committed artefact, and CI asserts 17 of its fi
 computed over the whole split, a second copy of the repository's exchange arithmetic inside a bin, a CI re-check
 whose regex could not survive a shell's double quotes, and two ledger assertions that still counted 17 artefacts
 when there were 18.
+
+### R38 — the frontier of a term store, and the density that explains the ceiling (**read** 2026-11-02, no dispatch)
+
+**The question.** R37's arm reached 8.6% of the split and its registration called that *inconclusive by
+feasibility*. §153 gave the reach a cause — "a definition is reusable only where a corpus reuses a phrase" —
+and a cause is a claim, so R38 tests it against the corpus rather than against the store.
+
+**Why it needs no dispatch.** BIRD's `evidence` block is a store of definitions written by the people who
+made the corpus: one per 90.35% of dev questions, and a mapping rather than prose, from a phrase a question
+uses to the database vocabulary it denotes. Read as `{key, value}` pairs it is the key universe a
+definitional memory could have had, so "was 8.6% the corpus's ceiling?" is answered by ranking those keys
+by the questions they reach.
+
+**What was built.** `packages/eval/src/frontier.ts` — three narrow annotation shapes (91.3% of annotated
+questions parse), `keyStats` counting reach and annotations per key, `reachCurve` and `keysForShare`, a
+`databaseShares` reading, and three gates. `pnpm eval:frontier` recomputes the whole reading from the
+committed R37 artefact and CI diffs it, asserting sixteen fields.
+
+**Result — the closure stands and the arm's construction is exonerated.**
+
+| | value |
+|---|---|
+| annotated questions / parsed | 1,386 (90.35%) / **1,266 (91.3%)** |
+| distinct keys, of which recurring | **1,559**, 346 |
+| keys that reach a quarter of the split, ranked raw | **2** — `list`, `name`, both annotated once |
+| mean density, keys in ≤3 / ≥50 questions | **0.967** / **0.077** |
+| frontier at the arm's 13 keys (density 0.5 / 0.8 / 1.0) | **241 / 148 / 78** against the arm's **132** |
+| keys to reach 25% at density 0.5 | 53 |
+| ceiling with every vocabulary key held (0.5 / 1.0) | **65.9%** / 52.3% |
+| entries bought per distinct term | 179 on 13 — **13.77** |
+
+**What it closes, and what it corrects.** The grain route stays closed, and now for a reason that is about
+how questions are written: **the corpus defines what it mentions once and mentions without defining what it
+mentions often.** A memory retrieved by the question's own words can only act on words that come back, and
+this corpus withholds its definitions from precisely those. Holding every vocabulary key still leaves 34.1%
+of the split unreached. What does *not* survive is §153's implied criticism of the store: at 13 keys the
+frontier is 241 against 132, a factor of 1.83, so the arm was on the frontier rather than behind it.
+
+**Cost.** Zero model calls, zero dispatches, 31 unit tests, three gates (`V66`, `V68` blocking; `V67`
+advisory). Four defects, all in the reading: a frontier of English, a store reconstructed with two scopes
+missing, and a refutation clause that measured nothing (`AUDIT` §34.10).
+
+**What it hands forward.** The instrument, not the verdict: a frontier curve, a density separator computed
+from the corpus's own judgement, and the two-column agreement check that catches a scope error before it
+becomes a paragraph.
+

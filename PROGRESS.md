@@ -8923,6 +8923,111 @@ Sealed by 2,658 tests across 129 files (35 in `lexicon.test.ts`, of which 5 are 
 four coverage dimensions at **99.98 / 99.67 / 100 / 99.98** with `lexicon.ts` at **100% on all four**, and two
 gates (`V64` blocking, `V65` advisory).
 
+## 154 — The ceiling was real, and the reason was wrong
+
+**R38 bought no dispatch and corrected the round before it.** §153 closed the grain route with a number
+(8.6% reach) and a cause — "a definition is reusable only where a corpus reuses a phrase, and this one does
+not". The number stands. The cause does not, and the correction moves the closure from an assertion about a
+distiller to a property of how questions are written.
+
+### Why a zero-call round was the right instrument
+
+The corpus ships a store of definitions of its own, and the record had never read it as one. BIRD attaches
+an `evidence` block to **1,386 of 1,534 dev questions (90.35%)**, and the block is a mapping rather than
+prose:
+
+```
+  Eligible free rate for K-12 = `Free Meal Count (K-12)` / `Enrollment (K-12)`
+  driver reference name refers to driverRef
+  the label means the class of the molecule
+```
+
+Read as `{key, value}` pairs, those annotations *are* the key universe a definitional memory could have had.
+So the question that decides whether the route is closed — was 8.6% the corpus's ceiling or the store's
+construction? — is answered by ranking the corpus's own keys by the questions they reach. Three narrow
+shapes read **1,266 of the 1,386** annotated questions (91.3%), yielding **1,559 distinct keys**, 346 of
+which recur in more than one question.
+
+### The first frontier was a frontier of English, and the reading says so
+
+Ranked raw, **two keys reach a quarter of the split**: `list` and `name`. Both are annotated exactly once in
+1,534 questions and both occur in hundreds of them. They are not terms the corpus defines — they are words
+it happened to write a line about, and a frontier built from them measures the frequency of English.
+
+The separator is the corpus's own judgement rather than a stopword list: **density**, how often a key is
+annotated over how often its questions mention it. `single bond` is annotated every time it appears (1.0);
+`list` is annotated once in 272 (0.004). And the density structure is the round's finding:
+
+| keys by the number of questions that mention them | mean density |
+|---|---|
+| three or fewer | **0.967** |
+| fifty or more | **0.077** |
+
+**The corpus defines what it mentions once and mentions without defining what it mentions often.** That is
+the inversion a definitional store cannot survive, and it explains the whole record without appealing to the
+distiller: a memory retrieved by the question's own words can only act on words that come back, and the
+corpus withholds its definitions from exactly those.
+
+| store size | raw keys | density ≥ 0.5 | density ≥ 0.8 | density = 1 |
+|---|---|---|---|---|
+| 13 keys — the arm's own count | 1,026¹ | **241** | 148 | 78 |
+| keys to reach 25% | 2 | 53 | 233 | 318 |
+| ceiling, every key held | 95.2% | **65.9%** | 55.2% | 52.3% |
+
+¹ not a vocabulary frontier: at 13 keys the raw ranking is still generic words.
+
+### What it does and does not overturn
+
+**It does not overturn the closure.** Holding every key the annotations treat as vocabulary still leaves
+**34.1%** of the split unreached at density 0.5 and **47.7%** at density 1.0. No store of definable terms
+can render on half of this corpus.
+
+**It does overturn the reason, in the direction that flatters the arm.** At its own 13 terms the vocabulary
+frontier is **241 questions** against the arm's licensed **132** — a factor of 1.83, inside the band the
+three thresholds produce (241 / 148 / 78). The store was therefore not badly constructed: it was near the
+frontier of what 13 keys can do, and the frontier is low. §153's sentence "the distiller's term selection is
+far from the frontier" would have been wrong; the honest statement is that **the arm was on the frontier and
+the frontier is inside the corpus's own vocabulary**.
+
+| # | registered prediction | reading |
+|---|---|---|
+| P1 | the raw set crosses 25% within five keys, all generic | **2 keys**, `list` and `name`, densities 0.004 | holds |
+| P2 | the vocabulary frontier at 13 keys is under 2× the arm | **241 against 132**, ratio 1.83 | holds |
+| P3 | the ceiling at density 0.5 is at most 75% | **65.9%** with all 1,070 keys held | holds |
+| P4 | at least two entries per distinct term | **179 entries on 13 terms**, 13.77 | holds |
+| P5 | rare keys are annotated more thoroughly than common ones | 0.967 at ≤3 questions against 0.077 at ≥50 | holds |
+| P6 | the licence and the renderer agree | **132 licensed, 132 served** | holds |
+
+### Three defects, all in the reading, all caught by the reading disagreeing with itself
+
+**The first frontier was reached in two English words.** Found by looking at what the top keys were, not by
+looking at the number: 2 keys reaching 25% is either a discovery or a parser artefact, and it was the second.
+Fixed by density — a statistic the corpus already carried.
+
+**The arm's store was scoped by fold only, then by nothing at all.** Scoped by fold it licensed 141 questions
+and served 132, which reads as nine questions silently dropped by the character budget. Scoped by nothing it
+licensed 201, which reads as a third of the reach lost. The lane scopes its lexicon by fold **and** database
+(`lexiconByDomain.get(row.db_id)`); scoped correctly it is **132 licensed, 132 served**, and P6 asserts that.
+Both wrong versions were caught the same way — two columns of the same artefact disagreeing — which is why the
+reading publishes `armLicensed` beside `renderedQuestions` (`AUDIT` §34.10).
+
+**A refutation clause nobody measured.** The registration's second clause said a key universe covering under
+half of the annotations would be the parser's rather than the corpus's, and no column measured it. A clause
+that cannot fire is not a clause; `V68-the-annotations-were-parsed` now computes it (1,266 of 1,386, 91.3%)
+and blocks below a half.
+
+### Where this leaves the record
+
+The seventh closure stands and is now stated as a property of corpora rather than of mechanisms: **a
+definition is reusable only where a corpus repeats the words it defines, and this corpus repeats the words it
+leaves undefined.** What a reader can carry to another project is the instrument rather than the verdict —
+the frontier curve, the density separator, and the two-column agreement check — all of which cost zero model
+calls and apply to any store with keys.
+
+Sealed by **2,689 tests across 130 files**, four coverage dimensions at **99.98 / 99.67 / 100 / 99.98** with
+`frontier.ts` at **100% on all four**, three gates (`V66` and `V68` blocking, `V67` advisory), and sixteen
+arithmetic assertions in CI over a recomputed artefact.
+
 ## What is left, in order (current)
 
 **Every question this page has been organised around is now answered, and §150 answered the last one without a model call.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), the gate's benefit shrinks to half while the product stops paying (§147), the check is differential and cannot stand alone (§148), and the question §148 left open — whether a *weaker injection* exists — turned out to be the wrong question: the memory is 43% short of break-even, and the half that could have been rescued, the population, cannot be selected by anything measurable before generation (§149). **Nothing ships, and the reason is now five-layered rather than one.** §150 added the fifth layer and it is the strongest: the store's items have no per-item value that transfers, so the store cannot be pruned by evidence either. What is left is one arm that would settle the only positive lead, one blocked measurement, and eight mechanical or blocked items.
@@ -8938,7 +9043,7 @@ gates (`V64` blocking, `V65` advisory).
 | 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |
 | 8 | **S1a — ambiguity on public annotations** | unblocked and unbuilt. §146 makes it *less* urgent than §145 thought: ambiguity was refuted as the mechanism, so this is now a product feature rather than an explanation | — |
 | 9 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 10 | **S3 — the SOTA push** | **closed for the sixth time, and the last lever was not a lever.** §151 measured one rule per prompt *assigned* rather than observed: −0.33pp [−1.65, +1.25] on the first store and **−0.07pp [−1.34, +1.20]** on a second, clearance 0.672/0.737 and 0.708/0.721, and no fold in either draw with an interval that excludes zero on both. §153 then measured the **grain** — a `{term, statement}` store instead of advice — and it reached 8.6% of the split: **−0.59pp [−2.09, +0.91]** against the rule grain, **+0.13pp [−0.59, +0.85]** against no memory, licence 132/132. Seven routes that keep the corpus fixed are now measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149), the store's items (§150), the item count (§151), the grain (§153) | nothing. The seventh closure is about the corpus rather than the mechanism: 179 entries met 13 repeated terms |
+| 10 | **S3 — the SOTA push** | **closed for the seventh time, and the last lever's ceiling is now a number.** §154 read the corpus's own definitions as a store: at the arm's 13 keys the frontier is 241 questions against its licensed 132, and holding every vocabulary key still leaves 34.1% of the split unreached. The corpus defines what it mentions once (density 0.967) and mentions without defining what it mentions often (0.077). §153 closed the grain on 8.6%; §154 says why that is a ceiling rather than a construction defect. §151 measured one rule per prompt *assigned* rather than observed: −0.33pp [−1.65, +1.25] on the first store and **−0.07pp [−1.34, +1.20]** on a second, clearance 0.672/0.737 and 0.708/0.721, and no fold in either draw with an interval that excludes zero on both. §153 then measured the **grain** — a `{term, statement}` store instead of advice — and it reached 8.6% of the split: **−0.59pp [−2.09, +0.91]** against the rule grain, **+0.13pp [−0.59, +0.85]** against no memory, licence 132/132. Seven routes that keep the corpus fixed are now measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149), the store's items (§150), the item count (§151), the grain (§153) | nothing. The seventh closure is about the corpus rather than the mechanism: 179 entries met 13 repeated terms |
 | 11 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 12 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
@@ -8952,6 +9057,6 @@ critical path is no longer a decision — and it is no longer even a registratio
 
 **And §150 removed the item that was supposed to be next.** The critical path after §149 was "target the store"; the store turned out to be unprunable by evidence, and what survives is not a store question at all but a **usage** question — how many rules a prompt carries — with one number in its favour (+4.03pp [+0.76, +6.62] on 7,000 questions) and one condition against it (negative on every 350-question pilot, so its sign tracks the corpus). That is exactly the shape of question an arm answers and no further reading of committed artefacts can.
 
-**And §153 closed the seventh route, by arithmetic rather than by argument.** The grain was the last design lever with a number behind it — the benchmark's own definitions are worth +17.01pp in the same slot where our rule pack costs −0.59pp — and it turns out not to be reachable: 547 corrections yielded 179 entries, those entries carried 13 distinct terms, and 13 terms reach 132 of 1,534 questions. A representation that renders on 8.6% of a split cannot be compared on that split, which the registration said *before* the run, so the outcome is inconclusive by feasibility and the lever is closed by the corpus's phrase reuse rather than by the mechanism's failure. What a memory item is has now been varied as far as an object can be varied: its wording, its count, its filter, its audience, its payload, its cardinality, and its type.
+**And §153 closed the seventh route, by arithmetic rather than by argument.** The grain was the last design lever with a number behind it — the benchmark's own definitions are worth +17.01pp in the same slot where our rule pack costs −0.59pp — and it turns out not to be reachable: 547 corrections yielded 179 entries, those entries carried 13 distinct terms, and 13 terms reach 132 of 1,534 questions. A representation that renders on 8.6% of a split cannot be compared on that split, which the registration said *before* the run, so the outcome is inconclusive by feasibility. **§154 then measured the counterfactual that clause implied** — the corpus's own annotations are a store of definitions, and ranking their keys by the questions they reach shows the ceiling is 65.9% of the split and that the arm's 132 was within 1.83× of the 241 a store of its size could reach. The lever is therefore closed by a property of the corpus rather than by a construction defect, and the property has a name: **a corpus defines what it mentions once (mean density 0.967) and mentions without defining what it mentions often (0.077).** What a memory item is has now been varied as far as an object can be varied: its wording, its count, its filter, its audience, its payload, its cardinality, its type — and its type is bounded by arithmetic rather than by a null.
 
 **One thing this list no longer contains, and it should be said plainly.** For twenty rounds the plan was "measure the mechanism, then scale it". The mechanism has now been measured, out of sample, and it is a cost: memory makes the product worse, the filter makes it no worse, and the combination is a wash. Every item above is downstream of accepting that, including the ones marked "mechanical".

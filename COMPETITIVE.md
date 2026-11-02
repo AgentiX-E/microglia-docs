@@ -1061,3 +1061,55 @@ Three columns beside any memory ablation, and none of them costs a model call:
   different store, corpus and model, and each one tells its owner whether the memory is paying rather than whether
   it is retrieving.
 
+## Appendix I — Reach, density and the counterfactual every memory paper omits (2026-11-02)
+
+**The leaderboard did not move, and this round could not move it.** AskData remains SOTA at **83.40 test /
+78.49 dev**; microglia's no-memory cell is **57.63 dev** on the same split and is **not ranked** — the 20.86pp
+gap is generator and pool (§2). R38 bought no dispatch. What it produced is a measurement of whether the
+memory programme's last negative was the mechanism's fault, and it is the first entry in this appendix whose
+subject is the *evaluation corpus* rather than a system.
+
+### The counterfactual: what the corpus's own definitions could have reached
+
+Every memory ablation in the literature reports a delta, and a delta on a representation that could only
+apply to part of the evaluation set is a number with an unknown denominator. R38 makes the denominator
+computable, using definitions the benchmark itself wrote: BIRD annotates 90.35% of dev questions with a
+key–value mapping from a phrase the question uses to the database vocabulary it denotes.
+
+| store size | a definitional store built from the corpus's own keys | microglia's R37 arm |
+|---|---|---|
+| 13 keys — the arm's own | **241 questions** (241 / 148 / 78 across three density thresholds) | 132 |
+| keys needed for 25% of the split | 53 | never reached 25% |
+| ceiling, every vocabulary key held | **65.9%** (52.3% at density 1.0) | — |
+| entries spent per distinct key | one per key, by construction | **13.77** |
+
+So a store of that size could have reached 1.8× further, and no store could have reached half the split.
+
+### The statistic the field does not publish, now with a second half
+
+Appendix H proposed three columns — reach, licence rate, exchange rate against the bare model's hurdle. R38
+adds the column that makes the other three interpretable:
+
+**density** — for each key a memory stores, how often the corpus annotates it, over how often its questions
+mention it. On BIRD dev the distribution is an inversion: keys mentioned in three questions or fewer carry an
+annotation in **96.7%** of them, keys mentioned in fifty or more in **7.7%**. The corpus defines what it says
+once and leaves undefined what it says often.
+
+That single number predicts the whole family of negatives. A memory retrieved by the question's own words can
+only act where words recur; a corpus writes definitions exactly where words do **not** recur; therefore a
+memory that must be licensed by the question cannot carry the corpus's definitions, whatever its store,
+embedding, ordering or distillation. Any system whose memory is keyed — Graphiti's entity names, a tag
+store, a glossary — can compute this on its own corpus before building the layer, and it costs nothing.
+
+### Where the position stands
+
+- **On the BIRD leaderboard: not ranked.** 57.63 dev against AskData's 78.49; nothing here touches the
+  generator or the pool.
+- **On the mechanism axis: seven routes closed, and the seventh now has a ceiling rather than an anecdote.**
+  Content, quantity, filter, population, store contents, item count, and item type — with the last one bounded
+  by the corpus's own vocabulary: 34.1% of the split is unreachable by any store of definable terms.
+- **What it holds that the table does not:** a reach curve as a function of store size, a density separator
+  computed from the corpus's own annotations rather than from a stopword list, and a licence-versus-serve
+  agreement check that caught two scope errors in its own reading. The first two transfer to any system with a
+  keyed store; the third transfers to any system that reports what it retrieved.
+

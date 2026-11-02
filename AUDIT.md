@@ -2219,3 +2219,45 @@ sentence that no longer existed, and it survived a commit because nothing reads 
 in the same commit as §34.9, and noted here rather than quietly deleted: a repository whose argument is that every
 number should be recomputable also has to notice when a paragraph has lost its subject.
 
+### 34.10 A frontier of English, a store with two scopes, and a clause that could not fire
+
+R38 made no model call, and every defect it shipped was in the reading rather than in the data. Four of
+them, and the first two share a shape: a number that was arithmetically correct about a population nobody
+had built.
+
+| # | defect | how it read | what caught it |
+|---|---|---|---|
+| 1 | the frontier ranked every annotated key | **two keys reach 25%** — `list` and `name`, each annotated once and each occurring in hundreds of questions | reading what the top keys *were*, not how few there were: a frontier reached in two keys is a discovery or a parser artefact, and it was the second |
+| 2 | the arm's store scoped by fold when the lane scopes it by fold **and** database | **141 licensed, 132 served** — nine questions apparently dropped by the character budget | the two columns of the same artefact disagreeing, which the reading publishes side by side |
+| 3 | the same scope missing entirely, testing the union of all five folds' terms against every question | **201 licensed** — a third of the reach apparently lost to a budget | the same comparison, one version earlier; the correction from 201 to 141 to 132 is recorded in the registration's disclosure |
+| 4 | the registration's "the annotations were parsed" clause measured nothing | a refutation clause that cannot fire | writing the gate: a clause with no column behind it is prose, and it became `V68` |
+
+**The first is the one worth reading, because the number was not wrong.** Two keys really do reach 25% of
+the split; the keys really are `list` and `name`; the arithmetic is exact. What was wrong was the premise
+that an annotated key is a term. `list` is annotated once in 272 questions — the corpus wrote a line about
+it because a question happened to use the word, not because the word needs defining — and a store built
+from such keys measures the frequency of English. The fix is a statistic rather than a filter: **density**,
+annotations over occurrences, with the corpus supplying both numbers. It then turned out to be the round's
+finding rather than its hygiene, because the density structure is the inversion the closure rests on —
+0.967 at three questions or fewer against 0.077 at fifty or more.
+
+The adversarial test that would have caught it on the first pass is the one now in `frontier.test.ts`: a
+fixture where `single bond` is annotated in every question that mentions it and `list` is annotated once,
+with an assertion that the vocabulary filter keeps the first and drops the second.
+
+**The second and third are `AUDIT` §34.9's defect twice more, and the repetition is the lesson.** §34.9
+recorded a covered-subset exchange rate computed over the whole split; this round computed a fold-and-
+database-scoped reach by fold alone, then by nothing at all. The general form is worth stating plainly: a
+reading that reconstructs a store from an artefact must reconstruct its **scopes** as well as its contents,
+and scope is the part a reader cannot see in the numbers. Three versions of the same column — 201, 141,
+132 — all computed by the same function, differing only in the population they were pointed at. The guard
+that worked is structural and cheap: publish the licensed count beside the served count, so a scope error
+shows up as two columns that should be equal and are not, rather than as a story about a character budget.
+
+**The fourth is the smallest and the most embarrassing.** The registration's second refutation clause says
+that a key universe covering under half of the annotated questions is the parser's rather than the
+corpus's, and when the clause was written nothing computed that share. A rule with no instrument behind it
+is exactly the failure this programme keeps finding in other people's gate tables — a non-blocking gate
+that fails and is narrated is a gate that does not exist (§136) — arriving in our own registration. It is
+now `V68-the-annotations-were-parsed`, blocking, and it reads 1,266 of 1,386 (91.3%).
+
