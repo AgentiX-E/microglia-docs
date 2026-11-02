@@ -2735,3 +2735,47 @@ annotations, which distinguishes a term from a word without a stopword list; and
 between what a store licenses and what a renderer serves, which caught two scope errors in this reading
 before either became a paragraph.
 
+
+### 3.6.34 The disagreement was a sample size, and the arithmetic is public
+
+For its whole history this project has quoted a memory effect that ranged from **+8pp to −9.26pp** across
+runs of the same comparison, and it has treated that range as a fact about the mechanism — sometimes as
+instability, sometimes as a corpus dependence. R39 checks the other explanation, which nobody had checked:
+that the numbers disagree because none of the designs could see the effect they were looking for.
+
+**The unit was wrong, and the unit was the whole obstacle.** The project's power audit read one row per
+artefact. But a claim in this record is almost never an artefact — it is an **arm** inside one: `values` at
++1.17pp, `linked` at −9.26pp, `full-one` at −0.20pp, `full-lexicon` at −0.59pp. The item had been carried
+since R30 as a schema question, *is an arm an artefact?*, and the answer is that an arm is a column of a run:
+it inherits every validity gate and contributes only the number of questions that changed hands. **98 arm
+rows** over 20 artefacts, three columns of arithmetic, no model call.
+
+| reading | what it says |
+|---|---|
+| rows decided by their own sample | **18 of 98** |
+| smallest decided row | **4.57pp** |
+| median floor, 350 questions | **4.38pp** over 75 rows |
+| median floor, 1,534 questions | **2.07pp** over 22 rows |
+| median floor, 7,000 questions | **0.82pp** |
+| `full − none` | **20 runs: 18 negative, 2 positive, 1 decided, 6 inside a 95% interval** |
+| its median magnitude | **2.86pp** at 350 → **0.33pp** at 1,534 |
+
+**Two conclusions, and the second is the one that changes how the product should be described.** First: no
+effect smaller than 4.5pp has ever been decided in this record, and the effects the product cares about are
+between 0.1 and 0.7pp. Second: the memory contrast's magnitude **falls by a factor of nine when the sample
+grows 4.4×** — the signature of a pilot that exaggerated, not of a mechanism whose sign wanders. The one
+contrast that grows with the sample is `linked`, schema pruning, **7.71pp → 9.26pp**, decided at both sizes;
+a real effect survives a larger sample and this instrument can see one when it exists.
+
+**The price list is the practical artefact.** Every undecided row is priced — the questions it would take to
+settle an effect of the size it found — and the numbers run from **352** to **1,457,294**. That converts
+"underpowered" from an adjective into a decision: an effect of 0.07pp on 1,534 questions is not something
+this project can decide, and re-running it is not a plan.
+
+**What a reader should take, and what they should not.** They should take the instrument: `√(z²·d/n)` beside
+every delta, the two baselines a channel can have (+1.17pp against no memory and +0.85pp against the full
+pack are both true), and a replication count that refuses to call one decided run a replication. They should
+not take this as evidence that memory is worthless — **80 undecided rows are 80 questions this record cannot
+answer, not 80 answers of zero.** The correct statement is narrower and more useful: on this corpus, at these
+sizes, the mechanism's effect is below what the instrument resolves, and the only reading that is both
+well-powered and inside a 95% interval is **−0.71pp on 7,000 out-of-sample questions**.

@@ -1113,3 +1113,52 @@ store, a glossary — can compute this on its own corpus before building the lay
   agreement check that caught two scope errors in its own reading. The first two transfer to any system with a
   keyed store; the third transfers to any system that reports what it retrieved.
 
+
+## Appendix J — The column no system in this table publishes: what its own sample could resolve (2026-11-02)
+
+**The leaderboard did not move.** AskData remains SOTA at **83.40 test / 78.49 dev**; microglia's no-memory
+cell is **57.63 dev** and is **not ranked**. R39 bought no dispatch and produced no accuracy number. What it
+produced is the column that decides how every other number in this appendix should be read.
+
+### The comparison, restated as a question about instruments
+
+Every row in Appendix A–I reports a delta on an evaluation set. Not one of them — including ours — reports the
+smallest delta that set could have resolved. That is not a criticism of the sources' arithmetic; it is a
+statement about what a memory paper's table usually carries, which is a score, a baseline and a seed or task
+count. The seed count is the input to the missing number rather than the number.
+
+R39 computes it for this project's whole record and the result is severe:
+
+| quantity | value |
+|---|---|
+| published arm rows over 20 artefacts | **98** |
+| rows decided at 80% power | **18** |
+| smallest decided row | **4.57pp** |
+| median floor at 350 questions (75 rows) | **4.38pp** |
+| median floor at 1,534 questions (22 rows) | **2.07pp** |
+| median floor at 7,000 questions (1 row) | **0.82pp** |
+| the memory contrast, 20 runs | **18 negative, 2 positive, 1 decided** |
+| its median magnitude, 350 → 1,534 questions | **2.86pp → 0.33pp** |
+
+**So the number this project has been arguing with itself about for a dozen rounds was never measurable at
+the size it was measured.** That is the same sentence one could write about most of the mechanism rows in this
+appendix, and writing it is the reason the column belongs here rather than in a footnote.
+
+### Where microglia now sits against the field, in its own terms
+
+| comparison | microglia (2026-11-02) | the field |
+|---|---|---|
+| BIRD dev accuracy, no memory | **57.63** | AskData **78.49 dev / 83.40 test**; not ranked, 20.86pp behind |
+| memory ablation at a fixed corpus | **−0.71pp [−1.27, −0.18]** on 7,000 out-of-sample questions, 5 of 5 folds negative | deltas typically reported on tens to hundreds of tasks, without a floor |
+| does a reported delta exceed its own resolution | **18 of 98 rows** | not reported |
+| does a reported effect survive a larger sample | `full − none` **shrinks 8.7×** from 350 to 1,534; `linked` **grows** 7.71 → 9.26 | not reported |
+| what a question costs to settle | **352 questions** (cheap end) to **1,457,294** (dear end) | not reported |
+| store size the corpus could support | **241 questions** at the arm's 13 keys; ceiling **65.9%** | not reported |
+
+**What this appendix claims and what it does not.** It does not claim the field's memory systems do not work;
+it claims that the published tables do not contain the quantity that would show whether they do, and that when
+this project computed that quantity for itself, all eighteen of its decided rows were large effects the product
+never depended on, and not one of the small effects it *does* depend on was decided at all. **The transferable contribution is the column**: `√(z²·d/n)` beside every delta, the
+control named in every row, a price on every undecided question, and a replication count that refuses to call
+one decided run a replication. Any system in this table could compute all four from artefacts it already has,
+and none of them does.

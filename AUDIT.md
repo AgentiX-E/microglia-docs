@@ -1304,10 +1304,14 @@ measurements point in *opposite* directions, which is what two underpowered cova
 Whatever makes a rule help or hurt, it is not its similarity to the question, and the next hypothesis has to be
 about what the rule does to the query.
 
-**25.7 What the audit does not cover.** It audits whole-artefact deltas. An arm inside an artefact is not a row, so
-the record's one positive reading — the `values` channel — had to be looked up by hand, and any artefact that
-carries several arms understates its own positives. This is written into the artefact's `notes`. Closing it needs an
-arm-level table, which is a different reader over `arms` and `contrasts` rather than a parameter of this one.
+**25.7 What the audit does not cover — closed 2026-11-02 (`§34.11`).** It audits whole-artefact deltas, and an arm
+inside an artefact was not a row, so the record's one positive reading — the `values` channel — had to be looked up
+by hand. This was carried for seven rounds as a schema question, and the schema question was the mistake: an arm is
+a column of a run rather than a run, so it needs no validity schema and only the three numbers `(helped, harmed, n)`
+read as a row. `pnpm eval:resolution` now does that for all **98 published arm rows over 20 artefacts**, and the
+thing the gap was hiding is not the positive reading but the opposite: **18 of the 98 rows are decided by their own
+sample, every decided row is larger than 4.5pp, and no arm this record has ever quoted as a small effect — `values`
++1.17pp, `full-one` −0.20pp, `full-lexicon` −0.59pp — is decided at all.**
 
 **25.8 Carried forward.** R30 stage 1 is an offline classifier of what a rule did to the query — identifier
 imported, decision repeated, table ruled out — readable from `predictedSql` against `baselineSql` in the committed
@@ -2260,4 +2264,42 @@ corpus's, and when the clause was written nothing computed that share. A rule wi
 is exactly the failure this programme keeps finding in other people's gate tables — a non-blocking gate
 that fails and is narrated is a gate that does not exist (§136) — arriving in our own registration. It is
 now `V68-the-annotations-were-parsed`, blocking, and it reads 1,266 of 1,386 (91.3%).
+
+### 34.11 A schema question that was answered by arithmetic, and two columns that were the same column twice
+
+R39's item had been open since R30 and had been carried as a design question for seven rounds: *is an arm an
+artefact?* The answer is no, and the round's first finding is that the question was never the obstacle. An
+artefact is what the validity gates certify — a dataset, a fold partition, a call budget, a vetted outcome set.
+An arm is a column of that run, and the three numbers it contributes (`helped`, `harmed`, `n`) are enough to
+place it beside its own resolution. **Seven rounds of deferral were waiting for a schema decision that only a
+formula was needed for**, which is a distinct failure from the ones this chapter usually records: not a wrong
+number, not a wrong population, but a correct reframing of a problem as harder than it was.
+
+| # | defect | how it read | what caught it |
+|---|---|---|---|
+| 1 | `values` published as one number | "the values channel is worth **+1.17pp**" while `arm_pairs` said **+0.85pp** for the same arm in the same run | the two blocks of one artefact disagreeing by 0.33pp; they are `values − none` and `values − full`, and neither was wrong |
+| 2 | the replication table treated one decided run as a replication | `decidedAgree: true` on a contrast with a **single** decided row | writing the field: with one decided row the sign set has one element and "the decided rows agree" is vacuously true |
+| 3 | the first floor table averaged two middle values | a median floor of **2.10pp** where the observed values were 2.07 and 2.13 | the round's own rule that a published statistic should be one that was observed; the median now takes the lower middle |
+
+**The first defect is the one that matters, and it has been in the record since R26.** `arms[]` compares an
+arm against the no-memory baseline SQL; `arm_pairs[]` compares it against the `full` arm. Both blocks are in
+every artefact, both are labelled plausibly, and the same arm therefore has **two deltas that differ by a
+third of a point**. Any sentence that says "the channel is worth +1.17pp" is quoting a treatment effect; any
+sentence that says "+0.85pp" is quoting a control comparison; and a reader who has one number cannot tell
+which. The repair is not to pick one — they answer different questions — but to put `control` in the row and
+in the contrast name, which is what `resolution.ts` does and what the CI assertions now check.
+
+**The second is vacuous truth, which is the failure mode of every `every()` in this repository.** §138 found
+the same shape in `V6-controls-inject`: a gate that evaluates `every` over an empty list and reports green.
+Here it was a derived field evaluating "agreement" over a set of one. `null` is the correct answer and `null`
+is what it now returns, with a test that asserts it rather than a comment that promises it.
+
+**What the round shows about the record rather than about the code.** 98 arm rows, 18 decided, and **every
+decided row is larger than 4.5pp**. The three design sizes impose median floors of 4.38pp / 2.07pp / 0.82pp.
+So the range from +8pp to −9pp that this project has quoted since its first iteration was produced by
+instruments that could not see anything below four points, and the twenty runs of `full − none` are eighteen
+negatives, two positives, and one decision. **That is not a disagreement between experiments; it is one
+experiment repeated at a size that could not answer it.** The single contrast whose effect grows with the
+sample — `linked`, 7.71pp → 9.26pp — is the control that keeps the reading honest: shrinkage is a property
+of noise, and this instrument can see growth when there is some.
 

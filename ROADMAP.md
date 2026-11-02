@@ -3675,3 +3675,51 @@ missing, and a refutation clause that measured nothing (`AUDIT` §34.10).
 from the corpus's own judgement, and the two-column agreement check that catches a scope error before it
 becomes a paragraph.
 
+
+### R39 — the resolution ledger: every arm, beside the difference its own sample could resolve (**read** 2026-11-02, no dispatch)
+
+**Why this rather than the τ² arm or the SQL move.** `AUDIT` §25.7 had been open since R30: the power audit reads
+one row per artefact and an arm inside an artefact is not a row. It was deferred seven times on a schema question
+— *is an arm an artefact?* — and the question was the obstacle. An arm is a column of a run: it inherits every
+validity gate and contributes only `(helped, harmed, n)`. Two of the three other open items need a dispatch or a
+large mechanical move; this one needed a formula, and it turns out to bear on the question the record has
+re-opened most often.
+
+**The claim under test.** The memory effect has been quoted between +8pp and −9.26pp across runs of the same
+comparison, and that range has been read as a fact about the mechanism. The alternative account is that the
+designs could not see the effect. **98 published arm rows, recomputed, decide between them.**
+
+| reading | registration | result |
+|---|---|---|
+| rows decided at 80% power | fewer than a third | **18 of 98 — 18.4%**, 27 at a 95% interval |
+| smallest decided row | no decided row below 4pp | **4.57pp** |
+| `full − none`, 20 runs | ≥ 15 runs, ≤ 2 decided | **18 negative, 2 positive, 1 decided, 6 inside a 95% interval** |
+| its median magnitude | 1,534 median under a quarter of the 350 median | **2.86pp → 0.33pp**, ratio 0.11 |
+| the dearest undecided question | one price an order of magnitude past the corpus | **1,457,294 questions** for a −0.07pp row |
+
+**What the ledger found that the registration did not predict.** Two defects, both found by two columns of the
+same artefact disagreeing. `values` is **two contrasts, not one** — +1.17pp against the no-memory baseline and
++0.85pp against `full` — so any sentence quoting one number for "the channel" was describing a control comparison
+while quoting a treatment effect; every row now carries its `control`. And the first replication table called a
+single decided run a replication, because with one decided row the sign set has one element and agreement is
+vacuously true; `decidedAgree` is now `null` below two.
+
+**The counter-example, kept because it licenses the instrument.** `linked` — schema pruning — reads **7.71pp at
+350 questions and 9.26pp at 1,534**: the only contrast whose effect grows with the sample, decided at both sizes.
+A small-sample artefact does not grow with n, so the instrument can see a real effect, and it sees none in the
+memory contrast.
+
+**Refutation, applied.** Had `V69` or `V70` failed, the reading would have been withdrawn rather than qualified,
+because a short table and an unreconciled row both look like findings. Had three or more `full − none` runs been
+decided with signs disagreeing, the question would be contested rather than underpowered and the round's
+conclusion would be refuted. None fired. The gates are `V69` and `V70` blocking, `V71` advisory, 49 unit tests,
+100% on four coverage dimensions, and fifteen arithmetic assertions in CI.
+
+**What it hands forward, and what it forbids.** It hands forward a price list — every undecided row with the
+questions it would take — which converts "underpowered" from an adjective into a decision, and the floors each
+design size imposes (4.38pp / 2.07pp / 0.82pp). What it forbids is the eighth re-opening of the memory question at
+350 questions: that design cannot see the effect, and the ledger now says so in one line. **Item 10's closure is
+sharpened rather than reversed**: no lever in this record has ever produced 2pp, which is what the only corpus
+large enough to measure resolves.
+
+**Cost.** Zero model calls, zero dispatches, one command.

@@ -5281,3 +5281,74 @@ covered cells read 5 repairs against 4 breaks, and that is the sample a re-run w
 it cannot read a definition the corpus states without a key-value shape; the 9% of blocks that are prose are
 counted as unparsed rather than guessed at.
 
+### 17.76 The resolution instrument: three columns, one biconditional, and a price instead of a verdict
+
+**The item this closes was carried as a design question and needed a formula.** `AUDIT` §25.7 recorded that the
+power audit reads one row per artefact and that an arm inside an artefact is not a row; it was deferred for seven
+rounds on *is an arm an artefact?* The resolution of that question is a type: an artefact is the unit the validity
+gates certify, and an arm is a column of it. An arm therefore inherits every gate, needs no schema, and needs
+exactly `(helped, harmed, n)` — the three numbers `pairedWidths` already consumed for artefacts.
+
+```ts
+export type PublishedArm = {
+  readonly arm: string;       // 'full', 'full-one', 'values', 'linked'
+  readonly control: string;   // 'none' for a treatment effect, 'full' for a control comparison
+  readonly n: number;
+  readonly helped: number;
+  readonly harmed: number;
+  readonly foundPp: number;   // the delta the artefact printed
+};
+```
+
+**`control` is in the row because the record had been conflating two contrasts.** `arms[]` in every artefact
+compares an arm against the no-memory baseline; `arm_pairs[]` compares it against `full`. The `values` channel
+therefore reads **+1.17pp** and **+0.85pp** in the same run, and a sentence that quotes either number without its
+control is quoting a treatment effect while telling the reader about a control comparison. The contrast is named
+`${arm} − ${control}` so that a reader can grep for it.
+
+**`ArmReading` adds four derived columns, and each answers a question the delta cannot.**
+
+| column | definition | the question it answers |
+|---|---|---|
+| `halfWidthPp` | `1.96 · √(helped + harmed) / n` | what the 95% interval is |
+| `minDetectablePp` | `√(z²·d/n) · 100`, `z = 2.802` | the smallest effect this design would have found four times in five |
+| `decided` | `\|delta\| > minDetectablePp` | whether the row is a measurement or a number |
+| `requiredN` | `z²·d / δ²`, `null` when `δ = 0` | what it would cost to make it a measurement |
+
+`decided` and `requiredN` are two spellings of one inequality — a row is decided exactly when its price is at or
+below its own sample — and `V71` asserts that biconditional on every row. The gate is advisory and its failure is
+always a bug rather than a finding, which is why it names the first offending row: two formulas that disagree
+need an address.
+
+**`requiredN` returns `null` for a zero effect rather than an enormous integer.** "Infinitely many questions to
+decide whether nothing changed" is the true statement, and a printed `Infinity` or a 10¹⁸ would read like an
+estimate. The discordance is capped at one inside the formula, so a malformed row cannot buy itself a cheaper
+question.
+
+**`replicationsOf` groups by contrast and refuses to pool.** minidev, dev and train are different samples with
+different fold partitions and different stores; an average over them is an average of five experiments weighted by
+size, which this record has refused since R13. What is reported is the count of runs, the count that could decide,
+and whether the decided ones agree. **`decidedAgree` is `null` below two decided rows** — with one decided row the
+sign set has one element and "the decided rows agree" is vacuously true, which is §138's `every()`-over-an-empty-
+list failure in a new field.
+
+**`shrinkageOf` answers the second thing a resolution column cannot.** A delta that is undecided at 1,534 and was
++5.43pp at 350 has two readings: the effect is real and the design lost it, or the pilot exaggerated. When the
+median magnitude falls as the sample grows, the second is what the arithmetic supports — a genuine effect does not
+shrink because more questions were asked. The confound is disclosed rather than corrected: rows at different `n`
+are different rounds, so a fall across sizes is a fall across experiment families, and the row counts are published
+beside each median. `values − full` is one row at each size and `full − none` is thirteen and six, and a reader can
+see which is the stronger fact.
+
+**`designFloors` is what makes "underpowered" a specification.** The record's three sample sizes impose median
+floors of **4.38pp at 350 questions, 2.07pp at 1,534 and 0.82pp at 7,000**. A pilot design whose floor is 4.4pp
+cannot adjudicate a 1pp claim however many times it is run, and printing the floor beside the count of rows that
+used that size turns a repeated observation into a reusable number. The median takes the **lower** middle for an
+even count, so the published statistic is always one that was observed rather than an average of two that were.
+
+**Gates.** `V69-every-arm-is-a-row` compares the rows found while scanning with the rows emitted — silent omission
+is this record's most repeated failure and a short table looks like a complete one. `V70-the-ledger-reconciles`
+requires every printed delta to equal `(helped − harmed)/n` to a thousandth, because a row that fails means its
+delta describes a population nobody ran. `V71` is the biconditional above. The module is at 100% on all four
+coverage dimensions, the reader is a bin over `eval/results/`, and CI diffs the artefact and asserts fifteen fields
+of it on every push.

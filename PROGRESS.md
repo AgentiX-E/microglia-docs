@@ -9028,6 +9028,68 @@ Sealed by **2,689 tests across 130 files**, four coverage dimensions at **99.98 
 `frontier.ts` at **100% on all four**, three gates (`V66` and `V68` blocking, `V67` advisory), and sixteen
 arithmetic assertions in CI over a recomputed artefact.
 
+## 155 — The range was the instrument
+
+**§25.7 has carried the same open item since R30, and it carried it as a schema question:** `eval:power` audits
+whole-artefact deltas, an arm inside an artefact is not a row, so the record's arms had to be looked up by hand
+and any artefact carrying several arms understated its own positives. *Is an arm an artefact?* was the question
+that blocked the fix.
+
+**The answer is no, and an arm does not need to be one.** An artefact is the unit the validity gates certify —
+one dataset, one fold partition, one call budget, one set of vetted outcomes. An arm is a column of that same
+run. It inherits every gate and contributes one number the gates never read: how many questions changed hands
+between it and its control. So the missing thing was never a schema. It was three columns of arithmetic over
+`(helped, harmed, n)`.
+
+**What the ledger contains.** 98 arm rows over 20 artefacts, from `arms[]` (control `none`) and `arm_pairs[]`
+(control `full`): the delta recomputed from its discordant counts, the 95% half-width, the difference the same
+sample could detect at 80% power, whether the delta clears that floor, and — for every row that does not — how
+many questions it would take to decide an effect of the size it found. Plus each contrast name across the runs
+that measured it, and, for each contrast measured at more than one size, whether its median magnitude fell.
+
+| # | Prediction | Reading | Result |
+|---|---|---|---|
+| P1 | fewer than a third of the rows are decided | **18 of 98 — 18.4%**, 27 clear a 95% interval | holds |
+| P2 | no decided row is smaller than 4pp | smallest decided row is **4.57pp** | holds |
+| P3 | `full − none` measured ≥ 15 times, ≤ 2 decided | **20 runs, 1 decided**, 6 inside a 95% interval | holds |
+| P4 | the 1,534 median is under a quarter of the 350 median | **2.86pp → 0.33pp**, ratio 0.11 | holds |
+| P5 | at least 15 of 20 are negative | **18 negative, 2 positive** | holds |
+| P6 | one price exceeds the corpus by an order of magnitude | **1,457,294 questions** for a −0.07pp row | holds |
+
+**The record's most-quoted number was a design artefact, and the arithmetic says so.** The three sample sizes
+impose median floors of **4.38pp at 350 questions, 2.07pp at 1,534 and 0.82pp at 7,000**. The pilots that
+produced most of this page's beliefs could not have seen a 1pp effect had one been there, and every row that
+*was* decided is larger than 4.5pp. `full − none` — the memory contrast, twenty runs of it — is **18 negatives
+and 2 positives, one decided, six inside a 95% interval**, with a median magnitude that falls from **2.86pp on
+350 questions to 0.33pp on 1,534**. That is the signature of an exaggerated pilot, not of a mechanism whose
+sign wanders.
+
+**The counter-example is why the instrument can be trusted.** `linked`, the schema-pruning channel, reads
+**7.71pp at 350 questions and 9.26pp at 1,534**: the only contrast in the record whose effect *grows* with the
+sample, decided at both sizes. A rounding artefact does not grow with n. So the ledger separates the one large
+effect this project actually measured from the twenty small ones it has been arguing about — and it does so
+with the same arithmetic, which is the point.
+
+**Two defects, both found by two columns of the same reading disagreeing.** The first: `values` is **two
+contrasts**, +1.17pp against the no-memory baseline and +0.85pp against the `full` arm, and any sentence that
+quoted one number for "the channel" was quoting a treatment effect while describing a control comparison. Every
+row now carries its `control`, in the row and in the contrast name. The second: the first replication table
+called a single decided run a replication, because with one decided row "the decided runs agree" is vacuously
+true; `decidedAgree` is `null` below two. Both are `AUDIT` §34.9's defect — a correct computation about the
+wrong population — in a new place, and both were caught the way that one was: by a column contradicting another
+column rather than by a reviewer.
+
+**What this changes about the two hundred paragraphs above it.** Nothing in them is withdrawn: the numbers are
+the numbers, and every one of them reconciles to its own discordant counts. What changes is their standing. Of
+the arms this record has quoted — `values` +1.17pp, `full-one` −0.20pp, `full-lexicon` −0.59pp, `full-accepted`
++0.52pp — **not one is decided by its own sample**, and each now appears beside a price: 352 questions for the
+cheapest, 1,457,294 for the dearest. A question that costs a million questions is not a question this project
+can ask, and writing that down is the difference between a null and an excuse.
+
+Sealed by **2,738 tests across 131 files**, four coverage dimensions at **99.98 / 99.67 / 100 / 99.98** with
+`resolution.ts` at **100% on all four**, three gates (`V69` and `V70` blocking, `V71` advisory), and fifteen
+arithmetic assertions in CI over a recomputed artefact.
+
 ## What is left, in order (current)
 
 **Every question this page has been organised around is now answered, and §150 answered the last one without a model call.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), the gate's benefit shrinks to half while the product stops paying (§147), the check is differential and cannot stand alone (§148), and the question §148 left open — whether a *weaker injection* exists — turned out to be the wrong question: the memory is 43% short of break-even, and the half that could have been rescued, the population, cannot be selected by anything measurable before generation (§149). **Nothing ships, and the reason is now five-layered rather than one.** §150 added the fifth layer and it is the strongest: the store's items have no per-item value that transfers, so the store cannot be pruned by evidence either. What is left is one arm that would settle the only positive lead, one blocked measurement, and eight mechanical or blocked items.
@@ -9039,7 +9101,7 @@ arithmetic assertions in CI over a recomputed artefact.
 | 3 | **R32 — if the damage is not lexical, what is it?** | **closed, three negatives.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both marker kinds (§144). Axis 3 is refuted in the other direction (§145) | nothing further — a fourth structural account would need a corpus this one does not contain |
 | 4 | **R29 — the τ² lane's first non-rescoring arm** | **stage 1 built** (§152): the driver records mean pack size, calls, learning and the domain ledger, mapped by a tested pure function into the record `tau2GateAudit` reads; `l4` writes it under `tau2`. Stage 2 (the retail → airline cross-domain arm) still needs one `sota.yml` dispatch | §138's claim that the protocol's shared machinery, not only its gates, is scenario-agnostic; and whether the agent's turns are countable at all |
 | 5 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; the last third of the generality refactor |
-| 6 | **The arm-level audit gap (§25.7)** | still open: `eval:power` audits whole-artefact deltas, and an arm inside an artefact is not a row | a schema decision — whether an arm is an artefact |
+| 6 | **The arm-level audit gap (§25.7)** | **closed in §155, and the schema question was the mistake.** `pnpm eval:resolution` reads all 98 arm rows; **18 are decided, every decided row is larger than 4.5pp**, and the twenty `full − none` runs are 18 negatives, 2 positives and 1 decision | nothing — and the answer reframes item 10 as well: the small effects the record argued about were never measurable at the sizes it measured them |
 | 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |
 | 8 | **S1a — ambiguity on public annotations** | unblocked and unbuilt. §146 makes it *less* urgent than §145 thought: ambiguity was refuted as the mechanism, so this is now a product feature rather than an explanation | — |
 | 9 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
@@ -9060,3 +9122,23 @@ critical path is no longer a decision — and it is no longer even a registratio
 **And §153 closed the seventh route, by arithmetic rather than by argument.** The grain was the last design lever with a number behind it — the benchmark's own definitions are worth +17.01pp in the same slot where our rule pack costs −0.59pp — and it turns out not to be reachable: 547 corrections yielded 179 entries, those entries carried 13 distinct terms, and 13 terms reach 132 of 1,534 questions. A representation that renders on 8.6% of a split cannot be compared on that split, which the registration said *before* the run, so the outcome is inconclusive by feasibility. **§154 then measured the counterfactual that clause implied** — the corpus's own annotations are a store of definitions, and ranking their keys by the questions they reach shows the ceiling is 65.9% of the split and that the arm's 132 was within 1.83× of the 241 a store of its size could reach. The lever is therefore closed by a property of the corpus rather than by a construction defect, and the property has a name: **a corpus defines what it mentions once (mean density 0.967) and mentions without defining what it mentions often (0.077).** What a memory item is has now been varied as far as an object can be varied: its wording, its count, its filter, its audience, its payload, its cardinality, its type — and its type is bounded by arithmetic rather than by a null.
 
 **One thing this list no longer contains, and it should be said plainly.** For twenty rounds the plan was "measure the mechanism, then scale it". The mechanism has now been measured, out of sample, and it is a cost: memory makes the product worse, the filter makes it no worse, and the combination is a wash. Every item above is downstream of accepting that, including the ones marked "mechanical".
+
+**And §155 closed the last item that was waiting on a decision, by noticing that the decision was not
+needed.** The arm-level audit had been deferred since R30 on the question *is an arm an artefact*; the answer
+is that an arm is a column of a run, needs no validity schema, and needs only `(helped, harmed, n)` read
+beside the difference the same sample could resolve. Doing that over the whole record puts a number on
+something this page has asserted qualitatively for a dozen sections: **18 of 98 arm rows are decided, and
+every decided row is larger than 4.5pp.** The record's small effects — the ones it has argued about — were
+measured on designs whose median floor is 4.38pp at 350 questions and 2.07pp at 1,534, so they were never
+measurable at the size they were measured. That does not overturn any number on this page and it does change
+their standing: each is now published beside a price, from 352 questions at the cheap end to **1,457,294**
+at the dear end, and a question that costs a million questions is a reason to stop rather than a plan.
+
+**What is left is therefore four items and none of them is a decision.** Item 4 (the τ² cross-domain arm)
+needs one dispatch and would test §138's claim that the protocol's *machinery*, not only its gates, is
+scenario-agnostic. Item 5 (R27 stage 3) is the mechanical move of the eight SQL modules into `eval-sql`.
+Item 8 (S1a) is an unblocked product feature. Item 12 (vitest 4) waits on the toolchain. Items 7 and 9 wait
+on artefacts that do not exist, item 11 is excluded by the owner, and **item 10 is now answered in its own
+terms**: the SOTA push is closed not because the levers ran out but because the instrument that would have to
+detect the next lever resolves 2pp on the only corpus large enough to be worth measuring, and no lever in
+this record has ever produced 2pp.
