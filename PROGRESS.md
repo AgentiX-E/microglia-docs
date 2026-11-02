@@ -8788,7 +8788,12 @@ why that is the right place to look: if removing one item changes what another d
 what the item *is*, not how many of them fit.
 
 Sealed by 2,615 tests (43 new), four coverage dimensions at 99.98 / 99.66 / 100 / 99.98 with the new
-module at **100% on all four**, 32 CI assertions on the reading (8 new), and two gates (`V62`–`V63`).
+module at **100% on all four**, 32 CI assertions on the reading (8 new), and two gates (`V62`–`V63`) emitted
+by the reading rather than by the dispatch. One further defect was caught by the repository's own protocol
+check on the push that carried the replication: the registration's `gates` header listed those two and not
+the thirteen the dispatch actually emitted, and `eval:protocol` refused it in both directions (`AUDIT`
+§34.7). The header now states the dispatch's set; the deciding pair are named with their criteria in the
+file, where a reader looking for them will find them.
 
 ## What is left, in order (current)
 

@@ -3567,7 +3567,9 @@ the same questions in both draws: three of five folds keep their sign, the two t
 on the first draw, and **the single fold whose interval excludes zero (−5, [−2.55, −0.66]) covers zero on the
 second draw at [−2.93, +2.06]**. No fold in either draw is distinguishable from noise, which is what closes
 the count lever — and it corrects the "sign drawn per store" wording this round first published
-(`AUDIT` §34.5–§34.6).
+(`AUDIT` §34.5–§34.6). The replication's own artefact also failed the repository's protocol check on the way
+in: the registration's `gates` header named the reading's two gates and not the thirteen the dispatch
+emitted, which is a defect in the header rather than in either artefact (`AUDIT` §34.7).
 
 **Two defects found on the way.** The dev manifest never declared its nested archive, so a dev dispatch
 downloaded 346 MB and failed on the first question (`AUDIT` §34.1); and R35's dev interval had been computed

@@ -2105,3 +2105,32 @@ scale. The interval column existed in `assignmentOf`'s output the whole time and
 `clusteredLowPp`/`clusteredHighPp`/`p` per fold, and `foldPairsOf` reports which side of a pair spans zero
 separately — a combined flag could not have said that the first draw decided and the second did not. A
 per-fold table without intervals is a table of temptation.
+
+### 34.7 The `gates` field names a dispatch's output, and this round's two deciding gates come from somewhere else
+
+The push that carried R36's replication failed `eval:protocol` with:
+
+```text
+FAIL eval/results/poc-sota-bird-dev-R36-pack-assignment.json — prereg/R36-pack-assignment.md:
+  declares V62, V63, which the run never emitted;
+  does not name V1, V2, V3, V4, V5, V6, V7, V8, V32, V12, V48, V44, V49, which the run emitted
+```
+
+**The gate was right and the registration was wrong.** `prereg/*.md`'s `gates` header means *the gates this
+round's dispatch emits*, and claim 4 of `eval:protocol` enforces it in both directions: every declared gate
+must be emitted by the artefact that names the file, and every emitted gate must be declared. R36's header
+said `V62,V63` because those are the round's deciding gates — but they are produced by
+`pnpm eval:pack-assign` from an artefact that already exists, and no dispatch emits them. The header therefore
+claimed a run that never happened, and the run it did happen to name emitted thirteen lane gates the file
+never mentioned.
+
+**Why the ambiguity was invisible until now.** Every previous registration had exactly one carrier: a
+`prereg` file described a dispatch, the dispatch emitted gates, the artefact named the file. R36 is the first
+round whose verdict lives in a **second** artefact produced after the dispatch — an assignment reading over an
+old run — so it is the first file with two carriers and one header. The header now lists the dispatch's
+thirteen gates, and the two deciding gates are named with their criteria in a section of the file, which is
+where a reader looking for "what decides this round" will find them.
+
+**What was not done, deliberately.** `V62`/`V63` were not moved into the artefact, and the artefact's
+`config.prereg` was not blanked: both would have made the check pass by hiding which artefact came from where.
+The field says what it always said; the file was wrong about its own contents and is now right about them.
