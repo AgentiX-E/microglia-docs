@@ -2888,7 +2888,7 @@ too (§135), and `linked` is recorded as a **product rule**: never prune the sch
 measurement rather than a guess; the pilot also read `full` at −4.00pp where the registered run reads +0.33pp,
 the ninth minidev pack reading that does not survive the split.
 
-### R27 — protocol / adapter, or: the generality claim's first test (**stage 1 and 2 closed** 2026-11-01; stage 3 open)
+### R27 — protocol / adapter, or: the generality claim's first test (**all three stages closed**; stage 3 in R40, 2026-11-02)
 
 **Why this replaced the candidate pool as the next experiment.** The pool's 13.95pp headroom is still the
 largest unpriced gap in the record and still worth buying, but §136 found something more urgent underneath it:
@@ -3723,3 +3723,47 @@ sharpened rather than reversed**: no lever in this record has ever produced 2pp,
 large enough to measure resolves.
 
 **Cost.** Zero model calls, zero dispatches, one command.
+
+### R40 — the layer split, and the table that stops being a paragraph (**read** 2026-11-02, no dispatch)
+
+**Why this rather than the τ² arm or the pool.** R27 stage 3 had been open since stage 2 closed: the SQL
+modules still sat in `eval` beside the protocol, with no line saying which was which. The design's own
+words for it were "mechanical, changes no number", which is exactly why it was worth doing properly — a
+mechanical stage is the only kind that can be verified mechanically, and the verification is what turns the
+project's central claim from a paragraph into a gate.
+
+**The claim under test.** *The measurement apparatus is scenario-agnostic; `core` contains no scenario
+vocabulary in code; the text-to-SQL surface is a bounded set of modules.*
+
+**The move.** `sql-exec`, `sql-guard`, `sql-diff`, `schema-link`, `m-schema`, `value-samples` and the
+extracted `canonicalRows` became `@agentix-e/microglia-sql`. The cut is one question about a signature —
+does the function mention a database? — and three modules that answer yes stayed for named dependency
+reasons: `bird-data` (the artefact schema), `link-bind` (the rule-template engine), `exec-signature` (a
+measurement signal).
+
+| reading | registration | result |
+|---|---|---|
+| `core` scenario words in code | zero | **0 of 37 modules** |
+| coupled modules outside the adapter | 10–14 | **12**, each with a written reason |
+| adapter size | 1,600–1,900 lines, 6–8 modules | **1,766 lines, 7 modules** |
+| package edges | all downward, fewer than 10 | **5, all downward** |
+| artefacts changed | none | **none** — 31 revalidated byte for byte |
+| coverage | four dimensions ≥ 95% | **99.98 / 99.68 / 100 / 99.98**, `coupling.ts` 100×4 |
+
+**What the round found that the registration did not predict.** Two defects, neither in the move. The
+scanner's comment stripper treated a `/` after an operator as a division, so the regex `/^- "([^"]+)":/`
+in `lexicon.ts` opened a string that never closed and the module was reported as SQL-coupled — a false
+positive in the direction that gets believed. And `sql-guard`'s deadline started before its child had
+loaded `node:sqlite`, so under full-suite load 40–80 ms of boot could consume a 250 ms budget and report an
+answer as a timeout; the child now announces readiness and the clock starts at the statement.
+
+**Refutation, applied.** Had a coupled module arrived with no reason, `V72` would have failed and the
+round would have published the gap rather than the split. Had any edge pointed upward, `V73` would have
+withdrawn the direction claim. Had any artefact changed, the move would have reverted: "mechanical" is a
+claim with a test. None fired.
+
+**What it hands forward.** `sota.ts` — 2,243 lines, the largest deferred module, and the one the design
+always said stage 3 would split on the same rule. Its reason is written down rather than implied, which is
+the point of making the deferrals data.
+
+**Cost.** Zero model calls, zero dispatches; one command over the working tree.

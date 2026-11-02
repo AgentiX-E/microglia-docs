@@ -1162,3 +1162,39 @@ never depended on, and not one of the small effects it *does* depend on was deci
 control named in every row, a price on every undecided question, and a replication count that refuses to call
 one decided run a replication. Any system in this table could compute all four from artefacts it already has,
 and none of them does.
+
+## Appendix K — Architecture generality, which no leaderboard scores (2026-11-02)
+
+**The leaderboard did not move.** AskData remains SOTA at **83.40 test / 78.49 dev**; microglia's
+no-memory cell is **57.63 dev** and **not ranked**. R40 bought no dispatch and produced no accuracy
+number. What it produced is the one property a competitor's table cannot show: whether the measurement
+apparatus is the benchmark's or the product's.
+
+### The comparison, restated as a question about coupling
+
+Every system in Appendix A–J is measured by *its own* harness. That is not a criticism — it is what a
+benchmark paper does — but it means the published table cannot distinguish two very different artefacts:
+a general measurement protocol that happens to have been run on text-to-SQL, and a text-to-SQL system
+with a bespoke scorer. XiYan-SQL and CHASE-SQL are the second kind by construction; Mem0, LangMem,
+Graphiti/Zep and A-MEM are memory stores measured by task suites written for them.
+
+R40 measures the distinction for this project and finds it is now a package boundary:
+
+| quantity (recomputed on every push) | microglia (2026-11-02) | the field |
+|---|---|---|
+| production lines in the scenario adapter | **1,766** in 7 modules, one package | not reported |
+| scenario vocabulary in the base library | **0 of 37 modules** in code | not reported |
+| modules that name a database and are *not* the adapter | **12**, each with a written reason | not reported |
+| package imports that point up the layer graph | **0 of 5** | not reported |
+| gates reused by a second scenario | **39**, of which 9 supplyable, 30 arm-indexed, 2 vacuous (§138) | the field's second domain usually gets a second scorer |
+
+**What this appendix claims and what it does not.** It does not claim the field is not modular — most of
+these systems are. It claims that *"our harness is general"* is a sentence nobody publishes evidence for,
+and that when this project computed the evidence it found the honest answer was narrower than the
+sentence: the protocol is scenario-agnostic, the **gate set** is arm-indexed (§138), and the scenario is
+1,766 lines that live in exactly one package. **A positioning claim that survives its own repository is
+worth more than one that survives a reviewer**, and the difference between the two is a gate.
+
+**Where microglia sits, in one line.** Nowhere on the leaderboard — 20.86pp behind the SOTA on BIRD dev —
+and the only entry in this document whose architecture claim is enforced by three blocking gates rather
+than asserted in a paragraph.

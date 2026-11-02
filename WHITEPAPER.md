@@ -2779,3 +2779,43 @@ not take this as evidence that memory is worthless — **80 undecided rows are 8
 answer, not 80 answers of zero.** The correct statement is narrower and more useful: on this corpus, at these
 sizes, the mechanism's effect is below what the instrument resolves, and the only reading that is both
 well-powered and inside a 95% interval is **−0.71pp on 7,000 out-of-sample questions**.
+
+### 3.6.35 The generality claim, metered: 1,766 lines of scenario, and zero in the library
+
+Every iteration of this project has asserted that its measurement apparatus is scenario-agnostic — that
+the gates, the paired statistics and the artefact schema know nothing about SQL, that `core` is clean, and
+that the text-to-SQL surface is a bounded set of modules. The assertion was made in a paragraph, measured
+once by hand, and never recomputed. R40 makes it a number that a build enforces.
+
+**The split.** Six modules and one function became `@agentix-e/microglia-sql`: execution, the statement
+guard, the query differ, schema linking, M-Schema rendering and value sampling, plus the canonical row
+form that decides what "the same rows" means. The cut is one question — *does a signature mention a
+database?* — and three modules that answer yes stayed, each with the dependency that keeps them out:
+the corpus loader reads the artefact schema, the rule binder needs a knowledge representation, and the
+execution signature is a measurement signal.
+
+| layer | production modules | lines | coupled |
+|---|---|---|---|
+| `core` | 37 | 6,821 | **0** |
+| `protocol` | 2 | 1,215 | **0** |
+| `sql` | 7 | 1,766 | 5 |
+| `eval` | 76 | 24,799 | 12, each with a reason |
+| `browser` | 2 | 280 | 0 |
+| `node` | 6 | 1,282 | 0 |
+
+**Why this is a product statement rather than a refactor.** The library's pitch is that a host can embed
+it without inheriting one benchmark. That pitch is falsifiable, and it was falsified once already in the
+other direction: `AUDIT` §136 found the second scenario had written three gates beside the protocol instead
+of using its thirty-nine. The remedy was structural, and structure only counts when it is enforced. Three
+gates now are: a module that names a database and is neither in the adapter nor in the deferral table
+fails the build; an import that points up the layer graph fails the build; and `core` naming a scenario
+fails the build. **A thirteenth coupled module cannot arrive silently**, which is the property a claim
+needs if it is to survive its own repository.
+
+**The measurement discipline that made it possible.** Counting scenario words in a module requires knowing
+what is code and what is prose, and the first attempt got it wrong in the direction that flatters a false
+positive: a regular expression containing quote characters opened a string the scanner never closed, so a
+general module was reported as coupled. The second failure was not in the scanner at all — under load, the
+statement guard's deadline expired while its child process was still loading SQLite, so an answer was
+recorded as a timeout. Neither defect touched a published number, and both were found because the round
+did not accept "the tests still pass" as evidence that a move was correct.

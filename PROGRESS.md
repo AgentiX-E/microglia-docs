@@ -9090,6 +9090,63 @@ Sealed by **2,738 tests across 131 files**, four coverage dimensions at **99.98 
 `resolution.ts` at **100% on all four**, three gates (`V69` and `V70` blocking, `V71` advisory), and fifteen
 arithmetic assertions in CI over a recomputed artefact.
 
+## 156 — The scenario is a package, and the layer table stops being a paragraph
+
+**`AUDIT` §24.7 carried R27's stage 3 as "mechanical and open" since R27 stage 2 closed.** It is now
+closed, and the thing that made it worth a section is not the move. Since the first iteration this
+project has claimed that the measurement apparatus is scenario-agnostic and that `core` contains no
+text-to-SQL. That claim was measured once, by hand, in §136 — 11,764 lines, 37.2% of the repository,
+zero in `core` — and never recomputed, which is the shape of every number that quietly stops being true.
+
+**The move.** Six SQL modules and one extracted function became `@agentix-e/microglia-sql`:
+`sql-exec`, `sql-guard`, `sql-diff`, `schema-link`, `m-schema`, `value-samples`, plus `canonicalRows`,
+which had been hiding inside `sota.ts` and defining what "the same rows" means. The cut is one question
+about a signature — *does the function mention a database?* — and the graph it completes is
+`core ← protocol ← sql ← eval`, with `browser` beside `eval` and `node` above `browser`.
+
+**Three modules answer yes and stayed, and each has a dependency rather than a shrug.** `bird-data`
+opens SQLite to read a *corpus*, and depends on the artefact schema, which is the protocol's.
+`link-bind` needs the rule-template engine, which is a knowledge representation. `exec-signature` is a
+measurement signal read by the pool. "Mentions SQL" is not the test; *which layer the module depends on*
+is.
+
+**The table became a reading.** `pnpm eval:coupling` walks every production module, counts lines,
+counts scenario words in **code** (comments stripped by a lexer), reads the package import graph, and
+assigns a verdict: `adapter`, `deferred` with a written reason, or `general`.
+
+| layer | modules | lines | coupled modules |
+|---|---|---|---|
+| `core` | 37 | 6,821 | **0** |
+| `protocol` | 2 | 1,215 | **0** |
+| `sql` | 7 | **1,766** | 5 |
+| `eval` | 76 | 24,799 | 12, each with a reason |
+| `browser` | 2 | 280 | 0 |
+| `node` | 6 | 1,282 | 0 |
+
+**Three gates, all blocking.** `V72` fails when a module outside the adapter carries a scenario word
+with no written reason — and also when the walker emits fewer rows than it scanned, because a short
+table looks exactly like a complete one. `V73` fails on any package import that points at an equal or
+higher layer; five edges exist and every one is downward. `V74` certifies the README's sentence: 37 core
+modules, zero scenario words in code, every occurrence inside a test where a scope string is free text.
+
+**Two defects were found, and neither was in the move.** The first: the comment stripper tracked quotes
+but not regular expressions, so `/^- "([^"]+)":/` in `lexicon.ts` put it inside a string it never left,
+swallowing the module's remaining comments and reporting the module as SQL-coupled — a false positive
+that would have been read as a real coupling forever. The second is a product defect the move exposed by
+changing nothing: under full-suite load `sql-guard`'s queued-statement test failed intermittently because
+**the deadline timer started before the child had finished loading `node:sqlite`**, so 40–80 ms of
+instrument overhead could consume a 250 ms deadline and report an answer as a timeout. The child now
+announces readiness and the clock starts at the statement. A lane's accuracy must not depend on how busy
+the machine was.
+
+**What the round did not change.** Every committed artefact: `pnpm eval:protocol` revalidates all 31, and
+every reading in the chain rewrites its file byte for byte. That is the only reason a mechanical stage is
+worth doing — it can be verified mechanically.
+
+Sealed by **2,793 tests across 132 files**, four coverage dimensions at **99.98 / 99.68 / 100 / 99.98**
+with `coupling.ts` at **100 on all four**, three blocking gates, and eleven arithmetic assertions in CI
+over a recomputed artefact.
+
 ## What is left, in order (current)
 
 **Every question this page has been organised around is now answered, and §150 answered the last one without a model call.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), the gate's benefit shrinks to half while the product stops paying (§147), the check is differential and cannot stand alone (§148), and the question §148 left open — whether a *weaker injection* exists — turned out to be the wrong question: the memory is 43% short of break-even, and the half that could have been rescued, the population, cannot be selected by anything measurable before generation (§149). **Nothing ships, and the reason is now five-layered rather than one.** §150 added the fifth layer and it is the strongest: the store's items have no per-item value that transfers, so the store cannot be pruned by evidence either. What is left is one arm that would settle the only positive lead, one blocked measurement, and eight mechanical or blocked items.
@@ -9100,7 +9157,7 @@ arithmetic assertions in CI over a recomputed artefact.
 | 2 | **R33 — what ships, now that the filter pays and the memory does not** | **closed in §148–§149, and the answer is nothing.** Shape 1 (the check alone) is refuted: the rule is differential, and pointed at one query it flags 94.8% for a Youden of 0.0257 against the filter's 0.1068. Shape 2 (memory + filter) is bounded above by a wash (§147). Shape 3 was mis-specified as a weaker injection; restated as admission and measured in §149, it reaches 4% of a 2.67pp ceiling | nothing — the product line is closed on three independent measurements |
 | 3 | **R32 — if the damage is not lexical, what is it?** | **closed, three negatives.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both marker kinds (§144). Axis 3 is refuted in the other direction (§145) | nothing further — a fourth structural account would need a corpus this one does not contain |
 | 4 | **R29 — the τ² lane's first non-rescoring arm** | **stage 1 built** (§152): the driver records mean pack size, calls, learning and the domain ledger, mapped by a tested pure function into the record `tau2GateAudit` reads; `l4` writes it under `tau2`. Stage 2 (the retail → airline cross-domain arm) still needs one `sota.yml` dispatch | §138's claim that the protocol's shared machinery, not only its gates, is scenario-agnostic; and whether the agent's turns are countable at all |
-| 5 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; the last third of the generality refactor |
+| 5 | **R27 stage 3 — the SQL modules into `packages/sql`** | **closed in §156.** Seven modules and 1,766 lines are the adapter, `core` is at zero scenario words in code, and `pnpm eval:coupling` recomputes the whole table on every push | nothing — and it found a real defect in `sql-guard`'s deadline while changing no number |
 | 6 | **The arm-level audit gap (§25.7)** | **closed in §155, and the schema question was the mistake.** `pnpm eval:resolution` reads all 98 arm rows; **18 are decided, every decided row is larger than 4.5pp**, and the twenty `full − none` runs are 18 negatives, 2 positives and 1 decision | nothing — and the answer reframes item 10 as well: the small effects the record argued about were never measurable at the sizes it measured them |
 | 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |
 | 8 | **S1a — ambiguity on public annotations** | unblocked and unbuilt. §146 makes it *less* urgent than §145 thought: ambiguity was refuted as the mechanism, so this is now a product feature rather than an explanation | — |
@@ -9136,7 +9193,9 @@ at the dear end, and a question that costs a million questions is a reason to st
 
 **What is left is therefore four items and none of them is a decision.** Item 4 (the τ² cross-domain arm)
 needs one dispatch and would test §138's claim that the protocol's *machinery*, not only its gates, is
-scenario-agnostic. Item 5 (R27 stage 3) is the mechanical move of the eight SQL modules into `eval-sql`.
+scenario-agnostic. Item 5 (R27 stage 3) closed the move in §156 and turned the coupling table into a
+gated reading: seven modules and 1,766 lines are the adapter, `core` is at zero, and a thirteenth coupled
+module now fails the build until somebody writes down why it is not in `packages/sql`.
 Item 8 (S1a) is an unblocked product feature. Item 12 (vitest 4) waits on the toolchain. Items 7 and 9 wait
 on artefacts that do not exist, item 11 is excluded by the owner, and **item 10 is now answered in its own
 terms**: the SOTA push is closed not because the levers ran out but because the instrument that would have to

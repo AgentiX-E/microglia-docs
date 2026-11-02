@@ -5352,3 +5352,73 @@ requires every printed delta to equal `(helped − harmed)/n` to a thousandth, b
 delta describes a population nobody ran. `V71` is the biconditional above. The module is at 100% on all four
 coverage dimensions, the reader is a bin over `eval/results/`, and CI diffs the artefact and asserts fifteen fields
 of it on every push.
+
+### 17.77 The adapter as a package, and a coupling scan that has to survive a lexer
+
+**The design this implements is one sentence from §17.64**: `core ← protocol ← eval-sql / eval-tau2`,
+enforced rather than described. Stage 3 is the part that makes the arrow true for the SQL side: seven
+modules move into `packages/sql`, and the direction becomes a gate instead of a diagram.
+
+**The cut, applied and then corrected by it.** *Does the function mention a database?* Six modules answer
+yes and one function does: `sql-exec` (opens SQLite, returns rows), `sql-guard` (bounds a statement),
+`sql-diff` (reads two statements), `schema-link` (matches question words to schema names), `m-schema`
+(renders a schema), `value-samples` (reads column values), and `canonicalRows`, which had been living
+inside `sota.ts` and defining what "the same rows" means. Three modules answer yes and stay, and the reason
+each time is a *dependency*, not a topic:
+
+| module | why it is not in `packages/sql` |
+|---|---|
+| `bird-data` | it opens SQLite to read a corpus, and it depends on the artefact schema, which is `protocol`'s |
+| `link-bind` | it needs the rule-template engine, a knowledge representation that belongs under `core` |
+| `exec-signature` | it is a measurement signal over execution shapes, read by `pool` and `signal-gate` |
+
+**`canonicalRows` is the interesting extraction**, because it is the seam the split exposes: a lane that
+parses a reply and a runner that executes a statement must agree about row identity, and the agreement only
+holds if there is one definition. It moved to the adapter and `eval` re-exports it, so no downstream import
+changed while the definition became single.
+
+**The scan is three pure functions and one walker.** `stripComments`, `scenarioWords`, `moduleRow`,
+`importEdges`, three gates. It has to be a lexer rather than a regular expression for one concrete reason:
+`lexicon.ts` contains `/^- "([^"]+)":/`, and a quote-tracking stripper enters a string at the first `"` and
+never leaves — the first version of this module swallowed the rest of the file and reported the module as
+SQL-coupled. The repair is the standard disambiguation, and it is worth writing down because the failure is
+silent in the direction that gets believed:
+
+```
+a '/' after a value (identifier, number, ')', ']') divides
+a '/' after an operator, an opener, or nothing at all opens a regex
+inside a regex: '\\' escapes, '[...]' is a character class, '/' ends it, then flags
+```
+
+**Counting code and not comments is a second decision with the same shape.** A module that explains in prose
+why it is *not* SQL-specific must not be counted as SQL-specific; the scan strips comments, counts the code,
+and publishes the comment-only hits separately (23 modules) without enforcing them. The strict word list is
+`sql`, `sqlite`, `nl2sql`, `text-to-sql`, `bird`, `m-schema`, and it deliberately excludes `query`, `schema`,
+`table` and `column`: those are a memory store's vocabulary too, and a gate that fires on `core/kernel`
+saying "query the journal" is a gate that gets suppressed within a week.
+
+**The verdict is derived, not declared.** `adapter` if the module lives in `packages/sql`; `deferred` if it
+names a scenario and appears in `DEFERRALS`; `general` otherwise. Because the derivation goes
+package → word count → verdict, a row cannot disagree with where its file is, and `V72` is what turns an
+unclassified module from a curiosity into a build failure:
+
+```ts
+export const DEFERRALS: Readonly<Record<string, string>> = {
+  'bird-data': 'the dataset loader; opens SQLite to read a corpus rather than to answer a question',
+  'link-bind': '…', sota: 'the mixed lane module: prompt, arms and gate inputs still share a file',
+  // twelve in all, each naming a dependency rather than a topic
+};
+```
+
+**Gates.** `V72-every-coupled-module-has-a-verdict` (blocking) also compares the rows emitted with the files
+scanned, because a short table is indistinguishable from a complete one. `V73-no-package-imports-upward`
+(blocking) reads a rank table — `core 0, protocol 1, sql 2, eval 3, browser 3, node 4` — and fails on any
+edge whose target rank is not strictly lower; five edges exist today and all five are downward.
+`V74-core-is-scenario-free` (blocking) is the README's sentence as a test.
+
+**One defect found in the code being moved, not in the move.** `BoundedSql` armed its deadline timer when a
+statement was posted, which includes the child's `node:sqlite` boot (~40–80 ms). On a loaded machine that
+overhead consumed a 250 ms budget and a correct answer was reported as `deadline`. The child now sends a
+readiness message before it registers its statement handler, `#ask` awaits it, and the clock starts at the
+statement. The wait is unbounded by the deadline on purpose: instrument overhead is not statement time, and
+a lane's accuracy must not be a function of how busy the machine was.

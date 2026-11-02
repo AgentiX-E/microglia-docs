@@ -1255,8 +1255,10 @@ half-width (14.98pp) while the gate reads the minimum detectable difference at 8
 `2.802/1.96 = 1.43`. Neither is wrong and a reader cannot tell which one a sentence means. Both now travel in
 `poc-l4-pair.json`, and the gate reads the one its own criterion names.
 
-**24.7 What is still not closed.** Stage 3 — moving the eight SQL modules into `eval-sql` and splitting `sota.ts`
-on the signature rule — is mechanical and open; it changes no number. The τ² lane cannot yet ingest a transcript,
+**24.7 What is still not closed — closed 2026-11-02 (`§34.12`).** Stage 3 moved the six SQL modules and the
+row canonicaliser into `packages/sql` and made the coupling table a reading (`pnpm eval:coupling`, `V72`–`V74`);
+`sota.ts` is the one module the split has not yet carved, and its 2,243 lines are named in `DEFERRALS` with that
+reason rather than left implicit. The τ² lane cannot yet ingest a transcript,
 so `V46-raw-is-verbatim` and `V47-evidence-ablated` are unreachable for a driver change rather than a gate
 change. And five of the nine supplyable gates need a field the driver has never written: until R29 stage 1, the
 lane's ceiling is nine and its floor is four, and every report says which.
@@ -2303,3 +2305,37 @@ experiment repeated at a size that could not answer it.** The single contrast wh
 sample — `linked`, 7.71pp → 9.26pp — is the control that keeps the reading honest: shrinkage is a property
 of noise, and this instrument can see growth when there is some.
 
+### 34.12 Two defects found by a round that changed no number, and a table nobody recomputed
+
+**§24.7 had carried R27's stage 3 as "mechanical and open" since stage 2 closed**, and it was right
+about the move and wrong about what the move would find. Moving six modules into `packages/sql` changed
+no artefact, and along the way it produced two defects — one in the scanner written to check the move,
+one in the code being moved.
+
+| # | defect | how it read | what caught it |
+|---|---|---|---|
+| 1 | the comment stripper did not know about regular expressions | `/^- "([^"]+)":/` in `lexicon.ts` opened a string the stripper never closed, so the module's remaining comments were swallowed and the module was reported **SQL-coupled** | a module the hand-written table said was general appearing in the coupled list; the fix is the standard division-vs-regex disambiguation |
+| 2 | `sql-guard`'s deadline covered the child's boot | a queued statement on a loaded machine was reported as `deadline` rather than as the answer it would have given | the full-suite run, where 2,700 concurrent tests slowed `node:sqlite` boot past a 250 ms deadline |
+
+**The first defect is the more instructive one, because it is a false positive rather than a miss.** A
+scan that over-reports coupling looks *conservative*: it says more of the repository is scenario-bound
+than really is, and a reader would rather have that than the reverse. But the number it produces is then
+wrong in the direction that gets believed, and the twelve deferrals that followed would each have needed
+a reason for a coupling that did not exist. The stripper now distinguishes the three `/` cases — comment,
+regex, division — and three tests exist because three shapes broke it earlier.
+
+**The second is a product defect the move exposed by changing nothing.** `BoundedSql` starts a timer when
+a statement is posted to a child, and a freshly spawned child spends 40–80 ms loading `node:sqlite`
+before it can answer. On an idle machine that is invisible; on a loaded one it consumed a 250 ms deadline
+and the statement was recorded as a timeout. The child now sends a readiness message and `#ask` starts its
+clock afterwards. **This is the same class as §24.5 and §29.3**: an instrument whose measurement is
+partly a property of the machine it runs on. The lanes use a 20-second deadline where 80 ms is noise, so
+no published number moves — and the failure mode it removes is the one that would only ever appear on a
+slow CI runner, i.e. exactly where nobody can debug it.
+
+**What the audit should record about the claim itself.** `PROGRESS` §136 measured the coupling table once,
+by hand: 11,764 lines, 37.2%, zero in `core`. Seven rounds later the architecture had changed and the
+sentence had not, because a paragraph does not fail a build. The table is now `pnpm eval:coupling`, it is
+recomputed on every push, and the claim it certifies — `core` names no database in code — is `V74`. That
+is the general lesson and this chapter has now recorded it in five different layers: **a number that is
+not recomputed is a number that is true until someone edits the code it describes.**
