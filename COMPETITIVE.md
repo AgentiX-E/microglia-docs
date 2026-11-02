@@ -971,3 +971,23 @@ and its ablation table is measuring an artefact of the order its retriever produ
   decomposition with an identity. Those three are the parts a competitor could adopt tomorrow and the parts
   that would tell them whether their own memory pays — none of which requires this project's store, corpus or
   model.
+
+### The check that costs nothing, and the one number a k-tuning paper should publish
+
+Every system in the table above reports a k, and a k is a decision about an average. The per-fold reading is
+the cheapest possible audit of whether that average means anything: bucket the same cases by the fold each
+question was held out in and recompute the four cells. Ours, on one split of one store:
+
+| fold | questions | repairs added | repairs given up | breaks added | breaks removed | net | Δpp |
+|---|---|---|---|---|---|---|---|
+| 0 | 307 | 5 | 7 | 4 | 6 | 0 | 0.00 |
+| 1 | 307 | 1 | 6 | 8 | 9 | −4 | −1.30 |
+| 2 | 307 | 5 | 4 | 4 | 7 | **+4** | +1.30 |
+| 3 | 307 | 2 | 3 | 4 | 0 | −5 | −1.63 |
+| 4 | 306 | 2 | 3 | 4 | 5 | 0 | 0.00 |
+
+Two folds flat, the three that move alternating **+4, −4, −5**. A k chosen on the pooled number would be a k
+fitted to the average of five signs, and every one of those signs is drawn when the store is built, not when
+the retriever runs. **The publication standard this suggests is one extra column**: alongside the k and its
+validation score, the fold-by-fold sign of the marginal item. If it alternates, the k is a coin; if it is
+stable and positive, the k is a knob and the ablation is worth reading.

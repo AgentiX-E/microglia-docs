@@ -5148,11 +5148,19 @@ twice. A decomposition without an identity is a table; with one it is a check on
 what turns "the second item carries 23 repairs and causes 27 breaks" into a statement that cannot be true of
 a broken reading.
 
+**4. Group by fold rather than pool, and say so in the module.** `foldsOf` re-runs the same four-cell
+accounting on the cases each fold held out, and it returns an array rather than a summary because the
+summary is the thing that hides the failure mode: the store is distilled once per fold, so a cross-term that
+appears in one fold and not the others is a property of the store that fold was given, not of packs. Here two
+folds are flat and the three that move alternate **+4, −4, −5**, which is what makes the count lever
+uncalibratable rather than merely non-additive. The per-fold cells also sum to the pooled cells, and that
+identity is asserted at both levels — a second identity for the same reason the first one exists.
+
 **Gates and cost.** `V62-assignment-instrument` and `V63-assignment-reproduces-the-lane`; the second compares
 this module's contrast against the lane's own `arm_pairs` entry to a hundredth of a point and on both
 discordant counts, which is how a reimplementation of one arithmetic is prevented from being a second
 opinion. The module is at 100% on all four coverage dimensions and the command makes no model call, so the
-instrument can run on every push (`pnpm eval:pack-assign`, 20 CI assertions).
+instrument can run on every push (`pnpm eval:pack-assign`, 24 CI assertions).
 
 **What it cannot do.** It cannot answer whether one rule *should* be shown — only whether removing the second
 one helps — and it cannot see the counterfactual for a question whose pack was empty. Both limits are stated

@@ -8746,13 +8746,31 @@ a character budget, a top-k, a density threshold — is tuning an interaction it
    because that one row was produced at a fifth of the resample count the rest of the round used. Nothing
    in R35's conclusion turns on it, and the row is restated at the default (`AUDIT` §34.2).
 
+**Per fold, the cross-term does not keep its sign — and that is the stronger reading.** The store is
+distilled once per fold, so the four cells are five readings rather than one:
+
+| fold | questions | repairs added | repairs given up | breaks added | breaks removed | net | Δpp |
+|---|---|---|---|---|---|---|---|
+| 0 | 307 | 5 | 7 | 4 | 6 | 0 | 0.00 |
+| 1 | 307 | 1 | 6 | 8 | 9 | −4 | −1.30 |
+| 2 | 307 | 5 | 4 | 4 | 7 | **+4** | +1.30 |
+| 3 | 307 | 2 | 3 | 4 | 0 | −5 | −1.63 |
+| 4 | 306 | 2 | 3 | 4 | 5 | 0 | 0.00 |
+
+Each cell sums across folds to the pooled cell and the net column to the pooled −5, asserted at both
+levels. The pooled table supports "not additive" but leaves a retreat open: a cross-term can be
+non-additive and still stable, in which case a store could calibrate its own rule count and the lever would
+be a tuning problem. The per-fold table closes it — two folds are exactly flat and the three that move
+alternate **+4, −4, −5**, so there is nothing for a calibration to converge on. Zero model calls, one fold
+of work (`AUDIT` §34.5).
+
 **What it closes.** Both of R35's remaining levers were designs. The item count is now measured at
 **0.672 clearance against 0.737**, and it does not pay. What is left is the **grain** at which memory is
 written — and the four-cell decomposition says why that is the right place to look: if removing one item
 changes what another does, the unit that matters is what the item *is*, not how many of them fit.
 
-Sealed by 2,605 tests (33 new), four coverage dimensions at 99.98 / 99.66 / 100 / 99.98 with the new
-module at **100% on all four**, 20 new CI assertions, and two gates (`V62`–`V63`).
+Sealed by 2,610 tests (38 new), four coverage dimensions at 99.98 / 99.66 / 100 / 99.98 with the new
+module at **100% on all four**, 24 new CI assertions, and two gates (`V62`–`V63`).
 
 ## What is left, in order (current)
 

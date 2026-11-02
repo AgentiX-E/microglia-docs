@@ -3559,10 +3559,20 @@ outlives the sign: **removing an item is not a subtraction**, because the remain
 alone — 15 repairs and 24 breaks move the other way, so the pack is not additive and the item count is not a
 knob.
 
+**Per fold, the cross-term does not keep its sign.** The store is distilled one fold at a time, so the same
+four cells read five times over are 0, **−4**, **+4**, **−5**, 0 — two folds exactly flat, the three that
+move alternating in sign. Each cell sums across folds to the pooled cell and the net column to the pooled
+−5. A pooled non-additivity still leaves a store free to calibrate its own rule count; a cross-term whose
+sign is drawn per store does not, and that is the form of the result that closes the count lever
+(`AUDIT` §34.5).
+
 **Two defects found on the way.** The dev manifest never declared its nested archive, so a dev dispatch
 downloaded 346 MB and failed on the first question (`AUDIT` §34.1); and R35's dev interval had been computed
 at 400 resamples where the round used 2,000 (`AUDIT` §34.2). Both fixed, both pinned.
 
-**Cost.** The adjudication is zero model calls; the replication is one `sota.yml` dispatch at 6,136 calls,
-half of R25's, and it is registered as P5.
+**Cost.** The adjudication is zero model calls; the replication is one `sota.yml` dispatch at
+**`learn_sample = 280`** for about 6,000 calls, half of R25's, and it is registered as P5. The first attempt
+at that dispatch left `learn_sample` at its default of *all*, forecast 13,328 calls against a cap of 9,000,
+and stopped after fold 1 — recorded as `AUDIT` §34.4, because a cost that does not name its input is not a
+cost.
 a competitor's number could be compared to.**

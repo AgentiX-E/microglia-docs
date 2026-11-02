@@ -2006,3 +2006,58 @@ Neither can catch the thing R36 is actually about. An arm that is measured corre
 arm: `full-one` is a truncation of *this* retrieval's order, and a store whose first item is chosen
 differently would answer a different question. That is why the round reports the four marginal cells rather
 than a single delta — a delta can be right about an arm and wrong about the mechanism.
+
+### 34.4 A cost that does not name its input is not a cost
+
+`prereg/R36-pack-assignment.md` was registered with a cost of **6,136 calls** for the replication dispatch,
+computed as 5 folds × 307 questions × 3 arms plus 1,534 learning generations. The first dispatch of it was
+issued without `learn_sample`, whose documented default is *all*, so each fold distilled from the entire
+1,534-question split rather than from the 280 corrections R25 had used: the lane measured fold 1 at 2,468
+calls, forecast 13,328 for the run against a cap of 9,000, and stopped.
+
+Two things worked exactly as designed, and both are worth recording because they are the reason this cost
+one fold rather than a night:
+
+- **The budget forecaster stopped the run instead of discarding it.** It extrapolates from the fold it has
+  finished and refuses to spend the rest on a run it cannot complete. A lane that had simply hit the cap
+  would have left five partial folds and no artefact.
+- **The failure named the number.** `MG_E_BUDGET_EXCEEDED: the configured cap cannot finish the folds`,
+  with the forecast beside it, is the difference between a configuration mistake and a mystery.
+
+The defect is in the *registration*, not the lane: **6,136 is the cost of a setting the file never wrote
+down**, and the dispatch that followed it had to guess. The fix is one line — the file now states
+`learn_sample = 280` and the ~6,000 calls that follow from it — and the general rule is worth keeping: a
+cost in a registration is a function of the inputs, so either the inputs are in the file or the cost is a
+wish.
+
+### 34.5 A cross-term that changes sign between folds is not a property of the treatment
+
+R36's second reading cost nothing: `foldsOf` buckets the same 1,534 assignment cases by the fold each
+question was held out in and runs the identical four-cell accounting on each bucket. Nothing was
+re-dispatched, and the table exists because of a decision made while writing the module — **group rather
+than pool** — since pooling is precisely the operation that would hide what the table shows:
+
+| fold | questions | repairs added | repairs given up | breaks added | breaks removed | net | Δpp |
+|---|---|---|---|---|---|---|---|
+| 0 | 307 | 5 | 7 | 4 | 6 | 0 | 0.00 |
+| 1 | 307 | 1 | 6 | 8 | 9 | −4 | −1.30 |
+| 2 | 307 | 5 | 4 | 4 | 7 | **+4** | +1.30 |
+| 3 | 307 | 2 | 3 | 4 | 0 | −5 | −1.63 |
+| 4 | 306 | 2 | 3 | 4 | 5 | 0 | 0.00 |
+
+Two identities are asserted rather than eyeballed: each of the four cells sums across folds to the pooled
+cell (23, 15, 24, 27) and the net column sums to the pooled −5.
+
+**What the pooled table cannot say.** The pooled reading supports one conclusion — the pack is not additive,
+because the second item's own record (23 repairs against 27 breaks) does not account for the contrast. It
+leaves a retreat open: a quantity can be non-additive and still *stable*, in which case a store could
+calibrate its rule count against its own folds and the lever would be a tuning problem rather than a closed
+one. The per-fold table closes that retreat, because the sign of the cross-term is drawn per store: two
+folds are exactly flat and the three that move alternate **+4, −4, −5**. There is nothing for a calibration
+to converge on.
+
+**Why this is an audit entry and not a footnote.** It is the third time in this programme that a pooled
+number has been the wrong unit — §141 withdrew a mechanism claim that a per-store reading dissolved, and
+§150 withdrew a per-item value that did not transfer between halves. §34.5 is the first time the per-store
+reading was available in the module *before* the pooled claim was published, and it is recorded because the
+cost of that ordering is one fold of work at zero model calls, against a retraction after publication.

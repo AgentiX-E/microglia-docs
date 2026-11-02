@@ -2603,6 +2603,23 @@ items beside it**, so no budget, top-k or density threshold can be tuned by aski
 the exchange rate agrees from its own side: the pair clears **0.737** of the bare model's 1.335 hurdle, the
 single rule clears **0.672**.
 
+**The same cells, one fold at a time, do not keep one sign.** The store is distilled separately per fold, so
+the decomposition is available five times rather than once, and it is reported that way:
+
+| fold | questions | repairs added | repairs given up | breaks added | breaks removed | net | Δpp |
+|---|---|---|---|---|---|---|---|
+| 0 | 307 | 5 | 7 | 4 | 6 | 0 | 0.00 |
+| 1 | 307 | 1 | 6 | 8 | 9 | −4 | −1.30 |
+| 2 | 307 | 5 | 4 | 4 | 7 | **+4** | +1.30 |
+| 3 | 307 | 2 | 3 | 4 | 0 | −5 | −1.63 |
+| 4 | 306 | 2 | 3 | 4 | 5 | 0 | 0.00 |
+
+Two folds are exactly flat and the three that move alternate **+4, −4, −5**; each cell sums across folds to
+the pooled cell and the net column to the pooled −5. This is the stronger statement of the same fact. A
+pooled non-additivity leaves one escape route: an effect can be non-additive and still *stable*, in which
+case a store could learn its own rule count and the lever would be a tuning problem. A cross-term whose sign
+is drawn when the store is built closes that route — there is nothing for a calibration to converge on.
+
 **What this does to the product claim.** Both levers R35 left open were designs. The item count is now
 measured and it does not pay. The grain at which memory is written is the only one left, and this section is
 the argument for taking it seriously: if removing an item changes what the remaining item does, then what
