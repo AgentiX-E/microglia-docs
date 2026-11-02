@@ -3004,7 +3004,7 @@ the second covariate (§62's embedding similarity) points the other way. **Relev
 measurement that made that readable — the power audit of all seventeen committed artefacts — was not in the
 registration and is the round's larger result: see §139 and R30.
 
-### R29 — the τ² lane's first arm that is not a re-scoring (**registered** 2026-11-01)
+### R29 — the τ² lane's first arm that is not a re-scoring (**stage 1 built, dispatch pending** 2026-11-02)
 
 **Why this rather than stage 3 or the pool.** Stage 3 (moving the eight SQL modules into `eval-sql` and splitting
 `sota.ts` on the signature rule) is mechanical and can be done at any time; it changes no number. The candidate

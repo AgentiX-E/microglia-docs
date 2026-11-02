@@ -8795,6 +8795,43 @@ the thirteen the dispatch actually emitted, and `eval:protocol` refused it in bo
 §34.7). The header now states the dispatch's set; the deciding pair are named with their criteria in the
 file, where a reader looking for them will find them.
 
+## 152 — The second scenario's record can now carry four more gates
+
+**R36 closed on two store draws, and the second draw cost 4,970 calls.** The replication read **−0.07pp
+[−1.34, +1.20]** on the same 1,534 questions, so P5 held with 0.80pp to spare against the 2pp bar the file fixed
+before the run. What repeats is the useful part: the second item is a net harm on both stores (23/27 and 20/23,
+0.85 and 0.87 repairs per break) and one rule clears less of the hurdle than the pair on both (0.672/0.737 and
+0.708/0.721). What does not repeat is the one fold that looked decided — fold 3's interval excluded zero on the
+first draw and covers it on the second — which is why the count lever is closed by *no fold deciding*, not by folds
+disagreeing (`AUDIT` §34.6). Two defects were caught on the way in, by the repository's own checks rather than by
+reading: the registration's `gates` header claimed a run that never happened (`AUDIT` §34.7) and the power audit did
+not yet see the new artefact.
+
+**R29 stage 1 is built and not yet dispatched.** The τ² driver now exports `instrument()`, which returns the arm
+record the protocol reads — mean items per pack counted at the facade, the call tally, the learning bookkeeping, the
+domain ledger, and the split with its repeats — and `l4` writes it into `poc-l4.json` under `tau2`, which
+`pnpm eval:l4-pair` already consumes through `tau2GateAudit`. The arithmetic is a pure function with 8 tests at
+100% on four coverage dimensions, deliberately: a mapping that lives inside a driver can only be tested by buying a
+dispatch, and a dispatch tests the environment and the arithmetic at once, so a failure cannot be attributed to
+either.
+
+**Four numbers in it can be filled dishonestly, and each is refused by name** (`AUDIT` §34.8): an empty pack set
+reports 0 rather than "not applicable", because that is V1's failure case; a run that made no call omits `calls`
+rather than claiming 0% failures; an unobservable distillation count omits the learning record rather than handing
+V32 a perfect score; and the held-out list reaches the gate with its repeats, since V2 asks whether every question
+was asked once and a record that tidies its input answers its own question.
+
+**What the dispatch will decide, stated in advance.** Whether the agent's turns are countable at all depends on what
+upstream's `SimulationRun` exposes. If they are, stage 1 supplies five of the nine supplyable gates and the ceiling
+moves from four informative gates to six; if not, it supplies four and R29's first prediction is refuted in the
+direction the prediction was written to detect. Every read in `diagnostics_of` is wrapped so a renamed upstream field
+becomes "not observable" rather than a failed benchmark.
+
+**Where this stands.** 2,623 tests across 128 files, four coverage dimensions at 99.98 / 99.66 / 100 / 99.98, both
+repositories pushed, CI green on `0c6433e`. The replication is committed as the projection its reader reads — six
+per-case columns plus the full metadata — because the sandbox's GitHub route refuses a body above roughly 3 MB, and
+the projection was verified to produce a byte-identical reading.
+
 ## What is left, in order (current)
 
 **Every question this page has been organised around is now answered, and §150 answered the last one without a model call.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), the gate's benefit shrinks to half while the product stops paying (§147), the check is differential and cannot stand alone (§148), and the question §148 left open — whether a *weaker injection* exists — turned out to be the wrong question: the memory is 43% short of break-even, and the half that could have been rescued, the population, cannot be selected by anything measurable before generation (§149). **Nothing ships, and the reason is now five-layered rather than one.** §150 added the fifth layer and it is the strongest: the store's items have no per-item value that transfers, so the store cannot be pruned by evidence either. What is left is one arm that would settle the only positive lead, one blocked measurement, and eight mechanical or blocked items.
@@ -8804,7 +8841,7 @@ file, where a reader looking for them will find them.
 | 1 | **R30 stage 2 — the sample that can see 1pp** | **done, and it refuted the product claim.** Run `41296776252`, 14,479 calls, 7,000 questions, 58 databases, all 12 gates green (§146). Memory costs −0.71pp [−1.27, −0.18] clustered, 5 of 5 folds negative; the read-time gate recovers +0.51pp and leaves −0.20pp | nothing — this *was* the critical path, and it is closed with a negative |
 | 2 | **R33 — what ships, now that the filter pays and the memory does not** | **closed in §148–§149, and the answer is nothing.** Shape 1 (the check alone) is refuted: the rule is differential, and pointed at one query it flags 94.8% for a Youden of 0.0257 against the filter's 0.1068. Shape 2 (memory + filter) is bounded above by a wash (§147). Shape 3 was mis-specified as a weaker injection; restated as admission and measured in §149, it reaches 4% of a 2.67pp ceiling | nothing — the product line is closed on three independent measurements |
 | 3 | **R32 — if the damage is not lexical, what is it?** | **closed, three negatives.** Axis 2 was a shadow of F1 (§143). Axis 1 is not measurable: 57.9% of the 271 sentences carry both marker kinds (§144). Axis 3 is refuted in the other direction (§145) | nothing further — a fourth structural account would need a corpus this one does not contain |
-| 4 | **R29 — the τ² lane's first non-rescoring arm** | registered, not run. Five driver fields plus a retail → airline cross-domain arm, one `sota.yml` dispatch | §138's claim that the protocol's shared machinery, not only its gates, is scenario-agnostic |
+| 4 | **R29 — the τ² lane's first non-rescoring arm** | **stage 1 built** (§152): the driver records mean pack size, calls, learning and the domain ledger, mapped by a tested pure function into the record `tau2GateAudit` reads; `l4` writes it under `tau2`. Stage 2 (the retail → airline cross-domain arm) still needs one `sota.yml` dispatch | §138's claim that the protocol's shared machinery, not only its gates, is scenario-agnostic; and whether the agent's turns are countable at all |
 | 5 | **R27 stage 3 — eight SQL modules into `eval-sql`** | mechanical, changes no number, can run at any time | nothing; the last third of the generality refactor |
 | 6 | **The arm-level audit gap (§25.7)** | still open: `eval:power` audits whole-artefact deltas, and an arm inside an artefact is not a row | a schema decision — whether an arm is an artefact |
 | 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |

@@ -2134,3 +2134,33 @@ where a reader looking for "what decides this round" will find them.
 **What was not done, deliberately.** `V62`/`V63` were not moved into the artefact, and the artefact's
 `config.prereg` was not blanked: both would have made the check pass by hiding which artefact came from where.
 The field says what it always said; the file was wrong about its own contents and is now right about them.
+
+### 34.8 Four ways to fill a gate's input dishonestly, and the fifth that is not a way at all
+
+R29 stage 1 is one function — `armRecordFromDriver` in `packages/eval/src/tau2-instrument.ts` — that turns what
+the τ² driver observed into the record the protocol's gates read. It is thirty lines of arithmetic and it exists
+because four of the numbers in it can be filled in a way that makes a gate pass while measuring nothing. Each is
+refused explicitly, and each refusal is a test:
+
+| the count | the dishonest fill | what the module does |
+|---|---|---|
+| mean items per pack | a run that served nothing reports "no reading" | reports **0**, which is V1's failure case |
+| call failures | no calls reports **0%**, the best possible score | omits `calls`, so V8 does not fire |
+| distillation failures | an unobservable count reports **0** | omits the whole learning record, so V32 does not fire |
+| held-out task list | the driver de-duplicates before the gate sees it | passes the list **with its repeats**, and reports distinct tasks separately |
+
+The fifth is not a dishonest fill but a missing one: **the agent's calls happen in another process.** `phase()` now
+returns the phase's stdout, `run_split.py` emits a `diagnostics` line, and the driver reads `agent_turns` from it —
+and if that line is absent or does not carry the count, `calls` is omitted rather than filled with the distillation
+calls alone. A denominator that omits every episode would grade V8 against the wrong population and pass.
+
+**Why the arithmetic is a module with tests rather than four lines in the driver.** The prediction R29 registered
+is about how many gates a second scenario can supply. If the mapping lives inside a driver that only runs in a τ²
+environment, then the only way to test the prediction is to buy a dispatch — and a dispatch tests the environment
+and the arithmetic at once, so a failure cannot be attributed to either. As a pure function it is 8 tests at 100%
+coverage on four dimensions, and the dispatch is then evidence about the environment alone.
+
+**What is still unproven, stated before it is measured.** Whether `run_split.py` can count the agent's turns at all
+depends on whether upstream's `SimulationRun` exposes its messages; every read in `diagnostics_of` is wrapped so
+that a renamed field becomes "not observable" instead of a failed run. If it cannot, stage 1 supplies four gates
+rather than five, and R29's first prediction is refuted in the direction it was written to detect.
