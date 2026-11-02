@@ -9147,6 +9147,71 @@ Sealed by **2,793 tests across 132 files**, four coverage dimensions at **99.98 
 with `coupling.ts` at **100 on all four**, three blocking gates, and eleven arithmetic assertions in CI
 over a recomputed artefact.
 
+## 157 — The transfer gates graded, and the store the arm never built
+
+**R41 ran, and the transfer family is now graded on a scenario it was not written for.** That was the
+round's registered purpose, and it was met: `V15-transfer-reconciles`, `V33-transfer-ledger` and
+`V17-transfer-net-reported` all fired and passed on a τ²-airline pair whose store had learned from
+τ²-retail. `V16-transfer-resolvable` failed, exactly as registered — 72 informative episodes against a
+floor of a hundred — and a pass there would have meant the floor was being cleared by episodes that were
+not informative. The audit's index moved by exactly the four gates the registration named: supplyable
+4 → **13**, arm-indexed 35 → **26**.
+
+| reading | value | source |
+|---|---|---|
+| `V15` | 200/200 episodes reconciled: **72 informative, 128 already repaired by the retry, 0 unmeasured** | `poc-l4-pair.json` |
+| `V16` | **72 informative, 12 repairs** — the floor is a hundred | same |
+| `V33` | **200/200 pairs carried**, one ledger row per episode | same |
+| `V17` | **−5.00pp net** over 200 measured trials (12 repaired, 22 broken), verdict `unmeasured` | same |
+| `l4-paired` | **−10.00pp**, 95% CI [−22, +2], p = 0.1797, n = 50 — **fails** | same |
+| `l4-same-split` | 0 only in first, 0 only in second | same |
+| `V5-resolution` | the sample resolves **16.81pp**; the pair cannot separate 10pp from zero | same |
+
+**And the arm that produced those numbers had no memory in it.** `V1-pack-not-empty` read **0.00
+rules/question**: the store held no knowledge when evaluation began, so every recall returned nothing,
+the agent was told nothing it had not been told before, and the arm labelled `memory` was the reference
+arm with an HTTP façade in front of it. The artefact says so from the other end as well — `domainOrigin`
+recorded **0 items stored**, and the store's own log line was `stored 0`.
+
+**Nothing in the record could say why, and that is the round's actual finding.** Three readings lived in
+the driver's process and none of them was written down: the distiller's report, the model client's call
+tally, and the store's admission counts. Two gates read exactly those numbers — `V32-fold-learning-intact`
+and `V8-call-reliability` — so both were **absent** on the one dispatch where they would have fired, and
+`V44-domain-accounted`, which reconciles the store's ledger, **passed on `0 <= 0`**. A blocking gate that
+certifies an empty population is a gate that certifies nothing, and it is why the pair looked valid enough
+to read.
+
+**The cause, traced through the code rather than guessed from the artefact.** τ²'s Python half is a
+litellm caller, so the lane names its model `deepseek/deepseek-chat` in one variable. The TypeScript
+client that distils the corrections read the same variable and posted that string to
+`api.deepseek.com/chat/completions`, whose `model` field is `deepseek-chat`; the prefixed form is refused
+with a 400, the client does not retry a 400, and `distill` counts a refused event as "the model said
+nothing about this correction". Thirty-two corrections, thirty-two refusals, an empty store — and the
+client's own tally read `prompts: 32, failures: 0`, because a failure was counted only when four attempts
+had been spent. The strongest reliability claim the lane can make, about thirty-two refusals.
+
+**A third defect was underneath both.** `combineInterpreters` runs every interpreter it is given and stops
+at the first that throws, so the rule interpreter that would have produced a negative lesson for each
+correction never ran. Its docstring called the second argument a "generic fallback", which is what the
+lane read; the code had never implemented one.
+
+**R42 is registered and dispatched** (`prereg/R42-instrument.md`, run `41468737074`). It fixes the three
+defects and re-runs the same arm, and its predictions are about the instrument rather than the effect:
+`V1` passes at a pack the artefact records, `V32` fires and passes, `V8` fires over a stated population,
+`V44` fires on a non-empty store, the fired set grows by exactly those two ids, `V16` still fails, and the
+transfer net stays at or below +5pp with the sign not predicted. The reading of that dispatch is §158.
+
+**What R41 bought, stated plainly.** The transfer machinery is portable — three of four gates graded on a
+second scenario with a ledger a reader can recompute — and the lane's own instrument is not yet able to
+say why an arm it measured was empty. Both sentences are in the record now, and the second one is the
+more useful: it is the first time a round's blocking gate fired at the *input* rather than at the result,
+and the four gates that stayed silent are the reason it took a re-read of the code to find out what
+happened.
+
+Sealed by **2,849 tests across 137 files**, four coverage dimensions at **99.98 / 99.67 / 100 / 99.98**,
+with `tau2-plan.ts`, `tau2-transfer.ts`, `tau2-gates.ts`, `tau2-distill.ts` and `l4-scenario.ts` at
+**100 on all four**.
+
 ## What is left, in order (current)
 
 **Every question this page has been organised around is now answered, and §150 answered the last one without a model call.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), the gate's benefit shrinks to half while the product stops paying (§147), the check is differential and cannot stand alone (§148), and the question §148 left open — whether a *weaker injection* exists — turned out to be the wrong question: the memory is 43% short of break-even, and the half that could have been rescued, the population, cannot be selected by anything measurable before generation (§149). **Nothing ships, and the reason is now five-layered rather than one.** §150 added the fifth layer and it is the strongest: the store's items have no per-item value that transfers, so the store cannot be pruned by evidence either. What is left is one arm that would settle the only positive lead, one blocked measurement, and eight mechanical or blocked items.

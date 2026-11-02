@@ -3767,3 +3767,91 @@ always said stage 3 would split on the same rule. Its reason is written down rat
 the point of making the deferrals data.
 
 **Cost.** Zero model calls, zero dispatches; one command over the working tree.
+
+### R41 — The transfer gates, on a scenario they were not written for (**read** 2026-11-02)
+
+**Why this and not the pool, the split, or the annotation set.** §138 salvaged one claim from the
+generality argument: the *apparatus* is scenario-agnostic. It rested on four gates, two of which fire on
+an empty list, and none of which was the machinery a sceptic would name — the transfer gates, the
+substrate comparison and the probe are the ones a reader would say were built for BIRD. R29 stage 1 made
+the τ² driver record what those gates read; stage 2 runs the arm that makes four of them fire on a second
+scenario. It is one dispatch, no new dataset, no new model family.
+
+| stage | work | the gates it makes fire |
+|---|---|---|
+| **1** | instrument `tau2-driver.ts`: mean pack size, call tally, learning bookkeeping, domain ledger, the split with its repeats | `V1`, `V2`, `V3`, `V5`, `V6`, `V7`, `V8`, `V32`, `V44` — the supplyable ceiling rose from 4 to **9** |
+| **2** | one cross-domain arm: learn τ²-retail, answer the whole τ²-airline set (50 tasks, 4 trials), the same set scored by a memory-free reference | `V15`, `V16`, `V17`, `V33` — the four transfer gates, on a scenario they were not written for |
+
+**The registration is `prereg/R41-cross-domain.md`**, and its predictions are reproduced here because the
+reading has to be checked against them rather than against a story written afterwards.
+
+1. Three of the four transfer gates pass: `V15` reconciles every episode into informative, already-correct
+   or unmeasured; `V33` carries one ledger row per episode; `V17` re-derives its net from its own counts.
+2. **`V16` fails.** A hundred informative episodes is a floor, and informative means the *control* arm
+   failed; a foreign pack on 50 airline tasks will not produce a hundred of them.
+3. The net marginal effect is a null at or below +5pp, with the sign not predicted: the mechanism's best
+   reading on its own terrain is +1.17pp, and a foreign scenario is strictly harder.
+4. The audit's index moves exactly four places — supplyable 9 → 13, arm-indexed 30 → 26 — with no other
+   gate added or removed.
+5. Every evaluated episode is paired; the reference arm's episodes reach the ledger as the control half.
+6. If the foreign pack serves nothing, `V1` fails and the round reports the mechanism (recall across a
+   scenario boundary) rather than the effect.
+
+**Refutation.** If `V15`, `V33` or `V17` fails, the transfer family cannot be graded on a second scenario
+and §138's claim narrows again — to *"the shape gates are portable and the accounting gates are not"* — in
+the protocol's own documentation. If the fired set gains a gate outside those four, the projection is
+reading a field nobody wrote and the projection reverts. If the net exceeds +5pp the split is audited
+before the finding is published: a cross-domain arm cannot leak by construction, so a large positive
+effect would mean the two arms are not the same task set, which `l4-same-split` checks.
+
+**Two defects were found before the dispatch was paid for**, and both are names carried across a boundary
+that does not preserve meaning: τ² task ids are unique inside a scenario rather than across two (every
+evaluated task would have been reported as leaked into training), and the lane graded every arm against a
+`pass^4` that belongs to τ²-retail (an airline delta would have measured the difference between scenarios).
+`AUDIT` §34.13 records both, with the third defect — a CI assertion that had written a constant where it
+meant a reading, for the second round running.
+
+**Cost.** One dispatch through `sota.yml`, both arms, 50 airline tasks at four trials against a 32-task
+retail learn half. No new dataset, no change to the merge gate.
+
+**Outcome.** Six of the seven predictions held and the seventh is the round. `V15`, `V33` and `V17` fired
+and passed on an airline pair over a retail store — 200 episodes reconciled, 200 ledger rows, a net
+re-derived from its own counts at **−5.00pp** (12 repaired, 22 broken of 72 informative). `V16` failed at
+**72 informative episodes** against a hundred, as registered. The index moved by exactly four places.
+`l4-paired` failed at **−10.00pp** (p = 0.1797, n = 50) and `V5` restated why: 50 tasks resolve 16.81pp.
+
+**And `V1` failed at 0.00 rules/question**, which the registration had reserved for the case where the
+foreign pack serves nothing. It served nothing because the store held nothing: the distiller's model was
+named the way litellm names it and was refused by the endpoint it was sent to, thirty-two times, and the
+driver discarded the report that counted the refusals. `V32` and `V8` were absent on that dispatch and
+`V44` passed on an empty ledger. **R42 is the instrument fix and the re-run**; §157 carries the reading,
+`AUDIT` §34.14 the four defects, and `TECH-DESIGN` §17.79 the boundary the model name crossed.
+
+### R42 — The store the memory arm never built (**dispatched** 2026-11-02)
+
+**Why the instrument and not the effect.** R41 graded the transfer family and measured an arm with no
+memory in it. No number from that pair can be read as an effect — `repaired: 12` came from a pack that
+was empty — so the next round is the one that makes the arm what its name says, and it is deliberately
+not a new hypothesis: same scenario pair, same split, same floor, same caps.
+
+| defect | who held the reading | who read it |
+|---|---|---|
+| the distiller's model id is a router name; the endpoint serves the bare one | `LlmClient` (configured) / `restModelOf` (sent) | the artefact records both, and the request carries the one that works |
+| a refused prompt was not a failed prompt | `LlmClient.stats.failures` | `V8`, over a population the artefact names (`calls.scope`) |
+| the composition was called a fallback and was not one | `resilientInterpreter` (per-event, counted) | `learning.llmFailed` |
+| the driver discarded the report that explains an empty store | `DistillReport` | `V32`, which now fires |
+| `V44` reconciled `0 <= 0` | the store's ledger | the gate requires a population |
+
+**The registration is `prereg/R42-instrument.md`.** Its predictions are about the instrument: `V1` passes
+at a recorded pack, `V32` fires and passes, `V8` fires on the distillation tally, `V44` fires on a
+non-empty store, the fired set grows by exactly `V8` and `V32` (11 → 13 evaluable, 28 → 26 absent), `V16`
+still fails, and the transfer net stays at or below +5pp with the sign not predicted.
+
+**The one behaviour that could look like a regression and is not.** `host.distill` is now called with a
+`fatal` predicate, so a provider that has stopped answering, a spent budget, an expired deadline or a
+refused key ends the *run* at distillation instead of emptying the store quietly. A dispatch that stops
+there writes no pair artefact, and that is the point: R41 spent thirty-nine minutes of evaluation on a
+pack that did not exist.
+
+**Cost.** One dispatch through `sota.yml`, the same configuration as R41. No new dataset, no new model
+family, no change to the merge gate.

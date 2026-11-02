@@ -2819,3 +2819,51 @@ general module was reported as coupled. The second failure was not in the scanne
 statement guard's deadline expired while its child process was still loading SQLite, so an answer was
 recorded as a timeout. Neither defect touched a published number, and both were found because the round
 did not accept "the tests still pass" as evidence that a move was correct.
+
+### 3.6.36 A second scenario graded the apparatus, and then reported an arm with no memory in it
+
+**The claim this section tests is the one §3.6.35 measured but did not exercise.** A clean layer graph says
+the apparatus carries no SQL; it does not say the apparatus *works* on anything else. The transfer family
+is the part a sceptic would name — four gates that ask whether a rule that repaired its own case repairs
+another — and every one of them had only ever run on text-to-SQL. R41 ran the arm that makes them fire on a
+second benchmark: learn from τ²-retail, answer τ²-airline, score the same episodes with no store.
+
+**Three of the four ported, and the fourth failed the way it was predicted to fail.**
+
+| gate | reading | verdict |
+|---|---|---|
+| `V15-transfer-reconciles` | 200 episodes: 72 informative, 128 already repaired by the retry, 0 unmeasured | pass |
+| `V33-transfer-ledger` | 200 of 200 pairs carried, one row per episode | pass |
+| `V17-transfer-net-reported` | −5.00pp net from its own counts (12 repaired, 22 broken) | pass |
+| `V16-transfer-resolvable` | 72 informative episodes against a floor of a hundred | **fail, as registered** |
+
+That is the apparatus claim, and it now rests on a scenario it was not written for. The paired comparison
+that came with it fails at −10.00pp (p = 0.1797, n = 50), and the resolution gate says why in one line: fifty
+tasks resolve 16.81pp, so the pair cannot separate a ten-point effect from zero. None of that is a result
+about the memory, and the artefact says so rather than letting a reader infer it from a missing bar — there
+is no published `pass^4` for τ²-airline, so the leaderboard gate is omitted and the comparison it supports
+is the paired one.
+
+**And then the run reported its own emptiness.** `V1-pack-not-empty` read **0.00 rules per question**: the
+store held no knowledge, every recall returned nothing, and the arm labelled memory was the control arm
+with an HTTP façade in front of it. The cause was one string. τ²'s Python half is a litellm caller and
+names its model `deepseek/deepseek-chat`; the TypeScript client that distils the corrections read the same
+variable and posted that name to an endpoint that serves `deepseek-chat`, which refuses the prefixed form
+thirty-two times. The client did not count those refusals as failed prompts, because its counter moved only
+after four retries had been spent — so it reported *thirty-two prompts, zero failures* while storing
+nothing.
+
+**The instructive part is not the bug; it is which gates stayed quiet.** Two gates read exactly the numbers
+that would have explained the empty store — the distiller's failure count and the client's call tally — and
+both were **absent** from the artefact, because the driver computed them and wrote neither. A third,
+`V44-domain-accounted`, is a blocking gate that reconciles the store's ledger, and it **passed**, because
+its inequality is satisfied when there is nothing to reconcile. A reader of that pair saw eleven gates, one
+failure, and a story about a memory that did not help; the truth was a memory that was never there.
+
+**What changed as a result, and it is a product change rather than a benchmark one.** A model name is a
+boundary and is now translated where the endpoint is known, with both strings recorded. A prompt that was
+sent and refused is a failed prompt. A composition that was documented as a fallback now has one — the
+host's, conditional on the failure being this event's rather than the run's — and a run-ending failure stops
+the run at distillation instead of emptying a store quietly. The driver keeps the report it used to
+discard, so `V32` and `V8` fire. And the ledger gate requires a population, because an aggregate check over
+nothing is the one failure mode a gate cannot report about itself.

@@ -2339,3 +2339,91 @@ sentence had not, because a paragraph does not fail a build. The table is now `p
 recomputed on every push, and the claim it certifies — `core` names no database in code — is `V74`. That
 is the general lesson and this chapter has now recorded it in five different layers: **a number that is
 not recomputed is a number that is true until someone edits the code it describes.**
+
+### 34.13 An id that was only unique inside its scenario, and a bar from the wrong one
+
+R41 is the first round in this record whose *own code* produced two defects before the dispatch that
+would have exposed them, and both are the same species: a name or a number carried across a boundary
+that does not preserve its meaning.
+
+| # | defect | how it would have read | what caught it |
+|---|---|---|---|
+| 1 | τ² task ids are unique **inside a scenario**, not across two | a cross-domain arm's split and evaluation sets would intersect completely — both scenarios number their tasks from zero — and `V2-fold-partition` would report **every evaluated task as leaked** | writing the plan as a pure function with a disjointness property, then testing it with two scenarios that share task numbers |
+| 2 | the lane graded every arm against `pass^4 = 0.575`, which is a **τ²-retail** number | an airline arm's delta would have measured the difference between two scenarios and published it as the difference the memory made | reading the dispatch configuration against the lane's constant while preparing the run; the fix is `l4-scenario.ts`, and the artefact now carries `published_bar_applies: 0` |
+| 3 | a CI assertion pinned the number of modules that name a scenario only in prose (`23`) | adding a module that explains, in prose, what a scenario's rules do not transfer to failed a check that has nothing to do with coupling | the CI run on the commit that added this round's modules — the same class as the adapter line count corrected in the previous round's last commit (`c1ec5d8`: *"the adapter's line count is recomputed, so the assertion must not pin it"*), and the second time in two rounds |
+
+**The first defect is the one worth remembering, because nothing in the lane would have reported it.** A
+leak reported by `V2` is a *blocking* gate, so the run would have failed loudly; what it would have
+destroyed is the reader's trust in the projection, since the two sets are provably disjoint by
+construction and the gate would have said otherwise. The qualification (`retail/3`, `airline/3`) is
+applied where the result document is read, so the split, the pair and the ledger speak names that cannot
+collide; the driver re-checks disjointness immediately before it pays for the learning half, because a
+leak is the one defect in this lane that produces a number instead of an error.
+
+**The second is the error this record keeps finding in published comparisons, now made at home.** A
+leaderboard row is a number about one benchmark; a delta computed against it from a *different* benchmark
+is a difference between benchmarks wearing a capability's name. The rule that came out of it is narrow
+enough to be checkable — *a published number is a bar for the scenario it was published for* — and the
+artefact states which of the two it is (`published_bar_applies`) rather than leaving a reader to guess
+from a missing field.
+
+**The third is a repetition, and repetitions are the only evidence a process has.** The adapter's line
+count was pinned in `ci.yml` one round ago (§34.4) and the same shape reappeared for a prose count. The
+assertion now compares the walk to the committed snapshot, which is what it was always for: the check
+exists so that a *silent* divergence fails, not so that a legitimate addition does.
+
+### 34.14 Four gates that read a store nobody built, and the name that crossed a boundary
+
+R41 is the first round in this record where the *result* was a defect in the instrument rather than in the
+hypothesis, and the defect is the one this chapter has been circling since §29.3: a lane reported a number
+about a treatment that was not applied. The memory arm's store held no knowledge, so its pack was empty
+for all 200 recall requests, and the arm spent thirty-nine minutes being the reference arm.
+
+**Four defects, and each one is a reading that existed and did not reach a gate.**
+
+| # | defect | where the reading lived | what the record said instead |
+|---|---|---|---|
+| 1 | the distiller's model id is litellm's `deepseek/deepseek-chat`; `api.deepseek.com` serves `deepseek-chat` and answers **400** to the prefixed form | `LlmClient` knew both strings and posted the wrong one | `stored 0`, no reason |
+| 2 | a refused request was not counted as a failed prompt: `failures` moved only after four attempts were spent, and a 400 is not retried | `LlmClient.stats` | `prompts: 32, failures: 0` — the best reliability claim available, about thirty-two refusals |
+| 3 | `combineInterpreters` runs every interpreter and stops at the first that throws, so the rule interpreter never ran; its docstring called the second argument a "fallback" | the composition | nothing: `distill` counted 32 failed events and returned |
+| 4 | `V44-domain-accounted` passed on `0 <= 0` | the ledger gate | a **blocking** gate certified a store with no items in it |
+
+**The fourth is the one to keep.** The first three are ordinary: a name that means one thing to a router
+and another to an endpoint, a counter that only moves on one of two failure paths, a docstring that
+described an intention rather than the code. The fourth is a *gate* — blocking, published, part of the
+thirty-nine the protocol claims are recomputable — and it was satisfied by an empty population. `V44` asks
+whether every domain-free item either arrived without a domain or lost it to a widening, and with zero
+items every side of the inequality is zero. **`every` over nothing is true, and the aggregate form of it is
+an inequality over nothing**, which is the same vacuity the chapter recorded for `V6` and `V7` — except
+that those two are *reported* as vacuous by the lane's own audit and `V44` was not.
+
+**The three fixes, and why each is at the layer it is.**
+
+- **The name is translated at the client** (`restModelOf`), not at the workflow. The workflow could have
+  set a second variable and left both strings to a reader; the client knows which endpoint it posts to, so
+  it is the only layer that can say what that endpoint serves. The list is one alias wide
+  (`deepseek`) and everything else is left alone: `openai/gpt-4o` and `deepseek-ai/DeepSeek-V3` are names
+  of other things, and mangling them would report a provider mismatch for a configuration that chose
+  differently. The artefact records both — `configuredModel` and `model` — so a reader can see the
+  translation rather than infer it.
+- **A prompt that was sent and refused is a failed prompt**, on both terminal paths. The counter was not
+  wrong about what it measured; it was measuring one of two ways a prompt ends badly and being read as if
+  it measured both.
+- **The fallback is the host's decision, not the combinator's** (`resilientInterpreter`). A blanket
+  "run the rules when the model fails" is a *different treatment* — a pack of generic negative lessons
+  graded as a pack of distilled procedures — so the fallback here is conditional: a failure of this event
+  falls through and is counted, a failure of the *run* (`stoppedRun`: budget, provider, deadline, config)
+  is rethrown and stops the run before an hour of evaluation is spent on a pack that does not exist.
+
+**And the driver keeps its diagnostics.** `DistillReport.failed`, `.candidates`, `.events`, and
+`LlmClient.stats.prompts`/`.failures` now reach the arm record, which is what makes `V32` and `V8` fire at
+all — both were *absent* on R41, and absent is a gate a reader cannot argue with. The call tally carries a
+`scope` (`run` | `distillation`) because the episodes' calls belong to the agent process and the
+distillation calls are the driver's own: a rate over a subset is a rate over a subset, and the artefact
+says which.
+
+**The boundary lesson, in the form this chapter keeps re-learning.** §34.11 recorded a schema question
+answered by arithmetic; §34.13 recorded an id that was unique inside a scenario and a bar that belonged to
+another; this section records a *model name* that was correct in one client and wrong in the other. In each
+case the value was right where it was written and wrong where it was read, and in each case the fix was to
+name the boundary rather than to correct the value.

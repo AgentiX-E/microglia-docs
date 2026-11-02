@@ -553,6 +553,7 @@ own 24.86pp deficit and moves the remaining work to the candidate pool, the sele
 | Context poisoning: Ω(√log N) margin in the effective distractor count | secondary analysis of a softmax-retrieval abstraction | **low — preprint summary, primary not read; the shape is what R16 uses, not the constant** |
 | Lost in the middle: mid-context evidence can fall below closed-book | Liu et al., 2024 (TACL) | high — widely replicated; placement is fixed in every arm here |
 | MemHarness: reconstruction between retrieval and action, GRPO-trained, reported to reduce negative transfer and beat static-memory baselines out of distribution | arXiv 2607.28272 | medium — mechanism and abstract read; the training half is out of scope here, the inference-time half is not |
+| τ²-bench airline/retail pass^4 rows (IBM learned guidelines 82.0 / 67.5; SapientAI 72.0 / 72.8; RAFT-30B-A3B 61.4 retail; ALTK-Evolve 57.5 retail; stock `llm_agent` gpt-oss-120b 34.0 / 27.2) | the τ²-bench leaderboard's submissions and their trajectory repositories, read 2026-11-02; the IBM numbers are **open PRs expected to be listed Unverified**, and its retail guidelines were learned from a train split the base split includes | medium — two of the five rows are unverified submissions and one of those discloses train/base overlap; the ALTK-Evolve row is the number this lane registered against, not the board's current top |
 | MeClear: cooperative Shapley attribution + LOO screening for negative downstream utility, query-scoped clearance, 82.3% task recovery | arXiv 2609.09115 | **low — secondary summary read; the primary has not been read and no number from it is used, only its mechanism** |
 | ε-MemEvo: adaptive injection gate, naive injection fails catastrophically while gated injection is safe across five ablations. | arXiv 2608.12522 | medium — abstract and ablation summary read; the setting is program evolution rather than SQL, so only the gate's *shape* transfers |
 | Raw-RAG: naive dense retrieval over raw history ranks first in 6 of 7 settings, +0.13 to +5.53 over the strongest agentic memory, and complete access to the transformed store still trails raw evidence | arXiv 2610.30755 | medium — abstract and the evidence-coverage argument read; no number re-run here, and the four benchmarks are conversation tasks rather than SQL |
@@ -1198,3 +1199,65 @@ worth more than one that survives a reviewer**, and the difference between the t
 **Where microglia sits, in one line.** Nowhere on the leaderboard — 20.86pp behind the SOTA on BIRD dev —
 and the only entry in this document whose architecture claim is enforced by three blocking gates rather
 than asserted in a paragraph.
+
+## Appendix L — The axis the leaderboard actually scores, and the competitor whose thesis is ours (2026-11-02)
+
+**Why a second benchmark changes the ranking question.** BIRD is single-shot: one question, one statement,
+one execution. τ²-bench is an agent loop with a user simulator, tools and a policy — the setting this
+library claims to be *for*. R41 ran the first arm on that axis (learn τ²-retail, answer τ²-airline), so the
+comparison table can now be read against the benchmark whose shape matches the product rather than against
+the one whose shape matches the adapter.
+
+**The τ²-bench table moved, and it moved a long way from the number this project registered.**
+
+| entry | airline pass^4 | retail pass^4 | note |
+|---|---|---|---|
+| **IBM Research, learned guidelines** | **82.0** | **67.5** | leaderboard PRs opened 2026-09; guidelines learned from a retail *train* split that the base split includes (disclosed); expected to be listed Unverified |
+| SapientAI-Agent-Opus-5 (claude-opus-5 / gpt-5) | 72.0 | 72.8 | custom scaffold, four trials, published trajectories |
+| RAFT-30B-A3B | — | 61.4 | fine-tuned on synthetic τ²-retail data |
+| ALTK-Evolve | — | 57.5 | **the bar this project registered against** (`PUBLISHED_PASS4`) |
+| stock `llm_agent`, gpt-oss-120b | 34.0 | 27.2 | the same stock agent this lane runs, one model family down |
+| **microglia, memory arm (R41)** | **36.0** | — | stock `llm_agent`, deepseek-chat, 50 tasks × 4 trials, **store empty — see below** |
+| **microglia, reference arm (R41)** | **46.0** | — | same episodes, no store |
+
+**Two things in that table matter more than the gap.** The first is that `PUBLISHED_PASS4 = 0.575` is no
+longer the leaderboard's top: it is the number that was published when this lane registered its bar, and the
+artefact says `published_bar_applies: 0` on any scenario other than retail precisely so a stale snapshot
+cannot be read as a ceiling. The second is that **the top entry's thesis is this project's thesis** — learned
+guidelines, no weight updates, no human annotation, a stated +10 accuracy points and +15 pass^4 points on
+τ²-retail — which makes it the most relevant competitor datum in this document and the one that most
+deserves the caveats it carries.
+
+**What its disclosure says, read as a measurement rather than as a claim.** The retail submission states
+that its guidelines were learned from a retail train split **that the base evaluation split includes**, in
+the same breath as reporting pass^4 67.54 over 114 base-split tasks. That is not necessarily a leak — the
+τ² base split is defined to contain train tasks — but it does mean the number is a *closed-book-on-a-subset*
+figure, and the leaderboard's own "Unverified" label is the right reading of it. The airline submission has
+no such overlap available (50 tasks, no train split to learn from), and reports 82.0. **The difference
+between the two submissions is exactly the difference this project's transfer arm exists to measure**, which
+is why R41's four transfer gates were the ones worth porting to a second scenario.
+
+**What microglia publishes that nothing in this table does.** Every row above is a pass^k and a cost. No
+entry publishes whether the treatment was applied: a pack's mean size, whether the store held anything, how
+many repairs came from the pack rather than from the retry, or a ledger pairing each episode against the
+same episode without the treatment. R41 published all four — and reported, against its own interest, that
+its memory arm's **store was empty for all 200 recall requests**, which is why `36.0` is not a reading about
+memory. The gate that caught it (`V1-pack-not-empty`) is blocking, and the four gates that should have
+explained it were absent from the artefact until R42 made the driver write them.
+
+| quantity | microglia | the field |
+|---|---|---|
+| gate that fails when the treatment was not applied | **`V1`, blocking** | not reported |
+| paired per-episode ledger, holes included | **`V33`, 200/200 rows** | not reported |
+| net marginal effect with its own repair/break counts | **`V17`, −5.00pp** (and the pack was empty) | not reported |
+| sample resolution, stated with the delta | **`V5`, 16.81pp at n=50** | rarely reported |
+| leaderboard bar bound to the scenario it was measured on | **`published_bar_applies`** | not reported |
+
+**Where microglia sits, on the axis the product is for.** **36.0 against a leaderboard top of 82.0** on
+τ²-airline, and the honest label on that number is *void*: the arm it came from had no store, so it measures
+the reference arm with an HTTP façade. **The comparable number is 46.0** — the same episodes with no memory
+at all — which puts this lane 36 points behind the airline top before any treatment is applied. That gap is
+a statement about the agent, not about the memory: the lane runs τ²'s stock agent on a single model with no
+scaffold work, and the entries above it are scaffolds. What the project can claim, and what this appendix
+records, is that its apparatus is the only one in the table that can say *whether* a treatment was applied
+— and that it said so about itself.

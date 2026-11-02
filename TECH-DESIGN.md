@@ -5422,3 +5422,153 @@ overhead consumed a 250 ms budget and a correct answer was reported as `deadline
 readiness message before it registers its statement handler, `#ask` awaits it, and the clock starts at the
 statement. The wait is unbounded by the deadline on purpose: instrument overhead is not statement time, and
 a lane's accuracy must not be a function of how busy the machine was.
+
+### 17.78 The cross-domain arm: a plan, an episode ledger, and a bar that belongs to a scenario
+
+**The shape.** R29 stage 1 made the τ² driver record what the protocol's gates read. Stage 2 runs the arm
+those gates exist for: learn from τ²-retail, answer τ²-airline, score the same episodes without the store.
+Four modules carry it, and each is pure so that a dispatch tests the environment rather than the
+arithmetic.
+
+| module | input | output | why it is separate |
+|---|---|---|---|
+| `tau2-plan.ts` | the two scenarios' task ids, a share, two caps | the learn half and the held-out half, with every id qualified | the disjointness and the identity of a task are invisible from outside a run that costs an hour |
+| `tau2-transfer.ts` | both arms' per-episode verdicts | `TransferGateInput` plus the ledger | the four transfer gates read one reading, and the mapping from two verdicts to four counts is the part that can be wrong |
+| `tau2-instrument.ts` | what the driver observed | the arm record | a mapping inside a driver can only be tested by buying a dispatch |
+| `l4-scenario.ts` | the scenario the arm answered | whether a published bar applies, and the split floor | a bar from another scenario is a category error, not a strict test |
+
+**`heldOutPlan` has two shapes and one invariant.** On one scenario the pool is split by share; across
+two, the learned half is the learn list and the held-out half is the whole evaluation list, because a
+store that never saw the scenario has nothing to hold back. The invariant is the same in both: the two
+halves do not intersect. The driver re-checks it immediately before paying for the learning half — a leak
+is the one defect in this lane that produces a number instead of an error.
+
+**Ids are qualified where the result document is read.** τ² numbers its tasks from zero inside every
+domain, so a bare `3` names two different tasks in two scenarios. `airline/3` cannot. The qualification
+happens at the boundary (`scoredArm`), so the split, the pair and the ledger all speak the same names, and
+`V2-fold-partition`'s leak count becomes a statement about the run rather than about the naming.
+
+**The transfer unit is the episode, and the treatment is the pack.** BIRD's trial is one rule pointed at
+one foreign question with a counterfactual call beside it; τ² has neither, so the pair is
+`(reference verdict, memory verdict)` for one `(task, trial)`, with the verdict being τ²'s own
+`reward == 1`. The arithmetic is `transferSummary` — the function the SQL lane publishes through — and
+the reading it produces is narrower than BIRD's in a way the artefact states:
+
+```
+informative  the control arm failed, so the pack had something to repair
+broke        the control arm passed and the treatment failed
+unmeasured   either verdict is null (τ² writes null for an infrastructure failure)
+ledger       one row per episode, holes included, so every count can be recomputed from the file
+```
+
+**`V15` on this lane is a reconciliation and it is honest about that.** `unmeasured + blankRight +
+informative = trials` holds by construction when the summary and the ledger are built from one list of
+episodes, which is exactly what it would not do if the ledger were assembled somewhere else — the defect
+`V33` was written after. The gate is therefore cheap on τ² and it is not vacuous: it fails a summary that
+dropped a category, which is what a hand-built artefact does first.
+
+**The bar is a pair of numbers, not one.** `l4-scenario.ts` carries ALTK-Evolve's `pass^4 = 0.575` **and
+the scenario it was measured on**. On τ²-retail both are used; anywhere else the artefact reports
+`published_bar_applies: 0`, omits the leaderboard gate, and says in a note that the comparison it supports
+is the paired one. The split floor moves for the same reason: `60` was chosen for retail's 68-task
+held-out half, and a dispatch that answers a 50-task scenario states its own floor (`TAU_MIN_TASKS`).
+
+**Recall scope is the treatment, not a setting.** Items carry the scenario they were learned in and recall
+filters by it, so a `retail` store serves an `airline` question with nothing unless the facade asks in the
+store's own terms (`TAU_RECALL_DOMAIN`, defaulting to the learned scenario). The three names — learn,
+answer, recall — are recorded in the arm artefact, because a reader has to be able to tell a foreign pack
+from a pack the scenario filter emptied.
+
+**Interfaces.** No new package edge: everything here is `eval` reading `protocol`'s `TransferGateInput`.
+The dispatch is unchanged in kind — the same `sota.yml` job, the same two arms — and the scenario pair
+lives in repository variables rather than in the dispatch menu, because the menu is capped at twenty-five
+inputs and an experiment's scenario is a property of the experiment, not of the dispatch.
+
+### 17.79 The model name is a boundary, and a driver keeps the diagnostics it can see
+
+**The defect this section exists for.** R41's memory arm stored nothing, and the reason was one string.
+τ²'s Python half is a **litellm** caller: it names its model `deepseek/deepseek-chat`, and the workflow
+passes that name in `TAU_MODEL` because the Python side needs it in that form. The TypeScript client that
+distils the corrections reads the same variable and posts to `api.deepseek.com/chat/completions`, whose
+`model` field is `deepseek-chat`. The prefixed form is refused with a **400**, which the client does not
+retry — correctly, since a rejected request is not a transient one — and `distill` counts a refused event
+as "nothing to learn from this correction". Thirty-two corrections, thirty-two refusals, an empty store.
+
+**Where the translation belongs.** At the client, not at the workflow, and not at the call site. The
+workflow does not know which endpoint a variable will be read by; the call site knows even less. The
+client knows the endpoint it posts to, which makes it the only layer that can say what that endpoint
+serves:
+
+```
+restModelOf(configured) -> { sent, stripped? }
+  'deepseek/deepseek-chat'    -> 'deepseek-chat'      (stripped: 'deepseek')
+  'deepseek-chat'             -> 'deepseek-chat'
+  'openai/gpt-4o'             -> unchanged            (not this endpoint's alias)
+  'deepseek-ai/DeepSeek-V3'   -> unchanged            (a name, not an alias)
+  ''                          -> MG_E_CONFIG
+```
+
+**One alias wide, on purpose.** A rule that strips everything before the first `/` would send `gpt-4o` to
+a DeepSeek endpoint, and the resulting "model not found" would describe a configuration that had named
+another provider deliberately. The list is `{deepseek}` and it is a translation table, not a heuristic.
+`LlmClient` keeps both strings — `configuredModel` and `model` — and the artefact records both, so the
+translation is visible rather than inferred from a working run.
+
+**A prompt that was sent and refused is a failed prompt.** `failures` moved only when four attempts had
+been spent, so a provider that rejected every request outright reported `prompts: 32, failures: 0` — the
+strongest reliability claim the lane can make, about thirty-two refusals. The counter now moves on both
+terminal paths; what differs between a 400 and an exhausted 429 is whether the run continues, not whether
+the prompt failed. `TAU_DISTILL_MODEL` exists as an override for a caller that wants to state the REST id
+outright, and an empty value is read as unset: a workflow variable that is not configured renders as `''`,
+which `??` would have kept.
+
+**The composition was called a fallback and was not one.** `combineInterpreters` runs every interpreter it
+is given and stops at the first that throws. Its docstring called the second argument a "generic
+fallback", which is what this lane read; the code had never implemented one. The two extreme repairs are
+both wrong: a store emptied by an outage is the R41 defect, and a store filled with generic negative
+lessons under an outage is worse, because it grades as a memory that ran. So the fallback is the host's
+policy and it is conditional:
+
+```
+resilientInterpreter(primary, fallback, { fatal = stoppedRun })
+  primary answers              -> its candidates
+  primary throws, fatal        -> rethrow           (the run stops)
+  primary throws, not fatal    -> count it, fallback answers
+  fallback throws too          -> rethrow the primary error
+```
+
+`stoppedRun` is the predicate that separates "this call failed" from "the run is over": budget exceeded,
+provider failed after the breaker opened, deadline passed, and refused configuration (no credit, a model id
+the endpoint does not serve). Those four rethrow. `MG_E_STORE_IO` — one prompt that failed after every
+attempt — does not, because that is exactly the case the caller's `try` exists to absorb. The predicate
+lives in `eval/stopped-run.ts` now that two lanes need it; the SQL lane had its own copy.
+
+**The driver keeps what it can see.** Four readings lived in the driver's process during R41 and reached
+no artefact, which is why an empty store had no explanation anywhere in the record:
+
+| reading | source | gate it feeds |
+|---|---|---|
+| `learning.distillFailed` | `DistillReport.failed` | `V32-fold-learning-intact` |
+| `learning.candidates` / `.events` | `DistillReport` | separates "interpreter produced nothing" from "the store admitted nothing" |
+| `learning.llmFailed` | `resilientInterpreter.faults()` | how much of the pack came from the rule fallback |
+| `calls.{calls, failures, scope}` | `LlmClient.stats` | `V8-call-reliability`, over a stated population |
+
+**`calls.scope` is the honest part of that table.** The episodes' calls happen in the agent process and
+arrive as a turn count that τ² does not always report; the distillation calls are this process's own. A
+rate over a subset is a rate over a subset, and the alternative — reporting nothing — is how a run whose
+every distillation prompt was refused reached a reader as a store that had nothing to say. `V8` now fires
+on the subset, and the artefact says which subset it is.
+
+**And the ledger gate requires a population.** `V44-domain-accounted` read
+`storedWithoutDomain <= unscopedIn + widenedIn`, which is satisfied by an empty store, and it is
+**blocking**. The criterion now includes the population — `stored > 0 &&` — and the `actual` string says
+`the store holds no item, so there is no ledger to account for` when there is nothing to reconcile. This
+is the third form of the same vacuity this document has recorded (`V6`, `V7`, and now `V44`): an aggregate
+check whose aggregate is empty. The first two are *reported* as vacuous by the lane's audit; a shared gate
+has no such report, so the floor is in the criterion.
+
+**Interfaces.** No new package edge. `restModelOf` is exported from `eval/model-client.ts`, so a caller can
+ask what a name will become without constructing a client; `resilientInterpreter` and `stoppedRun` from
+`eval/tau2-distill.ts` and `eval/stopped-run.ts`. The protocol package changes in one place — the `V44`
+predicate and its two strings — and every BIRD artefact still validates, because the population term is
+satisfied by every store that has anything in it.
