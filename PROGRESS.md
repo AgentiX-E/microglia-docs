@@ -8692,6 +8692,68 @@ the run it replaces.
 Sealed by 2,572 tests (40 new), four coverage dimensions at 99.98 / 99.66 / 100 / 99.98 with the new
 module at 100% on all four, 24 new CI assertions, and three gates (`V59`–`V61`).
 
+## 151 — The pack size was the questions, and removing an item is not a subtraction
+
+**The lead R35 registered was already measured, and the measurement says no.** R35 left one number above
+zero: questions whose pack held a single rule outscored questions whose pack held two by **+4.03pp
+[+0.76, +6.62]** on the train corpus and +3.13pp on dev, recorded as a lead because retrieval assigns pack
+size. The arm that assigns it has existed since R25 — `full-one`, the same retrieval cut to its first item,
+on every question — and R25 reported it as a *dose control* rather than as a test. Re-read as the test:
+
+| | value |
+|---|---|
+| `full-one` − `full`, dev, clustered by database | **−0.33pp [−1.65, +1.25]**, 42 gained / 47 lost, p = 0.6718 |
+| the lane's own `arm_pairs` entry for the same pair | −0.33pp, 42/47 — the recount agrees to a hundredth of a point |
+| R35's observed contrast on the same split | +3.13pp [+0.87, +5.23] recomputed at the default 2,000 resamples |
+| clearance of the 1-item pack / of the 2-item pack | **0.672** / **0.737**, on a hurdle of 1.335 |
+
+**Where the +3.13pp came from, in one table.** The two populations differ in break rate, not in repair rate:
+
+| pack | questions | repaired of repairable | broken of breakable |
+|---|---|---|---|
+| one rule | 401 | 18 of 189 (**9.5%**) | **9 of 212 (4.2%)** |
+| two rules | 1,133 | 42 of 468 (**9.0%**) | **52 of 665 (7.8%)** |
+
+Singleton questions are questions where the store had one relevant thing to say, and a store that says one
+thing breaks half as often. Handing the second population the first population's pack size does not hand it
+the first population's break rate — it hands back 27 breaks and 23 repairs at the same time.
+
+**The result that outlives the sign: the pack is not additive.** The arms differ by one rule, so the
+contrast decomposes into four cells, and two of them point the other way:
+
+| the question was… | pair right | pair wrong | |
+|---|---|---|---|
+| one the bare model missed | 23 | 15 | the second rule repairs 23, and **prevents 15** the single rule would have repaired |
+| one the bare model answered | 24 | 27 | it **prevents 24** breaks, and causes 27 |
+
+The second rule's own record is 23 repairs against 27 breaks — **0.85 per break**, a net harm, which is
+exactly what R35's contrast appeared to license removing. It also prevents 15 repairs and 24 breaks: the
+first rule answers differently when it is alone in the block. The four cells sum to the measured −5
+questions, and that identity is a unit test rather than a remark. **So "how many rules fit" is not a dial:
+the marginal item's effect depends on which items are already there**, and every knob that moves the count —
+a character budget, a top-k, a density threshold — is tuning an interaction it cannot see.
+
+**Two defects found on the way, both recorded rather than smoothed.**
+
+1. **The dev archival manifest never declared its nested archive.** `dev.zip` ships `dev_databases.zip`
+   inside `dev_20240627/`, and `bird-dev.json` named the outer archive's root and nothing about the nest. A
+   dev dispatch therefore downloaded 346 MB, verified the digest, unpacked a directory holding only a zip,
+   and failed on the first question — the failure the manifest field exists to prevent, in the one split
+   that had never been through the code path that reads it. Fixed, pinned by a test that states all three
+   splits' layouts, and turned into a single pre-flight that names the missing field (`AUDIT` §34.1).
+2. **R35's published dev interval was computed at 400 resamples.** The point estimate reproduces exactly
+   (+3.13pp) and the upper bound to 0.004pp; the lower bound is +0.62 in `ROADMAP.md` and +0.87 here,
+   because that one row was produced at a fifth of the resample count the rest of the round used. Nothing
+   in R35's conclusion turns on it, and the row is restated at the default (`AUDIT` §34.2).
+
+**What it closes.** Both of R35's remaining levers were designs. The item count is now measured at
+**0.672 clearance against 0.737**, and it does not pay. What is left is the **grain** at which memory is
+written — and the four-cell decomposition says why that is the right place to look: if removing one item
+changes what another does, the unit that matters is what the item *is*, not how many of them fit.
+
+Sealed by 2,605 tests (33 new), four coverage dimensions at 99.98 / 99.66 / 100 / 99.98 with the new
+module at **100% on all four**, 20 new CI assertions, and two gates (`V62`–`V63`).
+
 ## What is left, in order (current)
 
 **Every question this page has been organised around is now answered, and §150 answered the last one without a model call.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), the gate's benefit shrinks to half while the product stops paying (§147), the check is differential and cannot stand alone (§148), and the question §148 left open — whether a *weaker injection* exists — turned out to be the wrong question: the memory is 43% short of break-even, and the half that could have been rescued, the population, cannot be selected by anything measurable before generation (§149). **Nothing ships, and the reason is now five-layered rather than one.** §150 added the fifth layer and it is the strongest: the store's items have no per-item value that transfers, so the store cannot be pruned by evidence either. What is left is one arm that would settle the only positive lead, one blocked measurement, and eight mechanical or blocked items.
@@ -8707,7 +8769,7 @@ module at 100% on all four, 24 new CI assertions, and three gates (`V59`–`V61`
 | 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |
 | 8 | **S1a — ambiguity on public annotations** | unblocked and unbuilt. §146 makes it *less* urgent than §145 thought: ambiguity was refuted as the mechanism, so this is now a product feature rather than an explanation | — |
 | 9 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 10 | **S3 — the SOTA push** | entry condition restated by §150, and for the fourth time narrowed: not "does the mechanism help", not "does an injection exist", not "can the store be pruned", but **"does one rule per prompt exchange better than two when pack size is assigned rather than observed"**. Five routes that keep the corpus fixed are now measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149), the store's items (§150) | **R36** — one dispatch with the pack set to a single rule, which halves prompt tokens |
+| 10 | **S3 — the SOTA push** | **closed for the fifth time, and the entry condition was the answer.** §151 measured one rule per prompt *assigned* rather than observed: −0.33pp [−1.65, +1.25], clearance 0.672 against 0.737, and the marginal item's four cells show the pack is not additive. Six routes that keep the corpus fixed are now measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149), the store's items (§150), the item count (§151) | nothing on the count axis; one design lever left — the **grain** of a memory write |
 | 11 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 12 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 

@@ -5113,3 +5113,48 @@ cast a `boolean` predicate forced on its callers. Making `usable` a type predica
 (`entry is LedgerCase & { packIdList: readonly string[] }`) deleted five casts and one dead guard at once;
 `AUDIT` §33.2 records the family. The one genuine gap — the `high < 0` arm of `excludesZero` — needed a
 corpus where the pairs beat the singles, and got a test rather than a comment.
+
+### 17.73 The assignment instrument: two arms, four cells, and an identity that makes the decomposition checkable
+
+The ledger instrument (§17.72) measured a contrast on questions retrieval *happened* to serve one rule. The
+assignment instrument measures the same contrast on questions the experiment assigns one rule, which is the
+difference between a correlation and a mechanism. It is one module, `packages/eval/src/assignment.ts`, and
+three decisions in it are worth recording.
+
+**1. The arm is a truncation of the pack, not a second retrieval.** `full-one` is built from the pack `full`
+carries — `makePack(pack.items.slice(0, 1), { budget: pack.budget })` — so the two prompts differ in one
+field. A second recall would have put retrieval noise inside a comparison that is about a budget, and the
+artefact records the evidence: 1,133 of 1,534 prompts (73.9%) differ and none carries more than one item
+(`V49`). `V62` re-checks it through `singleSlotOf`, which reads the lane's own count when the artefact has
+one and falls back to the lane's gate when it does not — the R25 artefact predates the count, and the gate is
+the same check stated as a verdict.
+
+**2. Two intervals, one of them the decision.** `comparePaired` gives the exact McNemar p and a per-question
+bootstrap; `clusterBootstrapCI` resamples databases, because questions inside a schema share a model, a
+vocabulary and a retrieval index. Both are reported and the registration reads the clustered one, which is
+wider by 0.09pp on the lower bound here (−1.65 against −1.56). The point of reporting both is that the
+difference is the cost of the cluster, and a reader can see it rather than take a claim on trust.
+
+**3. The four cells, and the identity that binds them.** The contrast decomposes by the base each question
+sits on — repairs are defined on questions the bare model missed, breaks on questions it answered — and each
+arm can win either. The four counts satisfy
+
+```text
+  (repairsGained + breaksSaved) − (repairsLost + breaksGained) = correct(removed) − correct(kept)
+```
+
+which is `netChange === gained + lost`'s signed sum, and it is asserted as a unit test rather than computed
+twice. A decomposition without an identity is a table; with one it is a check on the arm itself, and it is
+what turns "the second item carries 23 repairs and causes 27 breaks" into a statement that cannot be true of
+a broken reading.
+
+**Gates and cost.** `V62-assignment-instrument` and `V63-assignment-reproduces-the-lane`; the second compares
+this module's contrast against the lane's own `arm_pairs` entry to a hundredth of a point and on both
+discordant counts, which is how a reimplementation of one arithmetic is prevented from being a second
+opinion. The module is at 100% on all four coverage dimensions and the command makes no model call, so the
+instrument can run on every push (`pnpm eval:pack-assign`, 20 CI assertions).
+
+**What it cannot do.** It cannot answer whether one rule *should* be shown — only whether removing the second
+one helps — and it cannot see the counterfactual for a question whose pack was empty. Both limits are stated
+in the artefact rather than in a comment, because the next round's arm will be designed by someone reading
+the artefact.

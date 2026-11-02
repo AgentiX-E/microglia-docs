@@ -1931,3 +1931,78 @@ corpus effect.** No assertion over a committed artefact can answer that, because
 which questions a retrieval threshold happened to serve one rule — a fact the artefact records but does
 not control. That is why the pack-size result is registered as a lead and why the next step is an arm
 rather than another reading.
+
+## 34 — The defect the dispatch found, and the interval nobody recomputed
+
+Two defects surfaced while preparing R36. One of them stopped a run before its first model call; the other
+had been in a published table for two rounds and was invisible because the number looked plausible.
+
+### 34.1 `bird-dev.json` never declared that its databases are nested
+
+`dev.zip` contains five files and one of them is `dev_databases.zip`. The lane reads the archive's layout
+from the manifest — `nested` names the inner archive, `nestedRoot` the directory it unpacks to — and the
+dev manifest, the only one that had never been through the code path that reads those fields, had neither.
+The consequences were precisely ordered and all of them expensive:
+
+| step | cost paid before the failure |
+|---|---|
+| download | 346 MB |
+| digest | SHA-256 over 346 MB |
+| unpack the outer archive | 347 MB on disk |
+| unpack the nested archive | **never attempted** |
+| first question | `MG_E_STORE_IO: No database file for 'california_schools' under BIRD_DIR` |
+
+The error message was already specific — it names the database, the directory it looked under and the three
+roots it tried — and that is exactly why it took a second read to see that the answer was not in the
+directory at all. **A message that names the missing file invites a search; the missing field was in a
+manifest two directories away.**
+
+Three changes, none of which is a patch:
+
+1. The pair is declared (`dev_databases.zip` → `dev_databases`), which is the fix.
+2. A test states the layout of all three splits as data — minidev: none, dev: `dev_databases.zip`, train:
+   `train_databases.zip`. The regression is a missing field, so the test that catches it has to be a
+   statement about fields rather than a run. **The reason this test did not exist is that the manifest tests
+   checked the fields the code read; this one checks the fields the archive needs.**
+3. The lane verifies the extraction once, immediately after unpacking, against the eleven databases the
+   manifest promises, and refuses with the field name in `hint`. Eleven failures inside a fold loop become
+   one before it.
+
+**Why the R25 dev run passed.** It ran before the extractor was changed to read the layout from the
+manifest — the previous version hard-coded `dev_databases.zip`, and the commit that moved the name into the
+manifest for the train split did not add it to the dev one. A refactor that generalises a constant is a
+refactor that has to re-check every value it used to hold; this one checked the archive it was written for
+and not the one it had already worked on.
+
+### 34.2 R35's dev interval was computed at 400 resamples, and the round elsewhere used 2,000
+
+Recomputing R35's dev cell for R36 gave **+3.13pp [+0.87, +5.23]** where `ROADMAP.md` publishes
+**+3.13pp [+0.62, +5.23]**. The point estimate agrees to every digit it has, the upper bound to 0.004pp, and
+the lower bound differs by 0.25pp — the signature of a resample count, not of a different corpus:
+
+| resamples | low | high |
+|---|---|---|
+| 400 | +0.625 | +5.226 |
+| 2,000 (the module default) | +0.866 | +5.226 |
+| 10,000 | +0.872 | +5.377 |
+
+Nothing in R35's conclusion turns on the difference — the interval excludes zero at every one of the three
+— and that is exactly why it survived: **a published number that agrees with its neighbours in sign and
+size is not checked against its own method.** The class is `§32`'s (a bar that does not move when its inputs
+do), with a different mechanism: here the *procedure* varied while the number stayed plausible.
+
+The fix is structural rather than a correction: the default lives in one place (`assignmentOf` and
+`packSizeOf` both default to 2,000 and 13,579), the artefact records what it was computed at, and R36's CI
+assertion pins the interval to twelve decimal places, so a future change of resample count fails the build
+instead of publishing a narrower interval.
+
+### 34.3 What this round's gates can and cannot catch
+
+`V62` is an instrument check (one item at most, the split, the changed share) and `V63` is an agreement
+check (this module against the lane's own `arm_pairs`). Together they make the reading hard to fake and they
+would have caught a silent divergence between two implementations of one contrast.
+
+Neither can catch the thing R36 is actually about. An arm that is measured correctly can still be the wrong
+arm: `full-one` is a truncation of *this* retrieval's order, and a store whose first item is chosen
+differently would answer a different question. That is why the round reports the four marginal cells rather
+than a single delta — a delta can be right about an arm and wrong about the mechanism.

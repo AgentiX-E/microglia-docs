@@ -3532,16 +3532,37 @@ ever had: one rule per prompt halves the prompt tokens of the run it replaces.
 an exploratory pass, so P2, P3 and P7 are replications rather than predictions and only P1, P4, P5 and P6
 were blind. `AUDIT.md` §33.1 records the cost; §33.2 records four branches that no input could reach.
 
-### R36 — one rule per prompt, assigned rather than observed (**registered next**, one dispatch)
+### R36 — one rule per prompt, assigned rather than observed (**read** 2026-11-02, one dispatch in flight)
 
 **The question.** Does the pack-size contrast survive assignment? R35 measures it on questions retrieval
-happened to serve one rule; those questions are harder (47.3% unanswerable by the bare model against
-41.4%), and every 350-question pilot reverses the sign. An arm that sets the pack to one rule on the same
-split, against the bare arm already paid for, separates the mechanism from the corpus.
+happened to serve one rule; an arm that sets the pack to one rule on the same split separates the mechanism
+from the corpus.
 
-**Design sketch.** `sota.yml` on the dev split (1,534 questions) with the pack capped at one rule; the
-bare arm is cached, so the cost is one generation per question — about half the prompt tokens of the R25
-run on the same split. Registered outcomes: the exchange rate inside the arm against 0.789, the repair and
-break rates against the 8.10% / 4.59% break-even targets, and the net against the 2.67pp admission
-ceiling. **A null result closes the last lever; a positive one is the first result in this programme that
+**What was already paid for.** The arm has existed since R25: `full-one` is the same retrieval, the same
+order, the first item and no second one, on every question, built from the pack `full` carries so the two
+prompts differ in one field. R25 reported it as a dose control. R36 reads it as a test, and adds the two
+readings R25 did not have — each arm's exchange rate against the bare model's odds, and the four cells that
+say what the second item is actually worth.
+
+**Result — the lead does not survive, and the reason is the round's finding.**
+
+| | value |
+|---|---|
+| `full-one` − `full`, clustered by database | **−0.33pp [−1.65, +1.25]**, 42/47, p = 0.6718 |
+| R35's observed contrast, same split | +3.13pp [+0.87, +5.23] |
+| clearance, one rule / the pair | **0.672** / **0.737** on a hurdle of 1.335 |
+| the second item | 23 repairs, 27 breaks (0.85), **and 15 repairs / 24 breaks prevented** |
+
+Singleton questions repair at the same rate as pairs (9.5% against 9.0%) and break at half of it (4.2%
+against 7.8%); that break-rate difference *is* the +3.13pp. The four marginal cells are the result that
+outlives the sign: **removing an item is not a subtraction**, because the remaining item answers differently
+alone — 15 repairs and 24 breaks move the other way, so the pack is not additive and the item count is not a
+knob.
+
+**Two defects found on the way.** The dev manifest never declared its nested archive, so a dev dispatch
+downloaded 346 MB and failed on the first question (`AUDIT` §34.1); and R35's dev interval had been computed
+at 400 resamples where the round used 2,000 (`AUDIT` §34.2). Both fixed, both pinned.
+
+**Cost.** The adjudication is zero model calls; the replication is one `sota.yml` dispatch at 6,136 calls,
+half of R25's, and it is registered as P5.
 a competitor's number could be compared to.**

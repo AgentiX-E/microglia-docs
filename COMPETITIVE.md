@@ -905,3 +905,69 @@ competitor's number could be put beside directly.
   ledgers, and apply Spearman–Brown. If the number comes back near zero, the pruning is decoration; if it
   comes back high, this round's negative is a property of *this* store rather than of the method, and the
   difference between the two is what a benchmark of memory quality should be measuring.
+
+## Appendix G — The item count, assigned instead of observed (2026-11-02)
+
+**The leaderboard did not move.** AskData remains SOTA at **83.40 test / 78.49 dev**; microglia's no-memory
+cell is **57.63 dev** on the same split, a 20.86pp gap that is a generator-and-pool difference (§2) rather
+than a memory effect, and it is **not ranked**. What this round settles is the one number in this programme
+that had been positive, and the outcome is that it was a property of the questions.
+
+### The contrast, assigned
+
+| | value |
+|---|---|
+| observed: singleton-pack questions against pair-pack questions (dev) | **+3.13pp [+0.87, +5.23]** |
+| assigned: one rule for every question against the retrieved pack | **−0.33pp [−1.65, +1.25]**, 42/47 |
+| clearance of the 1-item pack / the 2-item pack | **0.672** / **0.737**, hurdle 1.335 |
+| the second item's own record | 23 repairs, 27 breaks (0.85 per break) |
+| the second item's cross-terms | **prevents 15 repairs and 24 breaks** |
+
+### What the literature predicts, and what it gets here
+
+| system | mechanism | reported | our test of the same mechanism |
+|---|---|---|---|
+| **Adaptive-RAG** (Jeong et al., 2024, NAACL) | route on query complexity, then choose how many retrieval rounds | beats single-round RAG on multi-hop sets | the nearest proxy — pack size 1 against ≥ 2 — is **−0.69pp** as a gate (§149) and **−0.33pp** as an assigned arm |
+| **Zhou et al., “What makes good in-context examples”**; **Lu et al., 2022** | more demonstrations dilute attention; order and selection swing accuracy | large effects on classification and QA | the same *sign* is not reproducible here: the second rule is a net harm on its own record (0.85) and the pack still cannot be improved by removing it |
+| **Elazar et al., “the ICL paradox”** | more demonstrations make the model less attentive to the query | demonstrated across model families | our second rule **prevents 15 repairs and 24 breaks** the first rule would otherwise have made — attention dilution would have to predict a *sign change* in the remaining item, and it does not |
+| **ACE** (Zhang et al., 2025) | curator prunes bullets on helpful/harmful counters | shipped as the maintenance mechanism | a prune needs per-item value, which §150 found has a reliability of −0.31; this round adds why: **items are not separable**, so a per-item counter is measuring an effect that depends on its neighbours |
+| **SKR / Self-RAG / CRAG / SIM-RAG** | decide *whether* to retrieve, or score each passage | large gains | refuted for this store in R34 (62.4% precision against a 47.64% bar, −0.05pp) |
+
+**Why the same mechanism pays there and not here, in one sentence.** Their retrieved unit is a passage that
+carries a missing fact, so the marginal passage either supplies the fact or is inert; ours is a rule that
+changes how the query is written, so the marginal rule changes what the first rule does — and a unit whose
+effect depends on its neighbours cannot be counted, budgeted or pruned as if it were independent.
+
+### The measurement no competitor has published
+
+Every system that reports "we retrieve top-k" reports a k chosen on a validation split, and the choice is
+almost always justified by the aggregate. The aggregate is compatible with three different worlds: items that
+add, items that interfere, and items that are simply selected by a threshold the way ours were. **The
+four-cell decomposition separates them**, and its identity — the four cells sum to the measured delta — is
+what makes it checkable rather than anecdotal:
+
+```text
+  the question was …            pair right   pair wrong
+    bare model wrong                    23           15
+    bare model answered                 24           27
+  net of the second rule: +23 +24 −15 −27 = +5 questions
+```
+
+A system that reports k on a validation split can run the same decomposition for one afternoon's compute and
+learn which of the three worlds it is in. If the cross-terms are zero, its k is a real knob. If they are not
+— as here, where they are 54% of the marginal item's gross effect — its k is an interaction it cannot see,
+and its ablation table is measuring an artefact of the order its retriever produced.
+
+### Where microglia stands, as a rank rather than a vibe
+
+- **On the BIRD leaderboard: not ranked.** 57.63 dev against AskData's 78.49; nothing in this round touches
+  the gap, which is the generator and the pool.
+- **On the memory-mechanism axis: the only entry whose published numbers are negative out of sample**
+  (−0.71pp, §146), whose best selective-retrieval gate is indistinguishable from zero (+0.11pp of a 2.67pp
+  ceiling, §149), whose per-item ledger has negative reliability (R35), and now **whose only positive
+  contrast reverses under assignment** (R36).
+- **What it has that the table does not:** the exchange-rate arithmetic (repairs ≥ 8.10% at fixed breaks, or
+  breaks ≤ 4.59% at fixed repairs, against a 1.393 hurdle), the assignment test, and the four-cell
+  decomposition with an identity. Those three are the parts a competitor could adopt tomorrow and the parts
+  that would tell them whether their own memory pays — none of which requires this project's store, corpus or
+  model.

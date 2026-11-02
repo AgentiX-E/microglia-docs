@@ -2565,3 +2565,45 @@ Resourcing: one engineer for P0–P1 (done/funded), one engineer + one evaluator
 
 *Next: `TECH-DESIGN.md` for the package layout, API, algorithms, security model, evaluation protocol,
 POC results, and the gap register.*
+
+### 3.6.31 The pack size was the questions, and removing an item is not a subtraction
+
+The previous section left one number standing above zero: questions whose pack held a single rule outscored
+questions whose pack held two by **+4.03pp [+0.76, +6.62]**, recorded as a lead because retrieval assigns
+pack size and the singleton questions are harder. Settling it needed an arm that assigns pack size. The arm
+existed — R25 had built `full-one` as a dose control, the same retrieval cut to its first item on every
+question — so the test cost nothing but a reading.
+
+**It reverses.** On the same 1,534 dev questions, `full-one` against `full` is **−0.33pp [−1.65, +1.25]**
+clustered by database, 42 gained against 47 lost. The +3.13pp on that split was a difference between two
+populations that a threshold created, and the difference is entirely in the break rate:
+
+| pack | questions | repaired of repairable | broken of breakable |
+|---|---|---|---|
+| one rule | 401 | 18 of 189 (9.5%) | **9 of 212 (4.2%)** |
+| two rules | 1,133 | 42 of 468 (9.0%) | **52 of 665 (7.8%)** |
+
+A question the store has one relevant thing to say about is a question where a note of either length is
+worth the same and costs less. Handing the pair population the singleton population's pack size does not
+hand it the singleton population's break rate.
+
+**The finding that outlives the sign is that the pack is not additive.** The arms differ by one rule, so the
+contrast decomposes into four cells, and two of them point the other way:
+
+| the question was… | pair right | pair wrong | |
+|---|---|---|---|
+| one the bare model missed | 23 | 15 | the second rule repairs 23, and prevents 15 the single rule would have repaired |
+| one the bare model answered | 24 | 27 | it prevents 24 breaks, and causes 27 |
+
+The second rule's own record is 23 repairs against 27 breaks — **0.85 per break**, a net harm, which is
+precisely what the observational contrast appeared to license removing. It also prevents 15 repairs and 24
+breaks, because the first rule answers differently when it is alone. The four cells sum to the measured −5
+questions, and that identity is a unit test rather than a claim. **An item's effect is a function of the
+items beside it**, so no budget, top-k or density threshold can be tuned by asking how many items fit — and
+the exchange rate agrees from its own side: the pair clears **0.737** of the bare model's 1.335 hurdle, the
+single rule clears **0.672**.
+
+**What this does to the product claim.** Both levers R35 left open were designs. The item count is now
+measured and it does not pay. The grain at which memory is written is the only one left, and this section is
+the argument for taking it seriously: if removing an item changes what the remaining item does, then what
+matters is what an item *is*, not how many of them a prompt can hold.
