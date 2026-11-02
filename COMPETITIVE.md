@@ -998,3 +998,66 @@ is separable from noise on either draw. **The publication standard this suggests
 alongside the k and its validation score, the fold-by-fold sign of the marginal item *and* its interval, on
 two store draws if the store is stochastic. If no fold decides, the k is a coin; if a fold decides on both
 draws, the k is a knob and the ablation is worth reading.
+
+## Appendix H — The grain: what every system stores, and the statistic none of them publish (2026-11-02)
+
+**The leaderboard did not move.** AskData remains SOTA at **83.40 test / 78.49 dev**; microglia's no-memory cell is
+**57.63 dev** on the same split, and it is **not ranked** — the 20.86pp gap is generator and pool (§2), untouched by
+anything here. What R37 tests is the one design dimension the whole comparison has been holding fixed without saying
+so: **what a memory item is.** Every system in §3 stores statements, and R37 asks whether it should store terms.
+
+### The unit of memory, by family
+
+| family | the unit it writes | retrieved by | can its unit refuse to apply? |
+|---|---|---|---|
+| Mem0, LangMem, ACE-style playbooks | a fact, preference or insight, in prose | embedding similarity to the query | **no** — a statement has no referent, so it applies wherever it is read |
+| ExpeL, Reflexion, Voyager skill libraries | an insight or a reusable procedure distilled from trajectories | similarity, or a task description | **no** — same reason |
+| Agent Workflow Memory, A-MEM | a workflow or a linked note | similarity, plus links | **no** — links widen the set, they do not license an item |
+| Graphiti / Zep-style temporal graphs | an **entity** and its edges, with a name | embedding, graph traversal, recency | **partly** — an entity has a referent, but nothing forces the query to contain its name, so the graph can speak about an entity the question never mentions |
+| **microglia R37 (`full-lexicon`)** | `{term, statement}`, term copied from the question that taught it | **the term itself** | **yes, by construction** — write-time `admitLexicon`, read-time `lexiconPackOf`, and `V64` re-reads the rendered lines |
+
+The graph family is the closest prior and it is the one worth being precise about: an entity node is exactly the
+right *object*, and R37's finding is about the object, not the storage. What the graph systems do not have is the
+**licence** — the two predicates that make "the query contains this name" a precondition rather than a retrieval
+preference. A licence is what lets a definition be checked against the question in front of the reader, and it is
+also what makes the representation's coverage measurable.
+
+### The number that is missing from every ablation table
+
+R37's arm is licensed and reached **132 of 1,534 questions (8.6%)**; on those, 179 entries distilled from 547
+corrections and carried 13 distinct terms the corpus repeats. Against the rule grain it reads **−0.59pp
+[−2.09, +0.91]**, and against no memory **+0.13pp [−0.59, +0.85]** — and the honest reading of both is that they
+are deltas on a twelfth of the split, so neither can be about the representation.
+
+**That is the statistic the field does not publish.** A system that stores entities, terms, tags or keys reports an
+end-to-end delta and a retrieval precision; it does not report **the share of the evaluation set on which its unit
+could apply at all**. Without that number the delta has an unknown denominator, and a reader cannot tell a weak
+mechanism from an unexercised one — which is precisely the ambiguity R37's registration was written to pre-empt, by
+fixing a 25% floor before the run and naming the outcome *inconclusive by feasibility* rather than a refutation.
+
+### The publication standard this suggests
+
+Three columns beside any memory ablation, and none of them costs a model call:
+
+1. **Reach** — the share of the evaluation set on which the memory rendered anything, plus the concentration (our
+   132 covered questions are 81% accounted for by two terms).
+2. **Licence rate** — of the lines rendered, the share whose key actually occurs in the question it was shown for.
+   Ours is **132 of 132**; a system whose keys are entities selected by similarity will not be near 100%, and the
+   gap between those two numbers is the size of the dose nobody intended to give.
+3. **The exchange rate against the bare model's own hurdle** — repairs per break divided by the model's base odds
+   (1.335 on BIRD dev). A delta without it cannot distinguish a memory that helps from a prompt that perturbs.
+
+### Where microglia stands, as a rank rather than a vibe
+
+- **On the BIRD leaderboard: not ranked.** 57.63 dev against AskData's 78.49, and this round changes nothing about
+  the generator or the pool.
+- **On the memory-mechanism axis: the seventh negative, and the first that is about the corpus.** Six routes closed
+  with the corpus held fixed — content, quantity, the filter, the population, the store's items, the item count —
+  and now the object itself, which is the last one an ablation table can vary. **A distilled memory pays only where
+  the same words come back**, and on independently written questions they do not: 13 terms from 179 entries, 8.6%
+  reach.
+- **What it has that the table does not:** the licence predicate, the reach statistic, the exchange-rate arithmetic
+  and the four-cell decomposition with an identity. Any of the four is adoptable tomorrow by a system with a
+  different store, corpus and model, and each one tells its owner whether the memory is paying rather than whether
+  it is retrieving.
+

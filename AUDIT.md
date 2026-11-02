@@ -2164,3 +2164,58 @@ coverage on four dimensions, and the dispatch is then evidence about the environ
 depends on whether upstream's `SimulationRun` exposes its messages; every read in `diagnostics_of` is wrapped so
 that a renamed field becomes "not observable" instead of a failed run. If it cannot, stage 1 supplies four gates
 rather than five, and R29's first prediction is refuted in the direction it was written to detect.
+
+### 34.9 A reading named after a subset, and three other ways R37 would have shipped a number it did not measure
+
+R37 measured one variable — what a memory item *is* — and the arm's own artefacts were right. Everything that went
+wrong went wrong in the layer between the artefact and the sentence a reader would quote from it. Four defects,
+each with the check that caught it, because three of the four were caught only because the check was run locally
+before the push rather than by any reasoning about the code.
+
+| # | defect | how it read | what caught it |
+|---|---|---|---|
+| 1 | the covered-subset exchange rate was computed over the whole split | `onCovered.repaired = 17`, `broken = 15` — the 1,534-question reading — under a name and a sentence that both said "on the questions it reached", where the true counts are 5 and 4 | the CI assertion, written before the reader was finished, asserted `helped === 5 && harmed === 4` from `per_case` and the regenerated artefact contradicted it |
+| 2 | a second `exchangeOf` was written into `lexicon.ts` | identical arithmetic to `admission.ts`'s, over a different cell shape, tested in the new test file and therefore plausible | `tsc`: duplicate identifier at the package boundary, which is the only surface where a bin's copy meets the package's original |
+| 3 | the CI step's independent licence re-check could not parse | `SyntaxError: Invalid regular expression` — the step threw before asserting anything | running the step locally; in CI it would have failed the build on a green artefact, and the failure message would have named a regex rather than the licence |
+| 4 | the ledger's family count and two assertions disagreed | `a.family.datasets === 17` and a statement containing "12 of the 17", against an artefact reading 18 and 6 positive | the ledger step, run locally after the new artefact entered the audit |
+
+**The first is the one worth reading, because the code was not wrong — the name was.** `coveredRead` was computed by
+an `exchange(...)` helper that took a cell-picking function and iterated `cases`. Called once with
+`(entry) => entry.arms['full-lexicon']`, it produced exactly the split reading, which is a correct number about the
+wrong population. The bug could not be found by reading the arithmetic; it could be found by asking what the field
+name promises and what the denominator actually is. The fix is structural rather than numeric: the row set became
+the argument (`readingOf(rows)`), two readings are published (`exchange.split`, `exchange.covered`), and an assertion
+pins each — 17 and 15 across the split, 5 and 4 on the 132 covered cells, with the hurdle moving from 1.328 to 1.063
+between them because the denominators differ. The adversarial test that would have caught it on day one is the one
+now in `admission.test.ts`: the same three repairs divided by two different hurdles read as 9.0 and 4.5.
+
+**The second defect is about the repository's shape rather than this round.** `bin/**` is excluded from coverage —
+it is top-level-await entrypoints — so a duplicated pure function inside a bin is tested by nothing and reviewed by
+nobody. The duplicate here was caught by the type system only because the package already exported the name. The
+rule that follows is narrow and worth keeping: **a bin may format, and may not compute.** Anything a bin computes
+that a reader would quote belongs in a module with the four coverage dimensions behind it. `termOfLine` moved into
+`lexicon.ts` under that rule, and `licensedLines` now calls it, so the gate and any later reading share one reader
+of the rendered format instead of two regexes that drift.
+
+**The third is the sharpest, because it was a check against trusting a gate and it was itself untrustworthy.** A
+GitHub Actions step is a shell script long before it is JavaScript: the licence re-check was a `node -e "…"` whose
+body built a `RegExp` from a string containing `\\p{L}` and `\\$&`, so bash consumed one level of escaping and node
+received a different expression than the one written — `[\\]\\]` and a bare `$&`. Two lessons, both mechanical: a
+Unicode property class does not belong inside a double-quoted shell string, and **an independent re-check that
+cannot run is worse than no re-check, because the workflow reports the step as failed rather than as absent.** The
+replacement matches tokens (`split(/[^a-z0-9]+/)`, an optional trailing `s`) and needs no escaping at all; it then
+verified 132 of 132 lines licensed without consulting `V64`.
+
+**The fourth is the general form of the first: a gate on a count has to be re-read whenever the set it counts
+grows.** Adding R37's artefact moved the pack-size family from 17 to 18 and from 5 positive to 6, and the ledger
+gate's own criterion ("at least fifteen committed artefacts") passed throughout, because it was written to survive
+growth. Two hand-written assertions were not. The asymmetric outcome is the point: the *artefact* was right, the
+*gate* was right, and the *assertions beside them* were stale — which is exactly the failure mode a gate is supposed
+to prevent, arriving in the layer that quotes the gate.
+
+**One docs defect, recorded because it is the same class.** `ROADMAP.md` ended with a one-line orphan — "a
+competitor's number could be compared to.**" — left behind when the table above it was rewritten. It closed a
+sentence that no longer existed, and it survived a commit because nothing reads prose for well-formedness. Removed
+in the same commit as §34.9, and noted here rather than quietly deleted: a repository whose argument is that every
+number should be recomputable also has to notice when a paragraph has lost its subject.
+

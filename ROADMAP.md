@@ -3579,4 +3579,53 @@ at 400 resamples where the round used 2,000 (`AUDIT` §34.2). Both fixed, both p
 **`learn_sample = 280`** that spent **4,970 calls** (run `41369849335`), half of R25's. The first attempt at
 it left `learn_sample` at its default of *all*, forecast 13,328 calls against a cap of 9,000, and stopped
 after fold 1 — recorded as `AUDIT` §34.4, because a cost that does not name its input is not a cost.
-a competitor's number could be compared to.**
+
+### R37 — the grain of a memory write: a term and its referent (**read** 2026-11-02, run `41381789619`)
+
+**The question.** Every route closed so far changed *which* sentences a prompt carried, how many, or what they
+were called. None changed what a memory item **is**. R37 asks whether the object itself is the lever: advice
+about how to build a query, or a term with a referent.
+
+**What was already paid for, on both sides of the comparison.** R23 priced the corpus's own object: BIRD attaches
+a curated definition to most dev questions, 142 characters mean, and removing it costs **17.01pp** (paired,
+clustered, n = 1,534). R30 priced ours in the same slot: **−0.71pp**, and R36 read −0.59pp on a re-draw. Two
+objects, one slot, and the difference is not authorship — the pack was written by a model that had seen the
+corrections a definition would summarise.
+
+**The arm.** `full-lexicon`: a second store distilled from the same corrections by the same client under a fourth
+form, where each item is `{term, statement}`. Two predicates make it a different object rather than a differently
+worded one. At write time `admitLexicon` refuses a candidate whose term does not occur in the question that taught
+it. At read time `lexiconPackOf` renders an entry only on a held-out question containing its term, matched on word
+boundaries with an optional plural and no substring matching, so `rate` cannot be licensed by `separate`.
+
+**Result — the grain is licensed and almost never renderable, and the first refutation clause fires.**
+
+| | value |
+|---|---|
+| entries distilled from 547 corrections | **179** (0.33 per correction), 13 distinct terms |
+| held-out questions the block rendered on | **132 of 1,534 (8.6%)**, two terms covering 107 |
+| `full-lexicon` − `full`, clustered | **−0.59pp [−2.09, +0.91]**, 65 gained / 74 lost |
+| `full-lexicon` − `none`, clustered | **+0.13pp [−0.59, +0.85]**, 17 / 15 |
+| clearance, across the split / on the 132 reached | **0.854** (17/15 on 1.328) / **1.176** (5/4 on 1.063) |
+| licence | **132 of 132 lines**, 0 unlicensed; the only refusals were 12 candidates with no term |
+
+The registration fixed a 25% reach **before** the run and said that failing it makes the round *inconclusive by
+feasibility* rather than a refutation. It failed, and the reason is arithmetic about the corpus: a definition is
+reusable only where a corpus reuses a phrase. 179 entries met 13 repeated terms, and 127 of the 132 covered
+questions already carried a curated definition from the benchmark itself, so the learned entry was a second copy
+of a hint the model already had. Two numbers bound any second round — the distiller's yield, which learning from
+every correction rather than 280 sampled questions could move, and the corpus's phrase reuse, which nothing this
+project can do moves.
+
+**What it closes.** The seventh and last design lever: what a memory item *is* has now been varied as far as an
+object can be — wording, count, filter, audience, payload, cardinality, type. **A distilled memory pays only
+where the same words come back**, and on independently written questions they do not.
+
+**Cost.** One `sota.yml` dispatch, **5,103 calls** against a 9,000 cap, two distillations per fold and three arms
+over 1,534 questions. The adjudication is zero calls: `pnpm eval:lexicon` recomputes reach, licence, both deltas
+and both exchange rates from the committed artefact, and CI asserts 17 of its fields beside the run's own 14.
+
+**Four defects, three of them in the reading rather than in the arm** (`AUDIT` §34.9): a covered-subset field
+computed over the whole split, a second copy of the repository's exchange arithmetic inside a bin, a CI re-check
+whose regex could not survive a shell's double quotes, and two ledger assertions that still counted 17 artefacts
+when there were 18.

@@ -8832,6 +8832,97 @@ repositories pushed, CI green on `0c6433e`. The replication is committed as the 
 per-case columns plus the full metadata — because the sandbox's GitHub route refuses a body above roughly 3 MB, and
 the projection was verified to produce a byte-identical reading.
 
+## 153 — The grain is not refused and not tested
+
+**R37 cost one dispatch and changed what a memory item is.** Six routes had been closed with the corpus held
+fixed and every one of them changed *which* sentences reached the prompt, how many, or what they were called:
+content (§145), quantity (§146), the filter (§147–§148), the population (§149), the store's items (§150), the
+item count (§151). This round changed the object. Instead of a sentence of advice about how to build a query, a
+**term and what it denotes**, retrieved by the term and rendered only on a question that contains it.
+
+**Why the grain was the right place to look, in one number the record already had.** BIRD attaches a curated
+definition to most dev questions — 142 characters, mean. Removing it costs **17.01pp** on the dev split, paired,
+clustered (§133). The rule pack on the same split costs **−0.59pp**. Two objects in one prompt slot, and the gap
+between them is not the author: the pack was written by a model that had seen the very corrections a definition
+would summarise.
+
+### What was built
+
+| piece | what it does |
+|---|---|
+| `packages/eval/src/lexicon.ts` | the recipe: a term is a phrase copied from the question (`termOf`), a term is found as words and not as a substring (`occursIn`), a definition is stored only if its term is in the question that taught it (`admitLexicon`), rendered only if the held-out question still contains it (`lexiconPackOf`), and every rendered line is re-read against that question (`licensedLines`, whose reader is now one exported `termOfLine` rather than a regex in two places) |
+| `distill-prompt/3` + form `lexicon` | a fourth form beside lesson, repair and procedure: one candidate, `payload.term` copied character for character, statement says what the term denotes, no query inside it |
+| arm `full-lexicon` | a second store over the same corrections, rendered under a heading that says what the block is, at the same 1,200-character budget, in the same position |
+| `V64-lexicon-is-licensed` | blocking: entries > 0, lines > 0, every rendered term readable, zero unlicensed — three ways to publish a clean null without measuring anything, and the gate refuses all three |
+| `V65-lexicon-is-feasible` | advisory, and the one that decides this round: the registration fixed a 25% reach in advance, and a reach of 8.6% makes the round inconclusive by feasibility rather than a refutation |
+
+### What the arm read
+
+**The grain is licensed and almost never renderable.** 179 entries were distilled from 547 corrections — **0.33
+per correction** — and those 179 carried **13 distinct terms** a held-out question repeats, so the block rendered
+on **132 of 1,534 questions (8.6%)**. Two terms account for 107 of the 132: `cards` (87) and `drivers` (20).
+
+| # | registered prediction | reading |
+|---|---|---|
+| P1 | the block renders on ≥ 25% of the split | **132 of 1,534 (8.6%)** — refuted, and the first refutation clause fires |
+| P2 | beats no memory, clustered | **+0.13pp [−0.59, +0.85]**, 17 gained / 15 lost — not met |
+| P3 | beats the rule grain by ≥ 1.0pp | **−0.59pp [−2.09, +0.91]**, 65 / 74 — not met |
+| P4 | exchange rate ≥ 1.335 | **0.854** across the split (17/15 on a hurdle of 1.328); on the 132 questions it reached, 5 repairs against 4 breaks, clearance **1.176** — not met on the reading the file fixed |
+| P5 | every shown term occurs in its question | **132 of 132 lines licensed**, 0 unlicensed, and the only refusals were 12 candidates with no term at all (`lexicon-no-term`), never a term the question lacked — **holds** |
+| P6 | cost within ±20% of `full` | 12 characters against 1,062 — 1.1%, so not met by construction |
+
+**The reason is arithmetic, and it is about the corpus rather than the distiller.** A definition is reusable only
+where the corpus reuses a phrase. 179 entries met 13 repeated terms, and 127 of the 132 covered questions already
+carried a curated definition from the benchmark itself, so the learned entry was a second copy of a hint the model
+already had. The two numbers that bound a second round are the distiller's yield (0.33 entries per correction,
+movable by learning from every correction rather than 280 sampled questions) and the corpus's phrase reuse (13
+terms from 179 entries, not movable by anything this project can do, because the questions are written
+independently and share no terms by design).
+
+**And the published readings now separate two exchange rates, because one arm has two denominators.** Across the
+split, 17 repairs against 15 breaks on a hurdle of 1.328 is the reading comparable to R21's bar and to R36's two
+rule arms; on the 132 questions the block actually reached, 5 against 4 on a hurdle of 1.063 is the only place a
+*rate* is about the grain rather than about the arm's coverage. Both are committed, and `pnpm eval:lexicon`
+recomputes them from the artefact with no model call — 17 assertions in CI.
+
+### Four defects, three caught before the push and one by the repository's own check
+
+**The reading was named after a subset and computed over the whole split.** `poc-lexicon.json`'s `onCovered`
+field read 17 repaired and 15 broken — the entire 1,534 — while the sentence beside it said "on the questions it
+reached" and the CI assertion, written first, said 5 and 4. The field was a copy of the split reading with a name
+that promised a filter. Fixed by making the row set the argument: two readings, `exchange.split` and
+`exchange.covered`, computed by the same function over different rows, and an assertion that pins each.
+
+**A second `exchangeOf` was written into `lexicon.ts` when `admission.ts` already had one.** The duplicate passed
+muster in isolation and was caught by `tsc` as a duplicate identifier at the package boundary — the only place it
+could be caught, since a bin is excluded from coverage. Deleted rather than renamed: the arithmetic was identical,
+so the honest fix was to call the tested one, and the two-readings property is now asserted on it in
+`admission.test.ts`.
+
+**The CI step's independent licence re-check could not run at all.** It built a `RegExp` from a string containing
+`\p{L}` and `\$&` inside a shell double-quoted `node -e`, so bash consumed one level of backslash and node
+received `[\]\]` and a raw `$&` — a `SyntaxError`, not a failing assertion. This is the step that was supposed to
+*not trust the gate*, and it would have failed the build on a green artefact. Replaced with a token match
+(`split(/[^a-z0-9]+/)` plus an optional plural), which needs no escaping at all; the step then reported 14 checks.
+
+**The ledger's family count moved and two assertions still said 17.** Adding R37's artefact made the pack-size
+family 18 of 18 with 6 positive, and the ledger gate's own criteria ("at least fifteen") still pass, so the
+artefact was right and the *assertion* was stale — `a.family.datasets === 17` and a statement containing "12 of the
+17". Both are rewritten, and the round is a reminder that a gate on a count is a gate that has to be re-read every
+time the set it counts grows (`AUDIT` §34.9).
+
+### What it changes about the product statement
+
+The product line closes on nothing shipping, and that sentence does not change. What changes is the *kind* of
+nothing: this is not "a distilled memory does not pay" and not "a definition is the wrong object". It is **a
+distilled memory pays only where the same words come back**, and on a corpus of independently written questions
+they do not: 8.6% reach against a 25% floor fixed before the run. The grain joins the six closed routes, and the
+seventh closure is the first one that is about the corpus rather than about the mechanism.
+
+Sealed by 2,658 tests across 129 files (35 in `lexicon.test.ts`, of which 5 are new for the shared line reader),
+four coverage dimensions at **99.98 / 99.67 / 100 / 99.98** with `lexicon.ts` at **100% on all four**, and two
+gates (`V64` blocking, `V65` advisory).
+
 ## What is left, in order (current)
 
 **Every question this page has been organised around is now answered, and §150 answered the last one without a model call.** The covariate reproduces (§146), the mechanism does not (§141, withdrawn in §146), the gate's benefit shrinks to half while the product stops paying (§147), the check is differential and cannot stand alone (§148), and the question §148 left open — whether a *weaker injection* exists — turned out to be the wrong question: the memory is 43% short of break-even, and the half that could have been rescued, the population, cannot be selected by anything measurable before generation (§149). **Nothing ships, and the reason is now five-layered rather than one.** §150 added the fifth layer and it is the strongest: the store's items have no per-item value that transfers, so the store cannot be pruned by evidence either. What is left is one arm that would settle the only positive lead, one blocked measurement, and eight mechanical or blocked items.
@@ -8847,7 +8938,7 @@ the projection was verified to produce a byte-identical reading.
 | 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |
 | 8 | **S1a — ambiguity on public annotations** | unblocked and unbuilt. §146 makes it *less* urgent than §145 thought: ambiguity was refuted as the mechanism, so this is now a product feature rather than an explanation | — |
 | 9 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 10 | **S3 — the SOTA push** | **closed for the fifth time, on two store draws.** §151 measured one rule per prompt *assigned* rather than observed: −0.33pp [−1.65, +1.25] on the first store and **−0.07pp [−1.34, +1.20]** on a second, clearance 0.672/0.737 and 0.708/0.721, the marginal item at 0.85 and 0.87 repairs per break, and no fold in either draw with an interval that excludes zero on both. Six routes that keep the corpus fixed are measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149), the store's items (§150), the item count (§151) | nothing on the count axis; one design lever left — the **grain** of a memory write |
+| 10 | **S3 — the SOTA push** | **closed for the sixth time, and the last lever was not a lever.** §151 measured one rule per prompt *assigned* rather than observed: −0.33pp [−1.65, +1.25] on the first store and **−0.07pp [−1.34, +1.20]** on a second, clearance 0.672/0.737 and 0.708/0.721, and no fold in either draw with an interval that excludes zero on both. §153 then measured the **grain** — a `{term, statement}` store instead of advice — and it reached 8.6% of the split: **−0.59pp [−2.09, +0.91]** against the rule grain, **+0.13pp [−0.59, +0.85]** against no memory, licence 132/132. Seven routes that keep the corpus fixed are now measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149), the store's items (§150), the item count (§151), the grain (§153) | nothing. The seventh closure is about the corpus rather than the mechanism: 179 entries met 13 repeated terms |
 | 11 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 12 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 
@@ -8860,5 +8951,7 @@ measurably well is detect what the pack does (5.8% of clean questions acquire an
 critical path is no longer a decision — and it is no longer even a registration.** Item 10's entry condition is now a statement about the store, and the store has been the ceiling since R13: 22 of 100 admitted rules, 24 of 102 with no home database, and 19.5% of flagged names traceable to a rule. That is a different research programme, not the next iteration of this one, and starting it by pretending it is R35 would be the same error R33 made about shape 3. Items 4–5 are registered work that changes no claim. Three items wait on a decision (6, 10, 11), two on an artefact that does not exist (7, 9), one on a toolchain (12). **Nothing on this page is waiting on an idea, and nothing is waiting on compute except items 4 and 10.**
 
 **And §150 removed the item that was supposed to be next.** The critical path after §149 was "target the store"; the store turned out to be unprunable by evidence, and what survives is not a store question at all but a **usage** question — how many rules a prompt carries — with one number in its favour (+4.03pp [+0.76, +6.62] on 7,000 questions) and one condition against it (negative on every 350-question pilot, so its sign tracks the corpus). That is exactly the shape of question an arm answers and no further reading of committed artefacts can.
+
+**And §153 closed the seventh route, by arithmetic rather than by argument.** The grain was the last design lever with a number behind it — the benchmark's own definitions are worth +17.01pp in the same slot where our rule pack costs −0.59pp — and it turns out not to be reachable: 547 corrections yielded 179 entries, those entries carried 13 distinct terms, and 13 terms reach 132 of 1,534 questions. A representation that renders on 8.6% of a split cannot be compared on that split, which the registration said *before* the run, so the outcome is inconclusive by feasibility and the lever is closed by the corpus's phrase reuse rather than by the mechanism's failure. What a memory item is has now been varied as far as an object can be varied: its wording, its count, its filter, its audience, its payload, its cardinality, and its type.
 
 **One thing this list no longer contains, and it should be said plainly.** For twenty rounds the plan was "measure the mechanism, then scale it". The mechanism has now been measured, out of sample, and it is a cost: memory makes the product worse, the filter makes it no worse, and the combination is a wash. Every item above is downstream of accepting that, including the ones marked "mechanical".

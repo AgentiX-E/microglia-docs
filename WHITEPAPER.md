@@ -2627,3 +2627,62 @@ decidable fold has nothing to calibrate against. That is the form of the argumen
 measured and it does not pay. The grain at which memory is written is the only one left, and this section is
 the argument for taking it seriously: if removing an item changes what the remaining item does, then what
 matters is what an item *is*, not how many of them a prompt can hold.
+
+### 3.6.32 The grain is a term with a referent, and the corpus decides whether it can be used
+
+The previous section ends on the only lever it left standing: if removing an item changes what the remaining
+item does, then what matters is what an item **is**. R37 changes exactly that and nothing else. The store holds
+`{term, statement}` pairs instead of sentences of advice, built from the same corrections by the same client
+under a fourth distillation form, rendered at the same budget in the same position.
+
+**Why the object should matter, in a number the record already had.** BIRD attaches a curated definition to most
+dev questions — 142 characters, mean — and removing it costs **17.01pp** on the dev split, paired, clustered
+(§3.6.7). Our rule pack on the same split is worth **−0.59pp**. The same slot, the same questions, two objects
+worth thirty times different amounts, and the gap cannot be authorship: the pack was written by a model that had
+seen the very corrections the definition would summarise.
+
+The difference is that a definition has a **referent**. Advice about how to build a query is applied wherever it
+is read, because a reader has no way to check it against the question in front of them; a definition names a
+thing, so it can only be shown where that name occurs. R37 encodes that as two predicates rather than as a style
+instruction: `admitLexicon` refuses a learned entry whose term does not occur in the question that taught it, and
+`lexiconPackOf` renders an entry only on a held-out question containing its term, matched on word boundaries with
+an optional plural and never as a substring — `rate` cannot be licensed by `separate`.
+
+**The arm is licensed and almost never renderable.**
+
+| | value |
+|---|---|
+| corrections distilled, entries written | 547, **179** (0.33 per correction) |
+| distinct terms among the 179 | **13** |
+| held-out questions the block rendered on | **132 of 1,534 (8.6%)** |
+| those reached by the two commonest terms (`cards`, `drivers`) | 107 of 132 |
+| rendered lines whose term was re-found in their own question | **132 of 132**, 0 unlicensed |
+| `full-lexicon` − `full`, clustered | **−0.59pp [−2.09, +0.91]**, 65 / 74 |
+| `full-lexicon` − `none`, clustered | **+0.13pp [−0.59, +0.85]**, 17 / 15 |
+| exchange rate across the split / on the 132 reached | 0.854 / **1.176** (5 repairs, 4 breaks) |
+
+**The registered outcome is that this is not a test of the grain.** The file fixed a 25% reach in advance and
+said that failing it makes the round inconclusive *by feasibility* rather than a refutation, so that a distiller
+that produced nothing retrievable could not later be read as evidence about the object. It failed by two thirds
+of the split, and the cause is arithmetic about the corpus rather than about the mechanism: a definition is
+reusable only where the corpus reuses a phrase. 179 entries met 13 repeated terms, and **127 of the 132 covered
+questions already carried a curated definition from the benchmark itself** — so where the arm could act at all,
+it was a second copy of a hint the model already had. Its own record on those 132 questions is 5 repairs and 4
+breaks, which resolves nothing.
+
+**What it closes, and what it leaves.** Every earlier round varied what a memory *says*; this one varies what it
+**is**, and the answer is that the object cannot be exercised on this corpus. The product statement becomes
+narrower and more useful than "distilled memory does not pay": **a distilled memory pays only where the same
+words come back.** Two quantities bound any further attempt, and only one of them is ours to move — the
+distiller's yield of 0.33 entries per correction could rise by learning from every correction instead of 280
+sampled questions, while the corpus's phrase reuse of 13 terms per 179 entries cannot move at all, because
+independently written questions share no terms by design.
+
+**A note on how the reading is published, because it is part of the result.** One arm has two legitimate
+denominators: the split, which is comparable to the hurdle R21 fixed and to the rates R36 measured on two rule
+arms, and the 132 questions the block reached, which is the only place a *rate* is about the grain rather than
+about coverage. Both are committed in `poc-lexicon.json` and recomputed by `pnpm eval:lexicon` with no model
+call. The first version of that reading carried the split's numbers under the name `onCovered`, which is the
+defect `AUDIT` §34.9 opens with: a correct computation about the wrong population, invisible to anyone reading
+the arithmetic and obvious to anyone reading the name.
+

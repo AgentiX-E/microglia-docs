@@ -5176,3 +5176,55 @@ replication and its paired folds).
 one helps — and it cannot see the counterfactual for a question whose pack was empty. Both limits are stated
 in the artefact rather than in a comment, because the next round's arm will be designed by someone reading
 the artefact.
+
+### 17.74 The lexicon instrument: one object, two predicates, and a reading whose denominator is its argument
+
+R37 needed a store whose items are `{term, statement}` and a gate that can tell whether the grain was applied.
+Both live in `packages/eval/src/lexicon.ts` — 350 lines, four coverage dimensions at 100% — and the reading lives
+in `packages/eval/src/bin/lexicon.ts`, which is formatting and no arithmetic.
+
+**The predicates, in the order they fire.** `termOf(payload)` normalises whitespace and refuses a half-sentence
+(`/[.;!?]{1}\s/`), with `MIN_TERM = 3` and `MAX_TERM = 80`. `occursIn(term, text)` is the one that decides
+whether the grain can act: word boundaries on both sides, an optional plural `s`, flexible internal whitespace,
+case-insensitive, and **never** a substring match — `rate` may not be licensed by `separate`. It is built as
+`new RegExp('(^|[^\\p{L}\\p{N}_])' + pattern + '(s?)(?=$|[^\\p{L}\\p{N}_])', 'iu')`, and the escaping is done
+inside the module, in TypeScript, where a backslash means what it says.
+
+`admitLexicon(candidate, question)` is write time and refuses in a fixed order — `no-term`,
+`term-not-in-question`, `looks-like-query` — so the reason reported is the reason the earliest clause found, and
+`screenLexicon` turns the counts into the `lexicon-<reason>` keys the fold record carries. `lexiconPackOf(entries,
+question, budget)` is read time: only entries whose term occurs in the question, longest term first, ties
+alphabetical, and an entry that does not fit is **dropped rather than truncated**, because a truncated statement is
+a different claim. `licensedLines(lines, question)` re-reads the *rendered* lines through `termOfLine`, the same
+reader the renderer's format implies, and returns `{checked, unlicensed}`.
+
+**The gate.** `lexiconGate(run)` emits `V64-lexicon-is-licensed`, blocking, with four clauses: entries > 0, lines >
+0, every rendered line carries a readable term (`checked === lines`), and `unlicensed === 0`. Three of them are
+ways the arm could publish a clean null without measuring anything — an empty store, a renderer that shows nothing,
+a store that is licensed and a renderer that ignores the licence — and the fourth is the invariant itself. The gate
+is emitted only when the `full-lexicon` arm ran, so `V64` never fires on an artefact that has no lexicon store, and
+`FoldResult.lexicon` is `(LexiconRun & {questions}) | null` for that reason.
+
+**The reading and its two denominators.** `pnpm eval:lexicon` reads
+`eval/results/poc-sota-bird-dev-R37-lexicon-grain.json` and writes `eval/results/poc-lexicon.json`: the reach ledger
+(corrections → entries → terms → covered questions, with the top five terms by question count and the count of
+covered questions that already had corpus evidence), the licence recomputed from `per_case[].injectedLexicon`, the
+two deltas, and **two** exchange readings — `exchange.split` and `exchange.covered` — computed by the repository's
+existing `exchangeOf` from `admission.ts` over two different row sets. The verdicts P1–P6 are fields of the
+artefact, written in code, so a reader cannot pick the clause that flatters the round; `V65-lexicon-is-feasible`
+carries the 25% reach the registration fixed and is **advisory**, because a representation that does not reach far
+enough is a fact about the corpus rather than a defect in the module.
+
+**Gates and cost.** CI runs the artefact's own 14 assertions and the reading's 17, and the reading is `diff`ed
+against the committed file, so a change in the arithmetic arrives as a diff rather than as a paragraph. Neither
+command makes a model call. `poc-lexicon.json` is 3 KB; the run artefacts are 4.5 MB and are committed as the full
+per-case projection because the sandbox's GitHub route refuses a body above roughly 3 MB.
+
+**What it cannot do.** It cannot measure a definition the question does not contain — that is the whole design, and
+it is why the round is inconclusive rather than negative. It cannot tell a definition from advice that carries a
+term: a model asked for a definition may return a rule with a `term` bolted on, which passes the licence and is
+still advice, so the store sample travels in the artefact for a reader rather than being adjudicated here. And it
+cannot separate the grain from its retrieval: a term memory is recalled by its term, which is part of what the
+grain is and also a second difference from the rule arm's relevance ranker. The next round that tries this should
+render the same entries under `full`'s recall and see how much of the effect was the retriever.
+
