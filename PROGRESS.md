@@ -8746,31 +8746,49 @@ a character budget, a top-k, a density threshold — is tuning an interaction it
    because that one row was produced at a fifth of the resample count the rest of the round used. Nothing
    in R35's conclusion turns on it, and the row is restated at the default (`AUDIT` §34.2).
 
-**Per fold, the cross-term does not keep its sign — and that is the stronger reading.** The store is
-distilled once per fold, so the four cells are five readings rather than one:
+**The replication, and the fold that looked decided.** The dispatch this round registered landed on a fresh
+store draw of the same split — 4,970 calls, `learn_sample = 280`, the same five folds — and it reads
+**−0.07pp [−1.34, +1.20]**, 38 gained against 39 lost. **P5 holds**: the upper bound is 0.80pp inside the 2pp
+bar the file fixed before the run. Every qualitative fact about the marginal item repeats too, which matters
+more than the pooled number:
 
-| fold | questions | repairs added | repairs given up | breaks added | breaks removed | net | Δpp |
-|---|---|---|---|---|---|---|---|
-| 0 | 307 | 5 | 7 | 4 | 6 | 0 | 0.00 |
-| 1 | 307 | 1 | 6 | 8 | 9 | −4 | −1.30 |
-| 2 | 307 | 5 | 4 | 4 | 7 | **+4** | +1.30 |
-| 3 | 307 | 2 | 3 | 4 | 0 | −5 | −1.63 |
-| 4 | 306 | 2 | 3 | 4 | 5 | 0 | 0.00 |
+| | first store (R25) | second store (R36) |
+|---|---|---|
+| `full-one` − `full`, clustered | −0.33pp [−1.65, +1.25] | **−0.07pp [−1.34, +1.20]** |
+| the second item's record | 23 repairs / 27 breaks (0.85) | **20 repairs / 23 breaks (0.87)** |
+| clearance, one rule / the pair | 0.672 / 0.737 | **0.708 / 0.721** |
+| prompts the arm actually changed | 73.9% | 76.2% |
 
-Each cell sums across folds to the pooled cell and the net column to the pooled −5, asserted at both
-levels. The pooled table supports "not additive" but leaves a retreat open: a cross-term can be
-non-additive and still stable, in which case a store could calibrate its own rule count and the lever would
-be a tuning problem. The per-fold table closes it — two folds are exactly flat and the three that move
-alternate **+4, −4, −5**, so there is nothing for a calibration to converge on. Zero model calls, one fold
-of work (`AUDIT` §34.5).
+**The per-fold table, read as pairs.** The split is seeded, so fold *k* is the same questions in both
+artefacts — 0 of 1,534 questions change fold — which turns the per-fold reading from an inference into a
+paired measurement:
+
+| fold | questions | first draw | second draw | sign kept | intervals span zero |
+|---|---|---|---|---|---|
+| 0 | 307 | 0 | −2 | — (zero first) | both |
+| 1 | 307 | −4 | −1 | yes | both |
+| 2 | 307 | +4 | +5 | yes | both |
+| 3 | 307 | **−5** [−2.55, −0.66] | −1 [−2.93, +2.06] | yes | first **no**, second yes |
+| 4 | 306 | 0 | −2 | — (zero first) | both |
+
+Three folds keep their sign, and the two that do not are exactly zero on the first draw and have none to
+keep. **So the per-fold sign is not drawn anew per store — and that was the sentence this page published an
+hour before the replication landed.** What the second draw does take away is the only thing a per-fold table
+exists to find: fold 3 is the single row in either draw whose interval excludes zero, and on the second store
+it covers zero. The corrected claim is narrower and just as final for the lever: **no fold in either draw
+produces an effect distinguishable from noise, and the one that appeared to does not on the second draw.** A
+quantity with no decidable fold cannot be calibrated — not because folds disagree, but because none of them
+decides. Recorded as `AUDIT` §34.6, together with the process failure that produced it: `foldsOf` shipped
+without the interval column that `assignmentOf` had been returning all along.
 
 **What it closes.** Both of R35's remaining levers were designs. The item count is now measured at
-**0.672 clearance against 0.737**, and it does not pay. What is left is the **grain** at which memory is
-written — and the four-cell decomposition says why that is the right place to look: if removing one item
-changes what another does, the unit that matters is what the item *is*, not how many of them fit.
+**0.672 clearance against 0.737** on one store and **0.708 against 0.721** on a second, and it does not pay
+on either. What is left is the **grain** at which memory is written — and the four-cell decomposition says
+why that is the right place to look: if removing one item changes what another does, the unit that matters is
+what the item *is*, not how many of them fit.
 
-Sealed by 2,610 tests (38 new), four coverage dimensions at 99.98 / 99.66 / 100 / 99.98 with the new
-module at **100% on all four**, 24 new CI assertions, and two gates (`V62`–`V63`).
+Sealed by 2,615 tests (43 new), four coverage dimensions at 99.98 / 99.66 / 100 / 99.98 with the new
+module at **100% on all four**, 32 CI assertions on the reading (8 new), and two gates (`V62`–`V63`).
 
 ## What is left, in order (current)
 
@@ -8787,7 +8805,7 @@ module at **100% on all four**, 24 new CI assertions, and two gates (`V62`–`V6
 | 7 | **`V46`/`V47` — gates that need the driver's transcript** | blocked on the driver handing its transcript to the gate layer | the driver |
 | 8 | **S1a — ambiguity on public annotations** | unblocked and unbuilt. §146 makes it *less* urgent than §145 thought: ambiguity was refuted as the mechanism, so this is now a product feature rather than an explanation | — |
 | 9 | **S1b — the private chart vocabulary** | blocked on the 1,300-case set, two annotators, κ ≥ 0.7 | the only part of S1 public data cannot substitute |
-| 10 | **S3 — the SOTA push** | **closed for the fifth time, and the entry condition was the answer.** §151 measured one rule per prompt *assigned* rather than observed: −0.33pp [−1.65, +1.25], clearance 0.672 against 0.737, and the marginal item's four cells show the pack is not additive. Six routes that keep the corpus fixed are now measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149), the store's items (§150), the item count (§151) | nothing on the count axis; one design lever left — the **grain** of a memory write |
+| 10 | **S3 — the SOTA push** | **closed for the fifth time, on two store draws.** §151 measured one rule per prompt *assigned* rather than observed: −0.33pp [−1.65, +1.25] on the first store and **−0.07pp [−1.34, +1.20]** on a second, clearance 0.672/0.737 and 0.708/0.721, the marginal item at 0.85 and 0.87 repairs per break, and no fold in either draw with an interval that excludes zero on both. Six routes that keep the corpus fixed are measured and closed: content (§145), quantity (§146), the filter (§147–§148), the population (§149), the store's items (§150), the item count (§151) | nothing on the count axis; one design lever left — the **grain** of a memory write |
 | 11 | **Cortex release (W1)** | excluded from this programme by the owner | a decision, not a task |
 | 12 | **vitest 4 (W2)** | blocked on the toolchain: it lands when vite 7 is the default | — |
 

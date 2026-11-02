@@ -2052,12 +2052,56 @@ cell (23, 15, 24, 27) and the net column sums to the pooled −5.
 because the second item's own record (23 repairs against 27 breaks) does not account for the contrast. It
 leaves a retreat open: a quantity can be non-additive and still *stable*, in which case a store could
 calibrate its rule count against its own folds and the lever would be a tuning problem rather than a closed
-one. The per-fold table closes that retreat, because the sign of the cross-term is drawn per store: two
-folds are exactly flat and the three that move alternate **+4, −4, −5**. There is nothing for a calibration
-to converge on.
+one. What closes that retreat is not the sign pattern of this one table — the wording here originally said
+the sign was *drawn per store*, and §34.6 shows that the folds are the same questions across draws, so the
+signs partly repeat — but the intervals: **every one of the five spans zero**, so there is nothing for a
+calibration to converge on.
 
 **Why this is an audit entry and not a footnote.** It is the third time in this programme that a pooled
 number has been the wrong unit — §141 withdrew a mechanism claim that a per-store reading dissolved, and
 §150 withdrew a per-item value that did not transfer between halves. §34.5 is the first time the per-store
 reading was available in the module *before* the pooled claim was published, and it is recorded because the
 cost of that ordering is one fold of work at zero model calls, against a retraction after publication.
+
+### 34.6 The fold that looked decided, and the wording that had already shipped
+
+R36's per-fold table was read and written into four documents — the pre-registration, `README.md`,
+`ARCHITECTURE.md` §8.11 and `PROGRESS.md` §151 — before the replication dispatch finished. The replication
+then landed, and it refuted not the result but **the sentence that described it**. This entry records both,
+because the ordering is the mistake and the correction is the lesson.
+
+**What was written.** *"Two folds are exactly flat and the three that move alternate +4, −4, −5, so the
+cross-term's sign is drawn per store."* That was inferred from one store's five folds, and it treats a fold
+as a fresh draw of the store. It is not: the split is seeded, so fold *k* is the **same questions** in every
+store draw — 0 of 1,534 questions change fold between the two artefacts — which makes the per-fold table a
+*paired* measurement rather than five independent draws.
+
+**What the pairing shows.**
+
+| fold | questions | first draw | second draw | sign kept | first spans zero | second spans zero |
+|---|---|---|---|---|---|---|
+| 0 | 307 | 0 | −2 | — (zero first) | yes | yes |
+| 1 | 307 | −4 | −1 | yes | yes | yes |
+| 2 | 307 | +4 | +5 | yes | yes | yes |
+| 3 | 307 | −5 [−2.55, −0.66] | −1 [−2.93, +2.06] | yes | **no** | **yes** |
+| 4 | 306 | 0 | −2 | — (zero first) | yes | yes |
+
+Three folds keep their sign and the two that do not are exactly zero on the first draw and have none to
+keep. So the sign repeats more than the original wording allowed. **What does not repeat is the only thing a
+per-fold table exists to find**: fold 3 is the single row in either draw whose interval excludes zero, and on
+the second store it covers zero. The fold that is positive twice (+4, +5) spans zero both times.
+
+**Why the corrected statement is still the final one for the lever.** *No fold in either draw produces an
+effect distinguishable from zero, and the one that appeared to does not on the second draw.* This is a
+different claim from "the sign is random", and it is the claim the data supports: a quantity with no
+decidable fold cannot be calibrated — not because folds disagree, but because none of them decides. The
+product consequence is unchanged (no rule-count setting, no prune), and its foundation is now a paired
+measurement instead of an inference from a single table.
+
+**The process failure, stated plainly.** The per-fold module was written because "a pooled number hides
+per-store variation"; it then reported five rows and no intervals, which hid the same thing at a smaller
+scale. The interval column existed in `assignmentOf`'s output the whole time and was simply not carried into
+`foldsOf`. Two additions follow from that, and both are in the module now: `foldsOf` carries
+`clusteredLowPp`/`clusteredHighPp`/`p` per fold, and `foldPairsOf` reports which side of a pair spans zero
+separately — a combined flag could not have said that the first draw decided and the second did not. A
+per-fold table without intervals is a table of temptation.

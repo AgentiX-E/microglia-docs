@@ -3532,7 +3532,7 @@ ever had: one rule per prompt halves the prompt tokens of the run it replaces.
 an exploratory pass, so P2, P3 and P7 are replications rather than predictions and only P1, P4, P5 and P6
 were blind. `AUDIT.md` §33.1 records the cost; §33.2 records four branches that no input could reach.
 
-### R36 — one rule per prompt, assigned rather than observed (**read** 2026-11-02, one dispatch in flight)
+### R36 — one rule per prompt, assigned rather than observed (**read and replicated** 2026-11-02, run `41369849335`)
 
 **The question.** Does the pack-size contrast survive assignment? R35 measures it on questions retrieval
 happened to serve one rule; an arm that sets the pack to one rule on the same split separates the mechanism
@@ -3559,20 +3559,22 @@ outlives the sign: **removing an item is not a subtraction**, because the remain
 alone — 15 repairs and 24 breaks move the other way, so the pack is not additive and the item count is not a
 knob.
 
-**Per fold, the cross-term does not keep its sign.** The store is distilled one fold at a time, so the same
-four cells read five times over are 0, **−4**, **+4**, **−5**, 0 — two folds exactly flat, the three that
-move alternating in sign. Each cell sums across folds to the pooled cell and the net column to the pooled
-−5. A pooled non-additivity still leaves a store free to calibrate its own rule count; a cross-term whose
-sign is drawn per store does not, and that is the form of the result that closes the count lever
-(`AUDIT` §34.5).
+**P5 held, and the per-fold table is a paired measurement.** The replication landed: **−0.07pp
+[−1.34, +1.20]** on a fresh store draw, 38/39, upper bound 0.80pp inside the 2pp bar this file fixed before
+the run. The marginal item repeats its record (20 repairs / 23 breaks, 0.87 against 23/27, 0.85) and one rule
+again clears less of the hurdle than the pair (0.708 against 0.721). The split is seeded, so fold *k* holds
+the same questions in both draws: three of five folds keep their sign, the two that do not are exactly zero
+on the first draw, and **the single fold whose interval excludes zero (−5, [−2.55, −0.66]) covers zero on the
+second draw at [−2.93, +2.06]**. No fold in either draw is distinguishable from noise, which is what closes
+the count lever — and it corrects the "sign drawn per store" wording this round first published
+(`AUDIT` §34.5–§34.6).
 
 **Two defects found on the way.** The dev manifest never declared its nested archive, so a dev dispatch
 downloaded 346 MB and failed on the first question (`AUDIT` §34.1); and R35's dev interval had been computed
 at 400 resamples where the round used 2,000 (`AUDIT` §34.2). Both fixed, both pinned.
 
-**Cost.** The adjudication is zero model calls; the replication is one `sota.yml` dispatch at
-**`learn_sample = 280`** for about 6,000 calls, half of R25's, and it is registered as P5. The first attempt
-at that dispatch left `learn_sample` at its default of *all*, forecast 13,328 calls against a cap of 9,000,
-and stopped after fold 1 — recorded as `AUDIT` §34.4, because a cost that does not name its input is not a
-cost.
+**Cost.** The adjudication is zero model calls; the replication was one `sota.yml` dispatch at
+**`learn_sample = 280`** that spent **4,970 calls** (run `41369849335`), half of R25's. The first attempt at
+it left `learn_sample` at its default of *all*, forecast 13,328 calls against a cap of 9,000, and stopped
+after fold 1 — recorded as `AUDIT` §34.4, because a cost that does not name its input is not a cost.
 a competitor's number could be compared to.**

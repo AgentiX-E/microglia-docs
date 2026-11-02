@@ -911,7 +911,10 @@ competitor's number could be put beside directly.
 **The leaderboard did not move.** AskData remains SOTA at **83.40 test / 78.49 dev**; microglia's no-memory
 cell is **57.63 dev** on the same split, a 20.86pp gap that is a generator-and-pool difference (§2) rather
 than a memory effect, and it is **not ranked**. What this round settles is the one number in this programme
-that had been positive, and the outcome is that it was a property of the questions.
+that had been positive, and the outcome is that it was a property of the questions — confirmed on a second
+store draw, which is the part competitors do not publish and cannot easily dismiss: a null measured once on a
+resampled store is a null with no error bar on its reproducibility, and this programme has been burned by
+exactly that before.
 
 ### The contrast, assigned
 
@@ -919,8 +922,9 @@ that had been positive, and the outcome is that it was a property of the questio
 |---|---|
 | observed: singleton-pack questions against pair-pack questions (dev) | **+3.13pp [+0.87, +5.23]** |
 | assigned: one rule for every question against the retrieved pack | **−0.33pp [−1.65, +1.25]**, 42/47 |
-| clearance of the 1-item pack / the 2-item pack | **0.672** / **0.737**, hurdle 1.335 |
-| the second item's own record | 23 repairs, 27 breaks (0.85 per break) |
+| the same arm on a second store draw (run `41369849335`) | **−0.07pp [−1.34, +1.20]**, 38/39 |
+| clearance of the 1-item pack / the 2-item pack | **0.672** / **0.737**, then **0.708** / **0.721** |
+| the second item's own record | 23 repairs, 27 breaks (0.85) — then 20 and 23 (0.87) |
 | the second item's cross-terms | **prevents 15 repairs and 24 breaks** |
 
 ### What the literature predicts, and what it gets here
@@ -978,16 +982,19 @@ Every system in the table above reports a k, and a k is a decision about an aver
 the cheapest possible audit of whether that average means anything: bucket the same cases by the fold each
 question was held out in and recompute the four cells. Ours, on one split of one store:
 
-| fold | questions | repairs added | repairs given up | breaks added | breaks removed | net | Δpp |
-|---|---|---|---|---|---|---|---|
-| 0 | 307 | 5 | 7 | 4 | 6 | 0 | 0.00 |
-| 1 | 307 | 1 | 6 | 8 | 9 | −4 | −1.30 |
-| 2 | 307 | 5 | 4 | 4 | 7 | **+4** | +1.30 |
-| 3 | 307 | 2 | 3 | 4 | 0 | −5 | −1.63 |
-| 4 | 306 | 2 | 3 | 4 | 5 | 0 | 0.00 |
+| fold | questions | first draw | second draw | interval excludes zero |
+|---|---|---|---|---|
+| 0 | 307 | 0 | −2 | neither |
+| 1 | 307 | −4 | −1 | neither |
+| 2 | 307 | +4 | +5 | neither |
+| 3 | 307 | **−5** | −1 | first only |
+| 4 | 306 | 0 | −2 | neither |
+| **pooled** | **1,534** | **−0.33pp** | **−0.07pp** | neither |
 
-Two folds flat, the three that move alternating **+4, −4, −5**. A k chosen on the pooled number would be a k
-fitted to the average of five signs, and every one of those signs is drawn when the store is built, not when
-the retriever runs. **The publication standard this suggests is one extra column**: alongside the k and its
-validation score, the fold-by-fold sign of the marginal item. If it alternates, the k is a coin; if it is
-stable and positive, the k is a knob and the ablation is worth reading.
+Our split is seeded, so fold *k* is the same questions in both draws and the table is paired: three of five
+folds keep their sign, and **the single fold whose interval excluded zero on the first draw covers zero on
+the second**. A k chosen on the pooled number would be a k fitted to an average of five numbers, none of which
+is separable from noise on either draw. **The publication standard this suggests is two extra columns**:
+alongside the k and its validation score, the fold-by-fold sign of the marginal item *and* its interval, on
+two store draws if the store is stochastic. If no fold decides, the k is a coin; if a fold decides on both
+draws, the k is a knob and the ablation is worth reading.

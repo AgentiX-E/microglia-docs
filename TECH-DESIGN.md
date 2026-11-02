@@ -5148,19 +5148,29 @@ twice. A decomposition without an identity is a table; with one it is a check on
 what turns "the second item carries 23 repairs and causes 27 breaks" into a statement that cannot be true of
 a broken reading.
 
-**4. Group by fold rather than pool, and say so in the module.** `foldsOf` re-runs the same four-cell
-accounting on the cases each fold held out, and it returns an array rather than a summary because the
-summary is the thing that hides the failure mode: the store is distilled once per fold, so a cross-term that
-appears in one fold and not the others is a property of the store that fold was given, not of packs. Here two
-folds are flat and the three that move alternate **+4, −4, −5**, which is what makes the count lever
-uncalibratable rather than merely non-additive. The per-fold cells also sum to the pooled cells, and that
-identity is asserted at both levels — a second identity for the same reason the first one exists.
+**4. Group by fold rather than pool, and carry an interval on every row.** `foldsOf` re-runs the same
+four-cell accounting on the cases each fold held out, and it returns an array rather than a summary because
+the summary is the thing that hides the failure mode. Two decisions follow, both forced by what happened when
+the replication landed:
+
+- **The interval is part of the row.** `assignmentOf` had been returning a clustered interval all along and
+  `foldsOf` did not carry it, which made five point estimates look like five findings. Here four of five rows
+  span zero, and the fifth (−5, [−2.55, −0.66]) is the only one that does not.
+- **`foldPairsOf` reads the two draws as paired.** The split is seeded, so fold *k* is the same questions in
+  both artefacts — 0 of 1,534 questions change fold — and pairing is therefore exact rather than approximate.
+  It reports `sameSign`, and the two sides of "spans zero" separately, because the case that matters is a fold
+  that decided on one draw and did not on the other, and one combined flag cannot say which side moved.
+
+On this data three of five folds keep their sign, and the single decided-looking row covers zero on the second
+draw. The per-fold cells also sum to the pooled cells and the net column to the pooled net, asserted at both
+levels — a second identity for the same reason the first one exists.
 
 **Gates and cost.** `V62-assignment-instrument` and `V63-assignment-reproduces-the-lane`; the second compares
 this module's contrast against the lane's own `arm_pairs` entry to a hundredth of a point and on both
 discordant counts, which is how a reimplementation of one arithmetic is prevented from being a second
 opinion. The module is at 100% on all four coverage dimensions and the command makes no model call, so the
-instrument can run on every push (`pnpm eval:pack-assign`, 24 CI assertions).
+instrument can run on every push (`pnpm eval:pack-assign`, 32 CI assertions, 8 of them on the
+replication and its paired folds).
 
 **What it cannot do.** It cannot answer whether one rule *should* be shown — only whether removing the second
 one helps — and it cannot see the counterfactual for a question whose pack was empty. Both limits are stated
