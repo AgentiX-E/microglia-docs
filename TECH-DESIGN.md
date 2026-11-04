@@ -5714,17 +5714,28 @@ An override rather than a default: filling in only when absent would leave the m
 whenever it felt confident, which is the case that fails. It wraps the composite, so the rule fallback is
 stamped too — a store half-keyed by the model and half by nobody would be worse than either.
 
-**The reader.** τ² domains disagree about how to write a rubric:
+**The reader.** τ² writes its labels in two forms, and §17.83 counts which scenario uses which. This
+section's first printing of that table had the two rows swapped, which is the defect §34.17 records: the
+shape below is the corpus at v0.2.0, not an inference from a run.
 
-| domain | `evaluation_criteria` | `taskCorrection` before R43 | after |
-|---|---|---|---|
-| `airline` | `actions: [{name, arguments}]` | a call sequence | unchanged (preferred) |
-| `retail` | `nl_assertions: ["…"]`, no actions | **nothing** — 25 of 32 failures | a prose statement of what must be true |
+| domain | tasks | names calls | states prose | same as before R43 | `taskCorrection` after |
+|---|---|---|---|---|---|
+| `retail` | 114 | **112** | 8 | calls alone read fine | unchanged for 112, prose for 8 |
+| `airline` | 50 | 43 | **50** | calls alone read fine | calls preferred, prose for 7 |
 
-The fallback is not a weaker copy of the first form. An order of tool names with arguments can be followed
-without interpretation; a statement of the end state has to be turned into a procedure by the distiller,
-which is exactly the work the interpreter exists to do. What both share is that they say what *should have
-happened* rather than that something went wrong, which is the only thing a correction can be learned from.
+So the reader's fallback was not a repair for a scenario that states no calls — retail is the scenario that
+states calls — it was a repair for the tasks that state prose and no calls: seven, all of them in `airline`.
+(The 8 retail tasks that state prose also name calls, so a reader that only read calls lost nothing there;
+it lost the prose, which is what the distiller can use.)
+What made it look like a retail problem is recorded honestly in §34.17: the number that motivated it (25 of
+32 training failures teaching nothing) came from an arithmetic that counted passes as gaps, and the corpus
+cannot produce that number — only 2 of 114 retail tasks state neither form.
+
+The fallback is not a weaker copy of the first form, and the distinction survives the correction. An order
+of tool names with arguments can be followed without interpretation; a statement of the end state has to be
+turned into a procedure by the distiller, which is exactly the work the interpreter exists to do. What both
+share is that they say what *should have happened* rather than that something went wrong, which is the only
+thing a correction can be learned from.
 
 **A rate and its population.** `meanPackIds` is the mean of `servedPackSizes`, so it is `0` when the agent
 never asked and `0` when it asked two hundred times and was served nothing. The arm record gained two
@@ -5756,3 +5767,95 @@ StoreCensus` are exported from `@agentix-e/microglia-eval`; `Tau2Raw`/`Tau2ArmRe
 `recall?`; `ProtocolGateInput.packPopulation?` is supplied by the τ² projection under the same `supplied`
 field as `meanPackIds`, so the gate index in the pair report does not move (13 supplyable, 26
 arm-indexed). `TauTask.assertions` is parsed from `evaluation_criteria.nl_assertions`.
+
+### 17.83 The corpus is measured, not recalled
+
+**Why this exists.** Two sentences in this document about τ²'s labels were derived from a run's counters
+and were wrong in a way a reader could not detect: they described one scenario's label shape and named the
+other. The corpus is the part of the experiment this repository does not control, and a claim about it is
+either read out of the file at the pinned ref or it is a recollection. So it is now a module with tests, a
+CLI, and a step in the L4 job that runs before either arm.
+
+**What the pinned ref establishes, in three facts.** All three are in `sierra-research/tau2-bench` at
+v0.2.0, and none is a matter of interpretation:
+
+| fact | where | consequence |
+|---|---|---|
+| `EvaluationCriteria.reward_basis` defaults to `[DB, COMMUNICATE]` | `src/tau2/data_model/tasks.py` (`default_factory`) | a task that declares nothing is graded on the database and on the required strings |
+| the reward is the product of the components named in that basis | `src/tau2/evaluator/evaluator.py:92-118` | `NL_ASSERTION` and `ACTION` are components like any other: absent from the basis means not graded |
+| `actions` is replayed onto a fresh environment and the DB hashes compared | `src/tau2/evaluator/evaluator_env.py:93-111` | the call list is the definition of the target end state, not a trajectory the agent must walk |
+
+The third is the one that corrected this repository's own description of its own instrument. The first
+printing of the census said the reward "does not read" the shipped call lists; it reads them every time, as
+the recipe for the gold state. What is *not* graded is the agent walking that path — and, separately, the
+prose: `nl_assertions` gates only under `NL_ASSERTION`, which no task in either scenario declares, so 58
+tasks' worth of prose rubric is commentary on a graded outcome rather than a graded requirement.
+
+**The measurement.**
+
+| corpus | tasks | names calls | states prose | both | states neither | declares a basis | graded on `ACTION` | graded on `NL_ASSERTION` |
+|---|---|---|---|---|---|---|---|---|
+| `retail` | 114 | 112 (98.2%) | 8 (7.0%) | 8 | 2 (1.8%) | 0 | 0 | 0 |
+| `airline` | 50 | 43 (86.0%) | 50 (100%) | 43 | 0 | 0 | 0 | 0 |
+
+Two numbers are worth reading twice. `states neither` is the ceiling on how much of a run's `unanswered`
+the corpus can explain: 2 of 114 and 0 of 50, so a rate of twenty-five of thirty-two is not a corpus fact
+and has to be explained by the run (§34.17). And `declares a basis` is zero in both files, which is what
+makes the last two columns zero: the shipped grade is a DB hash compared to a replayed target, times a
+substring match on `communicate_info`.
+
+**The consequences, stated as work rather than as commentary.** For a learner, the reference calls are a
+target state written as a path. `taskCorrection` transmits the path — "resolved by calling X, then Y, in
+that order" — which is a stronger claim than the grade makes. Whether that over-specification helps or
+costs is measurable and is not yet measured: it is the R44 question. For the prose, the lesson distilled
+from an `nl_assertion` is a claim about a label nobody scores, which is admissible only because the store's
+job is to make the next episode go better, not to reproduce the rubric.
+
+**Interfaces.** `labelCensus(tasks): LabelCensus` and `readLabelCensusTasks(document): LabelCensusTask[]`
+are exported from `@agentix-e/microglia-eval`; `UPSTREAM_DEFAULT_BASIS` carries the default the census
+resolves silence to. The fields are positive counts — `pathScored`, `rubricGraded` — rather than a negation,
+because "how many are graded on this label" is the question a reader has, and a field named for what is not
+graded invites exactly the sentence that had to be withdrawn. `pnpm eval:label-census --corpus name=path …`
+reads either shipped form (a bare task list, or a result document's `tasks`) and is run by the L4 job
+against the environment it cloned, writing `eval/results/tau2-label-census.{json,md}` into the evidence
+bundle and the table into the job summary.
+
+### 17.84 The store admitted nothing, and one word covered three decisions
+
+**The layer R43 opened.** With the keys fixed (§17.82) and the reader fixed (§17.80), the same arm reports
+`learning.unanswered = 0`, `V32` passing, and a store of 24 items — and still `store.active = 0`,
+`recall.served = 0` over 1,518 requests. Nothing the recall path can see exists, so the façade is correct to
+return nothing and `V1` is correct to fail. The remaining question is why 24 items are not active, and the
+record could not answer it: `statuses.candidate` is what three different decisions write.
+
+| decision (`kernel/knowledge.ts`, `decideStatus`) | condition | reason written |
+|---|---|---|
+| prose needs corroboration | `tier === 'user-text' && distinctTasks < 2` | `needs-corroboration` |
+| confidence | `confidence < activationThreshold` (0.6) | `insufficient-evidence` |
+| support | `support < minSupport` (0.8) | `insufficient-evidence` |
+
+Three repairs, one word for two of them. `storeCensus` therefore carries `reasons` — a histogram of
+`statusReason` over the store — and the driver prints it ranked on the single line it writes about its own
+store. The next dispatch reads its hypothesis back instead of inferring it, which is the difference between
+a round and a guess.
+
+**What was excluded before the dispatch, and how.** With no transcript of a failed episode, the driver
+states the completion as the reference call *names* and the edit as those names *with their arguments*;
+`trustFor('edit')` derives trust from how far the edit moved the completion (`0.5 + 0.4 × distance/0.3`), and
+`minSupport` is 0.8. That is a plausible mechanism, and it is false: measured in three conditions — the
+driver's own shape, a rubric-only correction, and a call correction against a completion that names a
+different call — all three activate at 0.9. The test is committed as a guard, because a hypothesis that was
+excluded by measurement is a hypothesis the next round may not re-assert.
+
+**The record, again.** The pair report printed `V1`'s pre-R43 sentence — `0.00 rules/question`, no
+population — while the memory arm's file held `24 / 0 / 0` and `1,518 / 0`. `tau2ArmRecordOf` is the
+mapping from an arm's artefact to the record the projection reads, and it did not name `store` or `recall`:
+a field that is present in the file and absent from the record is invisible to every consumer downstream of
+the record, which is all of them. Both blocks travel now, with two tests — one on the mapping, one on the
+sentence `V1` must print for an arm whose record has a census. This is the second round in a row where the
+instrument was right and its plumbing was not.
+
+**Interfaces.** `storeCensus(items, recallDomain): StoreCensus` returns `reasons` beside `statuses`;
+`CensusItem` gains an optional `statusReason`; `Tau2ArmArtefact.tau2` gains `store?`/`recall?` and
+`tau2ArmRecordOf` forwards both. The driver's learn line ends with `reasons <key>=<count>, …` ranked by
+count, or `none recorded` when the store wrote none.

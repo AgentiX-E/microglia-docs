@@ -2553,3 +2553,86 @@ did not say enough. That is what §34.15 and this section spent their length on.
 **Coverage at the time of writing.** `2,883 tests across 137 files, 99.98 / 99.70 / 100 / 99.98`;
 `tau2-distill.ts` at 100 on all four dimensions, `tau2-instrument.ts` at 100, `tau2.ts` at 100,
 `gates.ts` (protocol) at 100.
+
+### 34.17 Three sentences about a corpus, none of which the corpus said
+
+**What was audited.** Not the code this time, but the prose this round published about τ²-bench's labels —
+in `TECH-DESIGN §17.82`, in `WHITEPAPER §3.6.38`, in two code comments and in a commit message. The audit
+instrument is new (`§17.83`): a census of the corpus files at the pinned ref, which is the only source that
+cannot agree with a run's counters by construction.
+
+**Defect 10 — the two scenarios were swapped.** The published claim was "`airline` names the expected calls,
+`retail` states `nl_assertions` and names no calls". Counted at v0.2.0: `retail` names calls on **112 of
+114** tasks and states prose on **8**; `airline` states prose on **50 of 50** and names calls on **43**. Both
+halves of the sentence are backwards. It survived review because it was plausible — two domains, two forms,
+one each — and because nothing in the record printed the corpus's own shape next to the claim.
+
+**Defect 11 — the number that motivated the fix cannot come from the corpus.** `TECH-DESIGN §17.82` and two
+doc comments in `packages/eval/src/tau2.ts` said the old reader left "25 of 32 failures with nothing to
+learn". The census bounds that explanation: **2 of 114** retail tasks state neither a call nor a rubric, so a
+25/32 rate is at least an order of magnitude beyond what the corpus can supply. The 25 came from the
+driver's old `train.length - corrections.length`, which counted *passes* as gaps — the arithmetic §17.80
+replaced with `unansweredTasks`, and the reason `V32` read 78.1% on a store that was not missing anything
+it could read. The reader fallback is still correct as a capability (7 airline tasks state prose and no calls, and
+one of them is worth a lesson); it was just not the cause that was published.
+
+**Defect 12 — a corpus number that came from a summary instead of from the file.** `WHITEPAPER §3.6.37`
+printed retail's population as 115 tasks. Upstream's readme advertises 115 for the retail *base* split; the
+file at the pinned ref holds **114**, which is what the census counts and what the lane lists. At 114 the
+80%-power floor at the observed discordance moves from 11.09pp to 11.13pp, so no conclusion moves — and that
+is exactly why the wrong number could live in a table: it was harmless, unchecked, and read as authoritative.
+
+**The common shape, and it is the third round in a row.** §34.14 found four gates reading a store nobody
+built; §34.15 found an arm nobody could reach; §34.16 found a rate with no population. Each was a *sentence
+about a measurement* that outran the measurement. This one is the same failure one layer out: a sentence
+about a corpus, written by the same hand that was measuring a run, with no step in the round that could
+contradict it. The repair is procedural rather than editorial — the census is a step in the L4 job now, so
+the corpus is counted before the arms run and printed into the same evidence bundle the conclusions come
+from. A claim that contradicts it will be contradicted by the artefact, in the same place a reader looks.
+
+**What is *not* claimed.** The census does not explain R43's `unanswered` count, and this section does not
+pretend the arithmetic defect is the whole of it: the readback decides. It does fix the bound, so the next
+attribution has to fit inside 2 of 114.
+
+**Coverage at the time of writing.** `2,904 tests across 138 files, 99.98 / 99.70 / 100 / 99.98`;
+`label-census.ts` at 100 on all four dimensions beside `tau2.ts`, `tau2-distill.ts`, `tau2-instrument.ts`
+and the protocol `gates.ts`.
+
+### 34.18 Two sentences that no artefact could support, and a count that was wrong for one commit
+
+**Defect 13 — the census reached the file and not the record.** R43's pair report printed `V1` as `0.00
+rules/question`, the sentence from before the population existed, while the memory arm's artefact held
+`store: 24 stored / 0 active / 0 servable` and `recall: 1,518 requests / 0 served`. `tau2ArmRecordOf` maps
+that artefact into the record the projection reads and its type named neither field, so the census stopped
+at the boundary. The gate's "actual" is built from the record, which means an instrument that is right in
+the file and absent from the record is silent everywhere it matters.
+
+**Defect 14 — a status breakdown that existed in prose only.** `PROGRESS §158` published "fourteen items,
+14 active, 14 in scope" beside R42's `0.00 rules/question`. R42's record contains no store census at all:
+the fields were added in R43. The sentence was assembled from a later round's *intended* reading of a
+per-arm probe and printed as if it had been recorded. It is now corrected in place with a pointer to the
+first round that can say anything about statuses, which is R43 and which says `24 stored, 0 active`.
+
+**Defect 15 — a count that was self-consistent and false for one commit.** Adding the census to the documents
+produced the sentence "we do exactly this for 15 of 164 tasks" — the sum of retail's prose count and
+airline's prose-only count. Only one of those numbers answers the question: retail's 8 prose tasks also name
+calls, so a calls-only reader loses nothing there, and the prose-only population is **7**, all in `airline`.
+Caught by the next arithmetic pass, corrected in the code comment, the test note and three documents, and
+committed as its own correction (`e58c082`) so the record shows the mistake rather than a clean final state.
+
+**The shape, fourth round running.** §34.14: four gates reading a store nobody built. §34.15: an arm nobody
+could reach. §34.16: a rate with no population. §34.17: three sentences about a corpus, none of which the
+corpus said. This one: a census that reached the artefact and stopped at the record, and a status quoted
+from a field that did not exist yet. Every case is a *claim about a measurement* outrunning the measurement,
+and every repair is plumbing or a step rather than an argument — the census is printed by the job, the
+reason histogram is in the census, the record carries what the file carries.
+
+**What this round did *not* conclude.** That the admission gate is mis-tuned. The three decisions that write
+`candidate` have different repairs and two of them share a reason string, so the round registers the
+histogram as its deliverable and refuses to pick a fix first (`prereg/R44-admission.md`). One hypothesis —
+that the driver's manufactured completion reads as a trivial edit — was excluded by a three-condition
+measurement before the dispatch, and that test is committed so it cannot come back.
+
+**Coverage at the time of writing.** `2,909 tests across 138 files, 99.98 / 99.70 / 100 / 99.98`;
+`label-census.ts`, `tau2-gates.ts`, `tau2-distill.ts`, `tau2-instrument.ts` and the protocol `gates.ts` at
+100 on all four dimensions.

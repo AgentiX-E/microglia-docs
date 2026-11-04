@@ -2877,13 +2877,15 @@ every artefact (`tasksForFivePp`); the second was in nobody's, because the run i
 and a split of fifty looks the same whether it was drawn from fifty tasks or a thousand.
 
 **They do not meet.** At the discordance the τ² pairs have observed — about a fifth of tasks — a 5pp
-interval takes **277** paired tasks and a 5pp *detectable difference* at 80% power takes **566**. τ²-retail
-carries **115** tasks and τ²-airline **50**. At every task each scenario holds, the floor is:
+interval takes **277** paired tasks and a 5pp *detectable difference* at 80% power takes **566**. τ²-retail's
+file carries **114** tasks and τ²-airline's **50** (§17.83 counts them; this table's first printing said 115,
+which is upstream's advertised size for the retail split rather than the number of tasks in it). At every task
+each scenario holds, the floor is:
 
 | scenario | tasks | smallest 95% interval | smallest 80%-power difference |
 |---|---|---|---|
 | τ²-airline | 50 | 11.76pp | 16.81pp |
-| τ²-retail | 115 | 7.75pp | 11.09pp |
+| τ²-retail | 114 | 7.79pp | 11.13pp |
 
 So no dispatch of this lane, on either scenario, can decide a 5pp effect — not because the sample was
 drawn badly, but because the population it is drawn from is smaller than the question. "R41 was
@@ -2940,3 +2942,86 @@ not been measured with a pack in the prompt. The honest summary is that the τ²
 reading* until R43 lands: 0.44 vs 0.40 on 50 paired tasks, p = 0.6875, minimum detectable 13.73pp. A
 four-point difference at that resolution is not evidence for or against the memory, and publishing it as a
 ranking would be the same mistake as publishing a rate without its population.
+
+#### 3.6.39 What the corpus grades, counted: every τ² number in this paper sits on it
+
+**The claim this section defends is narrow, and it is about everybody's numbers rather than ours.** A
+benchmark delta is a difference in a *product of chosen components*, and the corpus says which components
+those are. For τ² at the pinned ref the answer is exact: no task in `retail` or `airline` declares
+`reward_basis`, the default is `[DB, COMMUNICATE]`, and the reward is the product of exactly the components
+named in the basis. So an episode is graded on a DB hash — compared against a target built by *replaying*
+the reference trajectory onto a fresh environment — times a substring match on the facts the agent had to
+say. Nothing else. The reference trajectory itself is not graded as a trajectory, because `ACTION` is not
+in the basis, and the prose rubric is not graded at all, because `NL_ASSERTION` is not either.
+
+**Counted, per scenario, at v0.2.0** (`§17.83`; the step runs before either arm in every L4 dispatch):
+
+| corpus | tasks | names calls | states prose | both | states neither | graded on the path | graded on the prose |
+|---|---|---|---|---|---|---|---|
+| τ²-retail | 114 | 112 (98.2%) | 8 (7.0%) | 8 | 2 (1.8%) | 0 | 0 |
+| τ²-airline | 50 | 43 (86.0%) | 50 (100%) | 43 | 0 | 0 | 0 |
+
+**Three things follow, and the third is the one this paper needed.**
+
+*First, a memory's effect on τ² is an effect on end states.* That is not a limitation of the memory; it is
+what the benchmark asks. It does constrain what a delta can be attributed to: no memory can gain a point on
+these two scenarios by making an agent *talk* better, unless the fact it improved was in `communicate_info`
+— which 38 of 114 retail tasks and 6 of 50 airline tasks state.
+
+*Second, the prose is commentary.* Fifty-eight tasks carry a natural-language rubric that no default grade
+reads. A system that distils lessons from that prose is learning from a description of a graded outcome by
+someone who was not the grader — admissible, because the store's job is to make the next episode go better,
+but never evidence that the memory learned the reward. We do exactly this for 7 of 164 tasks — the airline
+tasks that state prose and name no calls — and saying so is cheaper than having it inferred.
+
+*Third, the corpus bounds our own excuses.* The one number in this lane's history that looked like a corpus
+problem — 25 of 32 training failures teaching nothing — is an order of magnitude beyond what the corpus can
+supply (2 of 114 tasks state neither form). It was an arithmetic defect in the driver (§34.17). Publishing
+the census is what makes that distinction checkable: with the table above in the same evidence bundle as the
+delta, a claim that the labels were the obstacle is contradicted by the artefact next to it.
+
+**Which is the same discipline Appendix J applies to power, applied to labels.** There, the column no system
+publishes is what its own sample could resolve; here, it is what its own labels can grade. Both are cheap to
+compute, both are unflattering in the general case, and both are the difference between a number a reader can
+audit and a number a reader has to trust. Every τ² number in this paper sits on top of the two rows above,
+and until this round this record had not counted them.
+
+#### 3.6.40 A memory that learned every failure and delivered nothing: three layers of one null
+
+**The reading, stated first.** R43's memory arm scored **0.38** against the reference arm's **0.42** on
+τ²-airline `pass^4` (−4.00pp, 95% interval [−18, +10], p = 0.7905 over 50 paired tasks, 8 lost and 6
+gained), while its store held 24 items, none of them active, against **1,518 recall requests and zero
+served**. The instrument it improved is the only reason those two sentences can be written together.
+
+**What the round did fix is real and is measurable.** `learning.unanswered` went **25 → 0** and
+`V32-fold-learning-intact` passed for the first time in this lane: every failed training task produced a
+correction, and the distiller answered all twelve events without a failure. That closes the reader defect
+§3.6.36 recorded and it closes the arithmetic defect §34.17 records — the "25 of 32 taught nothing" figure
+was the driver counting *passes* as gaps, not a corpus with nothing to say, and the corpus census (§17.83)
+bounds any such claim at 2 of 114 tasks.
+
+**The delivery defect did not close; it moved one layer in.** R41 had no store. R42 had a store keyed by the
+model's spelling. R43 has a store keyed by the host's, filled with 24 items distilled from every failure it
+could read, and **nothing in it is `active`** — so the recall path can see nothing, the façade correctly
+returns nothing, and the arm called memory is the control arm with an HTTP façade in front of it for the
+third round running.
+
+**Which is the finding this paper should carry, and it is uncomfortable.** A system reporting +4.00pp from a
+memory that never delivered a single rule is indistinguishable on a leaderboard from one reporting +4.00pp
+from a memory that did — and this record has now published the first kind twice, once at +4.00pp (R42) and
+once at −4.00pp (R43), both with an empty pack. The instruments that separate them are cheap and nobody
+publishes them: `V1`'s population, the store's statuses, the recall tally. They are in the artefact because
+a null with a cause is a result and a null without one is an anecdote.
+
+**What the round refuses to do is pick the repair before the reason.** `candidate` is what three decisions in
+`decideStatus` write — `needs-corroboration` for prose without a second task, `insufficient-evidence` for
+confidence, `insufficient-evidence` again for support — so the round's deliverable is a histogram of
+`statusReason` and its registration says so in advance (`prereg/R44-admission.md`). One candidate mechanism,
+that the driver's manufactured completion reads as a trivial edit to the capture layer, was excluded by a
+three-condition measurement before the dispatch and the test is committed so it cannot be re-asserted.
+
+**The methodological point, which is the paper's actual product.** R43's registration contained a refutation
+branch — *"if the store is 32+ items but `store.active` is 0, the defect is confidence and contradiction, not
+the key"* — and that branch is the one that fired. A round that can be refuted in advance is a round whose
+reading can be trusted; a round that cannot is a narrative. The pre-registered branch, not the delta, is what
+moved this project from "the memory does not help" to "the memory has not arrived, and here is the layer".

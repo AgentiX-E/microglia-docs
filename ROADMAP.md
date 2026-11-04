@@ -3876,7 +3876,7 @@ It failed at **0.00 rules/question**, from a store of fourteen items, on all 200
 R43 is the two repairs and the census, `§158` carries the reading, `AUDIT` §34.16 the defects, and
 `TECH-DESIGN` §17.82 the key.
 
-### R43 — The pack that served nothing, and the half of the failures that taught nothing (**dispatched** 2026-11-03)
+### R43 — The pack that served nothing, and the half of the failures that taught nothing (**read** 2026-11-04)
 
 **Why.** R42 delivered a store and not a treatment: fourteen items, two hundred requests, zero served. The
 next round is the two defects that make those two numbers compatible — a key the reader never asks in, and
@@ -3894,3 +3894,33 @@ the key. `servable > 0` with `served = 0` moves the subject to the façade. An i
 means the rubric-form lessons are prompt noise and must be ablated as their own arm.
 
 **Cost.** One dispatch through `sota.yml`, the same configuration as R42: about 1 h 20 min per arm.
+
+**Outcome (run `41851255477`, head `ae36444`).** The learner half landed and the delivery half did not.
+`learning.unanswered` **25 → 0** and `learning.edited` **7 → 12**; `V32-fold-learning-intact` **passes** at
+`0/32 unanswered (0.0%), 12 correction(s), 0 distillation failure(s)`. The store holds **24** items and
+`active` is **0**: `recall` saw **1,518 requests and served none**, so `meanPackIds` is `0.00` again and the
+arm scored 0.38 against the reference arm's 0.42 (−4.00pp, p = 0.7905, n = 50). Two registered predictions
+were refuted and both are informative: `edited` reached 12 rather than 32 because twenty of thirty-two
+training tasks *passed*, and `V8` fired on 12 calls rather than 32 because a correction is one call. The
+refutation branch this entry registered is the one that fired — a store of items with `active: 0` — so the
+next round reads admission. `§159` carries the readback, `AUDIT` §34.17/§34.18 the defects, `TECH-DESIGN`
+§17.83/§17.84 the census and the admission layer.
+
+### R44 — The store admitted nothing, and the store can say why (**dispatched** 2026-11-04)
+
+**Why.** Three decisions in `decideStatus` write `candidate`: prose without a second task
+(`needs-corroboration`), confidence below `activationThreshold` (0.6), and support below `minSupport` (0.8)
+— and the last two write the same string. R43 could therefore say *that* 24 items were held and not *why*.
+
+**The registration is `prereg/R44-admission.md`.** Its deliverable is the reason, not a repair: the round
+adds a histogram of `statusReason` to `storeCensus`, prints it ranked on the driver's learn line, and reads
+it. Its predictions: the histogram is populated and dominated by `insufficient-evidence`, with
+`needs-corroboration` at most on the prose-derived corrections and contradictions on none; `V1` finally
+prints its population because `tau2ArmRecordOf` now forwards `store` and `recall`; `V32` stays at 0/32;
+`V5` still fails and no bar moves; `l4-paired` stays insignificant with its sign unpredicted.
+
+**Pre-excluded.** The obvious suspect — that the driver's manufactured completion reads as a trivial edit to
+`trustFor('edit')` — was measured in three conditions and rejected before the dispatch; the test is
+committed as a guard so the dispatch cannot be used to re-assert it.
+
+**Cost.** One dispatch through `sota.yml`, the same scenario pair and sample: about 1 h 20 min.

@@ -9319,3 +9319,88 @@ still not been measured with a pack in the prompt. That is now one dispatch away
 records makes the next reading self-explaining: `served = 200` is delivery, `served = 0` with
 `servable > 0` moves the subject to the façade, and `servable = 0` keeps it in the store. Gates at the
 time of writing: **2,883 tests across 137 files, 99.98 / 99.70 / 100 / 99.98**, `pnpm check` exit 0.
+
+**Correction (2026-11-04).** Two sentences in this section misdescribe the corpus, and one invents a
+status. The domains' shapes are the other way round: `retail` names calls on 112 of 114 tasks and states
+prose on 8, `airline` states prose on all 50 (§17.83 counts the files). The status breakdown quoted above
+— "fourteen items, 14 active" — is in no artefact: R42's record had no store census at all, so the only
+status claim the evidence supports is R43's, and it is `24 stored, 0 active`. See §159 for the readback
+and §34.17 for the audit.
+
+## 159 — The learner worked, the store admitted nothing, and the corpus was counted for the first time
+
+**R43 answered the question it was dispatched to answer, and the answer moved the defect one layer in.**
+The learner reads every failure it can read: `learning.unanswered` **25 → 0**, `learning.edited` **7 → 12**,
+and `V32-fold-learning-intact` **passes for the first time in this lane** at `0/32 unanswered (0.0%), 12
+correction(s), 0 distillation failure(s) (0.0%)`. The store is not empty either — 24 items. And the pack is
+still empty: `store.active` **0**, `store.servable` **0**, `recall` **1,518 requests, 0 served**,
+`meanPackIds` **0.00**.
+
+| reading | R42 | R43 | what it means |
+|---|---|---|---|
+| `learning.edited` | 7 | **12** | every failed training task taught something |
+| `learning.unanswered` | 25 | **0** | no failure was left without a lesson |
+| `V32-fold-learning-intact` | FAIL 78.1% | **pass 0.0%** | the reader defect is closed |
+| `distilled` / `distillFailed` | 14 / 0 | **24 / 0** | two candidates per correction |
+| `store.stored / active / servable` | 14 / — / — | **24 / 0 / 0** | the store filled and admitted nothing |
+| `recall.requests / served` | 200 / 0 | **1,518 / 0** | asked 1,518 times, served nothing |
+| `V1-pack-not-empty` | FAIL, bare | **FAIL**, bare | the population was dropped between file and record |
+| `V44-domain-accounted` | pass 0/14 | pass **0/24** | every item carries the host's spelling |
+| `V15-transfer-reconciles` | 88 informative | **76 informative**, 124 retried, 0 unmeasured | the ledger reconciles |
+| `V17-transfer-net-reported` | +4.00pp | **−1.50pp** (18 repaired, 21 broken), `unmeasured` | a direction, not a rate |
+| `l4-paired` | +4.00pp, p = 0.6875 | **−4.00pp**, p = 0.7905, n = 50 | the arm had no memory to measure |
+| `pass^4` | 0.44 / 0.40 | **0.38 / 0.42** | memory below reference, both inside noise |
+| `V5-resolution` | FAIL 13.73pp | **FAIL 20.97pp** | 8 lost, 6 gained of 50 |
+| `scenarioTasks` | — | **learn 114 / test 50** | the lane's own count, agreeing with the census |
+
+**Three predictions held and two were refuted, and the refutations are the reading.** Held: `unanswered`
+→ 0, `V32` passing, the bar unmoved. Refuted: `edited` 7 → 32 was 12, because the prediction assumed
+every training task fails and twenty of thirty-two passed (a pass teaches nothing by design); and `V8`
+firing on ≥32 calls was 12, because a correction is one distiller call. Both were written down before the
+run, which is what makes them readable as refutations rather than as surprises.
+
+**The corpus was counted, and the count corrected three published sentences.** A new instrument
+(`label-census.ts`, `pnpm eval:label-census`, a step in the L4 job that runs before either arm) counts the
+labels at the pinned ref and prints them into the same evidence bundle as the delta:
+
+| corpus | tasks | names calls | states prose | both | states neither | declares a basis | graded on `ACTION` | graded on `NL_ASSERTION` |
+|---|---|---|---|---|---|---|---|---|
+| `retail` | 114 | 112 (98.2%) | 8 (7.0%) | 8 | 2 (1.8%) | 0 | 0 | 0 |
+| `airline` | 50 | 43 (86.0%) | 50 (100%) | 43 | 0 | 0 | 0 | 0 |
+
+The corrections it forced: the two scenarios' shapes were published the wrong way round; "25 of 32 had
+nothing to teach" cannot be a corpus fact when 2 of 114 tasks state neither form (it was the driver's
+`train.length - corrections.length` arithmetic); and retail's population is 114 tasks in the file, not the
+115 upstream advertises for the split. All three are in `AUDIT §34.17`, and the corpus is now printed
+beside the run rather than recalled after it.
+
+**Two instrument defects, found by reading R43's own artefacts.** `tau2ArmRecordOf` maps an arm's file into
+the record the projection reads, and it did not name `store` or `recall`, so the census was in the file and
+absent from the record — which is why the pair report printed `V1`'s pre-R43 bare sentence while the arm
+held `24 / 0 / 0` and `1,518 / 0`. Two tests hold the mapping now, and `V1`'s layered sentence is asserted
+at the projection level. The second is the one that decides R44: `candidate` is what three different
+decisions in `decideStatus` write, so a status histogram cannot distinguish them. `storeCensus` now carries
+a histogram of `statusReason`, and the driver prints it ranked on its one line about the store.
+
+**A hypothesis was excluded by measurement rather than by argument.** The obvious suspect for 24 candidates
+is the evidence payload: the driver has no transcript of the failed episode, so it states the completion as
+the reference call names and the edit as those names with their arguments, and `trustFor('edit')` derives
+trust from how far that edit moved the completion against `minSupport` 0.8. A three-condition test — the
+driver's own shape, a rubric-only correction, and a call correction against a completion naming a different
+call — clears the floor in all three at 0.9. The test is committed as the guard that keeps the hypothesis
+from being re-asserted, and R44 is registered to read the reason instead of guessing a repair.
+
+**Where the project stands.** Three rounds have each found the delivery defect one layer deeper: R41 had no
+store, R42 had a store with the model's keys, R43 has a store with the host's keys and no admission. The
+mechanism has still not been measured with a pack in the prompt, and this round's explicit conclusion is
+that it cannot be until something is `active`. On the leaderboard axis nothing moved: memory 0.38 against
+reference 0.42 is fifth of six named entries, and the only column this project leads is the one that says
+whether the treatment arrived.
+
+Gates at the time of writing: **2,909 tests across 138 files, 99.98 / 99.70 / 100 / 99.98**, `pnpm check`
+exit 0; `label-census.ts` and `tau2-gates.ts` at 100 on all four dimensions. Commits this round:
+`0028dd6` (the census), `25acfc8` (the call list is the target state, not an unread label), `e0b5562`
+(three comments repeating a count the corpus cannot produce), `e58c082` (seven tasks state prose alone),
+`eb0219f` (the bytes travel with the counts), `2db9fb8` (the record dropped the census), `82b2b41` (one
+status, three decisions), `8649563` (what the evidence shape does *not* explain), `dccbb3d` (R44
+registered). **R44 dispatched** as run `41872858497` on `dccbb3d`, `prereg=R44-admission`.

@@ -1301,3 +1301,64 @@ tasks), and the one claim it can make — that a *transfer* treatment was measur
 asserted — is a claim no entry in the table makes at all. Being fifth while publishing the instrument that
 would expose a first place as undelivered is the position this project chose, and R43 is the round that
 first puts a pack in the prompt.
+
+### L.3 — R43: the axis under the leaderboard, which is what the labels actually grade
+
+**A leaderboard ranks systems on a score whose components the benchmark chose, and the choice is countable.**
+For τ² at the pinned ref it is exact (§17.83): no task in `retail` or `airline` declares `reward_basis`, the
+default is `[DB, COMMUNICATE]`, and the reward is the product of exactly the components named in the basis.
+The reference calls are replayed onto a fresh environment to build the target DB hash, so the agent is graded
+on reaching that state rather than on walking that path, and the prose rubric gates nothing at all.
+
+| what a report owes its reader | microglia (this round) | the other entries in §L.2 | upstream τ² |
+|---|---|---|---|
+| a `pass^k` on a named scenario, with its split and trials | yes | yes | ships the harness |
+| which reward components were active in the run | **yes: `[DB, COMMUNICATE]`; 0 of 164 tasks declare otherwise** | not in the material this record has read | documented in later revisions (`src/tau2/evaluator/AGENTS.md`, `docs/evaluation.md`); at v0.2.0 only in the source |
+| the corpus's label shape — calls, prose, neither | **yes: 112 + 43 name calls, 8 + 50 state prose, 2 state neither** | not in the material this record has read | not published as a count |
+| whether the treatment was delivered | **yes: `tau2.store`, `tau2.recall`** | no | n/a |
+| what the sample could resolve | **yes: `resolution.halfWidthPp`, `mde80Pp`** | no | n/a |
+
+**None of the four columns is a boast about accuracy; they are all about what a reader can check.** The
+second row is the one that changes what a delta means: on a scenario graded by an end-state hash times a
+substring match, no memory can gain a point by making an agent *talk* better unless the improved fact was in
+`communicate_info` — which 38 of 114 retail and 6 of 50 airline tasks state. The third row is what bounds an
+excuse: 2 of 164 tasks cannot teach, so any "the labels were the obstacle" claim has to fit inside two.
+
+**Where this leaves the ranking, stated the way §L.2 stated it.** The order on τ²-airline `pass^4` does not
+change because the corpus was counted: IBM's 82.0 (unverified) is still first, SapientAI's 72.0 second, and
+microglia still sits fifth of six named entries, with its own two arms inside each other's interval. What
+changes is the standing of the *column*, not the row: the four other entries cannot say which of their points
+came from a database write and which from a sentence, because they did not record it, and this record can —
+which is the only sense in which the instrument is ahead of the leaderboard while the score is behind it.
+
+### L.4 — R43: the third delivery reading, and what a leaderboard cannot see
+
+**The axis did not move and the instrument did.** R43 re-ran the R42 contrast with the reader repaired and
+the keys owned by the host:
+
+| entry | airline `pass^4` | n | what it means |
+|---|---|---|---|
+| IBM Research, learned guidelines | 82.0 | 50 × 4 | leaderboard submission, unverified |
+| SapientAI-Agent-Opus-5 | 72.0 | — | custom scaffold |
+| ALTK-Evolve (this lane's registered bar) | — | — | 57.5 retail; no airline number |
+| **microglia, reference arm (R43)** | **42.0** | 50 × 4 | stock `llm_agent`, deepseek-chat, no store |
+| **microglia, memory arm (R43)** | **38.0** | 50 × 4 | store of 24 items, **0 active, 0 served** |
+| stock `llm_agent`, gpt-oss-120b | 34.0 | 50 × 4 | one model family down, same harness |
+
+Still **fifth of six**, and the pair is not a measurement of the mechanism: −4.00pp with an interval of
+[−18, +10], against a minimum detectable difference of 20.97pp at 50 paired tasks. `tasksForFivePp` is 431 at
+this round's 14% discordance, which no split of a 50-task scenario can supply.
+
+**What the three rounds of this lane have in common, and it is the entry's real content.** Three times the
+memory arm published a number, and three times the treatment had not been delivered: R41 had no store, R42
+had a store the recall path could not reach, R43 has a store nothing admitted. The published deltas were
++4.00pp, +4.00pp and −4.00pp, which is exactly what a memory that does nothing looks like — and no column in
+any of the tables above, including this one, would have shown it. The `store`/`recall` census and `V1`'s
+population sentence are what make the third column say `0 served` instead of leaving it to be inferred from
+a null.
+
+**Where the standing claim now sits.** The honest claim after R43 is narrower than after R42 and better
+founded: the lane can learn from every failure it can read, it cannot yet admit what it learned, and it
+publishes the layer it fails at. Against a field whose top entries publish a score and nothing about whether
+their treatment arrived, that is a claim about method rather than about rank — and it is the only column in
+this appendix where the ordering is not in dispute.
