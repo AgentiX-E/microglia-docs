@@ -3827,7 +3827,7 @@ driver discarded the report that counted the refusals. `V32` and `V8` were absen
 `V44` passed on an empty ledger. **R42 is the instrument fix and the re-run**; §157 carries the reading,
 `AUDIT` §34.14 the four defects, and `TECH-DESIGN` §17.79 the boundary the model name crossed.
 
-### R42 — The store the memory arm never built (**dispatched** 2026-11-02)
+### R42 — The store the memory arm never built (**read** 2026-11-02)
 
 **Why the instrument and not the effect.** R41 graded the transfer family and measured an arm with no
 memory in it. No number from that pair can be read as an effect — `repaired: 12` came from a pack that
@@ -3855,3 +3855,42 @@ pack that did not exist.
 
 **Cost.** One dispatch through `sota.yml`, the same configuration as R41. No new dataset, no new model
 family, no change to the merge gate.
+
+**Outcome.** The store was built and the pack was still empty. Five predictions held: the model name is
+translated where the endpoint is known (`configured=deepseek/deepseek-chat sent=deepseek-chat`), the
+distiller answered all seven events it was given, `V44` fired on a non-empty store and passed (0 of 14
+items without a domain), `V8` fired on the distillation tally (0/7 calls), and the fired set grew by
+exactly two gates (11 → 13 evaluable, 28 → 26 absent). `V16` failed at **88 informative** against a
+hundred, as registered, and `l4-paired` reported **+4.00pp** at p = 0.6875 — a direction, not a rate.
+
+**The prediction that failed is the round.** `V1` was registered to pass "at a pack the artefact records".
+It failed at **0.00 rules/question**, from a store of fourteen items, on all 200 requests. The arm named
+`memory` received no memory. Two causes were found and neither is the mechanism:
+
+| defect | the field that held it | why it stayed silent |
+|---|---|---|
+| the domain on a claim was the model's spelling | `domainOrigin.storedWithDomain` | `V44` counts items *without* a domain; a wrong one is still one |
+| two thirds of the failures named no calls, so taught nothing | `learning.unanswered = 25` | `V32` fired, but there was no population beside `V1` to read it against |
+| `meanPackIds` cannot distinguish "never asked" from "served nothing" | `servedPackSizes` | a mean over no request is `0`, and so is a mean over 200 empty answers |
+
+R43 is the two repairs and the census, `§158` carries the reading, `AUDIT` §34.16 the defects, and
+`TECH-DESIGN` §17.82 the key.
+
+### R43 — The pack that served nothing, and the half of the failures that taught nothing (**dispatched** 2026-11-03)
+
+**Why.** R42 delivered a store and not a treatment: fourteen items, two hundred requests, zero served. The
+next round is the two defects that make those two numbers compatible — a key the reader never asks in, and
+a reader that could only learn from one of the two rubric forms τ² writes.
+
+**The registration is `prereg/R43-rubric.md`.** Its predictions, in short: `learning.edited` goes 7 → 32
+and `unanswered` 25 → 0; `V32` passes on a population of 32; `V1` either passes or fails with a sentence
+that names the layer, never as a bare rate; the census is the round's evidence and the delta is not;
+`V8` fires on at least 32 calls; `V16` and `V5` still fail, and **no bar moves this round** — 50 paired
+tasks cannot decide 5pp and taking the bar down in the same round that first delivers the treatment would
+make the treatment and its bar one decision.
+
+**Refutation.** A store of 32 items with `active: 0` means the defect is confidence and contradiction, not
+the key. `servable > 0` with `served = 0` moves the subject to the façade. An informative count below 88
+means the rubric-form lessons are prompt noise and must be ablated as their own arm.
+
+**Cost.** One dispatch through `sota.yml`, the same configuration as R42: about 1 h 20 min per arm.

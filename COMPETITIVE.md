@@ -1261,3 +1261,43 @@ a statement about the agent, not about the memory: the lane runs τ²'s stock ag
 scaffold work, and the entries above it are scaffolds. What the project can claim, and what this appendix
 records, is that its apparatus is the only one in the table that can say *whether* a treatment was applied
 — and that it said so about itself.
+
+### L.2 — R42: the delivery reading, and where the lane actually sits
+
+**The second dispatch moved the pairs and not the rank.** R42 re-ran the same axis with the instrument
+repaired, and the arms land inside each other's interval:
+
+| entry | airline pass^4 | n | what it means |
+|---|---|---|---|
+| IBM Research, learned guidelines | 82.0 | 50 × 4 | leaderboard submission, unverified |
+| SapientAI-Agent-Opus-5 | 72.0 | — | custom scaffold |
+| ALTK-Evolve (this lane's registered bar) | — | — | 57.5 retail; no airline number |
+| **microglia, reference arm (R42)** | **40.0** | 50 × 4 | stock `llm_agent`, deepseek-chat, no store |
+| **microglia, memory arm (R42)** | **44.0** | 50 × 4 | same episodes, store of 14 items, **0 served** |
+| stock `llm_agent`, gpt-oss-120b | 34.0 | 50 × 4 | one model family down, same harness |
+
+Microglia is **fifth of six named entries** on this axis, and the honest reading of its own two rows is that
+they are indistinguishable: 4.00pp with a 95% interval of [−6, +14] and p = 0.6875 over 50 paired tasks,
+against a minimum detectable difference of 13.73pp. The lead is inside the noise, and the reason is known:
+`V1-pack-not-empty` fired at 0.00 rules/question on all 200 requests, from a store that held fourteen items.
+
+**What R42 added to the table that no competitor publishes.** The census, which separates four defects that
+used to share one number:
+
+| quantity | R41 | R42 | the field |
+|---|---|---|---|
+| items stored / active / servable in the recall scope | 0 / 0 / 0 | **14 / 14 / 14** | `tau2.store` |
+| recall requests / served / empty | not recorded | **200 / 0 / 200** | `tau2.recall` |
+| failures the learner could read | 32 of 32 (refused) | **7 of 32** | `learning.edited`, `learning.unanswered` |
+| `V1`'s sentence | `0.00 rules/question` | `0.00 …: 0 of 200 request(s) carried an item, from a store of 14 (14 active, 14 in scope)` | protocol `V1` |
+
+The third row is the one a leaderboard cannot see and this document's whole argument turns on: both arms of
+both rounds published a pass^4, and in three of the four cases the treatment had not been delivered at all.
+
+**Where the SOTA question stands after two instrument rounds.** On BIRD Mini-Dev this project's numbers are
+competitive and its own published deltas are resolvable; on τ²-bench it is not near the top, its bar is
+unreachable at the benchmark's population (`tasksForFivePp` = 185 at R42's discordance against 50 airline
+tasks), and the one claim it can make — that a *transfer* treatment was measured with a ledger rather than
+asserted — is a claim no entry in the table makes at all. Being fifth while publishing the instrument that
+would expose a first place as undelivered is the position this project chose, and R43 is the round that
+first puts a pack in the prompt.

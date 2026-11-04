@@ -5572,3 +5572,187 @@ ask what a name will become without constructing a client; `resilientInterpreter
 `eval/tau2-distill.ts` and `eval/stopped-run.ts`. The protocol package changes in one place — the `V44`
 predicate and its two strings — and every BIRD artefact still validates, because the population term is
 satisfied by every store that has anything in it.
+
+### 17.80 Three exhaustive verdicts, and a pass that is not a gap
+
+**Two defects of the same shape, found one day apart.** §17.79 fixed a store that was empty because a
+model name was wrong. Reading that round's own artefact for the write-up exposed two more decisions that
+were *nearly* right: a status classifier whose last arm could not be taken, and a ledger whose numerator
+counted the model's successes as the record's losses. Neither changed a number in R42 — the run was
+already dispatched when they were found — and both would have changed the next one.
+
+**A status the provider will repeat is not a prompt that failed.** `LlmClient` had three terminal paths
+for a non-ok reply and the third was unreachable:
+
+```
+if (status >= 500 || 429)                 -> transient, retry        (reachable)
+if (status === 402)                        -> MG_E_CONFIG, no credit  (reachable)
+if (!ok)  ... throw MG_E_STORE_IO          (every non-ok status that is not the two above)
+```
+
+Every status an HTTP response can carry is either `>= 500`, `429`, `402`, or in `4xx`. The `4xx` arm
+therefore *was* the fall-through, and it reached `MG_E_STORE_IO` — the code `stoppedRun` classifies as
+**per-prompt**, which is exactly wrong for a request the provider will refuse identically next time. The
+repair is not a fourth branch; it is to decide once, in three cases that between them cover the domain:
+
+| status | verdict | what the client does | code |
+|---|---|---|---|
+| `5xx`, `408`, `409`, `425`, `429` | `transient` | retries after the back-off, counts nothing | — |
+| `402` | `unpaid` | stops: sending again cannot help, and neither can sending something else | `MG_E_CONFIG` |
+| every other `4xx` | `refusal` | stops, naming the status, the model and the body | `MG_E_CONFIG` |
+
+`verdictOf` returns one of three strings and the loop switches on it, which means the compiler can see
+that the cases are exhaustive and the coverage report has nothing to be told to ignore. The distinction
+the third case draws is the one R41 needed: `MG_E_CONFIG` is in `stoppedRun`, so thirty-two refused
+distillation prompts end the **run** at the point of the fault instead of being absorbed one at a time as
+prompts that came back empty. `MG_E_STORE_IO` still exists and still means one prompt that failed after
+every attempt was spent — the case a caller's `try` is for.
+
+**A pass is not a question the record lost.** `V32-fold-learning-intact` asks how many learning questions
+went unanswered: `unansweredShare <= 0.1`, blocking. The τ² driver answered it with
+`train.length - corrections.length`, and on a training half where the model solves a third of the tasks
+that arithmetic reports 33% unanswered for a store built from **every single failure**. The gate would
+fail on an arm whose treatment is exactly the one it was registered as, and the failure would describe the
+model's skill rather than the store's provenance.
+
+The gate's own words separate the three cases, and the τ² lane is the first one where all three occur:
+
+| what happened to the task | correction | counts as unanswered? |
+|---|---|---|
+| the model passed it | none — nothing went wrong | **no**: the store the fold paid for is the failures |
+| it failed, and the criteria name the calls that should have happened | one | no |
+| it failed, and the criteria are empty | none | **yes**: the question the record lost |
+| it was never scored | none | **yes**: a missing measurement is not a pass |
+
+`teachingOf` is now the single place that decides whether a task teaches, and the two callers read it in
+opposite directions: `learnableCorrections` keeps the ones that teach, `unansweredTasks` keeps the ones
+that do not teach *and* were not passes. Two copies of one decision drift; R41 is what drift looks like
+from a distance, because the arm that round measured had an empty store — `unanswered` and `corrections`
+were both maximal, and the arithmetic looked right for the wrong reason. The driver's log line now states
+both numbers side by side, `N correction(s) from M task(s), K unreadable`, because together they are the
+population `V32` grades.
+
+**Interfaces.** `unansweredTasks(tasks, rewards, threshold?)` is exported from `eval/tau2.ts` and
+re-exported from the package index; `teachingOf` and `verdictOf` are file-local, since neither is a
+question another lane asks. No new package edge, no artefact field, no change to any gate's criterion.
+
+### 17.81 The requirement was published and the supply was not
+
+**A number that answers half a question.** `resolutionOf` reports `tasksForFivePp`: how many paired
+tasks a 5pp half-width would take at the discordance the pair observed. R41's pair observed nine
+discordant tasks in fifty, so the answer is **277**. A reader of that number still cannot tell whether
+another dispatch would help, because the other half of the comparison — how many tasks the scenario
+has — was nowhere in the artefact. The split is what the run was scored on; the scenario's size is
+what it was drawn from, and a dispatch cap makes the two indistinguishable.
+
+**The field, and where it comes from.** The driver lists every task in both scenarios before it draws a
+split, so the listing is already paid for. `scenarioTasks: { learn, test }` records it, `Tau2ArmRecord`
+carries it, and the pair publishes:
+
+```
+ceiling = ceilingOf(comparison, scenarioTasks.test)
+  tasks           the scenario's whole task set
+  halfWidthPp     1.96 x SE at that sample
+  mde80Pp         2.802 x SE at that sample      (what V5 grades)
+  resolvesFivePp  halfWidthPp <= 5
+```
+
+**Two multipliers, because the record has always quoted the wrong one on its own.** The 95% interval
+uses `1.96`; the 80%-power minimum detectable difference the protocol grades uses `2.802`. They differ
+by a factor of 1.43, and a lane that publishes the first while grading the second reports a 12pp
+half-width and fails a 17pp bar — the same defect `l4-resolution` had when it was advisory, one layer
+down. `ceilingOf` returns both, so the two cannot be read apart.
+
+**What the number says about τ², in one table.** Holding the discordance rate at R41's 18%:
+
+| paired tasks | 95% half-width | 80%-power MDE | what it is |
+|---|---|---|---|
+| 50 | 11.76pp | 16.81pp | R41's and R42's evaluation sample (a cap) |
+| 57 | 11.01pp | 15.75pp | the largest half a 115-task scenario affords at a 50/50 split |
+| **115** | **7.75pp** | **11.09pp** | **every task τ²-retail has** |
+| 277 | 5.00pp | 7.14pp | the interval requirement |
+| 566 | 3.50pp | 5.00pp | the *detectable-difference* requirement |
+
+The requirement and the supply do not meet, and the gap is not close: a 5pp effect needs five times
+the tasks the scenario contains. That converts "R41 was underpowered" — which invites another
+dispatch — into "no split of τ²-retail can decide an effect below 11pp", which is a property of the
+benchmark. The same arithmetic applies to τ²-airline, which has 50 tasks and therefore a floor of
+16.81pp at any sample.
+
+**Why this is an artefact field rather than a paragraph.** A prose ceiling survives only if its reader
+happens to know that retail carries 115 tasks; the field is recomputed from the arms on every pairing
+and moves when the discordance does. It is absent on every artefact written before it existed, and the
+pair then states no ceiling rather than one built from a guess — the same rule `V44` learned about
+populations, applied to a bound.
+
+### 17.82 The host owns the key, and a rate travels with its population
+
+**Two defects with one shape: a value taken from the party that does not own it.** §17.79 fixed a model
+name; §17.80 fixed a status classifier and a numerator. R42's artefacts then showed the same shape twice
+more, one layer closer to the measurement — a store of fourteen items whose every claim carried a domain
+the recall path never asks in, and a learner that could read one of the two rubric forms τ² writes.
+
+**The scope key.** `KnowledgeScope` has five fields, and recall filters on two of them:
+
+```
+MemoryStore.search(query)
+  candidates = lexical(q.text)                      // BM25 over stored statements
+  if query.scope: for each item with status 'active',
+                   item.scope.task === query.task, scopeMatches(item.scope, query)
+                     -> add to candidates
+  scored = candidates.filter(active && scopeMatches)  // scopeMatches compares domain equality
+```
+
+`task` is taken from the event, which is the host's own value. `domain` came from the model's JSON
+through `parseScope`, whose only guarantee is that the string is 1..80 characters. A model that answers
+`Retail (US)` for a run the host calls `retail` has written a claim that is stored, active, counted by
+`V44` (it *has* a domain), and unreachable — the write side succeeded and the read side can never ask for
+it.
+
+`stampDomain(interpreter, domain)` overrides `scope.domain` on every candidate the interpreter returns.
+An override rather than a default: filling in only when absent would leave the model in charge of the key
+whenever it felt confident, which is the case that fails. It wraps the composite, so the rule fallback is
+stamped too — a store half-keyed by the model and half by nobody would be worse than either.
+
+**The reader.** τ² domains disagree about how to write a rubric:
+
+| domain | `evaluation_criteria` | `taskCorrection` before R43 | after |
+|---|---|---|---|
+| `airline` | `actions: [{name, arguments}]` | a call sequence | unchanged (preferred) |
+| `retail` | `nl_assertions: ["…"]`, no actions | **nothing** — 25 of 32 failures | a prose statement of what must be true |
+
+The fallback is not a weaker copy of the first form. An order of tool names with arguments can be followed
+without interpretation; a statement of the end state has to be turned into a procedure by the distiller,
+which is exactly the work the interpreter exists to do. What both share is that they say what *should have
+happened* rather than that something went wrong, which is the only thing a correction can be learned from.
+
+**A rate and its population.** `meanPackIds` is the mean of `servedPackSizes`, so it is `0` when the agent
+never asked and `0` when it asked two hundred times and was served nothing. The arm record gained two
+fields, and `V1`'s sentence gained a clause:
+
+```
+store:  { stored, active, servable, statuses: { active, candidate, quarantined, retired, other } }
+recall: { requests, served, empty }
+
+V1 actual (population recorded):
+  0.00 rules/question: 0 of 200 request(s) carried an item, from a store of 14 (14 active, 14 in scope)
+V1 actual (no request):
+  0.00 rules/question: the store held 14 item(s), 14 of them active, and the agent made no recall request
+V1 actual (no population recorded, every artefact before R43):
+  0.00 rules/question
+```
+
+`servable` is defined the way `search` defines reachability — `active` **and** the recall scope's domain —
+rather than by a census of its own. A census with its own definition could agree with a broken retrieval
+path; this one cannot.
+
+**Why the population is not its own gate.** It grades nothing: a store of fourteen items that serves one
+per question and a store of fourteen that serves nothing are separated by `V1` already. What the census
+adds is the *layer* — asked / active / servable / served — and a gate that fired on it would be a gate
+that fails whenever the instrument is being debugged, which is the round when a reader needs it most.
+
+**Interfaces.** `stampDomain(interpreter, domain): Interpreter` and `storeCensus(items, recallDomain):
+StoreCensus` are exported from `@agentix-e/microglia-eval`; `Tau2Raw`/`Tau2ArmRecord` carry `store?` and
+`recall?`; `ProtocolGateInput.packPopulation?` is supplied by the τ² projection under the same `supplied`
+field as `meanPackIds`, so the gate index in the pair report does not move (13 supplyable, 26
+arm-indexed). `TauTask.assertions` is parsed from `evaluation_criteria.nl_assertions`.

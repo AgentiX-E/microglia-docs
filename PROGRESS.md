@@ -9266,3 +9266,56 @@ on artefacts that do not exist, item 11 is excluded by the owner, and **item 10 
 terms**: the SOTA push is closed not because the levers ran out but because the instrument that would have to
 detect the next lever resolves 2pp on the only corpus large enough to be worth measuring, and no lever in
 this record has ever produced 2pp.
+
+## 158 — The pack that served nothing, from a store that held fourteen items
+
+**R42 ran** (run `41468737074`, `prereg/R42-instrument`, `bird=false`, `l4_arms=both`), and it did what it
+was dispatched to do: the store R41 never built existed. The evidence, from `arms/memory/poc-l4.json`:
+
+| reading | R41 | R42 | what it means |
+|---|---|---|---|
+| `learning.edited` | 32 of 32 (all refused) | **7** of 32 | the distiller answered; the *reader* could read 7 |
+| `learning.distilled` | 0 | **14 items** | two candidates per correction |
+| `learning.distillFailed` | 32 | **0** | the model name is translated at the endpoint |
+| `learning.unanswered` | 32 (arithmetic) | **25** | retail's failures name no calls |
+| `meanPackIds` | 0.00 | **0.00** | the façade served nothing, 200 times |
+| `V1-pack-not-empty` | FAIL | **FAIL** | the same sentence for a different cause |
+| `V32-fold-learning-intact` | absent | **FAIL, 25/32 (78.1%)** | the gap the reader created |
+| `V8-call-reliability` | absent | pass, 0/7 calls | seven calls, none refused |
+| `V44-domain-accounted` | pass on `0 <= 0` | **pass, 0 of 14 without a domain** | every item had one |
+| `V15` / `V33` / `V17` | 72 informative, −5.00pp | **88 informative, +4.00pp** | 23 repaired, 15 broken, `unmeasured` |
+| `V16` | FAIL, 72 < 100 | **FAIL, 88 < 100** | the scenario's easy episodes |
+| `l4-paired` | −10.00pp, p = 0.18 | **+4.00pp, p = 0.6875**, n = 50 | 2 lost, 4 gained |
+| `pass^4` | 0.36 / 0.46 | **0.44 / 0.40** | memory above reference, inside the interval |
+| `V5-resolution` | 12.0pp | **13.73pp** | 6 discordant of 50, SE 4.90pp |
+
+**The round's headline is not the +4pp.** It is that the arm called `memory` received no memory on any of
+its 200 requests, and the record carried both halves of that fact in fields that could not be read
+together: fourteen items in `domainOrigin.storedWithDomain`, and `0.00 rules/question` in `meanPackIds`.
+`V44` was quiet because every item carried a domain — a *wrong* domain is still a domain — and `V1` had no
+population to report, so its sentence could not say which of three zeros it was.
+
+**Two defects, both about a key rather than a mechanism.** First, the domain on every claim was the
+model's spelling: `parseScope` takes `task` from the event and `domain` from the model's JSON, the prompt
+forbids a guess and nothing validates one, and `MemoryStore.search` filters on `scope.domain` equality
+while the façade asks in the host's spelling. A claim stored as `Retail (US)` is active, counted, ledged
+and unreachable. `stampDomain` gives the key to the host — the only party that observed the scenario — on
+both branches of the fallback, and the suite holds the experiment in two halves so the claim is a test.
+
+Second, two thirds of the failures had nothing to teach, and the reason was the reader: τ²'s `retail`
+domain states `nl_assertions` and names no calls, and `taskCorrection` read `actions` only. `TauTask`
+now carries the prose rubric, `taskCorrection` falls back to it, and `teachingOf` stays the single
+decision so the corrections and the unanswered ledger cannot disagree. The prediction for R43 is `edited`
+7 → 32 and `unanswered` 25 → 0.
+
+**What R43 does not do is move a bar.** `V5` grades 5pp against a scenario whose whole population is 50
+paired tasks — `tasksForFivePp` is 185 at R42's discordance, and airline has 50 — so no dispatch of this
+lane can meet it. Moving the bar needs a registration field and its own round, and taking it in the same
+round that first delivers the treatment would make the treatment and its bar one decision. `R43-rubric`
+registers that expectation explicitly, in the `V5` and `V16` predictions.
+
+**Where the project stands.** Two rounds have been spent repairing the instrument, and the mechanism has
+still not been measured with a pack in the prompt. That is now one dispatch away, and the census R43
+records makes the next reading self-explaining: `served = 200` is delivery, `served = 0` with
+`servable > 0` moves the subject to the façade, and `servable = 0` keeps it in the store. Gates at the
+time of writing: **2,883 tests across 137 files, 99.98 / 99.70 / 100 / 99.98**, `pnpm check` exit 0.

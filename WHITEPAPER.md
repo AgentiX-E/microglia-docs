@@ -2867,3 +2867,76 @@ host's, conditional on the failure being this event's rather than the run's — 
 the run at distillation instead of emptying a store quietly. The driver keeps the report it used to
 discard, so `V32` and `V8` fire. And the ledger gate requires a population, because an aggregate check over
 nothing is the one failure mode a gate cannot report about itself.
+
+#### 3.6.37 What a benchmark cannot be asked, stated as a number
+
+**A bar and a population.** The τ² lane's registered bar for the paired comparison is 5pp. Two numbers
+decide whether that bar is reachable, and until now the record published only one of them: how many
+paired tasks a 5pp difference requires, and how many tasks the scenario actually has. The first was in
+every artefact (`tasksForFivePp`); the second was in nobody's, because the run is scored on a *split*
+and a split of fifty looks the same whether it was drawn from fifty tasks or a thousand.
+
+**They do not meet.** At the discordance the τ² pairs have observed — about a fifth of tasks — a 5pp
+interval takes **277** paired tasks and a 5pp *detectable difference* at 80% power takes **566**. τ²-retail
+carries **115** tasks and τ²-airline **50**. At every task each scenario holds, the floor is:
+
+| scenario | tasks | smallest 95% interval | smallest 80%-power difference |
+|---|---|---|---|
+| τ²-airline | 50 | 11.76pp | 16.81pp |
+| τ²-retail | 115 | 7.75pp | 11.09pp |
+
+So no dispatch of this lane, on either scenario, can decide a 5pp effect — not because the sample was
+drawn badly, but because the population it is drawn from is smaller than the question. "R41 was
+underpowered" invites another dispatch; "no split of τ²-retail can separate 11pp from zero" does not.
+
+**What the lane does about it.** It publishes the ceiling beside the requirement: the arms record how
+many tasks each scenario holds, and the pair reports the smallest difference the whole scenario could
+decide, with both the interval and the power-graded statistic, because they differ by a factor of 1.43
+and a lane that quotes one while grading the other reports a 12pp half-width against a 17pp bar. What
+it does *not* do is move the bar quietly. A bar chosen after seeing the supply is a bar chosen to be
+met; the honest sequence is to state the reachable bar in the next registration, before the next
+measurement, and to say that the τ² transfer claim is a direction rather than a verdict at any sample
+this benchmark affords.
+
+**The general form.** A benchmark's size is part of the content of any claim made on it. Where the
+population is fixed by the corpus rather than by the dispatch, "underpowered" describes the *claim*, not
+the run — and a record that cannot tell those two apart will keep paying for dispatches that cannot
+answer the question they were bought for.
+
+#### 3.6.38 Delivery and effect are two different claims
+
+**A number that cannot be read alone.** The τ² arm published `pass^4` 0.44 against the reference's 0.40 —
+a four-point lead. It also published `0.00 rules/question`: the agent received no memory on any of its two
+hundred requests, because a store of fourteen items had been built under a domain key the recall path never
+asks in and the learner had been able to read only the seven failures of thirty-two that named their tool
+calls. The lead is real and means nothing: two arms that both received nothing differ by luck.
+
+That is the distinction this project's gates were built for and had not yet enforced at the top: **delivery
+is a claim about the prompt, and effect is a claim about the reward.** A reader who sees only the reward
+cannot tell a mechanism that does not transfer from a mechanism that never arrived, and the second is the
+more likely explanation in any system whose plumbing is new.
+
+**Three zeros, one sentence.** `0.00 rules per question` is produced by four different defects in four
+different layers:
+
+| what happened | where the defect is | the sentence that says so |
+|---|---|---|
+| the agent never called recall | the agent or its configuration | "…and the agent made no recall request" |
+| the store held nothing active | the distiller's confidence or a contradiction | "…from a store of 14 (0 active, 0 in scope)" |
+| the items are stored under a key nobody asks in | the scope written at distillation | "…from a store of 14 (14 active, 0 in scope)" |
+| the façade dropped what the store offered | the recall endpoint | "0 of 200 request(s) carried an item…" |
+
+The arm now records the census behind the rate and the gate prints it, because a gate that fires with a
+rate alone sends its reader to the wrong layer — which is precisely what happened for two rounds.
+
+**Both rubrics, or two thirds of the lessons are lost.** τ²'s domains disagree about how to state a success
+criterion: one names the calls, the other states what must be true at the end. A learner that reads only
+the first discards 78% of its failures, and the gate that would notice is graded against a population the
+learner itself defines — so the loss looks like a property of the corpus. The correction now carries either
+form, and the count of failures that taught nothing is a separate number in the record.
+
+**What this costs the SOTA claim.** Two rounds have gone into the instrument, and the mechanism has still
+not been measured with a pack in the prompt. The honest summary is that the τ² lane's number is a *delivery
+reading* until R43 lands: 0.44 vs 0.40 on 50 paired tasks, p = 0.6875, minimum detectable 13.73pp. A
+four-point difference at that resolution is not evidence for or against the memory, and publishing it as a
+ranking would be the same mistake as publishing a rate without its population.

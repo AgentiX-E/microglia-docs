@@ -2427,3 +2427,129 @@ answered by arithmetic; §34.13 recorded an id that was unique inside a scenario
 another; this section records a *model name* that was correct in one client and wrong in the other. In each
 case the value was right where it was written and wrong where it was read, and in each case the fix was to
 name the boundary rather than to correct the value.
+
+### 34.15 The third arm was unreachable, and the numerator counted the wrong thing
+
+§34.14 was written from R41's artefacts. Reading them again for the registration of R42 — a round whose
+whole purpose is to make those readings reach a gate — exposed two more decisions in the same lane that
+were *nearly* right. Neither changed a number in R42, which was already dispatched; both would have
+changed the next dispatch, and one of them would have failed an arm that was correct.
+
+**Defect 5: a status classifier whose third arm could not be taken.** `LlmClient` decided what to do with
+a non-ok reply in three steps, and the third was unreachable as written:
+
+| step | condition | outcome | reachable? |
+|---|---|---|---|
+| 1 | `status >= 500 \|\| status === 429` | retry | yes |
+| 2 | `status === 402` | `MG_E_CONFIG`, no credit | yes |
+| 3 | everything else non-ok | `MG_E_STORE_IO` | **the `4xx` range *was* "everything else"** |
+
+Every status an HTTP response carries is `>= 500`, `429`, `402`, or in `4xx`. So the third arm was not a
+default for exotic statuses — it was the arm every refusal took, and it threw the code `stoppedRun`
+classifies as **per-prompt**. A model id the endpoint does not serve therefore reached the run as a
+prompt that failed after retries it never made, which is precisely the misreading R41 published. The fix
+decides once, in three exhaustive cases (`transient` / `unpaid` / `refusal`), and `refusal` is
+`MG_E_CONFIG` — run-level, because the provider will refuse the identical request identically.
+
+The general form of this defect is not "a missing branch". It is that **a fall-through arm is invisible
+in exactly the way a default is**: it looks defensive and it is doing the work. The test that would have
+caught it is the one the round wrote afterwards — a 400 must stop the run, not decrement a store.
+
+**Defect 6: `V32`'s numerator counted the model's passes as the record's losses.** The gate reads "at most
+10% of the learning questions went unanswered". The τ² driver answered with
+`train.length - corrections.length`, and a correction exists only for a task the model **failed**. On a
+training half where the model solves a third of the tasks, a store built from every single failure
+reports 33% unanswered and the gate — blocking — fails an arm whose treatment is exactly the one it was
+registered as.
+
+This is the mirror of §34.14's defect 4, and the pair is worth stating together:
+
+| | population | numerator |
+|---|---|---|
+| `V44` (R41) | **empty**, so `0 <= 0` passed | n/a |
+| `V32` (R41) | correct (32 training tasks) | **wrong**: a pass is not a gap |
+
+A gate that certifies an empty population and a gate that fails a correct arm are the same failure from
+opposite sides: neither of them is measuring what its criterion says, and both are believed because a
+gate is believed. `V44`'s repair was to put the population in the criterion. `V32`'s is to put the
+numerator's definition where the decision is made, once: `teachingOf` says whether a task teaches,
+`learnableCorrections` keeps the ones that do, and `unansweredTasks` keeps the ones that do not teach
+*and* were not passes — unscored and criteria-less failures. The driver reports that count, and its log
+line states both numbers (`N correction(s) from M task(s), K unreadable`) so the two cannot be read
+apart.
+
+**Why R41 could not have shown it.** The arm that round measured had an empty store: zero corrections,
+thirty-two unanswered, both maximal, and the arithmetic looked right for the wrong reason. The defect
+was visible only in the shape of the code, which is the argument for reading the code after reading the
+artefact rather than instead of it.
+
+**What covers each fix now.** `verdictOf`'s three cases are exercised by a 400 (refusal),
+`408`/`409`/`425` (transient) and `402` (unpaid), with `model-client.ts` at 100% on all four dimensions;
+`unansweredTasks` has four cases — passed, failed-with-criteria, failed-without-criteria, unscored — and
+the driver's end-to-end test reaches the arithmetic through a stand-in runner that states each task's
+expected tool calls, so the correction is real rather than stubbed. Full suite at the time of writing:
+**2,862 tests across 137 files, 99.98 / 99.69 / 100 / 99.98**.
+
+### 34.16 Two keys, one empty pack, and a rate with no population
+
+§34.15 was written from reading R42's *code* before its numbers existed. R42 then ran, and its artefacts
+carry a reading that makes both of that section's defects look like the easy half: the store was built
+(14 items, 0 distiller failures), the ledger reconciled, `V44` passed on a real population — and
+`meanPackIds` was **0.00 over 200 requests**. The arm named `memory` received no memory, for the second
+round running, from a store that was no longer empty.
+
+**Defect 7: the domain on every claim was the model's spelling.** `parseScope` takes `task` from the event
+and `domain` from the model's JSON. The prompt forbids a guess; nothing validates one. `MemoryStore.search`
+then filters items on `scope.task` **and** `scope.domain` equality, and the recall façade asks in the
+host's spelling — so a claim stored as `Retail (US)`, `retail_domain` or `Retail.` is active, counted,
+ledgered and **unreachable**, and every one of the three symptoms is invisible to the gate that looks
+closest: `V44` counts items *without* a domain, and these have one.
+
+The fix is not a normaliser, which would leave the model in charge of the key and require a mapping for
+every spelling it might invent. It is `stampDomain`: the host observed the scenario, so the host's string
+overrides whatever the interpreter returned, on both branches of the fallback — the rules write a scope of
+their own, and a store half-keyed by the model and half by nobody is worse than either.
+
+**How this is known rather than asserted.** The suite holds the experiment in two halves: one store, one
+claim, one question, and the only difference is the stamp. With it, the item is `active` under
+`domain: retail` and the pack serves it; without it, the item is `active` under `domain: 'Retail (US)'` and
+the pack is empty. Both halves pass, so the mechanism is a measurement rather than a story — and the
+second half is a permanent record of what R42 looked like from inside.
+
+What this does **not** establish is that R42's twelve items were mis-spelled. They lived in a store the
+job deleted. The stamp removes the class; R43's census names the instance.
+
+**Defect 8: `V1`'s rate had no population, so three different defects read the same.** `0.00
+rules/question` is produced by: the agent never asked; the store held nothing active; the items were stored
+under a key the recall does not ask in; or the façade dropped what the store offered. Four layers, one
+number. The arm now records `store` (stored, active, servable-in-scope, and a status histogram) and
+`recall` (requests, served, empty), and `V1`'s sentence reads
+
+```
+0.00 rules/question: 0 of 200 request(s) carried an item, from a store of 14 (14 active, 14 in scope)
+```
+
+which is a different sentence, about a different layer, from `…and the agent made no recall request`. The
+gate grades nothing new; it explains, which is what a gate owes a reader when it fires.
+
+**Defect 9: the learner could read one of the two rubric forms τ² writes.** `learning.edited` was 7 of 32
+and `learning.unanswered` 25, and the reason was not the corpus: τ²'s `retail` domain checks database
+state and states `nl_assertions`, while `airline` names the expected calls. `taskCorrection` read
+`actions` only, so 25 failures whose rubric says exactly what should have happened taught nothing, and
+`V32` — the gate built to catch a lost question — fired at 78.1% against a store that had read every
+failure it could.
+
+`TauTask.assertions` carries the prose rubric; `taskCorrection` prefers the calls (they are the sharper
+lesson) and falls back to the assertions; `teachingOf` remains the single decision, so `learnableCorrections`
+and `unansweredTasks` cannot drift apart. A task that states neither still teaches nothing and is still
+counted, which keeps the gate's population honest in the other direction.
+
+**The pattern across §34.14, §34.15 and §34.16 is one thing.** R41: a name carried across a boundary that
+does not preserve meaning. R42: two keys, both taken from the party that does not own them. Each round the
+defect moved one layer closer to the measurement, and each was found by reading the artefact for a number
+that could not be true — `0.00` beside `14`, `32/32` beside `failures: 0`. The gates fired; the sentences
+did not say enough. That is what §34.15 and this section spent their length on.
+
+**Coverage at the time of writing.** `2,883 tests across 137 files, 99.98 / 99.70 / 100 / 99.98`;
+`tau2-distill.ts` at 100 on all four dimensions, `tau2-instrument.ts` at 100, `tau2.ts` at 100,
+`gates.ts` (protocol) at 100.
