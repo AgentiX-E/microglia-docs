@@ -5923,3 +5923,72 @@ learn split does **not** hold 31 items as candidates, and that a non-`correction
 promoted. Then the implementation. Then `pnpm check`, coverage on all four dimensions ≥ 95% (goal
 100%), no mocks, and `ci.yml` green before dispatch. `prereg/R45-admission.md` registers the
 predictions and the revert rule in advance.
+
+### 17.86 R45 shipped, and the dependency order of everything still open
+
+**State at dispatch.** `pnpm check` exit 0; 2,921 tests across 139 files; coverage
+99.98 / 100 / 99.67 / 99.98. Commits `b88623e` (the repair), `bd456c3` (the
+coupling snapshot) pushed as `c65468f0` and `26f7c3f0`. CI run `42129954733`
+failed on the missing snapshot and `42130978881` is green after it; `AUDIT`
+§34.20 carries the defect. R45 run `42131391874` is dispatched on `26f7c3f0`,
+`prereg=R45-admission`, both arms, about 1 h 20 min. No result is claimed until
+its readback.
+
+**The remaining work, with its dependency order and why each waits.** Ten items,
+in the order the evidence permits:
+
+1. **R45 readback** — `store.active`, `store.servable`, `recall.served`,
+   `meanPackIds`, `V1`, the admission means and `l4-paired`. Blocks everything
+   below that concerns an effect rather than an instrument.
+2. **The revert rule** — if a served pack makes `l4-paired` significantly
+   negative or below −5pp, the repair is reverted on the reading. No explanation
+   is allowed to keep a treatment that costs accuracy.
+3. **R46 candidate: ablate the admission rule itself** — float evidence weight
+   against distinct-task count, and `minSupport` alone against a `sup3`-style
+   corroboration floor (IBM's 45.0% airline core). Three arms, one store, one
+   pre-registration, `l4-paired` as the dependent variable. **Blocked on (1)**:
+   all three are unmeasurable with zero served items.
+4. **Transcript-level `V46`/`V47`** — the BIRD lane's gates are closed (R22/R23),
+   but the τ² driver does not hand its trajectory to the gate layer. `parseTauResults`
+   reads only `task_id` and reward; the upstream `simulations[].messages` carry the
+   tool calls. **Blocked on (1)** for the same reason, and on a driver change that
+   must not move R45's pinned head.
+5. **S1a / S1b** — S1a (public ambiguity labels) is testable independently;
+   S1b needs the private vocabulary set and is a product decision, not a gate.
+6. **`sota.ts` split on the signature cut rule** — stage 3 of R27, mechanical,
+   "changes no number". 2,243 lines; acceptance is that all four coverage
+   dimensions do not regress and `pnpm eval:protocol` re-validates the 31
+   committed artefacts. Safe to parallelise with (1), but deliberately deferred
+   until the readback so a mechanical move cannot be confused with a result.
+7. **`eval-sql` package** — moving the eight SQL modules is the other half of
+   stage 3; same acceptance bar, same deferral.
+8. **vitest 4 migration (W2)** — vite 7 is already in the toolchain, but the
+   migration changes coverage semantics. Deliberately last: a coverage-number
+   change in the same round as an effect measurement would make two explanations
+   indistinguishable.
+9. **Dose curve (W8 follow-up)** — three pack sizes, one store, powered to find
+   where the ~1.7pp-per-rule cost crosses zero. Needs a served pack, so blocked
+   on (1).
+10. **cortex release dependency (W1)** — explicitly **excluded** from this
+    programme; the adapter carries a structural copy until `@agentix-e/cortex-*`
+    publishes.
+
+**Priority table.**
+
+| priority | item | trigger | acceptance |
+|---|---|---|---|
+| P0 | R45 readback + revert rule | run `42131391874` completes | `served > 0`, or a named next defect; revert on a negative effect |
+| P0 | CI green on every head | every push | `ci.yml` success, four coverage dimensions ≥ 95% |
+| P1 | R46 admission-rule ablation | `served > 0` | three arms, pre-registered, no threshold changed silently |
+| P1 | transcript-level V46/V47 | driver hands over `simulations[].messages` | gates read the prompts that were sent |
+| P2 | `sota.ts` / `eval-sql` split | any time after the readback | coverage does not regress, 31 artefacts re-validate |
+| P2 | dose curve | served pack + power calculation | interval on the crossing point |
+| P3 | S1b, vitest 4, W1 | product decision / deliberate migration / cortex release | each has its own registered bar |
+
+**Why nothing above was dispatched simultaneously.** A dispatch is pinned to a
+head. Starting a second workflow while R45 is measuring would either reuse the
+same artefact name (`poc-sota-bird-R45-admission.json`) or require a new head, and
+either way the readback would no longer name the treatment it measured. Parallel
+work this round was therefore confined to source study (`COMPETITIVE` L.6),
+documentation and offline measurement — all of which change no number the run
+will report.

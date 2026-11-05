@@ -1425,3 +1425,51 @@ existing `editSemantics` hook and predicates the dispatch on `served > 0`.
 six named entries and the only entrant publishing `store.active`, `recall.served` and `V1`'s
 population — the three numbers that say whether the treatment arrived. The gap is not a score gap yet;
 it is a delivery gap, and R45 is the first round that can close it.
+
+### L.6 — The competitor's source code, read on 2026-11-06
+
+**Repository.** [`AgentToolkit/altk-evolve`](https://github.com/AgentToolkit/altk-evolve), branch
+`main`, 135 stars, 418 Python modules, "Self improving agents through iterations". The README reports
+the same loop on a second benchmark: a GPT-4.1 ReAct agent on AppWorld's held-out split goes from
+**50.0% to 64.3% (+14.3pp)** with Evolve. Architecture: trajectories → extracted insights → database
+→ fed back into the agent; the full service adds an MCP server, vector storage, LLM-based conflict
+resolution, and **guideline consolidation that clusters and merges equivalent advice while preserving
+support counts and source provenance**.
+
+**The admission definition, from the code rather than the blog.**
+`experiments/guideline_pipeline/stages/export.py` states it directly: support is
+"the number of **distinct supporting source tasks**, or `support` in metadata, 1 when absent, for a
+guideline whose provenance is partial; core is `support >= core_support`; `min_support` is a floor
+applied before the split". The exported playbook is `{"r": rule, "n": support, "e": evidence}` with
+evidence coded `s` / `f` / `b` (success / failure / both), and `_floor(rows, min_support)` drops
+every row below the floor before export. `guidelines.py` imports the library's `_support` from
+`llm/guidelines/retrieval.py` rather than redefining it, with the comment "so core / min-support here
+mean exactly what they mean to `EvolveClient.select_guidelines`" — one decision point, the same
+discipline this repository applies to `scoreKnowledge`. Rows are sorted by support descending with
+rule text, evidence and id as ties, "so the rest only makes the order total and reproducible".
+`stages/consolidate.py` delegates clustering, merging and support attribution to
+`EvolveClient.consolidate_guidelines` and reports `support_before → support_after`.
+
+**What the comparison actually says.** This is the `sup3` core behind the 45.0% airline result:
+rules supported by at least three distinct training tasks. Three design differences are now visible
+and all three are measurable:
+
+| axis | ALTK-Evolve | microglia (before R45) | microglia (R45) |
+|---|---|---|---|
+| unit of support | integer count of distinct source tasks | float `evidence.weight × trust`, merged | unchanged, but `trust` is no longer priced by tool arity |
+| admission floor | `min_support` (default 1), `core_support` 3 for the reliable core | `minSupport` 0.8 **and** `activationThreshold` 0.6 on confidence | same thresholds, corrected evidence input |
+| selection | whole-rule Markdown list, ordered by support | scoped pack filtered by `scope.task` + `scope.domain` | unchanged |
+| provenance | preserved through consolidation | `statusReason`, `evidence[]`, `scope` owner stamped by host | item-level `admission` census added |
+
+The competitor's most important number for this project is still its own negative
+result — 101 lossless guidelines at 40.0% Pass^4 against 14 `sup3` guidelines at
+45.0% — because it says the **selection rule**, not the volume, decides the sign.
+Our R45 repair changes the *input* to admission without changing the rule; R46's
+candidate experiment is to ablate the rule itself: float weight against distinct
+task count, and `minSupport` alone against a `sup3`-style corroboration floor, on
+a served pack. Until a pack is served, none of those three can be measured, which
+is why they are registered as candidates rather than as a plan in motion.
+
+**R45 dispatch.** Run `42131391874` on `26f7c3f0`, `prereg=R45-admission`,
+`l4_arms=both`, `bird=false`. CI run `42130978881` on the same head is green.
+The readback, not this paragraph, decides whether the delivery gap closes.

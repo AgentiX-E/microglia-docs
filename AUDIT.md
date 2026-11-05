@@ -2694,3 +2694,47 @@ test, and a semantic edit hook whose condition is stated in advance.
 **What this round did not conclude.** That memory helps or harms. No pack was served in R41–R44; the
 effect is unmeasured. It also did not conclude that the thresholds are mis-tuned: the ablation rejects
 all three threshold levers and selects the evidence input instead.
+
+### 34.20 A snapshot that looked like a timestamp, and a green local check that was not green
+
+R45 shipped `tau2-admission.ts`, the corpus-shaped test, the driver hook, the
+item-level admission census and `prereg/R45-admission.md`. Local `pnpm check`
+exited 0 with 2,921 tests and coverage 99.98 / 100 / 99.67 / 99.98. The first
+push (`c65468f0`) made CI run `42129954733` **fail** at step 37, "The scenario is
+a measurement, not a paragraph".
+
+**Defect 20 — a tree reading filed under timing noise.** The coupling ledger
+compares a freshly walked snapshot with the committed `eval/results/poc-coupling.json`
+and fails when `scanned`, `totals.modules` or a gate disagree. Adding one eval
+module moved nine leaves: `scanned` 136 → 137, `eval.modules` 82 → 83,
+`totals.lines` 37,319 → 37,528, `coupledShare` 0.1952 → 0.1941, the eval→core
+edge 33 → 35 files, the `V72` detail, and the summary sentence. `pnpm check`
+regenerates that file locally, so the local gate is green *by construction*; the
+committed file was the old tree. Earlier rounds taught that `pnpm check` rewrites
+result files with `ranAt` and sub-millisecond timings, and the habit of clearing
+them was applied to all of them at once. Nine structural leaves were cleared with
+the noise, producing exactly the local-pass / CI-fail drift this project forbids.
+
+**The repair was a semantic diff, not a blanket exclusion.** Each changed leaf was
+classified: `bench/results/study.json` had 79 changed leaves, all p50/p95 timing
+jitter in microseconds; `poc-integrity`, `poc-l0`, `poc-l2b` and `poc-memform`
+changed only `ranAt`; `poc-delivery` changed `ranAt` plus four timing values.
+Only `poc-coupling.json` changed structurally, and only that file travelled, as
+`bd456c3` → `26f7c3f0`. CI run `42130978881` on `26f7c3f0` is **success**. The
+repository's own history confirms the convention: `0028dd6`, `ae36444` and
+`ea99e67` each updated the coupling snapshot in the same commit that added a
+module.
+
+**The rule this leaves behind.** A generated result file is not one category. Some
+are clocks, some are readings of the source tree, and a gate may require the
+second kind to be committed. Clearing by filename extension is not a policy;
+clearing by what each changed leaf *means* is.
+
+**Also recorded.** `prereg/R45-admission.md` first failed `pnpm eval:protocol`
+with "## Refutation: section is missing" because the section was titled
+"Refutation and revert rule". The validator requires the exact heading and a
+bullet in each of `## Prediction` and `## Refutation`; the title was corrected and
+`pnpm eval:prereg` passes. The first full `pnpm check` also exited 1 for this
+reason — the background task's reported exit code 0 was the trailing `tail`'s,
+not the check's. Every gate in this round was read from its own real exit code
+after that.

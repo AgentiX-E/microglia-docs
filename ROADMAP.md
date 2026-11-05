@@ -3939,7 +3939,7 @@ action with empty arguments; the real retail corpus carries 5–12 actions with 
 offline reproduction on the exact censused file through the real kernel holds **31 of 32** learn items
 as candidates. The hypothesis survives, the measurement does not.
 
-### R45 — Admission is a statement about the evidence, not about the edit (**in progress** 2026-11-06)
+### R45 — Admission is a statement about the evidence, not about the edit (**dispatched** 2026-11-06, run `42131391874`)
 
 **Why, and why without a second diagnostic dispatch.** `insufficient-evidence` is written by
 `confidence < 0.6` **or** `support < 0.8`. R44's histogram cannot separate them, but the decision is
@@ -3980,8 +3980,31 @@ also named.
 **Cost.** One dispatch through `sota.yml`, same scenario pair and sample, about 1 h 20 min. No new
 dataset, no new model family, no change to the merge gate.
 
-**Remaining after R45, in order.** (2) V46/V47 evidence ablations, blocked on the same missing
-transcript; (3) S1b; (4) split `sota.ts` on the signature rule — mechanical, changes no number,
-parallelisable at any time; (5) vitest 4 migration, deliberately last because it changes coverage
-semantics; cortex release excluded. Every step keeps the same acceptance bar: TDD, real tests, no
-mocks, ≥ 95% per dimension, `ci.yml` green, both repositories pushed as Lambertyan.
+**Shipped and dispatched.** `pnpm check` exit 0; 2,921 tests in 139 files; coverage
+99.98 / 100 / 99.67 / 99.98. Commits `b88623e` (repair) and `bd456c3` (coupling
+snapshot), pushed as `c65468f0` and `26f7c3f0`. CI `42129954733` failed on the
+uncommitted snapshot and `42130978881` is green after it — `AUDIT` §34.20 carries
+the defect and its repair. **R45 dispatched** as run `42131391874` on `26f7c3f0`,
+both arms, `bird=false`, about 1 h 20 min. No result is claimed before readback.
+
+**R46 candidate, registered but not opened.** Once a pack is served, ablate the
+admission *rule* rather than its input: float evidence weight against the
+competitor's distinct-task count, and `minSupport` alone against a `sup3`-style
+corroboration floor. IBM's own airline result (101 lossless rules at 40.0%
+Pass^4, 14 `sup3` rules at 45.0%) says the selection rule decides the sign, and
+`COMPETITIVE` L.6 reads the source that implements it. Three arms, one store, one
+pre-registration; blocked on R45's readback because all three are unmeasurable at
+zero served items.
+
+**Remaining after R45, in order.** (2) the revert rule on the readback; (3) R46
+admission-rule ablation; (4) transcript-level V46/V47, blocked on the driver
+handing `simulations[].messages` to the gate layer; (5) S1a, then S1b (private
+vocabulary, a product decision); (6) split `sota.ts` on the signature rule and
+move the eight SQL modules to `eval-sql` — stage 3 of R27, mechanical, changes no
+number, deferred until the readback so a move is not confused with a result;
+(7) W8 dose curve, three pack sizes, one store, powered to find the crossing
+point; (8) vitest 4 migration (W2), deliberately last because it changes coverage
+semantics; cortex release (W1) **excluded**. `TECH-DESIGN` §17.86 carries the
+ten-item dependency list and the P0–P3 table. Every step keeps the same
+acceptance bar: TDD, real tests, no mocks, ≥ 95% per dimension, `ci.yml` green,
+both repositories pushed as Lambertyan.

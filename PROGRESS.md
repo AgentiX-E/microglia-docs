@@ -9505,3 +9505,24 @@ pack makes `l4-paired` significantly negative, revert on the reading; (3) V46/V4
 which are blocked on the same missing transcript; (4) S1b; (5) `sota.ts` split on the signature rule;
 (6) vitest 4 migration, deliberately last because it changes coverage semantics. cortex release remains
 excluded.
+
+**R45 shipped, and the record of a red CI that was fixed rather than explained.** The repair is
+`b88623e` → `c65468f0` on `master`: `tau2-admission.ts` (the guarded semantic edit hook), the
+corpus-shaped test with its control, the driver wiring, the item-level `admission` census, the pair
+record forwarding it, and `prereg/R45-admission.md`. `pnpm check` exit 0, 2,921 tests in 139 files,
+coverage 99.98 / 100 / 99.67 / 99.98. The first CI run `42129954733` failed because the coupling
+snapshot is a reading of the source tree and a new module had changed it; nine structural leaves were
+cleared along with the timing noise. The semantic diff separated them, `bd456c3` → `26f7c3f0`
+committed only the snapshot, and `42130978881` is green. `AUDIT` §34.20 carries the defect.
+
+**R45 dispatched** as run `42131391874` on `26f7c3f0`, both arms, `bird=false`, `prereg=R45-admission`,
+about 1 h 20 min. Its readback, not this paragraph, decides whether the delivery gap closes; the
+registered revert rule applies if a served pack costs accuracy.
+
+**Competitor source read this round.** `AgentToolkit/altk-evolve` (418 Python modules) defines
+support as the **number of distinct supporting source tasks**, applies a `min_support` floor before
+export and a `core_support` of 3 for the reliable core, and imports the library's `_support` rather
+than redefining it so the export and the selector cannot drift. That is the `sup3` core behind IBM's
+45.0% airline result, and it is the reason R46's candidate experiment ablates the admission *rule*
+once a pack is served. `COMPETITIVE` L.6 has the file paths and the four-axis comparison;
+`TECH-DESIGN` §17.86 has the ten-item dependency list and P0–P3 table.
