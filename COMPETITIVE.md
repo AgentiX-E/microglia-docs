@@ -1362,3 +1362,66 @@ founded: the lane can learn from every failure it can read, it cannot yet admit 
 publishes the layer it fails at. Against a field whose top entries publish a score and nothing about whether
 their treatment arrived, that is a claim about method rather than about rank — and it is the only column in
 this appendix where the ordering is not in dispute.
+
+### L.5 — R44: the competitor published the negative effect, and the corpus priced our evidence
+
+**R44 readback.** Run `41872858497`, head `dccbb3d`, artefact `l4-evidence` (`13350877140`,
+20,276,079 bytes). `store` 19 / 0 active / 0 servable, `reasons insufficient-evidence=19`,
+`recall` 1,427 / 0, `meanPackIds 0.00`, `pass^4` memory **0.52** / reference **0.40**, `l4-paired`
+**+12.00pp** [−2.00, 26.00] p = 0.1460 n = 50, `V5` FAIL at 19.41pp MDE. The job's conclusion is
+`failure` because four blocking scientific gates failed; the build gate on the same head is green. The
+two colours measure different things and neither is suppressed.
+
+**Why the ranking table does not move.** R43 read 0.38 / 0.42 and −4.00pp; R44 read 0.52 / 0.40 and
++12.00pp. Both rounds served zero items. Two samples of the same untreated condition therefore moved
+the headline by 16pp and the memory arm's `pass^4` by 14pp, against a minimum detectable difference of
+19.41pp at 50 paired tasks. Promoting 0.52 from fifth to third would be quoting noise as a treatment.
+The table in L.4 stands: **SOTA = IBM 82.0 (unverified), microglia fifth of six named entries**, and
+the only column this project leads is "whether the treatment was delivered", currently `0 served`.
+
+**The competitor's October data is now the sharpest datum in this appendix.** IBM's 2026-10-20
+ALTK-Evolve report ([analysis](https://techbeat.co/story/altk-evolve-puts-gpt-4-1-atop-2-bench-with-learned-memory),
+[Chinese coverage](https://www.unite.ai/zh-cn/ibm-research-reports-learned-memory-tops-tau-2-bench-service-benchmark/))
+publishes the leaderboard submissions as PRs #542 (retail, 2026-09-14) and #551 (airline,
+2026-09-21), both disclosing modified prompts and expected to be flagged **unverified**:
+
+| submission | Pass^4 | configuration | note |
+|---|---|---|---|
+| IBM `gpt-5.5`, airline | **82.0** (#1) | lossless, 101 guidelines | unverified; frontier entries 66–72 |
+| IBM `gpt-4.1`, retail | **67.5** (#1) | lossless, 292 guidelines | beats RAFT-30B-A3B 61.4 by 6.1pp |
+| SapientAI-Agent-Opus-5, airline | 72.0 | custom scaffold | — |
+| IBM `gpt-4.1`, airline | **44.0** (#8) | `sup3`, 14 guidelines | rules seen in ≥ 3 tasks |
+| **IBM, airline, lossless** | **40.0** | 101 guidelines | **below the 14-rule core by 5pp** |
+| microglia R43 memory / reference | 38.0 / 42.0 | 0 served | — |
+| microglia R44 memory / reference | 52.0 / 40.0 | 0 served | — |
+| stock `llm_agent`, gpt-oss-120b | 34.0 | no store | — |
+
+The comparison that matters is the pair in bold: **more memory reduced reliability by 5pp** in the
+competitor's own airline results, and IBM explicitly reports that airline favours the compact `sup3`
+core while retail favours the full rule set — domain-specific admission, not a fixed rule count. Cost
+moves the same way: $0.084 → $0.139 per retail conversation (+65%) for the full list. This is the same
+thesis as `selective addition`, published by the current SOTA holder.
+
+**Three independent literature lines, all pointing at admission rather than volume.**
+
+| source | finding | number | code |
+|---|---|---|---|
+| Xiong et al., [arXiv:2505.16067](https://arxiv.org/abs/2505.16067) (ACL 2026) | `experience-following` causes error propagation and misaligned experience replay; selective addition + combined deletion fixes it | ~**10pp** absolute gain over naive memory growth | [agent_memory_manage](https://github.com/yuplin2333/agent_memory_manage.git) |
+| IBM ALTK-Evolve (2026-10-20) | lossless 101 rules underperform the 14-rule `sup3` core on airline Pass^4 | **40.0 vs 45.0** | open-source library; PR #542/#551 |
+| Yu et al., [arXiv:2608.10502](https://arxiv.org/abs/2608.10502) | dependency-guided rollback: remove faulty memories, preserve benign, selectively replay | **85.3%** recovery vs 77.3% LLM-judge; 100% benign preservation; −41.8% LLM calls | [memory-rollback](https://github.com/xiaoqi-7/memory-rollback) |
+| Xu et al., [arXiv:2502.12110](https://arxiv.org/abs/2502.12110) (NeurIPS 2025) | A-MEM: Zettelkasten-linked notes, memory evolution; `FlexA-Mem` (2026-10) makes the note set budget-adaptive | qualitative on six foundation models | [A-mem](https://github.com/agiresearch/a-mem) |
+
+**What our own corpus adds that none of them have.** R44's reason histogram plus an offline
+reproduction on the real retail tasks localises the negative effect to a *measurement* defect, not a
+design preference: `editDistance` prices a gold-verified correction by the number of tool arguments,
+`createLlmInterpreter` writes that price into both `trust` and `evidence.weight`, and `scoreKnowledge`
+applies it twice. Measured over 32 real learn tasks: `trust` 0.50–0.90, `confidence` 0.27–0.62,
+**31 of 32 held as candidates**. A five-condition ablation rejects all three threshold levers
+(`activationThreshold`, `minSupport`, `singleObservationTrust`) and selects a gold-verified semantic
+distance, which admits 32 of 32 with no threshold touched. R45 wires it through the architecture's
+existing `editSemantics` hook and predicates the dispatch on `served > 0`.
+
+**Standing comparison after R44.** SOTA is unchanged (IBM 82.0, unverified). microglia remains fifth of
+six named entries and the only entrant publishing `store.active`, `recall.served` and `V1`'s
+population — the three numbers that say whether the treatment arrived. The gap is not a score gap yet;
+it is a delivery gap, and R45 is the first round that can close it.

@@ -2636,3 +2636,61 @@ measurement before the dispatch, and that test is committed so it cannot come ba
 **Coverage at the time of writing.** `2,909 tests across 138 files, 99.98 / 99.70 / 100 / 99.98`;
 `label-census.ts`, `tau2-gates.ts`, `tau2-distill.ts`, `tau2-instrument.ts` and the protocol `gates.ts` at
 100 on all four dimensions.
+
+### 34.19 The guard that measured a shape the corpus does not contain
+
+R44 returned the reason it was registered to return: `store.reasons` was
+`insufficient-evidence=19`, with `needs-corroboration` and `contradiction-budget-exceeded` on none.
+`V1` finally printed its population (`0 of 1427 request(s) … from a store of 19 (0 active, 0 in
+scope)`), `V32` stayed at 0/32, `V5` failed at 19.41pp, and `l4-paired` was +12.00pp at p = 0.1460 with
+an empty pack. Five of six predictions held. The job's conclusion is `failure` because four *blocking*
+scientific gates failed; the build gate (`ci.yml` run `41872680757`, same head) is `success`. These are
+different colours with different meanings and both are recorded; nothing is suppressed.
+
+**Defect 16 — a guard test with the wrong subject.** R43 excluded "the driver's manufactured completion
+reads as a trivial edit" with a three-condition measurement, all three activating at `trust = 0.9`.
+All three conditions used **one action with an empty `arguments` object**. The real τ² retail corpus
+carries 5–12 actions per task with 1–5 arguments each. Reproduced offline on the exact file the workflow
+censused (sha256 `76e1fa64…`, 328,166 bytes) through the real `diffJson` → `trustFor` →
+`scoreKnowledge` → `decideStatus` chain: over the 32-task learn split, `distance` ranges
+0.1707–0.3333, `trust` 0.5000–0.9000, and **31 of 32 items are held as candidates**. The excluded
+hypothesis was correct in kind and wrong in measurement: the shape *is* the cause, and the corpus shape
+is not the shape that was tested. The test remains committed; its comment now has to state its
+population, and R45's test uses the corpus.
+
+**Defect 17 — a quadratic penalty nobody wrote down.** `createLlmInterpreter` assigns
+`candidate.evidence.weight = trust` and `candidate.trust = trust`. `scoreKnowledge` computes
+`logOdds += weight × logit(trust)`, which is therefore `trust × logit(trust)`. No comment in either
+file says the same quantity enters twice; the defaults' comment says "one trusted edit (weight 0.9)
+must clear `minSupport`", which is true and incomplete. Measured consequence: `support` clears 0.8 at
+`trust = 0.8`, but `confidence` there is 0.4806, and the activation boundary is `trust = 0.89`
+(`confidence = 0.6013`). Of 32 items, 16 have `support ≥ 0.8` *and* `confidence < 0.6`. A reader of
+the policy defaults would conclude that `minSupport` is the binding constraint; it is not.
+
+**Defect 18 — the refutation branch named the wrong function.** `prereg/R44-admission.md` said that if
+`insufficient-evidence` dominates and confidence is the failing half, "the repair is
+`activationThreshold`'s input — `scoreKnowledge` — and the round after reads that function's weights
+rather than `minSupport`". The five-condition offline ablation refines this: lowering
+`activationThreshold` to 0.45 admits 17 of 32 (a wrong lever that weakens the gate), lowering
+`minSupport` to 0.5 changes nothing (1 of 32), and raising `singleObservationTrust` changes nothing.
+Only correcting the **input** — gold-verified semantic distance — admits 32 of 32 without touching a
+threshold. The pre-registration was refutable and was refined by measurement, which is the intended
+use of a refutation branch, not a failure of it.
+
+**Defect 19 — the published delta is a noise sample, twice.** R43 reported −4.00pp and R44 reported
++12.00pp, both with `recall.served = 0`. `pass^4` for the memory arm moved 0.38 → 0.52 across two runs
+of the same untreated condition. Fourteen points of run-to-run drift against a minimum detectable
+difference of 19.41pp is the quantitative reason neither delta is a result, and it is why the ranking
+table in `COMPETITIVE` L.4 does not move on R44's 0.52.
+
+**The shape, fifth round running.** §34.14 four gates reading a store nobody built; §34.15 an arm
+nobody could reach; §34.16 a rate with no population; §34.17 three sentences about a corpus that the
+corpus did not say; §34.18 a census that stopped at the record. This round: a reason histogram that
+named the decision but not its half, and a guard whose population was one action. Every case is a
+measurement whose scope was narrower than the claim built on it. The repair is again plumbing and
+evidence, not an argument: item-level `trust`/`support`/`confidence` in the census, a corpus-shaped
+test, and a semantic edit hook whose condition is stated in advance.
+
+**What this round did not conclude.** That memory helps or harms. No pack was served in R41–R44; the
+effect is unmeasured. It also did not conclude that the thresholds are mis-tuned: the ablation rejects
+all three threshold levers and selects the evidence input instead.

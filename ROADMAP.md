@@ -3906,7 +3906,7 @@ refutation branch this entry registered is the one that fired — a store of ite
 next round reads admission. `§159` carries the readback, `AUDIT` §34.17/§34.18 the defects, `TECH-DESIGN`
 §17.83/§17.84 the census and the admission layer.
 
-### R44 — The store admitted nothing, and the store can say why (**dispatched** 2026-11-04)
+### R44 — The store admitted nothing, and the store can say why (**read** 2026-11-06; dispatched 2026-11-04)
 
 **Why.** Three decisions in `decideStatus` write `candidate`: prose without a second task
 (`needs-corroboration`), confidence below `activationThreshold` (0.6), and support below `minSupport` (0.8)
@@ -3924,3 +3924,64 @@ prints its population because `tau2ArmRecordOf` now forwards `store` and `recall
 committed as a guard so the dispatch cannot be used to re-assert it.
 
 **Cost.** One dispatch through `sota.yml`, the same scenario pair and sample: about 1 h 20 min.
+
+**Readback (run `41872858497`).** The reason is `insufficient-evidence=19` on 19 items, with
+`needs-corroboration` and `contradiction-budget-exceeded` on none; `V1` printed `0 of 1427 request(s)
+… from a store of 19 (0 active, 0 in scope)`; `V32` stayed at 0/32; `V5` failed at 19.41pp; `l4-paired`
+was +12.00pp at p = 0.1460 with an empty pack. Five of six predictions held; the count of corrections
+moved 12 → 10 because the training episode is a live model call. The job is `failure` on four blocking
+scientific gates while `ci.yml` on the same head is green — two colours, two meanings, both recorded.
+`§160` carries the readback, `AUDIT` §34.19 the four defects, `TECH-DESIGN` §17.85 the repair design,
+`WHITEPAPER` §3.6.41 the methodological point, `COMPETITIVE` L.5 the competitor data.
+
+**The pre-exclusion was right in kind and wrong in population.** The three guard conditions used one
+action with empty arguments; the real retail corpus carries 5–12 actions with 1–5 arguments each. An
+offline reproduction on the exact censused file through the real kernel holds **31 of 32** learn items
+as candidates. The hypothesis survives, the measurement does not.
+
+### R45 — Admission is a statement about the evidence, not about the edit (**in progress** 2026-11-06)
+
+**Why, and why without a second diagnostic dispatch.** `insufficient-evidence` is written by
+`confidence < 0.6` **or** `support < 0.8`. R44's histogram cannot separate them, but the decision is
+reproducible offline. Measured on the real 32-task learn split: `editDistance` =
+`ops / (leaves(before) + leaves(after))` makes `trust` fall as tool arity rises (0.50–0.90), and
+`createLlmInterpreter` writes `trust` into both `trust` and `evidence.weight`, so `scoreKnowledge`'s
+`weight × logit(trust)` is quadratic. `support` clears 0.8 at `trust = 0.8`; `confidence` there is
+0.4806 and the activation boundary is `trust = 0.89`.
+
+**The five-condition ablation selects the repair** (32 real tasks, real kernel, no model call):
+
+| condition | active / 32 | verdict |
+|---|---|---|
+| A current structural distance | 1 | the defect |
+| B gold-verified semantic distance = 1.0 | **32** | the repair; no threshold touched |
+| C `activationThreshold` → 0.45 | 17 | wrong lever, admits weak evidence |
+| D `minSupport` → 0.5 | 1 | no change; support never the block |
+| E `singleObservationTrust` → 0.99 | 1 | no change; contradiction path only |
+
+**Work, TDD-first.** (1) A corpus-shaped failing test in `packages/eval` asserting the 32-task split is
+not held at 31 candidates, plus a negative test that a non-`correctionEdit` event is not promoted.
+(2) `packages/eval/src/tau2-admission.ts` exports `tau2EditSemantics(before, after): number |
+undefined`, returning `1` only for the gold-verified `correctionEdit` shape and `undefined` otherwise
+so structural distance remains the default for every other host event. (3) `tau2-driver.ts` passes it
+as `editSemantics` to `openMicroglia`; `packages/core` is untouched. (4) `storeCensus` gains an
+`admission` block (min/max/mean of `trust`, `support`, `confidence`; the count of `support ≥ 0.8 &&
+confidence < 0.6`) and `CensusItem` gains the three optional fields; the driver prints the means.
+(5) `pnpm check`, coverage ≥ 95% on every dimension, no mocks, `ci.yml` green before dispatch.
+
+**The registration is `prereg/R45-admission.md`.** Predictions: `store.active > 0`,
+`store.servable > 0`, `recall.served > 0`, `meanPackIds > 0`, `V1` passes, admission means near
+0.90 / 0.90 / 0.6165, `V32` still 0/32, `V5` still failing, and `l4-paired` **not predicted** — this
+is the first round with a treatment, so the effect is genuinely unknown. **Revert rule:** if a served
+pack makes `l4-paired` significantly negative (or falls below −5pp), revert on the reading, not on an
+explanation. If `active > 0` but `served = 0`, the next round instruments `/v1/recall`, the branch R43
+also named.
+
+**Cost.** One dispatch through `sota.yml`, same scenario pair and sample, about 1 h 20 min. No new
+dataset, no new model family, no change to the merge gate.
+
+**Remaining after R45, in order.** (2) V46/V47 evidence ablations, blocked on the same missing
+transcript; (3) S1b; (4) split `sota.ts` on the signature rule — mechanical, changes no number,
+parallelisable at any time; (5) vitest 4 migration, deliberately last because it changes coverage
+semantics; cortex release excluded. Every step keeps the same acceptance bar: TDD, real tests, no
+mocks, ≥ 95% per dimension, `ci.yml` green, both repositories pushed as Lambertyan.

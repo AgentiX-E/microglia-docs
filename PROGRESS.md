@@ -9404,3 +9404,104 @@ exit 0; `label-census.ts` and `tau2-gates.ts` at 100 on all four dimensions. Com
 `eb0219f` (the bytes travel with the counts), `2db9fb8` (the record dropped the census), `82b2b41` (one
 status, three decisions), `8649563` (what the evidence shape does *not* explain), `dccbb3d` (R44
 registered). **R44 dispatched** as run `41872858497` on `dccbb3d`, `prereg=R44-admission`.
+
+## 160 — The reason has a name, and the name points at the evidence, not the threshold
+
+**R44 read.** Run `41872858497` on `dccbb3d` completed on 2026-11-04; its `l4-evidence` artefact
+(`13350877140`, 20,276,079 bytes) carries the full pair, both arms, the corpus census and the gate
+report. The job's conclusion is `failure`, and the reason is the scientific gates, not the build:
+`ci.yml` run `41872680757` on the same head is `success`. Four blocking gates read FAIL — `V1`
+(pack empty), `V5` (resolution), `V16` (transfer resolvable) and `l4-paired` (not significant) —
+and `l4-pair.ts` exits 1 on a blocking failure. Red here means *the treatment did not arrive and was
+not significant*; it does not mean a broken pipeline. The distinction is recorded rather than
+smoothed over, and no `continue-on-error` or `|| true` is involved.
+
+| reading | R43 | R44 | what it says |
+|---|---|---|---|
+| `learning.edited` | 12 | **10** | two more training tasks passed; a pass teaches nothing by design |
+| `learning.unanswered` | 0 | **0** | no failure left unread |
+| `store.stored / active / servable` | 24 / 0 / 0 | **19 / 0 / 0** | one item per candidate, none admitted |
+| `store.reasons` | not instrumented | **`insufficient-evidence=19`** | the round's deliverable: populated and dominated by one key |
+| `recall.requests / served` | 1,518 / 0 | **1,427 / 0** | the façade was still asked per step and served nothing |
+| `V1-pack-not-empty` | FAIL, bare rate | **FAIL, with population**: `0 of 1427 request(s) … from a store of 19 (0 active, 0 in scope)` | the `store`/`recall` forwarding fix reached the sentence |
+| `V32-fold-learning-intact` | pass 0/32 | **pass 0/32**, 10 corrections, 0 distillation failures | no reader was touched |
+| `V5-resolution` | FAIL 20.97pp | **FAIL 19.41pp** | no bar moved |
+| `l4-paired` | −4.00pp, p = 0.7905 | **+12.00pp** [−2.00, 26.00], p = 0.1460, n = 50, lost 3 / gained 9 | not significant, and the sign flipped |
+| `pass^4` memory / reference | 0.38 / 0.42 | **0.52 / 0.40** | two samples of the *same* untreated condition, 14pp apart |
+| `V17-transfer-net-reported` | −1.50pp, `unmeasured` | **+7.00pp**, 22 repaired / 8 broken, `unmeasured` | a direction, not a rate |
+| `V44-domain-accounted` | pass 0/24 | **pass 0/19** | every item carries the host's domain |
+
+**Predictions.** Five of the six registered predictions held: the histogram was populated and dominated
+by `insufficient-evidence`, with `needs-corroboration` and `contradiction-budget-exceeded` on none;
+`V1` printed its population; `V32` stayed at 0/32; `V5` failed and no bar moved; `l4-paired` stayed
+insignificant with an unpredicted sign. The sixth — that the learning half is unchanged — held in
+shape (0 unanswered, 0 distillation failures) but not in count: 10 corrections and 19 items rather
+than 12 and 24, because the training episode is a live model call and twenty-two of thirty-two tasks
+passed this time. Two runs of one untreated condition moving `pass^4` from 0.38 to 0.52 is the
+quantified noise floor, and it is the reason the round refuses to quote +12.00pp as a finding.
+
+**The reason is not the end of the diagnosis.** `insufficient-evidence` is written by two branches of
+`decideStatus` — `confidence < activationThreshold` (0.6) and `support < minSupport` (0.8) — and R44's
+histogram cannot separate them. Rather than spend a second dispatch instrumenting the split, the
+decision was reproduced offline on the *real* corpus and the *real* kernel: the retail task file the
+workflow censused (sha256 `76e1fa64…`, 328,166 bytes) and `diffJson` → `trustFor` → `scoreKnowledge`
+→ `decideStatus`, with no model call and no mock. The driver records a failed episode as the reference
+call **names** and the correction as those names **with their arguments**; `editDistance` counts
+`ops / (leaves(before) + leaves(after))`, so a tool with many arguments dilutes the distance. Measured
+over the 32-task learn split: `distance` 0.1707–0.3333, `trust` 0.5000–0.9000, mean 0.7695,
+`confidence` 0.2713–0.6165, mean 0.4613, and **31 of 32 items held as candidates**. The guard test
+written in R43 used one action with empty arguments; it cleared at 0.9, and it was measuring a shape
+the corpus does not contain.
+
+**Why confidence, and not support, is the failing half.** `createLlmInterpreter` sets
+`candidate.evidence.weight = trust` and `candidate.trust = trust`, so `scoreKnowledge`'s
+`logOdds += weight × logit(trust)` becomes `trust × logit(trust)` — a quadratic penalty. The measured
+threshold is `trust = 0.89` (`confidence = 0.6013`); `support` clears 0.8 at `trust = 0.8`, but
+`confidence` at that point is only 0.4806. Of the 32 items, 16 have `support ≥ 0.8` and
+`confidence < 0.6`, 15 have `support < 0.8`, and 1 has `confidence ≥ 0.6`.
+
+**The ablation that selects the repair** (32 real tasks, real kernel, five conditions):
+
+| condition | active / 32 | mean trust | mean confidence | verdict |
+|---|---|---|---|---|
+| A — current structural distance | **1** | 0.7695 | 0.4613 | the measured defect |
+| B — gold-verified semantic distance (1.0) | **32** | 0.9000 | 0.6165 | the repair |
+| C — `activationThreshold` 0.6 → 0.45 | 17 | 0.7695 | 0.4613 | wrong lever: admits weak evidence |
+| D — `minSupport` 0.8 → 0.5 | **1** | 0.7695 | 0.4613 | no change: support was never the block |
+| E — `singleObservationTrust` → 0.99 | **1** | 0.7695 | 0.4613 | no change: contradiction path only |
+
+R44's registered refutation branch said that if confidence is the failing half, the round after reads
+`scoreKnowledge`'s weights. The measurement refines it: the weights are not wrong, the **input** is. A
+τ² correction is `gold`-verified by `evaluation_criteria.actions`, so its evidential strength comes
+from the verifier, not from how many leaves the edit moved. `openMicroglia`'s `editSemantics` hook is the
+architectural place to say so (the chart pack uses it for the same reason), and R45 is registered to
+wire it, TDD-first, with the census extended to item-level `trust`/`support`/`confidence` so the next
+dispatch verifies the claim rather than repeating it.
+
+**What the literature says about the negative effect.** Three independent lines now agree with the
+user's hypothesis that the *content* and the *use* of memory, not its quantity, cause the harm. Xiong
+et al., [arXiv:2505.16067](https://arxiv.org/abs/2505.16067) (ACL 2026), name `experience-following`
+and its two failure modes — error propagation and misaligned experience replay — and measure a ~10pp
+absolute gain from **selective addition plus combined deletion** over naive memory growth. IBM's own
+2026-10-20 ALTK-Evolve report is the sharpest competitor datum: on airline, the 101-rule `lossless`
+prompt scores **40.0%** Pass^4 while the 14-rule `sup3` core (rules seen in ≥ 3 tasks) scores **45.0%** —
+*more memory reduced reliability*. Yu et al., [arXiv:2608.10502](https://arxiv.org/abs/2608.10502),
+measure dependency-guided rollback repair at 85.3% recovery versus 77.3% for an LLM-judge, preserving
+all benign memories. `COMPETITIVE` L.5 carries the full comparison.
+
+**Ranking, and why it did not move.** The SOTA remains IBM Research's `gpt-5.5` airline submission at
+**82.0** Pass^4 (unverified, modified prompt, PR #551); SapientAI-Agent-Opus-5 is 72.0; IBM's
+`gpt-4.1 sup3` is 44.0 at #8; stock `gpt-oss-120b` is 34.0. microglia's R44 arms read 52.0 / 40.0 and
+R43's read 38.0 / 42.0 — all four are samples of a **condition with zero served items**, so none is a
+ranking claim and the entry stays **fifth of six named entries** on the table in L.4. The only column
+this project leads is still "whether the treatment was delivered", and it currently reads `0 served`.
+
+**Where the project stands.** Four rounds have each found the delivery defect one layer deeper: R41 no
+store, R42 the model's keys, R43 the host's keys with no admission, R44 the reason for no admission and
+its measured cause. The gate chain is intact (2,909 tests / 138 files, 99.98 / 99.70 / 100 / 99.98,
+`pnpm check` exit 0, `ci.yml` green). **Remaining, in order:** (1) R45 — wire `editSemantics`, TDD,
+extend the census, dispatch and read `active > 0` / `served > 0` / `meanPackIds > 0`; (2) if a served
+pack makes `l4-paired` significantly negative, revert on the reading; (3) V46/V47 evidence ablations,
+which are blocked on the same missing transcript; (4) S1b; (5) `sota.ts` split on the signature rule;
+(6) vitest 4 migration, deliberately last because it changes coverage semantics. cortex release remains
+excluded.

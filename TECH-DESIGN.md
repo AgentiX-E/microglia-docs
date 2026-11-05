@@ -5859,3 +5859,67 @@ instrument was right and its plumbing was not.
 `CensusItem` gains an optional `statusReason`; `Tau2ArmArtefact.tau2` gains `store?`/`recall?` and
 `tau2ArmRecordOf` forwards both. The driver's learn line ends with `reasons <key>=<count>, …` ranked by
 count, or `none recorded` when the store wrote none.
+
+### 17.85 The admission input, and the hook that was already in the architecture
+
+**R44's reading.** `insufficient-evidence=19` on a store of 19, `0 active`, `0 servable`,
+`1,427 / 0` recall, and `meanPackIds = 0.00`. The reason distinguishes the three candidate branches
+but not the two halves of the branch that fired, so the next step was to reproduce the decision rather
+than dispatch a fifth instrument. The reproduction ran on the real retail corpus (the same 328,166
+bytes and sha256 `76e1fa64…` the label census recorded) through the real kernel, with no model call:
+32 learn tasks, 31 candidates, `distance` 0.1707–0.3333, `trust` 0.5000–0.9000, mean 0.7695,
+`confidence` 0.2713–0.6165, mean 0.4613.
+
+**The mechanism, in one paragraph.** The driver writes `complete()` as the reference call *names* and
+`edit()` as those names *with their arguments* (`correctionEdit`). `editDistance` is
+`ops / (leaves(before) + leaves(after))`; with 5–12 actions and 1–5 arguments each, the added leaves
+dominate the denominator and the distance falls with the *number of tool arguments*, not with the
+quality of the observation. `trustFor('edit')` maps that to `0.5 + 0.4 × clamp01(distance / 0.3)`.
+`createLlmInterpreter` then copies `trust` into both `candidate.trust` and
+`candidate.evidence.weight`, and `scoreKnowledge` adds `weight × logit(trust)` — so same quantity
+enters twice and the penalty is quadratic. `support` clears `minSupport` (0.8) at `trust = 0.8`, but
+`confidence` there is 0.4806; the activation boundary is `trust = 0.89` (`confidence = 0.6013`). This
+is why the reason histogram said `insufficient-evidence` for all 19 items and why lowering
+`minSupport` cannot repair it.
+
+**The five-condition ablation** (32 real tasks, real kernel, only the named input changed):
+
+| condition | active / 32 | mean confidence | reading |
+|---|---|---|---|
+| A current structural distance | 1 | 0.4613 | the defect |
+| B gold-verified semantic distance = 1.0 | 32 | 0.6165 | repair, no threshold touched |
+| C `activationThreshold` 0.6 → 0.45 | 17 | 0.4613 | admits weak evidence; wrong lever |
+| D `minSupport` 0.8 → 0.5 | 1 | 0.4613 | no change; support never the block |
+| E `singleObservationTrust` → 0.99 | 1 | 0.4613 | no change; contradiction path only |
+
+**Design of the repair.** `packages/eval/src/tau2-admission.ts` owns one exported function,
+`tau2EditSemantics(before, after): number | undefined`, and one pure predicate that recognises the
+`correctionEdit` shape (`actions` array, each entry with `name` and `arguments`). It returns `1` only
+for a gold-verified correction and `undefined` otherwise, so a host event of any other shape falls
+back to the structural distance instead of being promoted by accident. `tau2-driver.ts` passes it as
+`editSemantics` to `openMicroglia`, which forwards it to `buildFeedbackEvent`, which uses it in place
+of `editDistance` in `toSignal`. Nothing in `packages/core` changes: the hook exists precisely because
+domain packs know what their own edits mean, and the chart pack already uses it. The dependency
+direction is unchanged — `eval` depends on `core`, `core` does not depend on `eval`.
+
+**Why `1` is a semantic claim and not a constant to hide a threshold.** `evaluation_criteria.actions`
+is the state the upstream evaluator requires; a failing episode is scored against it by the benchmark,
+not judged by a reviewer. The observation's strength is the verification, so the edit is a full
+replacement of an unverified output by a verified one. A structural diff reads "arguments were added"
+and makes trust a function of a tool's arity. The alternative — leaving `trustFor` alone and lowering
+`activationThreshold` — is measured in condition C and rejected: it admits 17 of 32 items whose
+`confidence` is still 0.4613 on average.
+
+**Instrumentation for the dispatch that verifies it.** `storeCensus` gains an `admission` block:
+`trust`, `support` and `confidence` as min / max / mean plus a histogram of `statusReason` at item
+level, and the count of items whose `support ≥ 0.8` but `confidence < 0.6`. `CensusItem` gains
+optional `trust`, `support`, `confidence`. The driver prints the three means on its learn line. R45
+then tests the claim in the real pipeline: `active > 0`, `servable > 0`, `recall.served > 0`,
+`meanPackIds > 0`, and the admission means at 0.9 / 0.9 / 0.6165. A served pack with a significantly
+negative `l4-paired` is reverted on the reading, not explained.
+
+**TDD and acceptance.** The failing test comes first: a corpus-shaped test that asserts the 32-task
+learn split does **not** hold 31 items as candidates, and that a non-`correctionEdit` event is not
+promoted. Then the implementation. Then `pnpm check`, coverage on all four dimensions ≥ 95% (goal
+100%), no mocks, and `ci.yml` green before dispatch. `prereg/R45-admission.md` registers the
+predictions and the revert rule in advance.

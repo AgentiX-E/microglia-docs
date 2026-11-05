@@ -3025,3 +3025,62 @@ branch — *"if the store is 32+ items but `store.active` is 0, the defect is co
 the key"* — and that branch is the one that fired. A round that can be refuted in advance is a round whose
 reading can be trusted; a round that cannot is a narrative. The pre-registered branch, not the delta, is what
 moved this project from "the memory does not help" to "the memory has not arrived, and here is the layer".
+
+#### 3.6.41 The reason had one name and two causes, and the corpus settled it for free
+
+R44 delivered what it was registered to deliver: the store could name the decision that held every
+item. `store.reasons` was `insufficient-evidence=19` on 19 stored items, with zero corroboration holds
+and zero contradiction holds, beside `0 active`, `0 servable` and `1,427` recall requests of which `0`
+were served. `V1` printed its population at last, `V32` stayed at 0/32, `V5` failed at 19.41pp, and
+the bar did not move. Five of six predictions held. The sixth — that the learning half is unchanged —
+held in shape but not in count: 10 corrections rather than 12, because a live model passed twenty-two
+of thirty-two training tasks this time.
+
+**The number this paper will not quote as a result.** `l4-paired` read +12.00pp (p = 0.1460, n = 50),
+and the memory arm's `pass^4` read 0.52 against the reference arm's 0.40. R43 read −4.00pp and 0.38 /
+0.42. Both rounds served **zero** items. Two samples of the same untreated condition therefore moved
+the "effect" by 16pp and the memory arm's score by 14pp, against a minimum detectable difference of
+19.41pp. A field that publishes a score and nothing about whether its treatment arrived cannot
+distinguish these two rounds; a record that prints `recall.served` can. This is the whole argument for
+the delivery column, stated as an arithmetic fact rather than a methodological preference.
+
+**The reason had two causes, and the cheaper one was found without a dispatch.** `insufficient-evidence`
+is written when `confidence < 0.6` **or** `support < 0.8`; the histogram cannot tell which. The
+decision was reproduced offline against the real τ² retail corpus — the same 328,166 bytes the label
+census fingerprinted — through the real `diffJson` → `trustFor` → `scoreKnowledge` → `decideStatus`
+chain, with no model call. The driver states a failed episode as reference call *names* and the
+correction as those names *with their arguments*; `editDistance` divides the number of changes by the
+leaves on **both** sides, so a tool with more arguments produces a *smaller* trust. Over the 32-task
+learn split: `trust` 0.50–0.90, `confidence` 0.27–0.62, and **31 of 32 items held as candidates**.
+The R43 guard that excluded this hypothesis used one action with empty arguments; it measured a shape
+the corpus does not contain. The user's standing suspicion — that what is remembered and how it is
+used, not how much of it exists, produces the negative effect — is now a measured mechanism: the
+memory was not wrong, its evidence was priced by a tool's arity.
+
+**Why it is confidence and not support.** `createLlmInterpreter` writes `trust` into both the item's
+`trust` and its `evidence.weight`, and `scoreKnowledge` adds `weight × logit(trust)`; the same number
+enters twice, so the penalty is quadratic. `support` clears 0.8 at `trust = 0.8`, but `confidence`
+there is 0.4806; activation needs `trust = 0.89`. A five-condition ablation on the same 32 tasks
+settles the repair: lowering `activationThreshold` to 0.45 admits 17 of 32 (weakening the gate),
+lowering `minSupport` to 0.5 admits 1 of 32 (no change), raising `singleObservationTrust` admits 1 of
+32 (no change), and treating a gold-verified correction as a full replacement admits 32 of 32 with no
+threshold touched. The pre-registered refutation branch pointed at `scoreKnowledge`'s weights; the
+measurement moves the repair one layer upstream to its **input**.
+
+**What the field says, and why it agrees.** Xiong et al. ([arXiv:2505.16067](https://arxiv.org/abs/2505.16067),
+ACL 2026) name `experience-following` and its two failure modes — error propagation and misaligned
+experience replay — and measure a ~10pp absolute gain from selective addition and deletion over naive
+memory growth. IBM's own ALTK-Evolve report supplies the competitor's version of the same fact: on
+τ²-airline, 101 lossless guidelines score **40.0%** Pass^4 while the 14-rule `sup3` core scores
+**45.0%** — more memory, less reliability. Yu et al. ([arXiv:2608.10502](https://arxiv.org/abs/2608.10502))
+measure 85.3% recovery with dependency-guided selective repair against 77.3% for an LLM-judge. Three
+independent programmes converge on the same design rule: **admission quality, not memory volume**.
+R45 wires that rule through the architecture's existing `editSemantics` hook, TDD-first, with an
+item-level admission census, and reverts on the reading if a served pack costs accuracy.
+
+**What remains a claim about method, not rank.** The SOTA is still IBM's unverified 82.0 on airline;
+microglia is fifth of six named entries, and all four of its published arm scores come from a
+condition in which nothing was served. The honest standing claim after R44 is narrower than after R43
+and better founded: the lane can learn from every failure it can read, it can now say *why* it admits
+nothing, and it can reproduce that reason offline before paying for a dispatch. That is not a
+leaderboard position. It is the only column in which the ordering is not in dispute.
