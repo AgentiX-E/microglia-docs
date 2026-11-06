@@ -5992,3 +5992,119 @@ either way the readback would no longer name the treatment it measured. Parallel
 work this round was therefore confined to source study (`COMPETITIVE` L.6),
 documentation and offline measurement — all of which change no number the run
 will report.
+
+### 17.87 The source study sharpens R46, without opening it
+
+**State.** R45 run `42131391874` is in progress on `26f7c3f0`; `ci.yml`
+`42130978881` is green; both repositories are pushed as Lambertyan. While the
+L4 job ran, two 2026 papers and their implementations were read at first hand
+(`COMPETITIVE` L.7): MemGuard ([arXiv:2608.21867](https://arxiv.org/abs/2608.21867),
+code `whyyyyy123/MemGuard`) and MemAdapter
+([arXiv:2610.05162](https://arxiv.org/abs/2610.05162), code
+`DEEP-JLU/MemAdapter`). No source file, artefact, workflow or head in
+`microglia` was touched. This section records what that reading changes about
+the *design* of the next round; it does not open R46, and R46 remains blocked
+on a served pack.
+
+**The finding that matters.** Three independent implementations now use
+corroboration across **distinct source tasks** as the selection variable:
+ALTK-Evolve's `support` / `core_support = 3` (`COMPETITIVE` L.6), MemGuard's
+`len(distinct_task_ids) >= 2` in `memory/governance.py:205`, and IBM's own
+14-rule `sup3` core at 45.0% against 101 lossless rules at 40.0% on airline.
+microglia's `minSupport = 0.8` is support on a *single item's observations*, and
+R44's five-condition ablation measured that support was never the blocker.
+MemAdapter adds the complementary half: even an objectively correct memory can
+harm, because influence must be calibrated to the current context at use time —
+so "what is stored" and "how it is used" are two separate levers, not one.
+
+**R46 skeleton, registered but not opened. Twelve items.**
+
+1. **Trigger.** R45 readback reports `recall.served > 0` and `meanPackIds > 0`.
+   With zero served items, all three arms are the same untreated condition and
+   the round cannot be run.
+2. **Pre-registration first.** `prereg/R46-admission-rule.md`, with a
+   `## Refutation` section (the protocol validator rejects a missing one, as
+   R45's first `pnpm check` established), declared gates, a named dependent
+   variable and a revert rule. No result is written before the registration is
+   committed.
+3. **Three arms, one store, one dispatch.** All arms reuse R45's corrected
+   evidence input; only the *selection rule* differs.
+4. **Arm A — `as-is`.** R45's shipped rule: `evidence.weight × trust` with
+   `trust = 0.9` from `tau2EditSemantics`, `minSupport 0.8`,
+   `activationThreshold 0.6`. This is the control, not a new treatment.
+5. **Arm B — distinct-task support.** Replace the per-item observation support
+   with a count of distinct learn tasks whose gold-verified correction produced
+   the same normalised rule; apply a `sup3`-style floor (≥ 3 distinct tasks) on
+   top of the confidence gate. ALTK-Evolve's `export.py` is the reference for
+   the counting unit, MemGuard's `governance.py:204–205` for the floor.
+6. **Arm C — `minSupport`-only.** Drop the confidence gate and keep only the
+   corroboration floor, so the ablation separates "confidence about one item"
+   from "corroboration across items". This is the arm that tests whether R44's
+   `insufficient-evidence` diagnosis generalises once items are active.
+7. **Census extension.** `storeCensus` gains an arm-tagged, item-level
+   `distinctTaskSupport` count and retains R45's `admission` block, so every arm
+   reports its own population rather than one shared histogram.
+8. **Injection-side control.** Following MemGuard's
+   `is_injection_eligible` (`retrieval.py:350–363`) and MemAdapter's per-context
+   calibration, record — but do not yet change — the number of items that pass
+   a second gate at `/v1/recall`. Changing injection semantics is a separate
+   round, so a rule effect cannot be confused with a use effect.
+9. **Power, stated before the numbers.** R44 measured a minimum detectable
+   difference of **19.41pp** at 50 paired tasks. A 5pp effect is not decidable
+   in one dispatch of this lane, so R46 registers replication (or a larger n)
+   rather than a single significant-looking pair. `V5` is expected to fail and
+   no bar moves.
+10. **Dependency layering.** The change is confined to `packages/eval`:
+    `src/tau2-admission.ts` (arm definitions and support counting),
+    `src/bin/tau2-driver.ts` (arm wiring and census printing), `src/index.ts`
+    (exports), `src/__tests__/` (TDD), `prereg/`, and `eval/results/`.
+    `packages/core` is **not** touched. `.github/workflows/sota.yml` and its
+    dispatch inputs are **not** changed. The `l4-pair` artefact schema gains
+    fields only, so R45's committed artefacts still validate.
+11. **TDD and acceptance.** The failing test comes first and is corpus-shaped:
+    a 32-task learn split where two tasks yield the same rule must report
+    `distinctTaskSupport = 2`, and a single-task rule must report `1`. No mocks,
+    no untyped values, no skipped tests, no placeholder markers, no CJK in
+    comments or docs. `pnpm check`
+    exit 0, ≥ 95% on every coverage dimension (goal 100%), `ci.yml` green before
+    dispatch, both repositories pushed as Lambertyan.
+12. **Revert rule.** If any arm's `l4-paired` is significantly negative or below
+    −5pp with a served pack, revert on the reading, not on an explanation — the
+    same rule R45 carries.
+
+**The type shape the arm tables will consume** (design only; nothing is
+implemented before the readback):
+
+```ts
+// packages/eval/src/tau2-admission.ts — R46 candidate, NOT opened
+export type AdmissionRule = 'as-is' | 'distinct-task-support' | 'min-support-only';
+
+export type ArmAdmission = {
+  readonly rule: AdmissionRule;
+  readonly itemCount: number;
+  readonly distinctTaskSupport: Readonly<Record<string, number>>;
+  readonly admitted: number;
+  readonly served: number;
+  readonly meanPackIds: number;
+};
+```
+
+**Priority table.**
+
+| priority | item | trigger | acceptance |
+|---|---|---|---|
+| P0 | R45 readback + revert rule | run `42131391874` completes | `served > 0`, or a named next defect; revert on a negative effect |
+| P0 | CI green on every head | every push | `ci.yml` success, four coverage dimensions ≥ 95% |
+| P1 | R46 pre-registration | `served > 0` | `## Refutation` present, gates declared, no threshold changed silently |
+| P1 | Arms A/B/C + distinct-task census | registration committed | one store, three rule columns, `distinctTaskSupport` per item |
+| P1 | transcript-level V46/V47 | driver hands over `simulations[].messages` | gates read the prompts that were sent |
+| P2 | injection-side second gate | R46 readback | recorded first, changed in a separate round |
+| P2 | `sota.ts` / `eval-sql` split | any time after the readback | coverage does not regress, 31 artefacts re-validate |
+| P2 | dose curve | served pack + power calculation | interval on the crossing point |
+| P3 | S1b, vitest 4, W1 | product decision / deliberate migration / cortex release | each has its own registered bar |
+
+**What this round deliberately did not do.** It did not change a threshold, add
+an arm, split a package, migrate a test runner, or dispatch a second workflow.
+Each of those would either move a number R45 is measuring or make two
+explanations of the readback indistinguishable. The ten-item order in §17.86 is
+unchanged; only the content of item 3 is now specified.

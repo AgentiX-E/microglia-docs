@@ -3084,3 +3084,41 @@ condition in which nothing was served. The honest standing claim after R44 is na
 and better founded: the lane can learn from every failure it can read, it can now say *why* it admits
 nothing, and it can reproduce that reason offline before paying for a dispatch. That is not a
 leaderboard position. It is the only column in which the ordering is not in dispute.
+
+#### 3.6.42 The negative effect has two levers, and three competitors now agree on the first
+
+**The standing suspicion, restated.** The user has held from the beginning that
+what is remembered and *how it is used*, rather than how much of it exists,
+produces the negative effect. R44 made the first half measurable: the memory was
+not wrong, its evidence was priced by a tool's arity. Two 2026 papers read while
+R45 ran make the second half explicit and give the first an independent
+corroboration. MemAdapter
+([arXiv:2610.05162](https://arxiv.org/abs/2610.05162)) states that objective and
+correct memories can still induce sycophancy, and that the same memory warrants
+different influence in different contexts; filtering "bad" memories at pipeline
+stages therefore cannot repair the harm. Its implementation answers with three
+use-time stages — counterfactual induction, context-aware reflection,
+evidence-based generation — and retains exactly two ablations on frozen inputs.
+That is a *use policy*, not an admission rule.
+
+**A third vote for the admission rule.** MemGuard
+([arXiv:2608.21867](https://arxiv.org/abs/2608.21867)) names the same two
+failure modes this project keeps finding — unreliable admission and memory drift
+— and its distinguishing move is to treat the verifier's output as persistent
+lifecycle metadata reused at retrieval, conflict resolution, summarisation and
+archival. Its `governance.py:205` permits a cluster to be collapsed into a
+reusable summary only when it spans at least two distinct source tasks.
+Together with ALTK-Evolve's `support` (distinct source tasks, `core_support = 3`)
+and IBM's own 14-rule `sup3` core at 45.0% against 101 lossless rules at 40.0%,
+**three independent implementations** now make corroboration across distinct
+source tasks the variable that decides what survives. R45 changed the *input* to
+admission; the *rule* is still a per-item confidence/support pair. Keeping those
+two levers separate in the record is what lets R46 ablate one without the other.
+
+**What this round deliberately did not do.** It did not open R46, change a
+threshold, add an arm, split a package, migrate a test runner, or dispatch a
+second workflow while the first treated round was measuring. Every one of those
+would move a number the dispatch is about to report, or create two
+indistinguishable explanations of its readback. The scientific claim is deferred
+to the artefact: `recall.served`, `meanPackIds` and `l4-paired` on run
+`42131391874`, read before any new design is acted on.

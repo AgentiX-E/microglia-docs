@@ -2738,3 +2738,33 @@ bullet in each of `## Prediction` and `## Refutation`; the title was corrected a
 reason — the background task's reported exit code 0 was the trailing `tail`'s,
 not the check's. Every gate in this round was read from its own real exit code
 after that.
+
+### 34.21 A waiting round with no defect, and why that is the finding
+
+**What was checked.** On resume, `microglia` local `bd456c3` and remote
+`26f7c3f0` were compared by content and `microglia-docs` local `9a4880d` and
+remote `51c25fba` likewise; both remote heads carry the intended commits and
+the differing SHAs are the Git Data API rebuilding them. `ci.yml` `42130978881`
+is green on `26f7c3f0`. Run `42131391874` is `in_progress`. The prior SOTA
+failure `41872858497` was re-read from its own log: four blocking **scientific**
+gates (`V1-pack-not-empty`, `V5-resolution`, `V16-transfer-resolvable`,
+`l4-paired`) failed on an empty pack, `V32` stayed at 0/32, and `ci.yml` on that
+head was green. No infrastructure fault was found, so no repair was warranted.
+
+**No new defect was found, and none was invented.** The round's work was a first-
+hand source study (two arXiv abstracts and two GitHub repositories, read file by
+file), a twelve-item design skeleton for a round that is still blocked, and
+documentation. No file in `microglia` was added, edited, deleted or committed.
+In particular no threshold was relaxed, no arm was added, no package was split,
+no test runner was migrated, and no second workflow was dispatched while R45 was
+measuring. A watcher polls the run so its readback is not late.
+
+**The rule this leaves behind.** A pinned dispatch is a measurement in progress.
+"Making progress" during it is not a licence to create a diff: a second dispatch
+would reuse the same artefact name, and any source change would make the
+readback unable to name the treatment it measured. The absence of a code change
+in this round is therefore an auditable decision, not an omission. The only
+permitted parallel work is that which changes no number the run will report —
+source study, documentation and offline measurement — and the acceptance bar on
+every later round is unchanged: TDD, real tests, no mocks, ≥ 95% per dimension,
+`ci.yml` green, both repositories pushed as Lambertyan.

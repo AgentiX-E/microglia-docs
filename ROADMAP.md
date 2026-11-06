@@ -3996,6 +3996,20 @@ Pass^4, 14 `sup3` rules at 45.0%) says the selection rule decides the sign, and
 pre-registration; blocked on R45's readback because all three are unmeasurable at
 zero served items.
 
+**Two more sources read while R45 ran (L.7, §17.87).** MemGuard
+([arXiv:2608.21867](https://arxiv.org/abs/2608.21867)) activates only at
+`score >= 0.70 && confidence >= 0.60 && uncertainty <= 0.50`, keeps unverified
+records provisional, routes failures into guards, and requires
+`len(distinct_task_ids) >= 2` before summarising repeated experience — a third
+independent implementation that makes distinct-task corroboration the selection
+variable. MemAdapter ([arXiv:2610.05162](https://arxiv.org/abs/2610.05162)) adds
+the use-side half: even objectively correct memories can harm, because influence
+must be calibrated to the current context. Neither paper is a τ²-bench entry,
+so the ranking does not move. `TECH-DESIGN` §17.87 sharpens R46 into a twelve-item
+skeleton (`as-is` / `distinct-task-support` / `min-support-only`), a type shape,
+a P0–P3 table and an explicit dependency layering that leaves `packages/core`,
+`sota.yml` and R45's pinned head untouched. R46 remains **not opened**.
+
 **Remaining after R45, in order.** (2) the revert rule on the readback; (3) R46
 admission-rule ablation; (4) transcript-level V46/V47, blocked on the driver
 handing `simulations[].messages` to the gate layer; (5) S1a, then S1b (private

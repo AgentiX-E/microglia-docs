@@ -1473,3 +1473,94 @@ is why they are registered as candidates rather than as a plan in motion.
 **R45 dispatch.** Run `42131391874` on `26f7c3f0`, `prereg=R45-admission`,
 `l4_arms=both`, `bird=false`. CI run `42130978881` on the same head is green.
 The readback, not this paragraph, decides whether the delivery gap closes.
+
+### L.7 — Two 2026 sources read while R45 ran, and a third independent vote for distinct-task support (2026-11-06)
+
+**Boundary.** R45 is pinned to `26f7c3f0` and measuring. This appendix changes no
+source file, artefact, workflow or head in `microglia`; it records a source study
+that cannot alter a number the run will report. Both repositories were read
+through the GitHub tree API, and both abstracts were read on their arXiv pages,
+not from a secondary index.
+
+**Source 1 — MemGuard.** Wang et al., [arXiv:2608.21867](https://arxiv.org/abs/2608.21867),
+*Persisting Verifier Signals for LLM-Agent Memory Governance*, submitted
+22 Aug 2026, 30 pages, eight authors. Code:
+[`whyyyyy123/MemGuard`](https://github.com/whyyyyy123/MemGuard), branch `master`,
+42 tree entries, 30 Python files. The abstract names two failure modes —
+*unreliable admission* (failed trajectories, accidental successes and misleading
+observations enter memory because they appear relevant) and *memory drift*
+(duplicate, stale and conflicting records that retrieval alone cannot repair) —
+and states the paper's distinction: verifier output is **persistent lifecycle
+metadata**, not a one-shot filter. Its reported results, over four backbones,
+five seeds, 16 backbone–benchmark settings, four memory baselines plus a
+verifier-only control under matched runtime budgets, are **+7.9 success-rate
+points on WebArena**, **+5.6 step-success-rate points on Mind2Web** and
+**2.4–3.5 points** on Terminal-Bench 2.0 / SWE-Bench Verified, all against
+ReasoningBank as the strongest prior memory baseline. Those are different
+benchmarks from τ²-bench airline and do **not** enter the ranking table in L.4.
+
+**What the code implements, file by file.**
+
+| path | the rule, as written |
+|---|---|
+| `src/memguard/memory/admission.py:11–14` | `DEFAULT_ACTIVATION_REWARD = 0.70`, `DEFAULT_ACTIVATION_CONFIDENCE = 0.60`, `DEFAULT_FAILURE_GUARD_CONFIDENCE = 0.70`, `DEFAULT_MAX_ACTIVATION_UNCERTAINTY = 0.50` |
+| `admission.py:41–50` | with no verifier result the record is `PROVISIONAL` and `verification_required`; `docs/core_workflow.md:16–17` states it **cannot become an active positive memory** |
+| `admission.py:58–61` | `VERIFIED_SUCCESS` becomes `ACTIVE` only if `score >= 0.70` **and** `confidence >= 0.60` **and** `uncertainty <= 0.50`; otherwise `PROVISIONAL` with reason `low_confidence_success` |
+| `admission.py:63–64` | a failure trajectory becomes `ACTIVE` at `confidence >= 0.70`, but as a **failure guard**, i.e. a constraint rather than a positive recipe |
+| `verifier/criteria.py:13–17,19–56` | four criteria — `task_completion`, `evidence_consistency`, `execution_validity`, `generalizability` — and the instruction "Do NOT trust the agent's self-assessment or unsupported claims that the result is correct", using only runtime-visible evidence and no hidden benchmark labels |
+| `verifier/scoring.py:9–46` | `_weighted_mean`, `_label_for_score` on success/fail thresholds, `_boundary_score`, `_dispersion_score` over multiple score views: the reward / confidence / label / uncertainty descriptors the abstract describes |
+| `memory/schema.py:22–43` | nine persisted `verifier_*` fields on every `MemoryRecord` (`score`, `confidence`, `label`, `criteria`, `model`, `verification_time`, `uncertainty`, `views`), plus `state`, `use_count`, `conflicts_with`, `dedup_key`, `supersedes` |
+| `memory/retrieval.py:13–32` | nine positive weights (`relevance 1.00`, `quality 0.35`, `confidence 0.25`, `conflict 0.35`, `staleness 0.20`, `verifier_risk 0.45`, …) and six guard weights |
+| `retrieval.py:314–347` | three channels, not one pack: `positive_limit 5`, `summary_limit 2`, `guard_limit 2`, from a `candidate_pool_size 20` hybrid BM25/cosine pool |
+| `retrieval.py:350–363` | a **second** gate at injection time: `is_injection_eligible` rejects `uncertain / verified_fail / fail`, `verifier_score < 0.55`, `verifier_confidence < 0.50`, and demands `confidence >= 0.70` for guards |
+| `memory/governance.py:193–215` | a cluster is summarised only when `len(cluster) >= cluster_min_size` **and** `len(distinct_task_ids) >= 2`; a `max_active_records` budget archives the overflow by retention score; stale failures (`not verified_success`, `use_count == 0`, aged past `retire_failure_days`) are archived first |
+| `memory/consolidation.py:12–27,76` | surface similarity `>= 0.95` / `>= 0.80`, signature `>= 0.5`, and `ratio >= 0.92` decide DISCARD vs MERGE vs UPDATE |
+
+**Source 2 — MemAdapter.** Ning et al., [arXiv:2610.05162](https://arxiv.org/abs/2610.05162),
+*Counterfactual Adaptation Against Memory-induced Sycophancy*, submitted
+4 Oct 2026, seven authors. Code:
+[`DEEP-JLU/MemAdapter`](https://github.com/DEEP-JLU/MemAdapter), branch `main`,
+194 tree entries, 95 Python files. Its premise is the sharpest statement yet of
+the user's hypothesis: **objective and correct memories can still induce
+sycophancy, and the same memory warrants different influence in different
+contexts**, so filtering "bad" memories at pipeline stages cannot fix the harm.
+The abstract reports three components — Counterfactual Induction, Context-Aware
+Reflection and Evidence-Based Reasoning — and **no numeric deltas**; none is
+invented here. `methods/memadapter/memadapter.py` implements them as three
+stages (`01_counterfactual_induction_method_aligned.txt`, Stage 2 use
+instructions, `03_memory_use_guided_generation.txt`) with per-stage JSON schema
+validation and cached raw stage outputs. Its
+`methods/memadapter/ablations/README.md` retains **exactly two** ablations —
+`stage1-baseline` and `stage1-stage2-baseline` — and states that both reuse the
+same frozen retrieval input, sample selection, model settings and judge contract
+as the full method. That is the same discipline as this project's five-condition
+offline ablation in R45, applied to the *use* of memory rather than its admission.
+
+**A third independent vote.** L.6 recorded ALTK-Evolve's `support` = distinct
+supporting source tasks with `core_support = 3`; IBM's own airline result puts
+14 `sup3` rules at 45.0% against 101 lossless rules at 40.0%. MemGuard now adds
+`len(distinct_task_ids) >= 2` as the condition under which repeated experience
+may be collapsed into a reusable summary. Three independent implementations, in
+two different benchmark families, make **corroboration across distinct source
+tasks** the selection variable. microglia's `minSupport = 0.8` is a per-item
+observation support, and R44 measured that it was never the blocker; R45 changed
+the *input* to admission but not the *rule*. That is precisely what R46 is
+registered to ablate.
+
+**Four-axis comparison, unchanged ranking.**
+
+| axis | ALTK-Evolve (L.6) | MemGuard | MemAdapter | microglia (R45) |
+|---|---|---|---|---|
+| admission signal | gold-verified insight + provenance | four-criterion verifier, no self-assessment | does not filter; calibrates at use time | `editSemantics` = 1 for gold-verified `correctionEdit`, core untouched |
+| corroboration unit | distinct source tasks (`min_support`, `sup3` ≥ 3) | `distinct_task_ids >= 2` to summarise | n/a | `minSupport` 0.8 on one item's observations |
+| use policy | whole-rule Markdown list by support | 5 positive / 2 summary / 2 guard, second injection gate | per-context influence calibration | one scoped pack, one injection |
+| ablation discipline | `support_before → support_after` report | verifier-only control, matched runtime budgets, 5 seeds | 2 retained ablations on frozen inputs | 5-condition offline ablation (A–E), pre-registration, 2,921 tests |
+
+**Ranking.** Unchanged. The SOTA remains IBM Research's `gpt-5.5` airline
+submission at **82.0** Pass^4 (unverified, modified prompt, PR #551);
+SapientAI-Agent-Opus-5 72.0; IBM `gpt-4.1 sup3` 44.0 at #8; stock
+`gpt-oss-120b` 34.0. microglia stays **fifth of six named entries**, and all
+four published arm readings (R43 38.0 / 42.0, R44 52.0 / 40.0) remain samples
+of a zero-served condition. Neither new paper is a τ²-bench entry, so neither
+moves a rank. The column this project still leads is "whether the treatment was
+delivered", and it reads `0 served` until R45's readback.

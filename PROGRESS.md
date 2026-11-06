@@ -9526,3 +9526,70 @@ than redefining it so the export and the selector cannot drift. That is the `sup
 45.0% airline result, and it is the reason R46's candidate experiment ablates the admission *rule*
 once a pack is served. `COMPETITIVE` L.6 has the file paths and the four-axis comparison;
 `TECH-DESIGN` §17.86 has the ten-item dependency list and P0–P3 table.
+
+## 161 — Two more sources while the first treated round ran, and a third vote for distinct-task support
+
+**State at resume.** R45 run `42131391874` is `in_progress` on `26f7c3f0` (started
+2026-11-05T23:42:09Z, about 1 h 20 min). `ci.yml` `42130978881` is green on the
+same head. `microglia` local head `bd456c3` = remote `26f7c3f0` by content;
+`microglia-docs` local head `9a4880d` = remote `51c25fba` by content — both
+pushed as Lambertyan, SHA differences are the Git Data API rebuilding commits.
+The prior SOTA failure `41872858497` was the four blocking **scientific** gates on
+an empty pack (`V1-pack-not-empty`, `V5-resolution`, `V16-transfer-resolvable`,
+`l4-paired`), not an infrastructure fault; `V32` stayed at 0/32 and `ci.yml` on
+that head was green. A watcher is polling the run so the readback is not late.
+
+**Work this round, all of it unable to move a number R45 reports.** Two 2026
+papers were read at first hand on arXiv and their implementations were read file
+by file through the GitHub tree API. **MemGuard** ([arXiv:2608.21867](https://arxiv.org/abs/2608.21867),
+22 Aug 2026, `whyyyyy123/MemGuard`, 42 tree entries / 30 Python files) treats
+verifier output as persistent lifecycle metadata, not a one-shot filter:
+`admission.py` activates only at `score >= 0.70`, `confidence >= 0.60`,
+`uncertainty <= 0.50`, keeps a record without a verifier result permanently
+provisional, and turns failure trajectories into **guards** (constraints) rather
+than recipes; `retrieval.py` selects 5 positive / 2 summary / 2 guard from a
+20-item pool and applies a second injection gate; `governance.py:205` requires
+`len(distinct_task_ids) >= 2` before repeated experience may be summarised.
+Its abstract reports +7.9 SR points on WebArena, +5.6 step-SR on Mind2Web and
+2.4–3.5 points on terminal / software-engineering benchmarks over ReasoningBank
+(four backbones, five seeds, 16 settings) — a different benchmark family, so not
+a τ² rank. **MemAdapter** ([arXiv:2610.05162](https://arxiv.org/abs/2610.05162),
+4 Oct 2026, `DEEP-JLU/MemAdapter`, 194 tree entries / 95 Python files) states the
+use-side half of the user's hypothesis directly: objective and correct memories
+can still induce sycophancy, and the same memory warrants different influence in
+different contexts; its abstract gives **no numeric deltas** and none is invented
+here. Its repository retains exactly two ablations, both on frozen retrieval
+input, sample, model settings and judge contract.
+
+**The convergence.** With L.6's ALTK-Evolve (`support` = distinct source tasks,
+`core_support = 3`, IBM's 14-rule `sup3` core at 45.0% vs 101 rules at 40.0%),
+there are now **three independent implementations** in which corroboration
+across distinct source tasks is the selection variable. microglia's
+`minSupport = 0.8` is support on one item's observations and R44 measured that
+it was never the blocker. R45 corrected admission's *input*, not its *rule*.
+`TECH-DESIGN` §17.87 therefore sharpens R46 into a registered three-arm skeleton
+(`as-is` / `distinct-task-support` / `min-support-only`), a twelve-item list, a
+type shape, a twelve-row P0–P3 table and an explicit dependency layering that
+leaves `packages/core`, `sota.yml` and R45's pinned head untouched. **R46 is not
+opened**; it stays blocked on `served > 0`.
+
+**Ranking, unchanged.** SOTA is IBM Research's `gpt-5.5` airline submission at
+**82.0** Pass^4 (unverified, modified prompt, PR #551); SapientAI-Agent-Opus-5
+72.0; IBM `gpt-4.1 sup3` 44.0 at #8; stock `gpt-oss-120b` 34.0. microglia is
+**fifth of six named entries**; R43 (38.0 / 42.0) and R44 (52.0 / 40.0) remain
+samples of a zero-served condition and are not ranking claims. The only column
+this project leads is "whether the treatment was delivered", still `0 served`.
+
+**Where the project stands, and what is left in order.** (1) **R45 readback** —
+`store.active`, `store.servable`, `recall.served`, `meanPackIds`, `V1`, the
+admission means, `l4-paired`; the watcher returns when the run completes.
+(2) the registered **revert rule** if a served pack costs accuracy. (3) **R46**
+admission-rule ablation, blocked on (1). (4) transcript-level V46/V47, blocked
+on the driver handing `simulations[].messages` to the gate layer. (5) S1a, then
+S1b (a product decision). (6) `sota.ts` split and `eval-sql` move, mechanical,
+deferred until after the readback so a move is not confused with a result.
+(7) W8 dose curve, three pack sizes, powered to find the crossing point.
+(8) vitest 4 migration, deliberately last because it changes coverage
+semantics. **cortex release (W1) remains excluded.** Acceptance on every step:
+TDD, real tests, no mocks, ≥ 95% per dimension, `ci.yml` green, both
+repositories pushed as Lambertyan.
