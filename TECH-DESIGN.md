@@ -6198,3 +6198,101 @@ for mode in ('values', 'names', 'skeleton', 'toolset'):
 |---|---|---|---|
 | P0 | support census on real distilled statements | R45 readback reports `served > 0` | a committed histogram of distinct-task support; the registered floor is computed from it |
 | P1 | `>= 2` contrast arm | support census committed | registered as its own arm, never a fallback after the readback |
+
+### 17.89 The use side is a second lever, and it must be measured before it is changed
+
+**Context.** `COMPETITIVE` L.8 records why IBM's 82.0 cannot be replicated and
+why its own airline −5pp reversal is the datum that matters. `AUDIT` §34.23
+records the code-level finding: `stampDomain` disables the core's widening
+channel, the driver compensates by changing the recall filter's input, and
+`minCoverage = 0` makes all 32 active items injection candidates. This section
+turns that finding into a registered experiment. It changes no source file
+today.
+
+**Twelve-item design.**
+
+1. The registered unit is the **pack**, not the item: the treatment is what is
+   injected into one episode, and `meanPackIds` is its size.
+2. The control arm is the R45 configuration exactly as dispatched; no threshold
+   is touched.
+3. The treatment arm changes exactly one thing: the use policy. Three candidate
+   forms are registered as separate arms, never as a pooled fix.
+4. Arm **U1 — domain-faithful recall**: the filter's domain is the question's
+   domain. Prediction: `recall.served = 0` in the transfer configuration. This
+   is a *calibration* arm; its purpose is to price the current override, not to
+   win.
+5. Arm **U2 — widening-enabled**: candidates are no longer stamped with a
+   single learn domain, so `generalizationPlan` can produce
+   `domain === undefined` items that `scopeMatches` deliberately does not
+   filter. Prediction: a strictly positive but small served population.
+6. Arm **U3 — coverage-floored injection**: keep the current recall scope, set a
+   registered `minCoverage` above zero. This is the only arm that does not
+   require a core change.
+7. All arms share one store, one split, one model, one trial count and one
+   preregistration. Three arms, one store, one preregistration — the same
+   discipline as R46's admission-rule ablation.
+8. The registered floor for U3 is computed from a census of **real distilled
+   statements**, not from the structural proxy in §34.23 and not chosen after
+   seeing `l4-paired` (§17.88).
+9. Every arm reports `store.active`, `recall.served`, `meanPackIds`, the
+   zero-coverage share of injected pairs, `V1` and `l4-paired` with its
+   interval, MDE and p-value.
+10. A use-side arm is opened only after R45's readback reports `served > 0`;
+    at zero served items none of U1–U3 is measurable.
+11. `packages/core` is untouched by U1 and U3. U2 changes `packages/eval`
+    only if a real test proves that widening is reachable without altering
+    `widenedScopeOf` or `sameRuleShape`.
+12. The revert rule from `prereg/R45-admission.md` applies unchanged: if a
+    served pack makes `l4-paired` significantly negative or below −5pp, revert
+    on the reading, not on the explanation.
+
+**Type shape (registered, not yet implemented).**
+
+```ts
+// packages/eval/src/tau2-use-census.ts — TDD, real corpus, no mocks.
+export type UseCensus = {
+  readonly arm: 'as-is' | 'domain-faithful' | 'widening-enabled' | 'coverage-floored';
+  readonly recallRequests: number;
+  readonly recallServed: number;
+  readonly meanPackIds: number;
+  readonly injectedPairs: number;
+  readonly zeroCoveragePairs: number;
+  readonly widenedItems: number;
+};
+```
+
+**Priority table.** One row is added above the R46 arms; §17.87's table is
+unchanged.
+
+| priority | item | trigger | acceptance |
+|---|---|---|---|
+| P0 | R45 readback | run `42131391874` completes | all six predictions and the revert branch read from the artefact |
+| P0 | use census on real distilled statements | `served > 0` | committed histogram; U3 floor computed from it, never after the readout |
+| P1 | U3 coverage-floored arm | census committed | one store, one preregistration, paired ledger, `V1` blocking |
+| P1 | R46 admission-rule ablation | `served > 0` | three arms, one store, registered `>= 2` contrast |
+| P2 | U1 calibration arm | U3 read | reports `served = 0` as a *measurement*, not a failure |
+| P2 | U2 widening-enabled arm | a real test proves reachability | no change to `widenedScopeOf` or `sameRuleShape` |
+| P3 | transcript V46/V47, S1a/S1b, `sota.ts` split, W8, vitest 4 | in ROADMAP order | unchanged acceptance bar |
+
+**Dependency layering.** `packages/eval/src/bin/tau2-driver.ts` (recall query)
+→ `packages/eval/src/tau2-use-census.ts` (instrumentation, new) →
+`packages/core/src/apply/pack.ts` (`minCoverage`, read-only) →
+`packages/core/src/kernel/knowledge.ts` (`scopeMatches`, read-only) →
+`packages/core/src/distill/generalize.ts` (widening, read-only in U1/U3).
+`packages/core`, `sota.yml`, the pinned head `26f7c3f0` and the R45
+preregistration are untouched. `sota.yml` gains no new input until a use-side
+arm is actually opened.
+
+**Acceptance.** TDD: the failing test is written first against the pinned
+32-task fixture, using the real `scopeMatches`, `queryCoverage`,
+`EmbeddedMemory` and `buildPack`, with no mock and no model call. Coverage
+≥ 95% on lines, functions, branches and statements; `pnpm check` exit 0;
+`ci.yml` green; both repositories pushed as Lambertyan; no CJK, no untyped
+escape hatches, no skipped tests, no placeholder markers in code or docs.
+
+**What this round deliberately did not do.** It did not open U1–U3, change
+`stampDomain`, change `RECALL_DOMAIN`, add a `minCoverage` default, split a
+package, or dispatch a second workflow. Each would either move a number R45 is
+measuring or create two indistinguishable explanations of its readback. The
+offline census is a structural measurement; no accuracy claim is made before
+run `42131391874` reports.

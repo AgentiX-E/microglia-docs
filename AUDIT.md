@@ -2814,3 +2814,90 @@ real measurement refuses. The difference is that this one was caught by an
 offline count **before** an 80-minute dispatch was spent on it. R46 remains
 unopened and blocked on R45's readback; no source file, artefact, workflow or
 head in `microglia` was touched.
+
+### 34.23 The use side: a scope that was never a filter, and a widening channel that was switched off
+
+**Two hypotheses were tested and rejected before this section was written.**
+The first was that the hard `scope.task` equality in `MemoryStore.search`
+(`if (item.scope.task !== query.task) continue`) prevents delivery in the
+transfer arm. It does not: `tau2-driver.ts:125` defines
+`const TASK = 'tau2.act'`, and the learn-side candidates carry the same
+constant. The second was that a domain mismatch between learning (retail) and
+evaluation (airline) explains `recall.served = 0`. It does not: `RECALL_DOMAIN`
+defaults to `LEARN_DOMAIN`, and the driver's own comment states that asking in
+the store's terms *is* the transfer treatment. Both checks are recorded so that
+the defect below is not read as a guess.
+
+**What the source actually says.** `scopeMatches` in
+`packages/core/src/kernel/knowledge.ts` filters on `domain` only when
+`filter.domain !== undefined && scope.domain !== undefined && scope.domain !==
+filter.domain`. An item whose `scope.domain` is `undefined` is therefore
+deliberately *not* filtered: that is the widened item, the one generalisation
+produces when a rule has been endorsed in more than one domain.
+`widenedScopeOf` in `generalize.ts` states that `domain` is "the single
+dimension allowed to disappear", and `sameRuleShape` requires
+`item.scope.domain !== candidate.scope.domain` for a widening to be coherent.
+The core therefore already has the correct use policy: a domain-stamped item
+serves only its own domain; only a widened item may travel.
+
+The τ² lane disables it. `stampDomain` in `packages/eval/src/tau2-distill.ts`
+unconditionally overwrites every candidate's `scope.domain` with
+`LEARN_DOMAIN`. Every item in the store then carries the same domain, so
+`item.scope.domain !== candidate.scope.domain` is never true, no
+`generalizationPlan` can fire, and no widened item is ever produced. To make a
+cross-domain arm deliver anything, the driver compensates by setting the
+*recall filter's* domain to the store's domain instead of the question's. The
+filter is not removed; its input is changed so that it cannot exclude anything.
+
+**Measured consequence, on real corpus bytes and the real kernel.** An offline
+census (`scope-census.ts`, read-only, no model call, no mock) built the pinned
+32-item retail learn set and issued the driver's exact recall query
+(`task: 'tau2.act'`, `scope.domain: 'retail'`) against 50 real airline
+`reason_for_call` strings and 82 real held-out retail strings. Only the query
+population changes, so the delta is attributable to the use policy.
+
+| measurement | airline (transfer) | retail held-out (control) |
+|---|---|---|
+| items passing `scopeMatches` | **32 / 32** | **32 / 32** |
+| (query, item) pairs | 1,600 | 2,624 |
+| zero-coverage pairs, structural proxy | **75.88%** | 20.77% |
+| zero-coverage pairs, textual proxy | 7.37% | 0.72% |
+| mean best coverage, structural | 0.0617 | 0.1002 |
+| queries with any non-zero overlap, structural | 30 / 50 | 82 / 82 |
+| pairs surviving `minCoverage = 0` (the default) | **1,600 / 1,600** | 2,624 / 2,624 |
+| pairs surviving `minCoverage = 0.2` | 19 | 34 |
+
+`buildPack` defaults `minCoverage` to 0, so with the default configuration
+every scope-eligible item is an injection candidate. R45's repair changes the
+number of active items from 1 to 32; the pack therefore goes from empty to a
+population in which, on the structural reading, three quarters of the
+(question, rule) pairs share no content term with the question at all. Raising
+`minCoverage` to 0.2 removes 98.8% of the transfer pairs *and* 98.7% of the
+within-domain pairs: it is a blunt global gate, not a way to distinguish a
+foreign rule from a relevant one.
+
+**The caveat is part of the finding.** Real `statement` text is LLM output and
+is not available offline. Two proxies bracket it: structural (gold tool names
+plus argument keys, mean 40.34 tokens) and textual (the learned task's
+`reason_for_call`, mean 33.75 tokens). Neither is a distilled guideline. Both
+agree on the direction — the transfer population has strictly less lexical
+reachability than the within-domain control — and disagree on the magnitude, so
+this section claims the direction and the `scopeMatches` count, not an accuracy
+effect. The sign of `l4-paired` belongs to R45's artefact.
+
+**Why this is a defect, not a design preference.** The project's stated thesis
+is that the negative effect has two levers: what is remembered and how it is
+used. R44/R45 diagnosed and repaired the admission *input*; this section
+identifies a use-side path in which a correct core policy (widening as the only
+cross-domain channel) is bypassed by a lane-level override, and in which no
+relevance floor is applied at injection. `COMPETITIVE` L.8 records AECG's name
+for the resulting failure mode — `scope collapse` — and its measured cost of up
+to 16.89pp for removing scope preservation. That is an independent,
+quantitative statement that this path deserves its own registered arm.
+
+**What was not done.** No file in `microglia` was changed. Run `42131391874` is
+pinned to `26f7c3f0`; creating a diff during a measurement in progress would
+make its readback unable to name the treatment it measured (§34.21). The
+measurement lives in the artifact scratchpad, and `TECH-DESIGN` §17.89
+registers the use-side arms for after the readback with TDD, real tests, no
+mocks and ≥ 95% per dimension.

@@ -4027,3 +4027,30 @@ semantics; cortex release (W1) **excluded**. `TECH-DESIGN` §17.86 carries the
 ten-item dependency list and the P0–P3 table. Every step keeps the same
 acceptance bar: TDD, real tests, no mocks, ≥ 95% per dimension, `ci.yml` green,
 both repositories pushed as Lambertyan.
+
+**Use-side arms registered 2026-11-06 (`TECH-DESIGN` §17.89, `AUDIT` §34.23).**
+The R46 experiment now has a second, independent factor. `stampDomain` writes
+the learn domain onto every item, `generalizationPlan` therefore never produces
+a widened (`domain === undefined`) item, and the driver compensates by pointing
+the recall filter at the store's domain; `buildPack` defaults `minCoverage` to
+0. On the pinned 32-item retail set all 32 items pass the scope filter and
+75.88% of the 1,600 (airline question, retail rule) pairs have zero
+content-term overlap against 20.77% in the within-domain control. Two
+structural proxies bracket the real LLM statements, so only the direction is
+claimed. Three use-side arms are registered — **U1** domain-faithful recall (a
+calibration arm expected to report `served = 0`), **U2** widening-enabled, and
+**U3** coverage-floored injection — with one store, one preregistration, a
+paired ledger and the same revert rule. **None is opened.** All are blocked on
+`served > 0` from R45. U1 and U3 leave `packages/core` untouched; U2 changes
+`packages/eval` only if a real test proves widening is reachable without
+changing `widenedScopeOf` or `sameRuleShape`.
+
+**Remaining after R45, in order, revised.** (2) the revert rule on the readback;
+(3) use census on real distilled statements, then U3 and R46 as registered;
+(4) R46 admission-rule ablation with the `>= 2` contrast registered separately;
+(5) U1 calibration, then U2 only after a real reachability test; (6)
+transcript-level V46/V47; (7) S1a, then S1b; (8) `sota.ts` split and
+`eval-sql` move; (9) W8 dose curve; (10) vitest 4 migration, deliberately
+last; cortex release (W1) **excluded**. The acceptance bar is unchanged: TDD,
+real tests, no mocks, ≥ 95% per dimension, `ci.yml` green, both repositories
+pushed as Lambertyan.

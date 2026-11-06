@@ -3122,3 +3122,50 @@ would move a number the dispatch is about to report, or create two
 indistinguishable explanations of its readback. The scientific claim is deferred
 to the artefact: `recall.served`, `meanPackIds` and `l4-paired` on run
 `42131391874`, read before any new design is acted on.
+
+#### 3.6.43 Delivered is not the same as used well
+
+A competitor published the number everyone wants to copy: 82.0 Pass^4 on
+τ²-bench airline, from learned guidelines, no fine-tuning, no human annotation.
+The same report contains a less quotable number: on airline, 101 lossless rules
+score 40.0 while 14 high-support rules score 45.0. **More memory made the agent
+less reliable.** The gap between those two numbers is the product.
+
+The first is not a replicable object. It comes from two unverified leaderboard
+pull requests that disclose modified prompts, a different agent model, a train
+split that the base split includes, and 20 airline tasks on which a single task
+moves Pass^4 by five points. Its held-out counterpart is 70.0, not 82.0. No
+ablation separates the learned rules from the prompt edits and the model change,
+so reproducing it would tell us nothing about memory. We do not treat that as a
+target; `COMPETITIVE` L.8 carries the argument in full.
+
+The second number travels, because it is a mechanism. Four independent 2026
+results now agree on where the harm lives. AECG calls one half `scope collapse`:
+a procedure that was effective inside one coordination scope is reused at an
+incompatible decision level, and removing scope preservation costs up to 16.89
+points. Tether shows that a memory can be true when written and unsafe when
+used. MemPABench reports that Mem0, MemOS and a simple RAG baseline do not beat
+**no memory at all**. AMV-Guard shows that whether a memory is safe to act on
+depends on the action about to be taken, not on the entry's apparent
+reliability. The field has stopped asking how to store more and started asking
+when a stored thing should be allowed to influence a decision.
+
+Our own corpus says the same thing from the inside, and it says it before the
+measurement is bought. The core already has the right rule: an item stamped with
+a domain serves only that domain; only a *widened* item — one whose domain has
+been generalised away — may travel. The τ² lane stamps every item with the learn
+domain, which makes widening unreachable, and then points the recall filter at
+the store's domain so that a cross-domain arm can deliver anything at all. On
+the pinned 32-item retail set, all 32 items pass that filter, the default
+relevance floor is zero, and three quarters of the (airline question, retail
+rule) pairs share no content term with the question. That is not a claim that
+memory is harmful; it is a measurement of **how it is being used**, taken on real
+corpus bytes with the real kernel, before an 80-minute dispatch is spent.
+
+Delivered was the hard part for four rounds. Used well is the harder one. R45's
+artefact decides whether the first gap closed; the use-side arms registered in
+`TECH-DESIGN` §17.89 decide the second. Until both are read, the standing claim
+is about method: this lane can say whether a treatment arrived, can say how much
+of what arrived was relevant to the question, and can count the population
+before it pays for a result. That is not a leaderboard position. IBM's 82.0 is
+still the SOTA, and microglia is still fifth of six named entries.

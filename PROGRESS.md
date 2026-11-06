@@ -9610,3 +9610,78 @@ deferred until after the readback so a move is not confused with a result.
 semantics. **cortex release (W1) remains excluded.** Acceptance on every step:
 TDD, real tests, no mocks, ≥ 95% per dimension, `ci.yml` green, both
 repositories pushed as Lambertyan.
+
+## 162 — The competitor we cannot copy, and the use-side population we counted before the readback
+
+**The round.** R45 run `42131391874` is still measuring on pinned head
+`26f7c3f0`. As in §161, no file in `microglia` was changed and no second
+workflow was dispatched. The round answered a direct question about IBM
+Research's learned guidelines, read four more first-hand sources on the negative
+effect, read three competitor implementations at source, and counted the
+use-side population on real corpus bytes before the readback. All of it changes
+no number the run will report.
+
+**The answer, in one paragraph.** The mechanism is replicable and has been read
+at source (`COMPETITIVE` L.6); IBM's 82.0 is not a replicable object — two
+unverified PRs with disclosed modified prompts, a different agent model, a
+train/base split overlap, 20 airline tasks where one task is 5pp, and two
+different quantities (70.0 held-out versus 82.0 full base) behind one headline;
+and under this project's rules a SOTA benchmark must run through `sota.yml`,
+report whether the treatment arrived, and isolate contributions by ablation.
+The competitor's own airline result — 101 lossless rules at 40.0 against 14
+`sup3` rules at 45.0, **more memory, −5pp** — is the datum that supports the
+project's thesis, not the 82.0. `COMPETITIVE` L.8 carries the twelve-item
+argument, the minimal attributable reproduction protocol and the unchanged
+ranking.
+
+**Four more sources, all read at first hand.** AECG
+([arXiv:2610.05176](https://arxiv.org/abs/2610.05176)) names `memory pollution`
+and **`scope collapse`** and measures up to 16.89pp lost when scope preservation
+is removed; its declared code repository returned 404 and a repository search
+returned zero results, which is recorded rather than filled. Tether
+([arXiv:2610.25123](https://arxiv.org/abs/2610.25123)) shows that a memory can
+be correct when written and unsafe when used (62% of upstream-failing objects
+published by fact memory, 0.3% by Tether). MemPABench
+([arXiv:2610.30485](https://arxiv.org/abs/2610.30485)) reports that Mem0, MemOS
+and simple RAG **do not outperform No Memory**. AMV-Guard
+([arXiv:2610.31446](https://arxiv.org/abs/2610.31446)) makes verification a
+property of the action about to be taken, not of the entry (−33.9% cost at 100%
+safe-proceed recall on ToolSandbox). Together with Xiong's deletion rule —
+delete only after the memory has been retrieved and its mean downstream L2
+exceeds a threshold — the field now says the same thing from four directions:
+**the negative effect lives in what is admitted and in how it is used, and the
+use side needs a feedback signal, not a better store.**
+
+**A code-level defect found offline, and two hypotheses rejected first.**
+`scopeMatches` filters on `domain` only when the item has a domain; a widened
+item (`domain === undefined`) is deliberately allowed to travel. `stampDomain`
+unconditionally stamps every τ² item with the learn domain, so
+`generalizationPlan` can never produce a widened item; the driver compensates by
+pointing the recall filter at the store's domain. Measured on the pinned
+32-item retail set with the real kernel: **32/32 items pass the scope filter**,
+`minCoverage = 0` makes all of them injection candidates, and 75.88% of the
+1,600 (airline question, retail rule) pairs have zero content-term overlap
+against 20.77% in the within-domain control. Two structural proxies bracket the
+real LLM statements; the direction is claimed, the magnitude and any accuracy
+effect are not. `AUDIT` §34.23 has the table and the two rejected hypotheses;
+`TECH-DESIGN` §17.89 registers U1–U3 as use-side arms for after the readback.
+No result is claimed before `42131391874` reports.
+
+**Where the project stands, and what is left in order.** (1) **R45 readback** —
+watcher polling, `store.active`, `servable`, `recall.served`, `meanPackIds`,
+`V1`, admission means, `l4-paired`. (2) **Revert rule** — if a served pack is
+significantly negative or below −5pp, revert on the reading. (3) **Use-side
+census on real distilled statements**, then U3 and R46 as registered in §17.89.
+(4) **R46 admission-rule ablation**, three arms, one store, one preregistration,
+with the `>= 2` contrast registered separately. (5) transcript V46/V47.
+(6) S1a, then S1b. (7) `sota.ts` split and `eval-sql` move. (8) W8 dose curve.
+(9) vitest 4 migration, deliberately last. **cortex release excluded.**
+Acceptance on every step: TDD, real tests, no mocks, ≥ 95% per dimension,
+`ci.yml` green, both repositories pushed as Lambertyan.
+
+**Ranking.** SOTA is still IBM `gpt-5.5` airline **82.0** (unverified, modified
+prompt, PR #551); SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock
+`gpt-oss-120b` 34.0; microglia **fifth of six named entries**, all four
+published arms from a zero-served condition. The only column this project leads
+is whether the treatment was delivered, and it still reads `0 served` until the
+readback.

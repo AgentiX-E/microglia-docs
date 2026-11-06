@@ -1573,3 +1573,139 @@ four published arm readings (R43 38.0 / 42.0, R44 52.0 / 40.0) remain samples
 of a zero-served condition. Neither new paper is a τ²-bench entry, so neither
 moves a rank. The column this project still leads is "whether the treatment was
 delivered", and it reads `0 served` until R45's readback.
+
+### L.8 — What IBM's learned guidelines are, why their number cannot be replicated, and four more sources on the negative effect (2026-11-06)
+
+**The question.** A reader asked what IBM Research's learned guidelines are and
+why this project cannot replicate them. The honest answer has three layers, and
+conflating them is the error the question invites: the *mechanism* is replicable
+and has been read at source; the *number* is not a replicable object; and under
+this project's own acceptance rules, copying the number would not answer the
+question the project exists to answer.
+
+**What the method is.** ALTK-Evolve (IBM Research, 2026-10-20; eleven authors
+including Ashwath Vaithinathan Aravindan, Vatche Isahagian and Vinod Muthusamy)
+lets the *same* model that acts as the agent read its own training trajectories
+and distill successes and failures into short behavioural rules — authenticate
+the customer before any order action, present a structured change summary and
+obtain explicit approval before a database write, issue one tool call per turn.
+The rules are appended as a plain Markdown list after the domain policy in the
+system prompt. No weight update, no human annotation, no change to the τ²-bench
+stock THINK→ACT ReAct scaffold, tools or policy. Agent `gpt-4.1`, user simulator
+`gpt-5.5`, four trials per task; Pass^4 requires all four trials to succeed.
+
+| domain (held-out n) | config | rules | mean accuracy | Pass^4 |
+|---|---|---|---|---|
+| retail (40) | baseline | 0 | 78.1 | 57.5 |
+| retail (40) | `sup3` | 31 | 78.8 | 60.0 |
+| retail (40) | lossless | 292 | 82.5 | **67.5** |
+| airline (20) | baseline | 0 | 57.5 | 35.0 |
+| airline (20) | `sup3` | 14 | 60.0 | **45.0** |
+| airline (20) | lossless | 101 | 65.0 | **40.0** |
+
+The pair in bold is the most important number in this appendix. On airline,
+adding 87 more rules raised mean accuracy by five points and *reliability fell
+by five*. Cost rose `$0.084 → $0.139` (+65%) on retail and `$0.081 → $0.107`
+(+32%) on airline, almost entirely in prompt input tokens. IBM's own conclusion
+is that guidance dosage is a domain-specific dial and that the **selection
+rule**, not the volume, decides the sign. That is a published negative effect
+from the current SOTA holder, and it is the datum that supports this project's
+thesis.
+
+**Why 82.0 is not a replicable object.**
+
+1. **Unverified.** Both submissions are pull requests to the τ²-bench
+   repository — #542 (retail, 2026-09-14) and #551 (airline, 2026-09-21) — not
+   entries on a verified board. All figures are IBM's own reports; no
+   independent reproduction exists.
+2. **Modified prompt.** The PRs disclose modified prompts. The treatment is
+   therefore "learned rules **plus** prompt engineering", and no published
+   ablation separates the two.
+3. **Model as a confound.** 82.0 uses `gpt-5.5` as the agent (and in that
+   configuration as the guideline extractor). This lane runs τ²'s stock
+   `llm_agent` on `deepseek-chat` (reference 40.0–46.0); the same harness on
+   `gpt-oss-120b` scores 34.0. The 82-versus-40 gap is dominated by model
+   capability, not by memory.
+4. **Split overlap disclosed.** The retail guidelines were learned from a train
+   split that the base split includes. The airline submission has no train split
+   available. The difference between the two submissions is precisely what this
+   project's transfer arm was built to measure.
+5. **Sample resolution.** Held-out airline has 20 tasks: one task is five
+   percentage points of Pass^4. IBM's own 40.0-versus-45.0 reversal is below the
+   resolution of that sample. R44 measured this lane's MDE at 19.41pp with n=50
+   and reported it; that is the correct reading of a five-point difference on 20
+   tasks.
+6. **Two different quantities, one headline.** The held-out `gpt-5.5` airline
+   result is 55.0 → 70.0 Pass^4 (+15). The leaderboard's 82.0 is on the full
+   base split against the 2026-10-12 snapshot. They are not the same measure and
+   are not interchangeable.
+
+Even with `gpt-5.5` in hand, reproducing 82.0 would still not answer "did
+memory help", because model, prompt and split move together. This is an object
+problem, not a capability problem.
+
+**Why the project's own rules forbid treating it as a target.** SOTA benchmarks
+must run through `AgentiX-E/microglia`'s `sota.yml`; IBM submitted to an
+upstream repository. Every iteration here requires a pre-registration, a paired
+per-episode ledger, a blocking `V1-pack-not-empty` gate, `ci.yml` green and both
+repositories pushed as Lambertyan. The leaderboard table reports none of
+`store.active`, `recall.served`, pack size or a paired ledger: no row in it can
+say whether the treatment was delivered. Reproducing such a number would return
+to the state R41 explicitly voided, when 36.0 came from an empty store. Org
+secrets expose `DEEPSEEK_API_KEY` and `ZHIPU_API_KEY`; `gpt-4.1` and `gpt-5.5`
+are not available through them, and LLM-dependent components must stay behind a
+provider-agnostic abstraction rather than bind to one vendor.
+
+**What does travel, and what does not.** The mechanism travels: support as the
+count of distinct supporting source tasks, `min_support`, the `sup3` reliable
+core, consolidation preserving support and provenance, and one shared
+`_support` decision point (L.6). The number does not: §17.88 and `AUDIT` §34.22
+measured that a copied `sup3 >= 3` floor selects zero groups on this lane's
+32-task retail corpus under the strict normalisation. R46 is registered to
+ablate the *rule*, not to import the *threshold*.
+
+**A minimal attributable reproduction, if it is ever wanted.** One `sota.yml`
+arm, one agent, one prompt, one split, one model, varying only the guideline set
+(baseline / `sup3` / lossless), paired per episode, reporting MDE and power
+alongside the delta, and declared a cross-model control rather than a SOTA
+claim. Its precondition is `served > 0` on R45's readback. Before that, a
+dispatch would only produce another void reading.
+
+**Four more first-hand sources on the negative effect.**
+
+| source | finding | number |
+|---|---|---|
+| AECG, [arXiv:2610.05176](https://arxiv.org/abs/2610.05176) (Tian et al., 2026-10-04) | `memory pollution` (weak or spurious procedures recalled repeatedly) and **`scope collapse`** (knowledge escaping the coordination scope in which it was effective, reused at incompatible decision levels) | best in 11 of 12 framework–benchmark settings; up to +10.23pp over the strongest memory method; **removing scope preservation costs up to 16.89pp** |
+| Tether, [arXiv:2610.25123](https://arxiv.org/abs/2610.25123) (Wang et al., 2026-10-18) | a verdict derives from premises; when a signing key is revoked, its dependents must be withdrawn at read time | atomic-fact memory publishes 62% of upstream-failing objects; Mem0 42%, A-Mem/Graphiti 9%; Tether 0.3% with 37% fewer verification calls; rises to 9.4–22.1% when relations arrive in separate sessions |
+| MemPABench, [arXiv:2610.30485](https://arxiv.org/abs/2610.30485) (Li et al., 2026-10-21) | 99 sessions, 14 preferences, four months, five preference changes per user | **Mem0, MemOS and simple RAG do not outperform No Memory**; file-based memory improves accuracy but applies preferences beyond relevant contexts |
+| AMV-Guard, [arXiv:2610.31446](https://arxiv.org/abs/2610.31446) (Wang et al., 2026-10-22) | whether a memory must be re-verified is a property of the **action about to be taken**, not of the entry | ToolSandbox −33.9% verification cost at 100% safe-proceed recall; AppWorld −21.3% |
+
+AECG's abstract states that code is available and links `github.com/fenhg297/AECG`.
+That repository returned HTTP 404 on 2026-11-06, and a GitHub repository search
+for both the project name and the owner returned zero results. The paper's
+numbers are therefore read from its abstract, not from an implementation; this
+appendix records the gap rather than filling it.
+
+**Competitor source read this round.** `yuplin2333/agent_memory_manage`
+(27 entries, 13 Python/Markdown files, Xiong et al. arXiv:2505.16067) implements
+the ablation as five top-level scripts (`main_strict.py`, `main_coarse.py`,
+`main_noerrorprop.py` and two noisy-memory variants). Its
+`ExperienceMemory.find_worst_memory` deletes a record only when it has been
+**retrieved at least `deletion_retrieval_n_times` AND its mean downstream L2
+error exceeds `deletion_l2_threshold`**; `find_dead_memory` removes records
+retrieved fewer than `retrieval_n_times` after `exist_time_threshold`. The
+deletion signal is the *observed consequence of using the memory*, not a
+write-time self-assessment — the feedback loop this lane does not yet have.
+`xiaoqi-7/memory-rollback` (181 entries, 65 Python/Markdown, Yu et al.
+arXiv:2608.10502) separates pure reachability in `affected_subgraph.py` from
+`support_checker.py`, with an explicit exclusion set of evidentiary edges;
+`agiresearch/A-mem` (23 entries, 11) triggers evolution every
+`evo_threshold = 100` memories and links nearest neighbours.
+
+**Ranking.** Unchanged: IBM `gpt-5.5` airline **82.0** (unverified, modified
+prompt, PR #551) is the SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8);
+stock `gpt-oss-120b` 34.0; microglia **fifth of six named entries**, all four
+published arms from a zero-served condition. None of the four new papers is a
+τ²-bench entry, so none moves a rank. The use-side census in `AUDIT` §34.23 and
+`TECH-DESIGN` §17.89 is an offline structural measurement on this lane's own
+corpus, not a benchmark result; R45's `l4-paired` sign is still unread.
