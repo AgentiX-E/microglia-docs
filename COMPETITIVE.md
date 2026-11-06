@@ -1547,6 +1547,15 @@ observation support, and R44 measured that it was never the blocker; R45 changed
 the *input* to admission but not the *rule*. That is precisely what R46 is
 registered to ablate.
 
+**A caution on copying the threshold.** `sup3` is IBM's `core_support` on its
+own airline corpus, not a constant of nature. An offline census on this lane's
+32-task retail learn split (`AUDIT` §34.22, `TECH-DESIGN` §17.88) finds zero
+groups at support ≥ 3 under the strictest normalisation and one under the
+action-sequence reading. R46's floor must therefore be measured on real
+distilled statements before dispatch, with MemGuard's `>= 2` registered as a
+separate contrast arm. The competitor's *mechanism* travels; its *number* does
+not.
+
 **Four-axis comparison, unchanged ranking.**
 
 | axis | ALTK-Evolve (L.6) | MemGuard | MemAdapter | microglia (R45) |

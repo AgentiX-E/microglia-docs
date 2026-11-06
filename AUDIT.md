@@ -2768,3 +2768,49 @@ permitted parallel work is that which changes no number the run will report —
 source study, documentation and offline measurement — and the acceptance bar on
 every later round is unchanged: TDD, real tests, no mocks, ≥ 95% per dimension,
 `ci.yml` green, both repositories pushed as Lambertyan.
+
+### 34.22 A threshold copied from a competitor before its population was counted
+
+**The defect.** `TECH-DESIGN` §17.87, written earlier in this same round,
+registered R46's `distinct-task-support` arm with a `sup3`-style floor of
+**≥ 3 distinct supporting tasks**, taken from IBM's airline core (14 `sup3`
+rules at 45.0% against 101 lossless rules at 40.0%) and from ALTK-Evolve's
+`core_support = 3`. The threshold was copied from a different corpus and a
+different benchmark. Nobody had counted how many items in *this* lane could
+reach it. That is a design defect, not a result: a dispatch with an empty
+selected population reports a null that is indistinguishable from "the rule does
+not help".
+
+**The measurement, offline and read-only.** On
+`eval/fixtures/tau2-retail-learn-actions.json` (sha256 `b5e49bb7…`, 28,749
+bytes, 32 tasks, source sha256 `76e1fa64…`, 328,166 bytes), four normalisations
+of "the same rule" were counted with no model call and no repository change:
+
+| normalisation | distinct groups | support = 1 | groups ≥ 2 | groups ≥ 3 |
+|---|---|---|---|---|
+| full sequence with argument values | 32 | 32 | 0 | 0 |
+| action names only | 26 | 21 | 5 | 1 |
+| name + argument-key skeleton | 26 | 21 | 5 | 1 |
+| unordered tool set | 21 | 13 | 8 | 3 |
+
+The strictest definition makes all 32 tasks unique, so a ≥ 3 floor selects
+**nothing**. At sequence/skeleton level it selects one group covering three
+tasks. Only the loosest definition — which discards order and arguments — yields
+three groups. The distiller's own statements are LLM output and were **not**
+measured; no claim about their support distribution is made here.
+
+**The repair.** `TECH-DESIGN` §17.88 adds a P0 prerequisite: before any R46
+dispatch, run the real distiller once on the pinned learn split and commit the
+histogram of distinct-task support over the emitted statements. The registered
+floor is computed from that artefact, never chosen after seeing `l4-paired`.
+MemGuard's `>= 2` (`governance.py:205`) becomes a separate registered contrast
+arm rather than a post-hoc fallback. R44's measured MDE of 19.41pp at 50 paired
+tasks still stands, so replication is registered rather than a single pair.
+
+**Why this is recorded as a defect rather than a design note.** It is the same
+class as R43's `handle.edit` no-op rejection (§34.16) and the R45 admission
+input mispricing (§34.19): a mechanism that is plausible in prose but that a
+real measurement refuses. The difference is that this one was caught by an
+offline count **before** an 80-minute dispatch was spent on it. R46 remains
+unopened and blocked on R45's readback; no source file, artefact, workflow or
+head in `microglia` was touched.

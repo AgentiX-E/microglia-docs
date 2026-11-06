@@ -4008,7 +4008,12 @@ must be calibrated to the current context. Neither paper is a τ²-bench entry,
 so the ranking does not move. `TECH-DESIGN` §17.87 sharpens R46 into a twelve-item
 skeleton (`as-is` / `distinct-task-support` / `min-support-only`), a type shape,
 a P0–P3 table and an explicit dependency layering that leaves `packages/core`,
-`sota.yml` and R45's pinned head untouched. R46 remains **not opened**.
+`sota.yml` and R45's pinned head untouched. R46 remains **not opened**. An
+offline support census (`AUDIT` §34.22, `TECH-DESIGN` §17.88) then found that
+the copied `sup3` floor of ≥ 3 selects zero groups on the strictest reading of
+this 32-task corpus; the floor must now be computed from a census of the real
+distilled statements before any dispatch, not carried over from a competitor's
+benchmark.
 
 **Remaining after R45, in order.** (2) the revert rule on the readback; (3) R46
 admission-rule ablation; (4) transcript-level V46/V47, blocked on the driver

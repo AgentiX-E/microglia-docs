@@ -9580,6 +9580,23 @@ opened**; it stays blocked on `served > 0`.
 samples of a zero-served condition and are not ranking claims. The only column
 this project leads is "whether the treatment was delivered", still `0 served`.
 
+**A second parallel item, and a defect caught before it cost a dispatch.** An
+offline, read-only support census on the same 32-task fixture (sha256
+`b5e49bb7…`) counted how many distinct tasks could support "the same rule"
+under four normalisations: with full argument values 32 of 32 groups are unique
+(0 groups at support ≥ 3); at action-name / argument-key-skeleton level 26
+groups hold 21 singletons, 4 pairs and 1 triple; only the unordered tool set
+yields 3 groups at ≥ 3. `TECH-DESIGN` §17.87 had copied IBM's `sup3` floor of
+≥ 3 into R46's candidate arm without measuring that any item could reach it —
+a dispatch with an empty selected population would have reported a null that
+looks like a result. `AUDIT` §34.22 records the defect; `TECH-DESIGN` §17.88
+adds a P0 prerequisite (a support census on the real distilled statements,
+with the registered floor computed from that artefact rather than chosen after
+the readback) and registers MemGuard's `>= 2` as a separate contrast arm. The
+distiller's statements are LLM output and were **not** measured offline; no
+claim about their distribution is made. R46 remains unopened. This measurement
+changed no file in `microglia`.
+
 **Where the project stands, and what is left in order.** (1) **R45 readback** —
 `store.active`, `store.servable`, `recall.served`, `meanPackIds`, `V1`, the
 admission means, `l4-paired`; the watcher returns when the run completes.

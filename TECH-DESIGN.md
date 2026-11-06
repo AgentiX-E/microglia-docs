@@ -6108,3 +6108,93 @@ an arm, split a package, migrate a test runner, or dispatch a second workflow.
 Each of those would either move a number R45 is measuring or make two
 explanations of the readback indistinguishable. The ten-item order in §17.86 is
 unchanged; only the content of item 3 is now specified.
+
+### 17.88 An offline support census, and a threshold that must not be fixed before it is measured
+
+**Why.** §17.87 registered R46's arm B with a `sup3`-style floor of ≥ 3 distinct
+supporting tasks, copied from IBM's airline core. That threshold was copied, not
+measured on this corpus. Before another 80-minute dispatch is spent, the
+population it would select can be counted offline, with no model call, no mock
+and no change to R45's pinned head.
+
+**Corpus.** `eval/fixtures/tau2-retail-learn-actions.json`, sha256
+`b5e49bb7…`, 28,749 bytes, 32 tasks — the first 32 ids in lexical order, the
+exact learn split R44's memory arm read — extracted verbatim from τ²-bench
+v0.2.0 retail `tasks.json`, source sha256 `76e1fa64…`, 328,166 bytes. Action
+count per task 0–12, mean 5.03; one task (`24`) carries no action.
+
+**Four definitions of "the same rule", measured on the same 32 tasks.**
+
+| normalisation | distinct groups | support = 1 | groups with support ≥ 2 | groups with support ≥ 3 | tasks inside ≥ 2 groups |
+|---|---|---|---|---|---|
+| full action sequence with argument values | 32 | 32 | 0 | 0 | 0 |
+| action names only | 26 | 21 | 5 | 1 | 11 |
+| action name + argument-key skeleton | 26 | 21 | 5 | 1 | 11 |
+| unordered tool set (loosest) | 21 | 13 | 8 | 3 | 19 |
+
+The strictest definition makes every task unique. At sequence/skeleton level 21
+of 26 groups appear once, four appear twice and one appears three times (the
+`find_user_id_by_email → get_user_details → get_order_details ×2 →
+return_delivered_order_items ×2` shape). Only the unordered tool set, which
+discards both order and arguments, yields three groups at ≥ 3.
+
+**What this does and does not settle.** It settles that, on observable actions,
+a ≥ 3 distinct-task floor selects **zero rules** under the strict definition and
+**one group covering three tasks** under the sequence/skeleton definition. It
+does **not** settle the level R46 actually needs: the driver's rules are
+LLM-distilled statements, and a distiller may abstract two different action
+sequences into the same statement. That distribution cannot be measured without
+a model call, so it is not guessed here, and no claim about the sign of an
+effect is made.
+
+**The defect this found.** §17.87 wrote a fixed `>= 3` floor into a candidate
+design before measuring that any item can reach it. On the only definition
+available offline the arm would have had almost no population, and the dispatch
+would have reported a null that looks like a result. This is the same class of
+defect as R43's `handle.edit` no-op rejection: a plausible mechanism that a real
+measurement would have refused. `AUDIT` §34.22 carries it.
+
+**Three corrections to the R46 skeleton** (design only; R46 is still not
+opened, and none of these changes R45's pinned head):
+
+1. **P0 prerequisite — a support census on real distilled items.** Before any
+   R46 dispatch, run the real distiller once on the pinned learn split and emit
+   the distribution of distinct-task support over the statements it produces.
+   The artefact, not this paragraph, decides whether a floor is reachable.
+2. **Register the floor from that census, never from the readback.** The
+   pre-registration fixes the threshold computed by the census and attaches the
+   histogram; a threshold chosen after seeing `l4-paired` is not admissible.
+   MemGuard's `>= 2` (`governance.py:205`) is registered as a **separate
+   contrast arm**, not as a post-hoc fallback, so the two levers stay separate.
+3. **Keep the power statement.** R44's measured MDE is 19.41pp at 50 paired
+   tasks. A census that leaves few supported rules makes the interval wider, not
+   narrower; R46 still registers replication rather than a single pair.
+
+**Reproduction** — read-only, no model call, no repository change:
+
+```python
+import json, collections
+d = json.load(open('eval/fixtures/tau2-retail-learn-actions.json'))
+tasks = d['tasks']                      # 32 tasks, sha256 b5e49bb7…
+def key(t, mode):
+    if mode == 'values':
+        return tuple((a['name'], tuple(sorted((k, json.dumps(v, sort_keys=True))
+                     for k, v in a['arguments'].items()))) for a in t['actions'])
+    if mode == 'skeleton':
+        return tuple((a['name'], tuple(sorted(a['arguments'].keys()))) for a in t['actions'])
+    if mode == 'names':
+        return tuple(a['name'] for a in t['actions'])
+    return tuple(sorted({a['name'] for a in t['actions']}))   # toolset
+for mode in ('values', 'names', 'skeleton', 'toolset'):
+    c = collections.Counter(key(t, mode) for t in tasks)
+    dist = collections.Counter(c.values())
+    print(mode, 'distinct', len(c), 'support-dist', dict(sorted(dist.items())))
+```
+
+**Priority table update.** One row is added above the R46 arms; the rest of
+§17.87's table is unchanged.
+
+| priority | item | trigger | acceptance |
+|---|---|---|---|
+| P0 | support census on real distilled statements | R45 readback reports `served > 0` | a committed histogram of distinct-task support; the registered floor is computed from it |
+| P1 | `>= 2` contrast arm | support census committed | registered as its own arm, never a fallback after the readback |
