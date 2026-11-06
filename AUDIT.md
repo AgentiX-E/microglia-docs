@@ -2901,3 +2901,86 @@ make its readback unable to name the treatment it measured (§34.21). The
 measurement lives in the artifact scratchpad, and `TECH-DESIGN` §17.89
 registers the use-side arms for after the readback with TDD, real tests, no
 mocks and ≥ 95% per dimension.
+
+### 34.24 R45 read back: six predictions, a served pack, and the field V1 does not grade
+
+**The run.** `42131391874` completed `failure` on 2026-11-06, pinned to
+`26f7c3f0`. The `sota.yml` L4 job ran to completion — both arms scored 50 tasks
+at `k=4`, `V1` printed its population and `l4-pair` wrote a full ledger — and
+step 13 `Pair the arms` exited 1 on three blocking scientific gates. `ci.yml` on
+the same head is green. Reading the job log and the `l4-evidence` artefact
+(`20,276,204 bytes`, artifact `13467718128`) settles the distinction: this is a
+gate refusing to certify an underpowered measurement, not a build failure. It is
+the same distinction §160 drew for R44, now with a treatment attached.
+
+**Defect 21 — the delivery gap, and why it was never a property of memory.**
+R41 delivered nothing (no store), R42 served nothing (the retrieval keys were
+the model's spelling), R43 fixed the keys and still served nothing (`0 active`),
+R44 named the reason (`insufficient-evidence=19`) but could not separate its two
+halves. R45's offline reproduction priced the cause: `editDistance` charges a
+gold-verified correction by tool arity, `createLlmInterpreter` writes that price
+into both `trust` and `evidence.weight`, and `scoreKnowledge` multiplies them
+into a quadratic penalty. `tau2EditSemantics` returns full semantic distance for
+the gold-verified `correctionEdit` shape only. The live artefact confirms the
+repair to four decimals: `store 21 active / 21 servable`, `reasons
+confidence-cleared=21`, `candidate 0`, `recall 1480 served / 0 empty`,
+`meanPackIds 1.839`, admission `0.9000 / 0.9000 / 0.6165`, `supportOnly 0`.
+All six registered predictions held; the seventh (`l4-paired`) was deliberately
+left unregistered. Five rounds of the same symptom had one cause, and this is
+the first dispatch that reached the model at all.
+
+**Defect 22 — a served pack that the record cannot describe.** `V44` reports `0
+of 21 items with no domain, 0 unscoped, 0 widened`, and the scenario is
+`learn=retail / test=airline / recall=retail`. So 21 retail-learned rules were
+injected into airline questions on 1480 of 1480 requests, with `minCoverage`
+defaulting to 0 and `scopeMatches` passing all 21. But the arm record stores
+only `servedPackSizes`, `per_task` rewards and `per_trial` rewards: the memory
+arm contains no `statement`, `rule`, `packIds`, `content`, `text` or `injected`
+field (a token census over the artefact finds zero of each). `V1` grades *how
+many* items were served and is silent on *what* they said. R45's `+6.00pp [-6,
++20] p=0.5488, n=50`, with an MDE of 18.59pp and `tasksForFivePp=339`, therefore
+cannot distinguish "the effect is smaller than this lane can resolve" from "the
+pack was mostly about a different domain". §34.23 measured the second offline
+on structural proxies (75.88% of the 1,600 cross-domain pairs have zero lexical
+overlap, against 20.77% of the 2,624 within-domain pairs), but explicitly
+refused to call that an accuracy effect. This is the field that must be measured
+on real distilled statements before any use policy is changed.
+
+**The revert rule was read, not argued with.** `prereg/R45-admission.md`
+reverts if a served pack makes `l4-paired` significantly negative or below
+−5pp. The reading is `+6.00pp`, `p=0.5488`, above −5pp. It does not fire. The
+transfer ledger is `22 repaired / 17 broken of 200 measured`, net `+2.50pp`,
+verdict `unmeasured`; `V16` fails at 86 informative trials against a floor of
+100. Two `+12.00pp` (R44, empty pack) and `+6.00pp` (R45, served pack) deltas
+are both draws from a lane that cannot resolve 5pp; neither is evidence the
+memory helps, and neither is evidence it hurts.
+
+**Defect 23 — an instrument that changes no number.** The repair shipped in
+R46 is `packages/eval/src/tau2-use-census.ts`: the seven-field `UseCensus` shape
+registered in §17.89 verbatim, a derived `coverageProfile`, and a
+`zeroCoverageShare` helper, all pure functions over `(query, statement)` pairs
+observed at the recall facade. TDD came first — a failing test on the pinned
+32-task fixture (sha256 `b5e49bb7…`) with the real `queryCoverage` and
+`tokenize`, no mocks and no model call. Two hand-written assertions were caught
+by the kernel before implementation: `'cancel my reservation'` against
+`'cancel reservation'` is *full* coverage (1), not partial, because `my` is a
+stopword; the test was corrected to cover the zero, partial (2/3) and full
+branches separately. `armRecordFromDriver` builds the census only when the driver
+supplies `useObservations`, so every artefact before R46 reads "not measured"
+rather than a fabricated zero. The driver's `host.recall` call, its scope, the
+`minCoverage` floor and the returned pack are byte-for-byte the R45
+configuration; only observation was added. `tau2ArmRecordOf` carries `use`
+forward so the gate layer, which reads the record and never the file, can see it.
+
+**What this round deliberately did not do.** It did not open U1, U2, U3 or R46's
+admission-rule arms, change `stampDomain`, `RECALL_DOMAIN` or `minCoverage`,
+split a package, or dispatch a second workflow. U3's floor may be computed only
+from a census of real distilled statements (§17.88), which needs a dispatch that
+carries this instrument; registering a floor from the structural proxy, or after
+seeing `l4-paired`, is the failure §34.22 already caught once. The acceptance
+bar is unchanged: TDD, real tests, no mocks, ≥ 95% per dimension (this round
+99.98 / 100 / 99.68 / 99.98 over 2,934 tests in 140 files), `pnpm check` exit 0,
+`ci.yml` green, both repositories pushed as Lambertyan. `poc-coupling.json` was
+regenerated with the new module (`137 → 138` scanned, `37,528 → 37,746` lines)
+and committed; the six result files whose only diff was `ranAt` / `p50` / `p95`
+were restored rather than committed — §34.20's defect, avoided in advance.

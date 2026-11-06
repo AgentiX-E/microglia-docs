@@ -6296,3 +6296,103 @@ package, or dispatch a second workflow. Each would either move a number R45 is
 measuring or create two indistinguishable explanations of its readback. The
 offline census is a structural measurement; no accuracy claim is made before
 run `42131391874` reports.
+
+### 17.90 R45 reported: the instrument ships, the arms stay closed
+
+**The readback.** Run `42131391874` on `26f7c3f0` completed `failure` on three
+blocking scientific gates (`V5-resolution` 18.59pp MDE, `V16-transfer-resolvable`
+86 < 100 informative, `l4-paired` `+6.00pp [-6, +20] p=0.5488 n=50`). `ci.yml`
+on the same head is green. Both arms scored 50 tasks at `k=4`; memory `pass^4
+0.42`, reference `0.36`. The red conclusion is a gate refusing to certify an
+underpowered measurement, not a build failure.
+
+**The delivery defect is closed.** All six R45 predictions held: `store 21
+active / 21 servable`, `candidate 0`, `reasons confidence-cleared=21`,
+admission `0.9000 / 0.9000 / 0.6165`, `supportOnly 0`, `recall 1480 / 0`,
+`meanPackIds 1.839`, `V1` PASS `1.84 rules/question`, `V32` 0/32, `V8` 0%,
+`V5` FAIL as predicted. `tau2EditSemantics` is confirmed on a live dispatch.
+The revert rule — significantly negative, or below −5pp with a served pack —
+does not fire on `+6.00pp p=0.5488`, so the repair stands.
+
+**The next defect is in what the record can see.** `V44` shows `0 of 21 items
+with no domain, 0 unscoped, 0 widened`, with `learn=retail / test=airline /
+recall=retail`: 21 retail rules were injected into airline questions on all
+1480 requests. The arm record carries `servedPackSizes`, `per_task` and
+`per_trial`, but no statement, rule, pack id or injected content — a token census
+of the artefact finds zero of each. `V1` grades the pack's size, not its
+relevance. So `+6.00pp` cannot separate "underpowered" from "unrelated pack".
+§34.23 measured the latter offline on structural proxies (75.88% zero-overlap
+cross-domain vs 20.77% within-domain) and refused an accuracy claim; this
+round ships the instrument that can measure it on real statements.
+
+**Twelve-item implementation, all observation.**
+
+1. The registered unit stays the **pack**; the new unit is the `(question,
+   injected statement)` pair, observed at the `/v1/recall` boundary.
+2. `packages/eval/src/tau2-use-census.ts` implements the seven-field
+   `UseCensus` from §17.89 **verbatim**: `arm`, `recallRequests`,
+   `recallServed`, `meanPackIds`, `injectedPairs`, `zeroCoveragePairs`,
+   `widenedItems`. No field is added to the registered shape.
+3. A separate `coverageProfile` derives `measuredPairs`, `unmeasurablePairs`,
+   `meanCoverage` and `{zero, partial, full}` buckets; a `zeroCoverageShare`
+   helper divides the two registered counts. Widening the registered contract
+   is refused: U3's floor is computed from the profile, not smuggled into it.
+4. Coverage uses the real `queryCoverage` and `tokenize` from
+   `@agentix-e/microglia-core/kernel` — the same functions `buildPack` uses for
+   `minCoverage`. No new similarity notion, no embedding, no model call.
+5. `zeroCoveragePairs` counts every kernel-zero pair, including content-free
+   queries; `coverageProfile` reports those separately as `unmeasurablePairs`
+   and excludes them from the mean and buckets. The two readings answer
+   different questions and neither silently drops a population.
+6. `UseObservation` is one recall request: `{ query, statements }`, where
+   `statements` are the rendered statements of the items in the served pack.
+   An empty pack is an empty array, and a mean over no request is 0.
+7. `Tau2Raw` gains optional `useObservations`, `useArm`, `widenedItems`;
+   `armRecordFromDriver` calls `useCensus` only when observations exist. Every
+   artefact before R46 reports no `use` block — "not measured", never a
+   fabricated all-zero census.
+8. `Tau2ArmRecord` and `Tau2ArmArtefact.tau2` gain an optional `use`;
+   `tau2ArmRecordOf` carries it forward. The gate layer reads the record, so a
+   projection that dropped it would restore the silence permanently.
+9. The driver collects at the facade: `host.recall`'s arguments, its scope and
+   the returned pack are exactly R45's. Only `useObservations.push` is added.
+   `widenedItems` comes from the same `withoutDomain` domain ledger `V44` reads.
+10. `packages/core` is untouched. `sota.yml` gains no input. No gate changes —
+    `V1` still grades size, and nothing grades `use` yet. This is deliberate: a
+    new gate before a real-statement census would be a threshold chosen after
+    the readout, the exact failure §34.22 caught.
+11. TDD: `tau2-use-census.test.ts` (9 tests), three `armRecordFromDriver` tests,
+    one `tau2ArmRecordOf` round-trip test. The pinned 32-task fixture, real
+    corpora, real kernel; no mocks. Two literal coverage assertions were
+    corrected against the kernel before implementation (`'cancel my
+    reservation'` is full coverage, `my` being a stopword). Coverage 99.98 /
+    100 / 99.68 / 99.98; 2,934 tests in 140 files; `pnpm check` exit 0.
+12. U1–U3 and R46's admission-rule arms remain **closed**. U3's floor must be
+    computed from a census of real distilled statements, which requires a
+    dispatch carrying this instrument. The `as-is` census from that dispatch,
+    not R45's `l4-paired`, is the input to the floor.
+
+**Priority table, revised after the readback.**
+
+| priority | item | trigger | acceptance |
+|---|---|---|---|
+| P0 | R45 readback | met | six predictions + revert rule read from the artefact — **done** |
+| P0 | `use` instrument shipped | met | registered shape verbatim, TDD, no number changed — **done** |
+| P1 | dispatch carrying `useObservations` | this commit green | artefact reports a real-statement census; `zeroCoverageShare` read before any floor |
+| P1 | U3 coverage-floored arm | census committed | floor computed from the real artefact, registered before dispatch, `V1` blocking |
+| P1 | R46 admission-rule ablation | `served > 0` (met) | three arms, one store, `>= 2` contrast registered separately |
+| P2 | U1 calibration, U2 after a real reachability test | U3 read | U1 reports `served = 0` as a measurement |
+| P3 | transcript V46/V47, S1a/S1b, `sota.ts` split, W8, vitest 4 | ROADMAP order | unchanged acceptance bar |
+
+**Dependency layering.** `tau2-driver.ts` (facade, observation only) →
+`tau2-use-census.ts` (pure census, new) → `@agentix-e/microglia-core/kernel`
+(`queryCoverage`/`tokenize`, read-only). `tau2-instrument.ts` composes the
+census into the arm record; `tau2-gates.ts` projects it without grading it.
+`packages/core`, `sota.yml`, every gate definition and R45's artefact are
+untouched. The coupling ledger was regenerated for the one new module
+(`137 → 138`, `37,528 → 37,746` lines) and committed; six result files whose
+only diff was timing were restored, not committed (§34.20).
+
+**Ranking.** IBM `gpt-5.5` airline 82.0 remains the SOTA; microglia fifth of
+six named entries. A served pack and a non-significant `+6.00pp` move no rank
+and are not claimed as accuracy.

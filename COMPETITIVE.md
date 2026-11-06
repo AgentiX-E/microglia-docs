@@ -1709,3 +1709,61 @@ published arms from a zero-served condition. None of the four new papers is a
 τ²-bench entry, so none moves a rank. The use-side census in `AUDIT` §34.23 and
 `TECH-DESIGN` §17.89 is an offline structural measurement on this lane's own
 corpus, not a benchmark result; R45's `l4-paired` sign is still unread.
+
+### L.9 — R45 read back: the ranking holds, and the delivery column is no longer zero
+
+**The readback, 2026-11-06.** Run `42131391874` on `26f7c3f0` completed
+`failure` on three blocking scientific gates; `ci.yml` on the same head is
+green. Both arms scored 50 τ² airline tasks at `k=4`: memory `pass^4 0.42`,
+reference `0.36`, paired `+6.00pp [-6, +20] p=0.5488, n=50`, MDE 18.59pp,
+transfer `22 repaired / 17 broken`, net `+2.50pp`, verdict `unmeasured`. The
+R45 revert rule (significantly negative, or below −5pp with a served pack) does
+not fire. Neither the sign nor the magnitude is an effect this lane can resolve,
+and neither is claimed as one.
+
+**The delivery result, which is a different column.** For the first time in five
+rounds the memory arm was given a treatment: `store 21 active / 21 servable`,
+`recall 1480 / 1480 served`, `meanPackIds 1.839`, `V1-pack-not-empty` PASS.
+Six of six R45 predictions held. This closes the gap that made R41–R44's arm
+scores void — not a ranking claim, but the precondition for ever making one.
+`V44` reports 21 items all carrying the retail domain and `0 widened`, with
+`learn=retail / test=airline`: a retail pack was served to airline questions on
+every request.
+
+**Why IBM's number still cannot be the target.** L.8 recorded the three-layer
+answer: the mechanism travels, the number does not. R45 does not change it. IBM
+`gpt-5.5` airline **82.0** is two unverified PRs with disclosed modified
+prompts, a different agent model, a train split the base split includes, 20
+airline tasks where one task is 5pp, and two different quantities (70.0
+held-out, 82.0 full base) reported as one. Under this project's rules a SOTA
+benchmark must run through `sota.yml`, report whether the treatment arrived,
+and isolate contributions by ablation. R45 is the first run that can even
+attempt the second condition; it still fails the resolution condition. IBM's
+own airline reversal — 101 lossless rules at 40.0 against 14 `sup3` rules at
+45.0, a −5pp cost for more memory — remains the published datum that supports
+the negative-effect hypothesis, and it is a *mechanism* result, not a headline.
+
+**What the artefact could not say, and the competitor literature explains.**
+`+6.00pp` cannot distinguish an underpowered lane from an unrelated pack: the
+arm record counts pack size and rewards but no injected statement. AECG
+([arXiv:2610.05176](https://arxiv.org/abs/2610.05176)) names this "scope
+collapse" and loses up to 16.89pp without scope preservation; MemAdapter
+([arXiv:2610.05162](https://arxiv.org/abs/2610.05162)) says even correct
+memories harm when their influence is not calibrated to the current context;
+MemPABench ([arXiv:2610.30485](https://arxiv.org/abs/2610.30485)) finds Mem0 /
+MemOS / simple RAG do not beat No Memory. Three independent implementations —
+ALTK-Evolve's `support`/`sup3`, MemGuard's `distinct_task_ids >= 2`, and
+IBM's 14-rule core — make corroboration across distinct source tasks the
+selection variable. R46 ships the use-side census instrument (§17.90), not an
+arm, so the next dispatch can measure the relevance of *real* injected
+statements before any floor is registered.
+
+**Ranking (unchanged).** IBM `gpt-5.5` airline **82.0** (unverified, modified
+prompt, PR #551) is the current SOTA; SapientAI-Agent-Opus-5 72.0; IBM
+`gpt-4.1 sup3` 44.0 (#8); stock `llm_agent` `gpt-oss-120b` 34.0; microglia
+reference 40.0 (R44) / 42.0 (R43); microglia memory 52.0 (R44) / 38.0 (R43),
+now with R45's `0.42` added — all memory-arm scores before R45 came from a
+`0 served` condition and are not ranking claims. **microglia is fifth of six
+named entries.** R45's served pack and non-significant `+6.00pp` move no rank.
+The only column microglia leads is "whether the treatment was delivered", and
+it now reads `1480 served` rather than `0`.

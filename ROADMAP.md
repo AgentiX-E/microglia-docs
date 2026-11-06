@@ -3939,7 +3939,7 @@ action with empty arguments; the real retail corpus carries 5–12 actions with 
 offline reproduction on the exact censused file through the real kernel holds **31 of 32** learn items
 as candidates. The hypothesis survives, the measurement does not.
 
-### R45 — Admission is a statement about the evidence, not about the edit (**dispatched** 2026-11-06, run `42131391874`)
+### R45 — Admission is a statement about the evidence, not about the edit (**read** 2026-11-06, run `42131391874`, six of six predictions held)
 
 **Why, and why without a second diagnostic dispatch.** `insufficient-evidence` is written by
 `confidence < 0.6` **or** `support < 0.8`. R44's histogram cannot separate them, but the decision is
@@ -3986,6 +3986,39 @@ snapshot), pushed as `c65468f0` and `26f7c3f0`. CI `42129954733` failed on the
 uncommitted snapshot and `42130978881` is green after it — `AUDIT` §34.20 carries
 the defect and its repair. **R45 dispatched** as run `42131391874` on `26f7c3f0`,
 both arms, `bird=false`, about 1 h 20 min. No result is claimed before readback.
+
+**R45 read back 2026-11-06 (§163, `AUDIT` §34.24, `TECH-DESIGN` §17.90).** The
+run completed `failure` on three blocking scientific gates (`V5` 18.59pp MDE,
+`V16` 86 < 100 informative, `l4-paired` `+6.00pp [-6, +20] p=0.5488 n=50`);
+`ci.yml` on `26f7c3f0` is green. Both arms scored 50 tasks at `k=4`, memory
+`0.42` / reference `0.36`. **All six registered predictions held**: `store 21
+active / 21 servable`, `candidate 0`, `reasons confidence-cleared=21`,
+admission `0.9000 / 0.9000 / 0.6165`, `supportOnly 0`, `recall 1480 served /
+0 empty`, `meanPackIds 1.839`, `V1` PASS, `V32` 0/32, `V8` 0%, `V5` FAIL. The
+revert rule (significantly negative or < −5pp with a served pack) does **not**
+fire. This is the first dispatch to deliver a treatment in five rounds; the
+delivery gap is closed. `V44` reports 21 items all with the retail domain and
+`0 widened` under `learn=retail / test=airline / recall=retail`, and the arm
+record contains no injected statement — so `+6.00pp` cannot separate an
+underpowered lane from an unrelated pack. `AUDIT` §34.24 records the field V1
+does not grade.
+
+**R46 round 1 — the use census instrument, shipped (not an arm).**
+`packages/eval/src/tau2-use-census.ts` implements §17.89's seven-field
+`UseCensus` verbatim plus a derived `coverageProfile` and `zeroCoverageShare`;
+`armRecordFromDriver` builds it only from driver-supplied `useObservations`, so
+pre-R46 artefacts report "not measured". `tau2ArmRecordOf` carries it forward.
+The driver collects `(query, statements)` at the recall facade with the R45
+recall call unchanged — `packages/core`, `sota.yml` and every gate untouched.
+TDD: `tau2-use-census.test.ts` (9 tests), three `armRecordFromDriver` tests, one
+projection round-trip; pinned 32-task fixture, real kernel, no mocks. Two
+literal coverage assertions were corrected against `queryCoverage` before
+implementation. `pnpm check` exit 0; **2,934 tests in 140 files**; coverage
+**99.98 / 100 / 99.68 / 99.98**. The coupling ledger was regenerated for the
+one new module and committed; six timing-only result files restored. **No
+workflow dispatched yet** — U3's floor must be computed from a census of real
+distilled statements, which requires the `as-is` dispatch that carries this
+instrument, and §34.22 forbids a floor chosen after seeing `l4-paired`.
 
 **R46 candidate, registered but not opened.** Once a pack is served, ablate the
 admission *rule* rather than its input: float evidence weight against the
@@ -4054,3 +4087,30 @@ transcript-level V46/V47; (7) S1a, then S1b; (8) `sota.ts` split and
 last; cortex release (W1) **excluded**. The acceptance bar is unchanged: TDD,
 real tests, no mocks, ≥ 95% per dimension, `ci.yml` green, both repositories
 pushed as Lambertyan.
+
+**Remaining after R46 round 1, in order, revised again (2026-11-06).** Items
+(2) and (3)'s *instrument* are now **done**: the revert rule was read (does not
+fire) and `tau2-use-census.ts` ships with TDD. What remains:
+
+1. **P1 — an `as-is` dispatch carrying `useObservations`.** The only next
+   measurement. It changes no treatment; its purpose is a census of **real
+   distilled statements**, whose distribution the offline structural proxies
+   (§34.23) cannot supply. Read `zeroCoverageShare` from that artefact before
+   any floor is discussed.
+2. **P1 — U3 coverage-floored arm.** The floor is computed from the artefact in
+   step 1, registered before the U3 dispatch, never chosen after seeing
+   `l4-paired` (§34.22). One store, one preregistration, paired ledger, `V1`
+   blocking.
+3. **P1 — R46 admission-rule ablation** (`as-is` / `distinct-task-support` /
+   `min-support-only`), with MemGuard's `>= 2` corroboration registered as its
+   own contrast arm. `served > 0` is now met, so it is unblocked.
+4. **P2 — U1 calibration**, then **U2** only after a real reachability test.
+5. **P2 — transcript-level V46/V47** (driver hands `simulations[].messages` to
+   the gate layer), S1a then S1b.
+6. **P3 — `sota.ts` split and `eval-sql` move**, W8 dose curve, vitest 4
+   migration deliberately last.
+7. **cortex release (W1) excluded** by the standing instruction.
+
+The acceptance bar is unchanged: TDD, real tests, no mocks, ≥ 95% per
+dimension, `ci.yml` green, both repositories pushed as Lambertyan, and every
+iteration reporting the competitor comparison and the SOTA ranking.

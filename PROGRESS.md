@@ -9685,3 +9685,74 @@ prompt, PR #551); SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock
 published arms from a zero-served condition. The only column this project leads
 is whether the treatment was delivered, and it still reads `0 served` until the
 readback.
+
+## 163 — The first treatment arrived, six predictions held, and the artefact could not say what was in the pack
+
+**Run `42131391874` reported on 2026-11-06.** Its `sota.yml` conclusion is
+`failure` on three blocking scientific gates (`V5-resolution`,
+`V16-transfer-resolvable`, `l4-paired`); `ci.yml` on the pinned head `26f7c3f0`
+is green. The failure is a measurement, not a build: the review of the job log
+shows the L4 arm ran to completion, both arms scored 50 tasks at `k=4`, and the
+pairing step exited 1 because the registered gates refuse to certify an
+underpowered result. This is the same distinction §160 recorded for R44.
+
+**The delivery gap closed, exactly as the R45 pre-registration predicted.** The
+admission repair (`tau2EditSemantics`, shipped in `b88623e` / remote `c65468f0`/
+`26f7c3f0`) turned every gold-verified correction into full-semantic evidence.
+All six registered predictions were read from the artefact, not inferred:
+
+| prediction (prereg/R45-admission.md) | reading | held |
+|---|---|---|
+| `store.active > 0`, `store.servable > 0` | 21 / 21 | yes |
+| `statuses.candidate` falls from 19 to near zero | 0 (reasons `confidence-cleared=21`) | yes |
+| admission means `0.9000 / 0.9000 / 0.6165`, `supportOnly=0` | `0.9000 / 0.9000 / 0.6165`, `supportOnly=0` | yes, to four decimals |
+| `recall.served > 0`, `meanPackIds > 0` | 1480 / 1480 served, 0 empty, `meanPackIds=1.839` | yes |
+| `V1-pack-not-empty` passes | PASS, `1.84 rules/question` | yes |
+| `V32` stays 0/32, `V8` reliable, `V5` still fails | V32 0/32, V8 0.00% (0/11), V5 FAIL 18.59pp | yes |
+| `l4-paired` not predicted | `+6.00pp [-6, +20] p=0.5488, n=50` | honestly unregistered |
+
+Five of six predictions held and the sixth was deliberately left unregistered;
+the R44 offline reproduction (`trust=0.9`, `confidence=0.6165`) is now confirmed
+by a live dispatch. The transfer ledger reports 22 repaired / 17 broken of 200
+measured trials, net `+2.50pp`, verdict `unmeasured`; `V16` fails at 86
+informative trials against a floor of 100.
+
+**The revert rule does not fire.** The registered rule reverts only if a served
+pack makes `l4-paired` significantly negative or below −5pp. The reading is
+positive, non-significant, and above −5pp. R44's `+12.00pp` with an empty pack
+and R45's `+6.00pp` with a served pack are both samples of a lane whose minimum
+detectable difference is 18.59pp; neither is an effect. `AUDIT` §34.24 carries
+the full gate table and the reason the run is red while the code is green.
+
+**The finding this round.** `V44-domain-accounted` reports `0 of 21 items with
+no domain, 0 unscoped, 0 widened`, and the scenario is
+`learn=retail / test=airline / recall=retail`: 21 retail-learned rules were
+injected into airline questions on every one of 1480 requests. But the arm
+record counts only *how many* items were served and the rewards that followed;
+it never records *which* statements were injected or whether any shared a
+content term with the question. `V1` grades the size and is silent on the
+content, so `+6.00pp` cannot distinguish "the experiment is underpowered" from
+"the delivered pack was mostly about a different domain". That distinction is
+the user's standing hypothesis, and §34.23 measured it offline on structural
+proxies (75.88% of cross-domain pairs have zero lexical overlap against 20.77%
+within-domain).
+
+**R46 ships the instrument, not an arm.** `packages/eval/src/tau2-use-census.ts`
+implements the `UseCensus` shape registered in `TECH-DESIGN` §17.89 verbatim
+(seven fields), plus a derived `coverageProfile`. It is wired to the driver's
+recall facade as pure observation: the recall scope, the `minCoverage` floor and
+the pack contents are exactly as R45 ran them. TDD — the failing test came
+first on the pinned 32-task fixture with the real `queryCoverage`/`tokenize`
+kernel, no mocks and no model call; 9 census tests, 3 `armRecordFromDriver`
+tests and 1 gate-projection round-trip test. `AUDIT` §34.24 records why an
+instrument that changes no number is the correct next step, and why U1–U3 stay
+closed until a dispatch reports the census on **real distilled statements**
+rather than proxies.
+
+**Ranking is unchanged.** IBM `gpt-5.5` airline **82.0** (unverified, modified
+prompt, PR #551) is still the SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0
+(#8); stock `gpt-oss-120b` 34.0; microglia still **fifth of six named
+entries**. R45's memory arm scored `pass^4 0.42` and the reference `0.36`; the
+`+6.00pp` paired delta is not significant at n=50 and is not a ranking claim.
+The column this project leads — whether the treatment was delivered — now reads
+`1480 served` for the first time; that is a delivery measurement, not accuracy.

@@ -3169,3 +3169,63 @@ is about method: this lane can say whether a treatment arrived, can say how much
 of what arrived was relevant to the question, and can count the population
 before it pays for a result. That is not a leaderboard position. IBM's 82.0 is
 still the SOTA, and microglia is still fifth of six named entries.
+
+#### 3.6.44 The first pack arrived, and it taught us what we had not measured
+
+**Delivered is now a fact.** Run `42131391874` (2026-11-06) was the first
+dispatch in which the memory arm actually received a treatment. For four rounds
+the symptom was the same — nothing was served — and the causes were different:
+no store, then the wrong retrieval keys, then nothing active, then a store that
+could name its own refusal but not explain it. The last of those was a
+measurement defect, not a property of memory: a gold-verified correction was
+priced by how many arguments the tool takes, and that price was written twice
+into the evidence, so a confidence score multiplied it into a quadratic
+penalty. Correcting the price, without touching a single threshold, admitted
+all 21 items. The live artefact agrees with the offline reproduction to four
+decimals: `0.9000 / 0.9000 / 0.6165`, `supportOnly 0`, `candidate 0`,
+`1480 of 1480` requests served, `1.84 rules per question`. Six of six
+registered predictions held. That is what a repair looks like when it is
+measured before it is shipped.
+
+**Delivered is not the same as used well.** The scenario learns in retail and
+answers in airline. Twenty-one retail rules were injected into airline
+questions on every request; none was widened, none was unscoped, and the default
+relevance floor excludes nothing. An offline census on this project's own
+corpus found that 75.88% of those cross-domain (question, rule) pairs share no
+content term at all, against 20.77% within the domain. That is a structural
+measurement, not an accuracy result — the real rules are written by a model and
+are not available offline — but it is exactly the shape of the concern that
+motivated this work: that what we remember, and how we use it, may be the source
+of the harm.
+
+**And the run still could not answer it.** `+6.00pp` on `[-6, +20]` at
+`p=0.5488`, with a minimum detectable difference of 18.59pp, is a number this
+lane cannot resolve. More importantly, the arm record counted *how many* rules
+were served and the rewards that followed, but never *which* rules, or whether
+any of them was about the question in front of the model. A passing `V1` and a
+pack of unrelated rules are indistinguishable in that record. So this round
+does not claim that memory helps or that memory hurts. It claims that we can
+now say, from an artefact, whether the treatment arrived — and that we have
+found the next field we failed to measure.
+
+**The response is an instrument, not a lever.** `tau2-use-census.ts` records,
+for each request, what was actually put in front of the agent and how much of it
+is lexically reachable from the question, using the same coverage function the
+pack builder already uses. It changes no scope, no threshold, no pack content,
+and no gate. It is written test-first against the pinned corpus, with no mocks
+and no model call; a hand-written assertion about word coverage was corrected
+against the real kernel before the implementation was written. Every older
+artefact simply reports "not measured" instead of a reassuring zero.
+
+This is the discipline the whole project rests on: when a number is ambiguous,
+first add the measurement that would disambiguate it, not the parameter that
+would make it look better. The use-side arms — a domain-faithful calibration, a
+widening-enabled store, a coverage-floored pack — stay closed until a dispatch
+reports a census of the real distilled statements. A floor chosen from a proxy,
+or chosen after seeing the effect, would be the same mistake in a new costume.
+
+**Where we stand.** IBM's 82.0 is still the SOTA; microglia is still fifth of
+six named entries, and its `+6.00pp` is not a ranking claim. The column we lead
+— whether the treatment was delivered — reads `1480 served` for the first time.
+That is progress in the ability to be honest, which is the only kind of
+progress a benchmark cannot fake.
