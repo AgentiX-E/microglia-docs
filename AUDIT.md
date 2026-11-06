@@ -2984,3 +2984,41 @@ bar is unchanged: TDD, real tests, no mocks, ≥ 95% per dimension (this round
 regenerated with the new module (`137 → 138` scanned, `37,528 → 37,746` lines)
 and committed; the six result files whose only diff was `ranAt` / `p50` / `p95`
 were restored rather than committed — §34.20's defect, avoided in advance.
+
+### 34.25 A green local check that was not green in CI, and the fixture that fixed it
+
+**Defect 24.** The first R46 push (`4d6b4c19`) turned `ci.yml` run `42148206565`
+red at step 8 `Tests with coverage gates`: `tau2-use-census.test.ts` failed with
+`ENOENT: no such file or directory, open '/tmp/tau2/retail.json'`. The test read
+the two real corpora from the scratchpad path `/tmp/tau2/`, which exists in the
+agent sandbox (R44 left it there) but not on a fresh GitHub runner. The local
+`pnpm check` had exited 0 — 2,934 tests in 140 files, coverage 99.98 / 100 /
+99.68 / 99.98 — because the same machine happened to hold the file. This is the
+exact local-pass/CI-fail drift the standing instruction forbids, and the green
+local number was not evidence about the committed tree.
+
+**Why the defect was possible.** R45's `tau2-admission.test.ts` reads a
+*fingerprinted, repository-local* fixture
+(`eval/fixtures/tau2-retail-learn-actions.json`, sha256 pinned). The use-census
+test needed a second population — the natural-language `reason_for_call` texts
+of airline questions and held-out retail questions — and the first draft reached
+for the scratchpad corpora instead of committing a fixture. An artefact a test
+needs must live in the repository; otherwise CI reads a different world.
+
+**The fix.** New `eval/fixtures/tau2-use-census-queries.json` (sha256
+`54f79dbf…`, 45,187 bytes) carries the 32 learn statements derived from the R45
+fixture, the 50 airline questions, and the 82 held-out retail questions, plus
+both source corpora's sha256 and byte counts (`76e1fa64…` / 328,166 retail;
+`40d692b3…` / 149,096 airline). The test asserts both the learn fixture's and
+the query fixture's own sha256, the two corpus fingerprints, all four population
+sizes, and that no query is content-free — which is why the paired populations
+are exactly 50 x 32 = 1,600 and 82 x 32 = 2,624 with nothing silently skipped.
+No test reads `/tmp` after this change. The defect was reproduced deliberately:
+with `/tmp/tau2` moved aside, all 96 affected tests pass (`CI_SIM_RC=0`).
+
+**The rule this leaves behind.** A green `pnpm check` is a statement about the
+machine it ran on. Before claiming CI green, either read the remote run or
+reproduce the runner's filesystem. A fixture a test needs is part of the source
+tree, fingerprinted and asserted — the same discipline §34.20 applied to the
+coupling snapshot, now applied to test input. Both repositories are pushed again
+after the fix, and `ci.yml` is read from its real conclusion, not assumed.
