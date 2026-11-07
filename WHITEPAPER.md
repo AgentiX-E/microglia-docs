@@ -3323,3 +3323,90 @@ six named entries. The census run is measuring on a head that this reading did
 not touch. No accuracy claim is made from it. The question has narrowed from
 "does memory help" to "which memory reached which question, and with what right
 to speak" — a question an artefact can now answer.
+
+### 3.6.47 The reading came back, and the instrument that produced it was too coarse to answer the next question
+
+The as-is observation run has finished, and the number it was built to produce
+is now in the artefact. Of 1,512 recall requests, all 1,512 carried a pack;
+those packs placed 3,016 (question, statement) pairs in front of the model, and
+1,175 of them — **0.3896** of the population — shared no content term with the
+question they were meant to help answer. This is the first hard measurement, on
+real distilled statements rather than on a structural proxy, of the use-side
+half of the hypothesis that opened 3.6.46.
+
+Six predictions were written down before the run. Five held. The one that did
+not is worth more than the five that did: the registration predicted a
+zero-coverage share above 0.5, extrapolated from an offline proxy that measured
+0.7588 across domains and 0.2077 within one. The real statements read 0.3896.
+A proxy is not the distilled statement, and a threshold carried over from a
+proxy is a defect — the second time this project has measured that fact. The
+direction survives and is now quantified: over a third of what the model was
+shown was lexically unrelated to what it was asked. No refutation condition
+fired, and the paired delta (`0.00pp`, `[-10, +10]`, `p = 1.0000`) does not
+trigger the revert rule inherited from R45.
+
+The same configuration had already produced a different answer. R45 measured
+`+6.00pp` with 21 active items and 1,480 served requests; R46 measured
+`0.00pp` with 14 active items and 1,512 served, and both of its arms scored
+`pass^4 0.46`. Both deltas are non-significant, both have a minimum detectable
+effect above 13 points, and the distiller is a model call, so the learning half
+is not deterministic and the store population drifts between two identical
+dispatches. Two runs of one configuration returning +6 and 0 are a reading of
+the noise floor, not an accuracy claim about either.
+
+| reading | R45 | R46 |
+|---|---|---|
+| active items | 21 | 14 |
+| served requests | 1,480 | 1,512 |
+| paired delta | `+6.00pp` | `0.00pp` |
+| interval | `[-6, +20]` | `[-10, +10]` |
+| p | 0.5488 | 1.0000 |
+| MDE | 18.59pp | 13.73pp |
+
+**The defect the reading exposed is about granularity, not accuracy.** The
+design registered a *committed histogram* as the prerequisite for the coverage
+floor that U3 will eventually apply. The run committed no histogram. The
+instrument reduced the raw observations to seven scalars and discarded the
+pairs, leaving a single coverage number, `zeroCoveragePairs`, in the artefact.
+One scalar cannot determine what a non-zero `minCoverage` floor would do,
+because the same scalar is compatible with many different pack-level
+distributions. A real-kernel offline probe on the fingerprinted 32-task fixture
+found two populations with the identical registered scalar whose retained pair
+fractions at `minCoverage = 0.05` differ by 12.44 points (17.63% against
+5.19%), and a post-floor served population spread over a 33.24-point interval.
+The non-zero coverage mass sits in the left tail (p10 0.04, p50 0.069, p90
+0.143), so a floor chosen by intuition would empty an unpredictable number of
+packs and could fail the delivery gate by construction. This is the use-side
+twin of the earlier defect: a threshold about to be applied to a population
+nobody counted.
+
+**The repair is additive and deliberately unglamorous.** `coverageHistogram`
+now reduces the same facade observations to a committed population: a fixed,
+finite, ascending ladder of coverage floors that includes zero; at each rung the
+retained pairs, the packs that keep at least one statement and the packs a floor
+would empty; the quantiles of the non-zero coverage values; and a separate count
+of content-free questions, whose coverage is undefined rather than zero. It is
+computed where the census is computed and projected to the gate layer by the
+same path. The seven-field census is unchanged verbatim, and the new field is
+optional, so R45, R46 and every older artefact read as *not measured* instead
+of being silently assigned a zero population. No gate reads the histogram;
+`packages/core`, the workflow, the driver and the pairing logic are untouched.
+Seven failing tests were written before the implementation, including a
+real-kernel regression proving that two populations with identical registered
+fields commit different histograms. The full check exits 0 with 2,944 tests in
+140 files and coverage 99.98 / 99.69 / 100 / 99.98.
+
+The discipline is unchanged by having a better instrument. **No floor is
+chosen here.** A floor is computed from a histogram committed by a real
+dispatch and registered before the dispatch that uses it — never from a proxy,
+never from an accuracy number, and never from `l4-paired`. The histogram must
+first be read from a run that carries this instrument; that reading is the next
+observation, not this one. U1, U2, U3 and the admission-rule arms stay closed.
+
+**Where we stand.** IBM's 82.0 is still the SOTA; microglia is still fifth of
+six named entries. A falsified prediction and a census repair move no
+leaderboard row, and no accuracy claim is made from an observation round. The
+question has narrowed once more — not only *which memory reached which
+question*, but *with what coverage, and how many packs a given content filter
+would leave standing*. That is now a question an artefact can answer, once a
+run has committed one.

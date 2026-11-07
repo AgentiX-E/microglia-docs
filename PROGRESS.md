@@ -9897,3 +9897,77 @@ unchanged: TDD, real tests, no mocks, at least 95 percent per dimension,
 entries** with `0.42` / `0.36` at k=4. A dispatched observation round and five
 papers move no leaderboard row. The column microglia leads remains "whether
 the treatment was delivered": `1480 served`.
+
+## 166 — The census came back with one prediction falsified, and a scalar that could not grade its own floor
+
+**The run finished.** `sota.yml` run `42317807270` on `cb329054` completed at
+01:49Z. Both arms and the evidence upload (`l4-evidence`, 20,276,206 bytes)
+succeeded; step 13 `Pair the arms` exited 1 on `V5` (MDE 13.73pp), `V16` (81
+informative trials) and `l4-paired` (`0.00pp [-10, +10] p=1.0000`). That is a
+resolution verdict, not a build failure — `ci.yml` on the same head is green,
+and every validity gate R45 passed passes again.
+
+**Five of six predictions held.** The `use` block is present on the memory arm
+and absent on the reference; `1512 / 1512` requests served; `injectedPairs
+3016 = 1.9947 x 1512` exactly; `widenedItems 0`; all validity gates green.
+The falsified one is the magnitude of the coverage prediction: the
+pre-registered `zeroCoverageShare > 0.5` reads **0.3896** (`1175 / 3016`) on
+real distilled statements. The offline structural proxy said 0.7588
+cross-domain and 0.2077 within-domain. A proxy is not the distilled
+statement — the second time this project has measured the fact (§34.22). The
+direction survives and it is the first hard number for the standing use-side
+hypothesis: 39 percent of what the model was shown shared no content term
+with the question it was answering. No refutation fires, and `0.00pp` does not
+trigger R45's revert rule.
+
+**Two runs, one configuration, two answers.** R45 measured `+6.00pp
+[-6, +20] p=0.5488` with 21 active items; R46 measured `0.00pp [-10, +10]
+p=1.0000` with 14, both non-significant, both with an MDE above 13pp, and both
+arms now at `pass^4 0.46`. The distiller is an LLM call, so the learning half
+is nondeterministic and the store population drifts between identical
+dispatches. This is a direct reading of the noise floor, not a claim about
+either delta.
+
+**The defect we found by reading the artefact.** TECH-DESIGN §17.89 makes a
+"committed histogram" the P0 prerequisite for U3's floor. R46 committed none:
+`armRecordFromDriver` reduced the raw observations to seven scalars and threw
+the pairs away, and `coverageProfile` / `zeroCoverageShare` had no production
+caller. One scalar cannot say what a non-zero `minCoverage` floor would empty.
+A real-kernel offline probe on the pinned fixture measured two populations with
+the identical scalar whose retained fractions at `minCoverage = 0.05` differ by
+12.44pp, and a post-floor served population spread over a 33.24pp interval.
+This is the use-side twin of §34.22 — a threshold about to be applied to a
+population nobody counted.
+
+**The repair, TDD.** `coverageHistogram` now commits a fixed `COVERAGE_FLOORS`
+retention curve (pack-level `retainedPacks` / `emptiedPacks`), non-zero coverage
+quantiles and separately-reported content-free queries, computed in
+`armRecordFromDriver` and projected to the gate layer. The seven-field
+`UseCensus` is unchanged and the field is optional, so R45, R46 and every older
+artefact read as "not measured". No gate reads it; `packages/core`,
+`sota.yml`, the driver and `l4-pair` are untouched. Seven failing tests were
+written first, including a real-kernel regression proving two populations with
+identical registered fields produce different histograms. `pnpm check` exits 0:
+**2,944 tests / 140 files, coverage 99.98 / 99.69 / 100 / 99.98**. The coupling
+ledger moved structurally (37,746 -> 37,883 lines) and is committed; six
+timing-only result files were restored.
+
+**What stays closed and what is next.** No floor is chosen here, and U1, U2,
+U3 and the R46 admission-rule arms stay closed — the histogram must first be
+read from a real dispatch, and a floor is registered before its own dispatch,
+never from `l4-paired`. The order after this round: (1) an as-is observation
+reading the committed histogram; (2) U3 with its floor registered from that
+histogram, `V1` blocking; (3) the R46 admission-rule ablation with the `>= 2`
+contrast; (4) U1 calibration, then U2 after a real reachability test;
+(5) transcript V46/V47, S1a then S1b; (6) `sota.ts` split, W8 dose curve,
+vitest 4 last; (7) cortex release (W1) **excluded**.
+
+**Ranking and competitor comparison (unchanged).** IBM `gpt-5.5` airline
+**82.0** (unverified, PR #551) is the current SOTA; SapientAI 72.0; IBM
+`gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b` 34.0; microglia **fifth of six
+named entries**. The use-side sources behind the hypothesis are unchanged —
+MemCalib, CMI, CAMEL, the Memory Curse study, PFM, plus ALTK-Evolve,
+MemGuard, MemAdapter, AECG and MemPABench. An observation round, a falsified
+prediction and a census repair move no leaderboard row. The column microglia
+leads is still "whether the treatment was delivered", now `1512 served` on
+this run.

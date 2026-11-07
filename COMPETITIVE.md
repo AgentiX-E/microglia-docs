@@ -1923,3 +1923,72 @@ them.
 **Ranking (unchanged).** IBM `gpt-5.5` airline **82.0** remains the SOTA;
 microglia **fifth of six named entries**. An observation round and five papers
 move no leaderboard row.
+
+### L.12 — R46 read back: the ranking holds, the delivery column gains a number it cannot grade, and a scalar is replaced by a histogram (2026-11-07)
+
+**Why this section.** Run `42317807270` on `cb329054` completed `failure` on
+three blocking scientific gates and `success` on both arms and on the evidence
+upload. `ci.yml` on the same head is green. This is a resolution verdict, not a
+build failure: `V5` reports an MDE of 13.73pp, `V16` reports 81 informative
+trials, and `l4-paired` reads `0.00pp [-10, +10] p=1.0000` over 50 paired
+tasks. Every validity gate R45 passed passes again. No tau-squared-bench score
+is claimed from this round, and no leaderboard row moves.
+
+**Ranking (unchanged).**
+
+| entry | reading | status |
+|---|---|---|
+| IBM `gpt-5.5` airline | **82.0** | current SOTA; unverified, modified prompt, PR #551 |
+| SapientAI | 72.0 | second named entry |
+| IBM `gpt-4.1 sup3` | 44.0 (#8) | 14 lossless, distinct-task-supported rules |
+| stock `gpt-oss-120b` | 34.0 | baseline |
+| microglia | **fifth of six named entries** | unchanged this round |
+
+The one column microglia leads is still *whether the treatment was delivered*:
+R45 served 1,480 of 1,480 requests, R46 served 1,512 of 1,512. That column now
+has a second number beside it. The R46 `use` census commits 3,016 injected
+(question, statement) pairs, of which 1,175 — `zeroCoverageShare = 0.3896` —
+share no content term with the question. Five of the six pre-registered
+predictions held; the sixth, `zeroCoverageShare > 0.5`, is **falsified** on
+real distilled statements against an offline proxy of 0.7588 cross-domain and
+0.2077 within-domain. A falsified prediction is recorded as a reading, not
+softened into a favourable one, and it is not an accuracy claim.
+
+**What the competitors and the literature do and do not say.** None of the
+use-side sources read in L.7 through L.11 is a tau-squared-bench entry, so none
+enters the table above. Their value is that they make the same distinction this
+round quantified. MemCalib grades per-atom influence (Ignore / Bound / Control)
+and reports the best frontier model over-using memory on 53.33% of atoms and
+under-using on 35.82% over 1,500 test examples, with a public judge and an
+eight-channel credit assignment. The Memory Curse study holds prompt *length*
+fixed and finds content is the trigger, which is the independent replicate of
+R45's defect: a gate that grades pack size cannot see that content harmed. CMI
+separates lexical and dense interference, which is why this project reuses its
+own `queryCoverage` / `tokenize` rather than importing a new similarity notion.
+CAMEL isolates persistence and feedback as memory-specific amplifiers of
+spurious correlation; PFM locates the bottleneck before retrieval, in key
+assignment. IBM ALTK-Evolve, MemGuard, MemAdapter, AECG and MemPABench remain
+the corroboration and calibration references. None supplies a threshold that
+can be copied into U3: the copied `sup3` floor of `>= 3` already selected zero
+groups on the strictest reading of this 32-task corpus (§34.22).
+
+**The instrument defect and its repair.** TECH-DESIGN §17.89 made a *committed
+histogram* the P0 prerequisite for U3's floor; R46 committed only a scalar,
+`zeroCoveragePairs`, because `armRecordFromDriver` discarded the pairs. A
+real-kernel offline probe measured two populations with that identical scalar
+whose retained fractions at `minCoverage = 0.05` differ by 12.44pp and whose
+post-floor served population spans a 33.24pp interval. `coverageHistogram` now
+commits a fixed `COVERAGE_FLOORS` retention curve with pack-level
+`retainedPacks` / `emptiedPacks`, non-zero coverage quantiles and separately
+reported content-free queries. The seven-field census is unchanged; the new
+field is optional, so older artefacts read *not measured*; no gate reads it;
+`packages/core`, `sota.yml`, the driver and the pairing logic are untouched.
+TDD: 7 failing tests first, then green; 2,944 tests in 140 files, coverage
+99.98 / 99.69 / 100 / 99.98.
+
+**Still closed.** U1, U2, U3 and the R46 admission-rule arms are not opened. No
+floor is chosen from `l4-paired`, from a proxy or from any competitor's number.
+The next observation reads the histogram from a real dispatch, and U3's floor
+is registered before its own dispatch. IBM `gpt-5.5` airline **82.0** remains
+the SOTA; microglia stays **fifth of six named entries**. A reading, a
+falsified prediction and an additive evidence field move no leaderboard row.

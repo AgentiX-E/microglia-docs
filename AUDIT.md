@@ -3165,3 +3165,111 @@ is made from a dispatch that has not finished. The six documents remain
 append-only, English, free of CJK, credentials and forbidden literals; the
 result-file diff of `pnpm check` was classified as timing-only and restored
 (§34.26).
+
+### 34.28 R46 read back: five predictions hold, one is falsified, and the census could not grade its own floor
+
+**The run.** `sota.yml` run `42317807270` on head `cb329054` completed at
+01:49Z. Both arms (steps 11 and 12) and the evidence upload (step 15) are
+`success`; step 13, `Pair the arms`, exits 1. Read against `l4-job.log` and
+artefact `13554957903` (`l4-evidence`, 20,276,206 bytes, 92 entries), this is
+the same class of conclusion as R45: `V5-resolution` (MDE 13.73pp),
+`V16-transfer-resolvable` (81 informative trials, 17 repairs, below the 100
+required) and `l4-paired` (0.00pp, `[-10, +10]`, `p=1.0000`, `n=50`) refuse to
+certify an underpowered measurement. Every validity gate R45 passed passes
+again — `V1`, `V2`, `V3`, `V6`, `V7`, `V8`, `V15`, `V17`, `V32`, `V33`, `V44`.
+`ci.yml` on the same head is green. A red pair step is a resolution verdict,
+not a build failure.
+
+**Six predictions, read from the artefact.** `prereg/R46-use-census.md`
+registered six falsifiable predictions before dispatch. The table is the
+reading, not an interpretation:
+
+| # | prediction | reading | verdict |
+|---|---|---|---|
+| 1 | `use` on memory, absent on reference | memory `tau2.use` present; reference `tau2` absent entirely | **hold** |
+| 2 | `recallServed > 0`, requests/meanPackIds within 10% of R45 | `1512 / 1512`, requests `1512` (+2.2%), mean `1.9947` (+8.5% of 1.839) | **hold** |
+| 3 | `injectedPairs > 1000`, equals sum of served pack sizes | `3016 = 1.9947089947089947 x 1512`, an exact identity | **hold** |
+| 4 | `zeroCoveragePairs > 0` **and `zeroCoverageShare > 0.5`** | `1175 > 0` but `1175 / 3016 = 0.3896` | **FALSIFIED** |
+| 5 | `widenedItems = 0` | `0`; `V44` reports 0 of 14 items with no domain, 0 widened | **hold** |
+| 6 | all R45 validity gates pass, `V5`/`V16` unresolved, `l4-paired` sign not predicted | all pass; both unresolved; `0.00pp` claimed as no effect | **hold** |
+
+Prediction 4 is falsified on its *magnitude*, not its direction: the real
+distilled statements have a zero-coverage share of 0.3896, not the > 0.5 that
+the offline structural proxy (0.7588 cross-domain, 0.2077 within-domain,
+§34.23) led us to predict. This is the second independent measurement this
+project has of the same fact: **a proxy is not the distilled statement, and a
+threshold copied from a proxy is a defect** (§34.22). It is also the first hard
+number behind the standing hypothesis that *how* memory is used, not only *what*
+is remembered, drives the negative effect: on the real corpus 39 percent of
+injected (question, statement) pairs share no content term with the question,
+so over a third of what the model was shown was lexically unrelated to what it
+was asked. The falsification is recorded as a prediction that did not hold, not
+as a refutation: the reading is valid.
+
+**Refutation and revert branches, all clear.** None of the six refutations
+fires: the `use` block exists with 3016 injected pairs; `1175 <= 3016` and the
+share is in `[0, 1]`; no validity gate regresses; `l4-paired` is neither
+significantly negative nor below minus five points (`0.00pp`, `p=1.0000`), so
+R45's revert rule does not fire; the evidence artefact is present; and no floor
+was chosen from any accuracy number in this run. The observation round adds no
+accuracy claim that could soften the revert rule.
+
+**Same configuration, different store.** R45 and R46 were dispatched with
+verbatim-identical inputs; only `prereg` was renamed. Yet R45 distilled 21
+active items from 11 corrections with 1480 served requests and measured
+`+6.00pp [-6, +20] p=0.5488`; R46 distilled 14 from 7 corrections with 1512
+served and measured `0.00pp [-10, +10] p=1.0000`. Both memory and reference
+arms scored `pass^4 0.46` this round. The distiller is an LLM call, so the
+learning half is not deterministic: the store population drifts between two
+runs of the same split, and so does the paired delta. Two independent runs of
+one configuration producing +6pp and 0pp, both non-significant and both with
+an MDE above 13pp, are a direct measurement of the noise floor. No accuracy
+claim is drawn from either.
+
+**Defect 25: the committed census cannot grade its own floor.** TECH-DESIGN
+§17.89 registers, as the P0 prerequisite for U3, a "committed histogram" from
+which U3's `minCoverage` floor is computed before its own dispatch. R46
+committed no histogram. `armRecordFromDriver` reduced the driver's raw
+`useObservations` to the seven-field `UseCensus` and discarded the pairs;
+`coverageProfile` and `zeroCoverageShare` had no production caller at all. The
+artefact carries exactly one coverage number, `zeroCoveragePairs`. A scalar
+cannot determine what a nonzero `minCoverage` floor would do: a real-kernel
+offline probe on the fingerprinted 32-task fixture measures two populations
+with the identical registered scalar (`zeroShare 0.7588`) whose retained pair
+fractions at `minCoverage = 0.05` differ by 12.44pp (17.63% vs 5.19%), and
+shows the post-floor served population lies in a 33.24pp-wide interval
+(`[165, 657]` of 1480). The non-zero coverage mass is concentrated in the left
+tail (p10 0.04, p50 0.069, p90 0.143), so a floor chosen from intuition would
+empty an unpredictable number of packs and could fail `V1` by construction.
+This is the use-side twin of §34.22: a threshold about to be applied to a
+population nobody counted.
+
+**The repair, TDD and additive.** `coverageHistogram` reduces the same facade
+observations to a committed `CoverageHistogram`: a fixed, finite, ascending
+`COVERAGE_FLOORS` grid (including 0), the retention curve at each grid point
+(`retainedPairs`, `retainedPacks`, `emptiedPacks`), non-zero coverage quantiles,
+and separately-reported content-free queries. It is computed in
+`armRecordFromDriver` and projected through `tau2ArmRecordOf`; it calls
+`coverageProfile`, so the profile and histogram share one population by
+construction. The seven-field `UseCensus` is unchanged verbatim; the field is
+optional, so R45/R46 and every older artefact read as "not measured", never a
+zero. `packages/core`, `sota.yml`, `tau2-driver.ts`, `l4-pair.ts` and every gate
+definition are untouched — no gate reads `coverage`. The failing tests were
+written first (7 red, then green), including a real-kernel regression proving
+two populations with identical seven registered fields produce different
+histograms. `pnpm check` exits 0: 2,944 tests in 140 files, coverage
+99.98 / 99.69 / 100 / 99.98 (statements / branches / functions / lines).
+The v8 branch figure reads 99.68 on one repeated run of this identical tree and
+99.69 on two others — a plus-or-minus 0.01 non-determinism, recorded rather
+than rounded into a claim, and every dimension stays far above the 95%
+threshold. The coupling ledger moved structurally
+(37,746 -> 37,883 production lines, 138 modules unchanged) and is committed;
+six result files differing only in `ranAt` / `p50` / `p95` were restored.
+
+**What is still closed.** U3's floor is **not** chosen here. The histogram is
+now committed by the instrument, but the reading of a histogram from a real
+dispatch belongs to the next as-is observation; a floor is registered before
+its own dispatch (§17.88), never from `l4-paired`. U1, U2, U3 and the R46
+admission-rule arms stay closed. No rank moves: IBM `gpt-5.5` airline 82.0 is
+still the SOTA, microglia fifth of six named entries. Both repositories are
+pushed as Lambertyan.

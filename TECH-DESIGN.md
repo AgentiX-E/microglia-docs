@@ -6522,3 +6522,104 @@ over the same kernel functions `buildPack` already uses.
 touches `packages/core`, `sota.yml`, a gate definition, a preregistration or
 the pinned head. The reading is recorded before the readback so that a later
 design decision cannot be mistaken for something the run itself showed.
+
+### 17.93 R46 read back: the census committed a scalar, so the histogram is now committed too
+
+**Context.** Run `42317807270` (head `cb329054`) returned. `AUDIT` §34.28
+carries the full readback. Five of six pre-registered predictions hold; the
+sixth — `zeroCoverageShare > 0.5` — is falsified at `1175 / 3016 = 0.3896`.
+Every refutation and the R45 revert rule are clear. Both arms scored `pass^4
+0.46`, `l4-paired 0.00pp [-10, +10] p=1.0000`, MDE 13.73pp. The P0
+prerequisite for U3 in §17.89 was a "committed histogram" from which U3's
+`minCoverage` floor is computed **before** its own dispatch. R46 committed no
+histogram; it committed one scalar.
+
+**The design gap, measured.** The seven-field `UseCensus` (§17.89) reports
+`injectedPairs` and `zeroCoveragePairs`. `coverageProfile` and
+`zeroCoverageShare` were exported pure functions with no production caller:
+the driver's raw `useObservations` were reduced in-process and discarded. One
+scalar cannot determine what a non-zero floor does. A real-kernel offline probe
+on the fingerprinted 32-task fixture (`tau2-use-census-queries.json`, sha256
+`54f79dbf…`) measures:
+
+| reading | value | what it rules out |
+|---|---|---|
+| cross / within zero share | 0.7588 / 0.2077 | a proxy is not a distilled statement (§34.22 again) |
+| non-zero coverage quantiles (cross) | p10 0.04, p50 0.069, p90 0.143, max 0.333 | the mass is in the left tail; an intuitive floor is unpredictable |
+| retained share at `minCoverage = 0.05`, two populations with the identical scalar | 17.63% vs 5.19% (12.44pp apart) | the scalar does not determine the retention curve |
+| served population after a binary floor, from R45's 1480 x 1.839 pairs | `[165, 657]`, a 33.24pp-wide interval | the scalar cannot predict `V1` under a floor |
+
+This is §34.22's use-side twin: about to apply a threshold to a population
+nobody counted.
+
+**The repair — one new shape, additive and optional.**
+
+```ts
+// packages/eval/src/tau2-use-census.ts (TDD, real kernel, no mocks)
+export const COVERAGE_FLOORS = [0, 0.01, 0.02, 0.03, 0.05, 0.08, 0.1, 0.15, 0.2, 0.3] as const;
+
+export type CoverageFloorRow = {
+  readonly minCoverage: number;
+  readonly retainedPairs: number;   // measurable pairs with coverage >= floor
+  readonly retainedPacks: number;   // served, measurable packs keeping >= 1 statement
+  readonly emptiedPacks: number;    // served, measurable packs a floor would empty
+};
+
+export type CoverageHistogram = {
+  readonly measuredPairs: number;
+  readonly unmeasurablePairs: number;  // content-free query pairs, coverage undefined
+  readonly unmeasurablePacks: number;
+  readonly nonzeroQuantiles: CoverageQuantiles;
+  readonly floors: readonly CoverageFloorRow[];  // one row per COVERAGE_FLOORS entry
+};
+
+export function coverageHistogram(observations: readonly UseObservation[]): CoverageHistogram;
+```
+
+Design decisions, in priority order:
+
+1. **`COVERAGE_FLOORS` is a fixed measurement ladder, not a chosen floor.** It
+   is fixed in source before any dispatch and never derived from `l4-paired`;
+   zero is the as-is configuration (`buildPack` keeps every hit at `floor <= 0`).
+   U3 chooses one value from the committed histogram in its own preregistration.
+2. **The retention curve is measured at the pack, not only at the pair.**
+   `V1` grades whether a pack is non-empty, so `retainedPacks` and
+   `emptiedPacks` are the fields a floor can be held against. A pair-only
+   histogram would repeat the scalar's mistake one level down.
+3. **Content-free queries are reported, not bucketed as zero.** `queryCoverage`
+   returns 0 for a question with no content term, which is a statement about
+   the question, not the rule. `unmeasurablePacks` makes every floor reconcile:
+   `retainedPacks + emptiedPacks + unmeasurablePacks = recallServed`.
+4. **`coverageProfile` is called by `coverageHistogram`**, so the two readings
+   share one population by construction and the profile is no longer dead code.
+5. **The seven-field `UseCensus` is unchanged, verbatim.** `coverage` is a
+   sibling optional field on `Tau2ArmRecord` and `Tau2ArmArtefact.tau2`,
+   projected by `tau2ArmRecordOf`. Older artefacts (R45, R46) carry none and
+   stay "not measured", never a zeroed population.
+6. **No gate reads `coverage`.** It is committed evidence for a future
+   registration, not a grading rule. `packages/core`, `sota.yml`,
+   `bin/tau2-driver.ts`, `bin/l4-pair.ts` and every gate definition are
+   untouched; no pack, rule, scope, threshold or admission decision changes.
+
+**Dependency layering.** `bin/tau2-driver.ts` (already collects
+`useObservations`) → `tau2-instrument.ts::armRecordFromDriver` (reduces them)
+→ `tau2-use-census.ts` (`useCensus` + `coverageHistogram` + `coverageProfile`)
+→ `@agentix-e/microglia-core/kernel` (`queryCoverage`, `tokenize`) →
+`tau2-gates.ts::tau2ArmRecordOf` (projects both fields). The coupling ledger
+moved structurally: 37,746 -> 37,883 production lines, 138 modules unchanged,
+`coupledShare` 0.1929 -> 0.1922.
+
+**Acceptance.** TDD: 7 failing tests written first, then green. 2,944 tests in
+140 files, coverage 99.98 / 99.69 / 100 / 99.98, `pnpm check` exit 0,
+`bundle:size ok`, `ci.yml` green before merge, both repositories pushed as
+Lambertyan, no CJK, no skipped tests, no placeholder markers. A real-kernel
+regression proves two populations with **identical seven registered fields**
+produce different committed histograms — the defect the scalar could not see.
+
+**What this section deliberately does not do.** It does not open U1–U3 or the
+R46 admission-rule arms, choose a floor, change `stampDomain`, change
+`RECALL_DOMAIN`, add a `minCoverage` default, split a package, or dispatch a
+second workflow. U3's floor is computed from a histogram committed by a real
+dispatch and registered before its own dispatch; the reading of that histogram
+is the next observation, not this one. Ranking is unchanged: IBM `gpt-5.5`
+airline 82.0 remains the SOTA, microglia fifth of six named entries.
