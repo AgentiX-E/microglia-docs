@@ -10854,10 +10854,16 @@ gate wants.
 
 Thirty-nine new tests, both new modules at 100 / 100 / 100 / 100. `pnpm check`
 is green: 3182 tests over 151 files, coverage 99.95 / 99.65 / 100 / 99.95,
-`audit: ok`, the R49 verifier's thirteen-case self-test passing, bench blocking
+`audit: ok`, the R49 verifier's fifteen-case self-test passing, bench blocking
 gates PASS, bundle size ok after a written-down ceiling move (44,000 → 46,000
 raw, measured 45,372), and 147 modules / 39,854 production lines in the
 structural ledger.
+
+The verifier grew one prediction with it (P9), because a field that nothing
+grades is a field a reader has to remember to check. It is `n/a` on every
+artefact written before the switch — R49's included — and it fails an artefact
+whose census contradicts its own switch: `mode: 'off'` with refusals is not a
+weak result, it is a store that refused a write it was never allowed to judge.
 
 One thing the first version of this got wrong and the second fixes: the switch was
 recorded only in the run log. A readback that has to grep a log to learn whether
