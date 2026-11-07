@@ -3510,3 +3510,40 @@ number means something.
 six named entries. This section reports measurements and a method, not a gain.
 No accuracy claim is made, no floor is chosen, and the run that will supply the
 curve is measuring on a head this reading did not touch.
+
+### 3.6.50 Less memory can beat more memory, and a failed run is not a result
+
+The thesis of section 3.6.49 -- that the problem is not what was retrieved but
+what was allowed to speak -- gained five independent readings this iteration.
+A driving-agent audit found that a consolidated rulebook's advantage
+disappeared on fresh warmup pools and once caution was priced in, and that a
+single **15-token caution instruction matched the best merge**. IBM's own
+held-out airline ablation has a 14-guideline core beating a 101-rule set on
+Pass^4. A human-inspired architecture reports that deduplicating beats
+summarizing, with its aggressive configurations collapsing from a baseline
+interval of `[74.8, 82.0]` to 57.0 and 48.4, while five moderate settings
+stay non-destructive. A memory funnel refuses to crystallise a fact until
+at least three independent sources corroborate it. A dual-trace encoder
+stores only about 55 percent of sessions after an evidence gate, and when it
+finds nothing it says "I don't know" instead of guessing. Independently, that
+architecture derives every threshold from synthetic sessions and keeps
+evaluation data out of calibration entirely. The convergence is the point:
+across corpora, models and metrics, **dose, corroboration and abstention**,
+not retrieval volume, decide whether memory helps.
+
+The first run of the arm that applies this lesson produced no result. DeepSeek
+returned a persistent 500 during both arms' learning and evaluation phases,
+the evidence package contained the repository's baseline files and no arm
+readings, and the lane said so. We did not report a delta, did not grade the
+eight predictions and did not let the non-result revise the registered floor.
+The retry measures on the same head and the same preregistration, with no
+outcome observed in between. This is not a formality. A system that turns a
+provider outage into a fabricated accuracy number would invalidate every
+measurement in this document; treating "nothing was measured" as a first-class
+outcome is what keeps the number in section 3.6.49 meaningful.
+
+**Where we stand.** IBM's 82.0 is still the SOTA; microglia is still fifth of
+six named entries. The floor of `0.01` and its cost weights remain registered
+but unassessed, and U1, U2 and the admission-rule comparisons stay closed
+until a valid paired readout exists. This section reports a method, five
+external readings and an honest non-result, not a gain.

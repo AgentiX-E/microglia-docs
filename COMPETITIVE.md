@@ -2169,3 +2169,93 @@ named entries**. The one column microglia leads is still whether the treatment
 was delivered. U3 (run `42350304597`, dispatched on `33038232`) is the first
 arm that changes what is delivered; its step 11 read the registered floor
 successfully. A dispatch in progress moves no row.
+
+### L.16 — Five sources on the dose of memory, and a retry that moved no row
+
+While U3's retry (`42353229972`) measures, five first-party or primary sources
+were read on the standing hypothesis that the harm comes from **what is
+remembered and how it is used**, not from retrieval failing. All are recorded
+with their own ruler; none is merged into the tau-squared-bench Pass^4 table.
+
+**1. The Memory Funnel (membox, `core/consolidate.py`).** Memory has a
+three-tier lifecycle Trace -> Unit -> Crystal. `crystal_policy()` promotes a
+Unit only when it is corroborated by **at least three independent sources**
+(or an explicit user confirmation, or confidence >= 0.90 with importance >=
+0.80). Confidence rises per corroborating source and is capped at 0.95. The
+stated engineering reason is that LLMs hallucinate during extraction and a
+single error must not permanently warp the agent's worldview. This is the
+closest structural analogue yet read to R46's planned `distinct-task-support`
+and `min-support-only` comparators and the separately registered `>= 2`
+corroboration contrast. The value 3 is that project's choice, not a transferable
+constant; importing it would repeat the ruler defect of section 34.25.
+
+**2. Human-Inspired Memory Architecture (2605.08538).** On VSCode with a
+temporal streaming protocol, deduplication-based consolidation reaches
+**97.2 percent retention precision with a 58 percent store reduction** versus
+75.4 percent for keeping everything, and the store self-regulates at 300 to
+500 events. On LongMemEval S-tier, nine configurations with bootstrapped 95
+percent CIs were compared: all five moderate configurations overlap the
+raw-RAG baseline CI `[74.8, 82.0]` (non-destructive), while adaptive-10K
+collapses to **57.0** and aggressive clustering-with-merge to **48.4**. The
+design claim is "consolidation should deduplicate, not summarize": merging
+turns into cluster summaries destroys the specific details factual questions
+need. Two methodological points transfer directly. First, **threshold leakage
+is eliminated**: near-dedup 0.559, cluster distance 0.404 and interference
+0.542 come from percentile rules over eight synthetic personal-chat sessions
+embedded with the evaluation model, and importance weights come from fifty
+LLM-generated sessions; no benchmark data touches calibration. That is the
+same discipline as choosing `0.01` from a committed histogram and never from
+accuracy. Second, the paper **discloses that its deployed scoring formula
+differs from its biological specification**: content length (ROC AUC 0.77,
+weight 0.363) and turn position (0.325) dominate, recency is nearly
+uninformative (AUC 0.51, weight 0.019), and frequency and outcome were
+dropped. It also notes that adding timestamps and the current date to prompts
+contributes about +10 points, a cheap intervention independent of the memory
+architecture. Retention precision is a proxy with no downstream QA task, so
+these numbers are not comparable to Pass^4.
+
+**3. Dual-trace encoding (2604.12948).** Before encoding, an evidence-scoring
+gate rates relevance, specificity and explicitness from 0 to 2 each, stores
+only sessions scoring at least 3 of 6 (about **55 percent**), and discards
+chit-chat. Retrieval has three states; state C, when no trace is found,
+**explicitly declines to answer**, which the paper ties to user trust and
+hallucination avoidance. On LongMemEval-S (over 4,500 sessions, 100 questions)
+the dual trace reaches **73.7** overall accuracy versus **53.5** for the
+facts-only control (+20.2 points, p < 0.0001), with temporal reasoning
+improving +40 points (65 versus 25). State C is the same first-class
+abstention that RSCB-MC prices with `gamma > alpha > beta` and that U3
+registers as an `emptiedPacks` cost of 414 packs (27.77 percent).
+
+**4. Driving-agent memory audit (Jia and Li, 2026-10-20).** Past driving
+episodes were consolidated into a rulebook and compared with retrieval
+memories and token-matched filler. The rulebook's lead **vanished on fresh
+warmup pools and once caution was priced in**, and one **15-token caution
+instruction matched the best merge**. Together with the Memory Funnel's
+three-source bar and Human-Inspired's aggressive-configuration collapse, this
+is the strongest read-so-far external support for the hypothesis that less,
+better-corroborated and more cautiously used memory can beat more memory. It
+runs in the same direction as IBM's own held-out airline dose reversal, where
+the compact `sup3` core of 14 guidelines beats the 101-rule lossless set on
+Pass^4 (45.0 versus 40.0) while the larger set wins mean accuracy.
+
+**5. IBM ALTK-Evolve leaderboard filings, re-checked.** Retail 67.5 Pass^4
+(PR #542, filed 14 Sep 2026, Pass^1 81.14 over 114 base-split tasks at four
+trials, USD 0.1084 per conversation) ranks first ahead of RAFT-30B-A3B 61.4.
+Airline `gpt-5.5` 82.0 (PR #551, filed 21 Sep 2026, Pass^1 88.50 over 50
+tasks, USD 0.1690 per conversation) ranks first above frontier entries at
+66 to 72; `gpt-4.1 sup3` 44.0 is eighth. Both disclose modified prompts,
+expect Unverified status and remain open. The guideline cost is on prompt
+input tokens, trims about 0.3 to 0.4 assistant turns, and is largely
+reclaimable with prompt caching. The held-out ablation figures already
+registered in L.14 are not changed by this re-check.
+
+**The retry.** U3's first run `42350304597` failed on a DeepSeek 500 with zero
+`arms/` entries in its evidence zip; the retry `42353229972` is on the same
+head and prereg. A failed run, a lawful retry, a green CI and five source
+studies move no leaderboard row.
+
+**Current ranking (unchanged).** IBM `gpt-5.5` airline **82.0** Pass^4
+(unverified, PR #551, modified prompt) remains the SOTA; SapientAI 72.0; IBM
+`gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b` 34.0; microglia **fifth of six
+named entries**. The one column microglia leads is still whether the treatment
+was delivered, and U3 remains unassessed until a valid pair is read back.

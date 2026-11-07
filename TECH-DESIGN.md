@@ -6883,3 +6883,54 @@ branches, 100 percent functions and 99.98 percent lines; `pnpm eval:prereg`
 reads 36 of 36 valid; `audit: ok`; `bundle:size ok`. Ranking is unchanged:
 IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of six named
 entries.
+
+### 17.97 An infrastructure failure does not change the design
+
+The first U3 run `42350304597` ended as `completed failure`, but the failure
+is in the transport layer, not in the decision or gate layers. `TAU_MIN_COVERAGE:
+0.01` was injected and step 11 `Read the registered recall floor` succeeded;
+both arms then died on `litellm.InternalServerError: DeepseekException` with a
+500 from `api.deepseek.com`, step 14 failed only because
+`arms/reference/poc-l4.json` was missing, and step 15 correctly reported that
+nothing was measured. Its evidence zip has zero `arms/` entries. Therefore
+`decideFloor`, `resolveRecallFloor`, `buildPack.minCoverage`, the
+`coverage` histogram and every validity gate remain exactly as registered and
+**none has been exercised by a task outcome**. The registered floor `0.01`,
+the weights `(1, 3, 0.5)` and the least-aggressive tie-break are untouched;
+no accuracy number exists that could revise them.
+
+**A third terminal state.** The lane now has three distinct outcomes that the
+prose must keep separate. (1) `CI green` means the build, tests and coverage
+gates passed. (2) `scientific gate red`, seen in R47, means a complete
+artefact exists and the lane refuses to certify an underpowered measurement
+(`V5` MDE 17.72pp, `V16`, `l4-paired`), which is not a build failure. (3)
+`no measurement`, seen here, means no arm artefact exists at all: no delta, no
+graded prediction, no refutation, no revert, and downstream arms closed.
+Step 15 `Say so when nothing was measured` already distinguishes (3) from (2)
+in the workflow, and R48's sixth refutation states the required response. An
+uploaded directory of baseline files must never be mistaken for (2).
+
+**Why the head is still.** Retry `42353229972` measures on `33038232` with the
+unchanged preregistration. Editing `sota.yml`, the driver, `run_split.py` or
+the prereg now would make the measuring run differ from the head its
+registration names, which is precisely the desynchronisation section 34.21
+forbids. `microglia` therefore carries zero source changes this iteration;
+`pnpm check` is not rerun because no source changed, and its last full green
+(2980 tests, 142 files, 99.98 / 99.67 / 100 / 99.98) plus `ci.yml` run
+`42349873647` (44 steps) remain the governing evidence.
+
+**Defect 27 and its design boundary.** `run_split.py` documents
+`num_retries` as protection against a 429 aborting the whole `run_tasks`, but
+a persistent 500 aborts the phase just as completely, discarding 17 minutes
+of retail learn work; the L4 job also lacks a fail-fast provider health check
+before committing a roughly 20-minute runner. The remedy is registered in
+`AUDIT.md` section 34.33 for a later head: one lightweight completion probe
+that fails fast with an explicit no-measurement marker. Its acceptance bar is
+a design constraint, not an implementation detail: no reduction of trials, no
+skipped learn phase, no artefact assembled from the tasks that happened to
+survive (that would let the provider choose the population, a selection bias
+the whole use-side programme exists to remove), and no step that masks a
+non-zero exit. TDD, real tests, no mocks, at least 95 percent on every
+coverage dimension, `pnpm check` exit 0 and `ci.yml` green before any later
+dispatch. Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA,
+microglia fifth of six named entries.

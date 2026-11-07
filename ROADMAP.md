@@ -4454,3 +4454,34 @@ Meta's pass@1 ablation cannot be placed in that ranking. The column microglia
 leads is still "whether the treatment was delivered": `1512 served`, `3016`
 injected pairs, `1175` with no shared content term. A source study, a probe
 and a green CI run move no leaderboard row.
+
+### R48's retry: the order is unchanged, with one new P1
+
+The first U3 run `42350304597` produced no measurement because DeepSeek
+returned a persistent 500 during both arms' learn and eval phases; its
+evidence zip has zero `arms/` entries and only repository-baseline files. The
+retry `42353229972` is on the same head `33038232` and the unchanged prereg
+`R48-u3-coverage-floor`, with step 11 succeeding again. Under the head-still
+rule of section 34.21, `microglia` has zero changes this iteration and
+`ci.yml 42349873647` stays green on all 44 steps. The order below is the order
+already registered, with defect 27 added as a bounded P1.
+
+| priority | step | blocked by | status |
+|---|---|---|---|
+| P0 | `ci.yml` green on the R48 head, both repositories pushed as Lambertyan | — | **done** |
+| P0 | record `42350304597` as infrastructure failure / no measurement, examine the artefact, register defect 27 | — | **done this iteration** |
+| P0 | read `42353229972`'s `l4-evidence`: grade 8 predictions, 7 refutations, 3 reconciliation identities, and pair its memory arm against R47's as-is arm per task | run `42353229972` | **in progress, step 12** |
+| P1 | quantify U3's contribution to `pass^4`, paired delta, delivered population and `emptiedPacks`; revert on the reading if the rule fires | R48 readback | pending |
+| P1 | defect 27: a fail-fast provider health probe before the L4 job, on a later head only; no fewer trials, no skipped learn phase, no partial artefact, no failure-masking step | R48 readback | **registered, not started** |
+| P1 | R46 admission-rule ablation (`as-is` / `distinct-task-support` / `min-support-only`) with the `>= 2` contrast registered separately | R48 readback | pending |
+| P2 | U1 calibration using the MemCalib score structure on committed coverage, then U2 only after a real reachability test | U3 | pending |
+| P2 | transcript V46/V47, S1a then S1b | U1 / U2 | pending |
+| P3 | `sota.ts` split and `eval-sql` move, W8 dose curve, vitest 4 migration last | independent | pending |
+| — | cortex release (W1) **excluded** by the standing instruction | — | excluded |
+
+Five sources read while the arms measure (Memory Funnel, Human-Inspired
+Memory, dual-trace encoding, the driving-agent audit and a re-check of IBM's
+PR #542/#551) are quantified in `COMPETITIVE.md` section L.16. Their numeric
+thresholds are not portable into `COVERAGE_FLOORS` or R46's contrast.
+Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
+fifth of six named entries, and a failed run with a lawful retry moves no row.

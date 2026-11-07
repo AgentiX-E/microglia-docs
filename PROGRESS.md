@@ -10215,3 +10215,117 @@ revert on the reading rather than on the explanation. P1: R46's
 admission-rule ablation with at least two comparators. P2: U1 calibration and
 U2 after a real reachability test, then transcript V46/V47 and S1a/S1b. P3:
 `sota.ts` split, `eval-sql` move, W8 dose curve, vitest 4 migration last.
+
+## 170 — An infrastructure failure, a lawful retry, and five sources on the dose of memory
+
+**What happened.** Iteration 169 dispatched U3 as run `42350304597` on
+`33038232`. This iteration read it back and found `completed failure`, but the
+failure was not R47's scientific-gate red at `Pair the arms`: steps 12 and 13,
+the two arms themselves, failed. The cause is external and unambiguous. The
+job log for `128336818209` shows `TAU_MIN_COVERAGE: 0.01` injected at line 627
+and step 11 `Read the registered recall floor` succeeding, so the new wiring
+works on a real runner. The retail learn phase (`run_split.py --domain retail
+--phase learn --trials 1`, 114 tasks) then threw `tau2 phase failed` at
+07:30:45Z after `litellm.InternalServerError: DeepseekException` with
+`500 Internal Server Error` from `api.deepseek.com/beta/chat/completions`
+(request `7d06439a-ae83-451b-9591-436ff37e9da8`), which aborted every task's
+first trial. The reference arm's airline eval phase failed the same way
+(request `f41447e4-d372-4992-999a-97139dee5590`). Step 14 `l4-pair` then
+reported `missing artefact: arms/reference/poc-l4.json` as a cascade, step 15
+`Say so when nothing was measured` emitted `L4 wrote no artefact` by design,
+and step 16 uploaded `l4-evidence` (20,269,801 bytes, 90 files, id
+`13565972549`).
+
+**The artefact was examined, not assumed.** The zip contains zero `arms/`
+entries. Its root `poc-l4.json` is the 2026-10-22 placeholder titled
+`L4 -- tau-squared-bench pass^4 (not run: no environment)` with
+`status_not_run: 1`, `n: 0` and `calls: 0`; its `poc-l4-pair.json` is the
+2026-11-01 historical pair (`deltaPp 1.47`, `p` about 1.0). The 90 files are
+the repository's pre-existing `eval/results` history and baselines, not a
+reading of this run. So the verdict is **infrastructure failure / no
+measurement**: all eight R48 predictions are NOT GRADED, neither held nor
+falsified; all seven refutations are NOT TRIGGERED; the revert rule is NOT
+FIRED; U3 is UNASSESSED; and U1, U2 and R46's admission-rule arms stay CLOSED
+exactly as R48's sixth refutation requires (`nothing was measured ... say so,
+report no delta`).
+
+**The retry is lawful, and why.** Run `42353229972` was dispatched on the same
+head `33038232` with the same nine inputs and the unchanged prereg
+`R48-u3-coverage-floor` (HTTP 204). Its step 11 succeeded again and step 12 is
+measuring. Four facts make this a retry rather than a second experiment with a
+selection bias: the fault is a transport-layer 500 from a single provider and
+is independent of the treatment; it happened in the learn phase, before any
+task outcome existed; no accuracy, delta, p-value or census number was
+observed before the retry; and the head, the prereg, the cost weights, the
+tie-break and the floor were all left untouched. Seeing a bad result and
+rerunning would be p-hacking; seeing no result at all and rerunning is not.
+`ci.yml` run `42349873647` remains green on all 44 steps of `33038232`, and
+`microglia` has zero changes this iteration under the head-still rule of
+section 34.21.
+
+**A defect was registered, not patched mid-measurement.** Defect 27
+(`AUDIT.md` section 34.33) records that `run_split.py` forwards
+`num_retries` with a comment written for 429 rate limits, while a persistent
+500 still aborts the whole phase and discards 17 minutes of work, and that the
+L4 job has no fail-fast provider health check before committing a 20-minute
+runner. The fix is a separate P1 on a later head; changing the workflow now
+would desynchronise the measuring run from its registered head.
+
+**Five sources read while the arms measure.** (1) The Memory Funnel's
+`crystal_policy()` promotes a Unit to a Crystal only at **at least three
+independent sources**, with confidence capped at 0.95, so one bad extraction
+cannot become a permanent fact. (2) The Human-Inspired Memory Architecture
+(2605.08538) reports dedup-only consolidation at **97.2 percent precision
+with a 58 percent store reduction** versus 75.4 percent for keeping
+everything on VSCode, and on LongMemEval S-tier five moderate configurations
+overlap the raw-RAG baseline CI `[74.8, 82.0]` while aggressive adaptive-10K
+falls to **57.0** and clustering-with-merge to **48.4**; its conclusion is
+"deduplicate, not summarize". Every similarity threshold there (near-dedup
+0.559, cluster 0.404, interference 0.542) is derived from percentiles over
+eight synthetic sessions with no evaluation data entering calibration, and
+the paper honestly discloses that its deployed scoring formula differs from
+its biological specification (content length AUC 0.77 and turn position 0.325
+dominate; recency AUC 0.51). (3) Dual-trace encoding (2604.12948) applies an
+evidence-scoring gate over relevance, specificity and explicitness, each
+0 to 2, storing only sessions scoring at least 3 of 6 (about **55 percent**),
+and its retrieval state C explicitly answers "I don't know"; on LongMemEval-S
+the dual trace reads **73.7** versus **53.5** for facts only (+20.2 points,
+p < 0.0001) with a +40 point temporal-reasoning gain. (4) The driving-agent
+memory audit (Jia and Li, 2026-10-20) found the consolidated rulebook's lead
+vanished on fresh warmup pools and once caution was priced in, and that **one
+15-token caution instruction matched the best merge**. (5) The IBM ALTK-Evolve
+leaderboard filing was re-checked: retail 67.5 (PR #542, 14 Sep 2026) ahead of
+RAFT-30B-A3B 61.4; airline `gpt-5.5` 82.0 (PR #551, 21 Sep 2026, Pass^1
+88.50, 50 tasks, USD 0.1690 per conversation); `gpt-4.1 sup3` 44.0 at #8;
+both disclose modified prompts, expect Unverified status and remain open.
+None of the five supplies a threshold that may be copied into
+`COVERAGE_FLOORS`, for the same reason section 34.25 forbids mixing rulers.
+
+**Iteration snapshot.**
+
+| item | previous | this iteration |
+|---|---|---|
+| `microglia` head | `33038232` | `33038232` (unchanged, measurement window) |
+| `ci.yml` | `42349873647` green, 44 steps | unchanged, still green |
+| `pnpm check` | 2980 tests, 142 files, exit 0 | not rerun: no source change |
+| coverage | 99.98 / 99.67 / 100 / 99.98 | unchanged |
+| U3 first run | `42350304597` in progress | `completed failure`, no measurement |
+| U3 retry | — | `42353229972` measuring on step 12 |
+| docs | #169 / 34.32 / L.15 | #170 / 34.33 / L.16 / 17.97 / 3.6.50 |
+
+**What is next, in order.** P0: read run `42353229972`'s `l4-evidence`, grade
+eight predictions and seven refutations, and pair its memory arm against
+R47's as-is memory arm per task. P1: quantify U3's contribution to `pass^4`,
+the paired delta, the delivered population and `emptiedPacks`; if the revert
+rule fires, revert on the reading rather than on the explanation. P1: defect
+27's fail-fast provider check, on a later head only. P1: R46's admission-rule
+ablation with at least two comparators and the separately registered `>= 2`
+corroboration contrast. P2: U1 calibration and U2 after a real reachability
+test, then transcript V46/V47 and S1a/S1b. P3: `sota.ts` split, `eval-sql`
+move, W8 dose curve, vitest 4 migration last. Cortex release stays excluded.
+
+**Ranking (unchanged).** IBM `gpt-5.5` airline **82.0** Pass^4 is the current
+SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b`
+34.0; microglia **fifth of six named entries**, leading only whether the
+treatment was delivered. Failed runs, retries, green CI and source studies
+move no leaderboard row.

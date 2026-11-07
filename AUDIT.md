@@ -3576,3 +3576,94 @@ table reporting Pass@4 78 for PG-CHECKLIST uses a different pool and pass
 criterion; even at face value it is below IBM's 82.0 and is not merged into
 the ranking. None of these sources is a tau-squared-bench Pass^4 entry, and a
 source study moves no leaderboard row.
+
+### 34.33 The first R48 run measured nothing, and the retry is lawful
+
+**Forensic chain.** Run `42350304597` (created 07:12:39Z, completed failure
+07:36:34Z, job `128336818209`, head `33038232`) produced this step sequence:
+
+| step | conclusion | evidence |
+|---|---|---|
+| 11 `Read the registered recall floor` | success | `TAU_MIN_COVERAGE: 0.01` at log line 627 |
+| 12 `L4 arm -- memory` | failure | retail learn, 114 tasks, `tau2 phase failed` 07:30:45Z |
+| 13 `L4 arm -- reference` | failure | airline eval, 50 tasks, same provider error |
+| 14 `Pair the arms` | failure | `missing artefact: arms/reference/poc-l4.json`, cascade |
+| 15 `Say so when nothing was measured` | success | `L4 wrote no artefact`, the designed degradation |
+| 16 `Upload evidence` | success | `l4-evidence`, 20,269,801 bytes, 90 files |
+
+The provider error is `litellm.InternalServerError: DeepseekException` with
+`500 Internal Server Error` for `https://api.deepseek.com/beta/chat/completions`
+(learn request `7d06439a-ae83-451b-9591-436ff37e9da8`, eval request
+`f41447e4-d372-4992-999a-97139dee5590`), reported against many task/trial
+pairs. `TAU_RETRIES: 4`, `TAU_CONCURRENCY: 2`, `TAU_TRIALS: 4`,
+`TAU_MODEL: deepseek/deepseek-chat` were all set as registered.
+
+**The artefact is not a reading.** Unzipping `13565972549` yields zero `arms/`
+entries. Root `poc-l4.json` is the committed 2026-10-22 placeholder with
+`status_not_run: 1`, `n: 0`, `calls: 0` and the title `not run: no
+environment`. Root `poc-l4-pair.json` is the 2026-11-01 historical pair. All
+90 files are pre-existing history, ablations and baselines from
+`eval/results`; step 16 merely packaged them. A successful upload of a
+directory snapshot is not evidence that the lane scored a task.
+
+**Verdict and its three distinctions.** This is an **infrastructure failure /
+no measurement**. It is not a build failure (`ci.yml 42349873647` is green on
+all 44 steps of the same head). It is not a scientific-gate red, which R47
+exhibited with a complete artefact that the lane refused to certify
+(`V5` MDE 17.72pp, `l4-paired 12.00pp p=0.1094`); here there is no artefact
+to grade. And it is not a falsification of U3: with no census and no paired
+tasks, all eight predictions are NOT GRADED, all seven refutations are NOT
+TRIGGERED, the revert rule is NOT FIRED, and R48's sixth refutation explicitly
+commands "say so, report no delta" while U1, U2 and R46's admission-rule arms
+stay closed. Recording a zero, an as-is delta or a fabricated histogram here
+would be the exact defect section 34.21 and R47's refutations were written to
+prevent.
+
+**Why the retry is not p-hacking.** Run `42353229972` repeats the same head,
+prereg, nine inputs, weights, tie-break and floor. A rerun would be biased if
+a result had been seen and disliked. Here (1) the fault is a transport-layer
+500 from one provider, exogenous to `minCoverage`; (2) it struck the learn
+phase before any task outcome existed; (3) no accuracy, delta, p-value,
+`use` census or `coverage` histogram from this run was observed before the
+retry; (4) no registered file was edited. The lane therefore has no
+information with which to select a favourable rerun. Step 11 succeeded again
+and step 12 is measuring. No second workflow was dispatched while a run was
+still active; the first had reached `completed` before the retry.
+
+**Defect 27: a single provider can void an entire measurement, and the guard
+is aimed at the wrong status code.** `eval/drivers/tau2/run_split.py`
+forwards `TAU_RETRIES` to litellm's `num_retries` with a comment that says
+"litellm raises on a 429 rather than retrying, and one raised call aborts the
+whole `run_tasks` -- 68 tasks and 272 episodes lost to a rate limit one minute
+from the end". A persistent **500** is not that case, yet it still aborts the
+whole phase: the retail learn phase ran 07:13:30Z to 07:30:45Z, 17 minutes,
+and discarded every episode. The L4 job also has no fail-fast provider health
+check before committing a roughly 20-minute runner, so a provider that is
+already down is discovered only after the expensive phase fails. This is a
+real availability defect in the measurement apparatus, recorded here as
+defect 27.
+
+The fix belongs to a separate P1 on a later head, never inside this measuring
+window, because changing `sota.yml` while `42353229972` runs would
+desynchronise the run from the head its preregistration names. Its acceptance
+bar is strict: a single lightweight completion probe before the L4 job that
+fails fast with an explicit no-measurement marker when the provider is down;
+**no** reduction of trials, **no** skipping the learn phase, **no** partial
+artefact built from the tasks that happened to succeed (which would introduce
+a provider-chosen selection bias), and **no** step that masks a non-zero exit
+or swallows a failure with a shell fallback. TDD, real tests, no mocks, at
+least 95 percent on every coverage dimension, `pnpm check` exit 0 and
+`ci.yml` green before any later dispatch.
+
+**Source-study audit note.** Five sources were read while the arms measure and
+are quantified in `COMPETITIVE.md` section L.16: the Memory Funnel's
+three-source crystallisation, Human-Inspired Memory's deduplicate-not-summarize
+ablation and leakage-free synthetic calibration, dual-trace encoding's
+evidence gate and explicit "I don't know" state, the driving-agent audit's
+15-token caution equivalence, and a re-check of IBM's PR #542/#551 filings.
+Their numeric thresholds are design choices of their own corpora and models;
+none is a tau-squared-bench Pass^4 entry and none may be imported into
+`COVERAGE_FLOORS` or R46's admission contrast. The SOTA2 Research table's
+PG-CHECKLIST 78 stays recorded with its different pool and pass criterion.
+Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
+fifth of six named entries.
