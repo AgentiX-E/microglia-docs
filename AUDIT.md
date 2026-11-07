@@ -4137,3 +4137,54 @@ The general lesson is the one this project keeps re-learning in a different
 place each time: the thing that decides whether a result is real is itself a
 subject of measurement, and it must be shown to fail on purpose before it is
 trusted on a real run.
+
+### 34.43 A census that defaults to zero is not a census
+
+The pair artefact reported a `pass^4` delta and could not say what produced it.
+That is a measurement gap rather than a crash, and it is the kind that survives
+review: the number is real, the interval is honest, and the mechanism is simply
+absent. The published ablations behind the memory hypothesis say the mechanism
+is where the answer is — the same question against a focused pack and against a
+full session differs by fifteen to thirty-five points, and the strongest models
+express most of the gap by abstaining rather than by answering wrongly. A lane
+that reports only the delta cannot tell those two apart.
+
+The instrument is a per-episode flag: did any assistant message in this episode
+carry a tool call. Four decisions were made while building it, and each is a
+way the thing could have been wrong:
+
+1. **Absent must not read as zero.** The obvious implementation returns counts
+   and lets an absent census be an empty one, which every downstream reader
+   would print as "0 of 0 inactive" or "nothing abstained". `NOT_OBSERVED` is a
+   terminal state carrying its reason, exactly as `NO_MEASUREMENT` is for the
+   pair. This is the same defect as `reward: null` read as `0`, and the project
+   has now made it three times in three different places, which is why it is
+   written down as a rule rather than a fix.
+2. **A single hidden field voids the census.** If one simulation's messages are
+   unavailable, or its trial number was never set, the phase reports the whole
+   census as unobservable rather than the subset it could see. Half a census
+   silently reported as a whole one is worse than none: the shares would be
+   computed over a population the reader believes is complete.
+3. **The reduction is on the side with tests.** The Python phase touches
+   upstream's live objects and has no test harness; it therefore reports the
+   episodes exactly as it saw them and decides nothing. Every count, every
+   refusal and every ordering is in `packages/eval/src/inaction.ts`, covered at
+   100 % on all four dimensions.
+4. **The contract throws where the boundary must not.** `inactionContrast`
+   refuses two populations — correct for a pure function asked for a number
+   that does not exist — but its only caller is the driver, after an hour of
+   evaluation, where a throw loses the artefact that holds both censuses. The
+   adapter `inactionContrastOrNull` converts that refusal into a `null` contrast
+   and is itself tested. Two names for one statistic, because an exception is
+   the right answer in one place and the wrong one in the other.
+
+One dead branch was found by coverage and removed rather than annotated: the
+sort comparator's "equal ids" arm, unreachable because the ids are map keys. A
+`v8 ignore` there would have been a lie about what the code can do, and this
+repository does not keep those.
+
+What the instrument does not do is also part of the record. It does not score
+anything, it does not enter `pass^k`, it does not choose a floor, and it cannot
+distinguish "the agent said it did not know" from "the agent stopped mid-task" —
+τ² writes both as an episode with no further tool call. The narrower claim is
+the one that can be defended: the agent did not act.

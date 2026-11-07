@@ -7321,3 +7321,71 @@ The fourth terminal state is therefore outside the pair: a stopped run writes
 `poc-l4.json` with `status_no_measurement` and does not write
 `poc-l4-facade-pair.json` at all, because a pair that never measured has no
 contrast to report -- not even a null one.
+
+### 17.104 The abstention census: shape, states and one optional field
+
+A pair artefact that reports a delta without a mechanism is a number nobody can
+act on. The census is deliberately small, and its shape is the whole design:
+
+```
+inaction: {
+  asIs:    InactionCensus
+  floored: InactionCensus
+  contrast: InactionContrast | null
+}
+```
+
+`InactionCensus` has two states. `NOT_OBSERVED` carries a reason and no counts;
+`OBSERVED` carries `tasks: TaskInaction[]` ordered by id, `inactiveTrials` and
+`totalTrials`. `TaskInaction` is `{ id, inactive, trials }` with the id qualified
+by the scenario exactly as `TauTrialRow` qualifies its own, so the census
+reconciles with the pair's per-task rows line for line.
+
+The source is the phase's `diagnostics` object, which the Python driver already
+prints for the reliability gate. One key is added:
+
+```
+inaction: { observable: bool, episodes: [{ task, trial, acted }, ...] }
+```
+
+`observable` is a field rather than an inference because a reader must not
+decide for itself what a missing census means. `acted` is true when any message
+whose role is `assistant` (or `agent`, which older upstream versions used)
+carries a non-empty `tool_calls` list. Upstream's model gives a participant
+message either text or tool calls, and an assistant message continues an episode
+only by calling a tool, so `acted: false` is "the agent declined to continue" —
+the τ² counterpart of the abstention LongMemEval scores.
+
+Refusals, each of which is a state or an error rather than a default:
+
+| condition | result |
+| --- | --- |
+| no diagnostics at all | `NOT_OBSERVED` |
+| `inaction` key absent (every run before this instrument) | `NOT_OBSERVED` |
+| `observable: false` | `NOT_OBSERVED` |
+| empty episode list | `NOT_OBSERVED` |
+| `observable` not a boolean | throws |
+| episode without an id, or a trial that is not a non-negative integer, or `acted` not a boolean | throws |
+| the same `(task, trial)` twice | throws |
+
+`inactionContrast(asIs, floored)` is defined only when both sides are `OBSERVED`
+over the same task set and trial counts; the delta is the treatment's inactive
+share minus the control's, in percentage points. `inactionContrastOrNull` is the
+driver-facing adapter: same statistic, refusal becomes `null`, because the
+caller has just spent an hour of evaluation and the two censuses are worth more
+than the delta.
+
+Dependency layers:
+
+1. `inaction.ts` — pure, imports nothing from the lane; owns the states, the
+   reduction, the contrast and its adapter.
+2. `facade-pair.ts` — imports it for the summary line and the artefact's
+   optional `inaction` field. The field is optional because R49's artefact has
+   none and its verifier does not ask for one.
+3. `bin/tau2-driver.ts` — builds one census per facade, from that facade's own
+   phase, and never shares one between arms.
+4. `eval/drivers/tau2/run_split.py` — reports episodes, decides nothing.
+
+The census never enters `pass^k`, never selects a floor, and is never read by
+the R45 revert rule. It answers one question beside the delta: did the agent
+stop acting.

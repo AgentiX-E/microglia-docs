@@ -4628,3 +4628,27 @@ Order from here:
    re-dispatch, never a zero.
 5. U1, U2 and the R46 arms stay closed until a valid paired reading exists.
 6. cortex release remains excluded.
+
+### The abstention census, while R49 measures (2026-11-07)
+
+R49's memory arm is the long pole: two facades over the held-out split, each two
+hundred and twenty-eight episodes, on one store. While it runs, the instrument
+the next arm needs was built — a delta with no mechanism beside it cannot be
+attributed, and the published ablations say the mechanism is abstention.
+
+| Priority | Step | State |
+| --- | --- | --- |
+| P0 | Per-episode action census in the phase, per-task reduction with four refusal states, optional artefact field, summary line, 28 tests, `inaction.ts` at 100/100/100/100 | done |
+| P0 | Full gate: 3143 tests / 148 files, 99.95 / 99.64 / 100 / 99.95, `audit: ok`, verifier self-test, bench gates, bundle size | done |
+| P0 | Six-document sync and both repositories pushed | done |
+| P1 | Read R49 back into `PAIRED / REFUSED_CROSS_RUN / NO_MEASUREMENT` and report the interval, the p-value and the delivered population | running |
+| P1 | Register the next floor arm, now with the census required by its verifier | blocked on the readback |
+| P2 | U4 pack order, U5 pack ceiling, U6 fresh-versus-cumulative | registered, undispatched |
+| P2 | U1, U2, R46 admission arms | closed until a valid paired reading |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+No `Pass^4` number is claimed by this iteration and no SOTA row moves. The
+ranking stands where R48 left it: IBM `gpt-5.5` airline 82.0 is the published
+SOTA, and microglia is fifth of six named entries. What changed is what the next
+number will be able to say.

@@ -3698,3 +3698,38 @@ those is a variable one can hold fixed and change alone. The project's next arms
 do exactly that -- order, size, and consolidation policy -- and each is graded by
 paired gold-verified outcomes with a stated interval, not by a similarity score
 or a leaderboard row.
+
+#### 3.6.55 An agent that stops acting is a different result
+
+Two runs can lose the same number of tasks and be telling us different things.
+In one, the agent did the wrong thing for the hundredth time; in the other, it
+stopped doing anything at all. Averaged into `pass^4`, the two are
+indistinguishable, and a memory system that reports only the average cannot say
+whether it is being used and misled or being read and mistrusted.
+
+This is not a hypothetical distinction. Across the published ablations that
+motivated this work, the largest effect of giving a model too much memory is
+not a wrong answer but a refusal: the same question against a focused pack and
+against a full session differs by fifteen to thirty-five points, and the
+strongest models express most of that gap by abstaining. A benchmark that
+counts only correctness turns that mechanism into a generic score drop.
+
+τ² has no counted abstention. An episode that gives up does not answer "I don't
+know" and lose points politely; it fails every action the task required. But the
+behaviour is still visible, because upstream's episodes continue only through
+tool calls: an episode in which the agent never calls a tool is an episode in
+which the agent declined to act. We now record that per episode, per trial, and
+per arm, and print it beside the delta.
+
+Three choices make the number usable rather than decorative. It is a state
+before it is a count, so a run that could not observe the episodes says so
+instead of reporting zero. It is per facade, because two arms of one run are
+still two evaluations. And it never touches the score: the census explains a
+delta, it does not produce one.
+
+The claim it supports is deliberately narrow, and narrower is what makes it
+survive review. We are not saying the agent was confused, or that the pack was
+irrelevant, or that the model knew the answer and withheld it. We are saying
+that, in this episode, the agent did not act. Whether that is noise, overload or
+honest ignorance is the next question — and it is a question that can now be
+asked of the data rather than of the transcript.

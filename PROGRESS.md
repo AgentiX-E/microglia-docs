@@ -10732,3 +10732,71 @@ verifier. The fixtures are stub numbers and a README says so in the directory:
 `pnpm check` stays green: 3114 tests over 147 files, coverage 99.95 / 99.65 /
 100 / 99.95, `audit: ok`, verifier self-test passed, CI `42384056004` at
 `42241cf3` with 44 steps.
+
+### 172.8 — The delta gets a mechanism, and abstention stops being a default
+
+R49 is still measuring — at the time of writing the memory arm has been running
+for over an hour, which is what two facades of two hundred and twenty-eight
+episodes each costs. Its readback is the next thing that happens, and nothing
+here touches it: the dispatch is pinned at `3ea349af`, and this iteration's
+work lands after it.
+
+What it changes is what the *next* arm can say. A `pass^4` delta answers "did
+the pack change the outcome" and not "how". The two ways a pack can cost an
+episode are different findings:
+
+- the agent acted, and the pack sent it to the wrong tool;
+- the agent never acted at all.
+
+The published ablations behind the memory hypothesis make the second one
+load-bearing: fifteen to thirty-five points between a focused pack and a
+~113,000-token session, with the strongest models expressing most of that gap
+as abstention. τ² has no counted "I don't know" — an episode that gives up
+fails every required action instead — so the same mechanism shows up as an
+agent that never calls a tool. Upstream's message model makes that exact: a
+participant message carries either text or tool calls, and an assistant message
+continues an episode only by calling one. An episode with no tool call is an
+episode where the agent declined to continue.
+
+Three properties are enforced rather than assumed:
+
+1. **`NOT_OBSERVED` is a state, not a zero.** Every artefact before this
+   instrument carries no census. A reader that defaulted it would publish
+   "nothing abstained" for a run that never looked — the same defect as reading
+   an unscored trial as a failure.
+2. **The census is per facade.** One census shared between two arms would
+   recreate defect 29 one layer down: R48's readings came from different
+   dispatches, and two facades of one run still evaluate separately.
+3. **A contrast needs a common population.** Two censuses over different task
+   sets or different trial counts produce no delta. The pure function throws;
+   the driver turns that into a `null` contrast rather than lose an hour of
+   evaluation, and both censuses stay in the artefact for a reader to compare.
+
+The reduction lives in TypeScript (`packages/eval/src/inaction.ts`) because that
+is the half with tests, and the phase only reports the episodes it saw from
+upstream's live objects. Twenty-eight cases cover the real episode shape, the
+four malformed arms, the two zero-population cases a hand-written document can
+carry, and a sort that must be total without a reachable equal arm — the kind of
+branch that is either removed or untestable, and was removed. `inaction.ts` is
+at 100 / 100 / 100 / 100.
+
+The artefact gains one optional field, `inaction: { asIs, floored, contrast }`,
+and the summary line the workflow prints carries the two shares. Optional is
+the point: R49's artefact will not have it, and its verifier does not ask.
+
+`pnpm check` is green: 3143 tests over 148 files, coverage 99.95 / 99.64 / 100
+/ 99.95, `audit: ok`, the R49 verifier's thirteen-case self-test passing, bench
+blocking gates PASS, bundle size ok, and 145 modules / 39,480 production lines
+in the structural ledger. CI `42387783659` at `998f617a` is green over 44 steps.
+
+Order from here, unchanged where it was blocked:
+
+1. Read R49 back into `PAIRED / REFUSED_CROSS_RUN / NO_MEASUREMENT`. If PAIRED,
+   report the interval, the p-value, the delivered population — and now the
+   inaction shares, because the census starts with the next artefact.
+2. If REFUSED, the scope attestation is broken; fix it before any arm opens.
+3. If NO_MEASUREMENT, record what was missing and re-dispatch, never a zero.
+4. Only then register the next floor arm, and only with the census required by
+   its own verifier.
+5. U1, U2, R46 stay closed until a valid paired reading exists; U4, U5, U6 stay
+   registered and undispatched.
