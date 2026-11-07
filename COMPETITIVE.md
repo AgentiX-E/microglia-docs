@@ -2118,7 +2118,54 @@ column it leads is still whether the treatment was delivered: `1512 served` on
 R46. Its defensible differentiator is measurement rigour — paired confidence
 intervals, MDE, a pre-registered refutation rule and a committed retention
 curve — against competitor ablations that mostly report point estimates without
-error bars. The offline proxy probe in `AUDIT.md` section 34.30 shows the
-structure-only cost rule is robust to cost ordering but yields a plateau, not a
-unique floor; no floor is chosen here. A source study, a green CI run and an
-observation round move no leaderboard row.
+error bars. The offline proxy probe in `AUDIT.md` section 34.30 showed the
+structure-only cost rule robust to cost ordering **on the proxy only**; R47's
+committed curve falsified that and `AUDIT.md` section 34.31 records the
+correction. A source study, a green CI run and an observation round move no
+leaderboard row.
+
+### L.15 — Four gating mechanisms, one alternative leaderboard, and the U3 dispatch (2026-11-07)
+
+**Four mechanisms that decide whether retrieved memory is used at all.** All
+four address the same failure the project measures — retrieval that is always
+on injects material that is irrelevant to the current question — and none is a
+tau-squared-bench Pass^4 entry.
+
+| source | decision | threshold origin | reported effect |
+|---|---|---|---|
+| Self-RAG (Asai et al., 2024) | trained reflection tokens `[Retrieve]`, `[ISREL]`, `[ISSUP]`, `[ISUSE]` | learned during fine-tuning | critique and segment selection during generation |
+| CRAG (Yan et al., 2024) | a retrieval evaluator grades each document Correct / Ambiguous / Incorrect | evaluator score with confidence bands (0.7 / 0.3 in a third-party reproduction) | that reproduction reports `context_precision +0.431` from scoring and filtering alone |
+| TARG (arXiv 2511.09803) | training-free single-shot gate from prefix-logit entropy, top-1/top-2 margin or small-N variance | a fixed decision threshold on the uncertainty score | 70–90 percent fewer retrievals at matched EM/F1 on five QA benchmarks; states that retrieving for every query often hurts quality |
+| Know Before You Fetch (arXiv 2606.29959, `github.com/dongzhe1/know-before-you-fetch`) | a logistic calibrator maps a closed-book draft's log-probability to `P(correct)`, then allocates a retrieval budget or abstains | thresholds selected on a validation split, test evaluated once | gating is not universally faster: about +27 percent latency on Qwen3-8B and about -8 percent on Qwen3-32B at matched-accuracy operating points |
+
+The last row is the closest methodological relative of U3 and also the sharpest
+contrast. Both treat use as a decision rather than a default, both make
+abstention a first-class action, and both refuse to choose a threshold on the
+test outcome. But they select thresholds on labelled validation accuracy,
+whereas U3 selects its floor from a committed structural retention curve with
+registered cost weights and no accuracy input at all. Its published caveat —
+that a gate which helps one backbone can cost another — is the same
+domain-dependence IBM's own airline ablation measured, and a reason not to
+copy a numeric threshold from any of these papers into `COVERAGE_FLOORS`.
+CRAG's evaluator is a learned or LLM-based grader; U3's `queryCoverage` is the
+same deterministic kernel `buildPack` already uses, so the treatment needs no
+additional model call. The CRAG figure above is a third-party reproduction,
+not a number from the original paper, and is recorded as such.
+
+**An alternative leaderboard reading, with a different ruler.** SOTA2 Research
+publishes a τ²-bench airline full 50-task pool table dated 2026-06 that reports
+Pass@4 78 for PG-CHECKLIST (Sonnet 4.6 with a verifier), 74 for PG-RAW, 72 for
+a Sonnet 4.6 baseline and 58 for TOOLGUARD. It also lists `PV (24)` and
+`Mut (26)` columns, so its pool and pass criterion are not the official
+leaderboard's base split. Even read at face value, 78 is below IBM's 82.0, so
+it does not displace the SOTA; it is recorded as a competitor approach
+(process checklists and verifiers) rather than merged into the ranking table,
+because mixing rulers is exactly the defect section 34.25 was written about.
+
+**Current ranking (unchanged).** IBM `gpt-5.5` airline **82.0** Pass^4
+(unverified, PR #551, modified prompt) remains the SOTA; SapientAI 72.0; IBM
+`gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b` 34.0; microglia **fifth of six
+named entries**. The one column microglia leads is still whether the treatment
+was delivered. U3 (run `42350304597`, dispatched on `33038232`) is the first
+arm that changes what is delivered; its step 11 read the registered floor
+successfully. A dispatch in progress moves no row.

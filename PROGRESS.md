@@ -10192,6 +10192,21 @@ held-out airline ablation still measures the same non-monotonic memory dose:
 14 high-support guidelines at Pass^4 45.0 against 101 at 40.0. A registered
 arm moves no leaderboard row until it is read back.
 
+**The dispatch and the parallel source study.** R48 was dispatched through
+`AgentiX-E/microglia`'s `sota.yml` as run `42350304597` on `33038232`, with
+R47's inputs verbatim apart from the registration id. Step 11, `Read the
+registered recall floor`, completed successfully on the first attempt, so the
+new wiring works on a real runner and not only locally. While the two arms
+measure, four gating mechanisms were read and recorded in `COMPETITIVE.md`
+section L.15: Self-RAG's reflection tokens, CRAG's three-way retrieval
+evaluator, TARG's training-free prefix-logit gate (70 to 90 percent fewer
+retrievals) and Know Before You Fetch's calibrated retrieval budget, whose
+thresholds are chosen on validation and whose latency benefit reverses across
+backbones. An alternative SOTA2 Research airline table reporting Pass@4 78 for
+PG-CHECKLIST was recorded with its different ruler and does not displace IBM's
+82.0. None of these is a tau-squared-bench Pass^4 entry, and none supplies a
+threshold that may be copied into U3.
+
 **What is next, in order.** P0: read R48's `l4-evidence`, grade its eight
 predictions and seven refutations, and pair its memory arm against R47's as-is
 memory arm per task. P1: quantify U3's contribution to `pass^4`, the paired

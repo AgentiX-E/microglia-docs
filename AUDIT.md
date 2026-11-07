@@ -3548,3 +3548,31 @@ It does not predict the sign, magnitude or significance of `l4-paired`, and
 forbids any accuracy number from selecting or revising the floor. Ranking is
 unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of
 six named entries.
+
+### 34.32 The dispatch, and four gates whose thresholds are not ours
+
+`R48-u3-coverage-floor` was dispatched as run `42350304597` on `33038232`
+after `ci.yml` `42349873647` went green on 44 steps. Step 11, `Read the
+registered recall floor`, completed successfully: the registration-to-facade
+path is exercised on a real runner, and `TAU_MIN_COVERAGE` is set on the memory
+arm only. The head-still rule of section 34.21 applies again from dispatch, so
+no source, gate, threshold or registration is touched while the two arms
+measure.
+
+While they measure, four use-side gates were read and recorded in
+`COMPETITIVE.md` section L.15: Self-RAG's trained reflection tokens, CRAG's
+three-way retrieval evaluator with confidence bands, TARG's training-free
+prefix-logit gate (70 to 90 percent fewer retrievals at matched EM/F1), and
+Know Before You Fetch's calibrated retrieval budget with abstention. The last
+is the methodological near-relative: it selects thresholds on validation and
+evaluates test once, and it reports that gating costs about 27 percent latency
+on Qwen3-8B while saving about 8 percent on Qwen3-32B. That backbone
+dependence is a second, independent reason not to import a published numeric
+threshold into `COVERAGE_FLOORS`; the first is R47's refutation, which forbids
+a floor from accuracy or from an offline proxy. CRAG's reported
+`context_precision +0.431` is a third-party reproduction, not an original
+paper result, and is labelled as such. An alternative SOTA2 Research airline
+table reporting Pass@4 78 for PG-CHECKLIST uses a different pool and pass
+criterion; even at face value it is below IBM's 82.0 and is not merged into
+the ranking. None of these sources is a tau-squared-bench Pass^4 entry, and a
+source study moves no leaderboard row.

@@ -4411,7 +4411,7 @@ dispatch that applies the floor**; an array-order default is not acceptable.
 | P1 | read R47 `l4-evidence`: grade 8 predictions, 6 refutations, 3 reconciliation identities, quantile order, positive-rung `emptiedPacks > 0` | run `42337250684` | **done — all hold, `U3_ELIGIBLE = true`** |
 | P1 | compute the admissible set from the committed curve and register cost weights and tie-break before its own dispatch | R47 readback | **done — `0.01`, `alpha=1, gamma=3, beta=0.5`, least-aggressive** |
 | P1 | implement the U3 application path from registration to the recall facade | the decision | **done — 5-point wiring, TDD, 31 new tests** |
-| P1 | dispatch the U3 coverage-floored arm (`R48-u3-coverage-floor`) through `sota.yml` | green CI on the new head | **ready to dispatch** |
+| P1 | dispatch the U3 coverage-floored arm (`R48-u3-coverage-floor`) through `sota.yml` | green CI on the new head | **done — run `42350304597` on `33038232`, in progress** |
 | P1 | read R48 `l4-evidence`, grade 8 predictions and 7 refutations, pair its memory arm against R47's as-is memory arm | the R48 dispatch | pending |
 | P1 | R46 admission-rule ablation (`as-is` / `distinct-task-support` / `min-support-only`) with the `>= 2` contrast registered separately | R47 readback | pending |
 | P2 | U1 calibration using the MemCalib score structure on committed coverage, then U2 only after a real reachability test | U3 readback | pending |
