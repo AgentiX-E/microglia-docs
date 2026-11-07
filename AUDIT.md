@@ -3763,3 +3763,90 @@ readback of `42353229972`.
 
 Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
 fifth of six named entries.
+
+
+### 34.35 R48 read back: two deltas, a firing revert rule, and two defects
+
+**Provenance.** Run `42353229972`, head `33038232`, job `128345648759`,
+artefact `13568804042` (`l4-evidence`, 20,276,555 bytes, 92 entries, SHA256
+`2ad896dd7037f1bb74d0e755444ddb89314c054598d4a406869e758c43ddc1ef`). It is the
+lawful retry of the infrastructure-failed `42350304597` (34.33): same head,
+same prereg, same nine dispatch inputs, exogenous provider fault before any
+outcome existed. Both arms are `success`, the log has zero provider 500 lines,
+`TAU_MIN_COVERAGE: 0.01` is injected at step 12, and step 11 reads the
+registered floor. Only step 14 `Pair the arms` fails, on blocking scientific
+gates, while step 16 uploads the evidence.
+
+**The two deltas, kept separate.** `l4-paired` in `packages/eval/src/bin/
+l4-pair.ts` is the gate that pairs the memory arm against the memory-free
+reference arm **inside one dispatch**. Here it is `delta=-6.00pp [-16, +4]
+p=0.453125, n=50, lost=5, gained=2` (memory `pass^4 0.38`, reference `0.44`).
+The cross-run delta between R47's as-is memory arm and this run's floored
+memory arm is `delta=-4.00pp, p=0.6875, lost=4, gained=2` (0.42 -> 0.38).
+R48's "What is measured" calls the latter the contribution of U3; its R4
+refutation, R45's rule and R46/R47's restatements name the former, `l4-paired`,
+as the revert gate. They are not interchangeable.
+
+**R4 fires.** The registered rule (`prereg/R45-admission.md`, re-stated in
+R46/R47/R48) reverts if `l4-paired` is significantly negative **or** falls
+below -5pp with a served pack. The second branch does not require
+significance. `-6.00pp < -5pp` and `recallServed = 965 > 0`, so the rule
+fires. R45 further states "revert on the reading, not on the explanation" and
+"a plausible story about why a bad pack hurt is not evidence that the next pack
+will help". A plausible story is abundant here: the memory-free reference arm
+drifted from `0.30` (R47) to `0.44` (this run), 14 points of LLM sampling noise
+on an unchanged configuration; the minimum detectable effect is 14.83pp
+(`V5-resolution` FAIL, 216 tasks needed for a 5pp effect); `V16` sees 83
+informative trials against its 100 floor. None of it may soften the reading.
+The verdict is a governance action, not a causal claim: the applied floor
+`0.01` is reverted to the as-is default, the arm is recorded as measured,
+refuted and reverted, and no claim is made that the floor caused the delta.
+The registration itself is not edited (R5 forbids it).
+
+**Grading.** Seven predictions hold (P1-P7, including all three reconciliation
+identities `1573 + 0 = 1573`, ten rungs against 965 served packs, and the zero
+rung `1573 / 965 / 0`); P8 fails. Of seven refutations, R4 is FIRED and the
+other six are clear. `allPredictionsHold=false`, `allRefutationsClear=false`,
+`verdict=GATE_RED` with blocking red gates `V5-resolution` and `l4-paired`.
+The delivered population confirms the floor acted: `meanPackIds` 1.4675 ->
+1.0893, `injectedPairs` 2188 -> 1573, `zeroCoveragePairs` 750 -> 0,
+`recallServed` 1491 -> 965, and the histogram's `0` and `0.01` rungs are
+identical because the facade filtered before delivery. `U3_ELIGIBLE` from R47
+(34.31) is now consumed.
+
+**Defect 28 — the verifier bound the wrong delta.** The offline
+`r48-readback.py` verifier shipped in iteration 171 computed refutation R4
+from `cross_run_pair` (the `-4.00pp` contribution) and therefore reported
+`revertRuleFired=false`, `allRefutationsClear=true` for a reading that fires
+the rule. `l4-pair.ts`, R45, R46, R47 and R48 all bind the rule to the
+within-run `l4-paired` gate; iteration 171's binding was an isolated
+inconsistency. The root cause is that the rule lived only in prose and an
+untyped offline script. Fixed by lifting it into
+`packages/eval/src/l4-revert.ts` (`revertRule`, exported `REVERT_P_BAR=0.05`
+and `REVERT_DELTA_BAR_PP=-5`, a `scope` tag refusing cross-run readings) with
+fourteen TDD tests on the real committed fixture
+`eval/fixtures/tau2-l4-paired-readings.json`, and by correcting the offline
+verifier to the same semantics. Its self-test now grades R4 on R47 (`+12pp ->
+clear`) and R48 (`-6pp / 965 served -> FIRES`) end to end and asserts that a
+catastrophic cross-run delta with a safe within-run gate does not fire. The
+corrected real readback reports `revertRuleFired=true`.
+
+**Defect 29 — a cross-dispatch ablation is confounded by design.** R48
+prediction 8 required the two memory arms to share the learning phase and the
+store. They do not. R47 distilled 8 items over 4 edit events; the retry
+distilled 12 over 6 events, with identical seeded split, scenario, model,
+trials and admission configuration. The learned content changed while the
+configuration did not, because distillation and agent sampling are stochastic
+across dispatches. The reference arm drifted 14 points. `TECH-DESIGN` 17.40
+already warned that comparing two dispatches puts the answer inside the
+run-to-run noise, and `ROADMAP` Read 7 measured that a cross-run estimate was
+off by a factor of two in the direction that flattered the hypothesis. The
+fix is not another retry: it is a within-run pair (one learning phase, one
+store, one reference, only the recall facade varied), registered before its
+own dispatch. U1, U2 and R46's admission-rule arms remain CLOSED.
+
+**Acceptance.** `pnpm check` exits 0: 2994 tests across 143 files, coverage
+99.98 / 99.68 / 100 / 99.98, `audit: ok`, `bundle:size ok`; the coupling
+ledger reflects the new module (140 -> 141). Both repositories are pushed as
+Lambertyan and `ci.yml` is green on the new head. Ranking is unchanged: IBM
+`gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of six named entries.

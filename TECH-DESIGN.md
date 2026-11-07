@@ -6979,3 +6979,70 @@ all three terminal states, and fires refutations R1, R2 and R4 on broken
 inputs. It is staged for the readback of `42353229972`; no conclusion is drawn
 from it until that artefact exists. Ranking is unchanged: IBM `gpt-5.5`
 airline 82.0 remains the SOTA, microglia fifth of six named entries.
+
+
+### 17.99 The revert rule as a typed production invariant
+
+**Why it moved.** Until R48 the R45 revert rule existed only as English in
+`prereg/R45-admission.md` and as an untyped computation in an offline Python
+verifier. That verifier bound refutation R4 to the cross-run contribution
+(`-4.00pp`) instead of the within-run `l4-paired` gate (`-6.00pp`) and reported
+`revertRuleFired=false` for a reading that fires (AUDIT 34.35, defect 28). A
+governance invariant that decides whether an arm is reverted must not live in a
+script that no CI gate, no coverage threshold and no type checker can see.
+
+**The instrument.** `packages/eval/src/l4-revert.ts` exports:
+
+```ts
+export const REVERT_P_BAR = 0.05;
+export const REVERT_DELTA_BAR_PP = -5;
+
+export type PairedReading = {
+  readonly scope: 'within-run' | 'cross-run';
+  readonly deltaPp: number;
+  readonly p: number;
+  readonly paired: number;
+};
+
+export function revertRule(
+  reading: PairedReading,
+  servedPacks: number,
+): { readonly fires: boolean; readonly branch: RevertBranch; readonly reason: string };
+```
+
+The `scope` tag is the design point. `l4-paired` in `l4-pair.ts` pairs the
+memory arm against the memory-free reference arm inside one dispatch; a
+cross-run delta pairs two memory arms from two dispatches and measures a
+treatment's contribution. Only the former is a gate input. `revertRule`
+refuses a cross-run reading at runtime with an explicit error, so the wrong
+binding cannot recur silently, and its doc comment names the defect it closes.
+
+**Two independent branches.** `significantly-negative` fires when
+`deltaPp < 0 && p < REVERT_P_BAR`; `below-bar-with-served-pack` fires when
+`servedPacks > 0 && deltaPp < REVERT_DELTA_BAR_PP`. Significance is not
+required on the second branch and a served pack is not required on the first;
+both bars are strict. Non-finite deltas, out-of-range p-values, a non-positive
+paired count and a negative served count are refused rather than graded. The
+rule never reads accuracy to choose, justify or revise a floor — R48's R5
+forbids it.
+
+**TDD on real data, no mocks.** `eval/fixtures/tau2-l4-paired-readings.json`
+carries two committed readings: R47 (`+12pp, p=0.1094`, 1491 served packs,
+expected clear) and R48 (`-6pp, p=0.4531`, 965 served packs, expected FIRES on
+branch 2). Fourteen tests in `l4-revert.test.ts` read that fixture and cover
+both branches, both strict boundaries (`-5pp` and `p=0.05` do not fire), the
+zero-served-pack case, cross-run refusal, malformed inputs and the exported
+constants. The corrected offline `r48-readback.py` grades R4 end to end on the
+same two readings and asserts that a catastrophic cross-run delta with a safe
+within-run gate does not fire. The real artefact readback is now
+`revertRuleFired=true`, `P8 FAIL`, `verdict=GATE_RED`.
+
+**Consequence for the design.** The revert is a governance action on the
+reading, not a causal claim: the run is underpowered (MDE 14.83pp) and
+confounded by 14 points of reference drift plus a changed learning phase
+(defect 29). The applied floor is reverted to `AS_IS_FLOOR = 0`; the
+measurement instrument, the census, the histogram and `decideFloor` remain,
+because reverting an arm is not deleting the ability to measure one. The next
+arm must be a within-run pair so that only the recall facade varies. Ranking
+is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of
+six named entries.

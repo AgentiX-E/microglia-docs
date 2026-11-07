@@ -2311,3 +2311,42 @@ threshold 3 belongs to that project's corpus and is not imported.
 named entries**, leading only whether the treatment was delivered. U3 remains
 unassessed: run `42350304597` measured nothing, and retry `42353229972` is
 still on step 12. Two source readings and a self-tested verifier move no row.
+
+
+### L.18 — A measured arm that reverts, and a leaderboard that does not move
+
+Run `42353229972` is the first real U3 measurement. Its outcome is a reverted
+arm, not a new row. The within-run `l4-paired` gate reads `-6.00pp [-16, +4]
+p=0.4531` with 965 served packs, so the R45 rule's second branch (below -5pp
+with a served pack, no significance required) fires and the applied floor
+`0.01` is reverted to the as-is default (AUDIT 34.35). The reverted treatment
+delivered exactly the structural change it was designed to deliver —
+`zeroCoveragePairs` 750 -> 0, `recallServed` 1491 -> 965, `meanPackIds` 1.4675
+-> 1.0893 — so this is a measured use-side intervention, not an offline proxy.
+It is also an underpowered and confounded one: the memory-free reference arm
+drifted from `0.30` to `0.44` between the two dispatches, the learning phase
+distilled 8 items in one and 12 in the other, and the MDE is 14.83pp. No
+accuracy claim is made in either direction.
+
+That drift is itself a quantified result against the field. MemCalib's over-use
+and under-use split (L.17) and the Memory Funnel's corroboration threshold are
+about what a memory admits and how it is used; here the *learning phase itself*
+changed the remembered set between two runs of an identical configuration.
+Together with FinAcumen's calibrated threshold and explicit fallback, and the
+four gating mechanisms of L.15, the evidence says that a single dispatch's
+`pass^4` delta is not a stable ruler for a use-side intervention. The IBM
+ALTK-Evolve SOTA's own held-out airline ablation (L.14) already showed a
+non-monotonic dose — 14 rules `Pass^4 45.0` against 101 rules `40.0` — so a
+dose dial that is not paired within a run can flatter or condemn any entry.
+The methodological answer is not a number borrowed from any of these papers:
+their thresholds come from other benchmarks and are not portable into
+`COVERAGE_FLOORS`. It is a within-run pair that holds one store and one
+reference fixed.
+
+Ranking is unchanged. The current SOTA is IBM `gpt-5.5` airline `82.0`
+(unverified, PR #551, modified prompt), then SapientAI `72.0`, IBM `gpt-4.1
+sup3` `44.0` and stock `gpt-oss-120b` `34.0`; microglia is **fifth of six
+named entries**, leading only whether the treatment was delivered. SOTA2's
+PG-CHECKLIST `78` stays registered but unmerged because it uses a different
+task pool and pass definition. A measured, reverted arm, two corrected
+instruments and a green CI run move no leaderboard row.

@@ -3547,3 +3547,38 @@ six named entries. The floor of `0.01` and its cost weights remain registered
 but unassessed, and U1, U2 and the admission-rule comparisons stay closed
 until a valid paired readout exists. This section reports a method, five
 external readings and an honest non-result, not a gain.
+
+
+### 3.6.51 What drifted was the memory itself
+
+The first real measurement of a use-side floor did something more instructive
+than succeed or fail: it showed that the thing being compared had moved. U3
+changed exactly one number — a coverage floor of `0.01` at the recall facade —
+and the measurement delivered exactly the structural change it was designed to
+deliver. Zero-coverage injections fell from 750 to 0; served packs fell from
+1491 to 965; the average pack shrank from 1.47 to 1.09 items. The committed
+histogram's first two rungs are identical because the facade had already
+filtered before delivery. Every one of the three reconciliation identities
+holds. The instrument worked.
+
+What did not hold was the comparison. The two memory arms came from two
+dispatches, and between them the learning phase distilled 8 items in one and
+12 in the other, purely from LLM sampling, while the split, the seed, the
+model and the admission settings stayed identical. The memory-free reference
+arm moved 14 points. So the reading that the R45 rule grades — a within-run
+`-6.00pp` with 965 served packs — fires the revert rule on its second branch,
+and the applied floor is reverted to the as-is default. We do not claim the
+floor is harmful: the run is underpowered and confounded. We do claim what the
+standing rule requires, which is to revert on the reading rather than on a
+plausible story about why a bad pack hurt.
+
+This sharpens the product thesis. The problem is not only what was retrieved,
+and not only what was allowed to speak. It is that a memory is a stochastic
+product of a learning phase, and that its effect can only be measured against
+a fixed store, a fixed reference and a fixed set of questions inside one run.
+A cross-run delta between two memories compares two different things that
+happen to share a configuration. The next step is therefore not a larger
+sample or another retry; it is a within-run pair that holds everything fixed
+except the one number under study. That is a smaller experiment and a more
+honest one. No leaderboard row moves; the current SOTA remains IBM `gpt-5.5`
+airline 82.0, and microglia is fifth of six named entries.

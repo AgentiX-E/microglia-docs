@@ -4504,3 +4504,35 @@ readback. The P0-P3 table in the preceding section is unchanged, run
 `42353229972` is still on step 12, and U1, U2 and R46's arms stay CLOSED until
 a valid paired readout exists. Ranking is unchanged: IBM `gpt-5.5` airline
 82.0 remains the SOTA, microglia fifth of six named entries.
+
+
+### After the revert: the order from a within-run pair (2026-11-07)
+
+Run `42353229972` measured U3 for real and the R45 revert rule fired on the
+within-run `l4-paired` gate `-6.00pp` with 965 served packs. The applied floor
+`0.01` is reverted to the as-is default; the arm is measured, refuted and
+reverted, not re-dispatched. P8 failed because the two dispatches did not share
+a learning phase or a store (8 vs 12 distilled items) and the reference arm
+drifted 14 points. `TECH-DESIGN` 17.40 and Read 7 predicted exactly this
+confound. The order below supersedes the table in "R48's retry"; nothing here
+edits any preregistration.
+
+| priority | step | blocked by | status |
+|---|---|---|---|
+| P0 | record the retry's real readout, the firing revert and the two defects in all six documents | — | **done this iteration** |
+| P0 | lift the revert rule into typed, TDD, CI-gated production code with real committed readings | — | **done this iteration** |
+| P0 | `pnpm check` green, both repositories pushed, `ci.yml` green on the new head | — | **done this iteration** |
+| P1 | design a **within-run pair**: one dispatch, one learning phase, one store, one reference arm, only the recall facade varied between as-is and floored; register predictions, refutations, cost weights and tie-break before its dispatch | P0 | pending |
+| P1 | decide whether the within-run pair needs a third driver lane or a paired facade in `sota.yml`; TDD the wiring on a real fixture, no mocks, coverage at least 95 percent on every dimension | within-run design | pending |
+| P1 | defect 27's fail-fast provider health probe with an explicit no-measurement marker; bounded to a later head, never fewer trials or a partial artefact | independent | pending |
+| P1 | R46 admission-rule ablation (`as-is` / `distinct-task-support` / `min-support-only`) with the `>= 2` corroboration contrast registered separately | a valid within-run pair | CLOSED until then |
+| P2 | U1 calibration on the MemCalib score structure over committed coverage, then U2 only after a real reachability test | a valid pair | CLOSED until then |
+| P2 | transcript V46/V47, then S1a, then S1b | U1 / U2 | pending |
+| P3 | `sota.ts` split, `eval-sql` move, W8 dose curve, vitest 4 migration deliberately last | independent | pending |
+| — | cortex release (W1) **excluded** by the standing instruction | — | excluded |
+
+The revert is a governance action on a reading, not a finding that the floor
+is harmful: the measurement is underpowered (MDE 14.83pp) and confounded
+(defect 29). No accuracy number is claimed in either direction, and no leader
+board row moves. Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the
+SOTA, microglia fifth of six named entries.

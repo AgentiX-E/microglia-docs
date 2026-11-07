@@ -10386,3 +10386,99 @@ SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b`
 34.0; microglia **fifth of six named entries**, leading only whether the
 treatment was delivered. A failed run, a retry, source studies and a
 self-tested verifier move no leaderboard row.
+
+
+## 172 — U3 measured, the revert rule fired, and the arm was reverted
+
+**The retry measured.** Run `42350304597` on head `33038232` died on a persistent
+DeepSeek 500 and measured nothing (`AUDIT` 34.33). Its lawful retry
+`42353229972` on the same head, same prereg and same nine inputs is the first
+real U3 measurement: job `128345648759` ran both arms to `success`, the log has
+zero `DeepseekException` / `500 Internal Server Error` lines, step 11 read the
+registered floor, `TAU_MIN_COVERAGE: 0.01` reached the memory arm, and
+`l4-evidence` (`13568804042`, 20,276,555 bytes, 92 entries) carries both
+`arms/memory/poc-l4.json` and `arms/reference/poc-l4.json`. The run is
+`completed failure` only at step 14, `Pair the arms`: the blocking scientific
+gates `V5-resolution` (MDE 14.83pp), `V16-transfer-resolvable` (83 informative
+trials, 14 repairs) and `l4-paired` are red. `ci.yml` is green on the head.
+
+**Seven of eight predictions hold.** P1 the floor reaches the facade
+(`meanPackIds` 1.4675 -> 1.0893, `injectedPairs` 2188 -> 1573); P2
+`zeroCoveragePairs` 750 -> 0; P3 `recallServed` 1491 -> 965 with `V1` still
+passing; P4 all three reconciliation identities hold (1573 + 0 = 1573, all ten
+rungs against 965 served packs, zero rung retains 1573 and empties nothing);
+P5 every validity gate R47 passed passes again, no regression, `widenedItems=0`,
+seven census fields intact; P6 `coverage` present on memory and absent on
+reference; P7 the declared floor `0.01` is recomputed from R47's committed
+curve under the registered weights, not copied. The committed histogram is the
+structural fingerprint of a floor applied before delivery: its `0` and `0.01`
+rungs are identical (`1573 / 965 / 0`) because the facade had already removed
+the zero-coverage pairs, while rung `0.02` drops to `1533 / 956 / 9`.
+
+**P8 fails, and the registration says what that means.** The two memory arms
+are not comparable. R47 distilled 8 items from 4 edit events into a store of 8;
+the retry distilled 12 items from 6 events into a store of 12, with the same
+seeded split, scenario, model, trials and admission settings (`trust=0.9`,
+`support=0.9`, `confidence=0.6165`). The learning phase and the store changed
+while the configuration did not: LLM distillation and agent sampling are
+run-to-run stochastic. `prereg/R48-u3-coverage-floor.md` prediction 8 states
+that "a change in the learning phase, the store or the admission rule would
+break the pairing and refute the arm". The memory-free reference arm also
+drifted from `pass^4 = 0.30` in R47 to `0.44` in the retry, 14 points of pure
+sampling noise on an unchanged configuration. This is the standing warning of
+`TECH-DESIGN` 17.40 ("comparing two dispatches puts the answer inside the
+run-to-run noise") and `ROADMAP` Read 7 measured at first hand, and it is the
+user's hypothesis in its sharpest form yet: what was remembered and what the
+measurement compared were both wrong, not merely how memory was used.
+
+**The revert rule fires on the reading, not on the explanation.** The R45 rule,
+re-stated unchanged in R46, R47 and R48, reverts if `l4-paired` is
+significantly negative **or** falls below -5pp with a served pack; the second
+branch deliberately does not require significance, and `prereg/R45-admission.md`
+adds that "a plausible story about why a bad pack hurt is not evidence that the
+next pack will help". The within-run `l4-paired` gate (`packages/eval/src/bin/
+l4-pair.ts`, memory `0.38` against reference `0.44`) reads `-6.00pp [-16, +4]
+p=0.4531` with `recallServed = 965 > 0`. The rule fires. There is a highly
+plausible story available — the 14-point reference drift, the underpowered
+14.83pp MDE, the confounded pairing — and the standing project rule forbids
+using it to soften the reading. U3's applied floor of `0.01` is **reverted**:
+the as-is configuration (`AS_IS_FLOOR = 0`) is restored as the default, the
+retry is recorded as a measured, refuted, reverted arm, and no accuracy number
+is claimed in either direction. `prereg/R48-u3-coverage-floor.md` is not
+edited; its R5 refutation forbids editing the registration after the readout.
+
+**Two defects, both found by reading the artefact.** Defect 28: the offline
+`r48-readback.py` verifier bound refutation R4 to the **cross-run** delta
+between the two memory arms (`-4.00pp, p=0.6875`, the treatment's contribution)
+instead of the **within-run** `l4-paired` gate `-6.00pp` that the registration
+names, and so reported `revertRuleFired=false`. This is a real instrument bug,
+not a scientific disagreement. Defect 29: a cross-dispatch ablation cannot hold
+the learning phase, the store and the reference arm fixed, so `pass^4` deltas
+between two dispatches are confounded by design; R48's P8 predicted exactly
+this failure mode.
+
+**Fixed in this iteration, TDD and no mocks.** The revert rule is lifted out of
+prose and the offline script into `packages/eval/src/l4-revert.ts`, a typed
+production invariant. `PairedReading` carries a `scope` tag of `within-run` or
+`cross-run`; `revertRule` refuses a cross-run reading at runtime, and the two
+bars (`0.05`, `-5pp`) are exported constants. `eval/fixtures/
+tau2-l4-paired-readings.json` holds the two real committed readings (R47
+`+12pp -> clear`, R48 `-6pp / 965 served -> FIRES`). Fourteen tests use those
+real readings, both branches, both strict boundaries, and a mirror case where a
+catastrophic cross-run delta with a safe within-run gate must not fire. The
+offline verifier is corrected to the same semantics, its self-test grades R4
+end to end on the real readings, and the real artefact now reports
+`revertRuleFired=true`, `allPredictionsHold=false`, `allRefutationsClear=false`,
+`verdict=GATE_RED`. `pnpm check` exits 0 at 2994 tests across 143 files with
+coverage 99.98 / 99.68 / 100 / 99.98, `audit: ok`, `bundle:size ok`.
+
+**What is closed and what is next.** Downstream U1, U2 and R46's
+admission-rule arms stay CLOSED: R48's R6 keeps them closed until a valid pair
+exists, and a confounded cross-dispatch pair is not one. The reverted arm is
+not re-dispatched. P0 is now to design a **within-run pair**: one dispatch that
+holds a single learning phase, a single store and a single reference arm, and
+varies only the recall facade between the as-is and the floored configuration —
+the design `ROADMAP` Read 7 already proved removes the run-to-run confound.
+Defect 27's fail-fast provider probe remains a bounded P1 fix on a later head.
+Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
+fifth of six named entries. A measured, reverted arm moves no leaderboard row.
