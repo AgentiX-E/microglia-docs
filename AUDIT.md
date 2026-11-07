@@ -3850,3 +3850,66 @@ own dispatch. U1, U2 and R46's admission-rule arms remain CLOSED.
 ledger reflects the new module (140 -> 141). Both repositories are pushed as
 Lambertyan and `ci.yml` is green on the new head. Ranking is unchanged: IBM
 `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of six named entries.
+
+
+### 34.36 Paired-evaluation sources read after the revert
+
+**Provenance and scope.** While `ci.yml` run `42366953175` went green on head
+`455a4616`, five statistical and first-party benchmark sources were read to
+quantify defect 29 (34.35). They are methodology, not leaderboard entries:
+none reports a tau2-bench `Pass^4` number, none enters `COVERAGE_FLOORS`, and
+none changes the SOTA ranking. This section records what they establish and
+what they forbid.
+
+1. **Run-to-run variance and common random numbers** (SciXa, "Run-to-Run
+   Variance in Stochastic LLM Evaluation"; and "Seed Governance Practices in
+   Distributed Training Runs"): paired dichotomous outcomes across blocks are
+   graded by McNemar's test (McNemar 1947, Dietterich 1998); shared seeds give
+   `Var(A - B) = 2 * sigma^2 * (1 - rho)`, so at rho = 0.5 the difference's
+   noise is about 0.71 of the independent case. Seed coupling cancels only the
+   components the arms share; it does nothing for each arm's own sampling
+   draws. The two-tier protocol is "pair within comparisons, replicate across
+   claims", with run counts and per-run scores reported so selective run
+   counts cannot flatter a mean.
+2. **arXiv 2512.24145, "When Does Pairing Seeds Reduce Variance?"**: formalises
+   paired-seed evaluation as the classical paired design with the seed as the
+   unit of randomisation, holding it fixed across alternatives and estimating
+   effects through within-seed differences; it yields tighter intervals and
+   higher power whenever outcomes are positively correlated at seed level, and
+   reverts to independent evaluation when correlation is absent.
+3. **Noise-aware agent evaluation** (Scorable; Agentic AI Wiki "Eval Variance
+   and Statistical Power"): `Var(score) ~= sigma_between^2 / T +
+   sigma_within^2 / (T * R)`; more runs shrink only the within term, while
+   between-task heterogeneity is divided by T alone. Pairwise comparison on
+   the same items with the same seeds is described as the single
+   highest-return change in agent evaluation. A 500-task unpaired score near
+   50 percent has a 95 percent interval of about plus or minus 4.4 points.
+4. **tau-bench / tau2-bench evaluation guide** (QASkills 2026; the tau2-bench
+   dual-control protocol summary): keep `--user-model` fixed across
+   comparisons; pass^k is `E_task[prod_j success_j]`; report domain and k
+   beside every number; do not over-index on one seed. The dual-control setup
+   already ships three evaluation modes (default, no-user, oracle-plan) whose
+   gaps isolate communication and reasoning failure — a within-run ablation,
+   not a cross-dispatch one.
+5. **A pass^k implementation reading** (InferLoop): `pass^k = 1 -
+   C(n-c, k) / C(n, k)`, with `stderr = sqrt(p(1-p)/n)`; the note that a
+   scorer's judge disagreement can distort pass^k itself.
+
+**What this establishes.** R48 compared two dispatches that shared a
+configuration but not a random stream, so the 14-point reference drift and the
+8-versus-12 distilled-item difference are the run-level and learning-level
+noise the sources describe, not treatment effects. The exact McNemar test in
+`l4-pair.ts` is valid only for a genuine within-run pair. `V5-resolution`
+(MDE 14.83pp, 216 tasks for 5pp) is the between-task arithmetic floor, so
+another retry of the 50-task cross-dispatch design cannot resolve a 5pp
+effect. The fix is a within-run pair (34.35, `TECH-DESIGN` 17.100), not a
+larger sample of the same confounded design.
+
+**What this forbids.** No numeric threshold from these sources — no rho, no
+seed count, no CI half-width, no user-model setting — is imported into
+`COVERAGE_FLOORS`, the registered cost weights, the tie-break, or R46's
+admission-rule comparators (section 34.25). They come from other benchmarks
+and other task pools. Reading a method is not measuring a contribution.
+U1, U2 and R46's arms remain CLOSED until a valid within-run pair exists.
+Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
+fifth of six named entries.

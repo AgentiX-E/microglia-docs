@@ -7046,3 +7046,68 @@ because reverting an arm is not deleting the ability to measure one. The next
 arm must be a within-run pair so that only the recall facade varies. Ranking
 is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of
 six named entries.
+
+
+### 17.100 Why the next arm must be paired within one run
+
+R48's P8 failed because two dispatches of an identical configuration produced
+different memories: 8 distilled items in one, 12 in the other, and a
+memory-free reference arm that moved from `pass^4 = 0.30` to `0.44`. A source
+reading done after the revert makes the arithmetic of that failure explicit
+and fixes the design of the next arm. These are statistical sources, not new
+tau2-bench `Pass^4` entries, and none of their numeric thresholds is portable
+into `COVERAGE_FLOORS`; they are registered as method, not as a ruler.
+
+**Common random numbers.** Paired evaluation feeds both arms the same random
+stream, so seed-coupled noise enters both scores with the same sign and cancels
+in the difference: `Var(A - B) = 2 * sigma^2 * (1 - rho)`, where rho is the
+induced run-to-run correlation. At rho = 0.5 the difference's noise falls to
+about 0.71 of the independent-seed value, equivalent to doubling both arms'
+replicate counts. arXiv 2512.24145 formalises paired-seed evaluation as the
+classical paired design with the seed as the unit of randomisation, and shows
+it tightens intervals and raises power at a fixed budget while reducing to
+independent evaluation when correlation is absent. R48 did the opposite: it
+compared two dispatches that shared a configuration but not a random stream.
+
+**McNemar is the paired instrument.** The classical analysis of paired
+dichotomous outcomes across blocks is McNemar's test (McNemar, 1947;
+Dietterich, 1998). `packages/eval/src/bin/l4-pair.ts` already uses an exact
+two-sided McNemar test on discordant task pairs, and `l4-revert.ts` grades the
+same within-run reading. The test's validity rests on the two arms being
+paired on the same tasks under the same draws. A cross-run delta between two
+memory arms is not such a pair, which is precisely why R48 defines it as the
+treatment's contribution and never as the revert gate.
+
+**Where the variance lives.** For a mean score over T tasks with R runs each,
+`Var(score) ~= sigma_between^2 / T + sigma_within^2 / (T * R)`. Adding runs
+shrinks only the second term; the between-task term is divided by T alone and
+does not move no matter how many times a run is repeated. On a 500-task
+benchmark an unpaired score near 50 percent carries a 95 percent interval of
+roughly plus or minus 4.4 points, while a paired comparison on the same tasks
+with the same seeds can resolve an effect below three points on identical data
+and budget. This is the arithmetic behind R48's `V5-resolution` (MDE 14.83pp,
+216 tasks needed for a 5pp effect): retrying the same 50-task design cannot
+turn an underpowered comparison into a powered one, and a 14-point reference
+drift is the run-level term `sigma_run` observed directly.
+
+**The benchmark's own constraint.** The tau-bench evaluation guide states that
+the user simulator must be held fixed across comparisons, because a weaker
+simulated user can make a worse agent look better, and advises against
+over-indexing on a single seed; pass^k is `E_task[prod_j success_j]`, the
+fraction of tasks solved on all k independent trials. A field summary of
+noise-aware agent evaluation puts the failure plainly: if the same eval is
+rerun three times and gives meaningfully different scores, the eval is not yet
+measuring the system, it is measuring the run.
+
+**Design consequence.** The next arm is one dispatch with one learning phase,
+one store, one reference arm, one user simulator and one seed stream; only the
+recall facade varies between the as-is and the floored configuration. That is
+the paired design `ROADMAP` Read 7 already used when it distilled two variants
+inside one run and scored them against the same none arm on the same questions,
+where it removed a factor-of-two cross-run bias. Its acceptance bar is
+unchanged: predictions, refutations, cost weights and tie-break registered
+before dispatch, `V1` blocking, exact McNemar on the paired tasks, an MDE
+computed and reported, TDD with real fixtures and no mocks, coverage at least
+95 percent on every dimension, and both repositories pushed as Lambertyan.
+Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
+fifth of six named entries.

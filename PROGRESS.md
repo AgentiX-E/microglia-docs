@@ -10482,3 +10482,22 @@ the design `ROADMAP` Read 7 already proved removes the run-to-run confound.
 Defect 27's fail-fast provider probe remains a bounded P1 fix on a later head.
 Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
 fifth of six named entries. A measured, reverted arm moves no leaderboard row.
+
+
+### 172.1 — Statistical sources fix the design of the next pair
+
+After the R48 revert above and while `ci.yml` `42366953175` went green
+on head `455a4616`, five methodology sources were read and registered in
+`AUDIT` 34.36 and `TECH-DESIGN` 17.100. Common-random-numbers pairing gives
+`Var(A - B) = 2 * sigma^2 * (1 - rho)`; McNemar is the classical paired test
+the lane already uses; `Var(score) ~= sigma_between^2 / T + sigma_within^2 /
+(T * R)` shows that more runs cannot shrink the between-task term, which is
+why R48's MDE is 14.83pp and 216 tasks would be needed for a 5pp effect;
+tau-bench's own guide requires a fixed user simulator and reports pass^k as
+`E_task[prod_j success_j]`. Together they turn defect 29 from an observation
+into an arithmetic statement: two dispatches of one configuration are not a
+paired comparison. The next arm is therefore a within-run pair — one learning
+phase, one store, one reference, one seed stream, only the recall facade
+varied — with the acceptance bar of `TECH-DESIGN` 17.100. None of these is a
+new `Pass^4` entry and none moves a ranking: IBM `gpt-5.5` airline 82.0
+remains the SOTA, microglia fifth of six named entries.
