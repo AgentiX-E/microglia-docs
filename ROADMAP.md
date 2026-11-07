@@ -4664,7 +4664,7 @@ dispatch; the commit lands after it and is off by default.
 | P0 | `kernel/write-admission.ts`: `add` / `update` / `noop` against the top-10 neighbours, four refusals, `wouldChange` shared with the merge, 24 unit tests, 100/100/100/100 | done |
 | P0 | Distiller wiring after the exact-key merge and after generalisation; `suppressed` / `rephrased` in the report; 5 integration tests against a real store and a real replay | done |
 | P0 | `TAU_WRITE_ADMISSION` as a repository variable (the dispatch menu is at the platform limit of twenty-five), resolved and refused by test | done |
-| P0 | Full gate: 3182 tests / 151 files, 99.95 / 99.65 / 100 / 99.95, bench gates PASS, bundle ceiling moved to 46,000 with the measurement beside it | done |
+| P0 | Full gate: 3184 tests / 151 files, 99.95 / 99.65 / 100 / 99.95, bench gates PASS, bundle ceiling moved to 46,000 with the measurement beside it | done |
 | P1 | Read R49 back into `PAIRED / REFUSED_CROSS_RUN / NO_MEASUREMENT`; report the interval, the p-value and the delivered population | running (reference arm) |
 | P1 | U6b dispatch: `TAU_WRITE_ADMISSION=neighbours`, with the write census required by its readback | blocked on the R49 readback only because one lane at a time is the rule, not because the code is missing |
 | P2 | U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
@@ -4677,3 +4677,21 @@ left it: IBM `gpt-5.5` airline 82.0 is the published SOTA and microglia is fifth
 six named entries. What changed is that the store can now be measured for how much
 it refuses to write — which is the quantity every one of the four systems in
 COMPETITIVE L.23 acts on and this one did not.
+
+### R49 read, and the next registration is the instrument (2026-11-07)
+
+| Priority | Step | State |
+| --- | --- | --- |
+| P0 | R49 read back: within-run pair **PAIRED**, floor 0.01 → −4.00pp [−18, +8] p=0.774, 949 vs 1435 packs served; memory vs reference −4.00pp [−14, +6] p=0.688, R45 revert rule does not fire | done |
+| P0 | Write-side admission bench (U6b's mechanism): `add`/`update`/`noop`, census in the report and in the artefact, switch refused rather than defaulted, P9 in the verifier | done |
+| P1 | **R50: `l4-paired` re-registered** — block on harm, report `UNRESOLVED` when MDE > observed effect, threshold and wording fixed before dispatch | next |
+| P1 | Pack-thinness arm: 0.76 rules/question on a store of ten is the ceiling on everything else; the next arm raises the pack before it varies selection | registered with R50 |
+| P2 | U6b dispatch (`TAU_WRITE_ADMISSION=neighbours`), whose readback must report the write census | blocked on R50 |
+| P2 | U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
+| P2 | U1, U2, R46 admission arms | closed until a resolvable pair exists |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+Ranking unchanged: IBM `gpt-5.5` airline 82.0 is the published SOTA; microglia is
+fifth of six named entries. R49's retail cells (0.36 floored, 0.40 as-is, reference
+0.40) are not leaderboard rows and are not compared to one.

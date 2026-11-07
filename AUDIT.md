@@ -4240,3 +4240,115 @@ bundle gate failed at 45,309 raw against a 44,000 ceiling: the ceiling moved to
 46,000 in the script, with the measurement and the reason written beside the
 number, because a budget that is adjusted silently is a budget that only ever
 moves one way.
+
+### 34.45 A gate that cannot pass is not a gate, and it may not be fixed after the result
+
+R49 is the first dispatch in this lane's history that graded `l4-paired` on a real
+pair. R48 and everything before it had no reference arm, so the gate read "no
+reference arm" and passed — vacuously, which is worse than absent, because a
+vacuous pass is a green square a reader will count.
+
+With both arms present the gate returned:
+
+```
+[l4-pair] FAIL l4-paired: -4.00pp (p=0.6875, n=50)
+[l4-pair] protocol: minimum detectable 13.73pp
+[l4-pair] FAIL V5-resolution: minimum detectable 13.73pp
+```
+
+The pass condition is `delta >= 0 && p < 0.05`. The lane's own protocol gate
+reports that this split cannot resolve an effect smaller than 13.73pp — retail has
+115 tasks, the held-out half has 50, and the observed discordance puts anything
+below fourteen points inside the noise. So the gate demands a result the sample
+cannot deliver, at any effect size the mechanism under test could plausibly have.
+
+Three observations, in the order that matters:
+
+1. **The failure is informative and must be reported as such.** The delta is
+   −4.00pp with four tasks lost and two gained, at a store of ten rules serving
+   0.76 rules per question. That is a null result with a slight negative point
+   estimate, not a harm: the R45 revert rule asks for significance or a drop below
+   −5pp with a served pack, and neither holds. The mechanism stays.
+2. **The gate is the defect, and the defect is structural.** Two independent
+   statements came out of the same step — `V5-resolution` says the sample cannot
+   resolve 13.73pp, `l4-paired` fails for not resolving 4pp. A pair of gates that
+   contradict each other on every dispatch will be read as "the memory does not
+   work" regardless of what the memory does.
+3. **It is not changed now.** The numbers above are exactly what the gate was
+   written without, and editing a pass condition after seeing the result converts
+   a pre-registered experiment into a search over thresholds. `l4-paired`'s
+   replacement is registered as R50 with its threshold, its wording and its
+   treatment of `UNRESOLVED` fixed *before* the next dispatch: block on harm (the
+   revert rule it was always meant to mirror), report `UNRESOLVED` when the
+   minimum detectable difference exceeds the observed effect, and keep V5 as the
+   gate that says the sample cannot decide it.
+
+What this costs is a red workflow that is not a broken build. The code CI is green
+(`ci` on `a1939e9`'s tree); the `sota` run is red because a *finding* gate was not
+met, and the two are different signals that must not be merged into one word. The
+lane's own convention — a finding gate exits non-zero *after* writing the
+artefact — is what made the readback still possible: steps 15–17 ran, the pair
+artefact was written, and the numbers above exist because the failure was
+recorded rather than thrown away.
+
+One number worth keeping for the next registration: **0.76 rules per question**
+(V1, from 949 served of 1528 requests, store of 10). The mechanism's ceiling is
+set by that number. A pack that carries fewer than one rule per question cannot
+move a forty-point gap no matter how well it is selected, and every arm that varies
+selection while the pack stays this thin is measuring the same null.
+
+### 34.46 The retention curve was computed on the population that had already survived it
+
+R49's artefact carries two numbers that cannot both be right:
+
+```
+recall: { requests: 1528, served: 949, empty: 579 }
+coverage.floors: [ { minCoverage: 0,   retainedPacks: 949 },
+                   { minCoverage: 0.01, retainedPacks: 949 } ]
+pair.servedPacks: { asIs: 1435, floored: 949 }
+```
+
+The curve says floor `0.01` empties nothing. The pair says the same floor cost 486
+packs. Both are readings of one run, and the curve is the one that is wrong.
+
+The cause is an ordering, not an arithmetic error. In a paired dispatch the lane
+grades the *floored* facade, and the use observations are collected at that
+facade's recall boundary — after the floor has been applied. `coverageHistogram`
+then asks, of those observations, what floors 0, 0.01, 0.02 … would retain, and
+every floor at or below the applied one answers "everything", because the
+population it is being asked about already passed it. The R47 curve, taken from an
+as-is run, prices the same floor at 414 emptied packs out of 1483; R49's prices it
+at zero.
+
+This matters beyond the artefact being internally inconsistent. `decideFloor`
+(U3) chooses the next floor from a committed histogram, and the registration rule
+is that the curve is committed *before* the dispatch that uses it. A curve taken
+from a floored run says floors are free, so the decision it feeds would raise the
+floor rather than price it — and the artefact would look like an ordinary curve
+the whole way.
+
+The fix is one line of provenance and one of plumbing. `armRecordFromDriver` now
+builds the curve from `coverageObservations` when the driver supplies them, and
+the driver supplies the **as-is facade's** observations whenever a pair ran; the
+`use` census keeps describing the graded facade, because that is the population
+whose packs were graded. Absent, the curve falls back to the same observations it
+always used, so every artefact before this one is unchanged — including the
+committed R47 curve, which was taken from an ungated run and is therefore correct.
+
+What the numbers say about the lane, once the curve is read correctly: the store
+holds ten rules, all active, all in the recall scope, none without a domain; the
+graded facade served a pack on **949 of 1528 requests (62.1 %)**, averaging **0.76
+items** per request, with a median rule/query coverage of **4.7 %** and a maximum
+of 40 %. Thirty-eight per cent of the agent's decisions were made with an empty
+pack — which is the single most useful fact in this artefact for the memory
+hypothesis, because an intervention that is absent 38 % of the time has its
+measured effect diluted by exactly that share before anything else is considered.
+
+Two smaller readings from the same artefact, recorded so they are not rediscovered:
+
+- `use.injectedPairs` is 1164 over 949 served packs — 1.23 items per non-empty
+  pack — and `zeroCoveragePairs` is 0. The pack is not empty because it is
+  unrelated; it is empty because the store has nothing to say about the question.
+- The facade contrast lost 7 tasks and gained 5 of 50, and the arm-against-
+  reference comparison lost 4 and gained 2. Two different pairings, two different
+  discordant sets, one conclusion: no effect this split can see.

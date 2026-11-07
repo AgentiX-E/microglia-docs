@@ -2679,3 +2679,32 @@ numbers for themselves on setups they chose. Nothing here is registered from
 either vendor's margin. What transfers is the mechanism — decide before writing,
 keep the superseded fact, count the refusals — and mechanisms are what the arms
 test.
+
+### L.24 — R49's cells beside the published rows, and why they do not join the table (2026-11-07)
+
+| Entry | Scenario | Cell | Comparable? |
+| --- | --- | --- | --- |
+| IBM `gpt-5.5` | airline | **82.0** pass^4 | published SOTA; unverified here (PR #551, prompt changed) |
+| SapientAI | airline | 72.0 | reported |
+| IBM `gpt-4.1 sup3` | airline | 44.0 | reported |
+| stock `gpt-oss-120b` | airline | 34.0 | same harness, reference row |
+| **microglia** (floored, R49) | retail | **36.0** pass^4 | **no** — different scenario, own split, 10-rule store |
+| microglia (as-is, R49) | retail | 40.0 | **no** — same reason |
+| microglia reference (no memory, R49) | retail | 40.0 | **no** — same reason |
+
+The rows are here because the alternative is worse: a project that publishes its
+memory cells everywhere except beside the numbers it is chasing invites the
+reader to assume they were compared and lost. They were not compared. Retail and
+airline differ in tool count, task length and grading rubric, and the airline SOTA
+rows come from a prompt that this lane deliberately does not reproduce.
+
+What *is* comparable is the reference row inside the run: 40.0 without memory and
+36.0 with it, on the same 50 tasks and the same trials. That is the honest
+statement of where the memory mechanism sits today — **not above its own
+ablation**, at a difference the split cannot resolve (MDE 13.73pp). Which puts the
+project's position plainly: fifth of six named entries on the published airline
+table, and inside its own lane, level with no memory at all.
+
+The next step is therefore not a competing architecture. It is a pack that
+carries more than 0.76 rules per question, because a mechanism whose input is
+thinner than one rule cannot separate itself from a mechanism whose input is none.

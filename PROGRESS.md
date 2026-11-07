@@ -10853,10 +10853,10 @@ merges that crossed a task boundary, which is also the evidence a corroboration
 gate wants.
 
 Thirty-nine new tests, both new modules at 100 / 100 / 100 / 100. `pnpm check`
-is green: 3182 tests over 151 files, coverage 99.95 / 99.65 / 100 / 99.95,
+is green: 3184 tests over 151 files, coverage 99.95 / 99.65 / 100 / 99.95,
 `audit: ok`, the R49 verifier's fifteen-case self-test passing, bench blocking
 gates PASS, bundle size ok after a written-down ceiling move (44,000 → 46,000
-raw, measured 45,372), and 147 modules / 39,854 production lines in the
+raw, measured 45,372), and 147 modules / 39,867 production lines in the
 structural ledger.
 
 The verifier grew one prediction with it (P9), because a field that nothing
@@ -10885,3 +10885,117 @@ Order from here:
 4. If NO_MEASUREMENT, record what was missing and re-dispatch, never a zero.
 5. U1, U2, R46 stay closed until a valid paired reading exists; U4, U5, U6a stay
    registered and undispatched.
+
+### 172.10 — R49 measured: the floor costs nothing and buys nothing, and the lane's own gate cannot pass
+
+R49 ran to completion: memory arm 14:46 → 16:13 UTC, reference arm 16:13 → 16:52,
+one dispatch pinned at `3ea349af`, `prereg/R49-within-run-pair.md`, floor `0.01`,
+common seed 300. The memory arm learned from 32 tasks in 5 corrections — **10
+items created, 0 distiller failures**, 10 active and 10 servable in the recall
+domain, 0 answered by the rule fallback — and then evaluated the held-out 50
+tasks at 4 trials twice, once per facade, on that one store.
+
+**The registered question.** Floor `0.01` against as-is, within one run:
+
+| Facade | pass^4 | packs served |
+| --- | --- | --- |
+| as-is (`minCoverage` 0) | 0.40 | 1435 |
+| floored (`minCoverage` 0.01) | 0.36 | 949 |
+| delta | **−4.00pp**, CI [−18.00, +8.00], p = 0.7744, n = 50 | −486 (−33.9%) |
+
+The floor is therefore a **no-op on accuracy and a real reduction in what the
+pack carries**: it serves 486 fewer packs over the same 200 episodes. That is the
+first time this lane has measured a coverage floor's effect on the same store, in
+the same run, with common random numbers — the thing R48 could not do — and the
+answer is that at this threshold it changes delivery and not outcome.
+
+**The other question, which the same run also answers.** Memory against the
+memory-free reference, paired per task:
+
+```
+[l4-pair] paired n=50 delta=-4.00pp [-14.00, 6.00] p=0.6875 lost=4 gained=2
+[l4-pair] FAIL l4-paired: -4.00pp (p=0.6875, n=50)
+```
+
+Four tasks lost, two gained, on a store of ten rules serving 0.76 rules per
+question. The R45 revert rule does **not** fire — it asks for significantly
+negative or below −5pp with a served pack, and −4.00pp at p = 0.69 is neither — so
+the mechanism stays. What the run does not do is support a benefit.
+
+**And the reason it cannot, stated by the lane itself.**
+
+```
+[l4-pair] protocol: 13 gate(s) fired, 2 vacuous, 26 absent, minimum detectable 13.73pp
+[l4-pair] FAIL V5-resolution: minimum detectable 13.73pp
+```
+
+The minimum detectable difference on this split is **13.73pp**. The observed
+effect is 4.00pp. The experiment is running below its own resolution, and
+`V5-resolution` says so instead of letting the delta be read as a result.
+
+Which makes the last line of the pair step a finding about the *instrument*:
+
+```
+[l4-pair] FAIL l4-paired: -4.00pp (p=0.6875, n=50)
+```
+
+`l4-paired` passes only when `delta >= 0 && p < 0.05`. With an MDE of 13.73pp on
+retail's 115 tasks, a real effect of the size this mechanism could plausibly have
+cannot produce p < 0.05 at n = 50 — so the gate is **unreachable by construction**
+on this scenario, and this dispatch is the first one that graded it at all (R48
+had no reference arm, and the gate read "no reference arm" and passed vacuously).
+A gate that cannot pass is not a gate; it is a line that turns every future
+dispatch red for a reason that has nothing to do with the mechanism.
+
+It is **not** edited now. The numbers above are the ones the gate was written
+without, and changing a pass condition after seeing the result is the exact move
+the pre-registration discipline exists to prevent. It is registered instead, as
+R50: `l4-paired` blocks on *harm* (the R45 revert rule it was always meant to
+mirror), and reports `UNRESOLVED` when the minimum detectable difference exceeds
+the observed effect — with the threshold and the wording fixed before the next
+dispatch, and V5 kept as the gate that says the sample cannot resolve it.
+
+**What the artefact says about the pack itself**, which is the more useful finding:
+
+| Reading | Value |
+| --- | --- |
+| store | 10 items, 10 active, 10 servable in the recall scope, 0 without a domain, 0 distiller failures |
+| graded facade | 949 of 1528 requests served a pack — **38 % were empty** |
+| mean items per request | 0.76 (1.23 per non-empty pack) |
+| rule/query coverage | p50 4.7 %, p90 11.1 %, max 40 % |
+
+An intervention that is absent on 38 % of the agent's decisions has its measured
+effect diluted by that share before anything else is considered, and the store
+that produces it came from five corrections over thirty-two tasks. That is the
+answer to the standing hypothesis, in the only form this run can give it: the
+memory is not hurting because it is wrong; it is barely present.
+
+And one instrument defect, found by comparing two numbers in the same artefact:
+
+```
+coverage.floors: minCoverage 0   -> 949 packs retained
+                 minCoverage 0.01 -> 949 packs retained     (empties nothing)
+pair.servedPacks: asIs 1435, floored 949                    (empties 486)
+```
+
+The retention curve was computed on the floored facade, whose observations have
+already passed the floor — so every floor at or below the one under test reads as
+free. R47's committed curve, taken from an as-is run, prices the same floor at 414
+emptied packs of 1483. `decideFloor` chooses the next floor from that curve, so a
+curve of this shape would have told it "raising the floor costs nothing". Fixed by
+building the curve from the ungated facade's observations whenever a pair ran
+(`coverageObservations`), with the `use` census left on the graded facade; the
+committed R47 curve is unchanged and still correct.
+
+State of the project, unchanged in ranking and now measured in fact:
+
+| Question | Answer | Evidence |
+| --- | --- | --- |
+| does a 0.01 coverage floor change pass^4? | no measurable change; 34% fewer packs served | R49, [−18, +8], p = 0.77 |
+| does the pack beat no pack on retail? | unresolved: −4.00pp at an MDE of 13.73pp | R49, p = 0.69 |
+| is the store well-formed? | yes: 10 items, all active, all in scope, 0 domain-free, 0 distiller failures | V1 / V32 / V44 |
+| does the memory cost accuracy enough to revert? | no (R45 rule: not significant, not below −5pp) | `poc-l4-pair` |
+
+R50 is the next registration. Nothing else can be decided before it, because
+every remaining arm is a comparison whose smallest resolvable effect is larger
+than the effects the lane has ever measured.
