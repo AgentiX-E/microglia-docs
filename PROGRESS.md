@@ -10703,3 +10703,32 @@ The R49 environment contract was verified locally rather than assumed:
 with floors `0` and `0.01`, an empty pair variable resolves to disabled for
 push runs, a missing floor and an off-grid floor are both refused, and the
 verdict machinery returns PAIRED with `treatmentDelivered` on a realistic scope.
+
+### 172.7 — The readback becomes a tested artefact of the repository, not a script in a shell history
+
+R49's registration states eight predictions and seven refutations. Holding them
+in a reader's head is not a verification procedure, and the previous round's
+readback lived in a scratch directory: `eval/verifiers/r49_readback.py` now
+grades the pair artefact against all fifteen and is wired into `pnpm check` as
+`eval:verifiers`.
+
+It returns three verdicts. `GRADED` requires every prediction to hold and no
+refutation to fire. `NO_MEASUREMENT` is the registered pre-flight refusal.
+`ABANDONED` means a refutation fired, so there is no contribution to report --
+not even a null one. A delta is printed only for a `PAIRED` reading.
+
+The self-test is thirteen mutations of a real artefact written by the real lane
+with a stand-in driver: clean PAIRED, a blank `dispatchId`, a missing store
+fingerprint, a floored facade that served nothing, one that served more than
+as-is, a mismatched paired count, a contrast carrying a scope, a revert input, a
+missing gate on either side, a provider stop, an unregistered stop reason, and a
+missing artefact with both arms written.
+
+Three of those cases found bugs in the verifier rather than in the artefact, and
+they are recorded as AUDIT 34.42 because a verifier that cannot fail is not a
+verifier. The fixtures are stub numbers and a README says so in the directory:
+`pass4 = 1`, `delta = 0`, `p = 1`, and nothing there may be quoted as a result.
+
+`pnpm check` stays green: 3114 tests over 147 files, coverage 99.95 / 99.65 /
+100 / 99.95, `audit: ok`, verifier self-test passed, CI `42384056004` at
+`42241cf3` with 44 steps.

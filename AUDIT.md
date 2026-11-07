@@ -4105,3 +4105,35 @@ recorded lesson is narrower and worth keeping: a green `pnpm typecheck` says the
 libraries typecheck, not that the lanes do, and the two are separate commands on
 purpose. The mistake was caught by the second command three minutes later, which
 is the system working; it would not have been caught if only the first had run.
+
+### 34.42 Three bugs in the verifier, found by the verifier
+
+The R49 readback tool is a checker, so its own failure mode matters more than
+most: a checker that cannot fail silently certifies whatever it is handed. Its
+self-test is thirteen mutations of a real artefact, and three of them failed on
+first run -- because the checker was wrong, not the artefact.
+
+1. **An always-true outage test.** The refutation "NO_MEASUREMENT was reported
+   for a reason other than the registered pre-flight refusal" was written as
+   `stopped == 1 and ("pre-flight" in reason or "provider" in reason or stopped
+   == 1)`. The trailing disjunct makes the whole condition true whenever the
+   marker is present, so any unregistered stop reason would have been accepted
+   as a registered one. The disjunct is gone: the reason must name the provider
+   or the pre-flight.
+2. **A substring match that read the denial as the defect.** The check "the
+   facade contrast was fed to the R45 revert rule" scanned the serialised
+   artefact for `revert`. The artefact's own notes state that *no revert rule is
+   consulted here*, so the clean fixture tripped the check it was supposed to
+   pass. The test now looks for an actual `revert`-named key on the document,
+   its verdict or its contrast.
+3. **Predictions that had no meaning outside PAIRED.** Two predictions compare
+   the two facades' per-task rows, which a run that never measured does not
+   have. They were being reported as failures, which reads as an instrument
+   fault rather than an inapplicable claim. They now render as `n/a` for a
+   non-measuring terminal state, and the verdict is decided by the terminal
+   state, not by those two.
+
+The general lesson is the one this project keeps re-learning in a different
+place each time: the thing that decides whether a result is real is itself a
+subject of measurement, and it must be shown to fail on purpose before it is
+trusted on a real run.
