@@ -3991,3 +3991,40 @@ coupling ledger records 142 modules / 38444 production lines. No source in the
 pre-registration is changed. No benchmark is dispatched and no `Pass^4` number
 is claimed. IBM `gpt-5.5` airline 82.0 remains the SOTA; microglia is fifth of
 six named entries.
+
+
+### 34.38 Defect 27 closes, and the two earlier defects become unrepresentable
+
+R48's first dispatch (`42350304597`) spent an hour on a DeepSeek endpoint that
+answered 500 on every call. Both arms failed, the evidence zip carried zero arm
+entries, and the readback had to declare NO_MEASUREMENT after the fact. Defect
+27 was the absence of a decision before the run was paid for.
+
+`provider-probe.ts` now classifies a bounded series of pre-flight completions
+into three states. Only READY may start a paid measurement. A refusal throws
+`ProviderNoMeasurementError`, which `l4.ts` catches by name across the dynamic
+import boundary and records as an artefact with `status_no_measurement: 1`,
+`status_not_run: 0` and `claim: none`. That distinction matters: a green skip
+is exactly the quiet failure the first R48 dispatch produced, and an empty
+`per_task` array would be a zero-task measurement dressed up as a measurement
+that happened. The lane-level test asserts both the absence of `per_task` and
+the absence of any paired artefact on that path.
+
+The probe is opt-in and registered by R49 rather than on by default. Turning it
+on globally would change the call sequence of every earlier dispatch, and an
+infrastructure failure would then be confounded with a change in the harness.
+This is a deliberate trade-off, recorded here rather than hidden in a default.
+
+Defects 28 and 29 are now unrepresentable at the type level as well as the
+runtime level. `FacadeContrast` carries a `facade-contrast` tag and has no
+`scope` field readable by `revertRule`; the R45 revert rule consumes only the
+memory-versus-reference `l4-paired` gate. `RunScope` pins eight shared fields,
+and `scopeDifference` names the first field that disagrees. A pair whose store
+fingerprint differs is refused before any task row is compared, even when its
+cross-run delta looks catastrophic. The mirror test asserts exactly that.
+
+Verification of this section: `pnpm check` exit 0, 3104 tests, coverage
+99.94 / 99.63 / 100 / 99.94 across statements, branches, functions and lines.
+Three lane-level tests exercise the real CLI, and 62 pure tests exercise every
+terminal state, every malformed-instrument path and every registered grid
+rung. The structural coupling ledger moved from 142 to 144 modules.

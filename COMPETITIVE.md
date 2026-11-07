@@ -2438,3 +2438,78 @@ prompt, PR #551) remains the SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0;
 stock `gpt-oss-120b` 34.0; microglia **fifth of six named entries**. No
 competitor discussion in this section produces a benchmark result and no row
 moves.
+
+
+### L.20 — Causal memory selection, cognitive traps, and what the source code actually says (2026-11-07)
+
+The standing hypothesis is that what is remembered and how it is used cause
+the negative effect. Four independent sources read this iteration support the
+"how it is used" half directly, and one of them ships source code we read.
+
+**CMI / Causal-LoCoMo** (Saksham Sahai Srivastava, arXiv 2605.17641, May 2026;
+`github.com/Saksham4796/causal-memory-intervention`, 258 files, master). Its
+`src/agents/cmi_agent.py` does not ask whether a memory is similar to the
+query. For each retrieved candidate it runs three controlled interventions and
+computes `utility = s_with - s_no` and `stability = s_with - s_perturbed`,
+where `s_no` is the no-memory answer, `s_with` the single-memory answer and
+`s_perturbed` the answer under a perturbed memory. A memory is selected only
+when both clear their thresholds. `src/memory/perturb_memory.py` defines five
+perturbation types — negation, scope shift, temporal shift, entity swap,
+poison injection — and `src/memory/retrievers.py` supplies random, recency,
+keyword, embedding and hybrid retrievers as baselines. On 87 filtered examples
+the paper reports task score 0.846, useful-memory F1 0.875, harmful-memory
+rejection 0.990 and zero poisoned-memory adoption, against vector, graph,
+reflection, summary, full-history and no-memory baselines.
+
+This is methodologically close to R49 and worth stating precisely. CMI's
+`no_memory` condition is WITHIN one example, exactly as R49's two facades are
+WITHIN one dispatch. CMI grades a single memory's marginal utility; R49 grades
+one floor's net contribution over a paired task set. CMI scores with a task
+scorer or an optional oracle variant; R49 uses the benchmark's gold-verified
+reward, so no LLM judge enters the measurement. CMI's referee critique notes
+that its central claim rests on a fixed bank of synthetic harmful memories and
+87 examples, which is a resolution limit, not a refutation. We therefore
+transfer the intervention structure, not the 0.990 number.
+
+**MemTrapBench** (first version 2026-08-20) reports 1,050 multi-step dialogues
+in which five ways of presenting past interactions lowered the average score
+against the no-memory response across two model families. Its four categories
+— cognitive bias 350, task boundary 350, safety 200, avoidance after negative
+feedback 150 — make the sharpest published statement of the hypothesis: a
+retrieved memory can be TRUE and semantically close yet harmful because it is
+applied beyond its original boundary. That is a use-side failure, not a
+retrieval failure, and it is exactly what `minCoverage`, scope attestation and
+the served-pack census are designed to expose.
+
+**MemoryAgentBench** (Hu, Wang, McAuley, July 2025) reports the same shape
+from the consolidation side: on single-hop FactConsolidation, plain GPT-4o
+with long context scored 60.0 against MemGPT 28.0, Mem0 18.0 and MIRIX 14.0;
+on multi-hop every system scored 7 percent or below. **HaluMem** (Chen et al.,
+November 2025) reports 15 to 30 percent hallucination and 17 to 35 percent
+omission across extraction, update and answering, and a fall in Mem0
+extraction recall from 42.91 to 3.23 percent as history grew from roughly
+1,500 to 2,600 turns. **LongMemEval** (ICLR 2025) reports a roughly 30 percent
+accuracy drop over sustained interactions and treats abstention as a
+capability. An independent April 2026 audit of LoCoMo found 6.4 percent of its
+answer key wrong and its LLM judge accepting 63 percent of deliberately wrong
+answers — a direct corroboration of this project's rule that a leaderboard row
+is not an engineering blueprint.
+
+None of these sources changes the ranking, and none is imported as a
+threshold. Together they strengthen the decision to measure the use side with
+paired, gold-verified outcomes rather than retrieving more or trusting a
+self-reported score. The registered cross-model control of L.8 stays
+registered and not dispatched.
+
+Current SOTA table, unchanged this iteration:
+
+| Rank | Entry | Pass^4 | Status |
+| --- | --- | --- | --- |
+| 1 | IBM `gpt-5.5` airline | 82.0 | unverified, PR #551, modified prompt |
+| 2 | SapientAI | 72.0 | reported |
+| 3 | IBM `gpt-4.1 sup3` | 44.0 | reported |
+| 4 | stock `gpt-oss-120b` | 34.0 | same harness reference |
+| 5 | microglia (six named entries) | — | no new Pass^4 claimed; leading column: treatment delivered |
+| 6 | — | — | — |
+
+SOTA2 PG-CHECKLIST 78 is registered but not merged into this table.

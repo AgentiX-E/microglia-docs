@@ -3634,3 +3634,40 @@ Nothing here moves a row. IBM `gpt-5.5` airline 82.0 is still the SOTA, and
 microglia is still fifth of six named entries. The claim remains about method:
 this lane can say whether a treatment arrived, how much of what arrived was
 relevant, and whether the comparison it is about to quote is a pair at all.
+
+
+#### 3.6.53 Why less memory can help, and why we measure one change at a time
+
+A memory system has two jobs that are easy to confuse: keeping something, and
+deciding whether to put it in front of the agent for THIS question. The second
+job is where the negative effect lives. A stored rule can be completely true,
+written down correctly and semantically close to the question — and still be
+wrong to use, because it was learned under a different task, a different
+policy version or a different scope.
+
+Independent work now makes that concrete. MemTrapBench reports 1,050 dialogues
+in which presenting past interactions lowered the average score against a
+no-memory response. MemoryAgentBench reports that on fact-consolidation tasks
+a plain long-context model beat three purpose-built memory systems by a wide
+margin. Causal Memory Intervention takes a different route: instead of
+retrieving by similarity, it asks whether adding one memory actually improves
+the answer, and whether that improvement survives a small perturbation of the
+memory. Its published source code shows the check is a comparison of three
+answers to the SAME question — with no memory, with the memory, with a changed
+memory.
+
+microglia's R49 iteration applies the same discipline at the level of a whole
+configuration. One dispatch learns once, builds one store, and then answers
+the same held-out tasks twice: once with every retrieved item kept, once with
+a coverage floor that withholds weakly supported items. Because both halves
+share the learning, the store, the split, the seed and the model, any
+difference belongs to the one number that changed. A separate memory-free arm
+is still measured for the existing accuracy gate; the two comparisons are
+never mixed.
+
+The result is reported in one of three states: a paired contribution with its
+interval and p-value, a refusal when the two halves turn out not to be one
+run, or no measurement when the instrument failed. The last two are not
+negative results and not zeros. Saying so explicitly is part of the product:
+a system that cannot tell "we measured nothing" from "we measured no effect"
+will confidently optimise the wrong thing.

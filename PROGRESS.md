@@ -10564,3 +10564,54 @@ facade loop, the second artefact writer, the `sota.yml` step, a fresh R49
 pre-registration and the dispatch itself are the remaining P1 items. No new
 `Pass^4` number is claimed here. Ranking is unchanged: IBM `gpt-5.5` airline
 82.0 remains the SOTA, microglia fifth of six named entries.
+
+
+### 172.3 — R49 ships the paired facade end to end, and closes defect 27 (2026-11-07)
+
+The within-run pair stopped being an invariant plus a promise and became a
+measured lane. One `sota.yml` dispatch now runs one learning phase, one
+distilled store and two recall facades inside a single driver process; only
+`buildPack.minCoverage` differs between them. The registration is
+`prereg/R49-within-run-pair.md`, opened before any dispatch, with
+`recallFloor: 0.01` and `facadePair: as-is-floored`, eight predictions and
+seven refutations.
+
+| Deliverable | File | What it decides |
+| --- | --- | --- |
+| Paired-facade contract | `packages/eval/src/facade-pair.ts` | plan resolution, scope attestation, per-task mapping, verdict, artefact and readback, all pure |
+| Pre-flight provider probe | `packages/eval/src/provider-probe.ts` | READY / DEGRADED / NO_MEASUREMENT with an explicit marker |
+| Driver wiring | `packages/eval/src/bin/tau2-driver.ts` | one store, two `evaluateFacade` calls, one explicit shared seed, additive `pairedFacades()` |
+| Second artefact | `packages/eval/src/bin/l4.ts` | `poc-l4-facade-pair.json`, the `l4-facade-pair` gate, and a no-measurement branch |
+| Registration truth | `packages/eval/src/prereg.ts`, `bin/prereg-pair.ts` | `facadePair` header; a pair cannot exist without a positive registered floor |
+| Readback CLI | `packages/eval/src/bin/facade-pair-readback.ts` | three terminal states, no defaulting, no delta in the two non-measurements |
+| Workflow | `.github/workflows/sota.yml` | pair/floor/probe/pre-registration env, 240-minute memory arm, readback step |
+
+Acceptance, all measured on this iteration:
+
+| Gate | Result |
+| --- | --- |
+| `pnpm check` | exit 0, 3104 tests over 147 files |
+| Coverage | statements 99.94, branches 99.63, functions 100, lines 99.94 |
+| Repository audit | `audit: ok`; bundle size ok; resolution and coupling gates pass |
+| New pure-function tests | 62 in `facade-pair` and `provider-probe`, plus 48 for the artefact and readback layer |
+| Lane-level end-to-end tests | 3 in `l4-facade-pair.test.ts`, running the real CLI with a driver stand-in at the process boundary |
+| Pre-registration | `eval:prereg` 37/37 valid; `prereg-floor` emits `0.01`; `prereg-pair` emits `true` |
+| Structural ledger | 142 to 144 scanned modules, 38444 to 39176 production lines |
+
+Five real defects were found and fixed during the build, all by test or
+typecheck rather than by inspection: an over-narrow test regex, a missing
+re-export of `AS_IS_FLOOR`, two `noUncheckedIndexedAccess` failures in the
+readback, a wrong type name in the barrel export, and a stand-in driver that
+imported `dist` and triggered an unrelated workspace export error. In each
+case the test or the implementation was corrected, never relaxed.
+
+The SOTA table does not move. IBM `gpt-5.5` airline 82.0 remains the top row
+(unverified, PR #551, modified prompt), then SapientAI 72.0, IBM `gpt-4.1
+sup3` 44.0 and stock `gpt-oss-120b` 34.0. microglia is fifth of six named
+entries; its only leading column is whether the treatment was delivered. No
+new `Pass^4` is claimed and no leaderboard row is added.
+
+Remaining, in order: dispatch R49 through `sota.yml` and read back its three
+terminal states; then U1, U2 and R46 stay closed until a valid PAIRED reading
+exists; then the `sota.ts` split, the W8 dose curve and vitest 4. The
+cortex release remains excluded by the standing instruction.

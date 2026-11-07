@@ -4585,3 +4585,22 @@ explicit and nothing in it edits any pre-registration.
 
 No new `Pass^4` number is claimed. Ranking is unchanged: IBM `gpt-5.5` airline
 82.0 remains the SOTA, microglia fifth of six named entries.
+
+
+### R49 wiring complete, dispatch next (2026-11-07)
+
+| Priority | Step | State |
+| --- | --- | --- |
+| P0 | Paired-facade contract, pre-flight probe, typed invariant, TDD, full gate, six-document sync, two-repository push, CI green | done |
+| P1 | Dispatch R49 through `sota.yml` and read back `PAIRED / REFUSED_CROSS_RUN / NO_MEASUREMENT` | next |
+| P1 | Defect 27 provider probe, now implemented and registered as opt-in | done in code, exercised by the dispatch |
+| P2 | U1 / U2 / R46 arms | closed until a valid PAIRED reading exists |
+| P2 | Isolated cross-model control registered in COMPETITIVE L.8 | registered, not dispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+The gate for this iteration: 3104 tests over 147 files, coverage 99.94
+statements / 99.63 branches / 100 functions / 99.94 lines, `audit: ok`,
+bundle size ok, 37 of 37 pre-registrations valid, and three end-to-end lane
+tests. The structural ledger records 144 modules. No `Pass^4` number is
+claimed and no SOTA row moves.

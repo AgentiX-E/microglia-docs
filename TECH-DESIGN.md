@@ -7218,3 +7218,51 @@ files, coverage 99.97 / 99.67 / 100 / 99.97, `audit: ok`, `bundle:size ok`.
 Structural coupling ledger: 142 modules, 38444 production lines. Ranking
 unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of six
 named entries.
+
+
+### 17.102 R49 implementation: ten modules, four layers, one store
+
+The architecture decision of 17.101 was "paired facade in one driver run, not a
+third driver lane". `tau2-driver.ts` before R49 was a single `run()` that went
+from listing to learning to distillation to one facade to one evaluation to one
+artefact. A third lane would necessarily learn again, reproducing defect 29 by
+construction. R49 keeps one `run()` and extracts `evaluateFacade(floor, out)`
+inside it.
+
+Ten deliverables, in dependency order:
+
+1. `packages/eval/src/within-run-pair.ts` — the runtime invariant from the previous iteration. `RunScope`, `scopeDifference`, and the three-terminal `withinRunPair`.
+2. `packages/eval/src/l4-revert.ts` — the R45 revert rule, deliberately separated; it grades only the `l4-paired` population.
+3. `packages/eval/src/tau2-recall-floor.ts` — the one floor knob, `AS_IS_FLOOR`, registered cost weights and grid validation.
+4. `packages/eval/src/facade-pair.ts` — the new pure orchestration contract: `resolveFacadePairPlan`, `facadeArmTasks`, `storeFingerprintOf`, `facadeScope`, `facadePairVerdict`, `treatmentDelivered`, `pairedFacadeArtifact`, `readFacadePairArtifact` and the summary/state helpers.
+5. `packages/eval/src/provider-probe.ts` — the new pure pre-flight rule: `classifyProviderProbe`, `isProviderOutage`, `probeGate`, `noMeasurementMarker`, `ProviderNoMeasurementError`.
+6. `packages/eval/src/bin/tau2-driver.ts` — the integration layer. One `host`, one `knowledge` list, one `sharedScope` attested before either facade recalls, two `evaluateFacade` calls with an explicit shared `--seed 300`, and an additive `pairedFacades()` export.
+7. `packages/eval/src/bin/l4.ts` — writes `poc-l4.json` as before (the floored facade against the memory-free reference) plus `poc-l4-facade-pair.json`, adds the `l4-facade-pair` gate, and catches the no-measurement error.
+8. `packages/eval/src/prereg.ts` and `bin/prereg-pair.ts` — the registration is the only source of truth for both the pair switch and its floor. `readPrereg` refuses `as-is-floored` without a positive `recallFloor`.
+9. `bin/prereg-floor.ts` and `bin/facade-pair-readback.ts` — the workflow's two readbacks, one for the registered floor and one for the three terminal states.
+10. `.github/workflows/sota.yml` — one job, one 240-minute memory arm carrying both facades, one unchanged reference arm, one unchanged `l4-pair` step, and one new readback step.
+
+Dependency layering is strict and one-directional: the two pure modules
+(4, 5) depend only on the primitives (1, 3) and on `l4.ts`'s `compareArms`;
+the driver (6) depends on the pure layer through the package barrel; the CLI
+writers (7, 9) depend on the package, not on each other; the workflow (10)
+depends on the CLIs through the package scripts. No module reads accuracy,
+`l4-paired` or an offline proxy to choose a floor.
+
+Two design choices deserve their reasons. The registered floored facade is the
+one `l4-pair` grades, so the memory-versus-reference gate and the R45 revert
+rule remain exactly as R48 had them; the as-is facade exists only for the pair.
+And the store fingerprint is an FNV-1a digest over sorted UTF-8 statements,
+not a cryptographic commitment: it needs to be stable across Node and browser
+bundles, needs no `node:crypto`, and is compared only inside one process that
+owns both arms.
+
+Common random numbers are now an attested property. `run_split.py --seed`
+defaults to 300; in paired mode `driverArgs` receives that value explicitly,
+and `RunScope.seed` records it. `Var(A - B) = 2 * sigma^2 * (1 - rho)` is why
+two dispatches of one configuration are never a paired comparison.
+
+Acceptance: 3104 tests over 147 files, coverage 99.94 / 99.63 / 100 / 99.94,
+`audit: ok`, `bundle: size ok`, all 37 pre-registrations valid, and three
+lane-level tests that run the real CLI against a driver stand-in. The
+structural ledger records 144 modules and 39176 production lines.
