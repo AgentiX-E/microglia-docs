@@ -7111,3 +7111,110 @@ computed and reported, TDD with real fixtures and no mocks, coverage at least
 95 percent on every dimension, and both repositories pushed as Lambertyan.
 Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
 fifth of six named entries.
+
+
+### 17.101 The within-run pair: the architecture decision and the invariant that guards it
+
+**Context.** R48 measured U3 and fired the R45 revert rule on the within-run
+`l4-paired` gate (-6.00pp, 965 served packs). P8 failed because the two memory
+arms came from two dispatches: 8 versus 12 distilled items, and a memory-free
+reference that moved from 0.30 to 0.44. 17.100 and `AUDIT` 34.36 established
+the arithmetic (`Var(A - B) = 2 * sigma^2 * (1 - rho)`); two dispatches of one
+configuration are not a paired comparison. This section fixes the architecture
+and records the invariant already built. It changes no source file beyond the
+three new files listed below and the additive export.
+
+**Decision: a paired facade in ONE driver run, not a third driver lane.**
+
+| option | what it does | why it was chosen or rejected |
+| --- | --- | --- |
+| third driver lane | a second `pnpm eval:l4` step with its own module | **rejected**: `tau2-driver.ts` `run()` performs listing, learning, distillation, store construction, facade and eval as one unit. A second lane re-learns and re-distils, so the store differs by construction. That is defect 29 with extra steps. |
+| store snapshot reuse | learn once, serialise the store, restore it in a second process | **rejected**: adds a serialisation-fidelity risk and a new untested boundary; it also makes the seed stream and provider state differ between the two eval phases. |
+| paired facade in one `run()` | one learning phase, one store, two facade variants evaluated over the same held-out tasks and seed stream | **chosen**: the only arrangement where "one learning phase, one store, one split, one seed stream" is true by construction rather than by assertion. |
+
+**Code evidence for the decision.** `bin/tau2-driver.ts` lines 330-597 are one
+`run()`: `listTasks`, `heldOutPlan`, the learn `phase`, `learnableCorrections`,
+`EmbeddedMemory.open`, `host.distill`, `storeCensus`, `startRecall` with
+`host.recall({ minCoverage: MIN_COVERAGE })`, then the eval `phase` and the
+`observed` record. `bin/l4.ts` `measureFromDriver` calls `loaded.run()` once,
+then reads additive `instrument()` / `trials()` exports, and writes one
+artefact through `writeResult`. `bin/l4-pair.ts` joins two artefacts by
+`L4_FIRST` / `L4_SECOND` and grades `l4-paired` and `l4-same-split`.
+`bin/lib.ts` `writeJson` resolves its directory from `POC_RESULT_DIR`, so a
+second artefact needs an explicit, additive directory parameter. The existing
+additive-export pattern (`instrument`, `trials`) is the precedent for exposing
+the second facade without changing `run()`'s signature.
+
+**Sub-package layout and dependency layering (ten items).**
+
+1. `packages/eval/src/within-run-pair.ts` — pure invariant, no I/O, no clock,
+   no filesystem. Depends only on `./l4.js` (`compareArms`, `ArmTask`,
+   `ArmComparison`), `./tau2-recall-floor.js` (`AS_IS_FLOOR`) and
+   `./tau2-use-census.js` (`COVERAGE_FLOORS`). **DONE.**
+2. `packages/eval/src/__tests__/within-run-pair.test.ts` — 29 tests over the
+   committed fixture, additive to the 143-file suite. **DONE.**
+3. `eval/fixtures/tau2-facade-scopes.json` — real R47/R48 scopes plus a
+   labelled structural identity control. **DONE.**
+4. `packages/eval/src/index.ts` — additive re-export of the invariant; the
+   pre-existing `PairVerdict` from `pairs.ts` is untouched. **DONE.**
+5. `packages/eval/src/bin/tau2-driver.ts` — extract the eval segment
+   (`startRecall` through `observed`) into `evaluate(floor)`, call it twice on
+   the single store and single `test` split, expose `pairedFacades()` as an
+   additive export, and attest one `storeFingerprint` for both. **P1, pending.**
+6. `packages/eval/src/bin/l4.ts` — read the additive export; write the second
+   artefact through an additive `writeJson(value, dir)` overload so the first
+   artefact's path and gates are unchanged. **P1, pending.**
+7. `packages/eval/src/bin/l4-pair.ts` — unchanged; its `L4_FIRST`/`L4_SECOND`
+   inputs already select the two facades. **no change intended.**
+8. `.github/workflows/sota.yml` — keep one L4 job; replace the single memory
+   step with the paired step, point `L4_FIRST`/`L4_SECOND` at the two facade
+   directories, and keep the reference arm as the within-run gate. The 25-input
+   dispatch cap means the floor pair continues to come from the
+   pre-registration, never the menu. **P1, pending.**
+9. `prereg/R49-within-run-pair.md` — register the floor, the single-store
+   attestation, predictions, refutations, cost weights and tie-break *before*
+   dispatch; R5 forbids editing it after readback. **P1, pending.**
+10. `packages/eval/src/__tests__/` — a real-fixture test for the driver's
+    two-facade wiring and one for the second artefact writer, TDD before the
+    implementation, no mocks, at least 95 percent on every dimension.
+    **P1, pending.**
+
+**Dependency direction.** `within-run-pair.ts` sits below the driver and
+beside `l4-revert.ts`: both are pure, both are imported by the bin layer, and
+neither imports a bin, a workflow, a filesystem helper or a provider. The
+driver depends on the invariant only to *attest* its scope, never to choose a
+floor. The gate layer (`tau2-gates.ts`, `l4-pair.ts`) is not modified, so the
+protocol's `tau2GateAudit` keeps grading the same evidence shape.
+
+**Acceptance bar for the pair (17.100, restated).** One dispatch and one
+`RunScope`; `recall.served > 0` on both facades; `l4-same-split` passes with
+zero tasks on either side alone; the contribution is reported with its MDE and
+power; the R45 revert rule continues to grade only the memory-vs-reference
+`l4-paired` gate; a `REFUSED_CROSS_RUN` verdict is a `NO_MEASUREMENT`, not a
+finding; no accuracy number is claimed in either direction and no leaderboard
+row moves.
+
+**A separate decision, recorded in `COMPETITIVE` L.19.** The
+`cross-model-guideline-control` arm from L.8 is not opened now. It would add a
+second learning phase and a second store beside this pair. Its L.8 precondition
+(`served > 0`) is satisfied, but the project's own order puts a valid paired
+readout first.
+
+| priority | step | blocked by | status |
+| --- | --- | --- | --- |
+| P0 | type the within-run invariant, TDD it on real committed scopes, keep `pnpm check` green, sync six documents, push both repositories | — | **done this iteration** |
+| P1 | extract `evaluate(floor)` in the driver and expose `pairedFacades()`; TDD on a real fixture first | P0 | pending |
+| P1 | additive second-artefact writer in `bin/l4.ts`; TDD first | driver wiring | pending |
+| P1 | `sota.yml` paired step, `L4_FIRST`/`L4_SECOND`, reference arm unchanged | both above | pending |
+| P1 | register `prereg/R49-within-run-pair.md` before dispatch | design frozen | pending |
+| P1 | dispatch through `sota.yml`, read back with the three-terminal verifier, apply the R45 revert rule only to the within-run gate | registration | pending |
+| P1 | defect 27's fail-fast provider health probe with an explicit no-measurement marker | independent | pending |
+| P2 | U1, U2 and R46's admission-rule arms | a valid paired readout | **CLOSED** until then |
+| P3 | `sota.ts` split, `eval-sql` move, W8 dose curve, vitest 4 migration | independent | pending |
+| — | cortex release (W1) excluded by the standing instruction | — | excluded |
+
+**Verification of what is done.** `pnpm check` exit 0 at 3023 tests / 144
+files, coverage 99.97 / 99.67 / 100 / 99.97, `audit: ok`, `bundle:size ok`.
+Structural coupling ledger: 142 modules, 38444 production lines. Ranking
+unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of six
+named entries.

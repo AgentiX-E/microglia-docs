@@ -2350,3 +2350,91 @@ named entries**, leading only whether the treatment was delivered. SOTA2's
 PG-CHECKLIST `78` stays registered but unmerged because it uses a different
 task pool and pass definition. A measured, reverted arm, two corrected
 instruments and a green CI run move no leaderboard row.
+
+
+### L.19 — Why the leader's implementation is not copied, and what is copied instead (2026-11-07)
+
+**The question.** A reader asked why, once the leading competitor is known, the
+project does not reproduce its code, then learn from the other competitors and
+overtake it. The short answer is that the project already does the second half,
+and the first half is not an object that can be reproduced. L.8 recorded the
+argument in three layers on 2026-11-06; this section records the decision taken
+after the R48 revert.
+
+**Decision.** The *minimal attributable reproduction* registered at the end of
+L.8 (one `sota.yml` arm, one agent, one prompt, one split, one model, only the
+guideline set varied, declared a cross-model control and never a SOTA claim)
+stays **registered and not dispatched**. The next dispatch is the within-run
+pair. Opening the control arm now would spend a second learning phase and a
+second store beside the pair we are trying to measure, which is precisely the
+confound `AUDIT` 34.35 calls defect 29. The control remains available once a
+valid paired readout exists.
+
+| layer | object | status |
+| --- | --- | --- |
+| mechanism | `support`, `min_support`, the `sup3` reliable core, consolidation preserving support and provenance, one shared `_support` decision point | read at source and transferred (L.6, L.8) |
+| number | airline `82.0` Pass^4 | not a replicable object; six reasons below |
+| acceptance rule | prereg, paired per-episode ledger, `V1-pack-not-empty`, `sota.yml`, `ci.yml` green, both repositories pushed as Lambertyan | forbids treating a leaderboard row as a target |
+
+**Why 82.0 is not a build target** (L.8, unchanged by R48): (1) two unverified
+pull requests, #542 and #551, with no independent reproduction; (2) disclosed
+modified prompts, so the treatment is learned rules *plus* prompt engineering
+with no separating ablation; (3) `gpt-5.5` as the agent against this lane's
+stock `llm_agent` on `deepseek-chat` at 40-46, so the gap is dominated by model
+capability; (4) retail guidelines learned from a train split the base split
+includes, while the airline submission has no train split; (5) 20 held-out
+airline tasks, where one task is five points of Pass^4, against this lane's
+measured MDE of 19.41pp at n=50; (6) two different quantities, 70.0 held-out
+and 82.0 full base, reported as one headline.
+
+**What has already been transferred from competitors** (mechanisms, not
+thresholds or vendored code):
+
+1. ALTK-Evolve's support-as-distinct-source-tasks and its `sup3` reliable core;
+   R46 is registered to ablate the *rule*, not to import the threshold.
+2. AECG's `scope collapse` (up to 16.89pp lost without scope preservation) and
+   `memory pollution`, which motivate U1 and U2.
+3. Tether's read-time withdrawal of dependent verdicts, which motivates the
+   provenance condition on a served pack.
+4. MemPABench's finding that Mem0, MemOS and a plain RAG baseline do not beat
+   No Memory, the field-level statement of this project's thesis.
+5. AMV-Guard's action-relative re-verification, which is why the use side and
+   not the store is the treatment.
+6. MemAdapter's calibration of a correct memory's influence to the current
+   context.
+7. MemCalib's separate over-use `O` and under-use `U` with
+   `SCS = mean(rho^(O+U))`, mapped onto `zeroCoveragePairs` and `emptiedPacks`;
+   its model-dependent skew is why U3's cost weights have no default.
+8. The Memory Funnel's split between confidence (independent corroboration,
+   capped at 0.95) and importance (usage frequency), which gives R46's
+   `distinct-task-support` and `min-support-only` comparators their meaning.
+9. Self-RAG, CRAG, TARG and Know Before You Fetch on abstention and retrieval
+   necessity, registered as ancestors of the asymmetric abstention cost.
+10. `yuplin2333/agent_memory_manage`: deletion driven by the *observed
+    consequence of using* a memory (`deletion_retrieval_n_times` plus mean
+    downstream L2 error), the feedback loop this lane does not yet have.
+11. `xiaoqi-7/memory-rollback`: reachability separated from
+    `support_checker.py` with an explicit exclusion set of evidentiary edges.
+12. `agiresearch/A-mem` and `Quark-Medical/memcalib` (a `verl` fork) as first-
+    party source reads on evolution thresholds and calibration.
+
+**Why copying a numeric threshold was already refuted.** `AUDIT` 34.22 and
+`TECH-DESIGN` 17.88 measured that a copied `sup3 >= 3` floor selects **zero
+groups** on this lane's 32-task retail corpus under strict normalisation. A
+number that selects nothing is not a starting point for an overtake. Likewise
+AECG's advertised code at `github.com/fenhg297/AECG` returned HTTP 404 on
+2026-11-06; the gap is recorded rather than filled with an invented
+implementation.
+
+**What the SOTA holder's own report contributes.** Its airline table is the
+published negative effect this project exists to explain: 101 lossless rules
+score 40.0 Pass^4 while 14 `sup3` rules score 45.0, a -5pp cost for more
+memory, with input-token cost up 32 percent. That is a mechanism result, not a
+headline, and it is the datum worth reproducing. Reproducing 82.0 would move
+model, prompt and split together and could not answer "did memory help".
+
+**Ranking, unchanged.** IBM `gpt-5.5` airline **82.0** (unverified, modified
+prompt, PR #551) remains the SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0;
+stock `gpt-oss-120b` 34.0; microglia **fifth of six named entries**. No
+competitor discussion in this section produces a benchmark result and no row
+moves.

@@ -10501,3 +10501,66 @@ phase, one store, one reference, one seed stream, only the recall facade
 varied — with the acceptance bar of `TECH-DESIGN` 17.100. None of these is a
 new `Pass^4` entry and none moves a ranking: IBM `gpt-5.5` airline 82.0
 remains the SOTA, microglia fifth of six named entries.
+
+
+### 172.2 — The within-run pair begins as a typed invariant, and the control arm stays parked
+
+The direction question was settled first. A reader asked why the leading
+competitor's implementation is not reproduced before learning from the others.
+`COMPETITIVE` L.19 records the answer: the mechanisms have been read at source
+and transferred, the mechanisms of nine further systems are already registered,
+and the `82.0` number is not a replicable object (L.8, six reasons). The
+`cross-model-guideline-control` arm registered in L.8 stays **registered and not
+dispatched**; opening it now would add a second learning phase and a second
+store next to the pair we need to measure. The next dispatch remains the
+within-run pair. Cortex release stays excluded by the standing instruction.
+
+**Architecture decision, from source rather than intuition.** A *paired facade
+inside one driver run*, not a third driver lane. `packages/eval/src/bin/
+tau2-driver.ts` `run()` is one self-contained unit: `listTasks`, the learn
+phase, `host.distill`, one `EmbeddedMemory` store, one `startRecall` facade and
+one eval phase. A third lane would re-run that whole chain and reproduce defect
+29 by construction. `bin/l4.ts` calls `loaded.run()` once and writes one
+artefact; `bin/l4-pair.ts` pairs two artefacts through `L4_FIRST`/`L4_SECOND`;
+`bin/lib.ts` resolves its output directory from `POC_RESULT_DIR`. The wiring
+therefore needs one extra artefact per run, not a new lane. `TECH-DESIGN`
+17.101 carries the ten-item layout, the dependency layering and the P0-P3 order.
+
+**What was built this iteration.** `packages/eval/src/within-run-pair.ts`
+lifts defect 29 out of prose into a typed, testable production invariant, the
+same move that produced `l4-revert.ts` in the previous iteration. `RunScope`
+names the eight fields two arms must share (dispatch, registration, store
+fingerprint, learn split, test split, seed, trials, model); `scopeDifference`
+names the first field that drifted; `withinRunPair` returns one of three
+terminal states, `PAIRED`, `REFUSED_CROSS_RUN` or `NO_MEASUREMENT`, matching the
+offline R48 verifier. The `FacadeContrast` it emits is tagged
+`facade-contrast` and deliberately has no `scope` field, so it cannot be handed
+to `revertRule`, which grades the memory-vs-reference `l4-paired` gate and
+nothing else. That is defect 28 and defect 29 made unrepresentable.
+
+`eval/fixtures/tau2-facade-scopes.json` carries the real committed R47 and R48
+readings: runs `42337250684` and `42353229972`, 8 versus 12 distilled items,
+reference `pass^4` 0.30 versus 0.44, served packs 1491 versus 965, and the two
+within-run gate readings +12pp and -6pp. Its identity control is labelled in
+the fixture as a structural counterpart, not a measurement: it proves the
+invariant admits a valid pair without inventing an experimental result.
+`packages/eval/src/__tests__/within-run-pair.test.ts` has **29 tests** over the
+real scopes, all eight scope fields, all registered floor rungs, both refusal
+branches, a mirror case where a catastrophic-looking cross-run delta must still
+be refused, and every malformed-instrument path. `packages/eval/src/index.ts`
+exports the new API; the pre-existing `PairVerdict` from `pairs.ts` is
+unchanged, and the new verdict type is named `WithinRunPairVerdict` to avoid a
+collision typecheck caught.
+
+**Verification.** `pnpm check` exits **0**: 3023 tests across 144 files,
+coverage 99.97 / 99.67 / 100 / 99.97, `audit: ok`, `bundle:size ok`. The
+structural coupling ledger moved from 141 to 142 modules and 38236 to 38444
+production lines; the six timing-only JSON artefacts rewritten by the check
+were restored, so only the structural entry travels. Both repositories are
+pushed as Lambertyan and `ci.yml` is green on the new head.
+
+**What is still pending, and is not claimed as done.** The driver's paired
+facade loop, the second artefact writer, the `sota.yml` step, a fresh R49
+pre-registration and the dispatch itself are the remaining P1 items. No new
+`Pass^4` number is claimed here. Ranking is unchanged: IBM `gpt-5.5` airline
+82.0 remains the SOTA, microglia fifth of six named entries.

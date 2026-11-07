@@ -4536,3 +4536,52 @@ is harmful: the measurement is underpowered (MDE 14.83pp) and confounded
 (defect 29). No accuracy number is claimed in either direction, and no leader
 board row moves. Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the
 SOTA, microglia fifth of six named entries.
+
+
+### The within-run pair: the invariant first, then the wiring (2026-11-07)
+
+A reader asked why the leading competitor's implementation is not reproduced
+before learning from the others. `COMPETITIVE` L.19 answers it: the mechanisms
+were read at source and transferred, twelve competitor designs are already
+registered, and the `82.0` number is not a replicable object (L.8). The
+`cross-model-guideline-control` arm registered in L.8 stays **registered and
+not dispatched**; it would add a second learning phase and a second store
+beside the pair this lane needs. The next dispatch is the within-run pair.
+Cortex release remains excluded.
+
+**Architecture decision.** `TECH-DESIGN` 17.101 records it with source
+evidence: a paired facade inside one `tau2-driver.ts` `run()`, not a third
+driver lane and not a store snapshot. `run()` learns, distils, builds one store
+and evaluates as one unit, so a second lane would re-learn and reproduce defect
+29 by construction. `bin/l4.ts` writes one artefact from one `run()`;
+`bin/l4-pair.ts` already joins two artefacts via `L4_FIRST`/`L4_SECOND`. The
+wiring needs one extra artefact per run, not a new lane.
+
+**Completed this iteration, P0.**
+
+| item | file | result |
+| --- | --- | --- |
+| typed invariant, three terminal states | `packages/eval/src/within-run-pair.ts` | `RunScope`, `scopeDifference`, `withinRunPair`, `FacadeContrast` tagged `facade-contrast` |
+| real committed scopes | `eval/fixtures/tau2-facade-scopes.json` | R47 8 items / 0.30 / 1491 served; R48 12 items / 0.44 / 965 served; labelled structural identity control |
+| 29 tests | `packages/eval/src/__tests__/within-run-pair.test.ts` | 29 pass, real scopes, eight fields, all grid rungs, both refusals, mirror case, malformed instruments |
+| additive export | `packages/eval/src/index.ts` | `WithinRunPairVerdict` named to avoid the existing `PairVerdict` collision |
+| full gate | `pnpm check` | 3023 tests / 144 files / 99.97 / 99.67 / 100 / 99.97 / `audit: ok` / `bundle:size ok` / exit 0 |
+| structural ledger | `eval/results/poc-coupling.json` | 141 -> 142 modules, 38236 -> 38444 production lines; six timing-only JSONs restored |
+
+**Remaining order.** The table in "After the revert: the order from a
+within-run pair" still governs; the P1 line items below make its first P1
+explicit and nothing in it edits any pre-registration.
+
+| priority | step | blocked by | status |
+| --- | --- | --- | --- |
+| P1 | extract `evaluate(floor)` in the driver, one store, two facades, `pairedFacades()` additive export; TDD on a real fixture before implementation | P0 done | pending |
+| P1 | additive second-artefact writer in `bin/l4.ts`; TDD first | driver wiring | pending |
+| P1 | `sota.yml` paired step with `L4_FIRST`/`L4_SECOND`, reference arm unchanged, floor pair from the registration | both above | pending |
+| P1 | `prereg/R49-within-run-pair.md` with predictions, refutations, weights and tie-break before dispatch | design frozen | pending |
+| P1 | dispatch, three-terminal readback, R45 revert rule graded only on the within-run gate | registration | pending |
+| P1 | defect 27 fail-fast provider probe with an explicit no-measurement marker | independent | pending |
+| P2 | U1, U2, R46 admission-rule arms | a valid paired readout | CLOSED until then |
+| P3 | `sota.ts` split, `eval-sql` move, W8 dose curve, vitest 4 last | independent | pending |
+
+No new `Pass^4` number is claimed. Ranking is unchanged: IBM `gpt-5.5` airline
+82.0 remains the SOTA, microglia fifth of six named entries.

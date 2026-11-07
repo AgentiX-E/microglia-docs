@@ -3582,3 +3582,55 @@ sample or another retry; it is a within-run pair that holds everything fixed
 except the one number under study. That is a smaller experiment and a more
 honest one. No leaderboard row moves; the current SOTA remains IBM `gpt-5.5`
 airline 82.0, and microglia is fifth of six named entries.
+
+
+#### 3.6.52 The leader is a number, and a number is not a blueprint
+
+A fair question arrived after the R48 revert: the leading competitor is known,
+so why not reproduce its implementation, learn from the others, and overtake
+it? The question assumes the leader is a thing with source code. It is not.
+IBM's `82.0` on airline is two unverified pull requests with disclosed modified
+prompts, a different agent model, a train split that the base split includes,
+twenty held-out tasks where one task moves Pass^4 by five points, and two
+different quantities - 70.0 held-out and 82.0 full base - printed as one
+headline. Even with `gpt-5.5` in hand, reproducing it would answer nothing
+about memory, because model, prompt and split move together. That is an object
+problem, not a capability problem.
+
+What does travel is the mechanism, and it has already travelled. The support
+count, the `sup3` reliable core, consolidation that keeps provenance, and one
+shared decision point were read at source in L.6 and L.8. Nine more systems
+have been read since: AECG's scope collapse, Tether's read-time withdrawal,
+MemPABench's finding that memory does not beat no memory, AMV-Guard's
+action-relative safety, MemAdapter's calibration, MemCalib's over- and
+under-use, the Memory Funnel's confidence-versus-importance split, and the
+deletion feedback loops in `agent_memory_manage` and `memory-rollback`.
+`COMPETITIVE` L.19 lists all twelve transfers. None of them was a fork. The
+one time a numeric threshold was copied - `sup3 >= 3` - it selected zero groups
+on this lane's own corpus. A number that selects nothing is not a starting
+point.
+
+The SOTA holder's own report contains the number worth reproducing, and it is
+not on the leaderboard. On airline, 101 lossless rules score 40.0 Pass^4 while
+14 `sup3` rules score 45.0. More memory made the agent less reliable, at 32
+percent higher input-token cost. That is a mechanism result about dose, and it
+is the published datum behind the thesis that what matters is not what was
+stored but what was allowed to speak. The distance between those two numbers
+is the product.
+
+So the honest sequence is the reverse of the intuitive one. First make the
+measurement able to say whether a treatment arrived and what it contained.
+Then make two facades of a single store comparable inside one run, so a floor's
+contribution can be attributed at all. Only then is a cross-model control
+worth its dispatch - declared as a control, never as a SOTA claim. This
+iteration built the guard for the second step: `within-run-pair.ts` refuses any
+comparison whose two arms do not share one dispatch, one registration, one
+store, one split and one seed stream. Defect 29 was a sentence; it is now a
+runtime refusal with three terminal states and 29 tests on real committed
+scopes. A reader who wants the shortcut can see exactly what it would cost:
+two learning phases, two stores, and a delta that cannot be attributed.
+
+Nothing here moves a row. IBM `gpt-5.5` airline 82.0 is still the SOTA, and
+microglia is still fifth of six named entries. The claim remains about method:
+this lane can say whether a treatment arrived, how much of what arrived was
+relevant, and whether the comparison it is about to quote is a pair at all.

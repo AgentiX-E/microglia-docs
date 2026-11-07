@@ -3913,3 +3913,81 @@ and other task pools. Reading a method is not measuring a contribution.
 U1, U2 and R46's arms remain CLOSED until a valid within-run pair exists.
 Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
 fifth of six named entries.
+
+
+### 34.37 Defect 29 becomes a runtime refusal, with real committed scopes
+
+**Object.** `packages/eval/src/within-run-pair.ts`, its 29-test suite, the
+committed fixture `eval/fixtures/tau2-facade-scopes.json`, and the additive
+export in `packages/eval/src/index.ts`. This is the same lift performed for the
+R45 revert rule in 17.99 / 34.35: a sentence in a document becomes a type and
+a function that CI grades.
+
+**The invariant.** Two memory facades are a pair only when they come from one
+dispatch, one pre-registration, one distilled store, one learn split, one test
+split, one seed, one trial count and one model. `RunScope` states exactly those
+eight fields. `scopeDifference` walks them in a fixed order and returns the
+first disagreement by name, so a refusal says which repair is needed.
+`withinRunPair` checks role labels, the as-is floor of `0`, a floored arm on a
+registered `COVERAGE_FLOORS` rung above zero, scope identity, instrument
+validity on both arms, and exact task-id equality before calling the existing
+`compareArms` with `PAIR_SEED = 7` and `PAIR_RESAMPLES = 10_000`, identical to
+`bin/l4-pair.ts`. It never re-implements a statistic.
+
+**Three terminal states and their order.** `REFUSED_CROSS_RUN` is graded
+*before* the instrument checks: a scope drift is the primary fact, and a
+missing artefact on one arm is not evidence that a cross-run comparison was
+valid. `NO_MEASUREMENT` covers malformed scopes, invalid served counts, empty,
+duplicated or mismatched task rows, and a zero common task set. `PAIRED` carries
+a `FacadeContrast` tagged `facade-contrast`, the floor, both served counts and
+the `ArmComparison`. A refused pair never emits a delta.
+
+**Why the tag matters.** Defect 28 was an offline verifier binding the R45
+revert rule to a cross-run delta; defect 29 was a cross-dispatch comparison
+presented as a treatment contribution. `l4-revert.ts` types its input as
+`PairedReading` with `scope: 'within-run' | 'cross-run'`. The new contrast has
+no `scope` property at all and is a distinct type, so it cannot be passed to
+`revertRule` without an explicit, visible conversion. A test asserts the
+property is absent. This is the second time a confusion between the
+memory-vs-reference gate and a treatment contrast is made unrepresentable
+rather than documented.
+
+**Fixture provenance.** R47 (`42337250684`): 8 distilled items, reference
+`pass^4` 0.30, `recallServed` 1491, within-run `l4-paired` +12pp p=0.1094.
+R48 retry (`42353229972`): 12 distilled items, reference 0.44, `recallServed`
+965, within-run `l4-paired` -6.00pp p=0.4531. Both are committed readings from
+34.35 / 17.98 / `prereg/R48-u3-coverage-floor.md`. The `storeFingerprint`
+strings in the fixture are the *documented store identities* ("8 distilled
+items", "12 distilled items"), not sha256 digests; the fixture description says
+so, and a real dispatch must attest the digest of its one store. The identity
+control is explicitly labelled "structural, NOT a measurement": both facades
+carry the same scope and the same outcomes, so a valid pair must report a zero
+delta. No accuracy figure is invented anywhere in this suite.
+
+**Coverage of the suite.** 2 tests on the committed readings themselves; 9 on
+`scopeDifference` (identity plus one per field plus split contents); 4 on a
+valid pair (zero delta, constants, the missing `scope` tag, every grid rung);
+4 on cross-run refusal (the real R47/R48 pair, a changed store on one dispatch,
+drift graded before a missing measurement, a mirror case with a
+catastrophic-looking but cross-run delta); 10 on `NO_MEASUREMENT` (swapped
+labels, as-is floor, zero floor, off-grid floors, three missing attestations,
+six malformed scope fields, two served counts, four task-row defects, plus a
+zero-served as-is arm that must still pair). All 29 pass.
+
+**Two defects found and fixed during the build, both in the test or the type
+layer, not papered over.** (1) `PairVerdict` collided with the existing export
+from `pairs.ts`; typecheck caught it and the new type was renamed
+`WithinRunPairVerdict`. (2) `NaN` seeds were reported as a scope drift because
+`===` is false for `NaN`; `sameValue` now uses `Object.is`, so two facades
+sharing an invalid seed reach the instrument check and correctly report
+`NO_MEASUREMENT`. Two earlier failures were mis-constructed tests that changed
+only one arm's scope; the implementation was right and the tests were changed
+to apply the malformed scope to both arms of one run.
+
+**Verification and scope.** `pnpm check` exit 0, 3023 tests / 144 files,
+coverage 99.97 / 99.67 / 100 / 99.97, `audit: ok`, `bundle:size ok`. The
+coupling ledger records 142 modules / 38444 production lines. No source in the
+τ² driver, `bin/l4.ts`, `bin/l4-pair.ts`, the gate definitions or any
+pre-registration is changed. No benchmark is dispatched and no `Pass^4` number
+is claimed. IBM `gpt-5.5` airline 82.0 remains the SOTA; microglia is fifth of
+six named entries.
