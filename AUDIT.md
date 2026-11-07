@@ -4188,3 +4188,55 @@ anything, it does not enter `pass^k`, it does not choose a floor, and it cannot
 distinguish "the agent said it did not know" from "the agent stopped mid-task" —
 τ² writes both as an episode with no further tool call. The narrower claim is
 the one that can be defended: the agent did not act.
+
+### 34.44 A mechanism that cannot report what it refused is not measurable
+
+The store had one dedupe rule and it was an exact key over namespace, kind, scope
+and statement. That rule is correct and it is also the defect: because the key
+contains the scope, the same lesson learned twice in two tasks was never the same
+claim, so the store grew a second copy — and a second copy is not a small waste.
+It spends a pack slot that a distinct rule could have had, and it splits one
+observation across two items so neither can corroborate the other.
+
+The mechanism added is a write-time decision against the top-s nearest memories.
+This audit records the four places it could have been wrong, and what was done
+about each.
+
+1. **The fourth operation.** The leading implementation offers `ADD`, `UPDATE`,
+   `DELETE`, `NOOP`. Implementing `DELETE` here would mean letting a similarity
+   match retire a stored rule, and this repository has already refused that shape
+   once: curation will not merge items whose payloads disagree, because a merge
+   lets the survivor's payload inherit the loser's evidence. A paraphrase is not
+   evidence about which statement is true. The decision therefore has three
+   operations, and the missing one is documented where a reader will look for it
+   rather than omitted silently.
+2. **The payload.** After deciding "these are the same rule", the next question
+   is what merging does to the payload — and `mergeEvidence` *replaces* it. A
+   paraphrase carrying a different payload would have rewritten a stored rule on
+   the strength of a resemblance, so the payload check runs before the merge
+   question and a disagreement is an `add`.
+3. **The ordering.** Admission sits after the exact-key merge and after
+   generalisation, and only for a claim that would otherwise have been created.
+   Placed earlier it would have absorbed the cross-domain recurrence
+   generalisation exists to widen, and the `generalize: false` ablation in the τ²
+   lane would have started measuring admission as a side effect. Two mechanisms
+   on one path need an order that keeps each attributable, and this is that order.
+4. **The window and the tie.** `topS` bounds what a candidate may be compared
+   against, and the ranking is total: similarity descending, then id. Without the
+   tie-break, two neighbours at the same similarity would make the decision depend
+   on the order the store returned, and two runs over one store could disagree
+   about whether a write happened.
+
+The counting is not decoration. `suppressed` says how much paraphrase pressure the
+store absorbed, and `rephrased` says how much of it crossed a task boundary. An
+arm that varied admission and reported only `pass^4` would be unable to tell "the
+mechanism did nothing" from "the mechanism had nothing to do" — and those call for
+opposite next steps.
+
+Two smaller things found on the way. `wouldChange` was buried inside
+`mergeEvidence`; asking the same question from a second caller meant either
+exporting it or copying five conditions, and copying would have drifted. And the
+bundle gate failed at 45,309 raw against a 44,000 ceiling: the ceiling moved to
+46,000 in the script, with the measurement and the reason written beside the
+number, because a budget that is adjusted silently is a budget that only ever
+moves one way.

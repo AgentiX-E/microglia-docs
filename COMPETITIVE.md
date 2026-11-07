@@ -2626,3 +2626,56 @@ LoCoMo conversations run to tens of thousands of tokens and our packs do not, so
 the margin by which Mem0 beats full context is not a margin this lane can
 reproduce. What transfers is the mechanism, and mechanisms are what the arms
 test.
+
+### L.23 — Every serious memory layer decides at write time; they differ on what they do with the superseded fact (2026-11-07)
+
+The four systems worth comparing have converged on one thing this repository did
+not do until now: **the decision happens before the write.** Mem0 compares a
+candidate against the top-S most similar memories and asks a model for one of
+`ADD` / `UPDATE` / `DELETE` / `NOOP`; LangMem runs an asynchronous manager that
+extracts, deduplicates and updates after the turn; Graphiti extracts entities and
+relations on every ingestion and stamps bi-temporal validity; Letta lets the agent
+rewrite its own memory blocks by tool call. A store that only appends and filters
+at read time is the odd one out, and microglia was that store.
+
+What separates them is the second question, and it is the one that decides whether
+a memory can be audited: **what happens to the fact that lost.**
+
+| System | Write decision | Superseded fact | Read path | Grade |
+| --- | --- | --- | --- | --- |
+| Mem0 | top-S neighbours + LLM, AUDN | **deleted** (overwritten) | vector + optional graph | high — the paper and the shipped code agree (arXiv 2504.19413) |
+| Graphiti / Zep | entity + relation extraction, contradiction detection | **invalidated** with `invalid_at`, still queryable | hybrid graph + BM25 + vector, no LLM at query time | high for the mechanism, medium for its margins (see below) |
+| LangMem | background manager: extract, dedupe, update | updated in place, no temporal axis | store-agnostic semantic search | medium — primitives rather than a published mechanism |
+| Letta (MemGPT) | the agent edits its own blocks | rewritten by the agent | in-context blocks + archival search | high for the design, not a consolidation claim |
+
+Three conclusions that bear on U6 and on what this project should not copy:
+
+1. **Deletion is the wrong default and it is a product decision, not a technical
+   one.** Mem0's `DELETE` is defensible for a personalisation assistant and
+   indefensible for anything a reviewer has to sign: after the overwrite there is
+   no record of what the system believed last month. This repository already has
+   the alternative built — `validUntil`, `systemUntil`, `recordContradiction`, and
+   a retirement that keeps the item and its reason — so adopting write-time
+   admission costs it nothing in auditability, and it is why `delete` is the one
+   operation the implementation refuses to have.
+2. **The read path is where the cost went, not where the intelligence is.**
+   Graphiti's marketing point is that retrieval needs no LLM call; Mem0's is that
+   retrieved context stays near 7K tokens against 25K+ for full context. Both are
+   statements about *what was written*, not about what was retrieved. A pack that
+   carries two paraphrases of one rule violates the second claim while looking
+   perfectly healthy on any per-item metric.
+3. **The security boundary is the write path.** Once content the agent read today
+   becomes trusted context tomorrow, a poisoning write is permanent. A decision
+   that requires an observation to *change* something before it is stored, and
+   that counts what it refused, narrows that surface — not to zero (a first-time
+   write of a hostile claim is still a write), but it removes the path where a
+   rephrasing of an existing rule is laundered in as new corroboration.
+
+Two numbers in the table are used with care, and the reason belongs in the record.
+Mem0 and Zep have published benchmarks of each other on LoCoMo and LongMemEval,
+and both disputes turned on configuration rather than on architecture: Zep's
+rebuttal argued Mem0 misconfigured it, and both sides have since published better
+numbers for themselves on setups they chose. Nothing here is registered from
+either vendor's margin. What transfers is the mechanism — decide before writing,
+keep the superseded fact, count the refusals — and mechanisms are what the arms
+test.

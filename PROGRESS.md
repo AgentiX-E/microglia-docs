@@ -10800,3 +10800,73 @@ Order from here, unchanged where it was blocked:
    its own verifier.
 5. U1, U2, R46 stay closed until a valid paired reading exists; U4, U5, U6 stay
    registered and undispatched.
+
+### 172.9 — The store learns to refuse a write, and the refusal is counted
+
+R49 finished its memory arm at 16:13 UTC after 88 minutes and is now running the
+reference arm; its readback is still the next thing that happens, and nothing in
+this iteration touches it. What this iteration builds is the mechanism the *next*
+arm varies.
+
+The gap it closes is a sentence in the dedupe key. `dedupeKeyOf` is namespace,
+kind, scope and the normalised statement, so a claim is "the same" only inside
+one scope. The same lesson re-derived on a second task was therefore a second
+item, and the two consequences are the ones the memory literature reports as the
+negative effect:
+
+- **The pack pays twice.** Two items carrying one rule occupy two slots of a
+  pack whose limit is eight; the retrieval that spends the budget on a paraphrase
+  has less of it for the next distinct rule.
+- **Neither copy corroborates.** One observation each means the pair stands on
+  one task between them, and the promotion gate that asks for two independent
+  tasks sees one task twice.
+
+The published alternative is a write-time decision rather than a read-time
+filter, and `kernel/write-admission.ts` implements the smallest version that can
+be defended: compare the candidate against its top-s nearest live items in the
+same namespace and kind — ten, the setting the most widely deployed memory layer
+publishes — and choose `add`, `update` or `noop`.
+
+Four decisions are the whole design, and three of them are refusals:
+
+1. **No `delete`.** A similarity match is not evidence about which of two
+   statements is true. Curation already refuses to merge two items whose payloads
+   disagree because the survivor would inherit the loser's evidence — the
+   selection route, and it needs no attacker beyond a paraphrase. Retiring
+   something here goes through `decideStatus`, `recordContradiction` and
+   `curateKnowledge`, all of which keep the closed item and its reason.
+2. **A payload disagreement is an `add`.** Same words, different payload: two
+   facts, and merging would overwrite the survivor's payload with the
+   candidate's.
+3. **The merge question has one definition.** `wouldChange` was extracted from
+   `mergeEvidence`, so "would this write change anything" is answered identically
+   by the merge and by the admission instead of by two copies that drift.
+4. **Admission is asked last.** After the exact-key merge and after
+   generalisation, and only for a claim that would otherwise be created. Running
+   it earlier would let it absorb the very claims those two mechanisms are
+   measured by, and its ablation would then be an ablation of all three.
+
+The counters are part of the mechanism rather than an extra. `suppressed` is the
+write-side counterpart of the pair lane's abstention census — how much paraphrase
+pressure the store absorbed without growing — and `rephrased` is the subset of
+merges that crossed a task boundary, which is also the evidence a corroboration
+gate wants.
+
+Thirty-seven new tests, both new modules at 100 / 100 / 100 / 100. `pnpm check`
+is green: 3180 tests over 151 files, coverage 99.95 / 99.65 / 100 / 99.95,
+`audit: ok`, the R49 verifier's thirteen-case self-test passing, bench blocking
+gates PASS, bundle size ok after a written-down ceiling move (44,000 → 46,000
+raw, measured 45,372), and 147 modules / 39,833 production lines in the
+structural ledger.
+
+Order from here:
+
+1. Read R49 back into `PAIRED / REFUSED_CROSS_RUN / NO_MEASUREMENT` and report
+   the interval, the p-value and the delivered population.
+2. If PAIRED, the floor arm's result is recorded; U6b is then dispatchable with
+   `TAU_WRITE_ADMISSION=neighbours`, and its own readback must report the write
+   census beside the delta.
+3. If REFUSED, fix the scope attestation before any arm opens.
+4. If NO_MEASUREMENT, record what was missing and re-dispatch, never a zero.
+5. U1, U2, R46 stay closed until a valid paired reading exists; U4, U5, U6a stay
+   registered and undispatched.

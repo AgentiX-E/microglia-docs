@@ -3733,3 +3733,44 @@ irrelevant, or that the model knew the answer and withheld it. We are saying
 that, in this episode, the agent did not act. Whether that is noise, overload or
 honest ignorance is the next question — and it is a question that can now be
 asked of the data rather than of the transcript.
+
+#### 3.6.56 A memory that writes everything is not a memory
+
+Every system that remembers has a write path, and most of them have only one
+rule: if the new thing is not already there, put it there. "Already there" is
+usually an exact key — the same sentence, in the same scope. That rule is
+correct, it is cheap, and it quietly makes the store grow in the one shape it
+cannot see: the same lesson, learned again somewhere else, in different words.
+
+The cost is not the disk. It is the pack. A prompt has room for eight or ten
+rules, and a store that holds two copies of one rule spends two of those slots
+on the same sentence. Worse, the two copies do not corroborate each other: each
+carries one observation, so a rule that has now been learned twice still stands
+on a single task, and any gate that asks for independent confirmation sees one
+task twice and believes it saw two.
+
+So the interesting question is not how to retrieve better but what to refuse to
+write. The published answer in the most widely deployed memory layer is a
+write-time decision: compare the candidate against its nearest stored memories,
+and let the store choose between adding it, merging it, or declining to write at
+all — a `NOOP` for the fact it already knows. That is consolidation happening at
+the door, where it is cheap and where the reader cannot be misled, rather than at
+the prompt, where every duplicate has already been paid for.
+
+We now do the same, with one deliberate omission. The published operation set
+includes a delete. We do not, and the reason is not caution about code: a
+similarity score says two sentences look alike, and that is not evidence about
+which of them is true. Deleting on resemblance lets a paraphrase retire the rule
+it paraphrases — and this project already refuses that shape elsewhere, where
+merging two rules whose payloads disagree would let the survivor silently inherit
+the other's evidence. Retirement here has its own machinery, and all of it keeps
+the closed item and the reason it was closed.
+
+Two things make the mechanism measurable rather than merely plausible. It refuses
+a write without moving a timestamp — a `noop` that rewrote the item would read as
+a rewrite to every delivery log downstream — and it counts what it refused. That
+count is the write-side twin of the abstention census: one says how much noise
+the agent declined to act on, the other says how much repetition the store
+declined to keep. An arm that varied this mechanism and reported only accuracy
+could not tell "it did nothing" from "it had nothing to do", and those two
+findings point in opposite directions.

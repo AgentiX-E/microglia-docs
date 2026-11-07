@@ -7389,3 +7389,69 @@ Dependency layers:
 The census never enters `pass^k`, never selects a floor, and is never read by
 the R45 revert rule. It answers one question beside the delta: did the agent
 stop acting.
+
+### 17.105 Write-side admission: the decision, its bounds, and one shared predicate
+
+```
+admitWrite(candidate, neighbours, policy, { threshold = 0.85, topS = 10 })
+  -> { op: 'add',    reason: 'no-neighbour' | 'below-threshold' | 'different-payload', nearest }
+   | { op: 'update', target: KnowledgeItem, similarity }
+   | { op: 'noop',   target: KnowledgeItem, similarity }
+```
+
+`WriteNeighbour` is `{ item, similarity }`, and the score is supplied by the
+caller rather than recomputed: a store with embeddings and a store without must
+share the decision, and what must not vary is what happens once a candidate has a
+nearest neighbour. `neighbourhood(candidate, items)` is the lexical
+implementation for callers that have nothing better — Sørensen–Dice over content
+tokens, exact, deterministic and free.
+
+Order of evaluation, each step a hard gate:
+
+| step | gate | why it is a gate rather than a filter |
+| --- | --- | --- |
+| 1 | namespace equality | retrieval never crosses tenancy; a merge must not either |
+| 2 | kind equality | a rule and an anti-pattern are different knowledge that can share words |
+| 3 | rank by similarity desc, id asc, keep `topS` | without the tie-break the decision depends on the store's return order |
+| 4 | `similarity >= threshold` | below it the candidate is a different claim |
+| 5 | payload equality | a merge replaces the payload, so a disagreement is a different fact |
+| 6 | `wouldChange(target, candidate, policy)` | false means the write changes nothing: `noop` |
+
+`wouldChange` lives in `kernel/knowledge.ts` and is the one definition shared with
+`mergeEvidence`. It is false only when the observation is already cited by the
+item, the item is not retired (or the observation is not trusted enough to revive
+it), no new condition is being adopted, the payloads agree, and the tier is not
+stronger.
+
+Wiring, and the layer each piece lives in:
+
+1. `kernel/write-admission.ts` — pure; imports `wouldChange`, `jsonEqual`,
+   `diceSimilarity`, `MicrogliaError`. No store, no clock.
+2. `distill/distiller.ts` — calls it from `upsert`, after the exact-key merge and
+   after the generalisation plan, before `createKnowledgeItem`; merges through the
+   same `mergeEvidence` the exact-key path uses, and counts `suppressed` /
+   `rephrased` into `DistillReport`.
+3. `capture/microglia.ts` — forwards `admission` verbatim; absent means off.
+4. `eval/write-admission-plan.ts` — `TAU_WRITE_ADMISSION` (`off` | `neighbours`)
+   and `TAU_WRITE_ADMISSION_THRESHOLD` (in (0, 1]), refused rather than clamped.
+5. `.github/workflows/sota.yml` — a repository variable, not a dispatch input: the
+   menu is at the platform's limit of twenty-five and which claims a store admits
+   is a property of the experiment.
+
+The pool the decision sees is the whole namespace, not the candidate's task. That
+is the entire point — the exact key cannot cross that boundary — and it is also
+the cost: one namespace-wide read per candidate, only when the switch is on.
+
+Refusals, all thrown before a write:
+
+| condition | result |
+| --- | --- |
+| threshold outside (0, 1] | throws |
+| `topS` not a positive integer | throws |
+| a neighbour similarity that is not in [0, 1] | throws |
+| the same neighbour supplied twice | throws |
+| `TAU_WRITE_ADMISSION` not `off`/`neighbours`/empty | throws at module load |
+| `TAU_WRITE_ADMISSION_THRESHOLD` not in (0, 1] | throws at module load |
+
+What it never does: choose a floor, enter `pass^k`, retire an item, or write when
+the decision is `noop`.
