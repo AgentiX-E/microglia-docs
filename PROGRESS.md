@@ -9971,3 +9971,57 @@ MemGuard, MemAdapter, AECG and MemPABench. An observation round, a falsified
 prediction and a census repair move no leaderboard row. The column microglia
 leads is still "whether the treatment was delivered", now `1512 served` on
 this run.
+
+## 167 — The histogram is shipped, and the run that reads it is registered before it exists
+
+**The repair is green on both repositories.** `microglia` master `d5497a8e`
+and `microglia-docs` main `fedc3c4b` carry the additive `coverageHistogram`
+instrument and its six internal sections, both Lambertyan +0800 with remote
+trees byte-for-byte equal to the local ones. `ci.yml` `42334137993` on
+`d5497a8e` completed `success` with all 40 steps green. `pnpm check` exits 0:
+2,944 tests in 140 files, coverage 99.98 / 99.69 / 100 / 99.98; one repeated
+run of the identical tree reads 99.68 on the v8 branch dimension, a
+plus-or-minus 0.01 non-determinism recorded in `AUDIT` section 34.28 rather
+than rounded into a claim. Six times-only result files were restored; the
+coupling ledger's four structural changes are committed.
+
+**R47 is a registered observation, not an arm.**
+`prereg/R47-coverage-histogram.md` fixes the P1 step before it runs: R45's and
+R46's verbatim inputs with only `prereg` renamed, so the artefact is
+`poc-sota-bird-R47-coverage-histogram.json` and both earlier files survive.
+It reads the memory arm's `tau2.coverage` beside the unchanged seven-field
+`tau2.use`. Eight predictions are registered — ten `floors` rows with a zero
+first rung, pair reconciliation against `injectedPairs`, pack reconciliation
+against `recallServed` at every rung, the zero rung as the identity,
+monotonicity plus at least one positive rung that empties a pack, ordered
+quantiles, and every R45/R46 validity gate passing again. The last clause of
+the monotonicity prediction is the one that can fail for a substantive reason:
+if no served pack is emptied by any positive rung, the fixed grid cannot grade
+`V1` on this corpus and U3 cannot be registered from it.
+
+**No numeric share is predicted.** R46 registered `zeroCoverageShare > 0.5`
+from an offline proxy and read 0.3896 on real distilled statements. Repeating
+that extrapolation would repeat the defect, so R47 predicts identities that
+must hold regardless of the population plus one qualitative claim. The sign,
+magnitude and significance of `l4-paired` are not predicted, and **no floor is
+chosen**. Six refutations cover a missing or reference-side `coverage` block,
+any failed reconciliation identity, a broken grid or quantile ordering, R45's
+revert rule and validity-gate regression, an absent evidence artefact, and any
+floor chosen from an accuracy number or from a post-run edit to a
+registration.
+
+**Verification before any dispatch.** `pnpm eval:prereg` 35 of 35 valid;
+`pnpm eval:protocol` all claims hold; `pnpm check` exit 0; `audit: ok`;
+`bundle:size ok`. The coupling ledger is unchanged because a pre-registration
+adds no production line. No gate reads `coverage`; `packages/core`,
+`sota.yml`, the driver and the pairing logic are untouched. U1, U2, U3 and
+R46's admission-rule arms stay closed until the histogram is read from a real
+dispatch.
+
+**Ranking and competitor comparison (unchanged).** IBM `gpt-5.5` airline
+82.0 remains the SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock
+`gpt-oss-120b` 34.0; microglia **fifth of six named entries**. The use-side
+sources behind the hypothesis are unchanged — MemCalib, CMI, CAMEL, the
+Memory Curse study, PFM, plus ALTK-Evolve, MemGuard, MemAdapter, AECG and
+MemPABench; none is a tau-squared-bench entry. A registered observation moves
+no leaderboard row.

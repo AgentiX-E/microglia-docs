@@ -3273,3 +3273,77 @@ its own dispatch (§17.88), never from `l4-paired`. U1, U2, U3 and the R46
 admission-rule arms stay closed. No rank moves: IBM `gpt-5.5` airline 82.0 is
 still the SOTA, microglia fifth of six named entries. Both repositories are
 pushed as Lambertyan.
+
+### 34.29 R47 is registered: read the committed histogram before choosing any floor
+
+**Defect 25's repair is shipped and green.** `microglia` master carries it as
+`d5497a8e` (parent `cb329054`) and `microglia-docs` main as `fedc3c4b` (parent
+`06b981dc`), both authored Lambertyan at +0800 with remote trees verified
+byte-for-byte against the local ones. `ci.yml` run `42334137993` on `d5497a8e`
+completed `success` with all 40 steps green, including `Tests with coverage
+gates`, `Repository audit`, `Protocol` and `Gate summary`. `pnpm check` exits 0
+with 2,944 tests in 140 files and coverage 99.98 / 99.69 / 100 / 99.98; section
+34.28 records that one repeated run of the identical tree reads 99.68 on the
+v8 branch dimension, a plus-or-minus 0.01 non-determinism rather than a claim.
+Six result files differing only in `ranAt` / `p50` / `p95` were restored, and
+the coupling ledger's four structural changes are committed.
+
+**The next P1 step is a registered observation, not an arm.**
+`prereg/R47-coverage-histogram.md` is added with R45's and R46's verbatim
+dispatch inputs and only `prereg` renamed, so the artefact becomes
+`poc-sota-bird-R47-coverage-histogram.json` and both earlier files survive. It
+reads the memory arm's `tau2.coverage` block beside the unchanged seven-field
+`tau2.use`. Eight predictions are registered, all falsifiable structural
+assertions rather than guesses about an unknown population:
+
+| # | prediction | why it can be wrong |
+|---|---|---|
+| 1 | `coverage` on memory, absent on reference | the instrument may not cross the process boundary |
+| 2 | ten `floors` rows, first `minCoverage` 0, strictly increasing | the grid may not be the fixed one in source |
+| 3 | `measuredPairs + unmeasurablePairs = use.injectedPairs` | the two readings may count different pairs |
+| 4 | at every rung `retainedPacks + emptiedPacks + unmeasurablePacks = use.recallServed` | the pack buckets may not reconcile |
+| 5 | at rung 0 `retainedPairs = measuredPairs` and `emptiedPacks = 0` | the as-is rung may not be the identity |
+| 6 | `retainedPairs` never rises, `emptiedPacks` never falls, and some positive rung reports `emptiedPacks > 0` | the grid may have no pack-level resolving power |
+| 7 | `nonzeroQuantiles` non-decreasing, all in 0 to 1, `min > 0` | the sorted population may be built incorrectly |
+| 8 | every R45/R46 validity gate passes again, `use` shape unchanged, `widenedItems = 0` | the dispatch may have changed a behaviour |
+
+Prediction 6's last clause is the one that can fail for a substantive reason:
+if no served pack is emptied by any positive rung, the fixed grid cannot grade
+`V1` on this corpus and U3 cannot be registered from it. R46's falsified
+prediction 4 is the reason no numeric share is predicted here — a proxy is not
+the distilled statement, and a pre-registered magnitude copied from an offline
+probe is a defect. The sign, magnitude and significance of `l4-paired` are
+**not predicted**, and no floor is chosen.
+
+**Six refutations.** A missing or reference-side `coverage` block; any of the
+three reconciliation identities failing; a violated grid shape, monotonicity
+or quantile ordering; `l4-paired` significantly negative or below minus five
+points with a served pack (R45's revert rule, unchanged), or any validity gate
+regressing; an absent evidence artefact; and a floor chosen from any accuracy
+number in this run, from the offline proxy, or from a post-run rewrite of R46's
+six predictions or this registration. U1, U2, U3 and R46's admission-rule arms
+stay closed until the histogram is read from a real dispatch.
+
+**Verification before any dispatch.** `pnpm eval:prereg` reports 35 of 35
+valid; `pnpm eval:protocol` reports all claims hold; `pnpm check` exits 0 with
+2,944 tests in 140 files and coverage 99.98 / 99.69 / 100 / 99.98; `audit: ok`
+and `bundle:size ok`. The times-only result files were restored and the
+coupling ledger is unchanged, because a pre-registration is a document and
+adds no production line. No gate reads `coverage`; `packages/core`,
+`sota.yml`, the driver and the pairing logic are untouched.
+
+**The eight predictions were checked against the real kernel before being
+registered.** A read-only offline probe on the fingerprinted fixture (50
+airline questions times 32 learn statements, and a second population with a
+content-free query and an empty pack) confirms that all eight structural
+assertions are self-consistent with `coverageHistogram`: 1,600 measured pairs
+reconcile to `injectedPairs`, the pack buckets reconcile to `recallServed` at
+every rung (`unmeasurablePacks` accounts for the content-free pack), rung 0 is
+the identity, retention is monotone, quantiles are ordered, and the seven
+`use` fields are unchanged. The falsifiable clause of prediction 6 holds on
+this proxy — rung 0.01 empties 20 of 50 packs — so the grid has pack-level
+resolving power on a population shaped like the corpus. This is a consistency
+check, not a prediction of the real run's numbers: the offline statements are
+structural proxies, and section 34.28 records why a proxy is not the distilled
+statement. Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA,
+microglia fifth of six named entries.

@@ -1992,3 +1992,54 @@ The next observation reads the histogram from a real dispatch, and U3's floor
 is registered before its own dispatch. IBM `gpt-5.5` airline **82.0** remains
 the SOTA; microglia stays **fifth of six named entries**. A reading, a
 falsified prediction and an additive evidence field move no leaderboard row.
+
+### L.13 — R47 registered: a measurement ladder, and no rung chosen (2026-11-07)
+
+**Why this section.** Defect 25's repair is shipped and green on both
+repositories (`microglia` master `d5497a8e`, `microglia-docs` main `fedc3c4b`;
+`ci.yml` `42334137993`, all 40 steps `success`). `coverageHistogram` commits a
+fixed ten-rung `COVERAGE_FLOORS` retention curve with pack-level
+`retainedPacks` / `emptiedPacks`, non-zero coverage quantiles and separately
+reported content-free queries. The seven-field census is unchanged and the new
+field is optional, so R45, R46 and every older artefact read *not measured*.
+No gate reads it; `packages/core`, `sota.yml`, the driver and the pairing
+logic are untouched. TDD: 7 failing tests first, then green; 2,944 tests in
+140 files, coverage 99.98 / 99.69 / 100 / 99.98.
+
+**R47 is an observation, not an arm.** `prereg/R47-coverage-histogram.md`
+keeps R45's and R46's verbatim dispatch inputs with only `prereg` renamed, so
+the artefact is `poc-sota-bird-R47-coverage-histogram.json` and both earlier
+files survive. Eight predictions are registered before the run: the histogram
+on one arm and not the other; ten rungs with zero first; pair reconciliation
+against `injectedPairs`; pack reconciliation against `recallServed` at every
+rung; the zero rung as the identity; monotonic retention with at least one
+positive rung emptying a pack; ordered quantiles; and every R45/R46 validity
+gate passing again. Six refutations cover a missing or reference-side block,
+any failed identity, a broken grid, R45's revert rule and gate regression, an
+absent evidence artefact, and any floor chosen from an accuracy number or from
+a post-run edit to a registration. **No floor is chosen** and the sign,
+magnitude and significance of `l4-paired` are not predicted.
+
+**Why no numeric share is predicted here.** R46 registered
+`zeroCoverageShare > 0.5` from an offline structural proxy and read 0.3896 on
+real distilled statements. That falsification is the reason R47 predicts only
+identities plus one qualitative claim, rather than importing a number. The
+published use-side benchmarks are read for method, not for a threshold:
+MemCalib grades per-atom influence Ignore / Bound / Control and reports the
+best frontier model over-using memory on 53.33% of atoms over 1,500 test
+examples; the Memory Curse study holds prompt length fixed and finds content
+is the trigger; CMI separates lexical and dense interference; CAMEL isolates
+persistence and feedback amplifiers; PFM locates the bottleneck before
+retrieval. IBM ALTK-Evolve, MemGuard, MemAdapter, AECG and MemPABench remain
+the corroboration references. The copied `sup3` floor of `>= 3` already
+selected zero groups on the strictest reading of this 32-task corpus
+(§34.22); no competitor's threshold is imported as a microglia setting.
+
+**Ranking (unchanged).** IBM `gpt-5.5` airline **82.0** (unverified, PR #551)
+remains the SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock
+`gpt-oss-120b` 34.0; microglia **fifth of six named entries**. None of the
+use-side sources is a tau-squared-bench entry, so none enters the ranking.
+The one column microglia leads is still "whether the treatment was delivered",
+`1512 served` on R46 with `3016` injected pairs of which `1175` share no
+content term with the question. A shipped instrument, a green CI run and a
+registered observation move no leaderboard row.

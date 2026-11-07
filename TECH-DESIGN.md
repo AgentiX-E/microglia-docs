@@ -6623,3 +6623,89 @@ second workflow. U3's floor is computed from a histogram committed by a real
 dispatch and registered before its own dispatch; the reading of that histogram
 is the next observation, not this one. Ranking is unchanged: IBM `gpt-5.5`
 airline 82.0 remains the SOTA, microglia fifth of six named entries.
+
+### 17.94 R47: the reading contract for the committed histogram
+
+**Purpose.** Section 17.93 registers the *instrument*; this section registers
+what a real dispatch must return before any `minCoverage` floor can be chosen.
+`prereg/R47-coverage-histogram.md` is an as-is observation — R45's and R46's
+verbatim inputs with only `prereg` renamed — that reads `tau2.coverage` beside
+the unchanged seven-field `tau2.use`. It opens no arm, changes no threshold and
+chooses no floor.
+
+**The contract, in priority order.** Eight falsifiable predictions are fixed
+before the run. The first seven are structural identities that the instrument
+must satisfy on the real population; the eighth carries forward every validity
+gate R45 and R46 passed.
+
+1. **Presence is a boundary check.** `coverage` exists on the memory arm and is
+   absent on the reference arm, whose driver returns before the recall facade
+   exists. A block on the wrong arm, or none on the memory arm, means
+   `useObservations` did not reach `armRecordFromDriver`.
+2. **The grid is fixed in source, never derived from a result.** `floors` has
+   exactly one row per `COVERAGE_FLOORS` entry (ten), the first `minCoverage`
+   is 0, and the sequence is strictly increasing. `COVERAGE_FLOORS` is a
+   measurement ladder, not a chosen floor; U3 selects one value from the
+   committed curve in its own registration.
+3. **Pair reconciliation.** `measuredPairs + unmeasurablePairs` equals
+   `use.injectedPairs`, because `coverageHistogram` calls `coverageProfile` on
+   the same observations `useCensus` counts. A content-free question has
+   undefined coverage, so its pairs are reported separately rather than
+   bucketed as zero.
+4. **Pack reconciliation at every rung.** `retainedPacks + emptiedPacks +
+   unmeasurablePacks` equals `use.recallServed`. Served packs either have a
+   content-bearing question and fall into the retained or emptied bucket, or
+   have no content term and are excluded from every floor. This is why `V1`
+   can be held against the curve: it grades whether a pack is non-empty.
+5. **The zero rung is the identity.** At `minCoverage = 0`, `retainedPairs`
+   equals `measuredPairs` and `emptiedPacks` is 0, because `buildPack` keeps
+   every hit when the floor is zero and coverage is always non-negative.
+6. **Monotonicity and resolving power.** `retainedPairs` never increases and
+   `emptiedPacks` never decreases as the floor rises; at least one positive
+   rung reports `emptiedPacks > 0`. The last clause is the substantive
+   falsifiable claim — if no served pack is emptied by any positive rung, the
+   fixed grid has no pack-level resolving power on this corpus and U3 cannot
+   be registered from it.
+7. **Quantile ordering.** `nonzeroQuantiles` is non-decreasing from `min`
+   through `max`, every value lies in 0 to 1, and `min > 0` when
+   `measuredPairs > 0`; these are quantiles of the strictly positive coverage
+   of measurable pairs.
+8. **No behaviour changes.** Every validity gate R45 and R46 passed passes
+   again, `V5` and `V16` stay unresolved, the seven-field `use` shape is
+   unchanged and `widenedItems = 0`.
+
+**Why no numeric share is predicted.** R46 registered
+`zeroCoverageShare > 0.5` from an offline structural proxy and read 0.3896 on
+real distilled statements. A proxy is not the distilled statement. Predicting
+another magnitude from that proxy would repeat the defect, so this
+registration predicts only identities that must hold regardless of the
+population, plus one qualitative claim (that the grid resolves at least one
+pack). The sign, magnitude and significance of `l4-paired` are not predicted.
+
+**Refutation and revert.** Six conditions abandon or revert the reading: a
+missing or reference-side `coverage` block; any reconciliation identity
+failing; a violated grid shape, monotonicity or quantile ordering; `l4-paired`
+significantly negative or below minus five points with a served pack, or any
+validity gate regressing; an absent evidence artefact; and a floor chosen from
+any accuracy number in this run, from the offline proxy, or from a post-run
+edit to either registration. **No floor is chosen here.** U3's floor is
+computed from the committed retention curve and registered before its own
+dispatch, never from `l4-paired` (section 34.22). U1, U2, U3 and the R46
+admission-rule arms stay closed.
+
+**Dependency layering (unchanged).** `bin/tau2-driver.ts` collects
+`useObservations` → `tau2-instrument.ts::armRecordFromDriver` reduces them →
+`tau2-use-census.ts` computes `useCensus`, `coverageProfile` and
+`coverageHistogram` → `@agentix-e/microglia-core/kernel` supplies
+`queryCoverage` and `tokenize` → `tau2-gates.ts::tau2ArmRecordOf` projects both
+fields. No gate reads `coverage`; `packages/core`, `sota.yml`,
+`bin/l4-pair.ts` and every gate definition are untouched. `coverage` remains
+an optional sibling field, so R45, R46 and every older artefact read "not
+measured" rather than a fabricated zero.
+
+**Acceptance.** `pnpm eval:prereg` 35 of 35 valid; `pnpm eval:protocol` all
+claims hold; `pnpm check` exit 0 with 2,944 tests in 140 files and coverage
+99.98 / 99.69 / 100 / 99.98; `audit: ok`; `bundle:size ok`; `ci.yml` green
+before dispatch; both repositories pushed as Lambertyan; no CJK, no skipped
+tests, no placeholder markers. Ranking is unchanged: IBM `gpt-5.5` airline
+82.0 remains the SOTA, microglia fifth of six named entries.

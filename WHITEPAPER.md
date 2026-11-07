@@ -3410,3 +3410,46 @@ question has narrowed once more — not only *which memory reached which
 question*, but *with what coverage, and how many packs a given content filter
 would leave standing*. That is now a question an artefact can answer, once a
 run has committed one.
+
+### 3.6.48 Measure the ladder before choosing a rung
+
+The repair is shipped. A fixed, finite ladder of coverage floors now reduces
+the same facade observations into a committed population: at each rung, how
+many pairs survive, how many packs keep at least one statement, and how many
+packs that rung would empty. It is additive and optional, so the seven-field
+census is unchanged and every older artefact reads *not measured* instead of
+being assigned a population nobody counted. Both repositories are green: 2,944
+tests, coverage 99.98 / 99.69 / 100 / 99.98, and a continuous-integration run
+with all forty steps passing.
+
+The temptation now is to pick a rung. We have not. A floor is a treatment, and
+a treatment chosen from the same numbers that describe it is a decision with no
+measurement behind it. So the next run is registered as an observation: the
+verbatim configuration of the last two rounds, with only the pre-registration
+renamed, reading the ladder from a real dispatch and changing nothing else.
+
+What is written down before that run is not a guess about the answer. Eight
+predictions are structural: that the histogram appears on one arm and not the
+other, that its grid has ten rungs with zero first, that its pairs reconcile
+with the injected population and its packs with the served population at every
+rung, that the zero rung is the identity, that retention can only fall as the
+floor rises, that the quantiles are ordered, and that no validity gate
+regresses. One clause carries the real risk: at least one positive rung must
+empty a served pack. If none does, the ladder has no resolving power over this
+corpus and the whole idea of a content filter cannot be tested with it. That is
+a claim the run can falsify, and falsifying it would be a finding, not a
+failure.
+
+There is deliberately no predicted share of unrelated statements. The last
+round predicted one from an offline proxy and was wrong — 0.3896 against a
+prediction above 0.5 — because a proxy is not the distilled statement. Writing
+another magnitude borrowed from a proxy would repeat the mistake. Identities
+that must hold whatever the population looks like are the honest pre-commitment
+when the population is precisely what is being measured. The paired accuracy
+difference is not predicted either, and no floor is chosen from it.
+
+**Where we stand.** IBM's 82.0 is still the SOTA; microglia is still fifth of
+six named entries. A registered observation moves no leaderboard row. The
+order has not changed: read the ladder from a run that carries the instrument,
+register U3's floor before the run that applies it, and only then ask whether
+filtering what the model was shown changes what it does.

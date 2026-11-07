@@ -4291,3 +4291,86 @@ every dimension, `ci.yml` green, both repositories pushed as Lambertyan, no
 CJK, no skipped tests, no placeholder markers, no credential value, all
 documents and code comments in English, and every iteration reporting the
 competitor comparison and the SOTA ranking.
+
+**R47 registered 2026-11-07 — read the ladder before choosing a rung
+(`AUDIT` §34.29, `TECH-DESIGN` §17.94, `PROGRESS` §167, `COMPETITIVE` L.13,
+`WHITEPAPER` §3.6.48).** Defect 25's repair is shipped and green: `microglia`
+master `d5497a8e`, `microglia-docs` main `fedc3c4b`, both Lambertyan +0800
+with remote trees verified byte-for-byte. `ci.yml` `42334137993` on
+`d5497a8e` completed `success` with all 40 steps green. `pnpm check` exits 0:
+2,944 tests in 140 files, coverage 99.98 / 99.69 / 100 / 99.98; section 34.28
+records the plus-or-minus 0.01 v8 branch non-determinism. Six times-only
+result files were restored and the four structural coupling changes are
+committed.
+
+`prereg/R47-coverage-histogram.md` registers the P1 step before it runs. It
+is **not an arm**: dispatch inputs are R45's and R46's verbatim with only
+`prereg` renamed, so the artefact becomes
+`poc-sota-bird-R47-coverage-histogram.json` and both earlier files survive.
+It reads the memory arm's `tau2.coverage` beside the unchanged seven-field
+`tau2.use`, with eight falsifiable predictions:
+
+| # | prediction | why it can be wrong |
+|---|---|---|
+| 1 | `coverage` on memory, absent on reference | the instrument may not cross the process boundary |
+| 2 | ten `floors` rows, first `minCoverage` 0, strictly increasing | the grid may not be the fixed one in source |
+| 3 | `measuredPairs + unmeasurablePairs = use.injectedPairs` | the two readings may count different pairs |
+| 4 | at every rung `retainedPacks + emptiedPacks + unmeasurablePacks = use.recallServed` | the pack buckets may not reconcile |
+| 5 | at rung 0 `retainedPairs = measuredPairs` and `emptiedPacks = 0` | the as-is rung may not be the identity |
+| 6 | `retainedPairs` never rises, `emptiedPacks` never falls, some positive rung has `emptiedPacks > 0` | the grid may have no pack-level resolving power |
+| 7 | `nonzeroQuantiles` non-decreasing, all in 0 to 1, `min > 0` | the sorted population may be built incorrectly |
+| 8 | every R45/R46 validity gate passes again, `use` shape unchanged, `widenedItems = 0` | the dispatch may have changed a behaviour |
+
+Prediction 6's last clause is the substantive falsifiable claim: if no served
+pack is emptied by any positive rung, the fixed grid cannot grade `V1` on this
+corpus and U3 cannot be registered from it. **No numeric share is predicted** —
+R46 registered `zeroCoverageShare > 0.5` from an offline proxy and read 0.3896
+on real distilled statements, and repeating that extrapolation would repeat
+the defect. The sign, magnitude and significance of `l4-paired` are not
+predicted. Six refutations cover a missing or reference-side `coverage` block,
+any failed reconciliation identity, a broken grid or quantile ordering, R45's
+revert rule and validity-gate regression, an absent evidence artefact, and any
+floor chosen from an accuracy number, from the offline proxy or from a
+post-run edit to a registration.
+
+**Verification before any dispatch.** `pnpm eval:prereg` 35 of 35 valid;
+`pnpm eval:protocol` all claims hold; `pnpm check` exit 0 with `audit: ok` and
+`bundle:size ok`; the coupling ledger is unchanged because a pre-registration
+adds no production line. No gate reads `coverage`; `packages/core`,
+`sota.yml`, the driver and `bin/l4-pair.ts` are untouched.
+
+**Remaining after this registration, in order (P0–P3).**
+
+| priority | step | blocked by |
+|---|---|---|
+| P0 | both repositories pushed as Lambertyan, `ci.yml` green on the R47 head | this iteration |
+| P1 | dispatch R47 as-is, read the committed `CoverageHistogram` from `l4-evidence`, grade all eight predictions and six refutations | green head |
+| P1 | U3 coverage-floored arm: floor computed from that curve, registered before its own dispatch, `V1` blocking | the R47 readback |
+| P1 | R46 admission-rule ablation (`as-is` / `distinct-task-support` / `min-support-only`) with the `>= 2` corroboration contrast registered separately | the R47 readback |
+| P2 | U1 calibration, then U2 only after a real reachability test | U3 |
+| P2 | transcript-level V46/V47 (driver hands `simulations[].messages` to the gate layer), S1a then S1b | U1 / U2 |
+| P3 | `sota.ts` split and `eval-sql` move, W8 dose curve, vitest 4 migration deliberately last | independent |
+| — | cortex release (W1) **excluded** by the standing instruction | — |
+
+**What stays closed.** No floor is chosen here. U1, U2, U3 and the R46
+admission-rule arms remain closed until the histogram is read from a real
+dispatch; a floor is registered before its own dispatch, never from
+`l4-paired` (§34.22).
+
+**Ranking and competitor comparison (unchanged).** IBM `gpt-5.5` airline
+**82.0** (unverified, PR #551) is the current SOTA; SapientAI 72.0; IBM
+`gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b` 34.0; microglia **fifth of six
+named entries**. The use-side sources behind the hypothesis are unchanged —
+MemCalib, CMI, CAMEL, the Memory Curse study, PFM, plus ALTK-Evolve,
+MemGuard, MemAdapter, AECG and MemPABench; none is a tau-squared-bench entry
+and none supplies a threshold that can be copied into U3. The column
+microglia leads is still "whether the treatment was delivered", now
+`1512 served` with `3016` injected pairs of which `1175` carry no shared
+content term. A shipped instrument, a green CI run and a registered
+observation move no leaderboard row.
+
+**Acceptance bar, unchanged.** TDD, real tests, no mocks, >= 95% coverage on
+every dimension, `ci.yml` green, both repositories pushed as Lambertyan, no
+CJK, no skipped tests, no placeholder markers, no credential value, all
+documents and code comments in English, and every iteration reporting the
+competitor comparison and the SOTA ranking.
