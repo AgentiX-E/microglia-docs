@@ -9824,3 +9824,76 @@ hypothesis are unchanged: ALTK-Evolve's `support` / `sup3`, MemGuard's
 `distinct_task_ids >= 2`, MemAdapter's context calibration, AECG's scope
 collapse and MemPABench's No Memory baseline. An observation round moves no
 rank and claims no accuracy.
+
+## 165 — The census is dispatched, and five sources put a number on incorrect use
+
+**Conclusion first.** R46's `as-is` census round is **dispatched and measuring**
+as run `42317807270` on the pinned head `cb329054`. The registration was pushed
+only after `ci.yml` `42317463372` was read green from the remote on that exact
+head, and the remote prereg file was verified byte-for-byte against the local
+one. No result is claimed before the readback. Waiting time was spent on the
+standing question — whether the negative effect comes from *what is remembered*
+or *how it is used* — by reading five 2026 sources, one of them with its source
+code. This round pushes `microglia-docs` only; touching the measuring head is
+forbidden by §34.21.
+
+| item | state |
+|---|---|
+| `microglia` master | `cb329054` Lambertyan, **untouched** (R46 pinned head) |
+| `microglia-docs` main | `3ebfbe0c` -> this round's append-only sections |
+| CI before dispatch | `42317463372` `completed success` on `cb329054`, all 40 steps green |
+| `pnpm check` | exit 0; 2,934 tests / 140 files; coverage 99.98 / 99.69 / 100 / 99.98 |
+| R46 SOTA run | `42317807270` `in_progress`, watcher polling to completion |
+| R45 SOTA run | `42131391874` `completed failure` on three scientific gates, evidence uploaded; read back in §163 |
+
+**Ten things done this round.** (1) Read the final R45 watcher line and its
+`l4-job.log`, confirming §163 with no new deviation. (2) Wrote and validated
+`prereg/R46-use-census.md` (`1/1 valid`; `eval:protocol` all claims hold). (3)
+Ran the full local gate and classified its six regenerated result files as
+timing-only, restoring them. (4) Appended six English sections to the internal
+documents. (5) Committed both repositories as Lambertyan with +0800 dates and
+pushed through the Git Data API. (6) Verified the remote prereg blob hash.
+(7) Waited for and read the remote CI green on the dispatch head. (8)
+Dispatched `sota.yml` with the registered inputs and recorded the run id.
+(9) Cross-checked the census prediction against R45's real artefact:
+`meanPackIds 1.8392 x 1480 requests ≈ 2,722` injected pairs, and R45 has no
+`use` block, so pre-R46 artefacts correctly report "not measured". (10) Read
+five use-side sources and mapped them to the open items without moving the
+head.
+
+**The use-side reading, with its numbers (`COMPETITIVE` L.11).** MemCalib
+([arXiv:2609.24259](https://arxiv.org/abs/2609.24259), code
+`Quark-Medical/memcalib`) grades each memory atom's influence as Ignore /
+Bound / Control and reports the best frontier model over-using on 53.33% and
+under-using on 35.82% of atoms over 1,500 test examples; its judge grades a
+counterfactual removal. CMI
+([arXiv:2608.07622](https://arxiv.org/abs/2608.07622)) separates lexical from
+dense interference pathways. CAMEL
+([arXiv:2605.09330](https://arxiv.org/abs/2605.09330)) isolates three spurious
+patterns plus persistence and feedback amplifiers. The Memory Curse study
+holds prompt length fixed and finds content is the trigger in 18 of 28
+combinations. The PFM pathology
+([arXiv:2610.10265](https://arxiv.org/abs/2610.10265)) finds key assignment,
+not retrieval, is the bottleneck. Every one is a *use-side* or *content-side*
+result, not a ranking result.
+
+**Where the project stands, and what is left, in order.** (1) **read back**
+run `42317807270`: the `use` block, `zeroCoverageShare`, and the six registered
+predictions against the artefact — the only blocker on everything below.
+(2) **U3 coverage-floored arm**, floor computed from that census and
+registered before its own dispatch, `V1` blocking, read as a content filter.
+(3) **R46 admission-rule ablation** (`as-is` / `distinct-task-support` /
+`min-support-only`) with the `>= 2` corroboration contrast registered
+separately. (4) **U1 calibration**, then U2 after a real reachability test.
+(5) **transcript V46/V47**, S1a then S1b — MemCalib's A/B/C rubric is a
+candidate here, not a gate. (6) **`sota.ts` split and `eval-sql` move**, W8
+dose curve, vitest 4 last. (7) **cortex release (W1) excluded**. Acceptance
+unchanged: TDD, real tests, no mocks, at least 95 percent per dimension,
+`ci.yml` green, both repositories pushed as Lambertyan.
+
+**Ranking after this round (unchanged).** IBM `gpt-5.5` airline **82.0**
+(unverified, PR #551) is the current SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3`
+44.0 (#8); stock `gpt-oss-120b` 34.0; microglia **fifth of six named
+entries** with `0.42` / `0.36` at k=4. A dispatched observation round and five
+papers move no leaderboard row. The column microglia leads remains "whether
+the treatment was delivered": `1480 served`.

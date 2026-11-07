@@ -1812,3 +1812,114 @@ that census after the run, never from R45's delta.
 An observation round moves no rank. The column microglia leads remains
 "whether the treatment was delivered": `1480 served`, first non-zero in five
 rounds.
+
+### L.11 — Five sources read while the as-is census ran, and one that measures the use side with numbers (2026-11-07)
+
+**Why this reading.** R46's `as-is` census is measuring, for the first time,
+what a served pack actually put in front of the model. The standing question is
+whether the negative effect of memory comes from *what is remembered* or *how it
+is used*. Five sources read on 2026-11-07 bear on that second half, and one of
+them publishes the first benchmark that measures it with a number rather than a
+claim. None is a tau-squared-bench entry, so none moves the ranking below.
+
+**1. MemCalib ([arXiv:2609.24259](https://arxiv.org/abs/2609.24259), v3
+2026-10-08, Alibaba Qwen / USTC / Fudan; code and data
+[Quark-Medical/memcalib](https://github.com/Quark-Medical/memcalib), 995 files
+read via the GitHub tree API).** Its premise is the standing hypothesis stated
+as a measurable object: a memory system's effectiveness depends on whether the
+LLM gives *each in-context memory an appropriate degree of influence*, and
+post-retrieval filtering cannot guarantee a noise-free context. The benchmark
+assigns every atomic proposition a target influence level — **A** (Ignore: no
+answer-specific footprint), **B** (Bound: local support only), **C** (Control:
+determines the core conclusion) — and grades the realized footprint against it.
+The source is unambiguous about the unit: `judge.py`'s system prompt asks "how
+much of the response would change if the atomic content were removed while the
+current query stayed fixed", and grades *observable incorporation* rather than
+inferred intent. `metrics.py`'s `sample_level_calibration_metrics` turns the
+per-atom distance into `over_budget` and `under_budget`, with
+`scs_rho_0_5 = 0.5 ** total_budget` and `exact = total_budget == 0`.
+
+| quantity | reading | source |
+|---|---|---|
+| benchmark size | 13,500 train / 1,500 disjoint test, stratified | paper section 2.2 |
+| judge-human agreement | 96.7% on 150 judgments (95% Wilson CI 92.4–98.6%, Cohen's kappa 0.872) | paper appendix C |
+| best frontier model (GPT-5.6-SOL) | SCS 46.25 +/- 0.60, Exact 28.40 +/- 0.85, AOR 53.33 +/- 0.45, AUR 35.82 +/- 0.51 | Table 1 |
+| Claude Sonnet 4.6 | AOR 65.40 +/- 0.77 | Table 1 |
+| directional skew of GRPO / OPSD | improves one direction, deteriorates the other | abstract, Figure 1 |
+| MemCalib-RL, Qwen3-8B | SCS 78.18 +/- 0.04 (sentence, ordered) vs 76.59 (absolute) | Table 3 |
+
+Two findings matter here. First, even the best frontier model over-uses memory
+on **53.33%** of atoms and under-uses on **35.82%** — incorrect *use*, on a
+clean supplied context, is a majority behaviour, not an edge case. Second, the
+Judge prompt's counterfactual ("what would change if this atom were removed")
+is structurally the same instrument as this project's paired ledger and
+ablation logic, but at the level of a single proposition and a single response.
+`credit.py` implements the training half as eight ordered reward channels
+(`A-`, `B+`, `B-`, `C+`, `C-`, `A0+`, `B0-`, `C0-`) with
+`ORDERED_BIDIRECTIONAL_LOCALIZATION` and exact atom ablation, separating
+over-use from under-use credit at response-token granularity. This is the most
+complete published implementation of the use-side hypothesis.
+
+**2. Controlled Memory Interference ([arXiv:2608.07622](https://arxiv.org/abs/2608.07622),
+2026-08-07).** A controlled diagnostic for how memory states interfere as they
+accumulate. Benign accumulation has limited effects, but *relationship-specific*
+interference sharply suppresses update plasticity "either by blocking
+target-memory exposure or by disrupting its **downstream use**" — the same
+two-way split as delivery and use. Lexical and dense retrieval show **distinct
+interference pathways**, and poisoning is more sensitive to update-authority
+cues than to recency. The relevance is methodological: a lexical coverage
+census and an embedding-based one can disagree about which memories interfere,
+so §17.89's decision to reuse `queryCoverage` / `tokenize` rather than invent a
+new similarity notion is a choice that now has an independent reason.
+
+**3. CAMEL / The Trap of Trajectory ([arXiv:2605.09330](https://arxiv.org/abs/2605.09330),
+2026-05-10).** Recovers a causal structure over observations and memory states,
+then isolates three canonical spurious patterns — explicit confounding,
+unmeasured confounding, collider bias — as variable pairs that are associated
+but have no directed causal path. The diagnosis is the negative effect in one
+sentence: memory *improves* reasoning on clean inputs but *amplifies reliance*
+on spurious patterns when present. Two amplifiers are specific to memory:
+**persistence** (a spurious cue written once is retrieved on every later turn)
+and **feedback** (acting on it generates the next trajectory, which is written
+back and reinforces the cue). CAMEL calibrates at both write time and retrieval
+time. This is the causal version of this project's corroboration variable
+(ALTK-Evolve `support` / `sup3`, MemGuard `distinct_task_ids >= 2`, IBM's
+14-rule core): a single-task observation is exactly the object a spurious
+correlation can hide in.
+
+**4. The Memory Curse (7 LLMs x 4 social dilemma games x 500 rounds).**
+Cooperation degrades in **18 of 28** model-game combinations as accessible
+history grows. Lexical analysis of **378,000** reasoning traces ties the decay
+to eroding forward-looking intent rather than paranoia; a memory-sanitization
+control that holds prompt *length* fixed while replacing history with synthetic
+cooperative records substantially restores cooperation, so the **content**, not
+the length, is the operative trigger; ablating explicit chain-of-thought often
+reduces the collapse. This is an independent replicate of the defect R45
+exposed here: `V1-pack-not-empty` grades the *size* of a pack, and a lane that
+reports only size cannot see that the content is what harmed.
+
+**5. Personal-fact memory pathology ([arXiv:2610.10265](https://arxiv.org/abs/2610.10265),
+2026-10-07, read in a secondary technical summary).** Moves the measurement
+point to *before* generation and names three failure modes — staleness (70.3%
+of prompts exposed a superseded value without update resolution),
+misattribution, and latency — with a four-layer evaluation (storage-state
+validity, identity resolution, abstention, serving latency). Its decisive
+finding for this project: retrieval is not the bottleneck (participant-aware
+BM25 is within 0.02 of the reference ranker); **key assignment** is, and two
+frozen LLMs reproduce prompt-level errors verbatim into generated text. Dirty
+data in front of the model is not washed clean by the model.
+
+**What this changes, and what it does not.** It does not open an arm, change a
+threshold, or add a gate; R46's `as-is` dispatch is pinned on `cb329054` and
+the standing rule forbids a diff on a measuring head. It does strengthen the
+registration of everything after the readback: U3's coverage floor should be
+read as a *content* filter, not a size filter; the `>= 2` corroboration
+contrast is a spurious-correlation control; and a future transcript-level
+V46/V47 that grades influence per statement has a published rubric (A/B/C) and
+a published counterfactual judge to borrow from. `TECH-DESIGN` §17.92 maps the
+sources to the open items. No tau-squared-bench score is claimed from any of
+them.
+
+**Ranking (unchanged).** IBM `gpt-5.5` airline **82.0** remains the SOTA;
+microglia **fifth of six named entries**. An observation round and five papers
+move no leaderboard row.

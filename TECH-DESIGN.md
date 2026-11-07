@@ -6486,3 +6486,39 @@ the census is committed.
 
 **Ranking.** IBM `gpt-5.5` airline 82.0 remains the SOTA; microglia fifth of
 six named entries. An observation round moves no rank.
+
+### 17.92 Five sources read during the as-is dispatch, mapped to the open items
+
+`COMPETITIVE` L.11 reads five 2026 sources on the use side of the negative
+effect, one of them with its implementation (`Quark-Medical/memcalib`,
+`recipe/memcalib_credit/{judge,metrics,credit,segments}.py`). This section maps
+each to an item already registered in §17.90's priority table. **No mapping
+opens an arm, changes a threshold, adds a gate or edits a preregistration.**
+The `as-is` dispatch is pinned on `cb329054`; a diff on a measuring head is the
+one thing §34.21 forbids. Every number below is the source's own, not a
+microglia measurement.
+
+| source | what it quantifies | item it informs | action now |
+|---|---|---|---|
+| MemCalib, [arXiv:2609.24259](https://arxiv.org/abs/2609.24259) | per-atom influence A (Ignore) / B (Bound) / C (Control), over-use 53.33% and under-use 35.82% on the best frontier model, 1,500 test examples | transcript V46/V47, when the driver hands `simulations[].messages` to the gate layer | none; the rubric is a candidate, not a gate |
+| MemCalib-RL `credit.py` | eight ordered channels, bidirectional counterfactual credit by exact atom ablation | the paired ledger's unit: one statement, one question, one counterfactual | none; this project has no training loop |
+| CMI, [arXiv:2608.07622](https://arxiv.org/abs/2608.07622) | lexical and dense retrieval follow different interference pathways; interference can disrupt downstream use | §17.89's decision to reuse `queryCoverage` / `tokenize` instead of an embedding | none; no new similarity notion is introduced |
+| CAMEL, [arXiv:2605.09330](https://arxiv.org/abs/2605.09330) | three spurious patterns from a causal graph; persistence and feedback amplifiers | the `>= 2` distinct-task corroboration contrast of R46's ablation | none; registered separately, still closed |
+| Memory Curse | content, not prompt length, is the operative trigger (sanitization control); 18 of 28 combinations degrade | U3's coverage floor is a **content** filter, not a size filter | none; the floor awaits the census |
+| PFM, [arXiv:2610.10265](https://arxiv.org/abs/2610.10265) | key assignment is the bottleneck, retrieval is not; 70.3% stale exposure | the three-layer census `active` / `servable` / `served` | none; already shipped in R41–R45 |
+
+**The one design correction these sources support, and the one they do not.**
+They support reading U3's floor as a statement about *what the injected text is
+about*, which is what `zeroCoveragePairs` and the derived `coverageProfile`
+measure, and not as a statement about how many items a pack holds, which is all
+`V1` grades. They do **not** support importing MemCalib's LLM Judge, its A/B/C
+labels or its RL trainer into this lane: that would require a model call per
+atom, a labelled rubric and a training objective, and would change the very
+number R46 is measuring. The project's answer stays a pure, model-free census
+over the same kernel functions `buildPack` already uses.
+
+**Dependency layering, unchanged.** `bin/tau2-driver.ts` →
+`tau2-use-census.ts` → `@agentix-e/microglia-core/kernel`. Nothing in L.11
+touches `packages/core`, `sota.yml`, a gate definition, a preregistration or
+the pinned head. The reading is recorded before the readback so that a later
+design decision cannot be mistaken for something the run itself showed.

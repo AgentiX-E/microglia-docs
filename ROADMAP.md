@@ -4151,3 +4151,33 @@ vitest 4 migration deliberately last; (7) cortex release (W1) **excluded**.
 `TECH-DESIGN` §17.91 carries the configuration, the reading plan and the
 dependency layering; `AUDIT` §34.26 carries the twelve fixed decisions and the
 priority table.
+
+**R46 round 2 — dispatched 2026-11-07 as run `42317807270`.** The registration
+pushed as `cb329054` (`microglia` master) and `3ebfbe0c` (`microglia-docs`
+main), both Lambertyan +0800. `ci.yml` `42317463372` was read green from the
+remote on `cb329054` before any dispatch, and the remote prereg blob was
+verified byte-for-byte (`sha256 ac8fa19f…`, 5,917 bytes). Only then was
+`sota.yml` dispatched with the registered inputs (`http=204`); run
+`42317807270` on `cb329054` is `in_progress` with a watcher polling to
+completion. R45's real artefact cross-checks the census prediction:
+`meanPackIds 1.8392 x 1480 ≈ 2,722` injected pairs, and R45 carries no `use`
+block, so pre-R46 artefacts correctly read "not measured". **The pinned head
+is not touched while it measures** (§34.21); this waiting round pushes docs
+only.
+
+**Five use-side sources read while the census ran (`COMPETITIVE` L.11,
+`TECH-DESIGN` §17.92, `AUDIT` §34.27).** MemCalib
+([arXiv:2609.24259](https://arxiv.org/abs/2609.24259)) grades per-atom
+influence Ignore / Bound / Control and reports the best frontier model
+over-using on 53.33% of atoms; its code is public. CMI
+([arXiv:2608.07622](https://arxiv.org/abs/2608.07622)) separates lexical and
+dense interference. CAMEL
+([arXiv:2605.09330](https://arxiv.org/abs/2605.09330)) isolates three spurious
+patterns. The Memory Curse study holds prompt length fixed and finds content
+is the trigger. The PFM pathology
+([arXiv:2610.10265](https://arxiv.org/abs/2610.10265)) locates the bottleneck
+before retrieval. None is a tau-squared-bench entry; **none changes the order
+of the remaining steps above**, and none opens an arm, adds a gate, edits a
+preregistration or moves the ranking. IBM `gpt-5.5` airline **82.0** remains
+the SOTA; microglia **fifth of six named entries**. The single remaining
+blocker is the readback of run `42317807270`.

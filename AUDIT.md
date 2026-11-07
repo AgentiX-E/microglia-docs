@@ -3118,3 +3118,50 @@ last structural one. The only committed source change is the new prereg file.
 | P1 | R46 admission-rule ablation | `served > 0` (met) | three arms, one store, `>= 2` contrast registered separately |
 | P2 | U1 calibration, U2 after a real reachability test | U3 read | U1 reports `served = 0` as a measurement |
 | P3 | transcript V46/V47, S1a/S1b, `sota.ts` split, W8, vitest 4 | ROADMAP order | unchanged acceptance bar |
+
+### 34.27 The census is dispatched, and five use-side sources read without moving the head
+
+**The dispatch, on a verified green head.** The registration commit of §34.26
+pushed as `cb329054` on `microglia` master and `3ebfbe0c` on `microglia-docs`
+main, both Lambertyan with a +0800 author date. `ci.yml` run `42317463372` on
+`cb329054` was read from the remote as `completed success` — every one of its
+forty steps green, including the coverage gates — before any dispatch. Only
+then was `sota.yml` dispatched on `ref=master` with the registered inputs;
+`http=204`, and run `42317807270` was created on `cb329054` at 00:22:17Z. The
+prereg file on the remote head was verified byte-for-byte against the local one
+(`sha256 ac8fa19f…`, 5,917 bytes), so the run will grade the same registration
+this repository committed. A fresh watcher polls the run to completion; no
+result is claimed before its readback.
+
+**The head stays still.** §34.21's rule is applied again: R46 is a measurement
+in progress, so `microglia` master `cb329054` is not touched by the literature
+reading. This waiting round pushes `microglia-docs` only. That is deliberate,
+not an omitted push — a diff on the measuring head would make the readback
+unable to name which treatment it measured.
+
+**Five sources, all on the use side (`COMPETITIVE` L.11, `TECH-DESIGN` §17.92).**
+MemCalib ([arXiv:2609.24259](https://arxiv.org/abs/2609.24259)) is the first
+found source to put a number on incorrect *use*: per-atom influence A/B/C,
+with the best frontier model over-using on 53.33% of atoms and under-using on
+35.82% over 1,500 test examples; its published implementation
+(`Quark-Medical/memcalib`) grades a counterfactual "what would change if this
+atom were removed". Controlled Memory Interference
+([arXiv:2608.07622](https://arxiv.org/abs/2608.07622)) finds lexical and dense
+retrieval interfere through different paths. CAMEL
+([arXiv:2605.09330](https://arxiv.org/abs/2605.09330)) isolates three spurious
+patterns from a causal graph and two memory-specific amplifiers. The Memory
+Curse study holds prompt length fixed and shows the *content* is the trigger.
+The PFM pathology ([arXiv:2610.10265](https://arxiv.org/abs/2610.10265)) finds
+key assignment, not retrieval, is the bottleneck. None is a tau-squared-bench
+entry, so the ranking does not move.
+
+**Defect check, and what is not claimed.** These readings open no arm, add no
+gate, change no threshold and edit no preregistration. They do sharpen a later
+registration: U3's floor is a *content* filter, not a size filter, because
+`V1` grades size and the sources agree that content is what harms. No paper's
+number is imported as a microglia measurement, no LLM Judge or RL trainer is
+added to a lane that must stay model-free at the census, and no accuracy claim
+is made from a dispatch that has not finished. The six documents remain
+append-only, English, free of CJK, credentials and forbidden literals; the
+result-file diff of `pnpm check` was classified as timing-only and restored
+(§34.26).

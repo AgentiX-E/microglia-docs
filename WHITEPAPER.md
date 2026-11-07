@@ -3274,3 +3274,52 @@ six named entries. The watcher on R45 has now returned its final line, and it
 agrees with the record: three blocking gates, no effect certified, evidence
 uploaded. The next run is an observation, not a claim. That is the discipline
 that makes a later claim worth reading.
+
+### 3.6.46 Not what we remembered, but how we used it
+
+The suspicion that opened this line of work was that the trouble lay in what
+was remembered and in how it was used. For several rounds the project could
+only measure the first half. It counted active items, servable items, served
+packs, and the mean number of rules per question. Then R45 finally delivered a
+treatment — 1,480 of 1,480 recall requests carried an item — and the score
+still refused to say anything decisive. The pack arrived; the benefit did not
+resolve. That is the shape of a problem whose other half has not been measured.
+
+While the observation run measures it, five independent 2026 sources make the
+same distinction from outside. MemCalib grades each memory atom by the
+influence it should have on an answer — ignore it, let it support locally, let
+it control the conclusion — and finds that even the strongest frontier model
+over-uses memory on more than half of all atoms. The Memory Curse experiments
+hold the length of a prompt fixed and swap only its content, and cooperation
+recovers: it is not how much memory is present, it is what that memory says.
+CAMEL traces how a spurious association, once written, is retrieved again and
+again and eventually generates the very evidence that reinforces it. The PFM
+pathology finds the bottleneck before retrieval, in which key a fact was filed
+under, and shows that a model reproduces a prompt's errors rather than washing
+them clean. Controlled Memory Interference finds that lexical and dense
+retrieval disrupt downstream use through different paths.
+
+None of these is a leaderboard entry, and none is imported as a number this
+project measured. What they supply is a vocabulary. The failure is not that a
+store held a bad rule; it is that a rule about one thing was allowed to shape
+an answer about another, with more influence than its evidence warranted. That
+is a statement about the *use* of a memory, and it is measurable at the point
+where the memory is put in front of the model — which is exactly where R46's
+census sits. It records the question and the statements actually served, and
+asks how many of those pairs share even one content term.
+
+The discipline does not change with the new vocabulary. A coverage floor is a
+content filter, and it will be computed from the census of real statements
+after the run, then registered before the run that uses it. A rubric that can
+grade influence per statement exists now in the literature, but adopting it
+would put a model call and a labelled judgement inside the lane that is trying
+to measure without them. So the rubric waits for the transcript work, and the
+current round stays a pure, model-free observation. When a number is ambiguous,
+first build the instrument that can disambiguate it; only then decide what to
+change.
+
+**Where we stand.** IBM's 82.0 is still the SOTA; microglia is still fifth of
+six named entries. The census run is measuring on a head that this reading did
+not touch. No accuracy claim is made from it. The question has narrowed from
+"does memory help" to "which memory reached which question, and with what right
+to speak" — a question an artefact can now answer.
