@@ -2043,3 +2043,82 @@ The one column microglia leads is still "whether the treatment was delivered",
 `1512 served` on R46 with `3016` injected pairs of which `1175` share no
 content term with the question. A shipped instrument, a green CI run and a
 registered observation move no leaderboard row.
+
+### L.14 The SOTA's own dose curve, and six benchmarks that measure use-side harm
+
+**Ranking and the indicators contested.** The indicator is tau-squared-bench
+Pass^4, the share of tasks solved in all four trials. IBM `gpt-5.5` airline
+**82.0** is the current SOTA (leaderboard submission PR #551, filed 21 Sep
+2026, 50 tasks, Pass^1 88.50 percent, cost 0.1690 USD per conversation,
+modified prompts, expected to be listed as Unverified, still open). Its retail
+submission (PR #542, filed 14 Sep 2026, 114 base-split tasks, Pass^1 81.14 to
+Pass^4 67.54, 0.1084 USD per conversation, tau2-bench v1.0.1) ranks first in
+retail ahead of the fine-tuned RAFT-30B-A3B at 61.4. The snapshot is dated 12
+Oct 2026; frontier airline entries sit between 66 and 72. An important caveat
+that IBM itself discloses: leaderboard submissions are scored on the full base
+split that includes the training tasks from which the guidelines were learned,
+so those figures are not interchangeable with held-out evidence.
+
+| Rank | Entry | Indicator | Note |
+|---|---|---|---|
+| 1 | IBM ALTK-Evolve `gpt-5.5` (PR #551) | airline Pass^4 **82.0** | current SOTA, Unverified, modified prompt |
+| 1 | IBM ALTK-Evolve `gpt-4.1` (PR #542) | retail Pass^4 67.5 | ahead of RAFT-30B-A3B 61.4 |
+| 2 | SapientAI | 72.0 | named entry, prior snapshot |
+| — | IBM `gpt-4.1 sup3` | airline 44.0 | eighth on the airline board |
+| — | stock `gpt-oss-120b` | 34.0 | reference point |
+| **5 / 6** | **microglia** | — | no certified Pass^4 claim; MDE 13.73pp |
+
+**IBM's own ablation is the most important competitive reading.** Held-out
+airline, `gpt-4.1`, 20 tasks, four trials: baseline 57.5 mean accuracy / 35.0
+Pass^4; `sup3` (14 guidelines, support at least 3) 60.0 / **45.0**;
+`lossless` (101 guidelines) 65.0 / **40.0**. Retail, 40 tasks: baseline 78.1 /
+57.5, `sup3` (31) 78.8 / 60.0, `lossless` (292) 82.5 / 67.5. The same method
+therefore has opposite optimal dose in two domains. With `gpt-5.5` in airline,
+`sup2` (103) and `lossless` (146) lift Pass^4 from 55.0 to 70.0 and accuracy
+from 72.5 to 82.5 on held-out tasks, with the lossless result reproduced
+exactly across reruns. Cost rises with the dose: retail 0.084 to 0.139 USD per
+conversation (+65 percent), airline 0.081 to 0.107 (+32 percent), while matched
+successful conversations shorten by 0.3 to 0.4 assistant turns. The library is
+`AgentToolkit/altk-evolve`; the benchmark is `sierra-research/tau2-bench`.
+
+**Six benchmarks quantify the harm after retrieval.** None is a
+tau-squared-bench Pass^4 entry, so none moves a leaderboard row; they explain
+the use-side gap this project is measuring.
+
+| Source | What it measures | Reported magnitude |
+|---|---|---|
+| MemSyco-Bench | errors after correct retrieval (R+/A-) | 61-62 percent across Mem0, A-Mem, LightMem |
+| OP-Bench | over-personalisation vs memory-free BASE | 26.2-61.1 percent relative drops, 36 configurations |
+| MemCalib | calibrated atom influence (Ignore/Bound/Control) | best SCS 46.25, Exact 28.40; MemCalib-RL lifts Qwen3-8B 31.17 to 79.54 |
+| BenchPreS | preference misapplication | up to 86.48 percent; selectivity instruction cuts it to 12.80 at a 0.78-3.82 point cost |
+| RPEval | Ignore intent matching | humans 0.86, models 0.06-0.38 (inverse scaling) |
+| LongMemEval | sustained-interaction accuracy | about 30 percent drop |
+
+Four implementation families are relevant to borrowing. **MemCalib-RL**
+(`Quark-Medical/memcalib`, a `verl` fork) splits reward into eight channels for
+target-versus-actual influence and localises credit by ordered bidirectional
+counterfactual ablation; it needs training access and token-level likelihoods.
+**RSCB-MC** (arXiv 2604.27283) is inference-shaped: risk-sensitive contextual
+bandit, abstention as a first-class action, `gamma > alpha > beta`, 0.0 percent
+false-positive injection where static retrieval reaches 75 percent on hard
+negatives, and a 17.5 percent false-positive increase when abstention is
+ablated. **FinAcumen** (arXiv 2606.17642) gates retrieved experience behind a
+calibrated semantic-relevance threshold with an explicit fallback to the base
+policy. **Remember When It Matters** (Meta AI, arXiv 2607.08716) frames
+"behavioral state decay" and uses a separate memory agent that may stay silent;
+its tau-squared-bench ablation reports full selective intervention 64.3 macro /
+61.2 micro pass@1 against a 57.5 / 55.0 baseline, full-bank 61.5 / 58.6 and
+always-inject 63.5 / 61.5, with no error bars and a 0.3 micro-point difference
+the authors place inside run variance. That paper measures pass@1, not Pass^4,
+so it cannot be placed in the table above; its "stay silent" result is a
+qualitative corroboration of abstention, not a competing leaderboard number.
+
+**Where microglia stands.** Fifth of six named entries, unchanged. The one
+column it leads is still whether the treatment was delivered: `1512 served` on
+R46. Its defensible differentiator is measurement rigour — paired confidence
+intervals, MDE, a pre-registered refutation rule and a committed retention
+curve — against competitor ablations that mostly report point estimates without
+error bars. The offline proxy probe in `AUDIT.md` section 34.30 shows the
+structure-only cost rule is robust to cost ordering but yields a plateau, not a
+unique floor; no floor is chosen here. A source study, a green CI run and an
+observation round move no leaderboard row.

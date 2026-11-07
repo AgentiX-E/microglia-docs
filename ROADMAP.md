@@ -4374,3 +4374,68 @@ every dimension, `ci.yml` green, both repositories pushed as Lambertyan, no
 CJK, no skipped tests, no placeholder markers, no credential value, all
 documents and code comments in English, and every iteration reporting the
 competitor comparison and the SOTA ranking.
+
+### R47 in flight: the use-side cost rule, and the remaining order
+
+**Current position.** P0 is closed: both repositories were pushed as
+Lambertyan (`bc0a39eb` on `microglia@master`, `e33c73af` on
+`microglia-docs@main`), the R47 pre-registration blob is byte-identical on the
+remote, `ci.yml` `42336894395` went green on 44 steps, and the dispatch returned
+HTTP 204 as run `42337250684` on `bc0a39eb`. On resume the L4 job had completed
+the memory arm and entered the reference arm (step 12 of 19); BIRD and the
+retrieval probe were correctly skipped. A watcher is alive. Section 34.21's
+head-still rule applies: no `microglia` source, gate, threshold, pre-registration
+or second dispatch changes while R47 measures. This iteration's permitted
+parallel work is source study, documentation and an offline probe.
+
+**What this iteration added to the plan.** Three first-party readings, all in
+`AUDIT.md` section 34.30 and `TECH-DESIGN.md` section 17.95. IBM's held-out
+airline ablation shows `sup3` (14 guidelines) at Pass^4 45.0 versus
+`lossless` (101) at 40.0 while the larger set wins on Mean Accuracy 65.0 to
+60.0 — the SOTA system measuring its own non-monotonic memory dose. Six
+benchmarks (MemSyco-Bench, OP-Bench, MemCalib, BenchPreS, RPEval, LongMemEval)
+place 61 to 62 percent of errors after retrieval, score memory systems below a
+memory-free baseline, and show over-use dominating. The real-kernel offline
+probe showed the structure-only cost rule is robust to all three cost orderings
+but returns a plateau `[0.01, 0.02, 0.03]`, and that the proxy's `zeroShare
+0.7588` overstates R46's real `0.3896` by 36.92 points. Consequence for U3: the
+registration must declare a **tie-break rule and the cost weights before the
+dispatch that applies the floor**; an array-order default is not acceptable.
+
+**Remaining steps, in order (P0–P3), updated.**
+
+| priority | step | blocked by | status |
+|---|---|---|---|
+| P0 | two repositories pushed, `ci.yml` green on the R47 head | — | **done** |
+| P0 | documentation and offline source study while the run measures | — | **done this iteration** |
+| P1 | read R47 `l4-evidence`: grade 8 predictions, 6 refutations, 3 reconciliation identities, quantile order, positive-rung `emptiedPacks > 0` | run `42337250684` | **in progress** |
+| P1 | U3 coverage-floored arm: compute the admissible set from the committed curve, register cost weights and tie-break before its own dispatch, keep `V1` blocking | R47 readback | pending |
+| P1 | R46 admission-rule ablation (`as-is` / `distinct-task-support` / `min-support-only`) with the `>= 2` contrast registered separately | R47 readback | pending |
+| P2 | U1 calibration using the MemCalib score structure on committed coverage, then U2 only after a real reachability test | U3 | pending |
+| P2 | transcript V46/V47, S1a then S1b | U1 / U2 | pending |
+| P3 | `sota.ts` split and `eval-sql` move, W8 dose curve, vitest 4 migration last | independent | pending |
+| — | cortex release (W1) **excluded** by the standing instruction | — | excluded |
+
+**Decision points at the readback.** If the three reconciliation identities
+hold, quantile ordering holds, and at least one positive rung empties a pack,
+the grid has pack-level resolving power and U3 can be registered from the
+committed curve. If any identity fails, or the grid is broken, the instrument is
+reverted on the reading and U3 stays closed. If no positive rung empties a pack,
+R47's sixth prediction is falsified: the fixed grid cannot grade `V1` on this
+corpus and U3 cannot be registered from it — the registration is not rewritten
+after the fact. If `l4-paired` is significantly negative or below minus five
+points with a served pack, R45's revert rule fires unchanged.
+
+**Ranking and competitor comparison (unchanged).** IBM `gpt-5.5` airline
+**82.0** (unverified, PR #551, filed 21 Sep 2026, modified prompt, still open)
+is the current SOTA; IBM `gpt-4.1` retail 67.5 (PR #542) ahead of RAFT-30B-A3B
+61.4; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b`
+34.0; microglia **fifth of six named entries**. The newly read use-side sources
+— MemSyco-Bench, OP-Bench, BenchPreS, RPEval, LongMemEval, RSCB-MC, FinAcumen,
+MIST and Meta's "Remember When It Matters" — join MemCalib, CMI, CAMEL, the
+Memory Curse study, PFM, ALTK-Evolve, MemGuard, MemAdapter, AECG and
+MemPABench. None of the new papers is a tau-squared-bench Pass^4 entry, and
+Meta's pass@1 ablation cannot be placed in that ranking. The column microglia
+leads is still "whether the treatment was delivered": `1512 served`, `3016`
+injected pairs, `1175` with no shared content term. A source study, a probe
+and a green CI run move no leaderboard row.

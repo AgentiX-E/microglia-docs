@@ -10025,3 +10025,60 @@ sources behind the hypothesis are unchanged — MemCalib, CMI, CAMEL, the
 Memory Curse study, PFM, plus ALTK-Evolve, MemGuard, MemAdapter, AECG and
 MemPABench; none is a tau-squared-bench entry. A registered observation moves
 no leaderboard row.
+
+## 168 — The competitors measured the same harm, and a structure-only floor became measurable
+
+**State on resume.** R47 (run `42337250684`) was dispatched on `bc0a39eb` after
+`ci.yml` `42336894395` went green on 44 steps. On resume the L4 job had
+completed the memory arm and entered the reference arm (step 12 of 19); the
+BIRD and retrieval-probe jobs were correctly skipped by `bird=false` and
+`probe=false`. The first watcher had died silently at `04:21Z` with the log
+frozen; a fresh watcher was started and confirmed alive. No `microglia` source
+was touched: section 34.21's rule that a pinned dispatch is a measurement in
+progress was applied again, so this round's work is documentation, first-party
+source study and an offline probe.
+
+**The hypothesis got independent, quantified support.** IBM's own ALTK-Evolve
+ablation is the sharpest reading: on held-out airline tasks with `gpt-4.1`, 14
+high-support guidelines give Pass^4 45.0 percent while all 101 guidelines give
+40.0 percent, even though the larger set raises Mean Accuracy from 60.0 to
+65.0. More memory lowered reliability by 5.0 points in the system that holds
+the SOTA. Five further benchmarks converge: MemSyco-Bench attributes 61 to 62
+percent of errors to post-retrieval use; OP-Bench measures 26.2 to 61.1 percent
+drops against a memory-free baseline; MemCalib's best frontier model scores SCS
+46.25 and Exact 28.40 of 100 on calibrated use; BenchPreS sees misapplication
+up to 86.48 percent; RPEval finds models at 0.06 to 0.38 on Ignore where humans
+reach 0.86. The recurring shape is over-use, a trade of one error for another
+under prompt fixes, and distortion introduced by compression. Full tables and
+caveats are in `AUDIT.md` section 34.30.
+
+**First-party code was read, not summarised from a press post.**
+`Quark-Medical/memcalib` was inspected through the GitHub trees API:
+`recipe/memcalib_credit/metrics.py` defines `scs = 0.5 ** (over_budget +
+under_budget)`, `credit.py` implements eight merged channels with ordered
+bidirectional localisation, and `segments.py` produces exactly covering token
+groups. RSCB-MC's asymmetric abstention rule and FinAcumen's calibrated
+relevance threshold were mapped onto the project's `COVERAGE_FLOORS` curve. The
+design consequence is in `TECH-DESIGN.md` section 17.95: a floor scored by
+`alpha * relevant - gamma * falsePos - beta * abstained`, with
+`gamma > alpha > beta`, decided from the committed histogram alone.
+
+**A real-kernel probe made that rule testable.** On the fingerprinted fixture
+(32 statements x 50 airline queries), the pure asymmetric cost peaks at the
+same plateau `[0.01, 0.02, 0.03]` under all three cost orderings, because the
+smallest positive coverage is 0.0345. All 9 positive rungs empty at least one
+pack. The probe also measured that the offline proxy's `zeroShare = 0.7588`
+overstates R46's real `0.3896` by 36.92 points — a measured explanation of
+R46's falsified fourth prediction. It reported `FLOOR_SELECTED = false`: R47's
+refutation forbids a floor from accuracy or from this proxy.
+
+**What is next, in order.** P0: read R47's `l4-evidence`, verify the eight
+structural predictions and six refutations, and confirm the three reconciliation
+identities. P1: compute U3's floor from the committed curve, register a
+tie-break rule and the cost weights before its own dispatch, and keep `V1`
+blocking. P1: R46's admission-rule ablation with at least two comparators.
+P2: U1 calibration and U2, then transcript and S1 work. P3: `sota.ts` split,
+W8 dose curve and the vitest 4 migration, deliberately last. Section 34.21's
+head-still rule is lifted only after R47 is read back. Ranking is unchanged:
+IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of six named
+entries.

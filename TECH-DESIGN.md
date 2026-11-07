@@ -6709,3 +6709,78 @@ claims hold; `pnpm check` exit 0 with 2,944 tests in 140 files and coverage
 before dispatch; both repositories pushed as Lambertyan; no CJK, no skipped
 tests, no placeholder markers. Ranking is unchanged: IBM `gpt-5.5` airline
 82.0 remains the SOTA, microglia fifth of six named entries.
+
+### 17.95 The use-side cost model: a floor decided from structure, never from accuracy
+
+**The design question.** Section 17.89 requires U3's `minCoverage` floor to be
+computed from a committed histogram. It does not say how a floor is chosen from
+that histogram. Choosing the rung with the best `l4-paired` is not an option:
+R46 read `0.00pp [-10, +10] p=1.0000 n=50` with MDE 13.73pp, so every rung is
+inside the noise floor and the argmax would be a choice from noise. This section
+registers the decision rule at the design level, ahead of the committed curve;
+the floor itself stays unchosen until R47 is read back.
+
+**Two borrowed mechanisms, both inference-compatible.** MemCalib
+(arXiv 2609.24259, `recipe/memcalib_credit/metrics.py`) scores calibrated use
+as `scs = rho ** (over_budget + under_budget)` at `rho = 0.5`, where the budget
+is the sum of per-atom influence distances in each direction. Its RL loop needs
+token-level likelihoods and is not available through an inference-only API, so
+only the score structure is borrowed: an exponential penalty for misallocated
+influence, split into an over-use and an under-use channel. RSCB-MC
+(arXiv 2604.27283) contributes the decision rule `S(a, z) = R(a, z) - mu *
+P_fp(a, z) - alpha * c(a, z)` with `gamma > alpha > beta`, and abstention as a
+first-class action. Ablating abstention there raises false-positive injection
+by 17.5 percent and collapses cumulative reward, which is the empirical reason
+`emptiedPacks` must be a cost term rather than a discarded remainder.
+
+**The mapping onto the committed curve.** For each rung `f` in
+`COVERAGE_FLOORS`, the committed `floors` row already supplies
+`retainedPairs`, `retainedPacks` and `emptiedPacks`. Define, over the same
+population, `relevant(f)` as retained pairs with coverage above zero,
+`falsePos(f)` as zero-coverage pairs still injected at that rung, and
+`abstained(f) = emptiedPacks`. The structure-only score is
+
+```ts
+net(f) = alpha * relevant(f) - gamma * falsePos(f) - beta * abstained(f)
+```
+
+with `gamma > alpha > beta` registered before the dispatch, and the admissible
+floor set is `argmax_f net(f)`. No accuracy, `l4-paired`, p-value or task-level
+outcome enters `net`. The score is deterministic over the committed population,
+so two readers of one artefact must compute the same admissible set.
+
+**A registered tie-break is mandatory.** The offline probe in section 34.30
+found that on the proxy corpus the smallest positive coverage is 0.0345, so the
+rungs `0.01`, `0.02` and `0.03` retain identical pairs and tie under all three
+cost orderings. The correct reading is a tie set, not a unique floor. U3's
+registration must therefore declare a tie-break rule before dispatch — for
+example the smallest rung in the admissible set, which is the least aggressive
+filter — rather than letting an implementation detail such as array order
+choose. This is a design requirement, not a numerical result: the committed
+curve from a real run may have a different plateau.
+
+**What the probe proved and what it did not.** It proved
+`METHODOLOGY_VALID`: the rule is structure-only, accuracy-free and robust to
+all three cost orderings; `GRID_RESOLVING_RUNGS = 9/9`; and
+`SCALAR_SUFFICIENT = false`. It reported `FLOOR_SELECTED = false`. It also
+measured that the offline proxy's `zeroShare = 0.7588` overstates R46's real
+`0.3896` by 36.92 points, because the proxy injects all 32 statements into
+every query while the facade delivers a mean of 1.995 scoped items. This is why
+R47's refutation forbids a floor from the offline structural proxy: only a
+committed run supplies the population a floor would act on.
+
+**Dependency layering, unchanged by this section.** The cost model is a
+pure function of `CoverageHistogram`, which is produced in
+`packages/eval/src/tau2-use-census.ts` from `UseObservation` collected at the
+`/v1/recall` facade in `packages/eval/src/bin/tau2-driver.ts`, reduced by
+`armRecordFromDriver` in `packages/eval/src/tau2-instrument.ts`, projected by
+`tau2ArmRecordOf` in `packages/eval/src/tau2-gates.ts` and persisted by
+`packages/eval/src/bin/l4.ts`. The coverage kernel (`queryCoverage`,
+`tokenize`) lives in `packages/core/src/kernel/similarity.ts` and is shared
+with `buildPack`'s `minCoverage` in `packages/core/src/apply/pack.ts`. No new
+package, no new edge from `packages/core` to `packages/eval`, and no gate reads
+`coverage`. A future U3 registration adds a decision function over
+`CoverageHistogram` inside the eval lane; it does not widen the core API. The
+implementation stays TDD-first with real fixtures, no mocks, and at least 95
+percent coverage on every dimension. Ranking is unchanged: IBM `gpt-5.5`
+airline 82.0 remains the SOTA, microglia fifth of six named entries.

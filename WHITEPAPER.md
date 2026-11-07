@@ -3453,3 +3453,60 @@ six named entries. A registered observation moves no leaderboard row. The
 order has not changed: read the ladder from a run that carries the instrument,
 register U3's floor before the run that applies it, and only then ask whether
 filtering what the model was shown changes what it does.
+
+### 3.6.49 The problem is not what was retrieved. It is what was allowed to speak
+
+A memory system can be judged by how much it remembers. That is the wrong
+question. The useful question is whether each thing it hands to the model
+deserved to influence that particular answer, and by how much. Independent
+research groups have now measured the gap, and the results are remarkably
+consistent.
+
+**Retrieval succeeds and the answer still goes wrong.** MemSyco-Bench separated
+errors into four cases by crossing retrieval success with answer correctness,
+and found that across Mem0, A-Mem and LightMem, 61 to 62 percent of all errors
+occur after the relevant memory has already been retrieved. The fact was
+available; it was given the wrong weight, or a less relevant one was allowed to
+win. OP-Bench attached six memory methods to six models and scored every one
+below a memory-free baseline, with drops from 26.2 to 61.1 percent. MemCalib
+asked a finer question: for each atomic proposition in the supplied memory,
+should it be ignored, used as bounded local support, or allowed to control the
+conclusion? The best frontier model it tested scored 46.25 out of 100 on
+calibrated use and used every atom at exactly the right level in only 28.40
+percent of responses. Almost every model over-used memory more than it
+under-used it. Adding more memory is not obviously the fix.
+
+**Even the current leaderboard leader says so.** IBM's ALTK-Evolve tops the
+tau-squared-bench airline leaderboard at 82.0 percent Pass^4. Its own held-out
+ablation shows that on `gpt-4.1`, a compact core of 14 guidelines reaches
+Pass^4 45.0 percent while the full set of 101 reaches only 40.0 percent —
+although the larger set scores higher on average accuracy. More guidance raised
+capability and lowered reliability at the same time. The authors describe
+delivery as a dial to tune per domain, not a constant to maximise. A retail
+ablation in the same report goes the other way, which is precisely why the dose
+must be measured on the population it will act on rather than assumed.
+
+**What microglia has measured about itself.** On R46, 1,512 of 1,512 recall
+requests were served and 3,016 statement-question pairs were injected; 1,175 of
+those pairs shared no content term with the question. That 0.3896 share is not
+proof those memories were useless, but it is proof that delivery and relevance
+are different things — and the current gate only checks that a pack is
+non-empty. A single scalar cannot say what a relevance floor would remove, which
+is why R47 commits a ten-rung retention curve instead.
+
+**The discipline that follows.** Two tempting shortcuts are closed. A floor
+cannot be read off an accuracy number: R46's paired difference was 0.00 points
+with a confidence interval of plus or minus 10 points and a minimum detectable
+effect of 13.73 points, so no candidate floor is distinguishable from noise.
+And a floor cannot be read off an offline proxy: the proxy overstates the real
+zero-overlap share by 36.92 points because it injects every statement into
+every question, while the real system delivers a mean of two scoped items. A
+relevance floor must be computed from a committed curve, with a declared
+asymmetric cost and a tie-break rule registered before the run that applies it.
+That is slower than picking a threshold. It is also the only way the resulting
+number means something.
+
+**Where we stand.** IBM's 82.0 is still the SOTA; microglia is still fifth of
+six named entries. This section reports measurements and a method, not a gain.
+No accuracy claim is made, no floor is chosen, and the run that will supply the
+curve is measuring on a head this reading did not touch.

@@ -3347,3 +3347,128 @@ check, not a prediction of the real run's numbers: the offline statements are
 structural proxies, and section 34.28 records why a proxy is not the distilled
 statement. Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA,
 microglia fifth of six named entries.
+
+### 34.30 External evidence that the harm is on the use side, and a structure-only floor probe
+
+**Why this section exists.** The project's guiding hypothesis is that what is
+remembered and how it is used, not how much is retrieved, produces the negative
+effect. This round tested that hypothesis against first-party competitor source
+and six independent benchmark papers, then quantified it on the project's own
+fingerprinted corpus with the real kernel. R47 (run `42337250684`) is measuring
+on `bc0a39eb`; by section 34.21 the `microglia` head stays still. This section
+changes no source, no gate, no threshold, no pre-registration and no dispatch.
+
+**Finding 1 — the current SOTA reports its own non-monotonic memory dose.**
+IBM's ALTK-Evolve held-out airline ablation, agent `gpt-4.1`, 20 test tasks,
+four trials per task: baseline Mean Accuracy 57.5 percent and Pass^4 35.0
+percent; the compact `sup3` core of 14 high-support guidelines gives 60.0 and
+**45.0**; the full `lossless` set of 101 guidelines gives 65.0 and **40.0**.
+More guidelines therefore raise Mean Accuracy by 5.0 points while lowering the
+reliability metric by 5.0 points. IBM states that delivery is a dial, not a
+constant, and that support count is a knob to tune per domain. The retail domain
+disagrees: `sup3` (31 rules) gives 78.8 / 60.0 and `lossless` (292 rules) gives
+82.5 / 67.5, so more is better on both axes there. This is a domain-dependent
+dose response measured by the very system holding the SOTA, not a claim inferred
+from microglia's own numbers. Rule counts, costs and the leaderboard split
+caveat are recorded in `COMPETITIVE.md` section L.14.
+
+**Finding 2 — six independent benchmarks localise the failure after retrieval.**
+
+| Source | Measurement | Reported magnitude |
+|---|---|---|
+| MemSyco-Bench, arXiv 2607 (Xiang et al., 1 Jul 2026) | share of errors occurring after relevant memory was already retrieved | 61 to 62 percent across Mem0, A-Mem, LightMem; A-Mem retrieved-but-wrong reaches 64 / 74 / 75 percent in OFJ / MEC / VMS |
+| OP-Bench, arXiv 2601 (Hu et al.) | over-personalisation score of memory-augmented agents against memory-free BASE | 26.2 to 61.1 percent relative drop across 36 configurations; BASE is strongest |
+| MemCalib, arXiv 2609.24259 (Cao et al.) | calibrated influence of each memory atom (Ignore / Bound / Control) | best frontier model GPT-5.6-SOL scores SCS 46.25 and Exact 28.40 of 100; every model except Qwen3-8B over-uses more than it under-uses |
+| BenchPreS (Yoon et al.) | rate of misapplying stored preferences | up to 86.48 percent; a selectivity instruction cuts it to 12.80 on Gemini 3 Pro at a cost of 0.78 to 3.82 points of correct application |
+| RPEval (Feng et al., Renmin University and Huawei) | intent-matching accuracy on Ignore | humans 0.86, models 0.06 to 0.38; Qwen2.5-7B 0.06, GPT-5 0.12, DeepSeek-V3 0.38 |
+| LongMemEval | accuracy under sustained interaction | about 30 percent drop for commercial assistants and long-context models |
+
+Three mechanisms recur. First, **over-use dominates**: MemCalib reports that
+every tested model except Qwen3-8B over-uses more than it under-uses, and RPEval
+describes an inverse scaling effect on the ability to Ignore. Second, **prompt
+fixes trade one error for another**: MemSyco-Bench's memory-caution instruction
+helps the evidence-conflict task by 31.6 accuracy points but costs 13.0 to 21.0
+on personalisation; asking "Are you sure?" costs 9.9 to 27.7; BenchPreS's
+selectivity instruction cuts misapplication at the price of correct application.
+Third, **compression is a source of distortion**: MIST reports memory-context
+variants at 2.15 and 1.55 times chat-history sycophancy on MIST-Science and
+MIST-Moral against 1.16 and 1.31 for prompt variants alone, and attributes it
+to decontextualising compression rather than compression as such. Mem0's summary
+of the five-paper comparison explicitly warns that the papers use different
+taxonomies, judges and data, so the magnitudes are not comparable across rows;
+that warning is preserved here. The data are synthetic, and LLM judges agree
+with humans 96.7 percent on naturally sampled MemCalib cases but only 74.0
+percent (kappa 0.610) on a stress sample.
+
+**Finding 3 — the competitor code that can be borrowed, read first-hand.**
+`Quark-Medical/memcalib` is a fork of the `verl` RL framework whose project-
+specific code sits in `recipe/memcalib_credit/`. `metrics.py` defines the
+sample-level calibration score at rho = 0.5 as `scs = 0.5 ** (over_budget +
+under_budget)` with `over_budget = sum(max(d, 0))` and `under_budget =
+sum(max(-d, 0))` over per-atom influence distances `d`, plus `sopb = 1 -
+0.5 ** over_budget`, `supb = 1 - 0.5 ** under_budget` and `exact = (budget ==
+0)`. `credit.py` implements eight merged channels (`A-`, `B+`, `B-`, `C+`,
+`C-`, `A0+`, `B0-`, `C0-`) mapping the cross of target and actual influence
+levels, an ordered bidirectional localisation mode with per-channel signs and
+default etas, and group normalisation. `segments.py` splits a response into
+ordered, exactly covering token-index groups for atom-level credit. On
+Qwen3-8B, MemCalib-RL raises SCS from 31.17 to 79.54 and is the only tested
+method that reduces both over-use and under-use on all three backbones. The
+catch is that it needs training access and token-level likelihoods, so it
+cannot be applied through an inference-only API; the project borrows the score
+structure, not the training loop. RSCB-MC (arXiv 2604.27283) is closer to this
+project's shape: a risk-sensitive contextual bandit treats abstention as a
+first-class action under `S(a, z) = R(a, z) - mu * P_fp(a, z) - alpha * c(a,
+z)` with `gamma > alpha > beta`, i.e. a false-positive injection is penalised
+more than a correct reuse is rewarded. Static retrieval reaches a 75 percent
+false-positive rate on hard negatives; RSCB-MC reports 0.0 percent; ablating
+abstention raises false positives by 17.5 percent and collapses cumulative
+reward. Its authors call memory-use safety, not retrieval accuracy, the primary
+challenge, and concede that the controller over-abstains and that the evidence
+is offline smoke-scale with proxy labels. FinAcumen (arXiv 2606.17642) applies
+the same idea with a calibrated relevance threshold and an explicit fallback to
+the base policy when relevance is insufficient.
+
+**Finding 4 — quantified on this project's own corpus, with the real kernel.**
+An offline, read-only probe (`use-side-cost-probe.ts`) combined the two
+mechanisms on `eval/fixtures/tau2-use-census-queries.json` using
+`queryCoverage` and `tokenize` from `packages/core/src/kernel/similarity.ts`
+and `coverageHistogram` from `packages/eval/src/tau2-use-census.ts`. No model
+call, no mock and no source change. Four readings matter.
+
+1. The offline proxy injects all 32 distilled statements into each of 50
+   airline queries and reads `zeroShare = 0.7588` (1214 of 1600 pairs), while
+   R46's real delivery read 0.3896 (1175 of 3016). The proxy overstates the
+   real zero share by **36.92 points** because the real facade delivers a mean
+   of 1.995 scoped items per request. This is a direct, measured explanation
+   of why R46's fourth prediction was falsified and why R47's refutation
+   forbids choosing a floor from this proxy.
+2. Over the ten `COVERAGE_FLOORS` rungs, the pure asymmetric cost
+   `alpha * relevant - gamma * falsePos - beta * abstained` is maximised at the
+   same **plateau `[0.01, 0.02, 0.03]`** under all three cost orderings
+   (false-positive-averse `gamma=3`, symmetric `gamma=1`, and abstention-averse
+   `gamma=0.5, beta=3`). The plateau is real, not an artefact: the smallest
+   positive coverage in the population is 0.0345, so those three rungs retain
+   identical pairs. Structure therefore yields a tie set, not a unique floor,
+   and U3 will need a registered tie-break rule.
+3. All 9 positive rungs empty at least one pack (`GRID_RESOLVING_RUNGS=9/9`),
+   and a single scalar such as `zeroCoveragePairs` cannot recover a ten-rung
+   curve (`SCALAR_SUFFICIENT=false`). This is defect 25 restated as a measured
+   quantity.
+4. R46's `l4-paired = 0.00pp [-10, +10] p=1.0000 n=50` with MDE 13.73pp and
+   `tasksForFivePp 185` cannot resolve any candidate floor; a floor chosen from
+   accuracy is a choice from noise. The retention curve is deterministic over
+   the committed population and robust to the cost ordering.
+
+**What is and is not concluded.** The methodology is valid as a
+structure-only, accuracy-free decision procedure with a cost-robust plateau;
+this section does **not** select a floor. R47's refutation forbids a floor from
+an accuracy number or from the offline structural proxy, and section 34.22
+requires the floor to be computed from the committed curve and registered
+before its own dispatch. The external literature is corroboration, not evidence
+about this benchmark: MemCalib, OP-Bench and MemSyco-Bench are not tau-squared-
+bench entries, Meta's "Remember When It Matters" reports pass@1 without error
+bars, and IBM's leaderboard figures use the full base split that includes the
+training tasks from which the guidelines were learned. None moves a leaderboard
+row. Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA,
+microglia fifth of six named entries.
