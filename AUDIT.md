@@ -4028,3 +4028,80 @@ Verification of this section: `pnpm check` exit 0, 3104 tests, coverage
 Three lane-level tests exercise the real CLI, and 62 pure tests exercise every
 terminal state, every malformed-instrument path and every registered grid
 rung. The structural coupling ledger moved from 142 to 144 modules.
+
+### 34.39 Defect 30: a misspelled dispatch input silently skipped the memory arm
+
+The first R49 dispatch (`42380685732`) was cancelled before it measured
+anything, and the reason is instructive. The `prereg` workflow input is a
+registration ID; `sota.yml` appends `.md` to build the file path. The dispatch
+supplied `R49-within-run-pair.md` instead, so the step opened
+`prereg/R49-within-run-pair.md.md`, failed with `ENOENT`, and the memory arm
+was skipped by the default step dependency. The reference arm, guarded by
+`always()`, was still starting and would have spent an hour of model calls on a
+configuration error.
+
+Two fixes, both refusing rather than guessing. The registration step now
+rejects an input ending in `.md` with a message that names the correct form,
+and checks that `prereg/<id>.md` exists before any model call. The reference
+arm no longer runs when the registration check failed. The shell fragment was
+reproduced locally with both spellings: the correct ID emits `floor=0.01` and
+`pair=true`, and the incorrect one fires the guard.
+
+This is a harness defect, not a measurement. No arm ran, no artefact was
+written, no number is claimed, and the R45 revert rule was not consulted. The
+cortex release remains excluded. It is recorded because a skipped arm that
+looks like a completed job is the same class of quiet failure as defect 27:
+the lane must say what it did not measure.
+
+
+### 34.40 Defect 31: every stop before measuring was provider-shaped
+
+Defect 27 was fixed by a pre-flight probe, and the fix recognised exactly one
+error: `ProviderNoMeasurementError`, matched by name because the driver is
+dynamically imported. That was one case of a general problem. A paired run has
+three ways to stop before it measures anything, and only one of them is a
+provider:
+
+| Stop | Where it is detected | What the lane used to do |
+| --- | --- | --- |
+| the endpoint refuses every call | the pre-flight probe | explicit `status_no_measurement` (defect 27's fix) |
+| the distilled store is empty | `facadeScope` refuses to attest a fingerprint | rethrown as a stack trace, no artefact |
+| the pair's scope cannot be attested | `facadeScope` refuses a half-split, a non-finite seed, a zero trial count | rethrown as a stack trace, no artefact |
+
+The second row is R41's exact failure mode: 36.0 was scored from a store that
+held nothing, and the reading was published as a result. A red job with a stack
+trace is louder than that, but it is still not a statement about what was not
+measured, and it is indistinguishable from a genuine bug in the driver.
+
+The fix makes the refusal structural rather than nominal. `noMeasurementRefusal`
+builds an error that carries a well-formed marker, and `isNoMeasurementRefusal`
+recognises it by the marker's shape -- `status_no_measurement === 1`,
+`status_not_run === 0`, a non-empty reason -- instead of by class identity,
+because the driver is a dynamic import and a marker that crossed a JSON boundary
+has no prototype at all. `ProviderNoMeasurementError` remains, as one instance
+of the contract rather than the contract itself. `attestPairScope` wraps the
+strict `facadeScope`, so an unattestable pair reaches the lane as an explicit
+`status_no_measurement` that names the missing thing.
+
+The boundary is asserted in both directions. An ordinary driver crash still
+rethrows: a bug is not an instrument, and swallowing it would be worse than the
+stack trace. Three tests cover it -- a non-provider refusal becomes
+`status_no_measurement` with `per_task` absent, a plain `Error` still propagates
+out of the lane, and a marker-shaped object that has no class at all is still
+recognised.
+
+### 34.41 The per-package typecheck is not the gate
+
+While building 34.40 a call was written to `pairScopeOrRefuse`, a function that
+does not exist. `pnpm typecheck` passed. The reason is in
+`packages/eval/tsconfig.json`: its `exclude` lists `src/bin/**`, so the project
+build never sees a lane entrypoint, and every CLI this project dispatches --
+`l4.ts`, `tau2-driver.ts`, `prereg-floor.ts`, `prereg-pair.ts`,
+`facade-pair-readback.ts` -- is outside it.
+
+`pnpm typecheck:lanes` compiles `packages/eval/src/bin/*.ts` with `--noEmit` and
+does catch it, and `pnpm check` runs both, so the CI gate is complete. The
+recorded lesson is narrower and worth keeping: a green `pnpm typecheck` says the
+libraries typecheck, not that the lanes do, and the two are separate commands on
+purpose. The mistake was caught by the second command three minutes later, which
+is the system working; it would not have been caught if only the first had run.

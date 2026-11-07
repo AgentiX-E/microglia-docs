@@ -7266,3 +7266,58 @@ Acceptance: 3104 tests over 147 files, coverage 99.94 / 99.63 / 100 / 99.94,
 `audit: ok`, `bundle: size ok`, all 37 pre-registrations valid, and three
 lane-level tests that run the real CLI against a driver stand-in. The
 structural ledger records 144 modules and 39176 production lines.
+
+
+### 17.103 The pre-measurement refusal contract
+
+A dispatch that stops before it measures must leave one artefact that says so.
+Three stops qualify, and they arrive from different places:
+
+- the pre-flight probe (`probeGate`) refuses a provider that answered 5xx on
+  every call or answered intermittently;
+- `facadeScope` refuses to attest a pair whose store is empty, whose split is
+  half-empty, whose seed is not finite, or whose trial count is not a positive
+  integer;
+- the run's own deadline and the split guard refuse before the evaluation.
+
+The contract is a marker, not a class:
+
+```ts
+type NoMeasurementMarker = {
+  readonly status_no_measurement: 1;   // not a result
+  readonly status_not_run: 0;          // and not a missing environment
+  readonly claim: 'none';              // nothing may be concluded
+  readonly reason: string;             // what was missing, in one sentence
+};
+```
+
+`noMeasurementRefusal(reason)` builds an error carrying it; `isNoMeasurementRefusal`
+recognises it by the marker's shape. Class identity cannot be the contract here:
+`l4.ts` loads the driver with a dynamic `import()`, and a marker that crossed a
+JSON boundary has no prototype, so a `instanceof` check would silently fail open
+on exactly the case it exists to catch.
+
+`attestPairScope(shared)` is the lane-facing wrapper: it returns the attested
+`RunScope` or throws the refusal, so the driver never has to decide whether an
+empty store is a bug or an instrument. `facadeScope` itself stays strict and
+throws a plain `Error`, because a caller that bypasses the wrapper should get a
+programming error, not a graded outcome.
+
+Dependency layers added by this rule:
+
+1. `provider-probe.ts` -- pure; the marker, the refusal, the recogniser, the
+   probe classifier. Imports nothing from the lane.
+2. `facade-pair.ts` -- imports `provider-probe.ts` and `within-run-pair.ts`;
+   owns `attestPairScope`, the verdict, the artefact and the three-state
+   readback.
+3. `bin/tau2-driver.ts` -- the only place that calls `attestPairScope`, in the
+   paired branch, before either facade evaluates.
+4. `bin/l4.ts` -- the only place that calls `isNoMeasurementRefusal`, and the
+   only writer of the `status_no_measurement` artefact.
+5. `bin/facade-pair-readback.ts` -- reads the pair artefact back; it must never
+   default a missing state to PAIRED.
+
+The fourth terminal state is therefore outside the pair: a stopped run writes
+`poc-l4.json` with `status_no_measurement` and does not write
+`poc-l4-facade-pair.json` at all, because a pair that never measured has no
+contrast to report -- not even a null one.

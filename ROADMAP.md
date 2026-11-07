@@ -4604,3 +4604,27 @@ statements / 99.63 branches / 100 functions / 99.94 lines, `audit: ok`,
 bundle size ok, 37 of 37 pre-registrations valid, and three end-to-end lane
 tests. The structural ledger records 144 modules. No `Pass^4` number is
 claimed and no SOTA row moves.
+
+
+### R49 re-dispatch and the refusal contract (2026-11-07)
+
+The first R49 dispatch is cancelled (AUDIT 34.39) and the workflow now refuses a
+`prereg` input with a `.md` suffix, checks the file exists, and does not let the
+reference arm run when the registration check failed. The refusal contract is
+structural (AUDIT 34.40, TECH-DESIGN 17.103), so an empty store or an
+unattestable pair writes `status_no_measurement` instead of a stack trace.
+
+Order from here:
+
+1. Re-dispatch R49 with `prereg = R49-within-run-pair`, every other input
+   identical to R48, and read the pair artefact back into its three terminal
+   states.
+2. If PAIRED: report the floor's interval, p-value and delivered population,
+   and let the main `poc-l4` artefact grade the registered facade against the
+   memory-free reference exactly as R48 did.
+3. If REFUSED_CROSS_RUN: the design is broken; fix the scope attestation before
+   any further arm is opened.
+4. If NO_MEASUREMENT: record what was missing -- provider, store or scope -- and
+   re-dispatch, never a zero.
+5. U1, U2 and the R46 arms stay closed until a valid paired reading exists.
+6. cortex release remains excluded.

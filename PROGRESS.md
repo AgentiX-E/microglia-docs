@@ -10615,3 +10615,56 @@ Remaining, in order: dispatch R49 through `sota.yml` and read back its three
 terminal states; then U1, U2 and R46 stay closed until a valid PAIRED reading
 exists; then the `sota.ts` split, the W8 dose curve and vitest 4. The
 cortex release remains excluded by the standing instruction.
+
+### 172.4 — The first R49 dispatch is cancelled, and the guard is hardened
+
+Dispatch `42380685732` was cancelled at its registration check. The `prereg`
+input was passed with a `.md` suffix, so the workflow looked for
+`prereg/R49-within-run-pair.md.md`. The memory arm was skipped and the
+reference arm began anyway. No task was evaluated and no artefact was written.
+
+The fix is in `.github/workflows/sota.yml`: the step now rejects a `.md`
+suffix with an actionable message, verifies the file exists, and the reference
+arm is conditioned on the registration check not having failed. The readback
+CLI's "no artefact" line was made neutral so a failed dispatch cannot be
+described as a single-facade run. Verified locally with both input spellings.
+
+R49 is re-dispatched with the correct ID `R49-within-run-pair`, keeping every
+other input identical to R48. The P0 gate stays green: 3104 tests over 147
+files, coverage 99.94 / 99.63 / 100 / 99.94, `audit: ok`. The SOTA table does
+not move and no `Pass^4` is claimed.
+
+
+### 172.5 — The refusal contract becomes structural, and an empty store stops being a crash
+
+The pre-flight gate added in 172.3 recognised one error name. A paired run can
+also stop because the distilled store is empty -- R41 scored 36.0 from exactly
+that -- or because the pair's scope cannot be attested at all, and both of those
+arrived at the lane as a rethrown `Error`: a red job with a stack trace, no
+artefact, and no statement about what was not measured.
+
+`provider-probe.ts` now exports `noMeasurementRefusal` and
+`isNoMeasurementRefusal`, and the contract is the marker's shape rather than the
+class or the name, which matters because the driver is dynamically imported and
+a marker that crossed a JSON boundary has no prototype. `facade-pair.ts` adds
+`attestPairScope`, which turns `facadeScope`'s strict refusals into that contract,
+so an empty store reaches `l4.ts` as `status_no_measurement` with the reason
+recorded. An ordinary driver crash still rethrows.
+
+Tests: four in `provider-probe.test.ts` (the refusal's shape, an empty reason
+being refused, recognition across a class boundary, and five non-refusals
+including a marker whose `status_no_measurement` is 0), four in
+`facade-pair.test.ts` (a well-formed scope, an empty store, four malformed
+scopes, and the strict builder staying strict), and two at the lane boundary in
+`l4-facade-pair.test.ts` (a non-provider refusal writes `status_no_measurement`
+with no `per_task`, and a genuine crash still fails the lane).
+
+A gate observation is recorded as AUDIT 34.41: `packages/eval/tsconfig.json`
+excludes `src/bin/**`, so `pnpm typecheck` alone does not see a lane entrypoint.
+`pnpm typecheck:lanes` does, and `pnpm check` runs both. During this build a
+reference to a nonexistent function passed the first and was caught by the
+second.
+
+R49 is re-dispatched with the registration ID in the form the workflow expects,
+every other input identical to R48. No `Pass^4` is claimed, the SOTA table does
+not move, and the cortex release stays excluded.
