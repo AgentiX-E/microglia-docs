@@ -6761,13 +6761,27 @@ curve from a real run may have a different plateau.
 
 **What the probe proved and what it did not.** It proved
 `METHODOLOGY_VALID`: the rule is structure-only, accuracy-free and robust to
-all three cost orderings; `GRID_RESOLVING_RUNGS = 9/9`; and
-`SCALAR_SUFFICIENT = false`. It reported `FLOOR_SELECTED = false`. It also
-measured that the offline proxy's `zeroShare = 0.7588` overstates R46's real
-`0.3896` by 36.92 points, because the proxy injects all 32 statements into
-every query while the facade delivers a mean of 1.995 scoped items. This is why
-R47's refutation forbids a floor from the offline structural proxy: only a
-committed run supplies the population a floor would act on.
+all three cost orderings **on the offline proxy corpus**; `GRID_RESOLVING_RUNGS
+= 9/9`; and `SCALAR_SUFFICIENT = false`. It reported `FLOOR_SELECTED = false`.
+It also measured that the offline proxy's `zeroShare = 0.7588` overstates
+R46's real `0.3896` by 36.92 points, because the proxy injects all 32
+statements into every query while the facade delivers a mean of 1.995 scoped
+items. This is why R47's refutation forbids a floor from the offline structural
+proxy: only a committed run supplies the population a floor would act on.
+
+**Correction from the committed curve.** The cost-robustness claim above was a
+property of the proxy, not of the rule, and R47 falsified it. On the real curve
+(run `42337250684`) the false-positive-averse ordering
+(`alpha=1, gamma=3, beta=0.5`) and the symmetric ordering
+(`alpha=1, gamma=1, beta=0.5`) both select `0.01` with `net = 1231.0`, while
+the abstention-averse ordering (`alpha=1, gamma=0.5, beta=3`) selects `0`,
+the as-is configuration, with `net = 1067.0`. The proxy tied `0.01`, `0.02`
+and `0.03` only because its smallest positive coverage was 0.0345; the real
+non-zero mass begins at 0.01695, so the first rung already separates packs.
+The design consequence is stronger than the original one: weights cannot have
+a default, they must be registered before the dispatch, and the registration
+must be recomputable from the committed artefact. Section 17.96 implements
+that.
 
 **Dependency layering, unchanged by this section.** The cost model is a
 pure function of `CoverageHistogram`, which is produced in
@@ -6779,8 +6793,93 @@ pure function of `CoverageHistogram`, which is produced in
 `tokenize`) lives in `packages/core/src/kernel/similarity.ts` and is shared
 with `buildPack`'s `minCoverage` in `packages/core/src/apply/pack.ts`. No new
 package, no new edge from `packages/core` to `packages/eval`, and no gate reads
-`coverage`. A future U3 registration adds a decision function over
+`coverage`. Section 17.96 adds that decision function over
 `CoverageHistogram` inside the eval lane; it does not widen the core API. The
-implementation stays TDD-first with real fixtures, no mocks, and at least 95
+implementation is TDD-first with real fixtures, no mocks, and at least 95
 percent coverage on every dimension. Ranking is unchanged: IBM `gpt-5.5`
 airline 82.0 remains the SOTA, microglia fifth of six named entries.
+
+### 17.96 U3: from a committed curve to one applied floor
+
+**The problem this section solves.** A floor that is computed but never applied
+would make U3 a second copy of the as-is run, and a floor supplied from the
+dispatch menu could be tuned after the readout. U3 therefore needs one path
+from the committed R47 artefact to the single `minCoverage` argument of the
+recall facade, with the decision registered before the dispatch and no new
+edge between packages.
+
+**Registered constants and the decision contract.** `tau2-recall-floor.ts`
+holds `AS_IS_FLOOR = 0`, `U3_COST_WEIGHTS = { alpha: 1, gamma: 3, beta: 0.5 }`
+and two functions:
+
+```ts
+export function resolveRecallFloor(
+  env: Readonly<Record<string, string | undefined>>,
+): number;
+
+export function committedFloor(
+  coverage: CoverageHistogram,
+  use: UseCensus,
+  weights?: CostWeights,
+): number;
+```
+
+`resolveRecallFloor` reads `TAU_MIN_COVERAGE`. An unset, empty or blank value
+returns zero, so every dispatch opened before U3 keeps its own committed
+artefact comparable. A set value must be a finite number in the unit interval
+**and** a rung of `COVERAGE_FLOORS`; anything else throws rather than clamps,
+because a silently clamped floor is a post-hoc choice disguised as a
+configuration. `committedFloor` calls `decideFloor` and refuses a broken
+population instead of inventing a floor.
+
+**The five-point wiring, with its dependency layering.** No new package and no
+new edge from `packages/core` to `packages/eval`:
+
+| layer | file | responsibility |
+|---|---|---|
+| core kernel | `packages/core/src/kernel/similarity.ts` | `queryCoverage`, `tokenize` (unchanged) |
+| core apply | `packages/core/src/apply/pack.ts` | `buildPack.minCoverage` (unchanged) |
+| eval instrument | `packages/eval/src/tau2-use-census.ts` | `COVERAGE_FLOORS`, `CoverageHistogram`, `UseCensus` (unchanged) |
+| eval decision | `packages/eval/src/u3-decision.ts` | `decideFloor`, `CostWeights`, least-aggressive tie-break |
+| eval resolution | `packages/eval/src/tau2-recall-floor.ts` | registered weights, `resolveRecallFloor`, `committedFloor` |
+| eval registration | `packages/eval/src/prereg.ts` | optional `recallFloor` header, validated |
+| eval CLI | `packages/eval/src/bin/prereg-floor.ts` | recompute the declared floor from the committed artefact; refuse a mismatch |
+| eval driver | `packages/eval/src/bin/tau2-driver.ts` | pass `minCoverage` to `host.recall` at the recall facade |
+| workflow | `.github/workflows/sota.yml` | read the floor into `TAU_MIN_COVERAGE` on the memory arm only |
+
+The `recallFloor` header is optional precisely so the 35 earlier
+registrations remain valid; the validator accepts a finite number in the unit
+interval and the lane strengthens that to the registered grid. The checker is
+the single source of truth: it reads `readPrereg`, resolves the declared value
+through `resolveRecallFloor`, recomputes `committedFloor` from
+`eval/fixtures/tau2-r47-coverage-histogram.json` under `U3_COST_WEIGHTS`, and
+refuses any disagreement. The dispatch menu cannot carry the floor because
+`workflow_dispatch` is already at GitHub's 25-input limit, which is a happy
+constraint: the registration, not the menu, owns the treatment.
+
+**What the lane does with the number.** `sota.yml` adds one step that emits
+`floor` as a step output, and the memory arm's environment sets
+`TAU_MIN_COVERAGE` from it. The reference arm is memory-free and never reads
+it. Scheduled runs and every earlier registration emit `0`, so no behaviour
+changes for them. The facade applies the floor before serving, so the
+`UseObservation` collected at `/v1/recall` records the filtered pack the
+agent actually saw; the histogram and census therefore measure the treated
+population, not a reconstruction of it.
+
+**The registered cost.** R47's `0.01` rung retains `1438` of `2180` measurable
+pairs in `1069` packs and empties `414` of `1491` served packs (27.77
+percent). Under `gamma > alpha > beta` that abstention is cheaper than a
+false-positive injection, but it is not free: `prereg/R48-u3-coverage-floor.md`
+registers it as a first-class outcome beside the paired delta. `V1` is based
+on `meanPackIds > 0` and is expected to keep passing, which is why R48
+predicts both a lower `recallServed` and a passing `V1` rather than treating
+one as the negation of the other.
+
+**Tests and acceptance.** `u3-decision.test.ts` has 21 tests on the
+fingerprinted 2239-byte real fixture; `tau2-recall-floor.test.ts` has 10;
+`prereg.test.ts` adds five cases for the optional header. `pnpm check` exited
+0 at 2980 tests across 142 files with 99.98 percent statements, 99.67 percent
+branches, 100 percent functions and 99.98 percent lines; `pnpm eval:prereg`
+reads 36 of 36 valid; `audit: ok`; `bundle:size ok`. Ranking is unchanged:
+IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of six named
+entries.

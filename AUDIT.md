@@ -3472,3 +3472,79 @@ bars, and IBM's leaderboard figures use the full base split that includes the
 training tasks from which the guidelines were learned. None moves a leaderboard
 row. Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA,
 microglia fifth of six named entries.
+
+### 34.31 R47 read back: a cost-robustness claim falsified, and a floor that is now wired
+
+**The readback.** Run `42337250684` on `bc0a39eb` completed as `completed
+failure` while step 15 `Upload evidence` succeeded with artefact
+`13562407896` (20,276,573 bytes, 92 entries). The failure is the `Pair the
+arms` step refusing to certify an underpowered measurement: `V1-pack-not-empty`
+passed at 1.47 rules per question across 1491 of 1491 requests,
+`V5-resolution` failed at MDE 17.72pp, `V16-transfer-resolvable` failed at 92
+informative trials with 22 repairs, and `l4-paired` failed at
+`12.00pp [0.00, 24.00] p=0.1094 n=50` with 2 lost and 8 gained. `ci.yml`
+`42336894395` stayed green on 44 steps. A red scientific gate on the sota
+workflow is not a build failure, and recording it as one would be defect 26
+in its own right.
+
+| R47 prediction | reading |
+|---|---|
+| `coverage` on memory, absent on reference | hold |
+| ten-rung grid, first rung zero, strictly increasing | hold |
+| `measuredPairs + unmeasurablePairs = injectedPairs` | `2180 + 8 = 2188` hold |
+| `retainedPacks + emptiedPacks + unmeasurablePacks = recallServed` at every rung | hold, zero rung `1483 + 0 + 8 = 1491` |
+| zero rung retains `measuredPairs` and empties nothing | hold |
+| monotone retention and at least one positive rung empties a pack | hold, 9 of 9 positive rungs |
+| ordered quantiles in 0 to 1 | hold |
+| earlier validity gates unchanged, `widenedItems = 0` | hold |
+
+All six refutations stayed clear and the revert rule did not fire, so
+`U3_ELIGIBLE = true` and the head-still rule of section 34.21 lifted on the
+reading. The committed `use` census read `recallRequests 1491`,
+`recallServed 1491`, `meanPackIds 1.46747`, `injectedPairs 2188`,
+`zeroCoveragePairs 750`, so `zeroCoverageShare = 0.3428`; the non-zero
+coverage quantiles ran `min 0.01695`, `p10 0.02273`, `p25 0.02778`,
+`p50 0.04545`, `p75 0.07692`, `p90 0.16667`, `max 0.33333`.
+
+**The defect this readback found is in our own design prose.** Section 34.30
+concluded that the retention curve is "deterministic over the committed
+population and robust to the cost ordering", and section 17.95 of
+`TECH-DESIGN.md` called the rule "robust to all three cost orderings". Both
+statements were measured on the offline proxy, where the smallest positive
+coverage is 0.0345 and `0.01`, `0.02`, `0.03` tie. On the real committed curve
+they are false. With `net(f) = alpha*relevant - gamma*falsePos -
+beta*abstained`, the false-positive-averse (`1, 3, 0.5`) and symmetric
+(`1, 1, 0.5`) weightings both select `0.01` at `net = 1231.0`, while the
+abstention-averse (`1, 0.5, 3`) weighting selects `0`, the as-is
+configuration, at `net = 1067.0`. The proxy's plateau was an artefact of the
+proxy. This is defect 26: a proxy property promoted to a design invariant
+without a first-party measurement. The fix is structural rather than a
+footnote — `CostWeights` has no default, `U3_COST_WEIGHTS` is registered in
+source before the dispatch, `prereg-floor.ts` recomputes the declared floor
+from the committed artefact and refuses a mismatch, and one test asserts the
+disagreement on the real fixture.
+
+**The second defect would have been a silent no-op arm.** A computed floor
+with no path to the facade would have made R48 an exact copy of R47 while
+claiming an ablation. The five-point wiring in `TECH-DESIGN` section 17.96 was
+written TDD-first: `u3-decision.test.ts` (21 tests),
+`tau2-recall-floor.test.ts` (10 tests) and five new `prereg.test.ts` cases,
+all on the fingerprinted real artefact with no mock. `resolveRecallFloor`
+refuses a value that is not a registered grid rung instead of clamping it,
+which closes the post-hoc tuning channel. `pnpm check` exited 0 at 2980 tests
+across 142 files with 99.98 percent statements, 99.67 percent branches, 100
+percent functions and 99.98 percent lines; `pnpm eval:prereg` reads 36 of 36
+valid; `audit: ok`; `bundle:size ok`. The optional `recallFloor` header keeps
+all 35 earlier registrations valid.
+
+**Registered cost, not hidden.** `prereg/R48-u3-coverage-floor.md` declares
+`recallFloor: 0.01`, the weights `alpha=1, gamma=3, beta=0.5` with
+`gamma > alpha > beta`, and the least-aggressive tie-break. R47's `0.01` rung
+empties 414 of 1491 served packs (27.77 percent) and retains 1438 of 2180
+measurable pairs. The registration predicts both a lower `recallServed` and a
+passing `V1`, because `V1` grades `meanPackIds > 0` and not per-pack
+non-emptiness; treating the two as contradictory would repeat the R45 defect.
+It does not predict the sign, magnitude or significance of `l4-paired`, and
+forbids any accuracy number from selecting or revising the floor. Ranking is
+unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of
+six named entries.

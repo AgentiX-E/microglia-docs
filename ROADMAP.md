@@ -4407,14 +4407,29 @@ dispatch that applies the floor**; an array-order default is not acceptable.
 | priority | step | blocked by | status |
 |---|---|---|---|
 | P0 | two repositories pushed, `ci.yml` green on the R47 head | — | **done** |
-| P0 | documentation and offline source study while the run measures | — | **done this iteration** |
-| P1 | read R47 `l4-evidence`: grade 8 predictions, 6 refutations, 3 reconciliation identities, quantile order, positive-rung `emptiedPacks > 0` | run `42337250684` | **in progress** |
-| P1 | U3 coverage-floored arm: compute the admissible set from the committed curve, register cost weights and tie-break before its own dispatch, keep `V1` blocking | R47 readback | pending |
+| P0 | documentation and offline source study while the run measures | — | **done** |
+| P1 | read R47 `l4-evidence`: grade 8 predictions, 6 refutations, 3 reconciliation identities, quantile order, positive-rung `emptiedPacks > 0` | run `42337250684` | **done — all hold, `U3_ELIGIBLE = true`** |
+| P1 | compute the admissible set from the committed curve and register cost weights and tie-break before its own dispatch | R47 readback | **done — `0.01`, `alpha=1, gamma=3, beta=0.5`, least-aggressive** |
+| P1 | implement the U3 application path from registration to the recall facade | the decision | **done — 5-point wiring, TDD, 31 new tests** |
+| P1 | dispatch the U3 coverage-floored arm (`R48-u3-coverage-floor`) through `sota.yml` | green CI on the new head | **ready to dispatch** |
+| P1 | read R48 `l4-evidence`, grade 8 predictions and 7 refutations, pair its memory arm against R47's as-is memory arm | the R48 dispatch | pending |
 | P1 | R46 admission-rule ablation (`as-is` / `distinct-task-support` / `min-support-only`) with the `>= 2` contrast registered separately | R47 readback | pending |
-| P2 | U1 calibration using the MemCalib score structure on committed coverage, then U2 only after a real reachability test | U3 | pending |
+| P2 | U1 calibration using the MemCalib score structure on committed coverage, then U2 only after a real reachability test | U3 readback | pending |
 | P2 | transcript V46/V47, S1a then S1b | U1 / U2 | pending |
 | P3 | `sota.ts` split and `eval-sql` move, W8 dose curve, vitest 4 migration last | independent | pending |
 | — | cortex release (W1) **excluded** by the standing instruction | — | excluded |
+
+**What this iteration changed in the plan.** R47's readback closed the P1
+measurement step: eight structural predictions held, three reconciliation
+identities held, six refutations stayed clear and the grid has pack-level
+resolving power. It also corrected a design claim: the structure-only cost
+rule is not robust to cost weights on the real curve, so weights have no
+default and are registered in `R48-u3-coverage-floor.md` rather than tuned
+after the readout. The U3 step therefore split into three checkable parts —
+decide, wire, dispatch — and the first two are done with real-fixture TDD. The
+dispatch remains the only P1 item between the current head and the readback
+that can quantify U3's contribution. Section 34.21's head-still rule is lifted
+on the R47 reading; it applies again from the moment R48 is dispatched.
 
 **Decision points at the readback.** If the three reconciliation identities
 hold, quantile ordering holds, and at least one positive rung empties a pack,

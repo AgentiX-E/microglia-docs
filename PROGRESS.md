@@ -10082,3 +10082,121 @@ W8 dose curve and the vitest 4 migration, deliberately last. Section 34.21's
 head-still rule is lifted only after R47 is read back. Ranking is unchanged:
 IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia fifth of six named
 entries.
+
+## 169 — R47 read back, a floor computed from structure, and U3 registered
+
+**The head-still rule is lifted on a reading, not on a hope.** R47 (run
+`42337250684`, dispatched on `bc0a39eb`) completed as `completed failure`
+because the `Pair the arms` step refused to certify an underpowered paired
+measurement; step 15 `Upload evidence` succeeded, with artefact `13562407896`
+(`l4-evidence`, 20,276,573 bytes, 92 entries). The readback found all eight
+structural predictions **HOLD**, all three reconciliation identities holding,
+all six refutations clear, no revert rule fired, and `U3_ELIGIBLE = true`.
+`V1-pack-not-empty` passed at 1.47 rules per question across 1491 of 1491
+requests; `V5-resolution` failed at an MDE of 17.72pp, `V16-transfer-resolvable`
+failed at 92 informative trials with 22 repairs, and `l4-paired` failed at
+`12.00pp [0.00, 24.00] p=0.1094 n=50` with 2 lost and 8 gained. Those three
+red gates are the lane refusing to certify a measurement inside its own noise
+floor, not a build failure; `ci.yml` stayed green on 44 steps.
+
+**The committed population.** The seven-field `use` census read
+`recallRequests 1491`, `recallServed 1491`, `meanPackIds 1.46747`,
+`injectedPairs 2188`, `zeroCoveragePairs 750`, `widenedItems 0`, so
+`zeroCoverageShare = 0.3428`. The `coverage` histogram read
+`measuredPairs 2180`, `unmeasurablePairs 8`, `unmeasurablePacks 8`, with
+non-zero quantiles `min 0.01695`, `p10 0.02273`, `p25 0.02778`,
+`p50 0.04545`, `p75 0.07692`, `p90 0.16667`, `max 0.33333`. The retention
+curve, in `retainedPairs / retainedPacks / emptiedPacks` order, was
+`0: 2180/1483/0`, `0.01: 1438/1069/414`, `0.02: 1395/1034/449`,
+`0.03: 981/797/686`, `0.05: 680/523/960`, `0.08: 335/210/1273`,
+`0.1: 265/158/1325`, `0.15: 169/95/1388`, `0.2: 129/70/1413`,
+`0.3: 2/1/1482`. The identities `2180 + 8 = 2188` and
+`1483 + 0 + 8 = 1491` held at every rung, the zero rung retained all measured
+pairs and emptied nothing, and all nine positive rungs emptied at least one
+pack. The grid therefore has pack-level resolving power and U3 can be
+registered from this curve.
+
+**An empirical correction to section 17.95.** The offline probe had called the
+structure-only cost rule "robust to all three cost orderings" because on the
+proxy corpus the smallest positive coverage was 0.0345 and the rungs `0.01`,
+`0.02`, `0.03` tied. The real committed curve is **not** cost-robust. With
+`net(f) = alpha * relevant(f) - gamma * falsePos(f) - beta * abstained(f)`,
+the false-positive-averse ordering (`alpha=1, gamma=3, beta=0.5`) and the
+symmetric ordering (`alpha=1, gamma=1, beta=0.5`) both select `0.01` at
+`net = 1231.0`, while the abstention-averse ordering
+(`alpha=1, gamma=0.5, beta=3`) selects `0`, the as-is configuration, at
+`net = 1067.0`. A tie set on the proxy was an artefact of the proxy, not a
+property of the rule. The correction is implemented, not merely noted:
+`CostWeights` has no default anywhere, the weights and tie-break must be
+registered before the dispatch, and a test asserts the disagreement on the
+real artefact.
+
+**U3's decision, TDD-first on a fingerprinted real artefact.** The committed
+`coverage` and `use` pair was saved as
+`eval/fixtures/tau2-r47-coverage-histogram.json` (2239 bytes, sha256
+`33d2006acb8d0c66fa732d16a5e0d42f5c26370efc65def01857a0371c3f5b9c`). A failing
+test was written first against a module that did not exist, then
+`packages/eval/src/u3-decision.ts` was implemented. `decideFloor` takes only
+the histogram, the census and required weights; it refuses a wrong grid, a
+broken pair or pack population, a broken zero rung, inverted quantiles, a
+negative measurable zero-coverage count and a non-monotone retention curve.
+It returns one cost row per rung and uses the registered least-aggressive
+tie-break. 21 of 21 tests pass on the real fixture, with no mock.
+
+**U3's application path, also TDD-first.** A floor that is computed but never
+applied would make the arm a second copy of the as-is run. The wiring was
+added in five places, each with a real test where coverage is measured:
+`tau2-recall-floor.ts` exports `AS_IS_FLOOR`, the registered
+`U3_COST_WEIGHTS`, `resolveRecallFloor` (an unset variable is the as-is zero;
+any set value must be a rung of `COVERAGE_FLOORS` and a refusal, never a
+silent clamp) and `committedFloor`; `prereg.ts` accepts an optional
+`recallFloor` header, so all 35 earlier registrations stay valid and the
+count is 36 of 36; `prereg-floor.ts` recomputes a declared floor from the
+committed R47 curve and refuses a mismatch; the recall facade in
+`tau2-driver.ts` passes `minCoverage` to `host.recall`; and `sota.yml` reads
+the floor from the run's own pre-registration into `TAU_MIN_COVERAGE` on the
+memory arm only. The dispatch menu is at GitHub's 25-input limit, so the
+floor could not be added there even if that were scientifically acceptable.
+10 new tests cover the resolver and the recomputation.
+
+**R48 is the registration, and it is fixed before the dispatch.**
+`prereg/R48-u3-coverage-floor.md` declares `recallFloor: 0.01`, the cost
+weights `alpha=1, gamma=3, beta=0.5` with `gamma > alpha > beta`, and the
+least-aggressive tie-break. It names the one behavioural difference from
+R47, fixes eight structural predictions (the floor reaches the facade,
+zero-coverage injection falls, packs are emptied while `V1` still passes,
+the identities hold, earlier gates hold, the declared floor is recomputed,
+and the two memory arms are comparable) and seven refutations. It explicitly
+does **not** predict the sign, magnitude or significance of `l4-paired`, and
+forbids using any accuracy number to select or revise the floor. R47's
+`0.01` rung emptied 414 of 1491 served packs (27.77 percent); that cost is
+registered as a first-class outcome, not hidden behind an accuracy delta.
+
+**Verification.** `pnpm check` exit 0 with the new sources, `pnpm eval:prereg`
+36 of 36 valid, `pnpm --silent eval:prereg-floor` emitting `0.01`,
+`audit: ok`, `bundle:size ok`, and every coverage dimension at or above 95
+percent. The timing-only JSON files that `check` rewrites were restored; only
+the structural `poc-coupling.json` change (the new eval module) is committed.
+Both repositories are pushed as Lambertyan and `ci.yml` is green on the new
+head before the U3 dispatch.
+
+**Ranking and competitor comparison (unchanged).** IBM `gpt-5.5` airline
+**82.0** Pass^4 (unverified, PR #551, modified prompt) remains the SOTA;
+SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b` 34.0;
+microglia **fifth of six named entries**. The use-side sources behind the
+hypothesis are MemCalib, RSCB-MC, FinAcumen, MemSyco-Bench, OP-Bench,
+BenchPreS, RPEval, LongMemEval, Meta's "Remember When It Matters", MIST,
+ALTK-Evolve, MemGuard, MemAdapter, AECG, MemPABench, CMI, CAMEL, the Memory
+Curse study and PFM. None is a tau-squared-bench Pass^4 entry, and IBM's own
+held-out airline ablation still measures the same non-monotonic memory dose:
+14 high-support guidelines at Pass^4 45.0 against 101 at 40.0. A registered
+arm moves no leaderboard row until it is read back.
+
+**What is next, in order.** P0: read R48's `l4-evidence`, grade its eight
+predictions and seven refutations, and pair its memory arm against R47's as-is
+memory arm per task. P1: quantify U3's contribution to `pass^4`, the paired
+delta, the delivered population and `emptiedPacks`; if the revert rule fires,
+revert on the reading rather than on the explanation. P1: R46's
+admission-rule ablation with at least two comparators. P2: U1 calibration and
+U2 after a real reachability test, then transcript V46/V47 and S1a/S1b. P3:
+`sota.ts` split, `eval-sql` move, W8 dose curve, vitest 4 migration last.
