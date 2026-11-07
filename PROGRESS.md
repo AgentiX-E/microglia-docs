@@ -10852,12 +10852,21 @@ pressure the store absorbed without growing — and `rephrased` is the subset of
 merges that crossed a task boundary, which is also the evidence a corroboration
 gate wants.
 
-Thirty-seven new tests, both new modules at 100 / 100 / 100 / 100. `pnpm check`
-is green: 3180 tests over 151 files, coverage 99.95 / 99.65 / 100 / 99.95,
+Thirty-nine new tests, both new modules at 100 / 100 / 100 / 100. `pnpm check`
+is green: 3182 tests over 151 files, coverage 99.95 / 99.65 / 100 / 99.95,
 `audit: ok`, the R49 verifier's thirteen-case self-test passing, bench blocking
 gates PASS, bundle size ok after a written-down ceiling move (44,000 → 46,000
-raw, measured 45,372), and 147 modules / 39,833 production lines in the
+raw, measured 45,372), and 147 modules / 39,854 production lines in the
 structural ledger.
+
+One thing the first version of this got wrong and the second fixes: the switch was
+recorded only in the run log. A readback that has to grep a log to learn whether
+admission was on cannot attest the treatment, and two arms would have produced
+indistinguishable artefacts. `Tau2ArmRecord.writeAdmission` now carries the mode
+and both counters, so the next dispatch's artefact says what the store was allowed
+to decide as well as what it decided. Absent on every artefact before it, which is
+not the same as `off`: those runs accepted every claim, but none of them counted
+what that acceptance cost.
 
 Order from here:
 

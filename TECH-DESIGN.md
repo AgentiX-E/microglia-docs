@@ -7453,5 +7453,10 @@ Refusals, all thrown before a write:
 | `TAU_WRITE_ADMISSION` not `off`/`neighbours`/empty | throws at module load |
 | `TAU_WRITE_ADMISSION_THRESHOLD` not in (0, 1] | throws at module load |
 
+The treatment is recorded, not inferred. `Tau2ArmRecord.writeAdmission` is
+`{ mode, rephrased, suppressed }`, optional and absent on every artefact written
+before it: `mode: 'off'` is a measured store, `undefined` is an unmeasured one, and
+a readback that had to grep the run log for the switch could not attest either.
+
 What it never does: choose a floor, enter `pass^k`, retire an item, or write when
 the decision is `noop`.

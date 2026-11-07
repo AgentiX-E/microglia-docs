@@ -4664,7 +4664,7 @@ dispatch; the commit lands after it and is off by default.
 | P0 | `kernel/write-admission.ts`: `add` / `update` / `noop` against the top-10 neighbours, four refusals, `wouldChange` shared with the merge, 24 unit tests, 100/100/100/100 | done |
 | P0 | Distiller wiring after the exact-key merge and after generalisation; `suppressed` / `rephrased` in the report; 5 integration tests against a real store and a real replay | done |
 | P0 | `TAU_WRITE_ADMISSION` as a repository variable (the dispatch menu is at the platform limit of twenty-five), resolved and refused by test | done |
-| P0 | Full gate: 3180 tests / 151 files, 99.95 / 99.65 / 100 / 99.95, bench gates PASS, bundle ceiling moved to 46,000 with the measurement beside it | done |
+| P0 | Full gate: 3182 tests / 151 files, 99.95 / 99.65 / 100 / 99.95, bench gates PASS, bundle ceiling moved to 46,000 with the measurement beside it | done |
 | P1 | Read R49 back into `PAIRED / REFUSED_CROSS_RUN / NO_MEASUREMENT`; report the interval, the p-value and the delivered population | running (reference arm) |
 | P1 | U6b dispatch: `TAU_WRITE_ADMISSION=neighbours`, with the write census required by its readback | blocked on the R49 readback only because one lane at a time is the rule, not because the code is missing |
 | P2 | U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
