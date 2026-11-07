@@ -2587,3 +2587,42 @@ registered single-variable arm on the paired machinery this project already has:
 Every one of them is graded by paired, gold-verified outcomes and reported with
 its interval, p-value and delivered population. None of them is graded by a
 similarity score, a proxy, or a leaderboard row.
+
+### L.22 — Mem0's write path is bounded consolidation, and that changes what U6 must test (2026-11-07)
+
+The arms in L.21 assume one thing about consolidation that the most widely
+deployed memory layer does the other way. Mem0's update phase does not rewrite
+the store; it compares each extracted candidate against the **top-s most similar
+existing memories** (reported s = 10) and asks the model to choose one of four
+operations — `ADD`, `UPDATE`, `DELETE`, `NOOP` — where `NOOP` is the answer for
+a redundant fact. Consolidation is therefore local, explicit and mostly a
+refusal to write.
+
+That is a different intervention from "re-consolidate the store across tasks",
+which is how U6 is currently specified. If U6 comes back negative, the honest
+reading is not "consolidation hurts" but "a global rewrite of an accumulated
+store hurts", and the bounded variant Mem0 ships would still be untested here.
+The registration is therefore refined rather than dispatched:
+
+| Arm | Single varied variable | Why this is the one to test |
+| --- | --- | --- |
+| U6a global | per-task fresh store vs one store re-consolidated across tasks | reproduces or refutes the 203-point fifteen-task result in this lane |
+| U6b bounded | per-task fresh store vs one store edited only against its ten nearest neighbours, with `NOOP` available | the mechanism the leading memory layer actually ships |
+
+Two other published quantities belong in the record, with their grades, because
+they bound how much of the negative effect a pack-level intervention can even
+reach:
+
+| Claim | Source grade | What it licenses here |
+| --- | --- | --- |
+| Mem0 (J = 66.9 %) and Mem0-graph (68.4 %) against a full-context baseline and OpenAI's memory (52.9 %) on LoCoMo, 6,956 retrieved tokens per call against 25,000+ for full context | **high** — the paper's own table (arXiv 2504.19413) | structured, small, op-maintained memory outperforms large context on a conversational benchmark; the mechanism is write-time, not read-time |
+| "Lost in the Middle": at 32K prompt tokens a model ignores roughly 70 % of the information placed in the middle | **medium** — the finding is well replicated, the exact fraction is one reading of one figure | pack ORDER is a real variable at long context; at our pack size (8–12 items) it is a hypothesis, not a result, which is why U4 stays registered rather than assumed |
+| A passive context buffer loses 30–50 % on temporal tasks | **low** — vendor summary of a survey, primary table not opened | a direction, not a number; nothing is registered from it |
+
+Nothing here changes a threshold. What it changes is the shape of U6: two arms,
+not one, and the negative result — if it comes — is attributed to *global*
+rewriting specifically. The scale caveat is stated rather than smoothed over:
+LoCoMo conversations run to tens of thousands of tokens and our packs do not, so
+the margin by which Mem0 beats full context is not a margin this lane can
+reproduce. What transfers is the mechanism, and mechanisms are what the arms
+test.
