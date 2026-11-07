@@ -1767,3 +1767,48 @@ now with R45's `0.42` added — all memory-arm scores before R45 came from a
 named entries.** R45's served pack and non-significant `+6.00pp` move no rank.
 The only column microglia leads is "whether the treatment was delivered", and
 it now reads `1480 served` rather than `0`.
+
+### L.10 — An observation round moves no rank, and the negative-effect sources are now use-side
+
+**The final R45 line, checked.** Run `42131391874` finished `completed failure`
+at 01:02:49Z with `Pair the arms` as the only failing step. The three blocking
+gates are `V5-resolution` (18.59pp MDE), `V16-transfer-resolvable` (86
+informative trials, 22 repairs) and `l4-paired` (`+6.00pp [-6, +20] p=0.5488
+n=50`). The evidence artefact uploaded successfully. `ci.yml` on the same head
+is green, and the later fixture-fix head `c2da0b55` is green under
+`42149283405`. Nothing in the final log changes the L.9 reading.
+
+**The next dispatch is not an entry.** `prereg/R46-use-census.md` registers an
+`as-is` observation: no pack, rule, admission decision, scope, threshold, gate
+or `packages/core` line changes, and the dispatch inputs are R45's verbatim
+with only `prereg` renamed. It measures the relevance of *real* injected
+statements, the half of the negative-effect hypothesis L.9 could only measure
+on structural proxies. It claims no accuracy effect, so it produces no
+leaderboard row and cannot move a rank. U3's coverage floor is computed from
+that census after the run, never from R45's delta.
+
+**Competitor and literature comparison, use-side column.**
+
+| source | mechanism | what it says about negative effects | status here |
+|---|---|---|---|
+| IBM ALTK-Evolve (`AgentToolkit/altk-evolve`) | distilled rules appended to the system prompt; `support` = distinct source tasks, `sup3` core | 101 lossless rules 40.0 against 14 `sup3` rules 45.0: more memory costs 5pp | source read; selection contrast registered for R46 |
+| MemGuard (arXiv:2608.21867) | activates at score / confidence / uncertainty bars, keeps unverified records provisional | requires `len(distinct_task_ids) >= 2` before summarising repeated experience | read; `>= 2` contrast registered separately |
+| MemAdapter (arXiv:2610.05162) | calibrates memory influence to the current context | even objectively correct memories can harm | read; the use-side half of the hypothesis |
+| AECG (arXiv:2610.05176) | scope preservation for retrieved experience | "scope collapse" loses up to 16.89pp | read; motivates U1 / U3 |
+| MemPABench (arXiv:2610.30485) | benchmark over memory systems | Mem0 / MemOS / simple RAG do not beat No Memory | read; motivates the paired control |
+| microglia `as-is` census | seven-field census at the recall facade | measures statement relevance before any floor | registered, not yet run |
+
+**Ranking after this registration (unchanged).**
+
+| rank | entry | headline | caveat |
+|---|---|---|---|
+| 1 | IBM `gpt-5.5` airline | **82.0** (current SOTA) | self-reported, modified prompt, PR #551, not independently verified |
+| 2 | SapientAI-Agent-Opus-5 | 72.0 | different scaffold |
+| 3 | IBM `gpt-4.1 sup3` | 44.0 (#8) | 14 corroborated rules beat 101 lossless ones by 5pp |
+| 4 | stock `llm_agent` `gpt-oss-120b` | 34.0 | no memory |
+| 5 | **microglia** | `0.42` memory / `0.36` reference (R45, k=4) | `+6.00pp` not significant at n=50; not a ranking claim |
+| 6 | microglia reference arm | `0.36` | the control, not a competitor entry |
+
+An observation round moves no rank. The column microglia leads remains
+"whether the treatment was delivered": `1480 served`, first non-zero in five
+rounds.

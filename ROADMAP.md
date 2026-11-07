@@ -4114,3 +4114,40 @@ fire) and `tau2-use-census.ts` ships with TDD. What remains:
 The acceptance bar is unchanged: TDD, real tests, no mocks, ≥ 95% per
 dimension, `ci.yml` green, both repositories pushed as Lambertyan, and every
 iteration reporting the competitor comparison and the SOTA ranking.
+
+**R46 round 2 — the `as-is` census, registered (2026-11-06) and dispatched on
+the next green head.** `prereg/R46-use-census.md` fixes the P1 measurement
+before it runs. It is not an arm: dispatch inputs are R45's verbatim
+(`l4=true`, `bird=false`, `probe=false`, `l4_arms=both`, `l4_train_share=0.5`,
+`adjudicate=false`, `split=minidev`) with only `prereg` renamed, so the artefact
+becomes `poc-sota-bird-R46-use-census.json` and R45's is preserved. Six
+predictions and six refutation conditions are registered: `use` present on the
+memory arm and absent on the reference (the `!MEMORY` driver returns before the
+facade), the served population within ten percent of R45's `1480 / 1.839`,
+`injectedPairs > 1000` equal to the sum of served pack sizes,
+`zeroCoverageShare > 0.5` on real statements, `widenedItems = 0`, R45's
+validity gates passing again, and **no prediction** of `l4-paired`'s sign,
+magnitude or significance. No floor is chosen here; U3's is computed from the
+committed census after the dispatch and registered before its own dispatch
+(§34.22). R45's revert rule carries over unchanged.
+
+**Verification before the dispatch.** `pnpm eval:prereg prereg/R46-use-census.md`
+reports `1/1 valid`; `pnpm eval:protocol` reports `all claims hold`;
+`pnpm check` exits 0 with 2,934 tests in 140 files and coverage 99.98 / 99.69 /
+100 / 99.98. Six regenerated result files were classified as timing-only and
+restored; the coupling ledger is unchanged. `ci.yml` run `42149283405` on
+`c2da0b55` is read green from the remote. The final R45 watcher line
+(`completed failure`, `Pair the arms` failing, evidence uploaded) agrees with
+§34.24 and §17.90 with no new deviation.
+
+**Remaining after this registration, in order.** (1) read the `as-is`
+artefact's `use` block and `zeroCoverageShare` from the remote; (2) U3's floor
+computed from that census and registered before its dispatch, with `V1`
+blocking; (3) R46 admission-rule ablation (`as-is` / `distinct-task-support` /
+`min-support-only`) with the `>= 2` contrast registered separately; (4) U1
+calibration, then U2 only after a real reachability test; (5) transcript-level
+V46/V47, S1a then S1b; (6) `sota.ts` split and `eval-sql` move, W8 dose curve,
+vitest 4 migration deliberately last; (7) cortex release (W1) **excluded**.
+`TECH-DESIGN` §17.91 carries the configuration, the reading plan and the
+dependency layering; `AUDIT` §34.26 carries the twelve fixed decisions and the
+priority table.

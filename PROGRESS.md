@@ -9756,3 +9756,71 @@ entries**. R45's memory arm scored `pass^4 0.42` and the reference `0.36`; the
 `+6.00pp` paired delta is not significant at n=50 and is not a ranking claim.
 The column this project leads — whether the treatment was delivered — now reads
 `1480 served` for the first time; that is a delivery measurement, not accuracy.
+
+## 164 — The final monitor line, and a measurement registered before it existed
+
+**Conclusion first.** R45's watcher finished with `run: completed failure` on
+`42131391874`; the failing step is `Pair the arms` at 01:02:49Z, and the three
+blocking gates are the same three already recorded here in §163 and in `AUDIT`
+§34.24 — `V5` (18.59pp MDE), `V16` (86 informative trials), `l4-paired`
+(`+6.00pp [-6, +20] p=0.5488 n=50`). No new deviation, no hidden fourth
+failure, and the evidence artefact was uploaded. The red conclusion is a gate
+refusing to certify an underpowered measurement; `ci.yml` on the same head is
+green. The CI drift of defect 24 is closed remotely: `42149283405` on
+`c2da0b55` is `completed success`.
+
+**What this round did, ten items.**
+
+1. Read the final watcher log and the full `l4-job.log` rather than assuming the
+   intermediate live readout was the whole result.
+2. Reconciled each `PASS` / `FAIL` line against §34.24 and §17.90; the record is
+   accurate and needs no correction.
+3. Confirmed both arms, the not-run annotation and the evidence upload all
+   completed `success` around the one failing step.
+4. Re-read the remote heads: microglia `c2da0b55`, microglia-docs `5768471b`,
+   both Lambertyan.
+5. Wrote `prereg/R46-use-census.md` and validated it with `pnpm eval:prereg`
+   (`1/1 valid`) and `pnpm eval:protocol` (`all claims hold`).
+6. Fixed the dispatch inputs to R45's verbatim with only `prereg` renamed, so
+   the new artefact cannot overwrite R45's.
+7. Derived the reference-arm prediction from the driver's `!MEMORY` branch:
+   its artefact cannot carry a `use` block.
+8. Registered six falsifiable predictions and six refutation conditions,
+   including the rule that no floor is chosen from an accuracy number.
+9. Ran the full `pnpm check`: `CHECK_RC=0`, 2,934 tests in 140 files, coverage
+   99.98 / 99.69 / 100 / 99.98, `bundle:size ok`.
+10. Classified the six regenerated result files as timing-only and restored
+    them; the only committed source change is the new prereg file.
+
+| check | reading | bar |
+|---|---|---|
+| `pnpm check` | exit 0 | exit 0 |
+| tests | 2,934 in 140 files | all pass |
+| coverage, statements | 99.98 | at least 95 |
+| coverage, branches | 99.69 | at least 95 |
+| coverage, functions | 100 | at least 95 |
+| coverage, lines | 99.98 | at least 95 |
+| `ci.yml` | `42149283405` success on `c2da0b55` | green before dispatch |
+| semantic diff | six timing files restored, coupling unchanged | no fabricated structure |
+
+**Where the project stands, and what is left, in order.** (1) **P1 — the
+`as-is` census dispatch** carrying `useObservations`, registered here and
+waiting only on the green head; this is the only next measurement. (2) **P1 —
+U3 coverage-floored arm**, whose floor is computed from that artefact and
+registered before its own dispatch. (3) **P1 — R46 admission-rule ablation**
+(`as-is` / `distinct-task-support` / `min-support-only`), unblocked by
+`served > 0`. (4) **P2 — U1 calibration**, then U2 after a real reachability
+test. (5) **P2 — transcript-level V46/V47**, S1a then S1b. (6) **P3 —
+`sota.ts` split and `eval-sql` move**, W8 dose curve, vitest 4 migration last.
+(7) **cortex release (W1) excluded** by the standing instruction. Every step
+keeps the same acceptance bar: TDD, real tests, no mocks, at least 95 percent
+per dimension, `ci.yml` green, both repositories pushed as Lambertyan.
+
+**Ranking and competitor comparison.** IBM `gpt-5.5` airline **82.0**
+(unverified, modified prompt, PR #551) is the current SOTA; SapientAI
+72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b` 34.0; microglia
+**fifth of six named entries**. The competitor sources behind the use-side
+hypothesis are unchanged: ALTK-Evolve's `support` / `sup3`, MemGuard's
+`distinct_task_ids >= 2`, MemAdapter's context calibration, AECG's scope
+collapse and MemPABench's No Memory baseline. An observation round moves no
+rank and claims no accuracy.

@@ -3022,3 +3022,99 @@ reproduce the runner's filesystem. A fixture a test needs is part of the source
 tree, fingerprinted and asserted — the same discipline §34.20 applied to the
 coupling snapshot, now applied to test input. Both repositories are pushed again
 after the fix, and `ci.yml` is read from its real conclusion, not assumed.
+
+### 34.26 The as-is census is registered before the run that measures it
+
+**The monitor's last line agrees with the record.** The watcher on R45 run
+`42131391874` finished at 01:02:49Z with `run: completed failure`. The failing
+step is 13, `Pair the arms`; steps 11 and 12 (both arms), 14 (the not-run
+annotation) and 15 (the evidence upload) are `success`. Read against
+`l4-job.log`, this is the same conclusion §34.24 and §17.90 recorded from the
+artefact, with no new deviation:
+
+| gate | final reading | why the step exits 1 |
+|---|---|---|
+| `V5-resolution` | FAIL, MDE 18.59pp | the lane cannot resolve a 6pp effect at n=50 |
+| `V16-transfer-resolvable` | FAIL, 86 informative trials, 22 repairs | fewer than the 100 informative trials the gate requires |
+| `l4-paired` | FAIL, `+6.00pp [-6, +20] p=0.5488 n=50` | not significant; no effect is certified |
+| `V3`, `V6`, `V7`, `V8`, `V32`, `V15`, `V33`, `V17`, `V44`, `l4-same-split` | PASS | the validity gates R45 also passed |
+
+The step's exit 1 is a gate refusing to certify an underpowered measurement, not
+a build failure: `ci.yml` on the same head is green. `V32` reports 0/32
+unanswered questions, 11 corrections and 0 distillation failures; `V15` carries
+200/200 trials with 86 informative and 114 already repaired by the retry;
+`V17` reports 22 repaired against 17 broken, net `+2.50pp`, verdict
+`unmeasured`. None of these numbers is re-read as an accuracy claim.
+
+**Defect 24 is closed on the remote.** `ci.yml` run `42149283405` on `c2da0b55`
+is `completed success`; the red predecessor `42148206565` on `4d6b4c19` stays in
+the record rather than being quietly superseded. The local check after the new
+registration exits 0 with 2,934 tests in 140 files and coverage 99.98 / 99.69 /
+100 / 99.98 — every dimension above the 95 percent bar — and `bundle:size ok`.
+The `FAIL` lines in that log are the standing eval families reporting their
+historical scientific negative results, not command failures.
+
+**What this round registers, before any run.** `prereg/R46-use-census.md` is the
+P1 dispatch of §17.90, written and validated before the dispatch that measures
+it. Twelve decisions are fixed in advance:
+
+1. It is **not an arm**. No pack, rule, admission decision, scope, threshold,
+   gate or line of `packages/core` changes; only the reading side is new.
+2. Dispatch inputs are R45's verbatim — `l4=true`, `bird=false`, `probe=false`,
+   `l4_arms=both`, `l4_train_share=0.5`, `adjudicate=false`, `split=minidev` —
+   with only `prereg` renamed, so `SOTA_ARTEFACT` becomes
+   `poc-sota-bird-R46-use-census.json` and R45's file is preserved.
+3. The registered unit stays the pack; the observed unit is the
+   `(question, injected statement)` pair at the `/v1/recall` facade.
+4. Only the **memory** arm can carry a `use` block: with `TAU_MEMORY=false` the
+   driver returns before the facade exists. A `use` block on the reference arm
+   is a wiring defect, not a control measurement.
+5. The seven-field `UseCensus` shape is read verbatim; `coverageProfile` is a
+   pure function over raw observations and is not a field of the artefact.
+6. `zeroCoverageShare` is computed from the two registered counts
+   (`zeroCoveragePairs / injectedPairs`), so it can be read from the artefact
+   without widening the contract.
+7. It includes content-free queries; the derived profile separates them. The
+   prediction is about the registered share, and the refutation names what a
+   profile read must not silently drop.
+8. **No floor is chosen in this round.** U3's floor is computed from the
+   committed census after the dispatch, as §34.22 requires, and is registered
+   before its own dispatch.
+9. `l4-paired`'s sign, magnitude and significance are **not predicted**. The
+   round claims no accuracy effect, and a red conclusion on `V5`, `V16` or
+   `l4-paired` is the lane's resolution verdict, not a regression.
+10. R45's revert rule (significantly negative, or below minus five points with
+    a served pack) carries over unchanged; this round adds no softer branch.
+11. The gate list is R45's verbatim
+    (`V1,V2,V3,V5,V6,V7,V8,V15,V16,V17,V32,V33,V44`), which is exactly the set
+    of V-coded gates `l4-pair` emitted on R45. No gate is added or removed
+    after seeing a number.
+12. Acceptance is unchanged: `pnpm check` exit 0, coverage at least 95 percent
+    on every dimension, `ci.yml` green before dispatch, both repositories
+    pushed as Lambertyan.
+
+**Semantic diff, classified before the commit.** `pnpm check` regenerated six
+result files. `bench/results/study.json` differed only in `p50Ms` / `p95Ms`;
+the other five differed only in `ranAt` and timing fields. All six were
+restored, not committed. The coupling ledger did not move: a Markdown
+registration adds no module, so the `137 -> 138` change of §17.90 remains the
+last structural one. The only committed source change is the new prereg file.
+
+| head | repository | what it is |
+|---|---|---|
+| `26f7c3f0` | microglia | R45 pinned head, `ci.yml` `42130978881` green |
+| `4d6b4c19` | microglia | R46 instrument, CI `42148206565` red (defect 24) |
+| `c2da0b55` | microglia | fixture fix, CI `42149283405` green |
+| `5768471b` | microglia-docs | §34.25, the defect's record |
+
+**Priority table after this registration.**
+
+| priority | item | trigger | acceptance |
+|---|---|---|---|
+| P0 | R45 readback | met | six predictions and the revert rule read from the artefact — done |
+| P0 | `use` instrument and CI drift fix | met | registered shape verbatim, remote CI green — done |
+| P1 | `as-is` census dispatch | this commit green | artefact reports a real-statement census; `zeroCoverageShare` read before any floor |
+| P1 | U3 coverage-floored arm | census committed | floor computed from the artefact, registered before its dispatch, `V1` blocking |
+| P1 | R46 admission-rule ablation | `served > 0` (met) | three arms, one store, `>= 2` contrast registered separately |
+| P2 | U1 calibration, U2 after a real reachability test | U3 read | U1 reports `served = 0` as a measurement |
+| P3 | transcript V46/V47, S1a/S1b, `sota.ts` split, W8, vitest 4 | ROADMAP order | unchanged acceptance bar |

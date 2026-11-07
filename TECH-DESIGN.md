@@ -6396,3 +6396,93 @@ only diff was timing were restored, not committed (§34.20).
 **Ranking.** IBM `gpt-5.5` airline 82.0 remains the SOTA; microglia fifth of
 six named entries. A served pack and a non-significant `+6.00pp` move no rank
 and are not claimed as accuracy.
+
+### 17.91 R46 as-is: the dispatch that measures without treating
+
+**Why this is a dispatch and not an offline computation.** §17.88 measured the
+support distribution offline and §17.89 measured use-side overlap on structural
+stand-ins. Neither can supply the distribution of the statements the distiller
+actually writes, because those statements are produced by model calls inside a
+run. The seven-field `UseCensus` of §17.90 is therefore an instrument waiting
+for a run; `prereg/R46-use-census.md` registers that run before it starts. The
+artefact of R45 run `42131391874` is not modified and is not re-read for an
+effect: its `+6.00pp [-6, +20] p=0.5488 n=50` stays an unmeasured effect with a
+served pack.
+
+**Dispatch configuration.** The inputs are R45's verbatim, with one field
+renamed so `SOTA_ARTEFACT` does not collide:
+
+```json
+{
+  "ref": "master",
+  "inputs": {
+    "prereg": "R46-use-census",
+    "l4": "true",
+    "bird": "false",
+    "probe": "false",
+    "l4_arms": "both",
+    "l4_train_share": "0.5",
+    "adjudicate": "false",
+    "split": "minidev"
+  }
+}
+```
+
+`bird=false` keeps the BIRD lane off, both arms share one job and one split, and
+`TAU_ENV_READY` remains the only switch that lets the two-hour lane run. The
+head dispatched on is the head that carries the prereg file; `ci.yml` on that
+head must be green first.
+
+**What is read, and from where.** The evidence artefact's
+`eval/results/arms/memory/poc-l4.json` carries `tau2.use`. The reference arm's
+artefact cannot: the driver's `!MEMORY` branch returns before the recall facade
+exists, so `instrument()` has no observations to reduce. The reading is:
+
+1. `arm` is `as-is`, so the census cannot be mistaken for a later U1–U3 arm.
+2. `recallRequests`, `recallServed`, `meanPackIds` reconcile with R45's
+   `1480 / 1480 / 1.839` within the registered ten percent band.
+3. `injectedPairs` is greater than 1000 and equals the sum of served pack
+   sizes; one row per injected statement, nothing silently dropped.
+4. `zeroCoveragePairs` and `zeroCoverageShare = zeroCoveragePairs /
+   injectedPairs` are read before any floor is discussed. The prediction is
+   `share > 0.5`, from §34.23's offline direction (0.7588 cross-domain against
+   0.2077 within-domain), and is falsifiable on real statements.
+5. `widenedItems` is 0, from the same domain ledger `V44` reads.
+6. `coverageProfile` is **not** in the artefact: it is a pure function over
+   `UseObservation[]`, and the registered contract is deliberately not widened.
+   U3's floor is computed from the committed census, not from a profile that
+   would have to be reconstructed after the fact.
+7. The V-coded gates are R45's set; `l4-paired`, `V5` and `V16` may again report
+   a red conclusion. That is a resolution verdict, not a regression of this
+   instrument.
+
+**Dependency layering, unchanged.** `bin/tau2-driver.ts` (facade, observation
+only) → `tau2-use-census.ts` (pure census) →
+`@agentix-e/microglia-core/kernel` (`queryCoverage` / `tokenize`, read-only).
+`tau2-instrument.ts` composes the census into the arm record and `tau2-gates.ts`
+projects it without grading it. `packages/core`, `sota.yml`, every gate
+definition and R45's artefact are untouched by this registration.
+
+**Acceptance, ten items.** (1) the prereg validates under `pnpm eval:prereg`;
+(2) `pnpm eval:protocol` still reports all claims holding; (3) `pnpm check`
+exits 0 with coverage at least 95 percent on every dimension; (4) no test reads
+a scratchpad path; (5) the six timing-only result files are restored, not
+committed; (6) both repositories are pushed as Lambertyan; (7) `ci.yml` on the
+dispatch head is read green from the remote; (8) the dispatch returns 204 and
+its run id is recorded; (9) the evidence artefact is read back from the remote,
+not assumed; (10) U1, U2, U3 and R46's admission-rule arms stay closed until
+the census is committed.
+
+**Priority table, unchanged by the registration.**
+
+| priority | item | trigger | acceptance |
+|---|---|---|---|
+| P0 | R45 readback, instrument, CI drift fix | met | artefact read, shape verbatim, remote CI green — done |
+| P1 | `as-is` census dispatch | this head green | real-statement census committed; `zeroCoverageShare` read first |
+| P1 | U3 coverage-floored arm | census committed | floor from the artefact, registered before dispatch, `V1` blocking |
+| P1 | R46 admission-rule ablation | `served > 0` (met) | three arms, one store, `>= 2` contrast separate |
+| P2 | U1, then U2 after a reachability test | U3 read | calibration reported as a measurement |
+| P3 | transcript V46/V47, S1a/S1b, split, W8, vitest 4 | ROADMAP order | unchanged bar |
+
+**Ranking.** IBM `gpt-5.5` airline 82.0 remains the SOTA; microglia fifth of
+six named entries. An observation round moves no rank.

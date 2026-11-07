@@ -3229,3 +3229,48 @@ six named entries, and its `+6.00pp` is not a ranking claim. The column we lead
 — whether the treatment was delivered — reads `1480 served` for the first time.
 That is progress in the ability to be honest, which is the only kind of
 progress a benchmark cannot fake.
+
+### 3.6.45 The measurement is written down before the measurement exists
+
+There is a particular temptation that arrives with an ambiguous number. R45
+delivered a real treatment and returned `+6.00pp` with an interval spanning
+both sides of zero. One can explain that number in at least two ways: the lane
+is too small to resolve the effect, or the pack that arrived was about a
+different domain than the question it was served to. Both explanations fit the
+artefact, because the artefact counted the size of each pack and never a single
+statement inside it. The temptation is to pick the explanation that suggests
+the most flattering next parameter — a coverage floor, a new threshold, a
+wider scope — and then tune until the number moves.
+
+The project's answer is to add the measurement that would disambiguate the two
+explanations, and to write down what that measurement is allowed to say before
+it is taken. R46's first dispatch therefore changes nothing about what the
+agent is shown. It carries an observer: for every recall request, the driver
+records the question and the rendered statements of the pack it served, and a
+pure function reduces them to seven numbers. The dispatch inputs are R45's
+verbatim, so the only difference between the two runs is the presence of a
+reader.
+
+What is registered in advance is precise enough to be wrong. The memory arm
+must carry a census and the reference arm must not; the served population must
+reconcile with R45's; the number of injected pairs must equal the sum of the
+pack sizes; the share of zero-coverage pairs must exceed one half, the
+direction an offline proxy measured on structural stand-ins; no widened item
+may appear; and every validity gate R45 passed must pass again. The sign,
+magnitude and significance of the paired accuracy delta are deliberately not
+predicted. A run that reports a red conclusion on resolution is a run that did
+its job — the lane is still too small at fifty paired tasks, and saying so is
+cheaper than manufacturing a result.
+
+Most importantly, the round refuses to choose the floor that the next arm will
+use. That floor belongs to U3 and will be computed from the committed census of
+real statements, then registered before its own dispatch. A threshold chosen
+after seeing the effect is not a hypothesis; it is a curve fitted to one point.
+The use-side arms stay closed until the census exists, and the older artefacts
+report "not measured" rather than a reassuring zero.
+
+**Where we stand.** IBM's 82.0 is still the SOTA; microglia is still fifth of
+six named entries. The watcher on R45 has now returned its final line, and it
+agrees with the record: three blocking gates, no effect certified, evidence
+uploaded. The next run is an observation, not a claim. That is the discipline
+that makes a later claim worth reading.
