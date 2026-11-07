@@ -3667,3 +3667,99 @@ none is a tau-squared-bench Pass^4 entry and none may be imported into
 PG-CHECKLIST 78 stays recorded with its different pool and pass criterion.
 Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
 fifth of six named entries.
+
+### 34.34 Two first-party source readings, and a verifier with three terminal states
+
+While run `42353229972` measures, two first-party sources were read to fix the
+semantics of the next two arms, and an offline readback verifier was built and
+self-tested. None changes the `microglia` head, and none moves a leaderboard
+row.
+
+**MemCalib, from the paper and its own repository.** The primary source is
+arxiv 2609.24259 with the `Quark-Medical/MemCalib` implementation. Each memory
+atom has an ideal use level in `{Ignore, Bound, Control}` mapped to rank
+`{0, 1, 2}`, and a judge reads its actual level. Over-use and under-use for one
+response are `O = sum(max(rank(actual) - rank(ideal), 0))` and
+`U = sum(max(rank(ideal) - rank(actual), 0))`. With `rho = 0.5` the six metrics
+are:
+
+```
+sMOS  = mean(1 - rho^O_j)          sMUS  = mean(1 - rho^U_j)
+AOR   = share of responses with O_j > 0
+AUR   = share of responses with U_j > 0
+SCS   = mean(rho^(O_j + U_j))      Exact = mean(1[O_j + U_j == 0])
+```
+
+All six lie in `[0, 1]` and are rescaled to `[0, 100]` for reporting. The
+benchmark has 15,000 examples from eight public QA datasets across health,
+general assistance and coding, split 13,500 train / 1,500 held-out test; the
+judge is DeepSeek-V4-Pro over three independent seeds in non-thinking mode
+with temperature and top-p at 1. A human annotator agreed with the judge on
+**96.7 percent** of 150 sampled judgments (95 percent Wilson CI 92.4 to 98.6).
+
+Four results bear directly on U3's registered design. (1) Every evaluated
+model except Qwen3-8B over-uses memory more severely and more frequently than
+it under-uses, which independently supports `gamma > alpha` (a false-positive
+injection costs more than a correct reuse earns). (2) Qwen3-8B shows the
+reverse skew and also beats the larger Qwen3.5-35B-A3B on both SCS and Exact,
+so the direction of the skew is **model-dependent**: this is a second,
+independent reason the cost weights have no default and are registered before
+dispatch rather than tuned afterwards. (3) The paper states that strength in
+one direction cannot compensate for substantial errors in the other, which is
+exactly why U3 prices an `emptiedPacks` abstention as a first-class cost
+instead of maximising retained pairs alone. (4) GRPO and GDPO, which assign a
+response-level advantage uniformly to tokens, improve one direction while
+deteriorating the other; MemCalib-RL instead uses ordered bidirectional
+counterfactual credit assignment with nine reward channels, token granularity
+and exact atom ablation. A single scalar accuracy objective is therefore a
+poor instrument for choosing a floor, which R47's refutation already forbade.
+
+The mapping registered for U1 is structural, not numeric: over-use `O`
+corresponds to `zeroCoveragePairs` (an irrelevant pair still injected) and
+under-use `U` to `emptiedPacks` (a pack that could have helped but was
+abstained). MemCalib's `rho = 0.5` decay is **symmetric**, whereas U3's cost is
+deliberately asymmetric (`gamma > alpha > beta`) following RSCB-MC. No MemCalib
+threshold, score or channel count may be copied into `COVERAGE_FLOORS` or the
+registered weights.
+
+**The Memory Funnel, from its own `core/consolidate.py` description.** The
+lifecycle is `Trace -> Unit -> Crystal`. `crystal_policy()` promotes a Unit
+only at **at least three independent sources**, or on explicit user
+confirmation, or at confidence >= 0.90 with importance >= 0.80. Confidence
+rises by a fixed step per corroborating source and is capped at **0.95**;
+importance starts at a baseline and tracks how often a fact is used. A highly
+corroborated but unused fact has high confidence and low importance; a
+constantly used fact with one source has high importance and low confidence.
+Supersession flips an older unit to `SUPERSEDED` with a `superseded_by` pointer
+rather than deleting it, and BFS retrieval skips superseded relations. The
+retrieval score is `score(t) = decay^hops(t) * (alpha * sim(t) + (1 - alpha) *
+bm25(t))`, and `decay_action` archives units past `valid_to`. The
+confidence/importance separation is the semantic anchor for R46's two planned
+comparators: `distinct-task-support` measures corroboration across independent
+traces (confidence), while `min-support-only` measures raw occurrence count
+(importance). The value 3 is that project's own bar, not a transferable
+constant; importing it would repeat the ruler defect of section 34.25.
+
+**An offline readback verifier with three terminal states.** `r48_readback.py`
+is a read-only analysis tool kept outside both repositories; it never mutates
+source, gates or registrations, so it is not subject to the repository's
+coverage gate and is not production code. It encodes the distinction this
+iteration required: `NO_MEASUREMENT` when the evidence zip has no complete arm
+pair, `GRADED` when a complete pair exists and no blocking gate is red, and
+`GATE_RED` when a complete pair exists but blocking scientific gates refuse it
+(R47's state). It grades all eight R48 predictions, all seven refutations, the
+three reconciliation identities, the registered floor recomputed from the
+committed R47 histogram, the cross-run per-task pair against R47's as-is memory
+arm with an exact two-sided McNemar p-value, and the revert rule. Its
+`--self-test` passes with `mcnemar(2, 8) = 0.109375` reproducing R47 exactly,
+`chosen = 0.01` with `net(0.01) = 1231.0` and `measurableZero = 742`, an
+abstention-averse ordering selecting `0`, all three terminal states asserted,
+a synthetic self-consistent GRADED input with `allPredictionsHold = True` and
+`allRefutationsClear = True`, and R1, R2 and R4 firing on their respective
+broken inputs. Run against the real artefact of `42350304597` it returns
+`NO_MEASUREMENT` with `armEntries = 0`, `predictionsGraded = 0`,
+`revertRuleFired = False` and `downstreamArms = CLOSED`. It is staged for the
+readback of `42353229972`.
+
+Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
+fifth of six named entries.

@@ -4485,3 +4485,22 @@ PR #542/#551) are quantified in `COMPETITIVE.md` section L.16. Their numeric
 thresholds are not portable into `COVERAGE_FLOORS` or R46's contrast.
 Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA, microglia
 fifth of six named entries, and a failed run with a lawful retry moves no row.
+
+### Semantic anchors registered while the retry measures
+
+`AUDIT.md` section 34.34 and `TECH-DESIGN.md` section 17.98 now register what
+the next two arms will measure, without opening them. MemCalib's separate
+over-use `O` and under-use `U` with `SCS = mean(rho^(O + U))` map structurally
+onto `zeroCoveragePairs` and `emptiedPacks` for U1, and its finding that the
+skew is model-dependent (all models but Qwen3-8B over-use; Qwen3-8B reverses
+and beats a larger model) corroborates registering U3's cost weights with no
+default. The Memory Funnel's `consolidate.py` split between confidence
+(independent corroboration, capped at 0.95) and importance (usage frequency)
+gives R46's `distinct-task-support` and `min-support-only` comparators their
+meaning, with the `>= 2` contrast testing the bar itself. Both sources'
+numeric thresholds are their own and are not imported. An offline readback
+verifier with three terminal states is self-tested and staged for the P0
+readback. The P0-P3 table in the preceding section is unchanged, run
+`42353229972` is still on step 12, and U1, U2 and R46's arms stay CLOSED until
+a valid paired readout exists. Ranking is unchanged: IBM `gpt-5.5` airline
+82.0 remains the SOTA, microglia fifth of six named entries.

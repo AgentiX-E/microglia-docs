@@ -10329,3 +10329,60 @@ SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b`
 34.0; microglia **fifth of six named entries**, leading only whether the
 treatment was delivered. Failed runs, retries, green CI and source studies
 move no leaderboard row.
+
+## 171 — First-party source semantics, a self-tested verifier, and the retry still measuring
+
+After iteration 170 recorded run `42350304597` as an infrastructure failure
+and dispatched the lawful retry `42353229972` on the same head and prereg, two
+first-party source readings fixed the semantics of the next arms and an
+offline readback verifier was built. All work stayed outside the `microglia`
+head under section 34.21; the `pnpm check` result (2980 tests, 142 files,
+99.98 / 99.67 / 100 / 99.98) and `ci.yml 42349873647` (44 steps green on
+`33038232`) remain governing.
+
+MemCalib's paper (arxiv 2609.24259) and repository (`Quark-Medical/MemCalib`)
+supply six use-side metrics with `rho = 0.5`, a 96.7 percent judge-human
+agreement on 150 sampled judgments (95 percent Wilson CI 92.4 to 98.6), and
+three findings that corroborate U3's registered design independently: the
+over-use skew present in every model but Qwen3-8B, the reverse skew on
+Qwen3-8B (which also beats a larger model), and GRPO/GDPO improving one
+direction while worsening the other. The Memory Funnel's `consolidate.py`
+supplies the confidence-versus-importance split that gives R46's
+`distinct-task-support` and `min-support-only` comparators their meaning.
+Both are quantified in `AUDIT.md` section 34.34 and `COMPETITIVE.md` L.17;
+neither is a tau-squared-bench Pass^4 entry and neither supplies a portable
+threshold.
+
+`r48_readback.py` is a read-only verifier with three terminal states
+(`NO_MEASUREMENT`, `GRADED`, `GATE_RED`), all eight R48 predictions, all seven
+refutations, the three identities, the floor recomputed from the committed R47
+histogram, a cross-run exact McNemar pair and the revert rule. Its self-test
+passes: `mcnemar(2, 8) = 0.109375`, `chosen = 0.01`, `net(0.01) = 1231.0`,
+`measurableZero = 742`, an abstention-averse ordering choosing `0`, all three
+states asserted, and R1/R2/R4 firing on broken inputs. On the real failed
+artefact it returns `NO_MEASUREMENT` with `armEntries = 0` and
+`downstreamArms = CLOSED`. It is staged for the retry's readback.
+
+**Retry status.** Run `42353229972` remains `in_progress`: step 11 read the
+registered floor successfully, step 12 (`L4 arm -- memory`) is still running
+after roughly 35 minutes without a provider error. The first run raised its
+DeepSeek 500 at 17 minutes, so this one has passed that point; no conclusion
+is drawn until `l4-evidence` is read back. Steps 13 to 16 are pending. No
+second workflow was dispatched and no source file was edited while it measures.
+
+**What is next, in order.** P0: read run `42353229972`'s `l4-evidence` with the
+verifier, grade eight predictions and seven refutations, and pair its memory
+arm against R47's as-is memory arm per task. P1: quantify U3's contribution to
+`pass^4`, the paired delta, the delivered population and `emptiedPacks`, and
+revert on the reading if the rule fires. P1: defect 27's fail-fast provider
+probe on a later head only. P1: R46's admission-rule ablation with the two
+comparators and the separately registered `>= 2` contrast. P2: U1 calibration
+using the registered structural mapping, then U2 after a real reachability
+test, then transcript V46/V47 and S1a/S1b. P3: `sota.ts` split, `eval-sql`
+move, W8 dose curve, vitest 4 migration last. Cortex release stays excluded.
+
+**Ranking (unchanged).** IBM `gpt-5.5` airline **82.0** Pass^4 is the current
+SOTA; SapientAI 72.0; IBM `gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b`
+34.0; microglia **fifth of six named entries**, leading only whether the
+treatment was delivered. A failed run, a retry, source studies and a
+self-tested verifier move no leaderboard row.

@@ -2259,3 +2259,55 @@ studies move no leaderboard row.
 `gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b` 34.0; microglia **fifth of six
 named entries**. The one column microglia leads is still whether the treatment
 was delivered, and U3 remains unassessed until a valid pair is read back.
+
+### L.17 — MemCalib's six metrics and the Memory Funnel's consolidation code
+
+Two first-party sources were read while U3's retry measures. Both quantify a
+use-side harm, and neither is a tau-squared-bench Pass^4 entry, so neither is
+merged into the ranking table.
+
+**MemCalib (arxiv 2609.24259; `Quark-Medical/MemCalib`).** The benchmark asks
+whether an agent gives each memory atom its ideal degree of influence, on a
+three-level scale `Ignore (0) / Bound (1) / Control (2)`. For response `j` the
+paper defines over-use `O_j` and under-use `U_j` as the sums by which actual
+levels exceed or fall short of ideal levels, then six metrics with `rho = 0.5`:
+`sMOS`, `sMUS`, `AOR`, `AUR`, `SCS = mean(rho^(O_j + U_j))` and
+`Exact = mean(1[O_j + U_j == 0])`. The corpus is 15,000 examples from eight
+public QA datasets (13,500 train, 1,500 held-out test); the judge is
+DeepSeek-V4-Pro over three seeds in non-thinking mode with temperature and
+top-p at 1, and agrees with a human annotator on 96.7 percent of 150 sampled
+judgments (95 percent Wilson CI 92.4 to 98.6). Three findings matter here.
+All models except Qwen3-8B over-use more than they under-use; Qwen3-8B shows
+the reverse and beats the larger Qwen3.5-35B-A3B on both SCS and Exact, so
+the skew is model-dependent rather than universal. The paper states that
+strength in one direction cannot compensate for substantial errors in the
+other. GRPO and GDPO improve one direction while deteriorating the other,
+while MemCalib-RL's ordered bidirectional counterfactual credit assignment
+with nine channels, token granularity and exact atom ablation balances both.
+For U3 this is independent support for an asymmetric cost with
+`gamma > alpha > beta`, for registering the weights with no default, and for
+pricing abstention as a first-class action. MemCalib's symmetric `rho` decay
+is not U3's cost and its thresholds are not portable into `COVERAGE_FLOORS`.
+
+**The Memory Funnel (membox, `core/consolidate.py`).** The lifecycle
+`Trace -> Unit -> Crystal` requires at least three independent sources (or an
+explicit user confirmation, or confidence >= 0.90 with importance >= 0.80)
+before `crystal_policy()` promotes a Unit. Confidence grows per corroborating
+source and is capped at 0.95; importance tracks usage. Supersession marks an
+older unit `SUPERSEDED` with a `superseded_by` pointer instead of deleting it,
+BFS retrieval skips superseded relations, and the retrieval score is
+`decay^hops(t) * (alpha * sim(t) + (1 - alpha) * bm25(t))`. The stated reason
+for the three-source bar is that a single LLM extraction error must not
+permanently warp the agent's worldview. Its confidence/importance split is the
+cleanest read-so-far analogue of R46's `distinct-task-support` versus
+`min-support-only` comparators, and it runs in the same direction as IBM's
+held-out airline dose reversal (14 guidelines beating 101 on Pass^4) and the
+driving-agent audit's 15-token caution equivalence recorded in L.16. The
+threshold 3 belongs to that project's corpus and is not imported.
+
+**Current ranking (unchanged).** IBM `gpt-5.5` airline **82.0** Pass^4
+(unverified, PR #551, modified prompt) remains the SOTA; SapientAI 72.0; IBM
+`gpt-4.1 sup3` 44.0 (#8); stock `gpt-oss-120b` 34.0; microglia **fifth of six
+named entries**, leading only whether the treatment was delivered. U3 remains
+unassessed: run `42350304597` measured nothing, and retry `42353229972` is
+still on step 12. Two source readings and a self-tested verifier move no row.

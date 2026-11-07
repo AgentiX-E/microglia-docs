@@ -6934,3 +6934,48 @@ non-zero exit. TDD, real tests, no mocks, at least 95 percent on every
 coverage dimension, `pnpm check` exit 0 and `ci.yml` green before any later
 dispatch. Ranking is unchanged: IBM `gpt-5.5` airline 82.0 remains the SOTA,
 microglia fifth of six named entries.
+
+### 17.98 Semantic anchors for U1 and R46, and the verifier as an acceptance tool
+
+The measurement window keeps the `microglia` head unchanged, so this section
+registers semantics for the next arms without implementing them.
+
+**U1 calibration.** MemCalib (arxiv 2609.24259) separates over-use `O` from
+under-use `U` and scores a response with `SCS = mean(rho^(O + U))` and
+`Exact = mean(1[O + U == 0])` at `rho = 0.5`, alongside `sMOS`, `sMUS`, `AOR`
+and `AUR`. Mapped onto the committed artefact, over-use corresponds to
+`zeroCoveragePairs` (a pair with no shared content term still injected) and
+under-use to `emptiedPacks` (a served pack the floor abstained from). This is a
+structural mapping only: MemCalib's decay is symmetric while U3's cost is
+asymmetric with `gamma > alpha > beta`, and its judge-based atom levels are not
+observable in the tau-squared lane. No MemCalib threshold, score or channel
+count may enter `COVERAGE_FLOORS` or the registered weights. MemCalib's finding
+that every model but Qwen3-8B over-uses more than it under-uses, that the skew
+reverses on Qwen3-8B, and that GRPO/GDPO improve one direction while worsening
+the other, is independent corroboration of three existing choices: penalise
+false-positive injection most, register the weights with no default, and treat
+abstention as a first-class cost rather than maximising retained pairs.
+
+**R46 admission-rule ablation.** The Memory Funnel's `core/consolidate.py`
+separates `confidence`, which grows with independent corroborating sources and
+is capped at 0.95, from `importance`, which tracks how often a fact is used.
+`crystal_policy()` promotes a `Unit` to a `Crystal` only at three independent
+sources (or explicit user confirmation, or confidence >= 0.90 with importance
+>= 0.80), and uses `SUPERSEDED` plus `superseded_by` instead of deletion. This
+gives R46's two comparators a precise meaning: `distinct-task-support` tests
+corroboration across independent traces (confidence), `min-support-only` tests
+raw occurrence count (importance), and the separately registered `>= 2`
+contrast tests the bar itself. The value 3 is that project's own choice and is
+not portable; it is a comparator to ablate, not a constant to adopt.
+
+**The verifier is an acceptance tool, not production code.** `r48_readback.py`
+lives outside both repositories, is read-only, and is therefore not under the
+coverage gate that governs shipped source. Encoding `NO_MEASUREMENT`,
+`GRADED` and `GATE_RED` as distinct terminal states is what prevents a provider
+outage from being graded as a finding. Its self-test reproduces R47's exact
+McNemar p-value `0.109375` from `(lost, gained) = (2, 8)`, recomputes the
+registered floor `0.01` with `net = 1231.0` and `measurableZero = 742`, asserts
+all three terminal states, and fires refutations R1, R2 and R4 on broken
+inputs. It is staged for the readback of `42353229972`; no conclusion is drawn
+from it until that artefact exists. Ranking is unchanged: IBM `gpt-5.5`
+airline 82.0 remains the SOTA, microglia fifth of six named entries.
