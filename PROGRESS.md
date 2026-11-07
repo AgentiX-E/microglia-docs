@@ -10668,3 +10668,38 @@ second.
 R49 is re-dispatched with the registration ID in the form the workflow expects,
 every other input identical to R48. No `Pass^4` is claimed, the SOTA table does
 not move, and the cortex release stays excluded.
+
+### 172.6 — The negative effect gets published effect sizes, and three arms become registrable
+
+The hypothesis this project has carried since its first memory arm -- that the
+harm comes from what is stored and how it is used -- now has two published
+ablations behind it, and both are recorded in COMPETITIVE L.21 rather than
+paraphrased.
+
+Use side: on LongMemEval the same question against a ~300-token focused prompt
+and against the full ~113,000-token session differs by 15-35pp across every
+model family, with the strongest models expressing the gap mostly as
+abstention. Nothing about the stored content changes between the conditions.
+
+Write side: on a fifteen-task stream, a store re-consolidated across tasks ends
+203 points behind per-task fresh distillation, with over-generalized entries at
+roughly five times the fresh rate, and removing a single consolidated workflow
+raises the pass rate.
+
+Three consequences are now registered as arms and none is dispatched: pack
+ORDER at fixed content (U4), pack SIZE ceiling at fixed coverage (U5), and
+fresh-versus-cumulative consolidation (U6). Each is a single varied variable on
+the paired machinery R49 is exercising, each is graded by paired gold-verified
+outcomes, and none imports a threshold from the papers.
+
+One readback requirement follows directly from the first result: the pair
+artefact must carry per-task abstention before the next floor arm is registered,
+because abstention is the measured response to noise and a delta without it is
+not attributable. That is queued behind the R49 readback, not folded into it --
+the measurement path is frozen while the dispatch runs.
+
+The R49 environment contract was verified locally rather than assumed:
+`TAU_FACADE_PAIR=true` with `TAU_MIN_COVERAGE=0.01` resolves to an enabled plan
+with floors `0` and `0.01`, an empty pair variable resolves to disabled for
+push runs, a missing floor and an off-grid floor are both refused, and the
+verdict machinery returns PAIRED with `treatmentDelivered` on a realistic scope.

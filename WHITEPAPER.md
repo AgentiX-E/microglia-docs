@@ -3671,3 +3671,30 @@ run, or no measurement when the instrument failed. The last two are not
 negative results and not zeros. Saying so explicitly is part of the product:
 a system that cannot tell "we measured nothing" from "we measured no effect"
 will confidently optimise the wrong thing.
+
+
+#### 3.6.54 Why the same memory can help and hurt, measured
+
+Two published experiments turn the project's hypothesis from a suspicion into a
+quantity, and both are ablations rather than opinions.
+
+The first is a use-side result. On LongMemEval, the same question answered
+against a focused prompt of roughly three hundred tokens and against the full
+session of roughly a hundred and thirteen thousand tokens produced a 15-35
+point accuracy gap across every model family tested, and the strongest models
+expressed the gap mostly by abstaining. Nothing about the stored content changed
+between the two conditions. Only how much of it was allowed to speak.
+
+The second is a write-side result. On a fifteen-task stream, an agent that
+re-consolidated one shared store across every task ended **203 points behind**
+the same agent distilling each task fresh, with over-generalized entries
+accumulating at roughly five times the fresh rate. Removing a single
+consolidated workflow from that store raised the pass rate. The memory was not
+missing. It was wrong, and it was wrong in a way that compounded.
+
+That is the whole thesis in two numbers: the negative effect lives in the
+selection, the ordering and the consolidation of what is stored, and each of
+those is a variable one can hold fixed and change alone. The project's next arms
+do exactly that -- order, size, and consolidation policy -- and each is graded by
+paired gold-verified outcomes with a stated interval, not by a similarity score
+or a leaderboard row.

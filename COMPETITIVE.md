@@ -2513,3 +2513,77 @@ Current SOTA table, unchanged this iteration:
 | 6 | — | — | — |
 
 SOTA2 PG-CHECKLIST 78 is registered but not merged into this table.
+
+
+### L.21 — What the literature actually measured about why memory hurts (2026-11-07)
+
+The standing hypothesis is that the negative effect comes from *what* is stored
+and *how* it is used, not from the presence of memory. The published record now
+quantifies both halves, and every number below is a measured effect under a
+controlled setting, not an argument.
+
+#### The use side: serving more costs accuracy even when the content is correct
+
+| Source | Setting | Measured effect |
+| --- | --- | --- |
+| Chroma, *Context Rot* (July 2025), 18 models | the same question answered against a ~300-token focused prompt versus the full ~113,000-token session | every model family did better on the focused prompt; the gap ranges 15-35pp and is widest for Claude Opus 4 / Sonnet 4 at 30-35pp, mostly expressed as **abstention** rather than a wrong answer |
+| same | needle-in-haystack with semantic rather than lexical needles | accuracy falls as input grows once the needle and the question stop sharing vocabulary; a purely lexical needle test certifies a length that is not usable |
+| same | 1 distractor versus 4 | one distractor measurably hurts, four compound it, and which distractor hurts most is interaction-specific rather than monotone in count |
+| same | coherent versus shuffled haystack, identical content | coherent haystacks are **worse** for every one of the 18 models: plausible adjacent text competes for attention |
+| Liu et al. 2023 (*Lost in the Middle*) | position sweep at fixed length | U-shaped recall: evidence at the edges survives, evidence in the middle does not |
+| NoLiMa / RULER | effective context length | 10 of 12 models claiming 128K fall below half their short-context score by 32K; the advertised window is not the usable window |
+
+Three consequences for this project, in order of how cheaply they can be tested:
+
+1. The `abstained` term in the U3 cost function is not a modelling convenience.
+   Abstention is the response the strongest models were measured to give under
+   noise, so a `pass^4` that moves without a matching abstention count is not
+   explained by that mechanism and must not be attributed to it. The pair
+   artefact should carry per-task abstention before the next floor arm is
+   registered.
+2. Pack **size** is a lever independent of pack **content**. The floor bounds
+   coverage from below and nothing bounds it from above, so a registered
+   size ceiling is a single-variable arm on the same within-run machinery.
+3. Pack **order** is a lever independent of both. If edges survive and the
+   middle does not, the highest-support statements belong at the edges, and
+   that is a one-line change in the renderer with a paired readout.
+
+#### The write side: consolidation itself is the damage
+
+| Source | Setting | Measured effect |
+| --- | --- | --- |
+| *Useful memories become faulty when continuously updated by LLMs* (arXiv 2605.12978) | 15-task ScienceWorld switch stream | cumulative consolidation ends **203 points behind** per-task fresh distillation; over-generalized entries accumulate at ~5x and garbage at ~20x the fresh rate, both widening monotonically across the 15 tasks |
+| same | ALFWorld, WebShop, ARC-AGI stream | an agent becomes worse on the very problems its memory was built from; removing a single consolidated workflow (W8) *raises* the WebShop pass rate |
+| MemForm / MFP | 1,016 paired clean-and-poisoned cases, 6 LLMs, LangChain and LlamaIndex | macro-average attack success 35.2-84.0% on multiple choice across five formation interfaces; **path poisoning** -- reordering an identical multiset of experiences -- flips behaviour on 30-55% of queries |
+| same | defences | A-MemGuard cuts path poisoning 56.8% to 21.4% but *raises* selection poisoning in some tests: one defence per interface, not one defence for memory |
+| OEP (arXiv 2605.18930) | clean, locally-correct edge cases with plausible consequence framing | attack success above 50% on GPT-4o agents, exploiting the experience-following inductive bias; a more capable agent can be more vulnerable |
+
+The first row is the strongest external evidence for the standing hypothesis,
+and it is an ablation, which is why it matters more than a survey: the same
+agent, the same tasks, the same store format, only the consolidation policy
+changed, and the difference is 203 points. The third row is the same claim from
+the adversarial side: authentic, individually successful experiences are not
+sufficient for a useful memory, because order and scope of consolidation decide
+what the agent will do next.
+
+The W8 result also confirms an item this project already carries as pending
+work: a single memory entry can be net-negative, so a dose curve over entries is
+the right instrument, and deleting one entry is a legitimate intervention.
+
+#### What is not taken from any of this
+
+No threshold, no hyperparameter and no architecture is imported. What is taken
+is a set of *mechanisms with published effect sizes*, each of which becomes one
+registered single-variable arm on the paired machinery this project already has:
+
+| Arm | Single varied variable | Predicted readout | Status |
+| --- | --- | --- | --- |
+| U3 floor | `buildPack.minCoverage` | already registered, R49 | dispatched |
+| U4 order | render order of the pack at fixed content | shifts `pass^4` without changing served size | registered, not dispatched |
+| U5 ceiling | `buildPack.maxItems` at fixed coverage | tests the size effect independently of relevance | registered, not dispatched |
+| U6 consolidation | fresh-per-task versus cumulative store | reproduces or refutes the 203-point result in this lane | registered, not dispatched |
+| W8 dose | presence of one entry | passes the 2605.12978 surgery test | pending, now with external precedent |
+
+Every one of them is graded by paired, gold-verified outcomes and reported with
+its interval, p-value and delivered population. None of them is graded by a
+similarity score, a proxy, or a leaderboard row.
