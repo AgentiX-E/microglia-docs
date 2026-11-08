@@ -12162,3 +12162,41 @@ group of three lands, R57's `far` arm, then `near`, then `adversarial`, one per 
 threshold at `supportTasks >= 3` becomes decidable the moment an item reaches three; (4) the
 correction rate — 12 of 57 tasks produce a correction — is the next population lever if support stays
 at two.
+
+### 172.39 Two dispatch errors, and the wiring defect the second one exposed
+
+Both mistakes are in the dispatch, not in the lane, and both are recorded because a run list that
+hides them makes the next dispatch repeat them.
+
+**The first**: R61's first dispatch (`42524759029`) omitted `l4=true`. The `l4` job is gated on
+`vars.TAU_ENV_READY == 'true'`, and that variable is `false` in this repository, so the dispatch
+produced a BIRD-only run with the arm this round grades **skipped**. Cancelled within a minute and
+re-dispatched (`42524907557`).
+
+**The second**: that re-dispatch omitted `bird=false`, which R60's dispatch had set. The BIRD lane
+therefore ran, spent **1,768 calls and 17 minutes** across all five folds — `n=350 without=51.71%
+with=51.14% delta=-0.57pp` — and then failed at *Price the memory prior*, not on its measurement but
+on where it looked for its own output.
+
+**The wiring defect the second error exposed, which is real and independent of the mistake.**
+
+```
+SOTA_ARTEFACT: inputs.prereg != '' && format('poc-sota-bird-{0}.json', inputs.prereg) || 'poc-sota-bird.json'
+```
+
+The workflow's artefact name takes its suffix from **any** dispatch input named `prereg`, and the lane
+that writes the file (`pnpm eval:sota`) never receives that variable — it decides its own name. So a
+dispatch that names a τ² pre-registration makes every BIRD step look for
+`poc-sota-bird-R61-floor.json` while the BIRD lane wrote whatever it writes, and the run goes red in a
+step that has nothing to do with the arm. R60 never met it because R60 skipped BIRD.
+
+Two candidate fixes, neither taken in this iteration because the graded run was in flight:
+
+| fix | shape | cost |
+| --- | --- | --- |
+| the `bird` job refuses a pre-registration that does not name a BIRD question | needs a step that reads `prereg/<id>.md` and gates the job on it, since `if:` cannot read files | a job gate, and an end-to-end check that a τ² dispatch skips BIRD |
+| the artefact name is computed once from the prereg's own frontmatter and passed **to** the lane | removes the second source of truth | touches every BIRD step's env |
+
+The second is the root fix: one artefact name, computed once, given to the lane rather than guessed
+about it. It is the next iteration's first item, with a test that a τ² pre-registration and a BIRD
+pre-registration produce different, correct names.
