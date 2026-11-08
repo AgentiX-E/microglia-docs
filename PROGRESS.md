@@ -11650,3 +11650,23 @@ field with **one live reader and one dead one** is invisible: the dead path is t
 and the live one is the one the tests exercise.
 
 Gates: 3,333 tests in 160 files, coverage 99.95 / 99.63 / 100 / 99.95.
+
+### 172.27 — R53's control could not be satisfied by any dispatch of it
+
+Checked before paying for it: R53's first refutation requires the three note-level arms to have
+identical delivery censuses, and two dispatches of one configuration never do. R54 and R56 ran the
+same fold, scenario pair, note and recall, and distilled from ten and eight corrections into 2,765 and
+2,984 delivered pairs. A three-dispatch R53 would fail its own control every time.
+
+The code agrees: `note` goes to `openMicroglia`, so it is a property of the host, and R49's two
+facades share one host. So the treatment is not reachable by a switch even now that
+`TAU_INJECTION_NOTE` is wired — the wiring was necessary and not sufficient.
+
+R53 is therefore not "dispatchable after R55". It is blocked on the note becoming a rendering option
+of one recall, so three levels can run as three facades over one store, one learning phase and one
+seed. That makes the control checkable — items per request comparable within one run — instead of
+asserting an equality between runs that stochastic corrections forbid.
+
+The rule this deposits: **a control must be checkable within one artefact or one run.** If it cannot
+be, the treatment is not within-run either, and the registration is describing two things it cannot
+hold apart.

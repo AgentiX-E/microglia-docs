@@ -4947,8 +4947,9 @@ conclusion is about guards rather than about attention.
 | P0 | `audit.mjs` fails on a `TAU_*` the source reads and no workflow can set; five were in that state, two of them a registered treatment (AUDIT 34.66) | done, guard written first |
 | P0 | `inaction` is declared, projected and written; the single-facade path computed the census and dropped it (AUDIT 34.67) | done, the compile guard caught the second half |
 | P1 | R55.0 readback — dispatched as run `42463064049` on `482d2d92` after the first attempt was cancelled for a `V0`-absent pair | running |
-| P2 | `r53_readback.py` — three arms, one per note level, with the identical-delivery-census refutation as its first check | next, before R53's dispatch |
-| P2 | R53 — now dispatchable: `TAU_INJECTION_NOTE` reaches the lane, and the abstention census its fourth prediction reads is in the artefact | registered, after R55.0 |
+| P2 | **The note becomes a rendering option of one recall, and the three levels run as three facades over one store** — R49's paired facade generalised from two to three (AUDIT 34.68). R53's first refutation is an equality between runs, and no arrangement of dispatches can satisfy it | blocking R53 |
+| P2 | `r53_readback.py` — three arms from one run, with the identical-items-per-request check as its control | after the three-facade capability |
+| P2 | R53 — **not dispatchable as registered**: `TAU_INJECTION_NOTE` now reaches the lane (AUDIT 34.66), and the note is a property of the host, so the three levels cannot be three dispatches | registered, blocked on the capability above |
 | P2 | U6b / U4 / U5 / U6a, store-level poisoning, R57 | registered, undispatched |
 | P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
 | — | cortex release | excluded by standing instruction |

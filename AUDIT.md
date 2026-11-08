@@ -5339,3 +5339,44 @@ know that the first is the contrast between two facades and the second is the gr
 single field with two shapes would be worse; two fields with one name each is the compromise, and the
 next iteration that touches the paired facade should consider whether the contrast belongs beside the
 census rather than in a sibling block.
+
+### 34.68 A registration whose control its own dispatch cannot satisfy
+
+R53's first refutation is a control: *if the three arms' delivery censuses are not identical, the
+experiment varied more than the note and is abandoned*. It is the right rule — a note-level comparison
+is worthless if the arms differ in anything else — and it cannot be satisfied by any arrangement of
+three dispatches.
+
+Two dispatches of one configuration differ in their corrections, because the model produces them at
+run time. R54 and R56 ran the same 32-row learning fold, the same scenario pair, the same note and the
+same recall, and distilled from **ten** and **eight** corrections respectively, producing 2,765 and
+2,984 delivered pairs. A three-dispatch R53 would therefore differ in its store, and the first
+refutation would fire on every attempt.
+
+The code says the same thing more directly. `note: NOTE_PLAN.mode` is passed to `openMicroglia`: the
+level is a property of the host, and R49's two facades deliberately share one host — which is why the
+paired-facade pattern cannot carry three notes without a change either. So the treatment is not
+reachable by a switch even now that `TAU_INJECTION_NOTE` is wired (34.66), and the wiring was necessary
+and not sufficient.
+
+R53 is listed as "dispatchable after R55" in the roadmap and it is not. It is blocked on a capability:
+the note has to become a rendering option of one recall, and the three levels have to run as three
+facades over one store, one learning phase and one seed. This is R49's pattern generalised from two to
+three, and the reason it is the right generalisation is that it makes the refutation checkable —
+*within one run over one store*, the items a pack carried for a given request are comparable to the
+digit, while the number of requests the agent chose to make is reported per arm instead of asserted
+equal.
+
+Two things are worth separating here, because conflating them is what produced the defect.
+
+**A control that is stated as an equality between runs is a control nobody can pass.** Stochastic
+components make equality across dispatches impossible in a way that no amount of care fixes, and the
+registration was written by someone who had just spent two iterations reading cross-dispatch
+differences. The rule that would have caught it: *a control must be checkable within one artefact or
+within one run*, and if it cannot be, the treatment is not within-run either.
+
+**The repair happened before the dispatch, and that is the cheapest kind.** R53's header was repaired
+once already, for the same family of defect (a header describing the previous experiment), and R54's
+was too. Three repairs to two registrations before either ran is a rate worth naming: the cost of a
+bad registration is now paid in a paragraph rather than in three two-hour dispatches and an ABANDONED
+artefact nobody can reuse.
