@@ -4718,8 +4718,10 @@ fixing the instrument. R51 answers the third by fixing the write path.
 | P0 | `trainDomain`/`testDomain`/`recallDomain` in the prereg header, read by `eval:prereg-scenario`, consumed ahead of the repository variables; three refusals keep the pin honest | done |
 | P0 | `storeItems` in the arm artefact — the store's own words, bounded, with `omitted`/`truncated` counted — because a count of conditions cannot be read for register | done |
 | P1 | R51 readback: **ABANDONED** by its own third refutation; `conditioned` 16/16 and empty 0/1,527 met, coverage p50 4.88% refuted, and the configuration was retail→airline rather than within-scenario | done |
-| P1 | **R54 dispatch** (retail/retail/retail, floor 0): R51's predictions where they are answerable, with coverage p50 ≥ 12% as the one that could not be tested before | **running** |
-| P1 | R54 readback: coverage p50 < 12% with 0% empty means the distiller writes in the procedure's register and the next arm is the prompt, not retrieval | blocked on the dispatch |
+| P0 | `coverage.medians` — the delivered-pair median and the non-zero median committed together, from one `measuredRows` pass, so "coverage p50" names a population instead of a phrase; drift guard against `nonzeroQuantiles.p50` | done, AUDIT 34.53 |
+| P0 | `eval/verifiers/r54_readback.py` — four states (`GRADED` / `NO_MEASUREMENT` / `DISCARDED` / `ABANDONED`), fourteen self-test artefacts, and a CI step that runs every verifier's self-test, which no step did before | done |
+| P1 | **R54 dispatch** (retail/retail/retail, floor 0, `f25c8b56`, run `42438746694`): R51's predictions where they are answerable, with coverage p50 ≥ 12% as the one that could not be tested before | **running** |
+| P1 | R54 readback: coverage p50 < 12% with 0% empty means the distiller writes in the procedure's register and the next arm is the prompt, not retrieval. Graded on `nonzeroQuantiles.p50`, the quantity R49 and R51 were read against; the delivered-pair median is printed as context and not graded | blocked on the dispatch |
 | P2 | U6b dispatch (`TAU_WRITE_ADMISSION=neighbours`), whose readback must report the write census | blocked on R54's readback by the one-lane rule |
 | P2 | R53: the pack's note as the only variable — `none` / `standard` / `hardened`, mechanism shipped (`TAU_INJECTION_NOTE`), recorded as `{mode, declared}` | registered, dispatchable |
 | P2 | U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |

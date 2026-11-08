@@ -3973,3 +3973,39 @@ change its conclusion, and every one of them belongs in the same paragraph as th
 predictions. Anything left outside that paragraph is not a detail of the run; it is an
 unregistered degree of freedom, and unregistered degrees of freedom are what a
 pre-registration exists to enumerate.
+
+### 3.6.52 A bar met on the survivors is not a statement about the delivery
+
+Here is a number that is easy to satisfy and hard to mean. Take everything a memory served,
+drop the items that share no term with the question, and report the median overlap of what is
+left. It will be respectable in almost any system, because the filtering did the work: the
+survivors are, by construction, the related ones.
+
+Our own lane ran on that number. R54 asks whether the triggers a distiller writes name the
+user's situation or the procedure's, and the prediction was registered as "coverage p50 at
+least 12%" — graded, correctly and consistently, against `nonzeroQuantiles.p50`. R49 read 4.7%,
+R51 read 4.88%, and the instrument that produced them is committed and self-tested. The
+trouble is what that population excludes. R47's census had 750 zero-coverage pairs among 2,188
+delivered ones; the median over *everything* that was served is about half the graded figure.
+The zeros were delivered. The model read them, paid for them, and was influenced by them.
+
+This is the same error as reporting retrieval precision and calling it usefulness, and the
+published record is full of it. MemSyco-Bench's most uncomfortable finding is that 61–62% of the
+errors it catalogues occur *after* the correct memory is already in place — the failure is
+downstream of the instrument most systems report. MemTrapBench shows five memory frameworks
+scoring below their own no-memory ablation. Neither result is reachable from a metric computed
+on the population that survived the filter.
+
+So the artefact now commits both medians, inside one block, from one pass over one set of
+observations:
+
+| Field | Population | What it answers |
+| --- | --- | --- |
+| `nonzeroQuantiles.p50` | pairs that cleared zero | what a floor is choosing from |
+| `medians.medianNonzero` | the same pairs, by name | the number the 12% bar has always been |
+| `medians.medianAllPairs` | every delivered pair | what the model actually saw |
+
+No threshold moved and no floor was re-chosen. What changed is that the claim "the conditions
+name the situation" can no longer be satisfied by a delivery that is four-fifths unrelated
+without the artefact showing both numbers in the same place. A measurement that can only be
+read one way is not a measurement; it is a conclusion with a number attached.

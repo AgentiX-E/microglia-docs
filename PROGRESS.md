@@ -11330,3 +11330,37 @@ arm is running.
 | 5 | four-dimension coverage on every new file | **met**: `store-items.ts`, `injection-note-plan.ts`, `prereg.ts`, `render.ts` all 100/100/100/100 |
 | 6 | the coupling ledger describes the tree it is in | **met**: 148 → 150 modules, committed snapshot regenerated |
 | 7 | full gate | **met**: 156 files, 3,253 tests, 99.95 / 99.62 / 100 / 99.95 |
+
+### 172.17 — R54 re-dispatched on the repaired instrument, and the delivered-pair median committed while it ran
+
+Run `42438746694` on `f25c8b56`, dispatched after the first attempt was cancelled rather than
+allowed to grade its third prediction on the old document for the third time. `ci` on the same
+commit had already gone green. The two steps that open the L4 job are the ones the registration
+now guarantees, and the header resolves locally to `retail/retail/retail`, floor 0, no facade
+pair.
+
+While it ran, the gap R54's first readback would have hit was closed in code: the 12% bar is
+graded against the median over the pairs that cleared zero, and the median over **every**
+delivered pair — the one that describes what the model actually saw — was in no field. On R47's
+population (750 zeros of 2,188 pairs) the two differ by roughly a factor of two.
+
+| Change | File | Reading after |
+| --- | --- | --- |
+| `measuredRows` — one population for profile, histogram, medians | `packages/eval/src/tau2-use-census.ts` | 100/100/100/100 |
+| `coverage.medians` — `medianAllPairs`, `medianNonzero`, `pairs`, `zeroPairs` | same, via `tau2-instrument.ts` | 100/100/100/100 |
+| `eval/verifiers/r54_readback.py` — four states, fourteen self-test artefacts | new | `SELF-TEST PASSED` |
+| `pnpm eval:verifiers` as a CI step | `.github/workflows/ci.yml` | runs |
+| a TypeScript coverage readback, written and deleted before it was pushed | — | not pushed |
+
+Totals: 3,267 tests, lines 99.95%, branches 99.62%, functions 100%, statements 99.95%.
+
+Two things this iteration is a record of rather than a claim about. The first is a dead branch:
+the first wiring guarded the new reduction with `?? []` inside a spread that is already
+conditional on the same value, and branch coverage named it at 98.30%. It was removed by
+restructuring rather than by a test that executes an impossible path. The second is that
+`eval/verifiers/*.py --self-test` had never run in CI — the workflow runs steps, not
+`pnpm check` — so two verifiers that grade registrations were themselves ungraded on every
+push since they were written.
+
+Pending on the lane: R54's readback (four of five predictions answerable, the third now
+comparable to R49/R51 for the first time), then U6b, R53's note levels, U4/U5/U6a.

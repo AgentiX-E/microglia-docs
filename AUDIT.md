@@ -4659,3 +4659,68 @@ cap, with `omitted` and `truncated` counted. A sample that silently dropped half
 would let the register of the sample stand in for the register of the store — the same
 defect as a retention curve computed on the population that survived it, one artefact
 earlier.
+
+### 34.53 Two medians, one phrase, and a verifier that had never run in CI
+
+R54 was dispatched a second time — run `42438746694` on `f25c8b56`, the commit that made the
+use census score the document the floor scores — after the first dispatch was cancelled twenty
+minutes in, because its third prediction would have been graded on the old document for the
+third time. Its first two steps are the ones the registration now guarantees: `State the
+scenario pair` and `Read the registered recall floor`, and `eval:prereg-scenario` resolves
+R54's header to `train=retail`, `test=retail`, `recall=retail` with a floor of 0 and no facade
+pair, checked locally against the committed file before the readback rather than after it.
+
+**What the run cannot answer, and what was done about it while it ran.** R54's third
+prediction is "coverage p50 at least 12%". The committed verifier grades it against
+`tau2.coverage.nonzeroQuantiles.p50` — the median over the pairs that cleared zero — and that
+is what R49 (4.7%) and R51 (4.88%) were read against, so the series is defined. What the
+artefact never carried is the other population. R47's histogram committed 750 zeros in 2,188
+injected pairs, which puts the median over **every** delivered pair at that population's 24th
+non-zero percentile, about 2.7%: half the graded number, and in no field at all.
+
+The zeros were delivered. The model saw those rules. So a bar met on the survivors is
+compatible with a delivery that is eight-tenths unrelated — which is exactly the state R54's
+second refutation has to tell apart from a distiller that names the situation, and the artefact
+gave the readback no way to tell them apart.
+
+Three changes, and one of them is a subtraction:
+
+| Change | Why it is the shape it is |
+| --- | --- |
+| `coverage.medians` — `medianAllPairs`, `medianNonzero`, `pairs`, `zeroPairs` | the delivered-pair median is now committed, inside the histogram block rather than beside it, because a median built from a different observation list would be a second population rather than a second reading |
+| `measuredRows` — one row builder for profile, histogram and medians | the two reductions cannot disagree about which packs are measurable, which is the same defect as the three call sites that each decided for themselves what a rule "says" |
+| a `coverage-readback` module and CLI, written and then deleted | it read the median out of the artefact in TypeScript while `eval/verifiers/*.py` already graded it in Python. Two readers for one field is the drift this project keeps paying for, so the TS path was removed before it was pushed |
+
+The test that matters is the drift guard: `medians.medianNonzero` must equal
+`nonzeroQuantiles.p50` on eight mixed observations, and `medians.pairs` must equal
+`measuredPairs`, with the counts hand-written (ten pairs, three of them zero) rather than
+derived from the function under test. A guard that recomputes its own subject cannot catch a
+population error. The histogram's exact-key-set assertion — the one that exists to make a
+silent widening impossible — fired and was updated deliberately, in the commit, with the reason
+in the assertion's own comment.
+
+**A dead branch, introduced and removed in the same iteration.** The first version of the
+wiring guarded the new reduction with `coverageSource ?? []`, a fallback that cannot be taken
+because the spread it sits inside is conditional on the same list. Branch coverage fell to
+98.30% and named the line. The repair is not a test that executes an impossible branch: the
+block is now built by a function that takes a non-optional list, so the defensiveness has
+nowhere to hide. `tau2-instrument.ts` reads 100/100/100/100.
+
+**And a self-test that had never run in CI.** `eval/verifiers/r49_readback.py` and
+`r51_readback.py` have both carried a `--self-test` since they were written, and `pnpm check`
+runs them — but the workflow does not run `pnpm check`, it runs steps, and no step ran the
+verifiers. A verifier whose fixtures are never graded is a file that was correct when it was
+written: the same failure mode as R16's header, R13's ledger and R12's admission. R54 is the
+first registration with a verifier that grades a state the registration itself names, and
+`DISCARDED` — a dispatch that ran the wrong scenario pair is discarded, not reinterpreted —
+is why the fourth state exists rather than being folded into `ABANDONED`. A step now runs
+`pnpm eval:verifiers` on every push, and `r54_readback.py --self-test` exercises fourteen
+artefacts including a pre-R54 run with no `scenario` block at all (still graded) and one whose
+coverage populations disagree (abandoned).
+
+**The consequence, stated before the readback rather than after it.** If R54's non-zero p50
+clears 12% while its delivered-pair median sits near zero, prediction 3 is met and the
+mechanism is only half described: the conditions name situations and most of what was served
+did not. That is not a refutation of R54. It is the registration the next one should be
+written against, and the value of committing the second median is that it can now be the
+subject of a registration at all.

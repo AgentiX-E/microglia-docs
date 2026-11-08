@@ -7782,3 +7782,63 @@ emptied 571 of 1,516 packs while the as-is facade served 1,435 of 1,527. Three d
 attributed the emptiness to the write path; AUDIT 34.51 corrects them. The retention curve
 that refuted them was added to the artefact by 34.46 for an unrelated reason and was sitting
 in the same file.
+
+### 17.111 The coverage median is two readings, and the artefact commits both
+
+`nonzeroQuantiles.p50` answers "how much of the question does a *surviving* rule mention".
+That is the right population for choosing a floor, because a floor acts on the survivors, and
+it is the quantity R54's 12% bar has been read against. It is not the population the model
+saw: a zero-coverage pair was delivered, injected, and paid for in tokens.
+
+```ts
+export type CoverageMedians = {
+  readonly pairs: number;          // delivered pairs from measurable packs
+  readonly zeroPairs: number;      // pairs whose delivered coverage is exactly zero
+  readonly medianAllPairs: number; // upper median over every delivered pair
+  readonly medianNonzero: number;  // upper median over the non-zero pairs
+};
+```
+
+It is nested inside `CoverageHistogram` rather than written beside it, and both are computed
+from one `measuredRows` pass:
+
+```
+measuredRows(observations) ──┬── coverageProfile   mean, buckets
+                             ├── coverageHistogram floors, nonzero quantiles
+                             └── mediansOf         both medians
+```
+
+A median built from a different observation list than the curve would be a second population,
+not a second reading of the same one — the same defect as the three call sites that each
+decided for themselves what a rule "says" (§17.107), and the same repair: one reduction of one
+population, called from one place.
+
+**Both medians are upper medians**, index `floor(0.5 * n)`, matching `quantileOf` and therefore
+matching `nonzeroQuantiles`. A reader who interpolates between the middle pair gets a different
+number and concludes the instrument is wrong; the convention is one function with one test that
+says so.
+
+**Why both, and why the gap is large.** R47's committed histogram read `nonzeroQuantiles.p50 =
+0.04545` beside `injectedPairs 2188` and `zeroCoveragePairs 750`. With 34.3% of that population
+at zero, the median over every delivered pair is the 24th non-zero percentile — about 0.027,
+roughly half. A registration that asks for "coverage p50 ≥ 12%" and is graded on the survivors
+can be met by a delivery that is four-fifths unrelated, because the survivors are by
+construction the related ones. Committing the delivered-pair median does not change any bar;
+it makes the second bar registerable.
+
+**What is deliberately not done here.** No threshold is applied to either median, and the
+retention curve still chooses a floor from the survivors. U3's decision rule consumes the
+curve, not the medians, and adding a graded median would change what the floor is chosen from
+without a registration saying so.
+
+**Pre-R54 artefacts** carry `nonzeroQuantiles` and no `medians`. Their non-zero median is
+recoverable because it is that field; their delivered-pair median is not, because the sorted
+list of delivered coverages is not in the file. `eval/verifiers/r54_readback.py` reports the
+first and prints the second as *not recoverable* rather than as zero, and grades nothing on it.
+
+**The verifier has four states**, and the fourth is written in the registration:
+`GRADED`, `NO_MEASUREMENT`, `DISCARDED` (the `scenario` block is not the registered pair, so
+the dispatch measured a different experiment), `ABANDONED`. `DISCARDED` is a state rather than
+a conclusion because a wrong configuration is not evidence about the mechanism. Its
+`--self-test` runs fourteen artefacts, and `pnpm eval:verifiers` runs every verifier's
+self-test, now as a CI step rather than only from `pnpm check`.

@@ -2857,3 +2857,19 @@ the airline columns it has measured, level with its own no-memory ablation on re
 against 38.0 at an MDE of 18.59pp), and none of this iteration's work moves `pass^4` at all.
 What this iteration bought is that the next number will be about the mechanism rather than
 about a switch.
+
+### L.28 — The number that is comparable to their rows is the delivered one (2026-11-08)
+
+L.27's caveat is now addressed in the instrument rather than in prose. The 4.9% was the median
+over the pairs that cleared zero; the artefact also commits the median over every delivered
+pair, which on R47's population (750 zeros of 2,188) is about half. Both are printed, neither
+is a threshold.
+
+Against the published work, the delivered-pair median is the honest comparison. MemSyco-Bench
+finds 61–62% of the errors it catalogues occurring after the correct memory is already in
+place, and MemTrapBench finds five frameworks below their no-memory ablation — both are
+statements about what happened to the whole delivery, not about a filtered subset. A memory
+whose delivered median is near zero cannot be compared to those rows by quoting its survivors.
+
+No ranking changes. IBM `gpt-5.5` airline 82.0 remains the published SOTA and microglia remains
+fifth of six named entries; nothing in this iteration moves `pass^4`.
