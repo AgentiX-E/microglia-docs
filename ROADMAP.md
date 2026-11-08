@@ -5184,3 +5184,35 @@ and the store grows to ~45 — enough that pairs double and triples triple, whic
 support 3 needs. If the median stays at 2 while claims rise, the cap was irrelevant and the episode
 is the constraint, which is R61's registration. If claims rise and nothing corroborates, more claims
 of this shape do not recur and the corpus is the answer rather than the population.
+
+## R57 — the controlled distractor, prepared against measurement (2026-11-09)
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | `plant.ts` — arm switch, document validator, digest, per-request choice, census, append into a rendered block | done, 36 cases, 100 on all four |
+| P0 | `eval/planted/retail.json` — six rules, two twinned pairs, committed before any dispatch | done, digest travels in the artefact |
+| P0 | the band, found unreachable before the run (10–20% against requests of 11–126 terms) | **amended to a term count**; `far` none, `near`/`adversarial` two or more |
+| P0 | the twin pair, found moving the dose by one word (`keep`) | `validatePlanted` refuses it; a pair is measured on the twin's text |
+| P0 | `TAU_PLANTED_RULES` wired through the SOTA workflow and into the artefact as `plant` | done |
+| P1 | dispatch `far`, then `near`, then `adversarial`, one arm per run, each paired against the reference | after R60 clears the lane |
+| P1 | `r57_readback.py` — grade the census before any delta: an arm whose band did not land is not an effect | next |
+| P2 | R55.1 — a recurrence threshold at `supportTasks >= 3` | decidable if R60 shows 3 |
+| P2 | R61 — per-assertion episodes, if R60's median stays at 2 | registered next |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+**What R57 is, precisely.** Not a third average. The registration's own words: the quantity this lane
+has never had is the **sign split** — for a rule that shares a question's topic and states the wrong
+action, the episodes it broke should outnumber the episodes it repaired. The mean may well stay
+`UNRESOLVED` at 57 pairs, and the repair/break ledger is the reading that carries the result.
+
+**What the pre-dispatch measurement changed.** The arm was drafted with a share as its level, which no
+topic-sharing rule can hit on requests this long, and with a twin pair that differed by one word. Both
+would have produced a run whose artefact looked complete and whose treatment was not the one
+registered. They are now refused in code rather than avoided by care, and the achieved distribution is
+recorded per request — `far` shares nothing with 100% of requests, `near` reaches its band on 76%.
+
+**The order of the four arms is deliberate.** `none` is not a dispatch: it is the store R56/R59/R60
+already measured. `far` runs first because a control that shows no effect is the only arm whose
+result makes the other two interpretable; `near` and `adversarial` follow on the same store and the
+same seed, and the readback refuses to grade a delta from an arm whose band did not land.

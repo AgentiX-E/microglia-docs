@@ -8457,3 +8457,34 @@ instruction is now composed from the number the parser enforces (`traceCeilingLi
 in `packages/core/src/distill/llm.ts`), so R60's ceiling of six is stated to the model and applied by
 the parser by construction, and the artefact carries `traceClaims: {ceiling, declared}` because two
 runs at two ceilings are two experiments.
+
+### 17.124 The planted distractor: a level counted in terms, a pair measured on one text
+
+R57 requires a rule in every pack whose only difference between arms is what it says. Three
+implementation choices decide whether that is a measurement.
+
+**The level is a count, not a share.** A request's length is not a property the arm controls, and a
+share of it makes the same rule a different dose on every request. The band is therefore the number
+of the request's content terms the rule carries: `far` none, `near` and `adversarial` two or more.
+The share is still recorded per request and in the census, because it is what the recall floor
+measures and it makes arms comparable across requests; it does not decide the band.
+
+**A twin pair is one token set plus a negation, enforced.** `validatePlanted` takes the difference of
+the two token sets and refuses anything outside `{not, never, no}` on the added side and anything at
+all on the dropped side. Without this, an authoring edit to one side of a pair silently changes that
+arm's level — the first draft did exactly that with one word. The level of a pair is then measured on
+the `near` text and inherited by both arms, so a marker cannot move the dose on the requests that
+carry the marker themselves.
+
+**The rule is appended, not merged.** `plantedRendered` encodes the line with the renderer's own
+`encodeItemLine`, appends it before the closing tag and bumps the header's `items` count with it. The
+alternative — re-rendering the pack with one more item — would re-decide which of the host's items fit
+the budget, so an armed pack could differ from the control's in what it drops as well as in what it
+adds. Two consequences are recorded rather than hidden: the armed pack may exceed the host's budget
+by one line, and `createdBlock` counts the requests whose pack carried no block until the plant
+arrived, because those requests carry the block's price as well as the rule's.
+
+The census travels in the artefact as `plant` (`carried` in the projection): arm, declared, planted,
+inBand, createdBlock, the sorted shared-term and coverage distributions, per-rule counts, and the
+committed file's digest. The digest is the property that makes the rules prior to the run, which is
+why the driver reads one committed path and no environment variable can point it elsewhere.

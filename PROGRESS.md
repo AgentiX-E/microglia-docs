@@ -12054,3 +12054,42 @@ the correction is part of the record, not a revision of it.
 The same applies to R60's ceiling: `TAU_TRACE_CLAIMS = 6` is a repository variable, so it persists.
 A run registered at three must set it to three, and every artefact carries `traceClaims` so a readback
 does not have to infer which ceiling produced the store.
+
+### 172.37 R57 prepared: the distractor's level, measured before the dispatch instead of after
+
+**State.** R57's arm is built and committed (`06529b9` on `master`), the registration is amended, and
+the dispatch is waiting on the lane rather than on the code: R60 (`42501736928` on `0238aea1`) was
+still running at the time of writing, and the one-lane rule keeps two arms from sharing a store.
+
+**What was built.** `packages/eval/src/plant.ts` — the arm switch, the document validator, the digest,
+the per-request choice, the census, the append into a rendered block, and a one-line summary for the
+run's log. `eval/planted/retail.json` — six rules: two `far`, two `near`, two `adversarial` in two
+twinned pairs. `TAU_PLANTED_RULES` is a repository variable wired into the SOTA workflow, the driver
+resolves it at module load, and the census travels in the artefact as `plant`.
+
+**What the pre-dispatch measurement found, which is the iteration's real result.** Two defects, both in
+the arm rather than in the code:
+
+| defect | measured | repair |
+| --- | --- | --- |
+| the share band was unreachable | retail requests carry 11–126 content terms (median 40); the drafted `near` rules reached 10–20% on 11–12% of requests, `far` on 0% | the band is a count of shared content terms, not a share |
+| the twin pair moved the dose | one added word (`keep`, carried by 30% of requests) put the adversarial arm at median coverage 0.067 against near's 0.048, in band on 64% against 49% | `validatePlanted` refuses a pair differing beyond a negation; a pair's level is measured on the twin's text |
+
+After the amendment: `far` shares nothing with 100% of requests, `near`/`adversarial` reach their band
+on 76%, and the remaining 24% is recorded as drift rather than repaired.
+
+**Tests.** 36 in `plant.test.ts`, and `plant.ts` is 100% on all four dimensions. The two most
+load-bearing are that the committed file's twin pairs satisfy the negation invariant (asserted over
+the real file, not a fixture) and that the adversarial arm's level equals its near rule's on a request
+that says "not" itself. Repository total: **170 files, 3,538 tests, 99.96 / 99.66 / 100 / 99.96**.
+
+**One API change, argued.** `encodeItemLine` is exported from `core/apply` with a narrowed
+`RenderableItem` input and `renderPack` accepts it: rendering needs six fields, and requiring the
+record's twenty would have meant inventing an evidence trail and a lifecycle for a rule that has
+neither. The alternative — re-implementing the line format in `eval` — is the drift the renderer was
+consolidated to prevent.
+
+**Next, in order.** (1) read R60 back when it lands, with the median as the reading that separates a
+binding cap from an episode-limited one; (2) dispatch R57's `far` arm, then `near`, then
+`adversarial`, each paired against the reference; (3) `r57_readback.py`, which must grade the census
+before it grades a delta — an arm whose band did not land cannot be read as an effect.

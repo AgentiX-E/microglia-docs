@@ -5904,3 +5904,46 @@ nothing in any artefact says what the per-correction distribution looked like, o
 carries the census and moves the ceiling to six, and the two are ranked in its registration: if the
 median rises to three or more the cap was the constraint, and if it stays at two the episode was and
 the next lever is per-assertion episodes rather than a bigger number in a prompt.
+
+### 34.80 The band measured its own arithmetic, and the twin moved the dose
+
+R57's arm was drafted with a share as its level: `far` under 5% of the request's content terms,
+`near` and `adversarial` 10–20%. Before any dispatch, the committed rules were measured against the
+domain's own 114 requests. Retail requests carry **11 to 126 content terms** — p10 21, median 40, p90
+78 — so a rule that shares four of a request's terms covers 0.10 of a short one and 0.03 of a long
+one. Measured: the drafted `near` rules reached the 10–20% band on **11%** and **12%** of requests,
+and `far` on **0%**. The band would have reported `inBand: false` on nearly every request and called
+it a reading.
+
+That is the third time this lane has graded a fraction whose denominator was the problem — R47's
+coverage histogram, R59's containment floor at 0.667 against a floor of 0.60, and now this. The
+difference here is that it was caught by measurement rather than by a readback, because the rules are
+a stimulus and a stimulus can be titrated before the run.
+
+**The second defect was in the pair, and it was worse.** `adversarial` is `near` with the correct
+action forbidden. The drafted pairs also added a word — `keep`, in the address pair — which 30% of
+retail requests carry. That raised the adversarial arm's median coverage to **0.067** against the near
+arm's **0.048**, and its in-band share to **64%** against **49%**. Two arms that differ in polarity
+would have differed in dose as well, which is the one confound the pair exists to remove. A single
+word, invisible in a diff of prose, moving the treatment by 40%.
+
+Both are now refused by construction rather than by care: `validatePlanted` rejects a twin pair whose
+token sets differ by anything but a declared negation marker, and a pair's level is measured on the
+`near` text and inherited by both arms, because a marker is itself a token and a third of these
+requests say "not" themselves.
+
+**What the measurement bought, stated as a distribution rather than a claim.** With the band in
+shared terms (`far` none, `near`/`adversarial` two or more): `far` shares nothing with **100%** of
+requests, and the near arm reaches its band on **76%**, with the remaining 24% recorded as drift. The
+drift is not a defect to be repaired — a request about exchanging a keyboard shares nothing with a
+rule about an address, and no authoring fixes that. An arm that planted nothing on those requests
+would be measuring a different store than the one it reports.
+
+**One design decision this forced, and its price.** The rule is appended to the rendered block rather
+than added to the store: the registration asks for exactly one rule in *every* pack, and an item the
+store merely held would be retrieved on the requests that resemble it. Re-rendering was refused for
+the same reason R53 refused a fixed budget for three notes — it would re-decide which of the host's
+items fit and so change what the armed pack *drops*. The price is stated in the artefact: an armed
+pack is one line longer, and on the requests whose pack was empty until the plant arrived
+(`createdBlock`), the arm carries the price of a block as well as of a rule — 1.14pp, measured on the
+public lane. A readback that wants the item's price subtracts that population.
