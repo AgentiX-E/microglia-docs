@@ -11761,3 +11761,62 @@ Where this leaves the project, in the order the roadmap can run:
 | 4 | U6b / U4 / U5 / U6a, store-level poisoning | registered |
 | 5 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
 | — | cortex release | excluded by standing instruction |
+
+### 172.30 — R58 built, registered and dispatched: the unit becomes a trace
+
+The iteration R55.0 and R56 both named in their own text, without either being able to run it: the
+object distilled. `taskCorrection` rendered one failed task as one sentence, the model wrote one rule
+from it, and one sentence of one failure carries one claim — so nothing could recur and no threshold
+could move the population (`{1: 7}`, maximum support 1).
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | `tau2-trace.ts` — the attempt, read out of `simulations[].messages`, with the failing trial chosen over the first and the cap's cost recorded | done, 23 tests |
+| P0 | `traceOf` — the attempt beside the reference actions and the failed rubric, which is the half `Correction` did not carry | done, red first (the rubric was being dropped on the parse) |
+| P0 | `DistillForm = 'trace'` — three claims per episode, `when` in the requester's words, no tool/function/endpoint/identifier in the statement | done, 7 tests; `lesson` byte-identical |
+| P0 | `consolidateKnowledge` — lexical grouping over a finished store, union of evidence, survivor = best-attested live member | done, 27 tests, 100 on all four coverage dimensions |
+| P0 | `distillUnit` on the arm record + `PROJECTION` decision — the unit, traces read, traced corrections, claims, census | done; the compile guard forced the fixture |
+| P0 | `l4-support-recurrence` — a gate, not a footnote: the two distributions must describe the store they count | done, 5 tests |
+| P0 | `r58_readback.py` — twelve self-test cases over the five predictions and four refutations | done, wired into `eval:verifiers` |
+| P0 | the trace arm refuses to run when the learning document carried no trace | done |
+| P0 | `prereg/R58-trace-unit.md` | registered, validated by `eval:prereg` |
+| P1 | R58's dispatch `42476580076` on `9ad59e96` — `l4=true`, `bird=false`, `prereg=R58-trace-unit`, `TAU_DISTILL_UNIT=trace` | **running** |
+| P2 | R53 — three note levels over one store | dispatch-ready, after R58 reads |
+| P2 | R57 — a controlled distractor at a measured coverage band | registered, undispatched |
+| P2 | U6b / U4 / U5 / U6a, store-level poisoning | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+**Four defects found while building, all of the class this file keeps naming.** Two empty token sets
+were treated as identical claims (`claimOverlap` returned 1), so two stopword-only statements would
+have merged and the census would have reported a corroboration no task contributed. A scalar or
+unparseable argument was dropped from a call's rendering, so the trace lost the only record of what
+the call carried. `arguments: null` collapsed under `??` before the null check that guarded it, which
+left an unreachable branch inside a function written that hour. And the union-find carried a
+path-compression loop that no store this lane produces can reach, since a union always attaches a root
+to a root: it was deleted rather than covered (AUDIT 34.73).
+
+**What the design deliberately is not.** Consolidation is not a second variable: the pass has a
+control inside the same dispatch — `supportBefore` against `supportAfter` over one store — for the
+reason R49's paired facade exists. The grouping is lexical and deterministic rather than
+embedding-based, because a merge decided by a cosine is decided by the model that produced the
+vectors, and the run that reads the census could not reproduce it.
+
+**What the dispatch is expected to say, written before it ran.** ≥ 1 item at support 3, ≥ 25% at
+support 2, ≥ 50% of the read store kept, coverage p50 ≥ 12%, ≥ 80% of corrections carrying a trace.
+The first three are the recurrence question R55.0 closed in the negative; the fourth is R54's and
+R56's bar, and it is the one that decides whether a trace is where the requester's words live.
+
+Coverage after the change, every dimension: **99.96 / 99.68 / 100 / 99.96**, 3,454 tests over 166
+files; `consolidate.ts`, `tau2-trace.ts` and `recurrence.ts` are 100 on every dimension.
+
+Where this leaves the project:
+
+| # | Step | State |
+| --- | --- | --- |
+| 1 | R58 — read the dispatch, then decide whether the unit or the corpus is the constraint | running |
+| 2 | R53 — three note levels over one store | dispatch-ready |
+| 3 | R55.1 — a recurrence threshold, now expressible if R58 produces an item at 3 | conditional on R58 |
+| 4 | R57, U6b / U4 / U5 / U6a | registered, undispatched |
+| 5 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |

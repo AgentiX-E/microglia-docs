@@ -5059,3 +5059,43 @@ recurrence gap at once, rather than two experiments.
 +10.53pp [−3.51, +24.56], p = 0.210, n = 57, resolution 19.66pp, verdict `UNRESOLVED`. The lane's
 largest point estimate, and still not a result: what it establishes is that the lane can produce a
 double-digit paired difference, and what it does not establish is that the treatment produced it.
+
+### R58 built, registered and dispatched (2026-11-08)
+
+The iteration R55.0 and R56 both pointed at, and neither could run. The registration is
+`prereg/R58-trace-unit.md`, written before the dispatch; the dispatch is `42476580076` on `9ad59e96`
+with `l4=true`, `bird=false` and `TAU_DISTILL_UNIT=trace`.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | `tau2-trace.ts` — the attempt read out of `simulations[].messages`, failing trial over the first, cap's cost carried | done, 23 tests |
+| P0 | `traceOf` + `Correction.assertions` — the attempt beside the reference and the rubric | done, red first |
+| P0 | `DistillForm = 'trace'` — three claims per episode, requester's register, no tool names | done; `lesson` unchanged |
+| P0 | `consolidateKnowledge` — grouping over a finished store, union of evidence, deterministic survivor | done, 27 tests, 100 on all four |
+| P0 | `distillUnit` record, `PROJECTION` decision, `l4-support-recurrence` gate, `r58_readback.py` | done |
+| P0 | the trace arm refuses a learning document with no trace, and `resolveDistillUnit` refuses a typo | done |
+| P1 | R58's dispatch | **running** |
+| P1 | R58 readback — five predictions, four refutations, twelve self-test cases | waiting on the run |
+| P2 | R53 — three note levels over one store | dispatch-ready |
+| P2 | R55.1 — a recurrence threshold, now expressible if R58 produces an item at 3 | conditional on R58 |
+| P2 | R57, U6b / U4 / U5 / U6a | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+**What R58 changes that the four previous registrations did not.** R54 changed the form of the rule,
+R56 the register of its condition, R53 the sentence above the pack, R55 the admission threshold. All
+four act on claims that already exist. R58 changes what a claim is derived from and then adds the only
+step that can notice two claims agreed: consolidation over the finished store. It is the first
+iteration since R49 that could move `supportTasks` at all.
+
+**The one-variable discipline, and where the second half lives.** The unit is the variable; the pass
+has its control inside the same run (`supportBefore` against `supportAfter` over one store), because a
+second dispatch would distil a second store and the difference would be the store's. That is R49's
+paired-facade argument applied to the write side.
+
+**What the readback will decide.** If an item reaches support 3 and coverage clears 12%, the store is
+worth reading and R53 and R57 become gradable against it, with R55.1 expressible for the first time.
+If nothing reaches support 2 even after the pass, the constraint is the corpus — 57 held-out tasks,
+one domain, four trials — and the next registration is about the sample rather than the mechanism.
+If the pass keeps less than half the store, support was bought with reach and R45's revert rule
+applies to the arm as a whole.

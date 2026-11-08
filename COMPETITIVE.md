@@ -3069,3 +3069,33 @@ sentence that has to accompany it is the pair's state: `UNRESOLVED`.
 
 IBM `gpt-5.5` airline 82.0 remains the published SOTA overall — that row is unaffected by anything
 measured here, because this lane has never run the airline arm as a treatment.
+
+### The mechanism behind the 2.59pp, and the first iteration that attacks it (2026-11-08)
+
+No new number this round, and the table above stands. What changed is that the mechanism which
+separates this project from the leader is now implemented rather than described.
+
+IBM's `sup3` admits a guideline after three distinct learning tasks and keeps ~5 guidelines per
+learning task. Both halves of that sentence are about the *unit*: a trajectory yields several
+guidelines, and three trajectories can support one of them. This store yielded one rule per failed
+task, so support was 1 for every item (`{1: 7}`) and no admission rule could raise it — the floor was
+above the population's maximum, which is why R55.1 was closed as unrunnable rather than as failed.
+
+R58 implements the two halves in the order the write path requires them:
+
+| Leader's property | Ours before | Ours now |
+| --- | --- | --- |
+| the unit is a trajectory | one sentence per correction | `input.trace`: attempt, reference trajectory, failed rubric |
+| several claims per unit | one candidate per event | up to three, each with its own trigger |
+| recurrence across tasks | impossible by construction | consolidation over the finished store, evidence unioned, counted by `supportTasks` |
+| admission at support 3 | floor above the population's maximum | expressible for the first time if any item reaches 3 |
+
+The prediction is registered (`prereg/R58-trace-unit.md`) and the dispatch is running
+(`42476580076`). Nothing is claimed until the readback: the lane's history is four `UNRESOLVED` pairs
+and one `HARM`, and the rule that a treatment which loses does not stay because its explanation is
+interesting has already reverted one arm (R56, −8.77pp).
+
+What would move the table: an item at support 3 in a store whose coverage clears the 12% bar, followed
+by a `pass^4` that a 57-task split can resolve. What would close the axis: no item at support 2 after
+the pass, which would make the corpus — 57 tasks, one domain, four trials — the constraint rather than
+the mechanism, and would move the next registration from the distiller to the sample.

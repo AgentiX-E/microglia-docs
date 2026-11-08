@@ -4175,3 +4175,46 @@ difference on this benchmark (+10.53 points, eleven tasks gained against five lo
 fifty-seven tasks cannot resolve ten), that the prompt-side levers are exhausted, and that the next
 change has to be to the *object* distilled. A trajectory contains the user's own phrasing, which is the
 one thing the surviving conditions still do not have.
+
+#### 3.6.63 The sentence was the problem, and the store was the evidence
+
+Every experiment in this series until now changed something a pack says or something a pack carries:
+the form of a rule, the register of its condition, the sentence printed above it, the floor a rule must
+clear. Each one produced a reading, and each reading left the same number behind: a store whose items
+are each supported by exactly one task.
+
+That number is not a quality of the writing. It is what the object being written can support. A failed
+task was rendered as one sentence — *"a request of this shape is resolved by calling these tools, in
+this order"* — the model wrote one rule from that sentence, and one sentence of one failure carries
+one claim. Seven items, seven tasks, no item that a second task ever corroborated. The published
+leader on this benchmark admits a guideline after three distinct learning tasks and keeps about five
+guidelines per task, because the thing it distils from is a whole trajectory rather than a sentence.
+
+A trajectory contains what a sentence cannot: what was attempted, in what order, beside what the
+reference does instead. The difference between those two is the lesson, and it is only visible when
+both sides are in front of the reader. That difference was in the run document all along, in
+`simulations[].messages`, and nothing had ever opened it.
+
+So this iteration changed the unit, and then added the step that makes the unit matter. Trace-level
+distillation can produce a claim that three traces agree on; it cannot by itself notice that they did.
+The consolidation pass runs over the finished store, groups items that state one claim, and folds each
+group into a survivor carrying the union of its evidence — which is what the recurrence count reads.
+Support becomes 2 or 3 without a threshold being lowered anywhere, because the evidence is what moved,
+not the bar.
+
+What the pass will not do is as much of the design as what it will. It refuses to merge two claims
+whose conditions disagree, whose payloads differ, or whose evidence is the same; each refusal is
+counted, because "nothing recurs" and "everything recurred and was refused" are different findings and
+only one of them is about the corpus. The grouping is lexical and deterministic rather than
+embedding-based, so the run that reads the census could reproduce it.
+
+The prediction is written down before the dispatch: at least one item at support three, at least a
+quarter at support two, at least half the store kept, and the register bar two previous registrations
+failed — a median coverage of twelve percent — met on the same instrument. The refutations are written
+down with it, and the first is the one that matters: if nothing reaches support two even after the
+pass, then recurrence is not reachable by changing the unit, and the constraint is the corpus rather
+than the mechanism.
+
+That is the shape of the question this project is now asking. Not *what should the memory say*, which
+four iterations answered as well as this benchmark can, but *what is worth calling one thing* — and
+whether a store of sixty tasks can contain a claim that three of them corroborate at all.

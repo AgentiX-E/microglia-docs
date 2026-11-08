@@ -5509,3 +5509,72 @@ the verdict is `UNRESOLVED`. It is the largest point estimate this lane has prod
 R56 −8.77pp) and it is not a result. The one thing it does establish is that the lane is not
 structurally unable to show a benefit: a 10.5pp paired difference on 57 tasks produces 11 gained
 against 5 lost, and the sample that could resolve it needs roughly four times the tasks.
+
+### 34.73 The unit was one sentence, so no threshold could move it
+
+R55.0 asked whether anything in the store recurs and read `{1: 7}`: seven items, one task behind each.
+R56 asked whether the conditions were written in the request's register and found they were not, that
+the tool-name ban was the fix, and that the fix halved the store. Both registrations named the same
+next question in their own text — *the object being distilled* — and R58 is the iteration that changes
+it rather than the prompt around it.
+
+**What was actually missing.** `taskCorrection` renders one failed learning task as one sentence
+(*"a request of this shape is resolved by calling `find_user`, then `cancel_pending_order`, in that
+order"*), the event carries that sentence, and the model writes one rule from it. The trajectory the
+agent walked was in the run document the whole time, under `simulations[].messages`, and no reader in
+this repository had ever opened it. A trace contains what a sentence cannot: what was attempted, in
+order, beside what the reference does. The *difference* is the lesson, and it is only visible when
+both sides are in front of the reader.
+
+The published competitive arm (`sup3`) admits a guideline after three distinct learning tasks. A store
+built one sentence at a time cannot reach that by lowering a threshold, because every item's evidence
+is one task; the threshold is above the population's maximum. That is why R55.1 was closed as *not
+runnable* rather than as *failed*.
+
+**What the iteration built, and the four defects found while building it.** The unit (`tracesOf`,
+`traceOf`, the `trace` form), the pass (`consolidateKnowledge`), the record (`distillUnit`), the gate
+(`l4-support-recurrence`) and the readback (`r58_readback.py`, twelve self-test cases). Each of the
+defects below was found by a test written before the code, or by a coverage line that refused to
+close:
+
+| Defect | What it would have done |
+| --- | --- |
+| `claimOverlap` returned 1 for two *empty* token sets | two statements made only of stopwords merged into one item and the census reported a corroboration no task contributed. Two claims with nothing in them are not evidence that they are the same claim; the function returns 0 now and the case has its own test |
+| `detailOf` dropped a scalar or unparseable argument, rendering only the name | the call's payload vanished from the trace, which is the same class of loss as a truncated attempt reported without its count. A non-JSON argument string is now rendered as what it was |
+| `arguments: null` collapsed to `undefined` before the null check (`??`) | the `args === null` branch was unreachable code inside a function written the same hour, and a coverage report would have called it tested. The branch is gone |
+| the union-find carried a path-compression loop | a union always attaches a root to a root, so within one pass a chain is at most one deep; the loop was unreachable. Removed rather than tested — a line that cannot be reached is a line that claims to be covered |
+
+Two more, of the shape this file has recorded five times already:
+
+- **`Correction` carried the reference calls and dropped the rubric.** A trace's second half is what
+  the task *promised*, and for the 7 of 164 tasks that state a rubric and name no calls the promise is
+  the only half there is. The trace arm would have shown the attempt and half the target.
+- **`retained` was arithmetic (`considered - merged`) rather than a count of survivors.** A survivor
+  whose re-scored confidence retired would have left the census disagreeing with the distribution
+  printed beside it — and the gate that checks exactly that reconciliation would have fired on a
+  correct merge.
+
+**Why one variable and one dispatch.** The treatment is the unit; the consolidation pass has a control
+*inside the same run* — `supportBefore` and `supportAfter` over one store it read once, which is how
+R49 reads two floors over one store. A second dispatch would distil a second store, and the difference
+would be the store's, not the pass's. The grouping is lexical and deterministic (Jaccard over content
+terms, floor 0.7) rather than embedding-based for the reason the write-side admission never became the
+lane's only path: a merge decided by a cosine is decided by the model that produced the vectors, and
+the run that reads the census could not reproduce it. The embedding backend's quota exhaustion made
+that a practical constraint as well as a principled one.
+
+**What is registered, and what it costs.** `prereg/R58-trace-unit.md`, written before the dispatch:
+at least one item reaching support 3, at least 25% reaching support 2, at least half the store kept,
+median non-zero coverage at or above 12%, and at least 80% of corrections carrying a trace. The cost
+is at most three distillation calls per correction where there was one — 96 against 32 — and the pass
+itself spends no model call at all.
+
+**The instrument, recorded rather than inferred.** `distillUnit` carries the unit, the traces read, the
+corrections that carried one, the claim count and the census. The gate `l4-support-recurrence` blocks
+rather than warns when a trace arm's two distributions do not sum to the populations it reports, and
+the driver refuses to run at all when the learning document carried no trace — because that run would
+report the *control's* store under the *treatment's* name, which is the one failure mode this lane has
+already paid for twice.
+
+Coverage after the change, every dimension: **99.96 lines / 99.68 branches / 100 functions / 99.96
+statements**; `consolidate.ts` and `tau2-trace.ts` are 100 on all four. 3,454 tests over 166 files.

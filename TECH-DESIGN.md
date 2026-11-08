@@ -8248,3 +8248,65 @@ answered two different ways counts as a mismatch for the same reason: one store 
 packs for one request. The artefact's state is `IDENTITY_BROKEN` when it fires, the `l4-note-identity`
 gate blocks, and `r53_readback.py` refuses to quote a delta from it. The population that cannot be
 held — which requests the agent chose to make — is reported per arm rather than asserted equal.
+
+### 17.120 The trace as the unit, and the consolidation pass over a finished store
+
+R58 changes which object the distiller is shown and adds a pass over the store it produces. Both are
+structural: the first decides what a claim can say, the second decides whether a claim can be
+corroborated at all.
+
+**The unit.** `TracesOf` reads the learning document's `simulations[]` — `task_id`, `trial`,
+`reward_info.reward`, `messages` — and extracts the assistant's tool calls in order. Three decisions
+are inside it:
+
+```
+which trial   the lowest reward, because a correction exists because the task failed;
+              an unscored trial ranks last but is kept when it is the only one
+which calls   assistant messages only, and only those with a name: a name invented from a
+              malformed entry would enter the ban's inventory and refuse every candidate
+how much      at most 12 calls, with the count that did not fit carried in `omitted`
+```
+
+`traceOf(trace, { expected, rubric })` assembles the payload the prompt reads —
+`{ trace: { attempt, expected, rubric?, omitted } }` — from the trace and the task's
+`evaluation_criteria`, which is where the reference trajectory and the rubric already were. The rubric
+travels on `Correction` now; it did not, so a trace arm could see what the agent did and only half of
+what the task promised.
+
+**The form.** `DistillForm` gains `trace`, and `buildDistillPrompt` branches to it beside `lesson`,
+`repair`, `procedure` and `lexicon`. Its guidance differs from `lesson` in the two places R54 and R56
+measured: `when` is *the words the person making the request used*, and the statement may not name a
+tool, a function, an endpoint or an identifier. The ban from R56 still enforces the second on the host
+side; the prompt states it so fewer candidates are refused after the call was paid for.
+
+**The pass.** `consolidateKnowledge(items, { now, policy, threshold })`:
+
+```
+group     same kind, same scope key, statement overlap >= threshold (Jaccard over content
+          terms, default 0.70), condition compatible (one absent, or overlapping >= threshold)
+refuse    different payloads, identical evidence, or conditions that disagree — each counted
+survivor  the best-attested live member: not quarantined, then most distinct tasks, then most
+          evidence rows, then the smallest id (so two runs over one store produce one store)
+merge     evidence = the union without repeats; support = the union's weights; trust = the max;
+          tier = the strongest; contradictions = the sum; status re-scored by `decideStatus`
+```
+
+`retained` is counted from the survivors rather than computed as `considered - merged`, so a survivor
+whose re-scored confidence retires cannot leave the census disagreeing with the distribution printed
+beside it. A second pass over its own output moves nothing, including `updatedAt`.
+
+**Why the write path cannot do this.** Every mechanism before this one compares *one incoming claim*
+with what is stored: the exact key absorbs a repeat within a scope, generalisation absorbs a
+recurrence across domains, admission absorbs a paraphrase. All three are asked at the moment the
+second episode arrives, and the question a recurrence threshold asks is about the *finished* store —
+which of these items are one claim, and how many tasks stand behind each. A rule that ran before the
+third item existed cannot answer it, and `supportTasks` is read from `evidence`, which only grows at
+write time.
+
+**The record and the gates.** `distillUnit` on `Tau2Raw` (`unit`, `traces`, `traced`, `claims`,
+`consolidation`) with a `PROJECTION` decision, so the compile guard forces the arm record to carry it.
+`l4-support-recurrence` is emitted only for a trace arm and fails when the census is absent or when
+either distribution does not sum to the population it describes — an instrument question, not an
+outcome one. The driver refuses to start if the unit is `trace` and no correction carried a trace, and
+`resolveDistillUnit` refuses an unrecognised value rather than measuring the default, which is what a
+misspelt variable would otherwise do.
