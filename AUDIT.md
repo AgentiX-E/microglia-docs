@@ -5056,3 +5056,37 @@ holding it.
 
 The CI literals stay literals. They are the check that a lane's own artefact agrees with the
 protocol, and a check that reads its expectation from the thing it is checking is not a check.
+
+### 34.61 The pack is recorded without the episode it was served to
+
+Every recall observation the τ² driver writes carries three fields — `query`, `statements`,
+`documents` — and none of them says which task or trial the request came from. The omission is
+invisible in every reading the lane has published so far, because all of them are pack-level (how
+many items, how much overlap, how often empty). It becomes decisive the moment a question is asked
+about a *rule* rather than about a pack: to say "this item broke that episode" one has to join an
+observation to an outcome, and the join key is absent.
+
+The pipeline makes it expensive to add. `useObservations` is filled at the facade boundary in
+`tau2-driver.ts`, where the request arrives as a query string; the caller is
+`microglia_agent.py`'s `recall(text)`, a module-level function with no task context; and the
+episodes run at `max_concurrency: 4`, so an environment variable set per task would be read by the
+wrong call. The one place the context exists is upstream's `run_tasks`, which constructs a
+simulation — and an agent — per task and trial, and whose agent factory signature this repository
+does not currently touch.
+
+Two consequences, and they are different in kind.
+
+**R57's design changed because of it.** The natural experiment for memory's negative effect is
+retrospective: attribute each lost episode to the items in its pack, and read the items' coverage
+against their credited harm. That experiment is not runnable here, and even with the join it would
+be confounded — an item is retrieved *because* it resembles the question, so the population it is
+credited over is selected by the same similarity that is supposed to explain the effect. R57 plants
+its items instead (a controlled distractor at a measured coverage level), which is causal and costs
+four arms.
+
+**The repair is a contract question, not a formatting one.** Passing `task` and `trial` on the recall
+request means either the agent knows its task (upstream API, unverified here) or the facade
+correlates requests to episodes by time and order (unreliable under four-way concurrency). Writing
+the first without reading upstream's constructor would be a guess, and a wrong guess would produce
+observations labelled with the *previous* task — a defect that reads as a finding. Recorded as debt
+with the two candidate paths named, rather than implemented mid-flight.

@@ -4835,6 +4835,7 @@ making it measurable, not features it needed.
 | P1 | R55.1 — admission at `supportTasks >= 3`, same store construction, same recall, same note | blocked on R55.0 |
 | P2 | R53 — the pack's note as the only variable (`none` / `standard` / `hardened`), on whichever store R55 leaves | registered, dispatchable |
 | P2 | U6b (`TAU_WRITE_ADMISSION=neighbours`), U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
+| P2 | R57 — a controlled distractor at a measured coverage band (`far` / `near` / `adversarial`), the negative-effect question as an experiment rather than an attribution | registered, blocked on R56 and R55 |
 | P2 | Store-level poisoning, four of MemForm's five routes | registered |
 | P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
 | — | cortex release | excluded by standing instruction |

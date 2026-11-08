@@ -11499,3 +11499,31 @@ State: 3,319 tests in 160 files, coverage 99.95 / 99.62 / 100 / 99.95; coupling 
 Next, in order: read R56 against its four predictions → R55.0 (recurrence distribution, free on
 R56's artefact) → R55.1 (admission at `supportTasks >= 3`) → R53 (note levels) on whichever store
 the previous two leave.
+
+### 172.22 — R57 registered: the negative effect gets a control, and the attribution gap is recorded
+
+R56 is in flight. The next question is the one standing instruction 8 names — *the memory and the way
+it is used produce a negative effect, and it has not been quantified* — and it turns out the lane
+cannot answer it retrospectively.
+
+`useObservations` carries the query, the statements and the documents; it does not carry the task or
+the trial, and the agent that issues the request has no task context inside an episode. So "this item
+broke that episode" has no join key (AUDIT 34.61). Even with one, the attribution would be confounded
+in the way every observational memory study is: an item is retrieved *because* it resembles the
+question, and the questions it resembles are exactly the ones it is most likely to help or hurt.
+
+R57 therefore plants the item instead of attributing it. One synthetic rule per pack, at a coverage
+band fixed before the run — `far` under 5%, `near` 10–20%, `adversarial` the same text negated — with
+the same store, the same recall, the same seed, four arms paired against `reference`. The prediction
+is a **sign split**, not a mean: `far ≈ 0`, `near < 0`, `adversarial < near`, and the repair/break
+ledger carries the result because a mean over 57 pairs resolves 20pp and this effect is smaller.
+
+Registered and undispatched, behind R56 and R55 by the one-lane rule. The rule file, the injection
+field and the per-arm coverage distribution are the whole implementation; the cost is four paired
+dispatches.
+
+Two numbers this closes if it runs. The dose curve prices an injected item at about −1.7pp and cannot
+separate content from volume; R57's `far` arm is the volume control. Iteration 62's harm attribution
+found hurt-rules at cosine 0.232 and help-rules at 0.228 (p = 0.86) on a store where relatedness and
+usefulness are confounded by construction; R57's `near` and `adversarial` arms are the same text with
+the sign flipped, which is the control that measurement never had.
