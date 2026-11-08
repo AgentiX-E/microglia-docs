@@ -4695,3 +4695,34 @@ COMPETITIVE L.23 acts on and this one did not.
 Ranking unchanged: IBM `gpt-5.5` airline 82.0 is the published SOTA; microglia is
 fifth of six named entries. R49's retail cells (0.36 floored, 0.40 as-is, reference
 0.40) are not leaderboard rows and are not compared to one.
+
+### R50 and R51: the gate that could not pass, and the question the rule never carried (2026-11-08)
+
+Two registrations, both written before any dispatch, and both of them consequences
+of one reading. R49 said three things at once: the floor is free and worthless at
+0.01, the memory neither helps nor hurts as far as 50 paired tasks can see, and the
+pack arrives on 62% of requests carrying 0.76 rules. R50 answers the first two by
+fixing the instrument. R51 answers the third by fixing the write path.
+
+| Priority | Step | State |
+| --- | --- | --- |
+| P0 | `pairedVerdict`: three states (`HARM` / `BENEFIT` / `UNRESOLVED`), the harm branch **calls** `revertRule`, `BENEFIT` requires `delta >= detectablePp`, `claim` is null when nothing may be claimed; 17 tests, 100/100/100/100 | done |
+| P0 | `l4-paired` blocks on harm only; `l4-effect-resolved` reports the resolution without blocking; `V5-resolution` untouched and still failing, because 115 tasks at pass^4 cannot resolve 6pp | done |
+| P0 | The three committed readings re-graded: R47 PASS/UNRESOLVED, **R48 stays FAIL/HARM**, R49 PASS/UNRESOLVED; fixture extended with R49 and with the resolution column | done |
+| P0 | `TauTask.instruction` parses both upstream shapes; the correction carries it; the learning event sends it as `input.question` with the id beside it | done |
+| P0 | `recallText` is the single definition the lexical index, the `minCoverage` floor and MMR all read, instead of each deciding for itself and all three choosing the statement | done |
+| P0 | `storeCensus` counts `conditioned` / `unconditioned` over the servable population, so the next readback measures whether a trigger was written at all | done |
+| P0 | Full gate: 3,217 tests / 153 files, coverage 99.95 / 99.65 / 100 / 99.95 (lines / branches / functions / statements); `typecheck` and `typecheck:lanes` clean; 39/39 pre-registrations valid | done |
+| P1 | R51 dispatch: `minCoverage 0`, `facadePair off`, 200 episodes at 4 trials, one store, one reference arm | next |
+| P1 | R51 readback against three predictions: `store.conditioned >= 4`, `empty/requests <= 0.25`, coverage p50 >= 12%; any of the three failing abandons the arm rather than reinterpreting it | blocked on the dispatch |
+| P2 | U6b dispatch (`TAU_WRITE_ADMISSION=neighbours`), whose readback must report the write census | blocked on R51's readback by the one-lane rule |
+| P2 | R52: `V5-resolution`'s 6pp bar is a protocol constant that τ² retail cannot meet at any n; the decision is whether the lane supplies its own bar or the protocol takes one per scenario | registered by this iteration, undispatched |
+| P2 | U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
+| P2 | U1, U2, R46 admission arms | closed until a resolvable pair exists |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+Ranking unchanged and no `pass^4` number is claimed: IBM `gpt-5.5` airline 82.0 is
+the published SOTA, and microglia is fifth of six named entries on the columns it
+has measured. R50 moves no benchmark number at all — it changes what the lane is
+allowed to say about one — and R51 is a registered experiment, not a result.

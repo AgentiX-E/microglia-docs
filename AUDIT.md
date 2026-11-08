@@ -4352,3 +4352,128 @@ Two smaller readings from the same artefact, recorded so they are not rediscover
 - The facade contrast lost 7 tasks and gained 5 of 50, and the arm-against-
   reference comparison lost 4 and gained 2. Two different pairings, two different
   discordant sets, one conclusion: no effect this split can see.
+
+### 34.47 A gate that could not pass is replaced by a state that cannot lie
+
+34.45 left the replacement as a registration rather than an edit, for the reason it
+gave: a pass condition changed after the result is a search over thresholds. R50 is
+that registration, and this is what implementing it did and did not do.
+
+**The change is to the sentence, not the memory.** `l4-paired` passed only on
+`delta >= 0 && p` below 0.05, on a split whose minimum detectable difference is
+13.73pp at n = 50 and 9.05pp at the scenario's full 115 tasks. Nothing the
+mechanism could plausibly do satisfies that condition here, so the gate was red on
+every dispatch that graded it and would have stayed red for reasons unrelated to
+the mechanism. It now passes exactly when the R45 revert rule does not fire — the
+rule it was described as mirroring in every document since R45 — and that rule is
+*called*, not copied: `pairedVerdict` invokes `revertRule`, so the two cannot
+drift into two answers to one question.
+
+**The resolution moved into a second gate rather than into the pass condition.**
+`l4-effect-resolved` reports whether `|delta|` reaches the minimum detectable
+difference. It does not block, and that is deliberate: an unresolvable effect is a
+statement about the sample, and `V5-resolution` already blocks on it from the
+protocol's side. A second blocking copy of the same fact would print the same red
+line twice, which is the failure mode 34.45 is about.
+
+**The verdict is derived from the two numbers the report prints.** `HARM` when the
+revert rule fires; `BENEFIT` when the delta is positive, significant, *and* at
+least the minimum detectable difference; `UNRESOLVED` otherwise, carrying
+`excludedAbovePp` so a reader learns what was excluded. The third clause on
+`BENEFIT` is the one that matters: without it, +4.00pp at an MDE of 13.73pp is
+published as a benefit the experiment had already certified it could not see.
+
+**`claim` is null in the `UNRESOLVED` state**, and that is a type decision rather
+than a stylistic one. A field that is always a string is a field downstream code
+concatenates into a sentence; a field that is null where there is nothing to say
+forces every consumer to handle the absence.
+
+Re-reading the three committed readings under the new condition is the check that
+it is the old condition restricted to harm and not a loosening:
+
+| Reading | Old `l4-paired` | State | New `l4-paired` |
+| --- | --- | --- | --- |
+| R47 +12.00pp, p = 0.1094 | FAIL | UNRESOLVED | PASS |
+| R48 −6.00pp, p = 0.4531, 965 packs | FAIL | HARM | **FAIL** |
+| R49 −4.00pp, p = 0.6875, 949 packs | FAIL | UNRESOLVED | PASS |
+
+R48 stays red — it is the only reading in the lane's history that fires a revert
+branch — and every other row moves from a verdict about the memory to a verdict
+about the sample. The fixture that carries these three readings was extended with
+R49 and with the resolution column, and the test asserts both the harm branch and
+the state for each row, at three different resolutions for the two rows whose runs
+predate the field.
+
+One thing this deliberately does not fix. `V5-resolution` still fails on τ² retail
+and always will: 115 tasks at pass^4 cannot resolve 6pp, and the bar is a constant
+of the shared protocol, not of this lane. Lowering it here would change what the
+BIRD lane certifies. What the lane can do without touching the protocol is stop
+attributing that failure to the memory, and that is what R50 does.
+
+### 34.48 The rule did not carry the question, and two boundaries dropped it
+
+R49's census is the most useful number the lane has produced, and it took two more
+readings of the code to see what it was a census *of*:
+
+```
+store: 10 items, 10 active, 10 servable, 0 without a domain
+requests: 1528, served 949, empty 579
+mean items per request 0.76, rule/query coverage p50 4.7%
+```
+
+A store of ten rules is thin. A store of ten rules of which **none can be found by
+a question** is a different defect, and it is the one that was there. Every rule
+read:
+
+> A request of this shape is resolved by calling find_user, then
+> cancel_pending_order, in that order.
+
+That sentence shares no term with anything a user says. It is also the only text
+the rule carried, because the item's condition — the field added in iteration 62
+for exactly this reason, "a statement records what was true; it says nothing about
+when it is true" — was absent from all ten.
+
+**Two boundaries, one omission.** Upstream τ² states the user's request in
+`user_scenario.instructions`. `parseTauTasks` read `id`, `evaluation_criteria`,
+`communicate_info` and `nl_assertions`, and dropped it. The driver then built the
+learning event as `input: { question: correction.taskId }`, so the distiller's
+prompt — which asks for a trigger "in the question's own terms" and reads
+`run.input.question` to find them — was asked to write in the terms of `"7"`. No
+condition could have been produced, and none was.
+
+Read side, the same half was missing three times over: the lexical index built its
+document from `statement`, `kind` and the scope; `minCoverage` measured
+`queryCoverage(query, item.statement)`; MMR diversified on `item.statement`. Three
+call sites, three independent decisions, one answer — the statement is the whole
+rule.
+
+**The repair is six lines and no knob.** `TauTask.instruction` parses both upstream
+shapes and is `''` rather than `undefined` when absent, because every consumer asks
+"is there a question to show" and none should distinguish two ways of saying no.
+The correction carries it to the event, which forwards it as `question` with the id
+beside it. `recallText(item)` — condition, then statement — becomes the single
+definition the index, the floor and MMR all read.
+
+**Why a census rather than an accuracy number.** The prediction R51 registers is
+`store.conditioned >= 4` of the servable items and an empty-pack share at or below
+25%, not a delta. An accuracy claim at an MDE of 9–14pp would be a claim the lane
+has already certified it cannot check, and 34.45 is the record of what happens when
+a gate demands one anyway. `storeCensus` now counts conditioned and unconditioned
+items over the servable population — not over the whole store, because an item the
+recall scope cannot reach is unconditioned for a different reason and adding the
+two populations together lets one defect hide behind the other.
+
+Two smaller things fell out of writing the tests, both of them arguments the next
+registration can use:
+
+- The word `order` in "in that order" lifted a tool-only statement's coverage of the
+  question *"cancel an order that has not shipped"* to **0.25** — four times the
+  0.01 floor R49 tested. That is why a 0.01 floor measured as free: the statement
+  accidentally clears it. The fixture for the recall test uses vocabulary the
+  statement does not contain, and the comment says which accidental match it is
+  avoiding.
+- `memory.search` returns every scope-mate whatever the lexical score, by design:
+  scope is an index, not a filter. So a condition changes the *rank*, and it is
+  `minCoverage` that turns a scope match into no match. The test asserts the order
+  and the lexical scores rather than a count of hits, because the count is a
+  property of the scope and not of the condition.

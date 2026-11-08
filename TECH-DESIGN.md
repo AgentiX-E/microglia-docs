@@ -7460,3 +7460,168 @@ a readback that had to grep the run log for the switch could not attest either.
 
 What it never does: choose a floor, enter `pass^k`, retire an item, or write when
 the decision is `noop`.
+
+### 17.106 The paired verdict: three states, two gates, one rule called rather than copied
+
+`l4-paired` used to be a pass condition inside `bin/l4-pair.ts`:
+`delta >= 0 && p` below 0.05. On τ² retail the pair's minimum detectable difference
+is 13.73pp at n = 50 and 9.05pp at the scenario's full 115 tasks, so the condition
+could not be met by any effect the mechanism could plausibly have. It was red on
+every dispatch that graded it, and a red line that is always red is a line its
+readers learn to ignore.
+
+**The state machine.** `pairedVerdict(input)` in
+`packages/eval/src/paired-verdict.ts` is pure, and its input is exactly the two
+numbers the report prints plus the served-pack count the revert rule needs:
+
+```ts
+type PairedVerdictInput = {
+  deltaPp: number;        // second arm minus first
+  p: number;              // exact two-sided McNemar
+  paired: number;         // tasks both arms scored
+  servedPacks: number;    // what the treatment actually delivered
+  detectablePp: number;   // Infinity when no task changed hands
+};
+```
+
+| State | Condition | `claim` |
+| --- | --- | --- |
+| `HARM` | `revertRule({scope:'within-run', …}, servedPacks).fires` | the sentence, naming the loss |
+| `BENEFIT` | `deltaPp > 0 && p < REVERT_P_BAR && deltaPp >= detectablePp` | the sentence, naming the gain and the resolution it clears |
+| `UNRESOLVED` | otherwise | `null` |
+
+`excludedAbovePp` is carried in every state: in `HARM` it is the resolution, in
+`UNRESOLVED` it is the bound the run established, and a reader who sees "nothing
+concluded" is entitled to know what *was* ruled out.
+
+**Why the harm branch is a call.** `revertRule` is the registered R45 invariant,
+read by the ledger, by the offline verifiers and by `l4-revert.ts`'s own tests. A
+second copy of "significantly negative, or below −5pp with a served pack" inside a
+bin is a second definition of one rule, and the copy that drifts is the one nothing
+grades. R50's refutation list says exactly this: if the verdict and the revert rule
+ever disagree, the gate is abandoned rather than patched.
+
+**Why the resolution is not in the pass condition, and not blocking.** The failure
+`V5-resolution` exists to prevent was a design whose MDE was 21.4pp against a 6pp
+bar *publishing a delta anyway*. The cure is a readout that refuses to claim a
+direction it cannot resolve, not a permanently red build on every scenario that
+cannot reach 6pp. So `V5-resolution` keeps its bar and keeps blocking; the finding
+gate stops attributing that fact to the memory; and `l4-effect-resolved` reports
+the resolution without blocking, because a second blocking copy of one fact is one
+red line printed twice.
+
+**Artefact contract.** `poc-l4-pair.json` gains:
+
+```json
+{
+  "verdict": {
+    "state": "UNRESOLVED",
+    "claim": null,
+    "reason": "-4.00pp at p=0.6875 with n=50 pairs does not clear the 13.73pp the sample can resolve; no effect larger than 13.73pp in either direction was shown",
+    "excludedAbovePp": 13.73,
+    "servedPacks": 949
+  }
+}
+```
+
+`claim: null` is a contract, not a convention: a field that is always a string is a
+field a downstream writer concatenates into a result. The step also prints one line
+— `[l4-pair] verdict <STATE>: …` — so a log reader without the artefact still sees
+the state rather than a bare delta.
+
+Refusals, all thrown before grading:
+
+| condition | result |
+| --- | --- |
+| `deltaPp` not finite | throws |
+| `detectablePp` NaN | throws |
+| `detectablePp` zero or negative | throws (a pair cannot resolve a zero-point effect) |
+| `p` outside [0, 1] | throws, via `revertRule` |
+| `paired` not a positive integer | throws, via `revertRule` |
+| `servedPacks` negative or non-finite | throws, via `revertRule` |
+
+`Infinity` is a legal `detectablePp` and is the honest value for a pair in which no
+task changed hands: refusing it would make the case that most needs saying
+unrepresentable.
+
+### 17.107 Recall text: one definition, because the three call sites had already drifted
+
+`KnowledgeItem.when` has existed since iteration 62. The renderer prints it ahead of
+the statement, the distiller prompt asks for it, the merge adopts it, and the
+sanitizer holds it to the statement's standard. Retrieval ignored it in every one of
+its three stages.
+
+**The definition.**
+
+```ts
+export function recallText(item: { statement: string; when?: string }): string {
+  return item.when === undefined || item.when.length === 0
+    ? item.statement
+    : `${item.when} ${item.statement}`;
+}
+```
+
+`kernel/similarity.ts`, next to `queryCoverage`, because "the document a rule is
+measured against" is a lexical question and not an indexing one. An empty `when` is
+not a condition: returning `" s"` would put a stray space in the document and would
+also make "has a condition" untestable by length.
+
+**The three readers**, now one each:
+
+| Stage | Before | After |
+| --- | --- | --- |
+| lexical index (`memory/store.ts`) | `${item.statement} ${item.kind} ${scopeText(item)}` | `${recallText(item)} ${item.kind} ${scopeText(item)}` |
+| `minCoverage` (`apply/pack.ts`) | `queryCoverage(query.text, hit.item.statement)` | `queryCoverage(query.text, recallText(hit.item))` |
+| MMR text (`apply/pack.ts`) | `text: hit.item.statement` | `text: recallText(hit.item)` |
+
+`kind` and the scope stay in the index and out of the coverage measurement. That
+asymmetry is deliberate and unchanged: BM25 may rank on `procedure` or on a scope
+word a structured caller supplied, while coverage asks whether the rule mentions
+the *question's* terms, which those words are not.
+
+**The write-side half, and where it went missing.** A condition cannot reach the
+store if the question never reaches the distiller:
+
+```
+τ² task file  user_scenario.instructions        ← dropped by parseTauTasks
+      ↓
+TauTask.instruction                             ← new, both upstream shapes
+      ↓
+Correction.instruction                          ← new, carried, not looked up again
+      ↓
+event.input.question = instruction || taskId     ← was: taskId
+      ↓
+distill prompt: "a trigger, in the question's own terms"
+```
+
+`TauTask.instruction` is `''` rather than `undefined` when absent: every consumer
+asks "is there a question to show", and none of them should distinguish two ways of
+saying no. The two upstream shapes are a bare string and
+`{reason_for_call, task_instructions}`, and the object form is **joined** rather
+than chosen between — `reason_for_call` is the topic and a trigger built from the
+topic alone fires on every task in it.
+
+**The measurement, not the argument.** `storeCensus` gains `conditioned` and
+`unconditioned`, counted over the servable population:
+
+```ts
+const servableItems = items.filter((i) => i.status === 'active' && i.scope.domain === recallDomain);
+const conditioned = servableItems.filter((i) => i.when !== undefined && i.when.trim().length > 0).length;
+```
+
+Counting over the whole store would fold two defects into one number: an item the
+recall scope cannot reach is unconditioned for a different reason, and a store that
+looks half-conditioned because half of it is unreachable is a store whose next
+repair is aimed at the wrong end.
+
+**What it is expected to change, stated as refutable predictions.** R51 registers
+`conditioned >= 4`, `empty/requests <= 0.25` and coverage p50 `>= 12%`. The three
+fail differently and each failure has its own reading: no condition means the write
+path is still not the defect; conditions that do not move the empty share mean the
+condition does not reach the pack; a falling empty share with a flat median means
+the pack is being filled on scope alone, which is the failure `minCoverage` exists
+to prevent and would make the floor the next question rather than this one.
+
+What it never does: invent a condition the distiller declined to state, truncate
+one, or rewrite a statement. A rule with no condition stays a rule with no
+condition — and is now counted.

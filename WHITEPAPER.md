@@ -3774,3 +3774,85 @@ the agent declined to act on, the other says how much repetition the store
 declined to keep. An arm that varied this mechanism and reported only accuracy
 could not tell "it did nothing" from "it had nothing to do", and those two
 findings point in opposite directions.
+
+#### 3.6.57 A gate that cannot pass is a sentence nobody reads
+
+There is a particular way a measurement programme dies that looks nothing like
+failure. It is a line in a report that has been red for months. Everyone knows it
+is red, nobody can remember when it was green, and the honest explanation —
+"this experiment cannot see what that line asks about" — is indistinguishable, in
+a glance, from "this mechanism does not work".
+
+We had one. The finding gate demanded that the memory not cost accuracy, at
+significance, on a split whose minimum detectable difference was thirteen and a
+half percentage points. No effect this mechanism could plausibly have, in either
+direction, satisfies a condition the sample cannot resolve. The gate was not
+strict. It was unanswerable, and an unanswerable gate spends its authority every
+time it fires.
+
+The repair is not to lower the bar. Lowering it would have been the move the
+pre-registration discipline exists to prevent, and it would have been wrong on the
+merits: the bar the sample cannot meet is *true*, and a bar that is true should
+keep saying so. What was wrong was the direction of the sentence. A finding gate
+should answer "did this hurt?", which is knowable, and a separate line should
+answer "can this experiment see the size of effect it is reporting?", which is a
+property of the sample and not of the memory.
+
+So the reading now has three states, not two. **Harm**, when the registered revert
+rule fires — significantly negative, or a large drop with a pack actually
+delivered. **Benefit**, when the gain is positive, significant, and at least as
+large as the smallest effect the pair could have detected; the third clause is the
+one nobody writes, and without it a four-point gain at a thirteen-point resolution
+gets published as a finding the experiment had already certified it could not see.
+And **unresolved**, which is the honest name for everything else, and which carries
+what was ruled out rather than merely what was not concluded.
+
+The resolved/unresolved split costs a word and buys something specific: it makes
+the report unable to say more than the instrument can. Three published readings
+from the same lane re-grade under it, and one of them — a six-point loss with
+nearly a thousand packs delivered — stays red. That is the check that this was a
+restriction and not a loosening. The other two stop being verdicts about the memory
+and become verdicts about the sample, which is what they always were.
+
+#### 3.6.58 The rule forgot the question
+
+A memory whose rules cannot be found by a question is not a memory. It is an
+archive with a search box that returns the shelf.
+
+Here is what our store held after learning from thirty-two tasks: ten rules, all
+active, all in the scope the agent was asking in. Every one of them read, in
+substance, *"a request of this shape is resolved by calling these three tools, in
+this order."* True, specific, and unusable — because a question does not arrive
+speaking the names of tools. It arrives saying *"I want to send this back and get
+the other size."* Between those two sentences there is not one shared word. And
+the store had nothing else, because the half of a rule that says *when it applies*
+had been thrown away twice before the pack was even built.
+
+The first loss was at the boundary where the task entered the system: the user's
+own words were parsed past. The second was symmetrical, and worse, because it was
+invisible: the mechanism that decides whether a rule is relevant had been reading
+only the claim, never the condition, in all three of its stages. The condition had
+been in the data model for a year. It was in the prompt. It was not in the index.
+
+The measurement that found this is the one worth keeping: of 1,528 requests,
+**thirty-eight per cent were served an empty pack**, and the packs that arrived
+carried 0.76 rules. An intervention that is absent more than a third of the time
+does not have a small effect; it has a diluted one, and every experiment run on it
+is measuring the dilution. That number is why the hypothesis we had been chasing —
+that our memory content was wrong, or that its use was wrong — could not have been
+answered by any accuracy comparison we ran. We were comparing the effect of a
+memory that mostly did not arrive.
+
+Two lessons, and the second is the general one.
+
+A system that learns from failures will learn very little if it is good. Thirty-two
+tasks yielded five corrections, because the model solved twenty-seven of them, and
+a store built only from mistakes is a store whose size is a function of the model's
+weakness. That is a property we inherited from the benchmark and mistook for a
+property of the mechanism.
+
+And a field that is written, rendered, merged and sanitized, but not *read by the
+retrieval path*, is a field that exists on paper. We have a word for this failure
+now, and it applies well beyond memory: the discipline of adding a column to a
+schema is nothing without the discipline of asking which code paths consult it.
+Three paths consulted the statement. One wrote the condition. Nobody asked.

@@ -2708,3 +2708,59 @@ table, and inside its own lane, level with no memory at all.
 The next step is therefore not a competing architecture. It is a pack that
 carries more than 0.76 rules per question, because a mechanism whose input is
 thinner than one rule cannot separate itself from a mechanism whose input is none.
+
+### L.25 — Every competitor ships the trigger; we dropped it twice (2026-11-08)
+
+The literature in L.21 explains why memory hurts: irrelevant or stale context,
+over-long prompts, and rules applied outside the scope that made them true. What it
+does not explain is *silence*. A memory that arrives and is wrong has an effect; a
+memory that does not arrive has none, and no accuracy comparison can tell you that
+the mechanism was absent, because the arm and the control behave identically when
+the treatment never fires.
+
+That is the state R49 measured. Ten rules, all servable, and **38% of 1,528 requests
+served an empty pack**, 0.76 rules per request, median rule/query coverage 4.7%.
+Which turns the question from "what did the competitors know about relevance" into
+"what do they write that we did not".
+
+| System | What carries the trigger | Where the question goes |
+| --- | --- | --- |
+| Mem0 | the memory record is a natural-language fact extracted *from the conversation*, so the user's own vocabulary survives the write | the conversation text is the input to extraction (arXiv 2504.19413 §3) |
+| Voyager | a skill has a **description** used for retrieval, separate from the code it names | the description is written to be matched against new tasks (arXiv 2305.16291 §2) |
+| ExpeL | insights are extracted from paired success/failure trajectories and conditioned on the task family | the trajectory, including the task text, is the input (arXiv 2308.10144) |
+| Reflexion | the reflection is *about* a specific attempt and is retrieved by task similarity | the attempt's task anchors the memory (arXiv 2303.11366) |
+| Generative Agents | the memory stream stores the observation verbatim, scoring recency × importance × relevance | retrieval scores the stored observation text against the query (arXiv 2304.03442) |
+| **microglia** (before R51) | **nothing** — the rule was the gold tool-call sequence, and the condition field was empty on 10 of 10 items | the task **id** was passed as the question, so even the distiller could not write a trigger |
+
+The pattern is not subtle. Every one of these systems stores the observation *with
+the situation that produced it*, because the situation is what a future query will
+resemble. We stored the conclusion and discarded the situation, at two boundaries:
+the τ² write path parsed past `user_scenario.instructions`, and the read path —
+index, coverage floor and diversity ranking — measured the statement alone even
+though the renderer had been printing the condition for a year.
+
+Two things are worth importing and one is worth refusing:
+
+1. **Import: the description is a first-class field, not a decoration.** Voyager's
+   split between "what the skill is" and "when to use it" is the same split as
+   `statement` / `when`, and the reason it works is that retrieval reads the
+   second. A trigger that only the renderer sees is a trigger that only the model
+   sees, and the model sees it *after* retrieval has already decided not to send it.
+2. **Import: retrieve by the situation, rank by the claim.** Our coverage gate now
+   measures against condition + statement, while MMR diversifies on the same text
+   and BM25 keeps `kind` and scope in the index. That is the closest structural
+   analogue to the published designs without adopting their vector stores.
+3. **Refuse: extracting from the raw transcript into free-form prose.** Mem0's
+   facts are strings a user could have said; ours are procedures verified against
+   an executable gold action list, which is a sharper correction and a worse
+   retrieval key. R51 keeps the verified procedure and adds the situation beside
+   it, rather than trading one for the other.
+
+What this costs in the ranking: nothing, because nothing here is a benchmark row.
+What it costs in the narrative: the standing hypothesis — "our memory hurts because
+its content or its use is wrong" — is not supported by the measurement, and this
+entry records the alternative that is: **the memory was rarely present, and when it
+was present it was not findable.** IBM `gpt-5.5` airline 82.0 remains the published
+SOTA; microglia remains fifth of six named entries on the airline columns it has
+measured, and level with its own no-memory ablation on retail (40.0 against 36.0 at
+an MDE of 13.73pp).

@@ -10999,3 +10999,176 @@ State of the project, unchanged in ranking and now measured in fact:
 R50 is the next registration. Nothing else can be decided before it, because
 every remaining arm is a comparison whose smallest resolvable effect is larger
 than the effects the lane has ever measured.
+
+### 172.11 — R50: the gate that could not pass, replaced by a state that cannot lie
+
+R49 left one number standing over every other: the pair's minimum detectable
+difference is **13.73pp**, and `l4-paired` demanded `delta >= 0 && p` below 0.05.
+Nothing the mechanism could plausibly do satisfies that on a 50-task half of a
+115-task scenario, so the gate was red by construction — which 34.45 recorded and
+deliberately did not fix in place, because a pass condition edited after the
+result is a search over thresholds. R50 is the registration that authorises the
+change, written before any dispatch and graded first against readings already in
+hand.
+
+**What changed.** `packages/eval/src/paired-verdict.ts` (17 tests,
+100/100/100/100) turns one paired reading into one of three states:
+
+| State | Condition | Blocks |
+| --- | --- | --- |
+| `HARM` | the R45 revert rule fires — significantly negative, or below −5pp with a served pack | yes |
+| `BENEFIT` | positive, significant, **and** at least the minimum detectable difference | no |
+| `UNRESOLVED` | everything else; carries `excludedAbovePp`, and `claim` is null | no |
+
+The harm branch **calls** `revertRule` instead of restating it. That is the whole
+reason this module exists rather than a condition inside the bin: two
+implementations of one rule are two answers to one question, and the one that
+drifts is always the one nobody graded. The `BENEFIT` clause that requires
+`delta >= detectablePp` is the new one, and it closes the symmetric hole the old
+gate had: a +4.00pp delta at an MDE of 13.73pp is an effect the experiment had
+already certified it could not see.
+
+`l4-paired` now passes exactly when no revert branch fires. `l4-effect-resolved`
+reports the resolution and does not block — an unresolvable effect is a statement
+about the sample, and `V5-resolution` already blocks on that fact from the
+protocol's side; a second blocking copy would be one red line printed twice.
+`V5-resolution` itself is untouched: 115 tasks at pass^4 cannot resolve 6pp and the
+bar is a constant of the shared protocol, not of this lane.
+
+**The check that this is a restriction and not a loosening.** The three committed
+readings, re-graded:
+
+| Reading | Old `l4-paired` | State | New `l4-paired` |
+| --- | --- | --- | --- |
+| R47 +12.00pp, p = 0.1094 | FAIL | UNRESOLVED | PASS |
+| R48 −6.00pp, p = 0.4531, 965 packs | FAIL | **HARM** | **FAIL** |
+| R49 −4.00pp, p = 0.6875, 949 packs | FAIL | UNRESOLVED | PASS |
+
+R48 stays red. It is the only reading in the lane's history that fires a revert
+branch, and a new condition that kept it red while letting the other two through is
+the old condition restricted to harm. The fixture carries all three, extended with
+R49 and with a `detectablePp` column that is `null` for the two runs that predate
+it; the test re-reads those two at three different resolutions and asserts the
+state does not move, so the invariance is checked rather than assumed.
+
+**Artefact.** `poc-l4-pair.json` gains a `verdict` block — `state`, `claim`,
+`reason`, `excludedAbovePp`, `servedPacks` — and the step prints one line,
+`[l4-pair] verdict UNRESOLVED: …`. `claim` is null in the `UNRESOLVED` state on
+purpose: a field that is always a string is a field a downstream writer
+concatenates into a claim.
+
+**Acceptance.**
+
+| # | Criterion | Result |
+| --- | --- | --- |
+| 1 | `l4-paired` blocks on harm and only on harm | **met**: `pass = state !== 'HARM'`, harm branch is `revertRule` |
+| 2 | a reading the sample cannot resolve is not reported as a failure of the memory | **met**: R49 and R47 read `UNRESOLVED` with `claim: null` |
+| 3 | a benefit the sample cannot resolve is refused | **met**: `+4.00pp` at MDE 13.73pp is `UNRESOLVED`, not `BENEFIT` |
+| 4 | the committed readings re-grade to the same verdicts they earned | **met**: R48 stays `HARM`; the other two become statements about the sample |
+| 5 | no accuracy number moves | **met**: `pass^4`, delta, interval and p-value are read, never recomputed |
+| 6 | a broken instrument is refused rather than graded | **met**: NaN delta, NaN resolution, non-positive resolution, p out of range, zero pairs, negative served packs all throw |
+| 7 | four-dimension coverage | **met**: `paired-verdict.ts` 100/100/100/100 |
+| 8 | the registration states its refutations before dispatch | **met**: `prereg/R50-paired-verdict.md`, 39/39 valid |
+
+### 172.12 — R51: the rule never carried the question, and two boundaries dropped it
+
+R49's census said the store held ten rules, all servable, that 38% of 1,528
+requests were served an empty pack, and that the mean was 0.76 rules per request.
+Thirty-eight per cent absence is the number that should have been a bug report, and
+it took two readings of the code to find out what it was a census of.
+
+Every rule in that store read:
+
+> A request of this shape is resolved by calling find_user, then
+> cancel_pending_order, in that order.
+
+That sentence shares no term with anything a person says. It was also the **only**
+text the rule carried, because the item's condition — `when`, added in iteration 62
+for the reason its own comment gives, "a statement records what was true; it says
+nothing about when it is true" — was absent from all ten.
+
+**Two boundaries, one omission.**
+
+- *Write.* Upstream τ² states the user's request in `user_scenario.instructions`.
+  `parseTauTasks` read the id, the criteria, `communicate_info` and
+  `nl_assertions`, and dropped it. The driver then built the learning event as
+  `input: { question: correction.taskId }`, so the distiller's prompt — which asks
+  for a trigger "in the question's own terms" and reads `run.input.question` to
+  find them — was instructed to write in the terms of `"7"`.
+- *Read.* `KnowledgeItem.when` was in the renderer and in neither retrieval
+  mechanism: the lexical index built `statement + kind + scope`, `minCoverage`
+  measured `queryCoverage(q, item.statement)`, MMR diversified on
+  `item.statement`. Three call sites, three decisions, one answer.
+
+**The repair, six lines and no knob.**
+
+| Where | Before | After |
+| --- | --- | --- |
+| `parseTauTasks` | instruction dropped | `TauTask.instruction`, both upstream shapes, `''` when absent |
+| learning event | `question = taskId` | `question = instruction \|\| taskId`, `taskId` beside it |
+| lexical index | `statement + kind + scope` | `recallText(item) + kind + scope` |
+| `minCoverage` | `q` against `statement` | `q` against `recallText(item)` |
+| MMR text | `statement` | `recallText(item)` |
+| store census | servable only | `conditioned` / `unconditioned` |
+
+`recallText` is one function in `kernel/similarity.ts` because the three call sites
+had already drifted from each other and from the renderer. `TauTask.instruction` is
+`''` rather than `undefined` when absent, because every consumer asks "is there a
+question to show" and none should distinguish two ways of saying no.
+`storeCensus` counts conditions over the **servable** population, not the whole
+store: an item the recall scope cannot reach is unconditioned for a different
+reason, and adding the two populations lets one defect hide behind the other.
+
+**What the tests found, which the design had not.**
+
+- The word `order` in "in that order" lifted a tool-only statement's coverage of
+  *"cancel an order that has not shipped"* to **0.25** — four times the 0.01 floor
+  R49 tested. That is why a 0.01 floor measured as free: the statement accidentally
+  clears it. The recall fixture therefore uses vocabulary the statement does not
+  contain, and the comment names the accidental match it avoids.
+- `memory.search` returns every scope-mate whatever its lexical score, by design —
+  scope is an index, not a filter. A condition therefore changes the *rank*, and
+  `minCoverage` is what turns a scope match into no match. The test asserts order
+  and lexical scores rather than a hit count, because the count is a property of
+  the scope and not of the condition.
+
+**Registered, not claimed.** R51 predicts `store.conditioned >= 4`,
+`empty/requests <= 0.25` and coverage p50 `>= 12%`, and refuses to predict a delta
+finer than the 9–14pp the sample can resolve. Each prediction has its own
+refutation: if `conditioned` is 0 the write path is not the defect; if `conditioned
+>= 4` and the empty share is unchanged the condition does not reach the pack and the
+account of *why* is refuted. In either case the arm is abandoned, not reinterpreted.
+
+**Acceptance.**
+
+| # | Criterion | Result |
+| --- | --- | --- |
+| 1 | the instruction is parsed from both upstream shapes | **met**: bare string, `{reason_for_call, task_instructions}`, one-half present, absent, non-object |
+| 2 | the write path carries it to the event | **met**: `Correction.instruction` → `input.question`, `taskId` beside it |
+| 3 | a rule is recalled by its condition | **met**: index, floor and MMR all read `recallText`; 9 tests in `condition-recall.test.ts` |
+| 4 | the condition is visible at the median, not only in one hand-built case | **met**: census `conditioned` / `unconditioned` over the servable population |
+| 5 | the change is behaviour, not a knob | **met**: no new option, switch or environment variable |
+| 6 | a harmless rule is unaffected | **met**: `recallText` is the statement when `when` is absent or empty |
+| 7 | four-dimension coverage | **met**: `similarity.ts`, `pack.ts`, `tau2.ts`, `tau2-instrument.ts` all 100/100/100/100 |
+| 8 | the registration states its refutations before dispatch | **met**: `prereg/R51-condition-carrying.md`, 39/39 valid |
+
+**State of the lane after both registrations.**
+
+| Question | Answer | Evidence |
+| --- | --- | --- |
+| does a 0.01 coverage floor change `pass^4`? | no measurable change; 34% fewer packs served | R49, [−18, +8], p = 0.77 |
+| does the pack beat no pack on retail? | unresolved: −4.00pp at an MDE of 13.73pp | R49, `UNRESOLVED` under R50 |
+| does the memory cost accuracy enough to revert? | no; the revert rule does not fire | R49, `l4-paired` PASS |
+| is the store well-formed? | yes, and every rule was unconditioned | R49 census + R51's new census |
+| can τ² retail resolve 6pp? | no, at any n; 9.05pp at 115 tasks | `V5-resolution`, unchanged |
+
+R51 is the next dispatch. Nothing else can be decided before it, because every
+remaining arm is a comparison whose smallest resolvable effect is larger than the
+effects the lane has ever measured — and because the pack it varies is the ceiling
+on all of them.
+
+**Evidence.** `master` at this commit; 153 test files, 3,217 tests, coverage
+**99.95 / 99.65 / 100 / 99.95** (lines / branches / functions / statements);
+`typecheck` and `typecheck:lanes` clean; `pnpm eval:prereg` 39/39 valid. No SOTA
+row moves: IBM `gpt-5.5` airline 82.0 remains the published SOTA and microglia
+remains fifth of six named entries on the columns it has measured.
