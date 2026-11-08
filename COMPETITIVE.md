@@ -3144,3 +3144,51 @@ airline 82.0 is the published SOTA; SapientAI-Agent-Opus-5 72.0; IBM `gpt-4.1 su
 60.0 (`pass^4`, retail); this lane 63.16% `pass^4` on retail's 57 held-out tasks with memory off and
 64.91% with it on.** The pair remains `UNRESOLVED`, and the memory-free control moved 8.77pp between
 two dispatches of one configuration, which is larger than any treatment effect reported here.
+
+### R59 — a resolution column, because the ranking is what the sample has to support
+
+The table this appendix keeps has always compared numbers and never asked what its own sample could
+separate. That column now exists and it changes what the comparison is allowed to say.
+
+**What the bench can resolve.** 57 held-out tasks, four trials, paired against the lane's own reference
+arm. On the binary endpoint the 95% interval is ±15.0pp and a three-point effect would need 1423 pairs;
+on the per-task rate it is ±5.5pp and needs 398. The best endpoint available here resolves **7.9pp at
+80% power**, and retail has 115 tasks in total.
+
+**The one published effect of that size** is the arm's own ablation: 292 rules at `pass^4` 67.5 against
+31 rules at 60.0 — **7.5pp**, for a tenfold reduction in store size. That is just inside the line, which
+means this bench *could* adjudicate a `sup3`-sized selection effect if it had a store large enough to
+select from. It cannot adjudicate anything finer.
+
+| reading, retail | value | separable from the lane at n = 57? |
+| --- | --- | --- |
+| IBM `gpt-5.5` airline (published SOTA, other domain) | 82.0 | n/a — different domain |
+| SapientAI-Agent-Opus-5 airline | 72.0 | n/a — different domain |
+| IBM `gpt-4.1` retail, lossless store | 67.5 | **no** — 4.3pp, inside the interval |
+| **this lane, memory on** | **64.91** | — |
+| this lane, memory off (same run) | 63.16 | — |
+| IBM `gpt-4.1 sup3`, retail `pass^4` | 60.0 | **no** — 3.2pp, inside the interval |
+| IBM `gpt-4.1 sup3`, airline | 44.0 | n/a — different domain |
+| sup3 ablation, published (67.5 → 60.0) | −7.5pp | **yes**, if a store of that size existed |
+
+Three consequences, in order of how much they cost.
+
+**The lane's position is "not 8pp from either IBM retail reading", and that is all.** It is not a rank.
+63.16 sits between 60.0 and 67.5 and the interval reaches past both. A record that printed the ordering
+without this column would be claiming a placement the sample cannot support, in either direction.
+
+**The lane's own treatment effect is invisible here.** +1.75pp on `pass^4`, −1.32pp on the rate, and
+every previous registration in the same position. The interval is 15pp. This is a design fact, not a
+mechanism fact, and it is now printed beside every pair.
+
+**The gap to `sup3`-sized effects is yield, not selection.** A 26-item store cannot be read the way a
+292-item store is read: their own ablation says selection is worth 7.5pp and selection needs a
+population. At 2.14 claims per correction and roughly half a claim per learning task, this lane's store
+is an order of magnitude smaller at equal task counts, which is why the next registration is about
+claims per trace rather than about the floor — and why R59's calibration is a precondition for that
+question rather than an answer to it.
+
+The published SOTA does not move: **IBM `gpt-5.5` airline 82.0**; **SapientAI-Agent-Opus-5 72.0**; **IBM
+`gpt-4.1 sup3` 44.0 (airline) / 60.0 (`pass^4`, retail)**; this lane **64.91% with memory on and 63.16%
+with it off** on retail's 57 held-out tasks. The pair remains `UNRESOLVED`, and the 8pp resolution above
+is the reason that word is the honest one.

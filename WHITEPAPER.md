@@ -4261,3 +4261,39 @@ ruler calibrated on the store it is measuring, does one claim become two items m
 count that a corroboration threshold would gate on reach two at all. If it does not, the honest reading
 is not that the pass failed but that a corpus of this shape cannot corroborate itself, and the next
 question is about the corpus.
+
+
+#### 3.6.65 Two rulers, and the confession that one of them was chosen last
+
+The previous two sections measured the store: what a claim is distilled from, and whether two claims
+can be recognised as one. This one is about the instrument the result is read on, and it starts with a
+number that had been sitting inside every artefact the lane ever produced, unread.
+
+A paired verdict here counts tasks: a task passes if all four of its trials pass, and the verdict is
+whether more tasks crossed up than down. It is the field's convention, it is what the published bar is
+stated in, and on this bench it is very nearly blind. R58's pair read **+1.75 points with an interval
+from −14 to +16**. The artefact also records, for every task on both arms, how many of its four trials
+passed — and nobody had ever divided. Doing so gives **−1.32 points, with an interval from −6.9 to
++4.2**: an interval 2.7 times narrower, and the opposite sign.
+
+Neither reading is a mistake, and that is what makes the pair worth keeping. The tasks that improved
+sum to +3.5; the tasks that got worse sum to −4.25. What memory did was lift ten near-misses into
+perfect runs and lower fourteen other tasks by slightly more each. The binary endpoint counts the
+first group only, because crossing into "all four" is the only thing it can see; the rate endpoint
+counts both. So the answer to "does memory help" is not a number this bench can produce — it is a
+shape, and the shape depends on which half of the effect the ruler is built to notice.
+
+Then the confession. The rate endpoint was chosen *after* seeing how wide the binary interval was. That
+is a real selection, of exactly the kind that turns a null result into a publishable one if nobody
+writes it down, and it is recorded as a selection rather than presented as a design. Nothing is claimed
+from it. Both readings are unresolved, and the code ships a function whose only job is to say when the
+two disagree — so that a report which quotes one has to quote the disagreement beside it.
+
+What the arithmetic does buy is a statement about the bench rather than about the mechanism. At 57
+tasks, the best endpoint available resolves about eight points at 80% power. The single effect the
+published record actually establishes — a lossless store at 67.5 against its three-task-corroborated
+core at 60.0 — is 7.5 points, and sits just inside that line. Every 2–4 point difference between
+selection strategies is outside it, permanently, on a bench of 115 tasks. A lane that reports
+"unresolved" on a two-point delta is not reporting a weak mechanism. It is reporting its own design,
+and the next question is not a better threshold — it is a larger store to select from, which is a
+distiller question and is where the remaining order of magnitude lives.

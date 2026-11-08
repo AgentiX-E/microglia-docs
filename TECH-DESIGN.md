@@ -8358,3 +8358,59 @@ That is the difference between *"the measure changed and the numbers moved"* and
 one group of these 15 items where the previous one merged none"*. The re-scoring cannot read the
 duplicate-evidence rule — the projection stores an evidence count, not rows — and says so rather than
 reporting a floor it did not apply.
+
+
+### 17.122 Two endpoints over one pair, and the rule that keeps either from being quoted alone
+
+A paired verdict in this lane is a sign test over `pass^4`: one task, one vote, and the vote is yes
+only if all four trials passed. That stays the headline, because it is what the published bar is
+stated in. It is also, on this bench, a ruler too coarse to see any effect the record contains, and the
+artefact has always carried the finer one.
+
+**The two readings.**
+
+```
+endpoint          delta      se       95% interval         MDE(80%)  tasks@3pp
+pass^4 (binary)    +1.75   +7.65  [ −14.04, +15.79]         —  1423
+pass rate          −1.32   +2.83  [  −6.86,  +4.23]     +7.92  398
+```
+
+The binary reading is `comparison.deltaPp` and `resolution.standardErrorPp` from the pair file. The
+rate reading is the paired mean of `per_task.successes / per_task.trials` over the tasks both arms
+scored, with its own standard error and a `2.802 · se` minimum detectable difference — the same
+constant `power.ts` and `resolution.ts` use, so the two rows are quoted on one convention.
+
+**Why the rate is tighter, arithmetically.** The sign test's standard error is driven by how many
+tasks changed hands: 19 of 57, which is `√19/57 ≈ 7.6pp`. The paired mean's standard error is the
+spread of the per-task differences over `√n`: 21.35pp of spread over `√57 ≈ 2.8pp`. A task that went
+from three of four to four of four contributes 0.25 to the second and 1 to the first *only if it
+crosses*, so the second uses information the first discards by construction.
+
+**Why they can disagree, which is the point.** The twelve tasks that rose sum to +3.5 and the
+fourteen that fell sum to −4.25. The binary endpoint counts the ten rises that crossed into
+four-of-four and none of the falls that did not. A mechanism that converts near-misses into successes
+while lowering many tasks slightly therefore reads positive on one endpoint and negative on the other,
+and any report that quotes one is describing half of what happened.
+
+So the module ships with the guard rather than the verdict:
+
+- `endpointsAgree(binaryPp, ratePp)` reports agreement, and treats a tie on either side as agreement —
+  "no effect" and "a small effect" are not a contradiction.
+- `eval:pair-rate --dir <downloaded run>` prints both rows, then the conflict line, then the sentence
+  that a conflict is not a defect in either reading.
+- No direction is claimed from either. The rate endpoint was chosen after the binary interval's width
+  was known, which is a selection and is recorded as one; a registration that wants to decide on it
+  names it before its dispatch.
+
+**Degenerate cases, and what they return.** Fewer than two pairs has no spread, so `sePp` and the
+interval are `null` rather than `0` — a sample of one is not a perfectly determined estimate. A zero
+spread with a zero delta gives `z: null`, because a ratio with no denominator is not a large number.
+Two arms scored on disjoint tasks report `pairs: 0` with `onlyFirst`/`onlySecond` populated: not "no
+difference", but nothing to compare. A task with zero trials is dropped rather than read as a total
+failure, which would move the mean by `1/n` of a whole task.
+
+**What it fixes about the design.** At 57 tasks the best endpoint available here resolves 7.9pp at 80%
+power. The one effect the published record establishes — lossless 67.5 against `sup3` 60.0 on retail's
+`pass^4` — is 7.5pp and sits just inside that. Every 2–4pp difference between selection strategies is
+outside it permanently at this sample, which is why the next registration is about yield (a larger
+store to select from) rather than about a finer threshold.

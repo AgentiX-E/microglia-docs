@@ -5739,3 +5739,86 @@ caveat that Jaccard would have refused, a paraphrased condition that passes the 
 subject-only one that does not, and the override that proves a stricter pass is dispatchable. The
 `l4-support-recurrence` gate now prints both floors beside the distributions, because a store
 consolidated at 0.60 and one consolidated at 0.70 are two experiments.
+
+### 34.76 The yield census counted a claim twice, and the population it read was the pass's output
+
+Found before dispatch, by asking what `claimsPerCorrection` does when two claims from different
+corrections have already been merged.
+
+**The defect.** The join is on `EvidenceRef.runId`, and the driver passed the store *after*
+`consolidateKnowledge`. A merged group leaves two items: the survivor, whose evidence is the union and
+therefore cites both runs, and the retired member, which still cites its own. Joining that store
+attributes the survivor to correction A **and** to correction B, then attributes the retired item to B
+again — three claims where two were written. On R58's store, where nothing merged, the defect was
+invisible; on R59's store, whose entire purpose is to merge, it would have inflated exactly the number
+the next registration is built on, in the direction that flatters the distiller.
+
+**The rule, stated rather than patched.** An item citing `k` runs is one claim made from `k`
+corrections, and counts once for each — that is what a write-side fold (`update`) produces, and the
+sum over corrections is then claims *written* rather than the store's size. The recurrence pass is the
+one thing that breaks the identity, because it merges *after* the write and keeps both halves. So the
+population is the store as the distiller wrote it, and `tau2-driver` now reads it once and uses the
+same read as the pass's input and as the yield's population:
+
+```ts
+const written = await store.listKnowledge({});
+const consolidation = DISTILL_UNIT === 'trace' ? consolidateKnowledge(written, …) : undefined;
+…
+yieldCensus: yieldCensus(claimsPerCorrection(captured, written)),
+```
+
+One read for both is not tidiness: two reads would be two populations, and the pass's input and its
+yield would then differ by whatever was written in between.
+
+**Tests.** A store of two claims as written reports `[1, 1]` and a total of 2; the same two after the
+pass reports `[1, 2]` and a total of 3. The second assertion is the defect, kept as a case so the
+comment that explains it cannot drift from the behaviour it describes.
+
+### 34.77 Two rulers on one sample point opposite ways, and that is the reading
+
+R58's pair has been read on `pass^4` since it landed: **+1.75pp, 95% CI [−14.04, +15.79], p = 1.000,
+10 gained, 9 lost, n = 57, `UNRESOLVED`.** The artefact also carries `per_task.successes` over
+`per_task.trials` for every task on both arms, and nothing had ever read it.
+
+**The same 57 tasks, on the rate endpoint:**
+
+```
+endpoint          delta      se       95% interval         MDE(80%)  tasks@3pp
+pass^4 (binary)    +1.75   +7.65  [ −14.04, +15.79]         —  1423
+pass rate          −1.32   +2.83  [  −6.86,  +4.23]     +7.92  398
+```
+
+The interval narrows by a factor of 2.7 and the sample a three-point effect needs falls from 1423 to
+398 — four times closer, and still impossible on a bench of 115 tasks. **The sign reverses.**
+
+**Why it reverses, which is the part worth keeping.** The twelve tasks that rose sum to +3.5 (mean
++0.29); the fourteen that fell sum to −4.25 (mean −0.30); the net is −0.75 over 57 tasks. The binary
+endpoint counts only the ten that crossed into four-of-four, all of them rises, and cannot see a task
+that went from three of four to two of four. So the arm's benefit is *concentrated* — it converts
+near-misses into perfect runs — and its harm is *diffuse* — it lowers more tasks by slightly more
+each. `pass^4` reads the concentrated half; the rate reads both.
+
+**What is claimed.** Nothing about direction. Either reading is `UNRESOLVED`, and picking the one
+whose sign is agreeable is the operation this entry exists to prevent: `endpointsAgree` reports the
+conflict, and the readback tool (`eval:pair-rate`) prints both rows and then the conflict line, so a
+report that quotes one has to quote the disagreement beside it.
+
+**What is declared.** The rate endpoint was chosen *after* seeing how wide the binary interval was.
+That is a real selection and it is recorded as one: the endpoint is reported as a secondary reading of
+an existing sample, no direction is claimed from it, and every registration that wants to decide on it
+must name it before its dispatch. It is not a licence to re-read old pairs until one becomes
+significant; it is a statement that the binary endpoint's resolution on this bench (~21pp) is larger
+than any effect the record contains, and that the next design should not inherit it by default.
+
+**What it means for the bench.** At 57 tasks the *best* endpoint available here resolves about 7.9pp
+at 80% power. The one effect the published record does establish — lossless 67.5 against `sup3` 60.0
+on retail's `pass^4` — is 7.5pp, which is just inside that. Every 2–4pp difference between selection
+strategies is outside it, permanently, at this sample. The honest position is that this bench can
+adjudicate a `sup3`-sized effect and nothing finer, and that a lane reporting `UNRESOLVED` on a
+two-point delta is reporting the design rather than the mechanism.
+
+**Tests.** `paired-rate.ts` reads 100 / 100 / 100 / 100 over twelve cases: the zero spread of two
+identical arms, the quarter-trial arithmetic, the narrower interval on the same sixteen observations,
+symmetry under a swap, the disjoint-arms case that has no pair rather than no difference, the dropped
+zero-trial task, the `2.802 · se` convention shared with `power.ts`, and the inverse-square scaling of
+the sample a target needs.

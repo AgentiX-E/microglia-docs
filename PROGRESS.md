@@ -11941,3 +11941,49 @@ trajectory yields five* with a per-correction distribution instead of an aggrega
 | P2 | R57, U6b / U4 / U5 / U6a | registered, undispatched |
 | P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
 | — | cortex release | excluded by standing instruction |
+
+### 172.34 The endpoint was the coarsest choice in the design, and nobody had divided
+
+Two things landed while R59 ran: a defect in the instrument built for the *next* registration, and a
+second reading of *this* one's predecessor.
+
+**The defect (found before it could fire).** `yieldCensus` joined the store *after* the recurrence pass.
+A merged group leaves the survivor citing both runs and the retired member citing its own, so the
+survivor is attributed to both corrections and the retired item to one of them again — three claims
+where two were written. Invisible on R58, which merged nothing; inflating on R59, whose purpose is to
+merge. The store is now read once and used twice: as the pass's input and as the yield's population.
+
+**The reading.** Every artefact has always carried per-task `successes` over `trials` for both arms.
+Read as a paired mean instead of as a sign test:
+
+| endpoint | delta | se | 95% interval | MDE(80%) | tasks for 3pp |
+| --- | --- | --- | --- | --- | --- |
+| `pass^4` (binary) | **+1.75pp** | 7.65pp | [−14.04, +15.79] | — | 1423 |
+| pass rate (paired) | **−1.32pp** | 2.83pp | [−6.86, +4.23] | 7.92pp | 398 |
+
+The sign reverses, and the reason is the shape of the effect rather than noise: the twelve tasks that
+rose sum to +3.5, the fourteen that fell sum to −4.25. The binary endpoint counts only the ten that
+crossed into four-of-four, all rises, and cannot see a task that went from three of four to two of
+four. **The benefit is concentrated; the harm is diffuse.**
+
+Nothing is claimed from it. Both readings are `UNRESOLVED`, `endpointsAgree` reports the conflict, and
+`eval:pair-rate` prints both rows and then the conflict line. The endpoint was chosen after the binary
+interval's width was known — declared as a selection, not presented as a design.
+
+**What it settles about the bench.** At 57 tasks the best available endpoint resolves 7.9pp at 80%
+power. The one effect the published record establishes — lossless 67.5 against `sup3` 60.0, 7.5pp — is
+just inside it; every 2–4pp difference between selection strategies is outside it permanently on a
+bench of 115 tasks. That is why the next registration is about **yield** (a larger store to select
+from) rather than about a finer floor.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | R59 — containment 0.60 + condition count 3 + the whole learning half | **complete, `42488237590` success**, read in 172.35 |
+| P0 | `paired-rate.ts` — the second endpoint, twelve cases, 100 on all four | done, pushed |
+| P0 | yield census population (before the pass, not after) | done, pushed |
+| P1 | R60 — the yield: claims per trace, and whether each failed assertion is its own episode | **next**, registered after 172.35 |
+| P1 | R53 — three note levels over one store | dispatch-ready, after R60 |
+| P1 | R55.1 — a recurrence threshold | conditional on an item reaching 2, then 3 |
+| P2 | R57 planted distractor, U6b / U4 / U5 / U6a | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
