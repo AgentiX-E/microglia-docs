@@ -4774,3 +4774,44 @@ scheme it does not recognise rather than ignoring it), pulls 1 MiB ranges over s
 connections, and checks the assembled length against the size the API reported. Measured:
 20,287,175 bytes in 1m52s, 91 entries. It refuses a run with two artefacts rather than choosing
 one. The sequence from "a run finished" to "a verdict" is three committed commands.
+
+### 34.55 The prompt that writes τ²'s triggers is written for a database
+
+Reading, while R54's reference arm ran, the instruction the τ² lane actually distils under.
+
+`tau2-driver.ts` builds its interpreter as `createLlmInterpreter({ llm })` — no `form`, no
+`taxonomy` — and `createLlmInterpreter` defaults `form` to `'lesson'`, the generic form. The
+`when` guidance in that form reads:
+
+> `when` names a property the reader can check on a *different* input: what the question asks
+> for, **which tables or columns it involves**, what the answer must be comparable to.
+
+and its worked example is the one BIRD taught it:
+
+> "Questions that name a race join results to races on raceId" is a rule; "the query answering
+> <one question> selects forename, surname and driverRef" restates one answer.
+
+Nothing in either sentence is wrong for BIRD. For τ² retail it instructs the model to name
+tables and columns in a benchmark whose questions are a customer asking for a cancellation and
+a refund, where no column exists to name. A model following that sentence will write a trigger
+about the shape of a query, which is the procedure's register — and that is precisely the state
+R54's second refutation exists to distinguish from a distiller that names the situation. The
+store R49 measured is the shape this predicts: *"A request of this shape is resolved by calling
+find_user, then cancel_pending_order, in that order."*
+
+**What this does and does not claim.** It does not claim the prompt caused R49's or R51's
+store: both were built by this same form, and R51's `conditioned 16 of 16` shows the model did
+write conditions under it. What it claims is narrower and checkable: the instruction points the
+trigger at schema objects, so a store whose p50 stays near zero is explained without appealing
+to model weakness, and the next registration has a mechanism to move rather than a
+temperature to nudge.
+
+The three other forms already exist and are already used — `procedure` by the public lane,
+`lexicon` for definitions, `repair` for accounts — so the τ² lane is not missing a mechanism.
+It is passing no form, and inheriting one written for SQL. `buildDistillPrompt` takes the form
+as its fourth argument and `createLlmInterpreter` forwards `options.form`; the change is a
+plumbing exercise behind a switch of the kind `NoteMode` and `WriteAdmission` already use.
+
+Not implemented before R54's readback, deliberately. Whether this is the next arm depends on a
+number that does not exist yet, and shipping a prompt change first would make the readback
+unable to say which of two variables moved.
