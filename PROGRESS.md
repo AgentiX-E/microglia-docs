@@ -11987,3 +11987,54 @@ from) rather than about a finer floor.
 | P2 | R57 planted distractor, U6b / U4 / U5 / U6a | registered, undispatched |
 | P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
 | — | cortex release | excluded by standing instruction |
+
+### 172.35 R59 graded: one claim, two tasks, and a control that moves more than the treatment
+
+**R59 read** (`42488237590` on `8f9aeffe`): `GRADED`, seven predictions, zero refutations.
+
+| reading | value |
+| --- | --- |
+| learning half | 57 tasks, 1 trial, **14 corrections** (24.6%) |
+| claims | **31** → 2.21 per correction |
+| consolidation | **1 group**, 30 of 31 retained (96.8%) |
+| support | max **1 → 2**; distribution `{1: 29, 2: 1}` |
+| the merged pair | containment **0.667** / Jaccard **0.348**, condition terms **exactly 3** |
+| `pass^4` | memory **63.16%** vs reference **66.67%** = **−3.51pp [−15.79, +8.77]**, `UNRESOLVED` |
+| rate endpoint | **−1.32pp [−5.97, +3.34]**, agrees in sign |
+
+Two defects were found in the *verifier*, not the run, and both are fixed: the attribution re-scoring
+graded a post-pass store (the pair it merged is no longer in it) and called the run `ABANDONED`; and
+the store sample carried no pointer from a retired item to its survivor, so the readback could say a
+group merged and not which pair. `statusReason` now travels, and the inference fallback is documented
+as exact for one group.
+
+**The calibration is confirmed on a real pair, with one number tight.** The claim floor has 0.067 of
+margin, Jaccard misses by 0.352, and the condition count is *exactly* at its floor — a fourth shared
+term would have been required under a count of 4 and this merge would not exist. That is what
+"binding" means, observed for the first time.
+
+**The noise floor, measured.** The memory-free reference arm read 63.16% in R58 and 66.67% in R59 on
+the same 57 tasks and the same four trials, with nothing changed on it: **3.51pp of run-to-run drift
+on the control**, twice the largest treatment effect this lane has recorded.
+
+**R60 registered and built** (`prereg/R60-yield-ceiling.md`): the trace ceiling moves 3 → 6, and the
+ceiling becomes one number written in both the prompt and the parser. R59's 2.21 against a cap of 3
+is a cap within one claim of the mean, and the artifact never carried the distribution that would say
+whether it binds — `yieldCensus` now does, with `maxClaims`, `medianClaims` and one row per
+correction, counted over the store *before* the recurrence pass.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | R60 — ceiling 6, yield census, `statusReason`, support 3 predicted | **dispatch** |
+| P0 | R60 readback — the median is the reading that separates cap from episode | after the run |
+| P1 | R61 — per-assertion episodes, if R60's median stays at 2 | registered next |
+| P1 | R55.1 — a recurrence threshold (`supportTasks >= 3`) | decidable if R60 shows 3 |
+| P1 | R53 — three note levels over one store | dispatch-ready |
+| P2 | R57 planted distractor, U6b / U4 / U5 / U6a | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+Where this leaves the project: the object (R58), the measure (R59) and the population (R59) are all
+answered, and the store holds one claim that two tasks derived. What remains is whether that can be
+made to happen at the published rate (10.6% at three tasks) or whether it is a property of
+trajectories and not of traces.

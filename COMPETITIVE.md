@@ -3192,3 +3192,46 @@ The published SOTA does not move: **IBM `gpt-5.5` airline 82.0**; **SapientAI-Ag
 `gpt-4.1 sup3` 44.0 (airline) / 60.0 (`pass^4`, retail)**; this lane **64.91% with memory on and 63.16%
 with it off** on retail's 57 held-out tasks. The pair remains `UNRESOLVED`, and the 8pp resolution above
 is the reason that word is the honest one.
+
+### R59 read and R60 — the recurrence rate is the comparison that decides whether the gap is closable
+
+The yield argument in the previous section had one number missing: whether the claims this lane writes
+actually recur. R59 supplied it, and it is the first time the comparison can be made on the axis the
+published `sup3` arm is defined by.
+
+| | IBM ALTK-Evolve (`sup3`) | this lane (R59) |
+| --- | --- | --- |
+| store, retail | 292 guidelines | **31 claims** |
+| at `supportTasks >= 3` | 31 of 292 — **10.6%** | **0 of 31 — 0%** |
+| at `supportTasks >= 2` | — | 1 of 30 — **3.3%** |
+| claims per learning task | ~5 | **0.54** (2.21 per correction, from 24.6% of tasks) |
+| what the recurrence is over | full trajectories, ~60 tasks | one trace per task, 57 tasks |
+
+Three readings of that table, in order of how much they cost.
+
+**The rate, not the store, is the gap now.** At the published 10.6%, 31 claims should hold 3.3 items
+at three distinct tasks. This store holds none. A store ten times smaller explains a count of 0.3
+items; it does not explain 0 when 3.3 were expected, so the explanation is in the *shape* of the
+claims rather than in the population alone. Their guidelines come from a whole trajectory with its
+successes and failures and read as patterns; these come from one failed rollout's diff against a
+reference and read as repairs to a specific kind of request.
+
+**The one corroboration is real, and it is one.** Two tasks derived the same directive, and the pair
+scores 0.667 on the shipped measure against 0.348 on the previous one. That is the mechanism working
+once — enough to say the axis exists here, not enough to say it is a rate.
+
+**Selection cannot be tested on a store that cannot corroborate itself.** Their own ablation says the
+gap between a lossless 292-rule store and its 31-rule `sup3` core is **7.5pp** at `pass^4`, and that
+the *selection* is what costs the 7.5pp. Selection needs a population to select from. This bench can
+resolve about 8pp at 57 tasks on its best endpoint, so it could in principle see a `sup3`-sized
+effect — but not while the store has no corroborated core to select.
+
+So R60 asks the only question that is both cheap and decisive: with the trace ceiling raised from
+three to six — a cap that sat within one claim of the measured mean — does the store grow enough for
+the class that already holds two members to receive a third. If support 3 appears, `sup3` becomes
+implementable here and the selection comparison becomes a real comparison. If it does not, the
+conclusion is that a register of one-sentence repairs from a single trace per task does not recur at
+this density, and the lane's competitive claim stays where it is: **63.16% `pass^4` on retail's 57
+held-out tasks with memory off, 64.91% with it on, both `UNRESOLVED` against a 15pp interval**, beneath
+**IBM `gpt-5.5` airline 82.0** (published SOTA), **SapientAI-Agent-Opus-5 72.0**, and beside **IBM
+`gpt-4.1` retail 67.5 lossless / 60.0 `sup3`**.

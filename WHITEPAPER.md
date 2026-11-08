@@ -4297,3 +4297,43 @@ selection strategies is outside it, permanently, on a bench of 115 tasks. A lane
 "unresolved" on a two-point delta is not reporting a weak mechanism. It is reporting its own design,
 and the next question is not a better threshold — it is a larger store to select from, which is a
 distiller question and is where the remaining order of magnitude lives.
+
+
+#### 3.6.66 One claim, two tasks, and a number nobody looked at
+
+The question the last three sections kept circling was whether a store this size can corroborate
+itself. It can — once, and that once is worth more than the count suggests.
+
+Two items became one. The absorbed claim says *perform the requested changes in the order the user
+stated them, completing each before starting the next*; the survivor says *before acting on a
+multi-part request, resolve every referenced order and item to concrete identifiers, then perform the
+requested changes in the order the user stated them*. Same directive, one with a precondition
+attached, and the two traces that produced them came from different tasks. The pair scores 0.667 on
+the measure this iteration shipped and 0.348 on the one it replaced. The floor has six hundredths of
+margin. The condition test has none: three shared content terms, exactly the number required, and a
+fourth would have been asked for under a count of four and the merge would not exist. A calibrated
+threshold that turns out to be binding is a threshold that was doing something.
+
+Then the number. Thirty-one claims from fourteen corrections is **2.21 per correction**, against a cap
+of three that the prompt stated in prose. A cap one claim above the mean is a cap that binds exactly
+where it is met and hides in the average everywhere else — and no artefact carried the distribution
+that would say which. That is the same failure as the three before it, in a smaller place: a measurement
+that reports a mean and calls it a shape. The census now records every correction's yield, its failed
+assertions, and the median beside the mean, because three claims from one correction and none from
+nine is the same average as one from each of three, and only one of those stores can recur.
+
+And the arithmetic that decides the next round. The published record keeps 31 of 292 guidelines at
+three distinct tasks — 10.6%. At that rate thirty-one claims should hold three items at three tasks.
+This store holds none, and one at two. Either these claims are more task-specific than a trajectory's
+guidelines, or the store is too small for its own recurrence. The two are separable, and only one of
+them can be moved without a new benchmark: yield. Pairs grow with the square of the store and triples
+with the cube, so thirty-one to forty-five claims is twice the pairs and three times the triples. If
+the class that already holds two members receives a third, the corroboration bar the published `sup3`
+arm is named after becomes reachable here for the first time.
+
+There is one more thing this round measured, and it is the least comfortable. The memory-free arm of
+the benchmark read 63.16% in one dispatch and 66.67% in the next, on the same tasks, the same trials,
+the same code, with nothing about it changed. Three and a half points of drift in the control, against
+a treatment effect that has never exceeded two. Every delta in this record is unresolved because the
+design cannot resolve it, and the honest description of the last several rounds is that they built a
+better store and then could not see it work.

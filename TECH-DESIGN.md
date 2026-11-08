@@ -8414,3 +8414,46 @@ power. The one effect the published record establishes — lossless 67.5 against
 `pass^4` — is 7.5pp and sits just inside that. Every 2–4pp difference between selection strategies is
 outside it permanently at this sample, which is why the next registration is about yield (a larger
 store to select from) rather than about a finer threshold.
+
+
+### 17.123 What a readback may grade, when the run it grades has already changed the store
+
+R59's first read exposed a class of defect that has nothing to do with the mechanism: a verifier can
+grade an artefact on a population the run has already consumed.
+
+**The case.** The attribution reading asks whether the floor was the reason, by re-scoring the stored
+items under the previous measure. It was written for R58, whose pass merged nothing — so the store it
+shipped *was* the population the pass read. R59's pass merged one group, and the store it ships is the
+one the pass left: the merged pair is not in it, containment finds 0 groups, Jaccard finds 0, and the
+prediction "Jaccard merges strictly fewer" fails. A failed prediction abandons, so a run that met
+seven of seven substantive predictions read as `ABANDONED`.
+
+**The rule this makes explicit.** A reading is gradeable only over the population it names, and an
+artefact carries one store, not two. Where a pass consumes its input, three things follow:
+
+- The attribution reading is **ungraded** when the census reports a group, with the reason printed.
+  `None` is not a pass; it is "this artefact cannot answer this question", which is what the state
+  machine already has a word for.
+- A refutation that depends on that reading is not evaluated either. It would otherwise fire on the
+  artefact's shape and convert "no evidence" into "the calibration is wrong", which is the worst
+  possible direction for a false positive.
+- What *can* be read from a post-pass store is what the pass did: the retired member, the survivor,
+  and the readings of the pair. That is a different question and it is now graded — a merged group
+  whose containment falls below the floor fires "not one claim", whatever the re-scoring says.
+
+**The join the record was missing.** A retired item and the survivor that absorbed it were both in
+the sample with nothing between them, so a readback could report a count of groups and not the pair
+that made one. `StoreItemRecord.statusReason` now carries the store's own reason as written
+(`consolidated:<id>`), because the prefix is the store's vocabulary and a projection that parsed it
+would break the first time the store gained another reason. Artefacts written before the field are
+linked by content — the live item whose statement contains the member most — which is exact for one
+group, an over-estimate for more, and therefore only ever makes the "not one claim" refutation harder
+to fire.
+
+**The same shape, one layer up: the ceiling in the prompt.** `TRACE_INSTRUCTION` said "at most three
+candidates" in prose while `maxCandidates` trimmed to whatever the caller passed. A dispatch that set
+the option to six asked the model for three; one that set it to two asked for three and kept two. The
+instruction is now composed from the number the parser enforces (`traceCeilingLine`, `traceInstruction`
+in `packages/core/src/distill/llm.ts`), so R60's ceiling of six is stated to the model and applied by
+the parser by construction, and the artefact carries `traceClaims: {ceiling, declared}` because two
+runs at two ceilings are two experiments.

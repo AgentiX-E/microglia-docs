@@ -5139,3 +5139,48 @@ impossibility. If nothing merges with 26 claims and a floor derived from this re
 that a corpus of this shape cannot corroborate itself, and the next registration is about the corpus.
 Support 3 is deliberately not predicted: one mergeable pair in 105 is a rate, and a triple needs three
 of them in one group.
+
+### R59 read, R60 built and registered (2026-11-09)
+
+R59 (`42488237590` on `8f9aeffe`) came back **`GRADED`: seven predictions, zero refutations.** The
+first corroboration in this project: two tasks derived the same claim, the pass merged them, and an
+item carries `supportTasks: 2`.
+
+| reading | value |
+| --- | --- |
+| learning half | 57 tasks, 1 trial, **14 corrections** (24.6%) |
+| store | **31 claims**, 2.21 per correction |
+| consolidation | **1 group**, 30 of 31 retained |
+| the pair | containment **0.667**, Jaccard **0.348**, condition terms **exactly 3** |
+| `pass^4` | **−3.51pp** [−15.79, +8.77], `UNRESOLVED`; rate endpoint −1.32pp, agrees in sign |
+
+The control moved 3.51pp between R58 and R59 on the same 57 tasks with nothing changed on it, which
+is twice the largest treatment effect in the record and is the number that governs how the deltas are
+read.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | readback: the attribution re-scoring graded a post-pass store, and `statusReason` was missing | **fixed**; the run now `GRADED` instead of `ABANDONED` |
+| P0 | `l4-support-recurrence` now requires a census that reports a group to ship an item two tasks stand behind | done, 4 cases |
+| P0 | `paired-rate.ts` — the second endpoint on the same pair | done, 12 cases, 100 on all four |
+| P0 | `yieldCensus` counted over the store *before* the recurrence pass | done |
+| P0 | `traceClaims` — the ceiling written in both the prompt and the parser | done |
+| P0 | R60 — ceiling 3 → 6, support 3 predicted | **registered, dispatch** |
+| P1 | R60 readback — the median is what separates a binding cap from an episode-limited one | after the run |
+| P1 | R61 — per-assertion episodes, if R60's median stays at 2 | registered next |
+| P1 | R55.1 — a recurrence threshold at `supportTasks >= 3` | decidable if R60 shows 3 |
+| P1 | R53 — three note levels over one store | dispatch-ready |
+| P2 | R57 planted distractor, U6b / U4 / U5 / U6a | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+**What R60 is, precisely.** One number, moved from three to six, and the instrument that says whether
+the number was ever the constraint. R59's 2.21 against a cap of 3 is a cap within one claim of the
+mean; the artefact never carried the distribution, so the question could not be asked. The census now
+carries it, with the median beside the mean and one row per correction.
+
+**What the readback will decide.** If the median claims per correction reaches 3, the cap was binding
+and the store grows to ~45 — enough that pairs double and triples triple, which is the arithmetic
+support 3 needs. If the median stays at 2 while claims rise, the cap was irrelevant and the episode
+is the constraint, which is R61's registration. If claims rise and nothing corroborates, more claims
+of this shape do not recur and the corpus is the answer rather than the population.

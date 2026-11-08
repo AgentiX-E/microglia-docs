@@ -5822,3 +5822,85 @@ identical arms, the quarter-trial arithmetic, the narrower interval on the same 
 symmetry under a swap, the disjoint-arms case that has no pair rather than no difference, the dropped
 zero-trial task, the `2.802 · se` convention shared with `power.ts`, and the inverse-square scaling of
 the sample a target needs.
+
+
+### 34.78 The first corroboration, and the two ways the record could not see it
+
+R59 is read (`42488237590`, `8f9aeffe`): **14 corrections from 57 learning tasks, 31 claims, one group
+merged, one item at `supportTasks: 2`, 30 of 31 items retained.** The verdict is `GRADED` on seven
+predictions, and it is the first time anything in this project has been corroborated by two distinct
+tasks.
+
+**The pair, named.** The pass retired
+
+> *"Perform the requested changes in the order the user stated them, completing each before starting
+> the next."*
+
+into a survivor
+
+> *"Before acting on a multi-part request, resolve every referenced order and item to concrete
+> identifiers, then perform the requested changes in the order the user stated them."*
+
+Their readings are the calibration's whole argument, measured on a real pair for the first time:
+
+| | value | floor | margin |
+| --- | --- | --- | --- |
+| containment over the statement | **0.667** | 0.60 | +0.067 |
+| Jaccard over the statement | **0.348** | 0.70 | **−0.352** |
+| shared content terms in the condition | **3** | 3 | **0** |
+
+So the floor R58 could not reach is reached with 0.067 to spare, the measure R58 used misses by a
+third of a point, and the condition count is **exactly binding** — a fourth shared term would have
+been required under a count of 4, and the merge would not have happened. Two of the three calibrated
+numbers are exercised here, and one of them has no margin at all.
+
+**Defect A: the readback called it abandoned.** The attribution prediction — "Jaccard merges strictly
+fewer groups than containment over this store" — is computed by re-scoring the stored items. The store
+the artefact carries is the one the pass *left*: the pair is gone, so containment finds 0 groups and
+Jaccard finds 0, the prediction fails, and a failed prediction abandons the run. On R58 that reading
+was informative precisely because its pass merged nothing. Here it graded the shape of the artefact.
+It is now ungraded when the census reports a group, with the reason printed, and the refutation that
+depends on it — "the two measures agree, so the calibration is wrong" — is evaluated only on a store
+the pass did not touch.
+
+**Defect B: the store could not name the pair.** `StoreItemRecord` carried the retired item and the
+corroborated survivor with no pointer between them, so a readback could report *that* a group merged
+and had to infer *which*. It inferred here (one retired item, one corroborated survivor) and printed
+the pair above; every run after this one carries `statusReason` as written, and the inference survives
+only as a fallback for artefacts written before it — exact for one group, an over-estimate for more,
+so the "not one claim" refutation can only become harder to fire.
+
+**The arm, which is not the result and is reported anyway.** `pass^4` **63.16% against 66.67%**,
+delta **−3.51pp, 95% CI [−15.79, +8.77], p = 0.7744, 5 gained, 7 lost** — `UNRESOLVED`, with
+`l4-effect-resolved` failing on a 17.03pp minimum detectable difference. On the rate endpoint the same
+pair reads **−1.32pp [−5.97, +3.34]**: the two endpoints agree in sign here, which is worth recording
+because they did not on R58.
+
+**The number that governs all of it.** The reference arm — memory-free, same 57 tasks, same four
+trials, same code — read **63.16% in R58 and 66.67% in R59**. Nothing changed on that arm between the
+two dispatches: it does not touch the store, the learning population or the distiller. A **3.51pp
+swing from run-to-run noise on the control** is twice the largest treatment effect this lane has ever
+measured, and it is why every delta in this record is `UNRESOLVED` by construction rather than by
+modesty.
+
+### 34.79 The ceiling was one claim from the mean, which makes it the next treatment
+
+31 claims from 14 corrections is **2.21 per correction** against a cap of three. A cap one claim above
+the mean is a cap that binds on the corrections that reach it and is invisible in the average because
+most do not. Three arithmetic facts settle what to do next.
+
+**The published rate does not transfer at this population.** Their `sup3` core is 31 of 292
+guidelines, **10.6%**. At that rate 31 claims would hold **3.3** items at three distinct tasks; this
+store holds **0** at three and **1** at two. Two explanations, and they are separable: either this
+register's claims are more task-specific than a trajectory's guidelines, or the store is too small for
+its own recurrence. Yield moves the second without touching the first.
+
+**Pairs scale with the square of the store, triples with the cube.** One corroborated class among 30
+items is the observation. Growing 31 → ~45 claims multiplies pairs by 2.1 and triples by 3.0, which is
+exactly the question R60 registers: does the class that already holds two members receive a third.
+
+**The cap has never been measured and now can be.** R59 was dispatched before `yieldCensus` existed;
+nothing in any artefact says what the per-correction distribution looked like, only its mean. R60
+carries the census and moves the ceiling to six, and the two are ranked in its registration: if the
+median rises to three or more the cap was the constraint, and if it stays at two the episode was and
+the next lever is per-assertion episodes rather than a bigger number in a prompt.
