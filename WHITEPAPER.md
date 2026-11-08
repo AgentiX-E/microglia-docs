@@ -4337,3 +4337,41 @@ the same code, with nothing about it changed. Three and a half points of drift i
 a treatment effect that has never exceeded two. Every delta in this record is unresolved because the
 design cannot resolve it, and the honest description of the last several rounds is that they built a
 better store and then could not see it work.
+
+### 3.6.54 The rule for merging two lessons was the reason there was only ever one
+
+This round is about a small thing that turned out to be the whole thing.
+
+When two lessons look like the same lesson, the system merges them and counts two tasks of support.
+That count is the only evidence the project has that a rule was learned twice rather than once, and it
+is what every claim about recurrence is built on. After the last round the count was one. Raising the
+number of lessons a failure can produce — from three to six — did exactly what it should: the median
+failure taught three lessons instead of two, and the total rose by a fifth. The count of lessons
+learned twice did not move. Not by one.
+
+The reason was a rule nobody had measured. Before merging two lessons the system also required their
+*triggers* to share three words. The idea was sound — the same advice under two unrelated triggers is
+not one rule — but the test was never checked against what triggers actually look like. Measured over
+the six hundred and sixty-six pairs that store contained, the number of shared trigger words was
+**one** whether the lessons matched or not. It was not a filter. It was a coin.
+
+And it was a coin weighted against the store: the pair it refused was the most similar pair in the
+whole store — 0.88 on the statement measure, near-identical wording — refused because the two
+triggers shared one word, while the pair it accepted shared five and was only 0.64 similar. A rule
+that admits the weaker match and refuses the stronger one is not approximating anything.
+
+There was a second defect underneath it. Merging was transitive: if A resembled B and B resembled C,
+all three became one lesson, and the record then said three tasks had agreed when the two outer ones
+might share a single word. A chain is not an agreement, and the measure had no way to tell them apart.
+
+Both are fixed by removing the assumption rather than tuning it. Triggers are recorded and reported
+but no longer decide; merging now requires every member of a group to match every other member, so a
+group of three really is three things that resemble each other. And the threshold itself stopped
+being a number written into the code: every run now sweeps it, records what each setting would have
+done with the store it just built, and ships the table. The number is chosen from a curve instead of
+from one example.
+
+The measurement that mattered was taken before anything was dispatched, on the store the failed round
+had already produced: at the unchanged threshold, that store holds **one group of three** — three
+tasks, one lesson — and at the failed round's trigger floor it holds none. The corroboration was
+there the whole time. The rule for finding it was excluding it.

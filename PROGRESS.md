@@ -12101,3 +12101,64 @@ never claimed, and an arm whose pairing did not run is `NO_MEASUREMENT` rather t
 **Next, in order.** (1) read R60 back when it lands, with the median as the reading that separates a
 binding cap from an episode-limited one; (2) dispatch R57's `far` arm, then `near`, then
 `adversarial`, each paired against the reference, and read each with the verifier above.
+
+### 172.38 R60 read back, R61 dispatched: the floor was the constraint, and it was measured before the arm
+
+**State.** R60 (`42501736928` on `0238aea1`) is read: `ABANDONED`, three predictions held and two
+failed. R61 (`42524907557` on `f5654f37`) was dispatched at 21:22Z with `prereg=R61-floor` and
+`l4=true`, and both its BIRD and L4 jobs are running. The first dispatch of the round omitted
+`l4=true`, which skips the L4 job when `vars.TAU_ENV_READY` is false; it was cancelled within a minute
+and re-dispatched rather than left to produce a BIRD-only run.
+
+**What R60 said.**
+
+| reading | R59 | R60 | prediction |
+| --- | --- | --- | --- |
+| claims per correction | 2.21 | **3.08** | ≥ 3.0 ✓ |
+| median claims per correction | 2 | **3** | 3 ✓ |
+| items at support 2 | 1 of 30 | **1 of 36** | ≥ 2 ✗ |
+| items at support 3 | 0 of 30 | **0 of 36** | ≥ 1 ✗ |
+| retained | 30 of 31 | 36 of 37 | ≥ 50% ✓ |
+
+The ceiling was binding and the yield moved. Corroboration did not move by one item. Both of the
+registration's opening refutations cleared, and they pointed at the pass rather than the corpus.
+
+**The two defects, both provable without an arm.**
+
+| defect | measurement | fix |
+| --- | --- | --- |
+| the condition veto did not separate | over 666 pairs, shared trigger words have median **1** in both the matching and the unrelated band (75% / 82% share ≥ 1); containment 0.11 in both. It kept 1 of the 4 pairs above 0.60 and refused the best one at **0.88 containment / 0.70 Jaccard** | the condition is reported per group and applied only when a caller sets a floor; default 0; 3 stays selectable as the ablation |
+| single linkage reported chains as agreement | A~B and B~C became one group of three whose extremes shared one term in five | complete linkage: every member against every member, `refusedLinkage` counting the refusals, and `weakestPair ≥ threshold` as an assertable invariant |
+
+**The measurement that became the premise, taken before the registration.** The new sweep run over
+R60's own store: at the unchanged 0.60 the store forms **one group of three**, weakest pair 0.62,
+where the pass formed one group of two; at the veto's floor it forms none. Support is an interval —
+2..4, from members carrying 2, 1 and 1 — because a sampled store carries no evidence rows.
+
+**What was built.**
+
+| module | what it does |
+| --- | --- |
+| `core/distill/consolidate.ts` | `conditionMinShared` defaults to 0; complete linkage over a cached pair matrix; census gains `refusedLinkage`, `groupDetail`, `weakestPair`, `largestGroup`, `crossTaskGroups` |
+| `eval/consolidation-sweep.ts` | the floor swept over a grid, carried in the artefact as `consolidationSweep`, operating point taken from the pass itself |
+| `eval/store-sweep.ts` | the same grouping over a store as an artefact ships it, with support as an interval |
+| `eval/bin/store-sweep.ts` | the same question asked of any committed artefact, without a dispatch |
+| `eval/recurrence.ts` | the cross-check is now the maximum rather than "any item at two", which a store that arrived merged satisfied without the pass doing anything |
+| `prereg/R61-floor.md`, `eval/verifiers/r61_readback.py` | seven predictions, four refutations, 13 self-test cases, wired into `eval:verifiers` |
+
+**Tests.** consolidate 38 (three rewritten to state the measurement and the policy separately; three
+added for the chain, the one-task group and the survivor's position), consolidation-sweep 8,
+store-sweep 8, recurrence 12, instrument 35. Repository: **172 files, 3,560 tests,
+99.96 / 99.68 / 100 / 99.96**. `consolidate.ts`, `consolidation-sweep.ts`, `store-sweep.ts` and
+`recurrence.ts` are 100 on all four dimensions.
+
+**One test budget changed, with the reason.** The tau2-driver end-to-end case timed out at the suite's
+20s default under `--coverage` while taking 1.4s alone. It spawns a runner and drives a full
+evaluation loop, and 60s is the budget the other end-to-end cases in the package already use; the
+alternative — lowering parallelism — would hide the same fragility behind a slower suite.
+
+**Next, in order.** (1) read R61 with `r61_readback.py`, instrument first and delta second; (2) if the
+group of three lands, R57's `far` arm, then `near`, then `adversarial`, one per dispatch; (3) R55.1's
+threshold at `supportTasks >= 3` becomes decidable the moment an item reaches three; (4) the
+correction rate — 12 of 57 tasks produce a correction — is the next population lever if support stays
+at two.

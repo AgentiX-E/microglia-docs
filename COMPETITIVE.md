@@ -3235,3 +3235,32 @@ this density, and the lane's competitive claim stays where it is: **63.16% `pass
 held-out tasks with memory off, 64.91% with it on, both `UNRESOLVED` against a 15pp interval**, beneath
 **IBM `gpt-5.5` airline 82.0** (published SOTA), **SapientAI-Agent-Opus-5 72.0**, and beside **IBM
 `gpt-4.1` retail 67.5 lossless / 60.0 `sup3`**.
+
+## The recurrence rate, after the floor was fixed (R60 read, R61 dispatched)
+
+| system | items at three distinct witnessing sources | basis | comparable? |
+| --- | --- | --- | --- |
+| microglia R59 | **0 of 30** (one item at two) | 31 claims, 57 tasks, ceil 3 | our lane |
+| microglia R60 | **0 of 36** (one item at two) | 37 claims, 57 tasks, ceil 6 | our lane — the ceiling moved and this did not |
+| microglia R61 | **pending** — the store's own duplicate family is a group of three with support in [2,4] | 37 claims, no condition veto, complete linkage | same store, different pass |
+| IBM ALTK-Evolve | **31 of 292 = 10.6%** | ~5 guidelines per learning task | different unit of claim, not a head-to-head |
+| SapientAI | 72.0 | published retail row | `pass^4` style average |
+| IBM (gpt-5.5) | 82.0 | airline domain SOTA | different domain |
+
+**The comparison this round changed.** R60 moved the ceiling and the recurrence rate did not move at
+all, which is the reading that says the yield was never the binding term. The binding term was the
+pass, and the pass had a filter that did not separate: over the store's 666 pairs, the number of
+shared trigger words was median **1** whether the two lessons matched or not.
+
+**Where microglia stands, stated precisely.** On the published 10.6% rate, a 36-item store should hold
+about four items at three witnesses; it holds none, and one at two. That is not a claim that the
+published rate is wrong — it is a different unit, extracted from trajectories rather than from
+per-task rubrics. It is a claim that this lane's *own* store already contained a three-witness lesson
+and the pass could not see it, which is a defect rather than a research gap, and it is the one R61
+grades.
+
+**What would move this lane's ranking, in order of size.** First, the correction rate: only 12 of 57
+tasks produce a correction at all, so there are 12 failure episodes to mine and every recurrence
+argument is bounded by that. Second, the claim unit: three to four claims per correction against the
+published five per learning task. Third, the end-to-end average, which stays `UNRESOLVED` at 57 pairs
+and needs ~400 for a three-point effect on the rate endpoint.

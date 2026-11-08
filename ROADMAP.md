@@ -5216,3 +5216,33 @@ recorded per request — `far` shares nothing with 100% of requests, `near` reac
 already measured. `far` runs first because a control that shows no effect is the only arm whose
 result makes the other two interpretable; `near` and `adversarial` follow on the same store and the
 same seed, and the readback refuses to grade a delta from an arm whose band did not land.
+
+## R61 — the floor was the constraint, measured before the arm (2026-11-09)
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | R60 read: ceiling binding, yield moved, corroboration did not | **done** — median 2→3, claims/correction 2.21→3.08, support 3 still 0 |
+| P0 | the condition veto, proven non-separating over 666 pairs | `conditionMinShared` defaults to 0; the value 3 stays as the ablation |
+| P0 | single linkage, replaced by complete linkage | `refusedLinkage` counts the refusals; `weakestPair ≥ threshold` is an invariant |
+| P0 | the floor as a swept instrument, carried in the artefact | `consolidationSweep` (`carried`), operating point = the pass's own census |
+| P0 | the same sweep over a shipped sample, so a readback can re-ask | `eval/store-sweep.ts`, support as an interval, agreement with the driver held by a test |
+| P0 | the premise, measured before registration | R60's store holds **one group of three** at 0.60; none at the veto's floor |
+| P0 | `prereg/R61-floor.md` + `eval/verifiers/r61_readback.py` | dispatched `42524907557` on `f5654f37`, BIRD and L4 both running |
+| P1 | R57 `far`, then `near`, then `adversarial`, one arm per dispatch | after R61 clears the lane |
+| P1 | R55.1 — a recurrence threshold at `supportTasks >= 3` | decidable the moment an item reaches 3 |
+| P2 | the correction rate: 12 of 57 tasks correct anything | the population lever if support stays at two |
+| P2 | R61's own refutation 4 — a three-task rule must also serve better | needs R61's paired delta |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+**Why the floor stops being a constant.** R59 chose 0.60/3 from a single merged pair, and R60 measured
+what that cost. A threshold picked from one example is a threshold nobody can price; a threshold
+swept inside every run and shipped in the artefact is one that can be re-priced from any commit
+without spending an arm. The grid costs 36 passes over a store of tens of items.
+
+**What R61 has to show, in the order the readback grades it.** The sweep must describe the same store
+its census does; every group must clear its own floor; a group of three must exist at 0.60; the
+maximum support must reach three and one item must carry it; the group must have bought a task rather
+than folded one task's claims; the store must keep half its items; and the veto must never merge more
+than the setting that replaced it. The paired delta is printed and not claimed — at 57 pairs it has
+never been resolvable, and a reading that cannot resolve is not evidence for or against.

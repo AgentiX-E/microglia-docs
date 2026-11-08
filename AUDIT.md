@@ -5947,3 +5947,71 @@ items fit and so change what the armed pack *drops*. The price is stated in the 
 pack is one line longer, and on the requests whose pack was empty until the plant arrived
 (`createdBlock`), the arm carries the price of a block as well as of a rule — 1.14pp, measured on the
 public lane. A readback that wants the item's price subtracts that population.
+
+### 34.81 A veto that did not separate, and a chain reported as agreement
+
+R60 is read (`42501736928` on `0238aea1`). It did exactly what it was built to do and then failed in
+a way worth more than a success.
+
+| reading | R59 | R60 | registered prediction |
+| --- | --- | --- | --- |
+| ceiling | 3 (inherited) | **6 (chosen)** | 6 |
+| claims per correction | 2.21 | **3.08** | ≥ 3.0 ✓ |
+| median claims per correction | 2 | **3** | 3 ✓ |
+| max claims | 3 | **4** | — |
+| items at `supportTasks ≥ 2` | 1 of 30 | **1 of 36** | ≥ 2 ✗ |
+| items at `supportTasks ≥ 3` | 0 of 30 | **0 of 36** | ≥ 1 ✗ |
+| store retained | 30 of 31 | 36 of 37 (97.3%) | ≥ 50% ✓ |
+
+**The ceiling was binding, and raising it moved the yield.** Median 2 → 3, mean 2.21 → 3.08. R60's
+first refutation — *the yield does not move, the cap was never the constraint* — is cleared.
+
+**And corroboration did not move by one item.** 37 claims at a cap of six produced the same single
+item at support 2 that 31 claims at a cap of three produced, and still nothing at three tasks. The
+second refutation — *the yield moves and nothing corroborates, the corpus is the constraint* — is
+cleared as well. Both readings in, and they point at the pass that is supposed to recognise two tasks
+saying one thing.
+
+**The veto had no discriminating power.** The pass required three shared condition terms before it
+would merge two items, on the argument that a count separates a paraphrased trigger from an unrelated
+one where a ratio does not. Measured over the 37 items and their **666 pairs**:
+
+| band | condition terms shared (p50) | share sharing ≥ 1 | condition containment (p50) |
+| --- | --- | --- | --- |
+| statements match (≥ 0.60) | **1** | 75% | **0.11** |
+| statements unrelated (< 0.40) | **1** | 82% | **0.11** |
+
+Neither measure separates. Because the veto runs *after* the statement gate it never sees an
+unrelated pair, so its only measurable effect was to keep **1 of the 4 pairs above 0.60** — and the
+pair it refused was the store's best: **containment 0.88, Jaccard 0.70**, conditions sharing one
+term, against a pair at 0.64 whose conditions shared five. A gate that is non-monotonic in the one
+measure that does separate (0.88 / 0.64 / 0.62 / 0.62, then a clean gap to 0.50) is not testing what
+it claims.
+
+**The grouping reported chains as agreement.** Single linkage merged A with B and B with C into one
+group of three whose extreme members could share one term in five, and the census read that as three
+tasks agreeing.
+
+Both are fixed in code, and both are now measured inside every run rather than argued: the condition
+is recorded per group and applied only when a caller asks for a floor (default 0), the grouping is
+complete linkage, and `weakestPair >= threshold` is an invariant a readback asserts.
+
+**The measurement that became the registration's premise, taken before it was written.** The sweep
+was run over R60's own 36 live items:
+
+| threshold | groups | largest | weakest pair | support |
+| --- | --- | --- | --- | --- |
+| 0.40 | 6 | 3 | 0.41 | 1..3, 2..3, four 1..2 |
+| 0.45 | 3 | 3 | 0.62 | 2..4, 1..2, 1..2 |
+| **0.50 – 0.60** | **1** | **3** | **0.62** | **2..4** |
+| 0.65 – 0.80 | 1 | 2 | 0.88 | 2..3 |
+
+At the unchanged statement floor the store holds **one group of three** where the pass formed one
+group of two; at the veto's floor it holds none. The support is an interval because a sampled store
+carries no evidence rows — `supportCeil` sums the members' counts, `supportFloor` is the largest one.
+
+**One diagnostic caught by another.** The first version of this measurement was a throwaway script
+that compared statements only, and at 0.40 it reported **seven** groups where the module reports
+**six**: it merged a `procedure` with a `negative` because their text matched. The module that ships
+checks kind and scope; the measurement that did not was the looser one. Which is the third time this
+round that a defect was found by measuring, and the first time it was found in the measurement.

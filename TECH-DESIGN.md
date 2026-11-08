@@ -8488,3 +8488,50 @@ The census travels in the artefact as `plant` (`carried` in the projection): arm
 inBand, createdBlock, the sorted shared-term and coverage distributions, per-rule counts, and the
 committed file's digest. The digest is the property that makes the rules prior to the run, which is
 why the driver reads one committed path and no environment variable can point it elsewhere.
+
+### 17.125 The floor belongs in the artefact as a grid, not in the code as a constant
+
+R60 showed a floor that was chosen once, from a single merged pair, and never asked what it cost. The
+answer, once asked, was that it cost the store its best duplicate. So the floor stops being a
+constant and becomes an instrument:
+
+```
+consolidationSweep: {
+  points:    [ { threshold, conditionMinShared, groups, merged, maxSupport,
+                 support, crossTaskGroups, largestGroup, weakestPair }, ... ]
+  operating: the point the pass actually ran at
+  groups:    every group the operating pass formed, as it reported them
+}
+```
+
+Three decisions make it an instrument rather than a table of numbers.
+
+**The operating point is the pass's own result, never a recomputation of it.** The pass runs first,
+its census is read, and the sweep starts from that report. A sweep that re-ran the same setting could
+disagree with the pass the store was written from, and then the artefact would carry two answers to
+one question with no way to tell which the store reflects. A readback asserts the agreement as its
+first prediction.
+
+**The condition floor is swept, not removed.** The operating value is 0 — no veto — and 1, 2 and 3
+stay in the grid so the module that was retired is still an ablation rather than a memory. A run that
+could not reproduce the setting it replaced could not show that the replacement was better.
+
+**Support is reported as a distribution and, over a sample, as an interval.** `supportAfter` is the
+distribution of items by distinct tasks, because a single maximum can hide a store collapsing into
+two large groups. The sample-level sweep in `store-sweep.ts` reports `supportFloor` and `supportCeil`
+per group instead of a number: without evidence rows a group of members at 2, 1 and 1 can be 2, 3 or
+4 tasks and no arithmetic recovers which. The interval is enough to answer the only question the
+sweep is asked — whether three tasks can be reached at all.
+
+**Complete linkage, and the invariant it buys.** A candidate pair merges only if every member of one
+group matches every member of the other. The cost is stated rather than hidden: a genuine chain of
+paraphrases stays two groups instead of becoming one, and `refusedLinkage` counts how often that
+happened. What it buys is that `weakestPair >= threshold` holds for every group by construction, so a
+readback can assert homogeneity instead of hoping for it — and a group of three whose extreme members
+share one term in five, which single linkage reported as three tasks agreeing, can no longer exist.
+
+**Two implementations, held to agreement.** `consolidation-sweep.ts` runs over full `KnowledgeItem`s
+inside the driver; `store-sweep.ts` runs over the projection an artefact ships, months later, without
+a dispatch. A test asserts they agree on group count, largest group and weakest pair at every floor,
+because a diagnostic that grouped a store differently from the pass that wrote it would let a
+readback discover a defect that is an artefact of the diagnostic.
