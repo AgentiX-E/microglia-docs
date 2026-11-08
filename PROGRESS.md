@@ -11553,3 +11553,40 @@ And the stop only fires on a chain that is *broken*, not on one that is short: R
 items is a reading, an empty one is not.
 
 Gates: 3,323 tests in 160 files, coverage 99.95 / 99.62 / 100 / 99.95.
+
+### 172.24 — R56 read: the form loses, and three losses that left no trace
+
+R56 ran and is `NO_MEASUREMENT`. Not because the dispatch failed — it completed, 57 tasks at four
+trials on both arms, 228 episodes, 1,869 packs served — but because the artefact could not say which
+form it ran. `armRecordFromDriver` carried `funnel` and dropped `storeItems`, `distillForm` and
+`injectionNote`, so the two predictions R56 was dispatched to grade (`tool-name share`, `no tool name
+in a pack`) had no text to grade, and the file looked complete. This is R56's own fourth refutation
+firing on R56: the registration wrote *"if the artefact cannot say which form ran … the run is
+`NO_MEASUREMENT`"* before the dispatch.
+
+What the surviving readings say is unambiguous, and it is a loss:
+
+| | R54 (`lesson`) | R56 (`procedure`) |
+| --- | --- | --- |
+| corrections → candidates | 10 → 20 | 8 → 8 |
+| **candidates per correction** | **2.00** | **1.00** |
+| store items | 20 | 8 |
+| items served per request | 1.417 of 20 = 7.1% | 1.597 of 8 = 20.0% |
+| coverage p50 | 8.33% | 6.25% |
+| paired `pass^4` | +5.26pp, p = 0.63 | **−8.77pp**, p = 0.36, 1,869 packs |
+
+`procedure` halved the yield — one candidate per correction where `lesson` produced two — and the
+store fell from twenty items to eight. The coverage drop is not pool depletion: a pack serving a
+fifth of its store overlapped the query *less* than one serving a fourteenth of a larger store, so
+the items are individually less term-overlapping with the question. The HARM branch needs no p-value
+and R45 reverts; the default goes back to `lesson`, and `TAU_DISTILL_FORM` replaces the constant so a
+later registration can ask again without editing the lane.
+
+Three losses in this iteration share one shape — **each left no trace**. The projection that omitted
+three keys, the readback predicated on `artefact["verdict"]` (a field no arm writes, so the R45
+refutation could never fire on real evidence and R54's inverse prediction passed on `None`), and
+`r56_readback.py` returning at the missing form before writing down a single surviving reading. All
+three produce a file that looks like a measurement.
+
+Gates: 3,327 tests in 160 files, coverage 99.95 / 99.62 / 100 / 99.95; 29 r56 self-test cases, 20
+r54, `_pair.py` shared by both.

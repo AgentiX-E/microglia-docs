@@ -4828,10 +4828,14 @@ making it measurable, not features it needed.
 | P0 | `storeItems` carries `supportTasks` and `evidence`, counted through `countDistinctTasks`, the same grouping the score uses | done, R55.0's measurement rides free on R56 |
 | P0 | `V0-instrument-ready`, the fortieth gate: five stages, two reconciliations, blocking, and *absent* on every artefact that predates it (AUDIT 34.59) | done |
 | P0 | `form: 'procedure'` plus a host-side ban on candidates naming the split's tool inventory, with the form, the inventory and the refusal count in the artefact | done, R56's single variable |
-| P0 | `eval/verifiers/r56_readback.py` — four states, twenty-one self-test cases, the share-drop declined when no baseline supplies the inventory R54 never recorded | done, wired into `eval:verifiers` and CI |
+| P0 | `eval/verifiers/r56_readback.py` — four states, twenty-nine self-test cases, the share-drop declined when no baseline supplies the inventory R54 never recorded | done, wired into `eval:verifiers` and CI |
+| P0 | `armRecordFromDriver` carries `storeItems`, `distillForm` and `injectionNote`; the three fields R56 was dispatched to read were being dropped by the projection (AUDIT 34.62) | done, test written red first |
+| P0 | `resolveDistillForm` replaces the `procedure` constant: R56 measured −8.77pp and 8 items, so R45's revert puts the default back to `lesson` | done |
+| P0 | `_pair.py` — the verdict and the paired delta live in `poc-l4-pair.json`, not in an arm artefact; both readbacks read a field no arm writes and their revert checks could not fire (AUDIT 34.64) | done, R54 re-read with its state unchanged |
+| P0 | `readings()` before `grade()`: a `NO_MEASUREMENT` still carries census, coverage, funnel, yield and verdict, so an ungraded run is not an erased one (AUDIT 34.64) | done, five cases name the readings that must survive |
 | P0 | `gate-matrix.ts` — `docs/GATE-COVERAGE-MATRIX.md` rendered from the two tables and the last published BIRD artefact, throwing on a gate in neither table (AUDIT 34.60) | done |
-| P1 | R56 readback against its four predictions: coverage ≥ 12%, tool-name share down ≥ 20pp, ≥ 12 items admitted, no tool name in any pack | **running** |
-| P1 | R55.0 — the recurrence distribution, read from R56's artefact at no extra cost: how many items reach `supportTasks >= 3`, and how many `>= 2` | blocked on R56 by the one-lane rule |
+| P1 | R56 readback against its four predictions: coverage ≥ 12%, tool-name share down ≥ 20pp, ≥ 12 items admitted, no tool name in any pack | **read: `NO_MEASUREMENT`** — two predictions lost to the projection defect, two failed, HARM at −8.77pp, revert fires (AUDIT 34.62, 34.63) |
+| P1 | R55.0 — the recurrence distribution, read from an artefact that carries `supportTasks`: how many items reach `supportTasks >= 3`, and how many `>= 2` | **dispatched** as run `42461427066` on `048b4f92`; R56's artefact could not carry it |
 | P1 | R55.1 — admission at `supportTasks >= 3`, same store construction, same recall, same note | blocked on R55.0 |
 | P2 | R53 — the pack's note as the only variable (`none` / `standard` / `hardened`), on whichever store R55 leaves | registered, dispatchable |
 | P2 | U6b (`TAU_WRITE_ADMISSION=neighbours`), U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
@@ -4857,3 +4861,68 @@ Ranking unchanged. IBM `gpt-5.5` airline 82.0 is the published SOTA, IBM `gpt-4.
 that domain, and microglia is fifth of six named entries. No item above moves `pass^4`: two are
 instruments, one is a treatment whose verdict this sample cannot resolve, and one is a readback that
 reports and does not claim.
+
+### R56 read: the form is reverted, and the recurrence column is dispatched (2026-11-08)
+
+R56 is `NO_MEASUREMENT` on its own fourth refutation — the artefact could not say which form ran,
+because the projection dropped the three fields the dispatch existed to read (AUDIT 34.62). What
+survived decided the treatment anyway, and it decided against it:
+
+| Reading | R54 (`lesson`) | R56 (`procedure`) |
+| --- | --- | --- |
+| candidates per correction | 2.00 | **1.00** |
+| store items | 20 | 8 |
+| items served per request | 1.417 of 20 (7.1%) | 1.597 of 8 (**20.0%**) |
+| coverage p50 | 8.33% | 6.25% |
+| paired `pass^4` | +5.26pp, p = 0.63 | **−8.77pp**, p = 0.36, 1,869 packs |
+
+R45 reverts: `procedure` is off, `lesson` is the default, and `TAU_DISTILL_FORM` is the switch a
+later registration would use. The axis *"is the trigger decided by the form the distiller is asked
+for"* is closed for `procedure` as registered — the more topical instruction halved the yield and
+made each item less term-overlapping with the question, which is the opposite of what it was for.
+
+**The order now.** R55.0 is the only dispatch open, and it is the one whose subject the last three
+iterations kept deferring: not the prompt, not the retriever, not the admission rule — the *unit*.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | R55.0 readback — the `supportTasks` distribution and the register gap. Prediction, written before the dispatch: no item reaches support 2, because every item derives from one correction and every correction from a different task | **running**, run `42461427066` |
+| P1 | R55.1 or its replacement. If R55.0 reads as predicted, admission at `supportTasks >= 3` is not runnable here and the next registration is about the object distilled — one task trace rather than one correction, which is where IBM's 5.1 guidelines per learning task come from | conditional on R55.0 |
+| P1 | R56's two lost predictions re-read on R55.0's artefact: the tool-name share of the `lesson` store, and whether a tool name reaches a pack. Both are free — the artefact now carries the fields | not a new dispatch |
+| P2 | R53 — the pack's note as the only variable (`none` / `standard` / `hardened`), on R55.0's store. `injectionNote` now reaches the artefact, so the note level is finally recordable | registered, dispatchable after R55.0 |
+| P2 | U6b (`TAU_WRITE_ADMISSION=neighbours`), U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
+| P2 | R57 — a controlled distractor at a measured coverage band, the negative-effect question as an experiment rather than an attribution | registered, after R55 |
+| P2 | Store-level poisoning, four of MemForm's five routes | registered |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+Deposits this iteration made, each of which is a reading that would otherwise have been lost:
+
+- **`readings()` before `grade()`** in both τ² readbacks. A `NO_MEASUREMENT` now carries the census,
+  the coverage quantiles, the funnel, the yield and the paired verdict. R56's record would have been
+  four lines of `n/a` without it.
+- **The yield column.** Candidates per correction, read from `funnel` or from `learning`, with the
+  baseline's ratio beside it. It is the reading that located R56's loss, and it cost one function.
+- **The pair file as the verdict's home.** R54's and R56's revert checks had never been able to fire
+  on real evidence, and R54's inverse prediction had been passing on `None`.
+
+Two debts carried forward unchanged, one repaid, one added:
+
+- **The verifier's terminal state is still too coarse** (scoped refutation by `subject`), and R56
+  makes it sharper: the run is `NO_MEASUREMENT` for a recording defect while its number is a HARM.
+  The report says both, in that order, and a state cannot.
+- **BIRD's absent gates still have no written reasons**; the arm inventory is still the prerequisite.
+- ~~**The projection lost fields silently.**~~ Repaid by named types and a red-first test. The general
+  form — a hand-written mapping between two shapes — is unchanged and is now a review target.
+- **A registration cannot hold "same corrections" across dispatches.** R56's learning population was
+  8 corrections against R54's 10, and the model decides that at run time. Prediction 3 (≥ 12 items)
+  was therefore graded against a baseline whose input size differed; the guard still fired, but a
+  registration that wants a store-size comparison must state the correction count it expects or make
+  the comparison per correction.
+
+Ranking unchanged, and now for a reason worth writing down. IBM `gpt-5.5` airline 82.0 is the
+published SOTA, IBM `gpt-4.1` retail 67.5 leads that domain, and microglia is fifth of six named
+entries. At `sup3` density — 0.54 guidelines per learning task against our 0.63 — IBM reads +2.5pp and
+we read an unresolved +5.26pp, so density is not the difference; and the mechanism that produces
+`sup3` cannot be transplanted onto a store built one correction at a time. That is the next thing to
+test, and R55.0 is the test.

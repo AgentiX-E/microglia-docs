@@ -5090,3 +5090,121 @@ correlates requests to episodes by time and order (unreliable under four-way con
 the first without reading upstream's constructor would be a guess, and a wrong guess would produce
 observations labelled with the *previous* task — a defect that reads as a finding. Recorded as debt
 with the two candidate paths named, rather than implemented mid-flight.
+
+### 34.62 The projection dropped the three fields the dispatch was sent to read
+
+R56 registered one variable and four predictions, and two of the four are about text: the share of
+admitted conditions naming a tool, and whether any tool name reaches a rendered pack. The driver
+wrote both subjects — `storeItems` with each item's condition, `distillForm` with the form and the
+tool inventory, `injectionNote` with the sentence every pack opened with — and
+`armRecordFromDriver`, the function that projects the driver's raw record into the arm record,
+carried none of them.
+
+The artefact came back `distillForm: null`, `storeItems` absent, `injectionNote` absent, and looked
+complete. That is the property that makes this defect worse than a crash: nothing in the file said a
+field was missing, and the two predictions that could not be graded were the two the registration was
+written for. `funnel` was added by the same iteration and *was* carried, which is how the loss
+survived review — the diff that introduced the projection showed a field being added.
+
+The repair is three `...(x === undefined ? {} : { x })` entries and a test that fails against the old
+function, written before the fix. The narrower lesson is that a projection with a hand-written field
+list loses silently whenever the source grows. The wider one is that two shapes of the same record
+existed as inline object literals in `Tau2Raw` and as a second inline literal in the artefact writer,
+so neither the reader nor the writer could be checked against the other; `DistillFormRecord` and
+`InjectionNoteRecord` are named types now, and the projection is exhaustive over them.
+
+The R56 artefact in the record cannot be repaired by this. Its fields were never written, and the run
+is `NO_MEASUREMENT` on the two text predictions — R56's own fourth refutation, which it wrote before
+the dispatch: *"If the artefact cannot say which form ran, two runs of one form would read as one
+experiment of two, and the run is `NO_MEASUREMENT`."* The registration anticipated its own instrument
+failure and the failure fired.
+
+### 34.63 R56 read: the form halved the yield, and the guard that fired was the store
+
+What survives the missing fields is enough to locate the loss, and it is not where the registration
+expected.
+
+| Reading | R54 (`lesson`) | R56 (`procedure`) | The bar |
+| --- | --- | --- | --- |
+| learning rows | 32 | 32 | — |
+| corrections the driver could distil | 10 | 8 | — |
+| candidates distilled | 20 | 8 | — |
+| **candidates per correction** | **2.00** | **1.00** | — |
+| store items | 20 | **8** | ≥ 12 |
+| requests served a pack | 1,951 / 1,951 | 1,869 / 1,869 | ≥ 75% |
+| items per request | 1.417 | 1.597 | — |
+| median rule/query coverage | 8.33% | **6.25%** | **12%** |
+| delivered-pair median | 8.33% | 2.17% (1,309 of 2,984 at zero) | — |
+| paired `pass^4` | +5.26pp [−8.77, +19.30], p = 0.63 | **−8.77pp** [−22.81, +5.26], p = 0.36 | resolution 20.27pp |
+
+Two terms moved together and only one of them is the treatment's fault. The correction count fell
+from ten to eight across two dispatches of the same 32-row learning fold: corrections are produced by
+the model at run time, so "same corrections" — which R56's own text lists among the things it holds —
+cannot be held across dispatches and was not held here. That is a defect in the registration's design
+and it is recorded as one. But it accounts for a fifth of the loss. The other factor is the yield:
+`procedure` produced **one** candidate per correction where `lesson` produced **two**, and that is
+the form's own behaviour, measured on the same instrument.
+
+The coverage reading is the one that decides whether the trigger moved, and it fell. The obvious
+confound — a smaller store has less to offer — runs the other way. With eight items and 1.597 served
+per request, a pack drew **20.0%** of the store; with twenty items and 1.417 served, it drew **7.1%**.
+A pack that serves a fifth of its store should overlap a query *more* than one that serves a
+fourteenth of a larger one, and it overlapped less. So the drop from 8.33% to 6.25% cannot be read as
+pool depletion; it points at the items themselves being less term-overlapping with the question. The
+registration's own refutation — *"if coverage rises but `pass^4` moves down by more than the
+resolution, the more topical trigger is buying relevance at the cost of the answer"* — did not fire,
+because coverage did not rise.
+
+Three of R56's four predictions are therefore decided, and none of them in the registration's favour:
+
+| Prediction | Bar | Measured | State |
+| --- | --- | --- | --- |
+| median coverage | ≥ 12% | 6.25% | **failed**, and moved the wrong way |
+| ≥ 12 items admitted | 12 | 8 | **failed**: the guard that was meant to catch a halved store caught it |
+| tool-name share falls ≥ 20pp | needs `storeItems` | lost to 34.62 | `NO_MEASUREMENT` |
+| no tool name in any pack | needs `storeItems` | lost to 34.62 | `NO_MEASUREMENT` |
+| `pass^4` reported | — | −8.77pp, p = 0.36, 1,869 packs | `HARM`; **R45 reverts** |
+
+The revert is mechanical and needs no p-value, which is why the lane's HARM branch does not ask for
+one: *"l4-paired −8.77pp is below the −5pp bar with 1869 served packs; significance is not required on
+this branch; revert on the reading."* The default form goes back to `lesson`, and `TAU_DISTILL_FORM`
+replaces the constant so a later registration can ask about the form again without editing the lane.
+
+What R56 does **not** establish: that `procedure` is worse than `lesson` for this lane, in general.
+It establishes that this dispatch of it — at eight corrections, one candidate each, on this fold —
+was worse by more than the lane's harm bar, and that its store was a fifth the size of the arm it
+replaced. The axis is closed for `procedure` as registered. It is not closed for "a prompt that names
+the situation rather than the tool", which is what the next registration would have to say
+differently.
+
+### 34.64 The readback read its verdict from a field no arm writes
+
+Grading R56 exposed a second, older defect, in the tool rather than in the lane.
+
+`r54_readback.py` and `r56_readback.py` both read `artefact["verdict"]`, and both carry a refutation
+phrased *"the memory costs accuracy and the revert rule fires"*. No arm artefact has that field. An
+arm is written by one arm's driver, which cannot see the other arm; the verdict and the paired delta
+are written into `poc-l4-pair.json` by the pairing step. The field exists only on the synthetic
+artefacts the verifiers' own self-tests build.
+
+So the one refutation that decides whether R45 reverts a treatment could never fire on real evidence,
+and its sibling prediction — R54's *"no revert branch fires: the memory does not cost accuracy"* —
+evaluated `state != "HARM"` against `state = None` and passed. **A check that passes because its input
+is missing is worse than no check, because the report says `PASS`.**
+
+Repaired by moving both readers to `eval/verifiers/_pair.py`: the pair file is the source, `--pair`
+defaults to the first `poc-l4-pair.json` found under `--dir`, and an absent verdict now reads `n/a`
+rather than `PASS`. R54 re-read with its pair file keeps its state — `ABANDONED`, on its own
+instrument refutation — and its revert prediction now passes on `verdict UNRESOLVED` instead of on
+`verdict None`.
+
+The same iteration found the third defect, in `r56_readback.py`'s own control flow: it returned
+`NO_MEASUREMENT` at the missing form *before writing down a single reading that had survived*, so the
+record of R56 held no HARM, no coverage, no funnel and no yield. A run whose one defect was a dropped
+field was then dropped from the record by the tool built to keep it. `readings()` now takes every
+reading the artefact still supports before any state is decided, and five self-test cases name the
+readings that must survive an ungraded state — the same five fail against the old control flow.
+
+The pattern across 34.62, 34.63 and 34.64 is one pattern: **each of the three was a loss that left no
+trace.** A projection that omits a key, a check whose input is absent, a verifier that returns before
+it reads. None of them raises, and all three produce a file that looks like a measurement.

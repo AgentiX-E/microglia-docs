@@ -4048,3 +4048,47 @@ own literal copy of the previous count. The answer is not more discipline: the c
 now *generated* from the tables that the audit reads, and the generator refuses to run if a gate the
 protocol publishes is missing from either table. A document that cannot disagree with its source is
 worth more than a document that is carefully proofread.
+
+#### 3.6.60 The file that looks like a measurement
+
+An experiment came back last week with a verdict of harm, a coverage reading, a funnel and a pair of
+arms that had each run to completion — and it was unreadable. Two of its four predictions could not
+be graded, because the record had lost the store's text on its way from the driver to the file. The
+run cost two hours and a few thousand model calls, and the part that decided whether the treatment
+worked was simply absent.
+
+The file did not say so. It had every key it was supposed to have. The one field that was missing
+had been dropped by a mapping function that listed the fields it copied by name, and the iteration
+that added the field had added it to both ends of the mapping and not to the mapping. The diff
+looked like an addition. The artefact looked complete.
+
+This is the failure mode worth naming, because it is not the one teams guard against. A crash is
+loud and gets fixed. A wrong number is eventually contradicted. But a **loss that leaves no trace**
+is invisible from both directions: the producer wrote the field, the consumer never looked for it,
+and nothing in between raises. We found three of them in one iteration — the projection, a check
+whose input the artefact never carried, and a verifier that returned before it read — and they share
+a signature. Each produced a file that reads as a measurement.
+
+The three repairs look different and are the same repair.
+
+The projection became a typed hand-off: the two ends of the mapping share named types now, so a field
+added at one end is a type error at the other. The check reads the file that actually holds its
+input, and an absent input reads `not measured` rather than `passed` — because a check that passes
+when its subject is missing is worse than no check, since the report says *pass*. The verifier takes
+every reading before it decides a state, so a run that cannot be graded is still a run that was
+counted.
+
+What is common to all three is an ordering. **Read first, judge second, and never let a judgement
+suppress a reading.** It is a small rule and it is not obvious, because the natural shape of a
+verifier is a chain of early exits, each one a decision that makes the rest unnecessary. The exits
+are what make it fast to read and what make it lossy to keep.
+
+There is a second, quieter lesson in the same experiment, and it is about honesty rather than
+engineering. The registration had predicted its own failure. One of its four refutations said, in
+advance, *if the artefact cannot say which form ran, the run measures nothing* — because a reader
+could otherwise mistake two runs of one form for an experiment of two. That is exactly what
+happened, and the sentence written before the dispatch is what let us say so without arguing about
+it afterwards.
+
+A pre-registration that predicts its own instrument's failure is not pessimism. It is the only way
+to keep an instrument failure from being read, later, as a result.

@@ -8054,3 +8054,56 @@ One more change fell out of the wiring: the store is read once. The census, the 
 domain ledger all describe the same listing, and three reads in a row would be three chances to
 describe three slightly different stores — the defect R48 found one layer down when two readings
 came from two dispatches.
+
+### 17.116 Three hand-offs that lose a field without saying so
+
+R56 was dispatched with one variable and four predictions, and it came back unreadable on two of
+them. The cause was not in the experiment; it was in the three places a record is handed from one
+shape to another, each of which dropped something and each of which produced a file that looked
+complete.
+
+**The projection.** `Tau2Raw` is what the driver observed; `Tau2ArmRecord` is what the artefact
+carries; `armRecordFromDriver` maps one to the other with a hand-written field list. R56's iteration
+added `funnel` to both ends and to the mapping. It also added `storeItems`, `distillForm` and
+`injectionNote` to both ends — and not to the mapping. The artefact came back `distillForm: null`,
+and nobody saw it, because the diff that introduced the mapping showed a field being added.
+
+The structural repair is that the two shapes share named types (`StoreItemSample`,
+`DistillFormRecord`, `InjectionNoteRecord`) instead of inline literals, so a change at one end is a
+type error at the other. The mapping itself stays explicit — a spread would carry fields nobody
+reviewed — and it is now covered by a test that fails against the old version. The rule this
+iteration writes down: **a projection is a place where a field is lost silently, so it is a place
+that needs a test that names the field**, not a place that needs care.
+
+**The verdict.** Both readback verifiers graded a refutation whose input is `artefact["verdict"]`.
+No arm artefact has that field: an arm is written by one arm's driver and cannot see the other arm.
+The verdict and the paired delta are written by the pairing step into `poc-l4-pair.json`. So the
+one check that decides whether R45 reverts could not fire on real evidence, and R54's inverse
+prediction — *no revert branch fires* — compared `None != "HARM"` and passed. `_pair.py` now owns
+both readings, `--pair` defaults to the pair file found beside the arms, and an absent verdict reads
+`n/a` rather than `PASS`.
+
+**The early return.** `r56_readback.py` decided the state before it took the readings: the missing
+form returned `NO_MEASUREMENT` and the report went out empty. A reader of that report could not tell
+a run that produced nothing from a run whose record lost one field — and R56 was the second. The
+control flow is inverted: `readings()` runs first and returns the values the grading needs, so the
+census, the coverage quantiles, the funnel, the yield and the paired verdict appear under every
+terminal state.
+
+The yield is the reading this iteration added, and it is the one that located R56's loss:
+
+```
+R54  edited 10 -> distilled 20   2.00 candidates per correction
+R56  edited  8 -> distilled  8   1.00 candidates per correction
+```
+
+Both numbers are the store's own record, taken before the projection. A verifier that had returned
+at the first missing field would have thrown them away, which is why the inversion is not
+cosmetics: the three predictions R56 could still be graded on are exactly the ones the old control
+flow dropped.
+
+**What the three have in common.** A projection that omits a key, a check whose input is absent, and
+a verifier that returns before it reads are one failure mode: the loss leaves no trace. None raises,
+none prints a warning, and all three produce a file that reads as a measurement. The countermeasure
+is not more care. It is a reading that is taken unconditionally, a state that is decided last, and a
+test whose fixture is the *defective* shape rather than the intended one.

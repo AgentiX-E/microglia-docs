@@ -2962,3 +2962,50 @@ remains `UNRESOLVED` at 57 pairs and a 20.27pp resolution. What has changed is t
 comparison — R56's coverage reading and R55.0's recurrence distribution — can be set beside `sup3`
 without an asterisk, and that "our store does not recur" will from now on be a measurement rather
 than an assumption.
+
+### L.31 — R56 read: the density column moves, the recurrence column cannot (2026-11-08)
+
+L.30 promised that two columns would stop being assumptions. One of them did, and the answer is
+worse than either outcome the table was written to expect.
+
+**Density.** R56's `procedure` arm halved the store's yield — one candidate per correction where
+`lesson` produced two — and the store went from twenty items to eight:
+
+| | ALTK-Evolve retail | ALTK-Evolve airline | microglia R54 | microglia R56 |
+| --- | --- | --- | --- | --- |
+| learning tasks | ~57 | ~50 | 32 | 32 |
+| guidelines | 292 | 101 | 20 | 8 |
+| per learning task | 5.12 | 2.02 | 0.63 | 0.25 |
+| `sup3` subset | 31 (10.6%) | 14 (13.9%) | not computable | not computable |
+| `sup3` per learning task | 0.54 | 0.28 | — | — |
+| `pass^4` vs no-guidelines | +10.0pp (67.5) | +5.0pp (40.0) | +5.26pp, p=0.63 | **−8.77pp**, HARM |
+
+Two rows are worth reading together. At `sup3` density IBM keeps **0.54 guidelines per learning
+task** and reads +2.5pp over no guidelines (60.0 against 57.5). Our R54 store kept **0.63 per learning
+task** — the same density, on the same benchmark, with the same measurement unit — and produced
++5.26pp that the pair could not resolve. Density is therefore *not* what separates the two systems,
+and L.30's framing of the material question as a density question was too generous to us: we are
+already at their selective arm's density and we are not getting its result.
+
+**Recurrence.** The column L.30 said R56 would fill is still empty, and now for a reason that is
+structural rather than instrumental. `supportTasks` is written correctly as of R56 — the τ² write
+path sets `EvidenceRef.taskId`, and the count is taken through the same function the score uses. But
+in this lane **every item derives from exactly one user correction, and every correction comes from
+a different task**, so `supportTasks` is 1 by construction, whatever the store contains. IBM's
+guidelines derive from *task trajectories*, successes and failures, ~5 per task; ours derive from one
+sentence of one failure. A mechanism whose admission rule is "three distinct tasks derived this"
+cannot be transplanted onto a unit that never has a second deriver.
+
+That is the sharpest competitive statement this project has been able to make, and it is a statement
+about the unit rather than about the prompt, the recall or the admission rule: **the recurrence
+mechanism is not available to a store built one correction at a time.** R55.0 is dispatched to
+measure the distribution rather than assert it — the prediction is that no item reaches support 2 —
+and if it reads as predicted, the next registration is about the *object* distilled (one task trace
+rather than one correction), which is R56's own second refutation arriving one iteration late.
+
+**What this changes in the table: nothing, and that is the point.** microglia remains fifth of six
+named entries; IBM `gpt-5.5` airline 82.0 remains the published SOTA overall and IBM `gpt-4.1` retail
+67.5 leads that domain. R56's arm lost 8.77pp and reverts under R45 — a revert is not a leaderboard
+move, it is the removal of a candidate that was never a row. The honest summary of this iteration on
+the competitive axis is that a hypothesis about *why* we trail was tested, cost us an arm, and did
+not pay: the prompt was not the missing piece, and the material question is still open.
