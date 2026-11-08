@@ -4814,3 +4814,45 @@ Ranking unchanged and no `pass^4` number is claimed: IBM `gpt-5.5` airline 82.0 
 the published SOTA, and microglia is fifth of six named entries on the columns it
 has measured. R50 and R52 move no benchmark number at all — they change what the lane is
 allowed to say about one — and R51 is a registered experiment, not a result.
+
+### R56 dispatched: the order after the instrument repair (2026-11-08)
+
+R54's readback fired the refutation its registration named — *the conditions exist and do not name
+the situation* — and the repair it called for is the prompt. R56 is that registration, dispatched as
+run `42451945339` on `8f3b6360`. Four of the six items below were defects found on the way to
+making it measurable, not features it needed.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | `taskId: correction.taskId` on the τ² write path — without it `distinctTasks` was 1 by construction and R55.0's recurrence reading would have been an artefact of the recorder (AUDIT 34.58) | done |
+| P0 | `storeItems` carries `supportTasks` and `evidence`, counted through `countDistinctTasks`, the same grouping the score uses | done, R55.0's measurement rides free on R56 |
+| P0 | `V0-instrument-ready`, the fortieth gate: five stages, two reconciliations, blocking, and *absent* on every artefact that predates it (AUDIT 34.59) | done |
+| P0 | `form: 'procedure'` plus a host-side ban on candidates naming the split's tool inventory, with the form, the inventory and the refusal count in the artefact | done, R56's single variable |
+| P0 | `eval/verifiers/r56_readback.py` — four states, twenty-one self-test cases, the share-drop declined when no baseline supplies the inventory R54 never recorded | done, wired into `eval:verifiers` and CI |
+| P0 | `gate-matrix.ts` — `docs/GATE-COVERAGE-MATRIX.md` rendered from the two tables and the last published BIRD artefact, throwing on a gate in neither table (AUDIT 34.60) | done |
+| P1 | R56 readback against its four predictions: coverage ≥ 12%, tool-name share down ≥ 20pp, ≥ 12 items admitted, no tool name in any pack | **running** |
+| P1 | R55.0 — the recurrence distribution, read from R56's artefact at no extra cost: how many items reach `supportTasks >= 3`, and how many `>= 2` | blocked on R56 by the one-lane rule |
+| P1 | R55.1 — admission at `supportTasks >= 3`, same store construction, same recall, same note | blocked on R55.0 |
+| P2 | R53 — the pack's note as the only variable (`none` / `standard` / `hardened`), on whichever store R55 leaves | registered, dispatchable |
+| P2 | U6b (`TAU_WRITE_ADMISSION=neighbours`), U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
+| P2 | Store-level poisoning, four of MemForm's five routes | registered |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+Three debts are recorded rather than resolved, and each one is a decision that would have changed a
+reading mid-flight:
+
+- **The verifier's terminal state is too coarse.** R54 was `ABANDONED` for a refutation about the
+  store sample while its coverage reading was measured and reconciled. The repair is a scoped
+  refutation (`subject: store | delivery`), not a fifth state (AUDIT 34.57).
+- **The driver does not stop before the evaluation loop.** `V0`'s predicate exists and is tested; the
+  call site inside the driver, which is the difference between learning in ninety seconds that the
+  store is empty and learning it after an hour, is not written (TECH-DESIGN 17.113).
+- **BIRD's absent gates have no written reasons.** The matrix reports what the last artefact carried,
+  not why the other twenty-nine were skipped, and distinguishing "this dispatch did not ask" from
+  "this lane cannot" needs a BIRD arm inventory (TECH-DESIGN 17.114).
+
+Ranking unchanged. IBM `gpt-5.5` airline 82.0 is the published SOTA, IBM `gpt-4.1` retail 67.5 leads
+that domain, and microglia is fifth of six named entries. No item above moves `pass^4`: two are
+instruments, one is a treatment whose verdict this sample cannot resolve, and one is a readback that
+reports and does not claim.

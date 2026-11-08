@@ -2920,3 +2920,45 @@ task, dose tuned per domain, provenance kept — not the numbers.
 **Ranking unchanged.** IBM `gpt-5.5` airline 82.0 remains the published SOTA, IBM `gpt-4.1` retail
 67.5 leads that domain, and microglia remains fifth of six named entries with nothing in this
 iteration moving `pass^4`.
+
+### L.30 — The recurrence column becomes measurable, and the ranking does not move (2026-11-08)
+
+Two instruments landed before R56's dispatch, and neither is a score. They are the two that decide
+whether a score can be compared with the published ablation at all.
+
+**Recurrence, finally counted.** IBM ALTK-Evolve's `sup3` keeps a guideline only when at least three
+distinct tasks derived it: 31 of 292 on retail (10.6%), 14 of 101 on airline (13.9%). We have quoted
+those percentages for two iterations without being able to compute the equivalent number about our
+own store, because the τ² driver never wrote `EvidenceRef.taskId` — every item's evidence fell back
+to its run id, and the distinct-task count was **1 by construction** for every item, whatever the
+store contained (AUDIT 34.58). A reading of "our rules never recur" would have been an artefact of
+the recorder.
+
+`storeItems` now carries `supportTasks` and `evidence` per item, counted through the same function
+the score uses to decide whether a claim is worth storing. So the comparison becomes possible on the
+quantity that actually separates the two systems:
+
+| | IBM ALTK-Evolve retail | microglia (τ² retail) |
+| --- | --- | --- |
+| learning tasks | ~57 | 32 |
+| guidelines | 292 | 20 (R54) |
+| per learning task | ~5.1 | 0.63 |
+| at support ≥ 3 | 31 (10.6%) | **not yet measured** — R56's artefact carries it |
+| at support ≥ 2 | — | **not yet measured** |
+
+**The pipeline, finally gated.** Every one of the thirty-nine protocol gates graded a reading, and
+none asked whether the machine that produced it carried anything. The competitors that publish
+ablations get this for free by construction: an ablation *is* a pipeline check, because removing a
+module and seeing the number move proves the module was in the path. We publish ablations too — the
+dose curve, the four feature flags, the clearance arm — and the failures we have actually suffered
+were upstream of all of them (a model alias, a floor applied to the wrong population, an evidence
+field never written). `V0-instrument-ready` is the fortieth gate and the first whose subject is the
+pipeline.
+
+**What this changes in the table: nothing yet.** Both instruments are pre-conditions for a
+comparable row, not rows. microglia remains fifth of six named entries; IBM `gpt-5.5` airline 82.0
+remains the published SOTA overall and IBM `gpt-4.1` retail 67.5 leads that domain; R54's +5.26pp
+remains `UNRESOLVED` at 57 pairs and a 20.27pp resolution. What has changed is that the next
+comparison — R56's coverage reading and R55.0's recurrence distribution — can be set beside `sup3`
+without an asterisk, and that "our store does not recur" will from now on be a measurement rather
+than an assumption.

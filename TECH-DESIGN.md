@@ -7946,3 +7946,81 @@ the rest are absent. The BIRD index is derived from committed artefacts — the 
 file — plus one written reason per absent gate, and `docs/GATE-COVERAGE-MATRIX.md` is rendered from
 both indexes so that the document cannot disagree with the table. A review found three numbers for
 one table this week; the answer is to stop writing the number down twice.
+
+### 17.113 What the funnel became when it met the protocol, and the three places it differs from 17.112
+
+The design in 17.112 was written before the funnel had a home. Putting it in the protocol moved
+three things, and each move is a decision worth recording because each one narrows what the gate can
+say.
+
+**The type is five counts, not four plus a model.** The protocol cannot name `fallback` or `model` —
+the first is a τ² interpreter's rule-based answer and the second is a lane's provider — and a gate
+that took them could not be evaluated by the SQL lane at all. What it takes instead is the chain
+every lane with a store shares:
+
+```ts
+export type FunnelInput = {
+  readonly corrections: number;   // what the learning half could teach from
+  readonly candidates: number;    // what the interpreter proposed over it
+  readonly admitted: number;      // created + merged
+  readonly stored: number;        // items the store holds
+  readonly servable: number;      // items the recall scope can reach
+  readonly refused?: number;      // host-side refusals, when the lane counts them
+  readonly failed?: number;       // interpreter failures, when the lane counts them
+};
+```
+
+`distilled` became `admitted` because the store has two ways to accept a candidate — a new item and a
+merge into an existing one — and a count that named only the first would read a run that merged
+everything as a run that admitted nothing. `events` is not carried: in a lane whose unit is one
+correction per event they are the same number, and in a lane where they differ it is `candidates`
+that decides the interpreter question.
+
+**The failures are a sentence, not a code set.** 17.112 proposed `EMPTY_STORE`,
+`INTERPRETER_PRODUCED_NOTHING`, `ADMISSION_REJECTED_ALL`, `SCOPE_UNREACHABLE` as a closed vocabulary
+so that a driver, a gate and a verifier could not disagree. In the event the gate prints the chain
+and names the stage that stopped — `32 correction(s) -> 30 candidate(s) -> 16 admitted -> 16 stored
+-> 0 servable: the store holds items and none is reachable by the recall scope this arm asks in`.
+The information is the same and there is one authority rather than three that must agree; the cost
+is that a verifier matching on a code now matches on a phrase, which is why the phrase for each
+stage is a single `return` in `emptyStage()` and cannot be assembled from parts.
+
+**The driver does not stop early yet.** 17.112's strongest claim — *stop before the evaluation loop,
+because learning in ninety seconds that the store is empty beats learning it after an hour* — is not
+implemented. The gate fires at the pair, the readback returns `NO_MEASUREMENT`, and an hour of
+pack-free evaluation is still spent. Recorded as debt: the repair is a `V0` evaluation inside the
+driver immediately after `host.distill()`, with the same predicate, which is the three-call-sites
+design the section asked for. The single predicate exists (`emptyStage`, `funnelReading`), so the
+work is a call site rather than a rewrite.
+
+Two things the design got exactly right and the implementation confirmed. The counts are taken at
+boundaries the driver can see — `corrections.length`, `distillReport.candidates`,
+`distillReport.created + merged`, `knowledge.length`, `census.servable` — rather than recomputed by
+the projection from other fields, because a projection that recomputes is a second opinion that can
+disagree with the store it describes. And the gate is *absent* on the twenty artefacts that predate
+the field: a default of "ready" would have certified every one of them with a reading nobody took.
+
+### 17.114 The coverage matrix is a projection, and the guard is a throw
+
+`docs/GATE-COVERAGE-MATRIX.md` is rendered by `packages/eval/src/gate-matrix.ts` from three inputs:
+`GATE_ORDER`, the two τ² index tables, and the gate ids in the last published BIRD artefact.
+
+The third input is the one worth arguing about. A lane's *capability* to supply a field is a
+property of its type; its *having supplied* one is a property of a run. The BIRD column reports the
+second, because that is what a reader comparing two lanes needs — and it is read from a committed
+artefact rather than from `GateInput`, so it moves when a run moves.
+
+Two properties hold the document to the data:
+
+- `gateRows` maps `GATE_ORDER` through a table lookup and **throws** on a gate that is in neither
+  table. A matrix that silently omitted a gate would be exactly the drift it exists to prevent, so
+  the omission is a failed build. The source is injectable (`order`, `index`) only so a test can
+  reach that branch; production passes nothing.
+- The counts in the header are computed from the rows, not typed. `| τ² can supply | 14 |` is
+  `TAU2_GATE_INDEX.supplyable.length`, and the test asserts the rendered line against the table.
+
+What the matrix does **not** yet do is 17.112's second half: one written reason per absent gate for
+the *BIRD* lane. BIRD fires ten gates in the artefact this document was rendered against and the
+type can supply thirty-nine; the twenty-nine it did not fire were skipped by dispatch inputs, not by
+a missing arm, and distinguishing "this dispatch did not ask" from "this lane cannot" needs an arm
+inventory for BIRD that does not exist yet. Recorded as debt rather than filled with a guess.

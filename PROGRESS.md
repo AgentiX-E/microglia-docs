@@ -11459,3 +11459,43 @@ register. R56 switches to `procedure` and refuses, host-side, any candidate that
 R55 (support counted per distinct task) moves behind it, and its measurement stage rides on R56's
 dispatch: `storeItems` gains `supportTasks` there with no treatment, so the recurrence distribution
 costs nothing extra. R53 follows whichever of the two moves the store.
+
+### 172.21 — R56 dispatched on the repaired instrument, and the pipeline becomes a gate
+
+Run `42451945339`, dispatched 2026-11-08 on `8f3b6360`, 57 retail tasks at k=4, both arms.
+
+Four things had to exist before the dispatch could measure anything, and three of them were
+defects rather than features.
+
+| What | Before | Now | Evidence |
+| --- | --- | --- | --- |
+| the task behind an item | never recorded: `taskId` absent, so `distinctTasks` was 1 by construction | `taskId: correction.taskId` | AUDIT 34.58 |
+| recurrence in the artefact | not carried | `supportTasks` and `evidence` per item, read through the score's own grouping | R55.0 |
+| a broken pipeline | no gate looked at it | `V0-instrument-ready`, the fortieth gate, five counts and two reconciliations | AUDIT 34.59 |
+| the form the distiller was asked for | `lesson` by default, unrecorded | `procedure`, with a host-side ban and the inventory it read | R56 |
+
+**The treatment.** `form: 'procedure'` is the single variable. The enforcement is not the prompt: a
+candidate whose statement or condition names one of the action names the split learned from is
+refused at `DistillOptions.accept` and counted, because a prompt cannot enforce itself. The artefact
+records the form, the inventory and the refusal count, so a readback can tell a run that constrained
+the store from a run whose ban was vacuous.
+
+**The readback is committed before the run lands.** `eval/verifiers/r56_readback.py` grades the four
+predictions R56 wrote — coverage ≥ 12%, tool-name share down ≥ 20pp against R54's store, ≥ 12 items
+admitted, no tool name in any pack — and refuses to grade a run that cannot say which form ran. It
+declines the share-drop when no baseline supplies the inventory R54 never recorded, rather than
+recovering one by reading R54's sentences, which would let the baseline's share depend on the
+reading. Twenty-one self-test cases, wired into `eval:verifiers` and therefore into CI, where the
+script had never run at all until R54 (§34.53).
+
+**The gate matrix is generated.** Every count this project quotes lives in a table, and prose that
+quotes a table drifts from it — twice now (§34.60). `gate-matrix.ts` renders the document from the
+tables and from the gates the last published BIRD artefact actually carried, and refuses to omit a
+gate the protocol publishes.
+
+State: 3,319 tests in 160 files, coverage 99.95 / 99.62 / 100 / 99.95; coupling ledger retaken at
+152 modules and 41,048 lines; CI green on `275cf0d7` apart from the L4 lane this dispatch is running.
+
+Next, in order: read R56 against its four predictions → R55.0 (recurrence distribution, free on
+R56's artefact) → R55.1 (admission at `supportTasks >= 3`) → R53 (note levels) on whichever store
+the previous two leave.

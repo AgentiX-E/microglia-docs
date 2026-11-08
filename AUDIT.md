@@ -4976,3 +4976,83 @@ mid-read.
 which is one of 12. A bar that moves after the data is not a bar, so it stays where it is and R56 is
 written against it — including the clause that if the form moves the trigger and the coverage is
 still under 12%, the axis closes.
+
+### 34.58 The task the driver never named, and the recurrence that therefore could not be measured
+
+R55.0's instrument is one integer per item: how many distinct tasks stand behind it. The store
+already holds the field that answers this. `EvidenceRef.taskId` exists for exactly this reason, and
+its own comment says why — *"support is counted per task, not per event: eight attempts of one task
+are one observation by one user"* — and `scoreKnowledge` groups by it.
+
+The τ² driver never set it. Its write path is `host.begin({ task: TASK, input, model, ... })`, and
+`RunStart.taskId` is optional and absent there, so every evidence row fell back to `run:${runId}`.
+One correction produces one run, so every item's count came out at **1 by construction**, whatever
+the store contained. Read through `storeItems`, that is a distribution of ones, and a distribution of
+ones is the *first refutation* R55 wrote before the dispatch: *no item reaches `supportTasks >= 2`,
+the distiller produces sentences about single episodes and the support mechanism cannot be
+transplanted*.
+
+That reading would have been an instrument defect wearing the clothes of a scientific conclusion —
+and it is exactly the class of error this project has paid for before (§34.53's verifier that had
+never run in CI, §34.54's sample that belonged to the previous experiment).
+
+The repair is one field, and the argument that it is bookkeeping rather than a treatment is that the
+store cannot change: the learning half runs one attempt per task (`trials: 1`), so a task id and a
+run id group the same rows; `scoreKnowledge` keeps the strongest observation per group, and there is
+one observation per group either way. What changes is that a claim derived from two tasks can now be
+*distinguished* from a claim derived from one, which is the question R55 asks.
+
+Two guards came with it. `countDistinctTasks(evidence)` is now a kernel export and `distinctTasks`
+is defined in terms of it, so the census cannot develop its own grouping while the fusion keeps
+another; and `storeItemSample` counts through it, so `supportTasks` in an artefact is the same
+number the score used to decide the item was worth storing.
+
+### 34.59 Thirty-nine gates, and not one of them asked whether the machine ran
+
+Every protocol gate graded a number. `V1` passes on one rule per question; `V32` passes on a store
+whose every item was quarantined; `V44` passed on `0 <= 0` in R41 while the distiller had failed on
+all thirty-two corrections. Three published rounds were read as "the mechanism does not work" when
+the stage that had failed was upstream of every gate the report carried, and one was read as "the
+store is thin" when the write path had refused every candidate.
+
+The missing question is not subtle and it is not scenario-specific: *did anything come out of each
+stage?* It is now `V0-instrument-ready`, the fortieth gate and the only one whose subject is the
+pipeline. Its input is five counts — corrections, candidates, admitted, stored, servable — plus the
+refusals and failures that explain a narrowing, and it grades two things:
+
+| condition | reading |
+| --- | --- |
+| every stage is non-zero | a zero locates the break, and the sentence names which stage stopped |
+| `admitted <= candidates`, `stored <= admitted`, `servable <= stored` | two counts taken over different populations are an instrument defect, not a surprise |
+
+It is blocking, because a run whose funnel is broken has no reading to publish — and it is *absent*
+rather than green on the twenty existing artefacts that predate the field, which is the rule this
+protocol has applied since stage 2: a gate that cannot fire is a line in the report, not a silent
+pass.
+
+τ²'s index moves with it: 13 supplyable → 14, 26 arm-indexed unchanged, 39 gates → 40. The eight
+gates below `V1` all grade a number; this is the first that grades the machine.
+
+### 34.60 The count in the CI script had drifted from the count in the table
+
+Adding the fortieth gate turned three thousand three hundred and nineteen local tests green and the
+build red: `.github/workflows/ci.yml` carries an inline τ² conformance script whose assertions are
+literals — `['thirty-five are absent', a.protocol.absent.length === 35]`,
+`['thirteen supplyable', a.protocol.supplyable === 13]` — and the artefact now reports 36 and 14.
+
+The same two numbers appear in `tau2-gates.ts`'s header table, in `l4-pair.ts`'s published sentence,
+and in three registrations. Every one of them was written by hand. This is the second time this
+repository has caught itself quoting a table it had moved — `gates.ts` carried "9 supplyable, 30
+arm-indexed" for as long as the table had said 13 and 26 — and the pattern is the same both times:
+**a number that appears in three places drifts in two of them.**
+
+Two repairs, of different kinds. The immediate one updates the five sites. The structural one makes
+the document a *projection*: `packages/eval/src/gate-matrix.ts` renders one row per gate, in
+publication order, from the two tables and from the gates the last published BIRD artefact actually
+carried — a measurement rather than a capability, because a type being able to supply a field is not
+evidence that a run supplied it. The guard that matters is the one that refuses to omit a gate the
+protocol publishes, and the source is injectable so a test can hold that guard instead of a comment
+holding it.
+
+The CI literals stay literals. They are the check that a lane's own artefact agrees with the
+protocol, and a check that reads its expectation from the thing it is checking is not a check.

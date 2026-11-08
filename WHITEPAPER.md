@@ -4009,3 +4009,42 @@ No threshold moved and no floor was re-chosen. What changed is that the claim "t
 name the situation" can no longer be satisfied by a delivery that is four-fifths unrelated
 without the artefact showing both numbers in the same place. A measurement that can only be
 read one way is not a measurement; it is a conclusion with a number attached.
+
+### 3.6.53 Forty gates, and the first one is a question about the machine
+
+Every number this project publishes is certified by a gate. Until this week there were thirty-nine,
+and every one of them graded a *reading*: the pack was non-empty, the split was a partition, the
+answer parsed, the effect was resolvable. A run could pass all thirty-nine with the machine that
+produced the reading broken at a stage none of them looked at.
+
+That is not hypothetical here. One round sent thirty-two distillation prompts, received thirty-two
+refusals, stored nothing, and passed the gate that asks whether the store is empty — because
+`0 <= 0` is true. The report said "the mechanism does not work" and the repair took three weeks;
+what had failed was a model alias. Another round was read as "the store is too thin" when the write
+path had refused every candidate it was offered.
+
+The fortieth gate is `V0-instrument-ready`, and its subject is the pipeline:
+
+```
+corrections ──▶ candidates ──▶ admitted ──▶ stored ──▶ servable
+```
+
+Five counts, taken at boundaries the run can see. It fails when any stage is zero — and names the
+stage — and it fails when two counts were taken over different populations (`admitted` cannot exceed
+`candidates`; `servable` cannot exceed `stored`). It is blocking, because a run whose funnel is
+broken has nothing to publish; and it is *absent*, not green, on the twenty artefacts that predate
+it, because a gate that cannot fire is a line in the report rather than a silent pass.
+
+Two things follow that matter more than the gate itself.
+
+**Instruments are part of the result.** A measurement whose pipeline was not recorded is a number
+whose provenance is unknown, and this project's most expensive mistakes have all been of that kind —
+not wrong statistics, but right statistics about the wrong population. The gate makes "which
+population" a thing the artefact must answer before anything else is read.
+
+**A count that appears in three places drifts in two of them.** Adding the fortieth gate turned
+3,319 local tests green and the build red, because a CI script and three documents each carried their
+own literal copy of the previous count. The answer is not more discipline: the coverage document is
+now *generated* from the tables that the audit reads, and the generator refuses to run if a gate the
+protocol publishes is missing from either table. A document that cannot disagree with its source is
+worth more than a document that is carefully proofread.
