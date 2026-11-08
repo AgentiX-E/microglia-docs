@@ -11868,3 +11868,43 @@ Where the project stands: the *object* question is answered (a trace produces mo
 claims), the *populations* question is now open and is arithmetic rather than design — 7 traces cannot
 corroborate anything three times, and raising the training population from 32 tasks is a variable the
 lane has never varied.
+
+### 172.32 R59 built: the floors are the store's, and the learning half is the whole half
+
+`prereg/R59-containment.md` is registered and the capability is in. Two changes, both repairs to
+numbers R58 produced rather than new mechanisms.
+
+| Change | Before | After | Why |
+| --- | --- | --- | --- |
+| merge measure | Jaccard, floor 0.70 | containment, floor **0.60** | the true pair reads 0.483 against 0.700; the store's maximum Jaccard was 0.483 |
+| condition test | same ratio floor | **≥ 3 shared content terms** | as a ratio a paraphrase and a conflict are indistinguishable (0.400 / 0.400 / 0.500, inverted) |
+| learning population | 32 tasks | **57, the whole learning half** | R58's registration multiplied every number by 32 corrections; the run had 7 |
+
+Held-out set unchanged: same 57 tasks, same four trials, so the reference arm stays comparable and no
+prediction is stated as a delta against R58's pass rate.
+
+**The defect found before dispatch.** Holding the condition to the statement floor would have refused
+the one merge the register offers (0.400 < 0.60) and produced a second inert pass, which would have
+been read as *"containment does not help either"*. The veto is now a count, measured, and the census
+carries both floors.
+
+**The calibration is reproducible.** `r59_readback.py` re-scores the artefact's stored items under
+both measures. On R58's artefact: `containment 1, Jaccard 0` — one group over the same 15 items under
+the shipped floor and none under the replaced one. Fourteen self-test cases sit in `eval:verifiers`,
+so CI re-checks the calibration instead of the record remembering it.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | R59 — containment 0.60 + condition count 3 + the whole learning half | **dispatch** |
+| P0 | R59 readback — seven predictions, three refutations, fourteen self-test cases | waiting on the run |
+| P1 | R53 — three note levels over one store | dispatch-ready, after R59 |
+| P1 | R55.1 — a recurrence threshold | still conditional: no item has reached 3 |
+| P2 | R57, U6b / U4 / U5 / U6a | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+Where this leaves the project: the *object* question is answered, the *measure* question is now
+answered with a floor the store set, and the *population* question is the variable this dispatch
+changes. If a group merges and support 2 appears, R55.1's threshold becomes readable for the first
+time and R57's distractors become worth paying for. If nothing merges with 26 claims and a floor
+calibrated on this register, the finding is about the corpus rather than the mechanism.

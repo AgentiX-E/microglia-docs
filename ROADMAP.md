@@ -5099,3 +5099,43 @@ If nothing reaches support 2 even after the pass, the constraint is the corpus �
 one domain, four trials — and the next registration is about the sample rather than the mechanism.
 If the pass keeps less than half the store, support was bought with reach and R45's revert rule
 applies to the arm as a whole.
+
+### R59 built and registered (2026-11-08)
+
+The two repairs R58's readback specified, plus the population the registration got wrong. The
+registration is `prereg/R59-containment.md`, written before the dispatch.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | `claimContainment` — shared terms over the smaller claim, floor 0.60 | done, 34 tests, 100 on all four |
+| P0 | condition veto as a count (≥ 3 shared terms) rather than a ratio | done; the ratio would have refused the one merge |
+| P0 | `ConsolidationCensus.conditionMinShared`, and the gate prints both floors | done |
+| P0 | `r59_readback.py` — seven predictions, three refutations, fourteen self-test cases, both measures re-scored over one store | done; reads `containment 1, Jaccard 0` on R58's artefact |
+| P0 | `TAU_TRAIN_TASKS` 32 → 57, the whole learning half, held-out set unchanged | dispatch configuration |
+| P1 | R59's dispatch | **next** |
+| P1 | R59 readback — is the floor the reason, or would Jaccard have merged the same groups | waiting on the run |
+| P1 | R53 — three note levels over one store | dispatch-ready, after R59 |
+| P1 | R55.1 — a recurrence threshold | conditional: no item has reached 3 |
+| P2 | R57, U6b / U4 / U5 / U6a | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+**What R59 changes that R58 could not.** R58 changed the object a claim is derived from and left the
+measure that decides whether two objects are one claim untouched. On the store R58 produced, that
+measure could not merge anything by construction: its highest-scoring pair sat below the floor. R59
+replaces the ruler with one calibrated on the store it measures, moves the condition test to a count
+because the ratio has no resolution at this scale, and doubles the learning population — which is the
+variable R58's registration got wrong rather than one it tested.
+
+**The attribution, stated in advance.** The measure has an attribution reading the artifice provides
+for free: the artefact's stored items can be re-scored under the previous floor, so "the floor is the
+reason" is a number over one population rather than an inference across two dispatches. The population
+change has no such control and is therefore reported as a sample change: no prediction in the
+registration is a delta against R58's pass rate.
+
+**What the readback will decide.** If one group merges and an item reaches support 2, the corroboration
+axis is open for the first time and R55.1's threshold becomes a decision rather than an arithmetic
+impossibility. If nothing merges with 26 claims and a floor derived from this register, the finding is
+that a corpus of this shape cannot corroborate itself, and the next registration is about the corpus.
+Support 3 is deliberately not predicted: one mergeable pair in 105 is a rate, and a triple needs three
+of them in one group.

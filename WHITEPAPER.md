@@ -4218,3 +4218,46 @@ than the mechanism.
 That is the shape of the question this project is now asking. Not *what should the memory say*, which
 four iterations answered as well as this benchmark can, but *what is worth calling one thing* — and
 whether a store of sixty tasks can contain a claim that three of them corroborate at all.
+
+#### 3.6.64 The floor was above the ceiling, and the store said so
+
+The previous section ended with a question the pass had not yet answered: whether a claim can be
+corroborated inside a store this size. The dispatch answered a different question first, and the answer
+was uncomfortable in a way that is useful.
+
+Nothing merged. Fifteen claims, one hundred and five pairs, zero groups — and the reason was in the
+store rather than in the mechanism. Its two closest items are one claim: the same premise in the same
+words, one ending *"and do not stop after the first one succeeds"*, the other *"and stop once all are
+applied rather than adding extra lookups or calculations"*. The similarity the pass used scored that
+pair at **0.483** against a floor of 0.70 — and 0.483 was the *highest* score of any pair in the store.
+The floor sat above the population's ceiling. Nothing was wrong with the grouping; the ruler was
+measuring the wrong distance.
+
+A similarity that divides by the union of two sentences charges an added clause twice: once because the
+union grew, once because the shared part did not. That is the right penalty for *are these the same
+length*, and the wrong one for *is this the same claim with a caveat attached*. Dividing by the smaller
+sentence instead puts the same pair at 0.700 and the closest pair that is genuinely two claims at
+0.533, which leaves a gap to put a floor in. The floor is 0.60, and it is not a number anyone chose:
+it is where the store's own distribution leaves room.
+
+The condition needed a third treatment. Holding it to the same floor would have refused the one merge
+worth making — the two paraphrased triggers score 0.400, because they are short and share a verb — and
+the pass would have reported itself inert a second time. As a ratio the condition does not separate at
+all: a paraphrase, an unrelated trigger and an outright conflict score 0.400, 0.400 and 0.500, in the
+wrong order. As a *count* it does, because a paraphrase shares more than the subject it restates and a
+conflict shares the subject and nothing else. Three shared terms, measured, with the ratio still in
+the census so a reader can see which test refused what.
+
+There is a habit this project keeps acquiring, and the iteration is the clearest instance of it. A
+number that describes a population is not portable between populations. The registration for the
+previous round said thirty-two corrections and multiplied everything by it — cost, store size, the
+assumption that three traces could agree — when the run had seven, because the learning half solves
+most of its tasks on the first attempt. The learning half is now the whole half, and the held-out set
+is untouched, so the comparison against the previous arm is still a comparison and the delta is still
+not a treatment effect.
+
+What is being tested now is narrow and checkable: with twenty-six claims instead of fifteen, and a
+ruler calibrated on the store it is measuring, does one claim become two items made one — and does the
+count that a corroboration threshold would gate on reach two at all. If it does not, the honest reading
+is not that the pass failed but that a corpus of this shape cannot corroborate itself, and the next
+question is about the corpus.

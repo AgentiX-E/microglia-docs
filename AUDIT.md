@@ -5666,3 +5666,66 @@ best arm.
    tasks are already solved, not because the fold is small.
 3. Consolidation at 0.70 Jaccard is inert on this register by construction, and the calibrated
    replacement is a containment floor at 0.60, measured on the store rather than guessed.
+
+### 34.75 The floor sat above the population's ceiling, and the condition test would have refused the one merge
+
+The measure R58's reading named is built (`prereg/R59-containment.md`), and building it found a second
+defect of the same kind one layer down — before the dispatch rather than after it.
+
+**What changed.** `claimOverlap` is `claimContainment`: `|A ∩ B| / min(|A|, |B|)` over content terms,
+floor **0.60** where Jaccard's was 0.70. The denominator is the smaller side, which is why the pair
+34.74 quotes merges: 14 shared terms of a 20-term claim is 0.700, where the union's 29 terms put it at
+0.483. The measure is symmetric because the smaller side is chosen rather than named, so two items in
+the opposite order score the same — a pass that merged in one store order and not the other would be
+the order dependence the whole pass exists to remove.
+
+**The defect the calibration caught.** The condition was held to *the same* floor, and on this
+register that refuses the only pair worth merging. The two paraphrased conditions —
+*"multiple distinct changes in one request and names the order"* against *"multiple distinct
+modifications and specifies the sequence"* — share four content terms of eight, which as a ratio is
+**0.400** against a 0.70 or 0.60 floor. Shipping the measure with one floor would have produced a
+second inert pass, a second `ABANDONED`, and a false conclusion: *"containment does not help either"*.
+
+As a ratio the condition carries no resolution at this sample. The same pair's conditions read 0.400,
+the closest non-repeat pair's conditions read 0.400, and two conditions that disagree about their
+subject (*"asks to change a booking"* against *"asks for a refund on a flight"*) read 0.500 — the
+ordering is inverted. What does separate them is a **count**: a paraphrased trigger shares four
+content terms, a conflicting one shares the subject and nothing else (two). The veto is therefore
+below **three shared terms**, and the census carries that count beside the ratio (`conditionMinShared`)
+so a reader can see which test refused what.
+
+**The re-scoring, and why it is in the repo rather than in a shell.** `eval/verifiers/r59_readback.py`
+re-scores the artefact's own stored items under both measures, which turns *"the measure changed and
+the numbers moved"* into *"here is what the floor does to this store"* without buying a second
+dispatch. Run against R58's artefact (`42476580076`):
+
+```
+re-scoring over the store the run kept: containment 1, Jaccard 0
+```
+
+One group over the same 15 items, under the floor this iteration ships and not under the one it
+replaces. 34.74's containment numbers were computed in an ad-hoc script; they are now a verifier with
+14 self-test cases inside `eval:verifiers`, so the calibration is re-checked by CI rather than
+remembered.
+
+**What the re-scoring cannot do, and says it cannot.** The artefact's `storeItems` carries an evidence
+*count* rather than evidence rows, so the pass's duplicate-evidence refusal is not re-scored: two
+claims distilled from one trace are indistinguishable from two claims distilled from two. The
+re-scoring therefore reports *at least* the groups the real pass would merge, and the census remains
+the authority on what it actually merged. A readback that silently skipped an unreadable rule and
+reported a smaller floor would be the defect it is trying to measure.
+
+**The population.** `TAU_TRAIN_TASKS` moves 32 → 57, the whole learning half, because 34.74's
+registration multiplied every scale number by 32 corrections when the run had 7. The split is
+unchanged (`round(114 × 0.5) = 57`), so the **held-out set is the same 57 tasks at the same four
+trials**: the reference arm stays comparable, and the change is in how much of the learning half is
+used, not in what is evaluated. At the measured edit rate (7 of 32) the expectation is ~12 corrections
+and ~26 claims. This is a sample change and is reported as one: no prediction in the registration is
+stated as a delta against R58's pass rate.
+
+**Tests.** `consolidate.ts` reads 100 / 100 / 100 / 100 across statements, branches, functions and
+lines over 34 cases, including the arithmetic at both floors, the symmetry of the measure, a trailing
+caveat that Jaccard would have refused, a paraphrased condition that passes the count and a
+subject-only one that does not, and the override that proves a stricter pass is dispatchable. The
+`l4-support-recurrence` gate now prints both floors beside the distributions, because a store
+consolidated at 0.60 and one consolidated at 0.70 are two experiments.

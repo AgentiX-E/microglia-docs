@@ -8310,3 +8310,51 @@ either distribution does not sum to the population it describes — an instrumen
 outcome one. The driver refuses to start if the unit is `trace` and no correction carried a trace, and
 `resolveDistillUnit` refuses an unrecognised value rather than measuring the default, which is what a
 misspelt variable would otherwise do.
+
+### 17.121 The merge floor is a containment, and the condition veto is a count
+
+R59 replaces the pass's similarity and its condition test. Both decisions are calibrated on the store
+the trace unit writes, and both are recorded in the census, because a floor that is not in the record
+makes two stores incomparable without anyone noticing.
+
+**The measure.** `claimOverlap` is `claimContainment`, `|A ∩ B| / min(|A|, |B|)` over content terms,
+default floor **0.60**. Jaccard was the natural first choice and the store refuted it: a claim and its
+own restatement with a different closing clause score 0.483 against a 0.70 floor, and 0.483 is the
+*maximum* over all 105 pairs in that store — the floor was above the population's ceiling, so no
+setting of it could merge anything. Containment charges the added clause once instead of twice and
+puts the same pair at 0.700 against 0.533 for the closest non-repeat.
+
+The denominator is chosen by size rather than by argument order, so the reading is symmetric and the
+pass stays a function of the store rather than of the order its items were written in. Two claims with
+no content terms score 0 and not 1: "these two claims have nothing in them" is not evidence that they
+are one claim.
+
+**The condition.** Held to `conditionMinShared = 3` shared content terms, not to a ratio. The
+measured reason is that the ratio has no resolution at this scale:
+
+```
+pair                                              ratio   shared   is it one claim
+the bundle-a-changes pair                          0.400      4    yes
+the closest pair that is not a repeat              0.400      4    no
+"asks to change a booking" vs "asks for a refund"  0.500      2    no — the ratio inverts
+```
+
+A paraphrased trigger shares more than the subject it restates; a conflicting one shares the subject
+and nothing else. The count separates them where the ratio does not, and the census carries
+`conditionMinShared` beside `threshold` so the two tests can be told apart in a readback.
+
+**The record.** `ConsolidationCensus` gains `conditionMinShared`; `l4-support-recurrence` prints both
+floors beside the distributions. `ConsolidationOptions` accepts an override for each, which is what
+makes a stricter pass dispatchable rather than a code change.
+
+**The attribution.** The artefact's `storeItems` is enough to re-score the store under the previous
+measure, so the readback reports both readings over one population:
+
+```
+re-scoring over the store the run kept: containment 1, Jaccard 0
+```
+
+That is the difference between *"the measure changed and the numbers moved"* and *"this floor merges
+one group of these 15 items where the previous one merged none"*. The re-scoring cannot read the
+duplicate-evidence rule — the projection stores an evidence count, not rows — and says so rather than
+reporting a floor it did not apply.
