@@ -7625,3 +7625,76 @@ to prevent and would make the floor the next question rather than this one.
 What it never does: invent a condition the distiller declined to state, truncate
 one, or rewrite a statement. A rule with no condition stays a rule with no
 condition — and is now counted.
+
+### 17.108 The resolution gate as a contract about claims
+
+`V5-resolution` used to read one number and one bar:
+
+```ts
+pass: Number.isFinite(detectablePp) && detectablePp <= 6
+```
+
+That condition is a property of the *scenario*, and it is not reachable on τ² retail at
+any sample size: 13.73pp at the 50-task half, 9.05pp over all 115 tasks, at pass^4. A gate
+a lane cannot answer is not strict, it is unanswerable, and an unanswerable gate spends its
+authority every time it fires.
+
+**The replacement, stated as data.**
+
+```ts
+export const POWER_TARGET_PP = 6;
+
+// inside buildProtocolGates
+const estimable = Number.isFinite(resolution);
+const withinTarget = estimable && resolution <= POWER_TARGET_PP;
+const claimResolved = typeof claim === 'number' && estimable && Math.abs(claim) >= resolution;
+pass: estimable && (withinTarget || claim === null || claimResolved)
+```
+
+| Input | Passes when | Why |
+| --- | --- | --- |
+| `claimPp: number` | `|claim| >= detectablePp` | a published direction the sample could have seen |
+| `claimPp: null` | the sample is estimable | the run says it concluded nothing |
+| `claimPp` absent | `detectablePp <= 6` | the lane does not report claims; the old condition stands |
+
+`Math.abs` because the symmetry is the point: a 4pp loss at a 13.73pp resolution is as
+unclaimable as a 4pp gain. The revert rule that fires on a large loss is a safety rule and
+is graded by `l4-paired`; this gate is about resolution, and it must not become a second
+copy of that rule.
+
+**Why absence is not `null`.** The obvious simplification — read a missing claim as "no
+claim" — makes the gate passable by omission. Any run could then be green by never
+mentioning what it concluded, which is exactly the vacuous pass R50 removed from
+`bin/l4.ts`. Three states cost one union type and keep the fallback honest.
+
+**Why the target is a constant.** R52's registration proposed it as a
+`ProtocolGateInput.powerTarget` defaulting to 6. The input would be the registration's own
+third refutation: a bar a caller can pass is a bar a caller can raise, the only callers who
+would pass one are the ones that cannot reach 6pp, and the number they would pass is the
+observed resolution — `detectablePp <= detectablePp`, true by construction. A constant is
+the only form that keeps the number a report rather than a permission.
+
+**The lane half.** `Tau2Evidence.claimPp` comes from `pairedVerdict`, and the pair step
+computes the verdict *before* the evidence so that the evidence can carry it:
+
+```
+comparison ──► pairedVerdict ──► claimPp (number | null) ──► protocol ──► V5 sentence
+     │                                   ▲
+     └──────── tau2DetectablePp ─────────┘
+```
+
+An arm artefact never sets it: an arm has no reference arm, therefore no verdict, therefore
+nothing to claim — and the protocol reads that as the fallback rather than as silence.
+
+**What the sentence prints.** Every branch names both numbers, because a reader who sees a
+green gate is entitled to know what the sample could have resolved:
+
+```text
+minimum detectable 21.41pp against a 6.00pp target; the run claims no direction
+minimum detectable 13.73pp against a 6.00pp target; claims 4.00pp, which is finer than the sample can resolve
+minimum detectable 21.41pp against a 6.00pp target; this lane reports no claims
+not estimable: no question changed hands
+```
+
+**Coverage.** `gates.ts` 100/100/100/100 — every branch above has a test, including the
+`|claim| === detectablePp` boundary and the `Infinity`-with-a-claim case.

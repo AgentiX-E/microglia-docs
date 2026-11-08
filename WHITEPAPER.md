@@ -3856,3 +3856,46 @@ retrieval path*, is a field that exists on paper. We have a word for this failur
 now, and it applies well beyond memory: the discipline of adding a column to a
 schema is nothing without the discipline of asking which code paths consult it.
 Three paths consulted the statement. One wrote the condition. Nobody asked.
+
+#### 3.6.59 A bar that is true and a bar that is answerable are different bars
+
+Every measurement programme has a line it cannot move. Ours was this: *this experiment
+cannot see a six-point effect.* That sentence was true, we had written it down, and we had
+also wired it into a gate as a pass condition. The consequence was a red square on every
+run, forever, for a reason no change to the mechanism could affect.
+
+That is a specific and common failure, and it is worth naming precisely. A false gate is
+caught, eventually, by somebody who cares. A *true* gate that is unanswerable is never
+caught, because it is right every time it fires and its only defect is that it fires at a
+thing nobody can change. Teams learn to read past it. The line stays red for a year, and
+then somebody quietly moves the threshold during a refactor and the record loses the one
+fact it was keeping.
+
+The repair is not to lower the bar. It is to notice that two different questions had been
+fused into one condition. *Can this experiment resolve six points?* is a fact about the
+sample: it belongs in the report, in the same sentence as the delta, and it should be
+printed whether or not anybody likes the answer. *Does this run claim more than it can
+resolve?* is a fact about the run: it is a defect when true, it is fixable, and it is the
+thing a gate should block on.
+
+So the gate now asks the second question and the report prints the first. The mechanism
+did not move; `pass^4` did not move; a single published number is unchanged. What moved is
+the sentence the instrument is allowed to say, and it is now a sentence it can support.
+
+There is one subtlety in that split that took a while to get right, and it is the whole
+difference between a contract and a loophole. A run must be able to say *I measured and I
+concluded nothing* — that is the honest outcome of most experiments, including several of
+ours. But it must not be able to say nothing at all and be treated the same way. Silence is
+not a claim of silence. A lane that simply never mentions what it concluded gets graded by
+the old, stricter bar; only a lane that explicitly states its own conclusion — including
+stating that it has none — gets the new one. The distinction costs a null, and it is the
+difference between an instrument that can be trusted with a green square and one that
+cannot.
+
+We also removed the version of this idea that looked more convenient. The obvious design is
+to let each scenario declare the effect size it wants to be judged at. It reads as
+flexibility and it is a permit: the only scenarios that would ever set a friendlier number
+are the ones that cannot reach the strict one, and the number they would set is the effect
+they happened to observe. A bar a caller can type is a bar that will be typed to pass. Ours
+is a constant in the protocol, it appears in every sentence the gate prints, and nobody,
+including us, can move it.

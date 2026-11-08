@@ -2764,3 +2764,53 @@ was present it was not findable.** IBM `gpt-5.5` airline 82.0 remains the publis
 SOTA; microglia remains fifth of six named entries on the airline columns it has
 measured, and level with its own no-memory ablation on retail (40.0 against 36.0 at
 an MDE of 13.73pp).
+
+### L.26 — Five 2026 results say the damage happens *after* retrieval, and one of them names our defect (2026-11-08)
+
+L.21–L.25 argued about what to store and how to find it. The 2026 literature has moved
+one step later, and the move is uncomfortable for the hypothesis this project has been
+carrying since R42: *"our memory hurts because its content or its use is wrong."* Half of
+that sentence is now the wrong half.
+
+| Result | What it measured | Number |
+| --- | --- | --- |
+| **MemTrapBench** (arXiv 2608.xxxxx, HF release) | five memory frameworks, two model families, all against no-memory | **every strategy underperformed no-memory**; the best still dropped more than 10% |
+| **MemCalib** (USTC + Qwen Applications + Fudan) | per-atom target influence — Ignore / Bound / Control — over 15,000 examples | best frontier model **SCS 46.25, Exact 28.40** of 100; every model but one over-uses rather than under-uses |
+| **MemSyco-Bench** | where errors come from on LongMemEval, LoCoMo, STALE, PersonaMem | **47.4–66.1%** "evidence not retrieved"; only **5.8–13.7%** "retrieved and still wrong"; and **61–62%** of errors in three systems happen *after* the right memory was retrieved |
+| **OP-Bench** | plain RAG, Mem0, MemU, MemOS × four backbones | all five below the no-memory baseline, by **26.2%–61.1%** |
+| **RPEval** (Renmin + Huawei) | preference labelled Ignore / Support / Dominate | humans 0.86 on Ignore; **GPT-5 0.12, DeepSeek-V3 0.38** — an inverse scaling result |
+| **CoM** (ACL 2026) | gate retrieved fragments by **relevance × consistency**, truncate the tail | **+7.5–10.4%** accuracy at **2.7%** of the tokens and **6.0%** of the latency of structured memory |
+| **STITCH** (ACL 2026) | index memory by **contextual intent** rather than by content | the same fragments, retrieved by what the user is trying to do |
+
+Two readings of that table matter here, and they point in opposite directions.
+
+**The first is that retrieval was never the whole story.** MemSyco's split says the
+retrieval failure dominates on conversation benchmarks — 47–66% against 5.8–13.7% — which
+is the failure R51 spent an iteration fixing at two boundaries. But the same paper finds
+that 61–62% of the *remaining* errors occur after the right memory was retrieved, and
+MemTrapBench goes further: a **correct, relevant** memory anchors the model to a prior
+frame that no longer fits the current question — their names for it are Reasoning Fixation
+and Belief Distortion. A precision@k table cannot see this, and neither can our `V1`.
+
+**The second is that our pack already carries the mitigation and it is too weak.**
+MemTrapBench's intervention, AdaptiveMem, is an inference-time instruction to watch for
+memory traps — no retraining, no new index — and it recovers performance. Our pack note
+says *"apply an item only where its condition holds"*, which is the same idea stated to a
+model that has just been handed the rule and has no reason to doubt it. The difference
+between "check the condition" and "this may be a trap" is the difference the paper measures.
+
+So the next arm is not about retrieval, and its hypothesis is written to be falsified:
+
+- **R53** — same store, same recall, same packs; the *only* variable is the sentence that
+  precedes them. Three levels: no note, today's note, and a hardened calibration note that
+  names the failure mode (a recalled rule may describe a situation this request is not;
+  prefer the current observation where they disagree). MemCalib's taxonomy gives the
+  prediction a direction: over-use dominates, so an instruction that licenses ignoring is
+  worth more than one that explains.
+
+One thing this table will not do is explain R49. R49's −4.00pp is inside a 13.73pp
+resolution and cannot be attributed to any of these mechanisms — the arm was not powered to
+distinguish absence from harm, and the census that came with it (38% empty packs) says the
+treatment was absent a third of the time. What it does do is remove the excuse: after R51
+the packs arrive, and if the effect is still flat, the cause is on this page rather than in
+the index.

@@ -11199,3 +11199,72 @@ verifier's default.
 | 4 | the readback refuses an absent census | **met**: `NO_MEASUREMENT`, self-test case 7 |
 | 5 | the readback refuses an unflattering-but-violated design | **met**: five refutations, each with a self-test case |
 | 6 | the suite stays above the gate | **met**: 153 files, 3,217 tests, both verifier self-tests pass |
+
+### 172.14 — R52: the resolution gate stops grading the scenario and starts grading the claim
+
+R50 fixed the finding gate that demanded a significant non-negative delta on a split that
+cannot resolve one. It left `V5-resolution` alone, because that gate's 6pp bar is shared
+with BIRD, where it is reachable — all seventeen committed cells pass it at 1.96–4.87pp.
+The price of leaving it was a red line on every τ² dispatch, and the price of removing it
+naively was worse: either the fact that the sample cannot resolve 6pp stops being stated,
+or the bar is handed to the party it constrains.
+
+**The condition moved from the sample to the claim.** `V5-resolution` now blocks a run
+that publishes a direction finer than its own sample could resolve — the failure it was
+written for, expressed as a property of the run. The 6pp is unchanged and unmovable:
+`POWER_TARGET_PP`, printed in every sentence the gate emits.
+
+| `claimPp` | Means | Graded by |
+| --- | --- | --- |
+| a number | the run concluded, at this size | the resolution |
+| `null` | the run measured and concluded nothing | nothing — it claims nothing |
+| *absent* | the lane does not report claims | the 6pp bar, exactly as before |
+
+The third row is the design. Collapsing `null` into *absent* would let any run pass by not
+mentioning the question, which is the vacuous pass 34.45 counted as worse than an absent
+gate. BIRD never supplies the field and therefore keeps its old condition to the digit.
+
+**The registered input became a constant, and the amendment says why.** R52 as written
+proposed `protocol.powerTarget` supplied by the scenario. Implementing it showed the input
+*is* the registration's third refutation with a different name: the only scenarios that
+would pass a target are the two that cannot reach 6pp, and the number they would type is
+the observed resolution, making the condition always true. The target is a constant; τ²
+supplies its *claim* instead. The amendment was appended before the code was pushed.
+
+**What had to be repaired beside it.** `.github/workflows/ci.yml` asserted that
+`eval:l4-pair` exits non-zero on the 67-task fixture — an assertion that existed only
+because the gate was red by construction. It now asserts the state instead:
+
+| Check | Before | After |
+| --- | --- | --- |
+| exit code | non-zero | zero, with the artefact stating why |
+| `V5-resolution` | `pass === false` | `pass === true`, sentence names 21.41pp **and** "the run claims no direction" |
+| claim | not recorded | `verdict.claim === null` — a value the artefact must write |
+| direction | refused by the exit code | refused by `l4-effect-resolved`, non-blocking |
+
+Both regression directions remain reachable: a claim of 4pp at a 21.41pp resolution fails
+on the comparison, and a pair that never sets `claimPp` falls back to the 6pp bar and fails
+there. The step cannot be passed by silence.
+
+One thing worth recording because it cost a red build: the new assertion's JavaScript
+comment contained a double quote and two backticks inside a shell-quoted `node -e` string,
+so the step died on a syntax error rather than on a check. A gate that fails for a reason
+unrelated to its subject is the same defect as a gate that cannot pass, one layer down.
+
+**Acceptance.**
+
+| # | Criterion | Result |
+| --- | --- | --- |
+| 1 | the gate blocks a claim finer than the resolution, in either direction | **met**: ±4pp at 13.73pp fails; ±13.73pp and above pass |
+| 2 | a run that concluded nothing is not red for its sample | **met**: `claimPp: null` at 13.73pp and at 9.05pp both pass |
+| 3 | a lane that reports no claims keeps the old condition | **met**: absence fails at 9.05pp against 6pp |
+| 4 | BIRD's committed cells do not move | **met**: none supplies `claimPp`; all pass on the target |
+| 5 | τ²'s verdicts do not move | **met**: the 67-task fixture stays `UNRESOLVED`, `l4-paired` stays PASS |
+| 6 | no caller can raise the bar | **met**: `POWER_TARGET_PP` is a constant, and the registration's third refutation forbids the input |
+| 7 | an unestimable resolution supports no claim | **met**: `Infinity` fails even with a claim attached |
+| 8 | four-dimension coverage | **met**: `gates.ts`, `tau2-gates.ts`, `sota.ts`, `l4-pair.ts` all 100/100/100/100 |
+
+**Evidence.** `master` at `3f2f9935`; 153 test files, 3,234 tests, coverage
+**99.95 / 99.64 / 100 / 99.95** (lines / branches / functions / statements); `pnpm check`
+green; 41/41 pre-registrations valid. No SOTA row moves: IBM `gpt-5.5` airline 82.0 remains
+the published SOTA and microglia remains fifth of six named entries.

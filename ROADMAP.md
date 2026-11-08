@@ -4707,22 +4707,30 @@ fixing the instrument. R51 answers the third by fixing the write path.
 | Priority | Step | State |
 | --- | --- | --- |
 | P0 | `pairedVerdict`: three states (`HARM` / `BENEFIT` / `UNRESOLVED`), the harm branch **calls** `revertRule`, `BENEFIT` requires `delta >= detectablePp`, `claim` is null when nothing may be claimed; 17 tests, 100/100/100/100 | done |
-| P0 | `l4-paired` blocks on harm only; `l4-effect-resolved` reports the resolution without blocking; `V5-resolution` untouched and still failing, because 115 tasks at pass^4 cannot resolve 6pp | done |
+| P0 | `l4-paired` blocks on harm only; `l4-effect-resolved` reports the resolution without blocking; `V5-resolution` left alone in that round, because 115 tasks at pass^4 cannot resolve 6pp and the bar is shared with BIRD | done, superseded by R52 |
 | P0 | The three committed readings re-graded: R47 PASS/UNRESOLVED, **R48 stays FAIL/HARM**, R49 PASS/UNRESOLVED; fixture extended with R49 and with the resolution column | done |
 | P0 | `TauTask.instruction` parses both upstream shapes; the correction carries it; the learning event sends it as `input.question` with the id beside it | done |
 | P0 | `recallText` is the single definition the lexical index, the `minCoverage` floor and MMR all read, instead of each deciding for itself and all three choosing the statement | done |
 | P0 | `storeCensus` counts `conditioned` / `unconditioned` over the servable population, so the next readback measures whether a trigger was written at all | done |
 | P0 | Full gate: 3,217 tests / 153 files, coverage 99.95 / 99.65 / 100 / 99.95 (lines / branches / functions / statements); `typecheck` and `typecheck:lanes` clean; 39/39 pre-registrations valid | done |
-| P1 | R51 dispatch: `minCoverage 0`, `facadePair off`, 200 episodes at 4 trials, one store, one reference arm | next |
+| P0 | R52: `V5-resolution` grades the claim (`claimPp`: number / `null` / absent) against a constant `POWER_TARGET_PP = 6`; CI conformance asserts the state rather than a non-zero exit; 16 new tests, 100/100/100/100 on every touched file | done |
+| P1 | R51 dispatch: `minCoverage 0`, `facadePair off`, 200 episodes at 4 trials, one store, one reference arm | running |
 | P1 | R51 readback against three predictions: `store.conditioned >= 4`, `empty/requests <= 0.25`, coverage p50 >= 12%; any of the three failing abandons the arm rather than reinterpreting it | blocked on the dispatch |
 | P2 | U6b dispatch (`TAU_WRITE_ADMISSION=neighbours`), whose readback must report the write census | blocked on R51's readback by the one-lane rule |
-| P2 | R52: `V5-resolution`'s 6pp bar is a protocol constant that τ² retail cannot meet at any n; the decision is whether the lane supplies its own bar or the protocol takes one per scenario | registered by this iteration, undispatched |
+| P2 | R53: the pack's note as the only variable — `none` / `today` / `calibrated`, on one store and one recall, to test whether the damage is in retrieval or in use | **registered, blocked on R51's readback** |
 | P2 | U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
 | P2 | U1, U2, R46 admission arms | closed until a resolvable pair exists |
 | P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
 | — | cortex release | excluded by standing instruction |
 
+R52 finishes what R50 started one layer up. The 6pp bar is true and stays true; it stops
+being a pass condition and becomes a target printed in the gate's own sentence, while the
+gate blocks the thing that is a defect in a run — publishing a direction the sample could
+not resolve. BIRD's seventeen cells do not move (they reach 1.96–4.87pp and none supplies a
+claim); τ²'s verdicts do not move; its `V5` line turns green on every dispatch whose pair
+concluded nothing, and says why in the same sentence.
+
 Ranking unchanged and no `pass^4` number is claimed: IBM `gpt-5.5` airline 82.0 is
 the published SOTA, and microglia is fifth of six named entries on the columns it
-has measured. R50 moves no benchmark number at all — it changes what the lane is
+has measured. R50 and R52 move no benchmark number at all — they change what the lane is
 allowed to say about one — and R51 is a registered experiment, not a result.

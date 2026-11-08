@@ -4518,3 +4518,70 @@ fixture still carries the gate, so the self-test is unaffected. R51's readback
 (`eval/verifiers/r51_readback.py`) does not read that gate for the same reason it
 does not read the other one: a gate that only ever said "no reference arm" was never
 evidence.
+
+### 34.50 R52: the same unanswerable gate, one layer down in the shared protocol
+
+34.47 through 34.49 removed an unanswerable condition from two τ² binaries. It did not
+touch the copy in `packages/protocol/src/gates.ts`, because that one is shared with a
+lane that *can* answer it: BIRD reaches 1.96–4.87pp on a 6pp bar, and lowering a true bar
+to flatter a lane that cannot reach it would have changed what every published BIRD cell
+certifies.
+
+The cost of keeping it was one permanently red line per τ² dispatch. The cost of removing
+it naively — deleting the gate, or passing a scenario-supplied target — is worse: the
+first loses the statement that the sample cannot resolve 6pp, and the second hands the bar
+to the party it constrains. R52 is the third option, and this is what implementing it
+found.
+
+**The condition is now about the run, not the scenario.** `V5-resolution` blocks a run
+that publishes a direction finer than its own sample can resolve. That is answerable on
+any scenario, it is the failure the gate was written for (a design that could not have
+seen the effect it went looking for, publishing a delta anyway), and it does not depend on
+a population the lane cannot enlarge.
+
+**The three states of `claimPp` are the whole design**, and the third is the one that
+matters:
+
+| `claimPp` | Means | Graded by |
+| --- | --- | --- |
+| a number | the run concluded, in this direction, at this size | the resolution |
+| `null` | the run measured and concluded nothing | nothing — it claims nothing |
+| *absent* | the lane does not report claims | the 6pp bar, exactly as before |
+
+Collapsing `null` and *absent* would be the vacuous pass 34.45 counted as worse than an
+absent gate: any run could then pass by not mentioning the question. BIRD never supplies
+the field, so all seventeen committed cells keep the condition they were graded by.
+
+**The registered amendment, and why it is not a convenience.** R52 as written proposes
+`protocol.powerTarget` as a scenario-supplied input defaulting to 6pp. Implementing it
+showed the input *is* the registration's own third refutation with a different name: the
+only scenarios that would pass one are the two that cannot reach 6pp, and the number they
+would type is the observed resolution — making the condition `detectablePp <= detectablePp`
+and therefore always true. The target is a constant, `POWER_TARGET_PP`, reported in the
+gate's own sentence and movable by nobody. The amendment is recorded in the registration
+before the code was pushed, which is the only condition under which an amendment is worth
+anything.
+
+**What it cost, in the one place that had encoded the old contract.** `.github/workflows/ci.yml`
+asserted that `eval:l4-pair` exits non-zero on the sixty-seven-task fixture — a step whose
+entire content was "the lane is red, and here is why". Under the new condition that pair
+claims nothing, so V5 passes and the step exits zero. The assertion was replaced rather
+than deleted, because a step that only asserts green is the failure mode R52 is about:
+
+| Check | Before | After |
+| --- | --- | --- |
+| exit code | must be non-zero | must be zero, and the artefact must say why |
+| V5 | `pass === false` | `pass === true` **and** the sentence contains "the run claims no direction" **and** 21.41pp |
+| claim | not recorded | `verdict.claim === null` — a value the artefact must write |
+| direction | refused by the exit code | refused by `l4-effect-resolved`, non-blocking |
+
+Both failure directions are still reachable by a future regression: a pair that claims
+4pp at a 21.41pp resolution fails on the comparison, and a pair that never sets `claimPp`
+falls back to the 6pp bar and fails there. The step cannot be passed by silence.
+
+**Refutation, written before dispatch and gradable offline.** If any committed BIRD cell
+changes verdict, the default did not survive the transplant. It does not: the seventeen
+cells supply no `claimPp`, and `2a71e60b`'s CI re-renders all of them. If a τ² dispatch
+records `BENEFIT` below its own `detectablePp`, the two halves have diverged — which the
+unit tests make unreachable, since `pairedVerdict` refuses the state before the gate reads
+it.
