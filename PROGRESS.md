@@ -11364,3 +11364,26 @@ push since they were written.
 
 Pending on the lane: R54's readback (four of five predictions answerable, the third now
 comparable to R49/R51 for the first time), then U6b, R53's note levels, U4/U5/U6a.
+
+### 172.18 — R54 in flight, and the header's sample turned out to be the last experiment's
+
+The memory arm completed and the reference arm is running. The memory arm's step is red, which
+on this lane is a scientific gate failing rather than a build failure: `eval:l4` exits non-zero
+when any registered gate fails, `V5-resolution` cannot pass at 115 tasks and a 6pp bar, and the
+artefact is written before the exit. Evidence uploads with `if: always()`.
+
+While it ran, three defects were found by reading rather than by waiting.
+
+| Found | Consequence if unread | Repair |
+| --- | --- | --- |
+| `sample: 200` is the transfer pair's size; this run is 228 episodes (57 retail tasks at k=4, `TAU_TEST_TASKS=0`) | the verifier's `tasks == 50` prediction would abandon the round for a bookkeeping error | Amendment 3 records it; the verifier predicts four trials and reports the episode count as context |
+| `storeItems` samples the whole store while `conditioned` counts servable items | conditions counted in one population and compared to the other — the defect the coverage readings were just repaired for | `StoreItemRecord.status`, required; the verifier quotes conditions from active items only |
+| the evidence download was an ad-hoc command with unrecorded flags | no readback was repeatable | `eval/tools/fetch_evidence.py`, 1 MiB ranges over sixteen connections, length checked against the API: 20,287,175 bytes in 1m52s |
+
+The R54 verifier itself carries four states — `GRADED`, `NO_MEASUREMENT`, `DISCARDED` for a
+dispatch whose `scenario` block is not the registered pair, and `ABANDONED` — plus a coherence
+check that refuses a census reporting more conditioned items than servable ones
+(`0 <= conditioned <= servable <= stored`). Its self-test runs seventeen artefacts, up from the
+fourteen it had when it was pushed, and each addition came from a defect found by reading.
+
+Pending: R54's readback, then U6b.

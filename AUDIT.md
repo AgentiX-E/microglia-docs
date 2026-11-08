@@ -4724,3 +4724,53 @@ mechanism is only half described: the conditions name situations and most of wha
 did not. That is not a refutation of R54. It is the registration the next one should be
 written against, and the value of committing the second median is that it can now be the
 subject of a registration at all.
+
+### 34.54 The sample the header declared was the last experiment's
+
+R54's header says `sample: 200`. That number came from R51, whose pair was retail → airline:
+fifty airline tasks at four trials. R54 is the same mechanism in the configuration its
+predictions were written for — retail → retail — and a same-scenario run is split out of one
+scenario's own pool. Retail holds 115 tasks, `trainShare 0.5` cuts 58 and 57, and the
+repository variable `TAU_TEST_TASKS` is 0, so the dispatch evaluates **57 held-out tasks and
+228 episodes**, with learning capped at 32 of the 58 by `TAU_TRAIN_TASKS`.
+
+This was found by reading the repository variables, not by waiting for the artefact, and it
+would have broken the readback in a way that looks like science. The verifier asserted
+`tasks == 50` as a prediction, which is R51's airline count; on a 57-task artefact that
+prediction fails and the run is **abandoned** — for a bookkeeping error, in the one round whose
+entire purpose is to produce a mechanism reading. That is defect 26 in the other direction: not
+a gate that passes on an absent input, but a check that fires on a stale one.
+
+Three things are wrong when a header describes the wrong experiment, and they need different
+repairs.
+
+| Wrong thing | Repair |
+| --- | --- |
+| the field is stale | record it in an Amendment; editing a registration after its dispatch is how a prediction becomes a description |
+| the verifier graded it | predict only what the registration registers — four trials — and report the episode count as context |
+| nothing notices | the readback prints `episodes N (T tasks at k=4)` beside the declaration, so the next reader sees both |
+
+The general form of the mistake is worth stating because it recurs in every round of this
+project: `sample` is a number about *a scenario's size*, written as if it were a number about
+*the experiment*. Airline has fifty tasks and retail has a hundred and fifteen, so the same
+budget in episodes is 200 in one and 228 in the other, and a header that carries the number
+without the scenario is a header that will be wrong the first time the scenario changes.
+
+**One more population, in the store sample.** `store.conditioned` is counted over *servable*
+items — active, and inside the recall scope — while `storeItems` is the first `limit` items the
+store lists, whatever their status. R54's verifier read conditions off the whole sample and
+printed "N sampled items state a condition", which invites a comparison against `conditioned`
+that compares two populations. That is the defect the coverage readings were repaired for one
+instrument earlier, and it has the same repair: `StoreItemRecord` now carries `status`,
+required rather than optional so no sample can omit it, and the verifier restricts the
+condition text it quotes to active items. A self-test case makes the population visible: a
+sample whose only conditioned item is retired states no condition, and the run abandons.
+
+**And the download is now a tool.** The evidence archive is 20 MB behind a signed URL that
+this environment fetches at about 24 KB/s per connection — fourteen minutes serially, which is
+why every readback so far began with an ad-hoc download nobody recorded. `eval/tools/fetch_evidence.py`
+follows the redirect *without* the API token (the storage host answers 401 to an `Authorization`
+scheme it does not recognise rather than ignoring it), pulls 1 MiB ranges over sixteen
+connections, and checks the assembled length against the size the API reported. Measured:
+20,287,175 bytes in 1m52s, 91 entries. It refuses a run with two artefacts rather than choosing
+one. The sequence from "a run finished" to "a verdict" is three committed commands.
