@@ -4714,10 +4714,14 @@ fixing the instrument. R51 answers the third by fixing the write path.
 | P0 | `storeCensus` counts `conditioned` / `unconditioned` over the servable population, so the next readback measures whether a trigger was written at all | done |
 | P0 | Full gate: 3,217 tests / 153 files, coverage 99.95 / 99.65 / 100 / 99.95 (lines / branches / functions / statements); `typecheck` and `typecheck:lanes` clean; 39/39 pre-registrations valid | done |
 | P0 | R52: `V5-resolution` grades the claim (`claimPp`: number / `null` / absent) against a constant `POWER_TARGET_PP = 6`; CI conformance asserts the state rather than a non-zero exit; 16 new tests, 100/100/100/100 on every touched file | done |
-| P1 | R51 dispatch: `minCoverage 0`, `facadePair off`, 200 episodes at 4 trials, one store, one reference arm | running |
-| P1 | R51 readback against three predictions: `store.conditioned >= 4`, `empty/requests <= 0.25`, coverage p50 >= 12%; any of the three failing abandons the arm rather than reinterpreting it | blocked on the dispatch |
-| P2 | U6b dispatch (`TAU_WRITE_ADMISSION=neighbours`), whose readback must report the write census | blocked on R51's readback by the one-lane rule |
-| P2 | R53: the pack's note as the only variable — `none` / `today` / `calibrated`, on one store and one recall, to test whether the damage is in retrieval or in use | **registered, blocked on R51's readback** |
+| P0 | Correction to the record: R49's 38% empty packs were the `minCoverage 0.01` floor, not the missing conditions — its own retention curve says 571 of 1,516 packs, against 1,435 of 1,527 served ungated | done, AUDIT 34.51 |
+| P0 | `trainDomain`/`testDomain`/`recallDomain` in the prereg header, read by `eval:prereg-scenario`, consumed ahead of the repository variables; three refusals keep the pin honest | done |
+| P0 | `storeItems` in the arm artefact — the store's own words, bounded, with `omitted`/`truncated` counted — because a count of conditions cannot be read for register | done |
+| P1 | R51 readback: **ABANDONED** by its own third refutation; `conditioned` 16/16 and empty 0/1,527 met, coverage p50 4.88% refuted, and the configuration was retail→airline rather than within-scenario | done |
+| P1 | **R54 dispatch** (retail/retail/retail, floor 0): R51's predictions where they are answerable, with coverage p50 ≥ 12% as the one that could not be tested before | **running** |
+| P1 | R54 readback: coverage p50 < 12% with 0% empty means the distiller writes in the procedure's register and the next arm is the prompt, not retrieval | blocked on the dispatch |
+| P2 | U6b dispatch (`TAU_WRITE_ADMISSION=neighbours`), whose readback must report the write census | blocked on R54's readback by the one-lane rule |
+| P2 | R53: the pack's note as the only variable — `none` / `standard` / `hardened`, mechanism shipped (`TAU_INJECTION_NOTE`), recorded as `{mode, declared}` | registered, dispatchable |
 | P2 | U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
 | P2 | U1, U2, R46 admission arms | closed until a resolvable pair exists |
 | P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |

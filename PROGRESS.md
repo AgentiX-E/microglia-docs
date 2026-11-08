@@ -11268,3 +11268,65 @@ unrelated to its subject is the same defect as a gate that cannot pass, one laye
 **99.95 / 99.64 / 100 / 99.95** (lines / branches / functions / statements); `pnpm check`
 green; 41/41 pre-registrations valid. No SOTA row moves: IBM `gpt-5.5` airline 82.0 remains
 the published SOTA and microglia remains fifth of six named entries.
+
+### 172.15 — R51 read back: ABANDONED, two mechanism predictions met, and one correction to the record
+
+R51 dispatched to fix the two boundaries that dropped the question. Its readback is the
+second-most useful artefact the τ² lane has produced, and it is useful partly because it
+corrects this project's own account of the defect it was fixing.
+
+| Prediction | Registered | Measured | |
+| --- | --- | --- | --- |
+| `store.conditioned` | ≥ 4 of servable | **16 of 16** | met (R49: 0 of 10) |
+| `empty / requests` | ≤ 0.25 | **0 / 1,527** | met (R49: 0.379) |
+| coverage p50 | ≥ 12% | **4.88%** | **refuted** (R49: 4.7%) |
+| mean pack | 1.4–2.4 rules | 1.222 | short |
+| `l4-paired` | no revert branch | UNRESOLVED, −2.00pp, MDE 18.59pp, 1,527 packs | met |
+
+**The registration's own third refutation fired**, so R51 is closed as ABANDONED rather than
+reinterpreted. The reason it fired is a dispatch defect, not a mechanism finding: the run
+inherited `TAU_TEST_DOMAIN=airline`, so a retail store answered airline questions. Coverage
+of retail rules against airline questions measures transfer, and no prediction about
+relevance can be refuted by it.
+
+**The correction.** Three internal documents and one public one read R49's "38% of 1,528
+requests were served an empty pack" as a write/read defect — rules with no condition,
+unfindable by a question. The census is real; the attribution is not. R49 ran
+`minCoverage 0.01`, and its own retention curve says that floor emptied **571 of 1,516**
+packs while the as-is facade served **1,435 of 1,527**. R51, at floor zero, served every
+request. The emptiness belonged to the knob under test.
+
+The conditions were missing, and writing them was the right repair — 16 of 16 now carry one.
+But it did not fix the emptiness, and every document that said it did is corrected in
+AUDIT 34.51, WHITEPAPER 3.6.61 and COMPETITIVE L.27.
+
+### 172.16 — the scenario in the registration, the store in the artefact, and R54
+
+Two instrument repairs, both from that readback, both shipped before the next dispatch.
+
+| Repair | What it fixes |
+| --- | --- |
+| `trainDomain` / `testDomain` / `recallDomain` in the prereg header, read by `eval:prereg-scenario`, consumed ahead of the variables | a dispatch whose configuration is invisible in the registration; three refusals (name shape, recall ≠ train, partial pair) keep the pin honest |
+| `storeItems` in the arm artefact: id, kind, condition, statement, trust, scope, bounded, with `omitted`/`truncated` counted | a census that counted conditions and could not read one, so it could not tell a trigger in the user's register from one in the procedure's |
+| `injectionNote` level (`none` / `standard` / `hardened`) + `TAU_INJECTION_NOTE`, recorded as `{mode, declared}` | R53's arm, ready to dispatch: the pack's sentence as the only variable |
+
+`declared` is the subtle half: `standard` is both the default and one of the three arms, so
+an artefact that recorded only the mode could not tell "this run is the standard arm" from
+"nobody set the switch" — and a three-level comparison reading a default as one of its own
+levels reports three arms from two.
+
+**R54 is registered on top of both**: R51's predictions, run at retail/retail/retail, with
+the coverage prediction as the one that could not be tested before. Dispatched; the memory
+arm is running.
+
+**Acceptance.**
+
+| # | Criterion | Result |
+| --- | --- | --- |
+| 1 | the scenario a registration executes cannot come from a variable it did not name | **met**: header + three refusals + both arms read the output |
+| 2 | a registration that pins nothing resolves exactly as before | **met**: three empty lines, variables stand, 42/42 valid |
+| 3 | the artefact carries the store's own words, bounded | **met**: `storeItems` with `omitted`/`truncated` |
+| 4 | the note arm is switchable without touching the pack | **met**: 7 tests at the renderer, 6 at the switch; default byte-identical |
+| 5 | four-dimension coverage on every new file | **met**: `store-items.ts`, `injection-note-plan.ts`, `prereg.ts`, `render.ts` all 100/100/100/100 |
+| 6 | the coupling ledger describes the tree it is in | **met**: 148 → 150 modules, committed snapshot regenerated |
+| 7 | full gate | **met**: 156 files, 3,253 tests, 99.95 / 99.62 / 100 / 99.95 |

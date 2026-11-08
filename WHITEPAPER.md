@@ -3899,3 +3899,77 @@ are the ones that cannot reach the strict one, and the number they would set is 
 they happened to observe. A bar a caller can type is a bar that will be typed to pass. Ours
 is a constant in the protocol, it appears in every sentence the gate prints, and nobody,
 including us, can move it.
+
+#### 3.6.60 A number can be right and its explanation wrong
+
+This section is a correction, and it is written in the same voice as the claim it corrects
+because the claim was ours.
+
+For two iterations we carried a story: thirty-eight per cent of requests were served an
+empty pack, and the reason was that our rules had no triggers — a memory that says what was
+true and never says when. Every word of the number is in the record. The explanation is not,
+and the two artefacts that refute it were both in the same file.
+
+The floor we were testing emptied the packs. Thirty-eight per cent of requests got nothing
+because we had asked for a coverage floor of one per cent, and one per cent of a question's
+terms is more than most correct rules share. The same artefact carried an ungated facade in
+the same run, and it served ninety-four per cent of requests. The retention curve printed
+both numbers twelve lines apart.
+
+What makes this worth a section rather than an erratum is how the mistake was available. An
+instrument that can only report one of two populations will report the one it was pointed
+at. We had a number with a mechanism-free explanation, we had a mechanism with a
+number-free explanation, and they agreed, so we believed the pair. Nobody computes a
+retention curve on the population that survived the retention, and nobody reads "38% empty"
+as "the packs were empty" without asking which facade produced it.
+
+The repair is not the retraction. It is that the correction arrived from a registered
+prediction whose refutation fired: we had written down, before the run, what would prove us
+wrong, including the exact case that occurred — "empty falls but coverage does not rise" —
+and the discipline did the rest. A programme without that sentence would have read a
+successful trigger-writing change, a floor of zero and a delivery rate of one hundred per
+cent, and concluded that everything was fixed. Two of those three were true and the third
+was a different experiment.
+
+Two things survived, and they are worth stating before the correction reads as a general
+retreat. The store does write its triggers now: sixteen of sixteen items carry a condition
+where ten of ten carried none. And the pack does arrive on every request — but it arrived
+before too, whenever we asked without a floor, and knowing that is the difference between a
+record that describes a mechanism and one that describes a knob.
+
+The general lesson is narrow and uncomfortable. In a system with many switches, a symptom
+belongs to the switch you set last as readily as to the mechanism you are studying, and the
+only defence is an instrument that reports the population the switch produced beside the
+population the mechanism produced. We had built that instrument, for an unrelated reason,
+and it was sitting in the same file while we wrote two documents that ignored it.
+
+#### 3.6.61 The experiment must say where it ran
+
+There is a specific class of expensive mistake that a pre-registration is supposed to make
+impossible, and we found one it did not cover.
+
+We registered three predictions about a run in which the memory learns from one corpus of
+tasks and answers questions from the same corpus. The dispatch inherited two environment
+variables — set months earlier for a different experiment — that made the memory learn from
+one corpus and answer questions from another. The readback compared a number measured in
+the second configuration against a prediction written for the first, and the prediction was
+refuted.
+
+Nothing about this was dishonest. The artefact recorded the configuration, the run printed
+it, and the numbers are exactly what they are. What failed is that the *registration* did not
+say which configuration it was about, so the two could drift apart without any document
+contradicting another. A prediction is a statement about a quantity measured under
+conditions, and we had been in the habit of writing the quantity and letting the conditions
+be whatever the machine was set to.
+
+The fix is small and belongs with an older one. The recall floor had already been moved into
+the registration, for the reason that a threshold a caller can pass is a threshold chosen
+after the result. The scenario is the same kind of thing: it changes what the experiment
+*is*, not how it is scored, and a value that changes what the experiment is cannot live in a
+variable that whoever runs the dispatch happens to have set.
+
+The general form is worth keeping: an experiment's identity is the set of things that would
+change its conclusion, and every one of them belongs in the same paragraph as the
+predictions. Anything left outside that paragraph is not a detail of the run; it is an
+unregistered degree of freedom, and unregistered degrees of freedom are what a
+pre-registration exists to enumerate.

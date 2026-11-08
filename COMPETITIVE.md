@@ -2814,3 +2814,46 @@ distinguish absence from harm, and the census that came with it (38% empty packs
 treatment was absent a third of the time. What it does do is remove the excuse: after R51
 the packs arrive, and if the effect is still flat, the cause is on this page rather than in
 the index.
+
+### L.27 — Two of our numbers were the wrong numbers, and the competitors' rows stand (2026-11-08)
+
+L.25 argued that every competitor ships the trigger and we dropped it twice, and used "38%
+of 1,528 requests served an empty pack" as the evidence. That number is real and the
+inference was wrong. This entry corrects it, because a comparison table built on a defect
+that does not exist is worse than no table.
+
+**What the number was.** R49 ran a coverage floor of 0.01. With it, 949 of 1,528 requests
+were served a pack; **without it, 1,435 were** — both figures are in R49's own artefact, and
+R51 at floor zero served **1,527 of 1,527**. The floor emptied the packs, not the missing
+triggers. The retention curve that says so was added for a different reason and printed
+twelve lines below the number we quoted.
+
+**What survives, measured:**
+
+| Reading | R49 (floor 0.01) | R51 (floor 0) | R54 (same-domain) |
+| --- | --- | --- | --- |
+| items in the store | 10 | 16 | pending |
+| items stating a condition | **0 of 10** | **16 of 16** | pending |
+| requests served nothing | 579 / 1,528 (the floor) | **0 / 1,527** | pending |
+| mean rules per request | 0.76 | 1.22 | pending |
+| p50 rule/query coverage | 4.7% | 4.88% | pending |
+
+So the honest row for microglia in L.25's table is not "no trigger, and therefore no
+delivery". It is: **a trigger now, full delivery, and 1.22 rules per request whose median
+lexical overlap with the question is 4.9%.** That last number is the one that matters
+against the published work, and it is worse than any of the systems listed in L.26 measure
+on their own benchmarks — Mem0 and Voyager retrieve by a description written to be matched
+against new tasks, while ours is a procedure whose median overlap with a user's utterance is
+one token in twenty.
+
+**One caveat that is not a comfort.** The 4.9% was measured on the transfer configuration
+(retail store, airline questions), where near-zero overlap is *correct* behaviour. R54
+re-measures it with the pair pinned to retail/retail/retail, and that number — not this one —
+decides whether the register is a defect or a property of transfer.
+
+**Where the ranking stands.** Unchanged, and no row of ours is a leaderboard entry. IBM
+`gpt-5.5` airline 82.0 is the published SOTA; microglia remains fifth of six named entries on
+the airline columns it has measured, level with its own no-memory ablation on retail (36.0
+against 38.0 at an MDE of 18.59pp), and none of this iteration's work moves `pass^4` at all.
+What this iteration bought is that the next number will be about the mechanism rather than
+about a switch.

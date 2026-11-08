@@ -4585,3 +4585,77 @@ cells supply no `claimPp`, and `2a71e60b`'s CI re-renders all of them. If a τ²
 records `BENEFIT` below its own `detectablePp`, the two halves have diverged — which the
 unit tests make unreachable, since `pairedVerdict` refuses the state before the gate reads
 it.
+
+### 34.51 R51 measured: the conditions were written, and the emptiness was never theirs
+
+R51 dispatched to fix two boundaries — the instruction dropped on the write side, the
+condition ignored on the read side — and registered three predictions. It came back
+ABANDONED, and the reason is more useful than the verdict.
+
+**What the run actually was.** The dispatch set no scenario inputs, so it inherited the
+repository variables: learn on **retail**, answer **airline**, recall under **retail**. The
+readback therefore graded a retail store's rules on airline questions. Nothing in the
+artefact was wrong; the configuration was invisible in the registration, and it is now a
+header (`trainDomain`/`testDomain`/`recallDomain`) read by `eval:prereg-scenario`.
+
+| Prediction | Registered | Measured | |
+| --- | --- | --- | --- |
+| `store.conditioned` | ≥ 4 of servable | **16 of 16** | met (R49: 0 of 10) |
+| `empty / requests` | ≤ 0.25 | **0 / 1,527** | met (R49: 0.379) |
+| coverage p50 | ≥ 12% | **4.88%** | **refuted** (R49: 4.7%) |
+| mean pack | 1.4–2.4 | 1.222 | short |
+| `l4-paired` | no revert branch | UNRESOLVED, −2.00pp, MDE 18.59pp | met |
+
+The third prediction fired its own refutation ("the pack fills on scope alone, with no
+topical gain") and the arm is closed as registered. But 4.88% is the coverage of retail
+rules against **airline** questions: that is a measurement of transfer, and a prediction
+about relevance cannot be refuted by it.
+
+**The correction this readback forces on the record, and it is mine.** AUDIT 34.48, WHITEPAPER
+3.6.58 and COMPETITIVE L.25 all read R49's "38% of requests were served an empty pack" as a
+defect of the write and read paths — rules with no condition, unfindable by a question. The
+census is real; the attribution is wrong. R49 ran `minCoverage 0.01`, and **its own retention
+curve says that floor emptied 571 of 1,516 packs** while the as-is facade in the same run
+served 1,435 of 1,527. R51, at floor zero, served every request. The empty packs were the
+floor under test, not the missing conditions.
+
+That matters beyond bookkeeping. The project spent two iterations on a defect whose number
+was a property of a knob it had turned, and the number that would have said so was already
+in the same artefact, one field away (`coverageObservations`, added by 34.46 for a different
+reason). The conditions *were* missing — 0 of 10 — and writing them was still the right
+repair; but it did not fix the emptiness, and the record has to say which is which.
+
+**What R51 did establish.** The store now writes its own triggers: 16 of 16 items carry a
+condition where R49's carried none, and the artefact carries the conditions in words
+(`storeItems`) rather than a count of them — because a count cannot tell a trigger written
+in the user's register from one written in the procedure's, and those two predict opposite
+coverage.
+
+### 34.52 The scenario belongs in the registration, and the store belongs in the artefact
+
+Two instrument defects, both discovered by the same readback, both repaired before the next
+dispatch.
+
+**A configuration that cannot be read is not a specification.** R51's predictions named a
+configuration the dispatch did not pin. The recall floor had already been moved into the
+pre-registration header for exactly this reason (a floor a caller can type is a floor chosen
+after the readout), and the scenario had not. It is the same argument: `trainDomain`,
+`testDomain`, `recallDomain` now live in the header, `eval:prereg-scenario` emits them,
+and both arms consume them ahead of the variables. A registration that pins nothing emits
+three empty lines, so every earlier registration resolves exactly as it did.
+
+Three refusals make the pin honest rather than decorative:
+
+| Refusal | Why |
+| --- | --- |
+| a domain that is not `^[a-z][a-z0-9]*$` | the value is pasted into an environment variable; anything a shell reads is a value that can change the experiment |
+| `recallDomain` ≠ `trainDomain` | recall is asked in the store's own scenario; a third domain is an experiment no registration has a prediction about |
+| a partial pair | the rest would fall back to a variable, which is the defect being removed |
+
+**A census is not a reading.** `store.conditioned` counted 16 items and could not show one
+of them, so the readback could not answer the question the next arm asks. `storeItems`
+carries id, kind, condition, statement, trust and scope, bounded by a limit and a character
+cap, with `omitted` and `truncated` counted. A sample that silently dropped half a store
+would let the register of the sample stand in for the register of the store — the same
+defect as a retention curve computed on the population that survived it, one artefact
+earlier.

@@ -7698,3 +7698,87 @@ not estimable: no question changed hands
 
 **Coverage.** `gates.ts` 100/100/100/100 — every branch above has a test, including the
 `|claim| === detectablePp` boundary and the `Infinity`-with-a-claim case.
+
+### 17.109 The pack's sentence is a variable with three levels
+
+The note a knowledge block opens with is the mechanism's only hook on the failure one step
+past retrieval. MemTrapBench's finding is that a *correct, relevant* memory anchors a model
+to a frame that no longer fits the question; MemCalib's is that over-use, not under-use,
+dominates; RPEval's is that humans ignore an irrelevant preference 0.86 of the time and
+GPT-5 0.12. Our note said "apply an item only where its condition holds", addressed to a
+model that had just been handed the rule in the same breath.
+
+```ts
+export type NoteMode = 'standard' | 'hardened' | 'none';
+```
+
+| Level | Note | Arm |
+| --- | --- | --- |
+| `standard` | the condition-checking sentence; **the default, byte-identical to every earlier artefact** | the control |
+| `hardened` | the above, plus: *a recalled rule may describe a situation this request is not; where the rule and the current observation disagree, the observation is the evidence* | the treatment |
+| `none` | no note at all | the absence of the sentence, not the absence of the pack |
+
+Four properties the tests hold:
+
+- the default renders the same bytes, because every committed artefact is re-rendered and
+  diffed on push;
+- `hardened` keeps the standard sentence verbatim and appends, so the two arms differ by one
+  sentence and not by a rewrite;
+- an abstention block keeps its own note at every level — that note says the opposite thing
+  (there is nothing to apply, do not invent one) and blanking it would invert the block
+  rather than vary the experiment;
+- the added sentence carries no double quote and no ampersand, because the note is an XML
+  attribute and the existing text already spends one pair of quotes on the word `when`.
+
+The dispatch switch is `TAU_INJECTION_NOTE`, resolved by `resolveInjectionNotePlan`, and the
+artefact records `{ mode, declared }`. `declared` exists because `standard` is both the
+default and an arm: without it, a readback cannot tell a control from a run nobody
+configured, and a three-level comparison would be reading a default as one of its own levels.
+
+### 17.110 An experiment's identity: the scenario in the header, the store in the artefact
+
+R51 registered three predictions about a within-scenario run and was dispatched against
+`TAU_TEST_DOMAIN=airline`, set months earlier for the transfer arm. The readback graded a
+retail store's rules on airline questions and fired a refutation that its own configuration
+had made unreachable.
+
+**The scenario moves into the header**, beside the recall floor, for the same reason: it
+changes what the experiment *is*.
+
+```yaml
+trainDomain: retail
+testDomain: retail
+recallDomain: retail
+```
+
+`eval:prereg-scenario` emits `train=`/`test=`/`recall=` lines into `$GITHUB_OUTPUT`, and both
+arms read `steps.recall_floor.outputs.train || vars.TAU_TRAIN_DOMAIN || …`. A registration
+that pins nothing emits three empty lines, so every earlier registration resolves exactly as
+before — the single rule this whole family of changes obeys.
+
+Three refusals, each closing a way the pin could be decorative:
+
+| Refusal | Reason |
+| --- | --- |
+| not `^[a-z][a-z0-9]*$` | the value is pasted into an environment variable |
+| `recallDomain` ≠ `trainDomain` | recall is asked in the store's own scenario; a third domain is an experiment with no registered prediction |
+| a partial pair | the rest falls back to a variable, which is the defect being removed |
+
+**The store moves into the artefact.** `store.conditioned` counted conditions and could not
+read one, so a readback could not distinguish "when the customer asks to cancel an order"
+from "when this request requires cancelling" — and those predict opposite coverage.
+
+```ts
+storeItems: storeItemSample(knowledge)   // id, kind, when, statement, trust, scope
+```
+
+Bounded by `limit` and `maxChars`, with `omitted` and `truncated` counted rather than
+dropped: a sample that silently halved a store would let the register of the sample stand in
+for the register of the store, which is the retention-curve defect one artefact earlier.
+
+**And the correction this produced.** R49's "38% of requests served nothing" was the
+`minCoverage 0.01` floor, not the missing conditions: its own retention curve says the floor
+emptied 571 of 1,516 packs while the as-is facade served 1,435 of 1,527. Three documents
+attributed the emptiness to the write path; AUDIT 34.51 corrects them. The retention curve
+that refuted them was added to the artefact by 34.46 for an unrelated reason and was sitting
+in the same file.
