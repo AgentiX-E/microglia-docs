@@ -5021,3 +5021,41 @@ statements**. `note-facade.ts` is 100 on all four. Two pre-existing branch gaps 
 that assert behaviour rather than lines — `diff-corpus.ts` 83.33 → 100, `tau2-admission.ts` 93.10 →
 95.83 — and one remains at 94.44 in `ablations.ts`, which TECH-DESIGN §13.6 records as unreachable
 because the store has no delete.
+
+### R55.0 read: nothing recurs, and the next registration is about the object (2026-11-08)
+
+R55.0 closed the question it was dispatched to ask, and it closed it in the direction the registration
+predicted: **no item reaches support 2**. Distribution `{1: 7}`, refutation FIRED, state `ABANDONED`.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | R55.0 readback — the `supportTasks` distribution and the register gap | **read**: `{1: 7}`, 0 of 7 at support 2, ABANDONED on its own refutation |
+| P0 | R56's two lost predictions re-read on R55.0's artefact — tool-name share of the `lesson` store, and whether a tool name reaches a pack | **read, free**: 0 of 7 items, 0 of 1,921 packs, ban refused 9 of 16 candidates |
+| P0 | The `sota` workflow graded the memory-free control against `published + 5pp`, so six consecutive dispatches concluded `failure` with the memory arm green (AUDIT 34.72, `sampleGates`) | done, 5 tests |
+| P1 | **R58 — the object distilled is one task trace, not one correction**, with consolidation across the learning set so a claim that recurs in three traces can reach support 3 | next; needs a registration |
+| P1 | R55.1 — admission at `supportTasks >= 3` | **closed**: not runnable, the floor is above the population's maximum |
+| P2 | R53 — the pack note at three levels over one store | dispatch-ready; capability done (AUDIT 34.69, 34.70) |
+| P2 | R57 — a controlled distractor at a measured coverage band | registered, unblocked in principle |
+| P2 | U6b / U4 / U5 / U6a, store-level poisoning | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+**Why R58 and not another admission rule.** IBM's `sup3` admits a guideline after three distinct
+learning tasks and keeps ~5 guidelines per learning task; the unit is a task *trajectory*. Ours is one
+sentence of one failure, so the deriver count is 1 by construction and no threshold can move it. The
+change that makes recurrence possible is at the write side: distil per trace, and consolidate across
+the learning set so the same claim arriving from three traces merges into one item with support 3.
+That is R56's second refutation arriving one iteration late, and it is the only route to the mechanism
+the published leader uses.
+
+**What R55.0 also showed, and it matters for R58's design.** The ban that refuses candidates naming the
+split's tools works: 9 of 16 candidates refused, zero tool names in 7 items and in 1,921 packs. Its
+cost is that the store halves and the surviving conditions share a median 7.14% of the request's terms.
+A trace-level unit is the shortest route to conditions written in the *user's* phrasing, because a
+trace is what contains that phrasing — which makes R58 an attack on the register gap and the
+recurrence gap at once, rather than two experiments.
+
+**The number, carried forward and not claimed.** Memory 64.91% against reference 54.39%, paired
++10.53pp [−3.51, +24.56], p = 0.210, n = 57, resolution 19.66pp, verdict `UNRESOLVED`. The lane's
+largest point estimate, and still not a result: what it establishes is that the lane can produce a
+double-digit paired difference, and what it does not establish is that the treatment produced it.

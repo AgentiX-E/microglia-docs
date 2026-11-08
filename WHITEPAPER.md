@@ -4135,3 +4135,43 @@ registration that said *three levels*. The guard had been written one commit ear
 instances of exactly this. The lesson is not that the guard failed. It is that a hand-written mapping
 between two shapes is a projection, and projections lose fields by default — so the test has to be
 attached to what leaves the function, not to what enters it.
+
+#### 3.6.62 The arm that was designed to fail, and did
+
+The last dispatch of this series was not an attempt to improve a number. It was an attempt to find out
+whether the mechanism this project has spent three iterations tuning can exist in the form it has been
+built in — and the registration said, in advance, that it could not.
+
+The claim: every rule in the store derives from exactly one user correction, every correction comes
+from a different task, and therefore no rule can ever be corroborated by a second task. The published
+leader on this benchmark admits a guideline after **three** distinct learning tasks and keeps about
+five guidelines per task, because its unit is a whole trajectory rather than a sentence. A store built
+one sentence at a time cannot reach that threshold by any admission rule; the threshold is above the
+population's maximum.
+
+The reading was a distribution, and the distribution was `{1: 7}`: seven rules, each supported by one
+task. Two of the four predictions failed, in the sense that their bars were not met, and they failed
+because the phenomenon they measured does not occur here. The refutation the registration wrote for
+itself — *nothing recurs, so the grain is one claim per correction* — fired. The state is `ABANDONED`,
+and that is the deliverable.
+
+There is a temptation, when a run is built to fail, to treat the failure as a formality. It is the
+opposite. Three iterations of tuning produced an arm that lost 8.8 points (the distiller's form), an
+arm that gained 5.3 (the same form, with a condition), and a series of explanations for why neither
+moved the benchmark. None of them could say whether the mechanism was wrong or merely misapplied,
+because every arm varied something on the *input* side. This one varied nothing and asked a structural
+question about the store, and its answer is the first in this series that changes what the next
+experiment is allowed to be.
+
+What the same run also settled is smaller and more immediately useful. Two iterations ago the
+distiller's form was changed because its conditions named the tools the agent had called, and the
+change cost 8.8 points while a guard against those names — added in the same commit — went unmeasured.
+The `lesson` form with only the guard produces **zero** tool names in seven rules and in 1,921
+delivered blocks, having refused nine of sixteen candidates. The form was never the fix. The guard was,
+and its price is a store half the size.
+
+So the project now knows three things it did not: that the treatment can produce a double-digit paired
+difference on this benchmark (+10.53 points, eleven tasks gained against five lost — unresolved, since
+fifty-seven tasks cannot resolve ten), that the prompt-side levers are exhausted, and that the next
+change has to be to the *object* distilled. A trajectory contains the user's own phrasing, which is the
+one thing the surviving conditions still do not have.

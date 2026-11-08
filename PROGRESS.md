@@ -11710,3 +11710,54 @@ learned is still there.
 R55.0 is still running (run `42463064049`, 95 minutes at the time of writing). Nothing in this
 iteration changes the path it executes: the three-facade branch is off unless a registration turns it
 on, and `budgetBasis` is unset on every dispatch that does not.
+
+### 172.29 — R55.0 read: nothing recurs, and the ban was the fix
+
+R55.0 (`42463064049` on `482d2d92`) was the dispatch the last three iterations kept deferring: not the
+prompt, not the retriever, not the admission rule, but the *unit*. It read exactly as registered.
+
+| Prediction | Reading |
+| --- | --- |
+| ≥ 2 sampled items reach support 3 | **0 of 7** |
+| ≥ 25% reach support 2 | **0 of 7** |
+| the store stays under 40 servable items | 7 servable |
+| items at support 2 name a tool 15% less often | not measurable — there are none |
+| the run is the registered trial count | k=4, 57 tasks |
+
+Refutation FIRED, state `ABANDONED`, distribution `{1: 7}`. R55.1 (admission at `supportTasks >= 3`)
+would admit nothing, and the registration is closed rather than re-parameterised. The unit — one
+sentence of one failure — is the constraint, and the next registration is about the object distilled.
+
+**The free re-read of R56's two lost predictions, on this artefact.** The `lesson` store built with the
+tool-name ban carries **0 tool names in 7 items** and **0 in 1,921 delivered packs**, with the ban
+refusing 9 of 16 candidates. R56 changed the form to `procedure` for exactly this purpose and lost
+8.77pp doing it; the ban alone achieves it. That does not rehabilitate `procedure` — R56 varied two
+things — but it does mean the form was never the fix, and the ban's cost is now the open question:
+nine refused candidates, coverage p50 7.14% against the 12% bar the ban's own registration set.
+
+**The number.** Memory arm `pass^4 = 64.91%` against the reference arm's `54.39%`: **+10.53pp paired
+[−3.51, +24.56], p = 0.210, n = 57**, resolution 19.66pp — `UNRESOLVED`, the largest point estimate in
+the lane (R54 +5.26pp, R56 −8.77pp) and not a result. 11 tasks gained against 5 lost.
+
+**A CI defect the run exposed, and it was not the run's.** The job concluded `failure` with the memory
+arm green: the memory-free reference arm had been graded against `published + 5pp`. Six consecutive
+`sota` runs ended that way, which means the status that exists to signal a real failure signalled
+nothing — an OOM, a missing artefact and a driver crash all looked like the expected red. `sampleGates`
+now gives the control the gate it owes the pairing step (every task it claims to have scored was
+scored) and applies the published bar to the treatment alone; `arm` and `published_bar_applies` carry
+the distinction into the artefact (5 tests, from a `bin/` decision that had none).
+
+Coverage after both changes: **99.95 / 99.68 / 100 / 99.95**, 3,390 tests in 162 files, level 100 on
+every dimension for the three new modules (`note-facade.ts`, `sample-gates.ts`, and the widened
+`diff-corpus.ts`).
+
+Where this leaves the project, in the order the roadmap can run:
+
+| # | Step | State |
+| --- | --- | --- |
+| 1 | R58 — the object distilled is one task trace, with consolidation across the learning set | next: needs a registration, not a dispatch |
+| 2 | R53 — three note levels over one store | dispatch-ready; the capability exists, the one-lane rule waits on R58's registration being written or run |
+| 3 | R57 — a controlled distractor at a measured coverage band | registered, after R55/R56, now unblocked in principle |
+| 4 | U6b / U4 / U5 / U6a, store-level poisoning | registered |
+| 5 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |

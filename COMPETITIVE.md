@@ -3030,3 +3030,42 @@ capability and found two defects, and a capability is not a result. microglia is
 entries; IBM `gpt-5.5` airline 82.0 is the published SOTA overall; IBM `gpt-4.1` retail 67.5 leads
 that domain; and the τ² retail number this lane can defend is the paired memory-versus-reference
 reading it already had.
+
+**R55.0 puts microglia closer to the retail leader than it has ever been, and the table still does not
+move.** The memory arm read `pass^4 = 64.91%` on the 57 held-out retail tasks; IBM's `gpt-4.1` retail
+arm is at 67.5, so the gap is **2.59pp** and it is the narrowest the comparison has been. Two facts
+keep that sentence honest:
+
+- Our own memory-free arm read 54.39% on the same split, which is *below* the 57.5 published baseline
+  the lane has been grading against. The 64.91 is therefore a weak backbone plus a large treatment
+  effect, not a strong backbone at parity: +10.53pp paired, p = 0.210, n = 57, resolution 19.66pp —
+  `UNRESOLVED`, so no contribution is claimed.
+- IBM's 67.5 is their selective arm on their split; ours is 57 tasks of the 114-task retail set with a
+  different backbone. The comparison is against the published number under the lane's own protocol, not
+  a head-to-head run.
+
+| Entry (τ² retail, `pass^4`) | Value | Source |
+| --- | --- | --- |
+| IBM ALTK-Evolve, `gpt-4.1`, selective (`sup3`) | **67.5** | published |
+| **microglia, `deepseek-chat`, R55.0 memory arm** | **64.91** | run `42463064049`, 57 tasks, unresolved pair |
+| IBM ALTK-Evolve, `gpt-4.1`, no guidelines | 57.5 | published baseline the lane grades against |
+| microglia, `deepseek-chat`, R55.0 memory-free reference | 54.39 | same run, same split |
+
+**What the table now says about the mechanism.** Three of our last four arms changed the *prompt side*
+of the injection — the form (R56), the note (R53, built not dispatched), the register (R51) — and the
+one that read highest was the arm with the least prompt engineering: `lesson` form, the tool-name ban,
+seven items. IBM's advantage is not in their prompt either; it is in the unit, where ~5 guidelines per
+learning task are derived from a trajectory and admitted only after three trajectories support them.
+Our store cannot express that, because an item has exactly one deriver by construction (AUDIT 34.71,
+distribution `{1: 7}`). **The remaining 2.59pp and the recurrence mechanism are the same problem**, and
+that is what R58 changes.
+
+Ranking, stated as the numbers rather than as an ordinal, because the ordinal depends on which
+submissions count: the retail rows this project has recorded are SapientAI 72.8 and IBM `gpt-4.1` 67.5
+above us, RAFT-30B-A3B 61.4, ALTK-Evolve 57.5 and stock `llm_agent` 34.0 below — and the earlier note
+that two of the five rows are unverified submissions, one of which discloses train/base overlap, still
+applies. Before R55.0 the lane's own number was not in that list at all; now it is, at 64.91, and the
+sentence that has to accompany it is the pair's state: `UNRESOLVED`.
+
+IBM `gpt-5.5` airline 82.0 remains the published SOTA overall — that row is unaffected by anything
+measured here, because this lane has never run the airline arm as a treatment.

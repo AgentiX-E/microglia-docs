@@ -5436,3 +5436,76 @@ an unknown value is refused, and the pair-plus-three-level combination is refuse
 The general form still stands as a review target, and now has one more concrete rule: **a parser's
 own object literal is a projection, and every projection in this repository has either a compile-time
 decision table or a test over the field that was added last.**
+
+### 34.71 Nothing recurs, exactly as the registration predicted, and the prediction is the finding
+
+R55.0 was dispatched to measure rather than assert a structural claim: that in this lane no item can
+reach support 2, because every item derives from exactly one user correction and every correction
+comes from a different task. The reading is the distribution, and it is `{1: 7}` over seven items.
+
+| Prediction (written before the dispatch) | Reading |
+| --- | --- |
+| at least 2 of the sampled items reach support 3 | **0 of 7** |
+| at least 25% reach support 2 | **0 of 7 (0.000%)** |
+| the store stays under 40 servable items | 7 servable — holds |
+| items at support 2 name a tool 15% less often | not measurable: there are no items at support 2 |
+| the run is the registered trial count | k=4, 57 tasks — holds |
+
+The refutation fired — *nothing recurs: no item reaches support 2, so the grain is one claim per
+correction* — and the state is `ABANDONED`. This is the one case in the last ten iterations where
+abandoning is the deliverable: the prediction was "this mechanism cannot run here", it was written
+before the dispatch, and it held exactly.
+
+Two consequences, and the second is the expensive one.
+
+**R55.1 is not runnable.** Admission at `supportTasks >= 3`, with the same store construction, the
+same recall and the same note, would admit nothing at all — the floor would be above the population's
+maximum. That is now a fact rather than a suspicion, and the registration is closed rather than
+re-parameterised.
+
+**The unit is the constraint, not the rule.** IBM's `sup3` arm admits a guideline after three distinct
+learning tasks and keeps ~5 guidelines per learning task; their unit is a *task trajectory*, successes
+and failures together. Ours is one sentence of one failure. A mechanism whose admission rule counts
+derivers cannot be transplanted onto a unit that never has a second deriver, and no threshold moves
+that. The next registration is therefore about the object distilled — one task trace rather than one
+correction, with consolidation across the learning set so a claim that recurs in three traces *can*
+reach support 3 — which is what R56's own second refutation was pointing at from the other side.
+
+### 34.72 R56's premise does not survive its own repair, and the ban was the fix
+
+R56 changed the distiller's form from `lesson` to `procedure` because R54's `lesson` store wrote its
+conditions in the procedure's register, naming the tools the agent had called. It also added a
+host-side ban that refuses a candidate whose statement or condition names one of the split's action
+names. The form change cost **−8.77pp** and was reverted under R45. The ban stayed.
+
+R55.0 ran `lesson` **with the ban** and 1,921 delivered packs later:
+
+| Reading | R54 (`lesson`, no ban) | R56 (`procedure`, ban) | R55.0 (`lesson`, ban) |
+| --- | --- | --- | --- |
+| store items | 20 | 8 | 7 |
+| candidates refused | — | — | **9 of 16** |
+| tool names in the store | the premise of R56 | — | **0 of 7** |
+| packs carrying a tool name | — | — | **0 of 1,921** |
+| coverage p50 | 8.33% | 6.25% | 7.14% |
+| items served per request | 1.417 of 20 (7.1%) | 1.597 of 8 (20.0%) | 1.577 of 7 (22.5%) |
+| paired `pass^4` | +5.26pp (p=0.63) | **−8.77pp** (p=0.36) | **+10.53pp** (p=0.21) |
+
+So the ban alone removes the tool names — nine candidates refused, zero surviving — and the form
+change was not needed for the purpose it was introduced for. That is not a claim that `procedure`
+would have been harmless under a different design; it is a claim about this one: R56 varied two things
+by accident, one of which was doing the work.
+
+**What the ban costs is still open, and R56's first refutation still stands.** Nine of sixteen
+candidates refused is a store half the size, and the surviving conditions share a median 7.14% of the
+request's terms — below the 12% bar the registration that introduced the ban set for itself. The
+conditions are in the user's register now ("A single request bundles multiple modifications to the
+same pending order"), which is what R51 asked for, and they are still not the request's words. A trace
+as the distillation unit is the shortest route to conditions written in the *user's* phrasing, because
+a trace is what contains that phrasing.
+
+**The number, and what it is not.** The memory arm read `pass^4 = 64.91%` against the reference arm's
+`54.39%`: **+10.53pp paired [−3.51, +24.56], p = 0.210, n = 57**, and the sample resolves 19.66pp, so
+the verdict is `UNRESOLVED`. It is the largest point estimate this lane has produced (R54 +5.26pp,
+R56 −8.77pp) and it is not a result. The one thing it does establish is that the lane is not
+structurally unable to show a benefit: a 10.5pp paired difference on 57 tasks produces 11 gained
+against 5 lost, and the sample that could resolve it needs roughly four times the tasks.
