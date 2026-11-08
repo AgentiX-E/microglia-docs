@@ -11440,8 +11440,9 @@ Run `42438746694`, 57 retail tasks at k=4, both arms.
 | paired `pass^4` | −2.00pp | **+5.26pp** [−8.77, +19.30] | resolves 20.27pp → `UNRESOLVED` |
 
 Every write-path prediction held; the coverage bar did not, and R54's second refutation fired on its
-own terms. The paired delta is the lane's first non-negative point estimate and it claims nothing:
-10 tasks gained, 7 lost, 57 pairs, resolution 20.27pp. The repair/break ledger reports for the first
+own terms. The paired delta is the lane's largest positive point estimate and its second non-negative one —
+the pre-R50 pair recorded +1.47pp over 68 pairs and failed on `p` — and it claims nothing: 10 tasks
+gained, 7 lost, 57 pairs, resolution 20.27pp. The repair/break ledger reports for the first
 time on this lane — 42 informative episodes, 28 repaired, 26 broken.
 
 The verifier returns `ABANDONED` because this artefact predates `storeItems`, so the store's text is

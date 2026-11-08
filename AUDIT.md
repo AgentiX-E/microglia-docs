@@ -4947,9 +4947,10 @@ the request's terms nearly doubled. It did not reach 12%. R54's second refutatio
 terms — *the conditions exist and do not name the situation* — and the registration says what that
 means: the next registration is about the prompt.
 
-The paired delta is the first non-negative one this lane has produced, and it is worth exactly what
-R50 says it is worth: 57 pairs resolve 20.27pp, so +5.26pp [−8.77, +19.30] at p = 0.63 is
-`UNRESOLVED`. Recording it as encouragement would be the same defect as recording it as a loss;
+The paired delta is the largest positive point estimate this lane has produced and the second
+non-negative one — the pre-R50 pair recorded +1.47pp over 68 pairs and failed on `p` rather than on
+sign. It is worth exactly what R50 says it is worth: 57 pairs resolve 20.27pp, so +5.26pp
+[−8.77, +19.30] at p = 0.63 is `UNRESOLVED`. Recording it as encouragement would be the same defect as recording it as a loss;
 neither is a reading. What the ledger does say, and this is a number rather than a direction: of 228
 episodes, 42 were informative, 28 repaired and 26 broke — the first time the repair/break split has
 been available on this lane at all.
