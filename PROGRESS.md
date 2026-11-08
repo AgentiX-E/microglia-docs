@@ -11527,3 +11527,29 @@ separate content from volume; R57's `far` arm is the volume control. Iteration 6
 found hurt-rules at cosine 0.232 and help-rules at 0.228 (p = 0.86) on a store where relatedness and
 usefulness are confounded by construction; R57's `near` and `adversarial` arms are the same text with
 the sign flipped, which is the control that measurement never had.
+
+### 172.23 — The early stop lands, and the stopped run keeps its reading
+
+The first of the three debts from 17.113 is repaid. `funnelVerdict` is a protocol export with three
+callers now — gate, readback, driver — and the driver stops immediately after `host.distill()`
+instead of spending an hour evaluating a store that came out empty.
+
+What makes it an instrument rather than an abort is what the refusal carries. The marker's reason is
+the same sentence `V0` prints, from the same function:
+
+```
+32 correction(s) -> 30 candidate(s) -> 0 admitted -> 0 stored -> 0 servable:
+every candidate was refused: the write path admitted nothing it was offered
+```
+
+so a stopped R56 would still have answered its own first refutation — *the ban is too strict* — with
+a count, and the readback would have had a stage to name instead of a state. `l4.ts`'s artefact no
+longer calls every stop a provider outage, because "retry" and "the store is empty" are different
+answers to the same red build.
+
+Two side effects worth recording. The store is read once and the census, funnel and domain ledger
+share it — three reads in a row would be three chances to describe three slightly different stores.
+And the stop only fires on a chain that is *broken*, not on one that is short: R56's store of twelve
+items is a reading, an empty one is not.
+
+Gates: 3,323 tests in 160 files, coverage 99.95 / 99.62 / 100 / 99.95.

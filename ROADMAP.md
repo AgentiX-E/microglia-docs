@@ -4846,9 +4846,9 @@ reading mid-flight:
 - **The verifier's terminal state is too coarse.** R54 was `ABANDONED` for a refutation about the
   store sample while its coverage reading was measured and reconciled. The repair is a scoped
   refutation (`subject: store | delivery`), not a fifth state (AUDIT 34.57).
-- **The driver does not stop before the evaluation loop.** `V0`'s predicate exists and is tested; the
-  call site inside the driver, which is the difference between learning in ninety seconds that the
-  store is empty and learning it after an hour, is not written (TECH-DESIGN 17.113).
+- ~~**The driver does not stop before the evaluation loop.**~~ Repaid: `funnelVerdict` is exported and
+  the driver stops on it immediately after `host.distill()`, with the full chain as the reason
+  (TECH-DESIGN 17.115).
 - **BIRD's absent gates have no written reasons.** The matrix reports what the last artefact carried,
   not why the other twenty-nine were skipped, and distinguishing "this dispatch did not ask" from
   "this lane cannot" needs a BIRD arm inventory (TECH-DESIGN 17.114).

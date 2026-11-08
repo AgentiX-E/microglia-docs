@@ -7985,9 +7985,9 @@ The information is the same and there is one authority rather than three that mu
 is that a verifier matching on a code now matches on a phrase, which is why the phrase for each
 stage is a single `return` in `emptyStage()` and cannot be assembled from parts.
 
-**The driver does not stop early yet.** 17.112's strongest claim — *stop before the evaluation loop,
-because learning in ninety seconds that the store is empty beats learning it after an hour* — is not
-implemented. The gate fires at the pair, the readback returns `NO_MEASUREMENT`, and an hour of
+**The driver does not stop early yet** (repaid in 17.115). 17.112's strongest claim — *stop before
+the evaluation loop, because learning in ninety seconds that the store is empty beats learning it
+after an hour* — is not implemented. The gate fires at the pair, the readback returns `NO_MEASUREMENT`, and an hour of
 pack-free evaluation is still spent. Recorded as debt: the repair is a `V0` evaluation inside the
 driver immediately after `host.distill()`, with the same predicate, which is the three-call-sites
 design the section asked for. The single predicate exists (`emptyStage`, `funnelReading`), so the
@@ -8024,3 +8024,33 @@ the *BIRD* lane. BIRD fires ten gates in the artefact this document was rendered
 type can supply thirty-nine; the twenty-nine it did not fire were skipped by dispatch inputs, not by
 a missing arm, and distinguishing "this dispatch did not ask" from "this lane cannot" needs an arm
 inventory for BIRD that does not exist yet. Recorded as debt rather than filled with a guess.
+
+### 17.115 The early stop, and what a no-measurement artefact has to carry
+
+The debt in 17.113 is repaid: `funnelVerdict(funnel)` is a protocol export with three callers — the
+gate publishes it, the readback refuses on it, and the driver stops on it immediately after
+`host.distill()`. Two details are what make the stop an instrument rather than an abort.
+
+**The reason is the chain, not the conclusion.** A stop that reported *"the store was empty"* would
+lose exactly the reading the next registration exists to produce — which stage refused, and how
+many. The marker therefore carries `funnelReading`'s sentence:
+
+```
+32 correction(s) -> 30 candidate(s) -> 0 admitted -> 0 stored -> 0 servable:
+every candidate was refused: the write path admitted nothing it was offered
+```
+
+That sentence is the one `V0` prints, from the same function, so a stopped run and a run that
+reached the gate cannot describe the same store differently. It also preserves the R56 refutation
+that reads *the ban is too strict*: a subject whose accepted store is empty is a finding, and it is
+recoverable from a stopped run's notes.
+
+**A funnel stop is not an outage.** `l4.ts`'s no-measurement artefact said "the provider failed its
+pre-flight probe", which was true of its only producer until now. The title is neutral and the note
+says *an infrastructure or instrument fact*, because the reader's next question — retry, or fix the
+store? — has a different answer in the two cases.
+
+One more change fell out of the wiring: the store is read once. The census, the funnel and the
+domain ledger all describe the same listing, and three reads in a row would be three chances to
+describe three slightly different stores — the defect R48 found one layer down when two readings
+came from two dispatches.
