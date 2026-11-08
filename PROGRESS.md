@@ -11908,3 +11908,36 @@ answered with a floor the store set, and the *population* question is the variab
 changes. If a group merges and support 2 appears, R55.1's threshold becomes readable for the first
 time and R57's distractors become worth paying for. If nothing merges with 26 claims and a floor
 calibrated on this register, the finding is about the corpus rather than the mechanism.
+
+### 172.33 The yield is an instrument, so the next question can be asked
+
+R59 is in flight (`42488237590` on `8f9aeffe`). While it runs, the number the *next* registration needs
+is now recorded rather than computed by hand: claims per correction.
+
+| | published arm | this lane (R58) |
+| --- | --- | --- |
+| guidelines per learning task | ~5 | **2.14 claims per correction**, ~0.5 per task |
+| store, retail | 292 lossless / 31 `sup3` | 15 claims from 7 corrections |
+
+`yieldCensus` records one row per correction — the failed rubric assertions it carried and the stored
+items citing it — joined on the run id rather than the task, because two corrections of one task are
+two events. A retired item still counts (a claim folded into a paraphrase was written), and a
+correction that yielded nothing is kept, because its absence is the finding. The median travels with
+the mean: three claims from one correction and none from nine averages the same as one from each of
+three, and only one of those stores can recur.
+
+This is instrumentation, not a treatment: it changes no behaviour and no earlier dispatch's numbers.
+It exists so that R60 — whatever R59's read decides — can ask *why one trace yields two claims where a
+trajectory yields five* with a per-correction distribution instead of an aggregate.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | R59 — containment 0.60 + condition count 3 + the whole learning half | **running, `42488237590`** |
+| P0 | R59 readback — seven predictions, three refutations, fourteen self-test cases | waiting on the run |
+| P0 | `yieldCensus` — claims and assertions per correction, twelve cases | done, pushed |
+| P1 | R53 — three note levels over one store | dispatch-ready, after R59 |
+| P1 | R55.1 — a recurrence threshold | conditional: no item has reached 3 |
+| P2 | R60 — the yield question: claims per trace, and whether each failed assertion is its own episode | registered next, after R59's read |
+| P2 | R57, U6b / U4 / U5 / U6a | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
