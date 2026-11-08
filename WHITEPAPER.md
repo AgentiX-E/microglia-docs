@@ -4092,3 +4092,46 @@ it afterwards.
 
 A pre-registration that predicts its own instrument's failure is not pessimism. It is the only way
 to keep an instrument failure from being read, later, as a result.
+
+#### 3.6.61 The instruction that took the room it was annotating
+
+The last experiment in this series varies one sentence: the note a knowledge block opens with, at
+three levels — no note, today's note, and today's note plus a licence to disregard a rule the current
+observation contradicts. Before it could be run, it had to be built, and building it found a defect
+that no amount of care in the registration would have caught.
+
+The note is an attribute of the block's opening tag, and the opening tag is counted against the
+character budget the host allows for knowledge. So a longer sentence gets its extra characters by
+dropping rules. At a budget of 320 characters the middle level carried one rule and the hardened
+level carried none. The two arms then differ in a sentence *and* in a pack, and the experiment's own
+first refutation — the three arms must deliver identical items — would have fired, correctly, on a
+confound it could not name.
+
+The fix is a definition rather than an exception. The budget bounds the block's **data**: the rules
+and the wrapper that carries them, with the note counted as if it were empty. A host that wants the
+old accounting still gets it, because every number published before this change was produced under
+it, and an upgrade must not silently change what a published number measured. The level that states
+no note renders exactly the note-free block, so the original guarantee survives where it applies.
+
+Two things about this are worth carrying forward, and they point in opposite directions.
+
+The first is that **an intervention and the thing it modifies often compete for the same scarce
+resource**, and the competition is invisible because the resource is counted in a place neither the
+designer nor the reviewer is looking. Here it was characters. Elsewhere it is a slot in a top-k, a
+row in a table, a line in a prompt, a field in a schema. When the intervention is *text about* the
+content, the default in almost every implementation is that the text is paid for out of the content's
+allowance.
+
+The second is that the defect was found by writing the control first. The test asserted an invariant
+over seventy-six budgets rather than the example that was in front of us, and it failed on the second
+of them. A control phrased as *the three arms deliver the same items* is a sentence; the same control
+phrased as a loop over budgets is a machine, and the machine reads the code's arithmetic instead of
+its intent.
+
+There is a coda, and it is not flattering. The same iteration that built the guard against silently
+dropped fields dropped one: a new header key was parsed, validated, checked against a second
+declaration, and then not copied into the object the parser returns, so the workflow read *off* for a
+registration that said *three levels*. The guard had been written one commit earlier, for four previous
+instances of exactly this. The lesson is not that the guard failed. It is that a hand-written mapping
+between two shapes is a projection, and projections lose fields by default — so the test has to be
+attached to what leaves the function, not to what enters it.

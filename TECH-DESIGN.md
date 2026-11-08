@@ -8191,3 +8191,60 @@ The exemption list here has three entries, each a name rather than a pattern, ea
 the same object that grants it. That is the compromise this repository uses wherever a check cannot be
 made total: **exempt the instance, in the place the check reads, with the reason beside it** — never
 the shape, and never in a comment somewhere else.
+
+### 17.119 The note as a rendering option, and the budget that cannot be shared with it
+
+R53 varies one sentence at three levels, and it could not be dispatched until the sentence was
+addressable per request and its length stopped deciding which rules a pack carries.
+
+**Where the level lives.** `RecallQuery.note` (added in 17.118's terms: a per-request field, absent
+meaning the host's, both absent meaning the text every committed artefact carries). The note is text a
+pack is rendered with, not state the memory holds, which is also why the level is on the query beside
+`budget`, `limit` and `minCoverage` rather than only on `MicrogliaOptions`. `Microglia.recall` resolves
+`query.note ?? this.note` once and passes it to `buildPack`; `NoteMode` is now derived from the kernel
+union (`NonNullable<RecallQuery['note']>`) so the two cannot drift.
+
+**Why per request and not per process.** A dispatch's corrections are produced by the model at run
+time, so two dispatches of one configuration distil different stores — R54 distilled from ten
+corrections and R56 from eight on the same learning fold. A registration whose first refutation is an
+equality between three arms' delivery censuses therefore cannot be graded by three dispatches. One
+host, one store and three recalls can, and that is the only arrangement in which the equality is a
+statement about the note.
+
+**The budget.** The note is an attribute of the wrapper and the wrapper is charged to the character
+budget, so at a fixed budget the `hardened` sentence — ~110 characters longer than `standard` — bought
+its room by dropping rules (AUDIT 34.69). `RenderOptions.budgetBasis` fixes the accounting:
+
+```
+note-included   overhead = |open(note)| + |close| + 1     the historical rule, still the default
+note-excluded   overhead = |open(note="")| + |close| + 1  the note cannot displace a rule
+```
+
+Under `note-excluded` the rendered block may exceed `budget` by the note's length; `tokens` reports the
+whole block either way, and `note: 'none'` is exactly the note-free block, so the original bound
+survives for the level that has no note. The basis is a host option (`MicrogliaOptions.budgetBasis`)
+rather than a per-request one: it describes what the host's budget *means*, and a host that varied it
+per request would be measuring two things.
+
+**The three-facade arm.** `resolveFacadeNotePlan` reads `TAU_FACADE_NOTES` (which the workflow takes
+from `facadeNotes: three-level` in the registration) and refuses three combinations:
+
+| Refused | Why |
+| --- | --- |
+| an unknown switch value | a silently disabled experiment is indistinguishable from a completed one |
+| the note arm together with R49's floor pair | one dispatch measures one variable, or every delta is a difference of two |
+| a single `TAU_INJECTION_NOTE` beside the three-level arm | the two declarations disagree about how many arms this dispatch has |
+
+The driver then evaluates the same held-out split three times against one host, one store and one
+seed stream, and keeps `standard` as the arm the rest of the lane grades — so `poc-l4` stays comparable
+to the lane's history while `poc-l4-facade-notes` carries the three arms, two contrasts against
+`standard`, the census per arm (served packs, requests, items per request, scored/unscored, pass^4,
+inaction) and the basis.
+
+**The control.** `packIdentity` compares the served statements for every request two arms both saw.
+Under `note-excluded` the item list is a pure function of store, query text, floor and limit, so any
+mismatch means the arms differed in something the registration did not name. A request one arm
+answered two different ways counts as a mismatch for the same reason: one store cannot produce two
+packs for one request. The artefact's state is `IDENTITY_BROKEN` when it fires, the `l4-note-identity`
+gate blocks, and `r53_readback.py` refuses to quote a delta from it. The population that cannot be
+held — which requests the agent chose to make — is reported per arm rather than asserted equal.

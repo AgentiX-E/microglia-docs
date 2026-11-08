@@ -4977,3 +4977,47 @@ Debts carried, and one added:
   other is an arm. Considered and left: one field with two shapes would be worse, and the next
   iteration that touches the paired facade should decide whether the contrast belongs beside the
   census.
+
+### The capability R53 was blocked on, built before its dispatch (2026-11-08)
+
+34.68 recorded that R53 could not be dispatched as registered: its first refutation is an equality
+between three arms' delivery censuses, and three dispatches of one configuration distil three
+different stores. The capability it needed is now in the lane, and building it found the defect that
+would have made that refutation fire on a confound.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | `RenderOptions.budgetBasis` — the note stops competing with the items it annotates. At a 320-character budget `standard` carried one rule and `hardened` carried none, because the note is charged to the same allowance as the rules (AUDIT 34.69) | done, red first: an invariant over 76 budgets |
+| P0 | `RecallQuery.note` — the level is a rendering option of one recall, host default when absent, byte-identical when neither is declared | done, three capture tests |
+| P0 | `MicrogliaOptions.budgetBasis` — the host declares what its budget covers, and the artefact records it | done |
+| P0 | `resolveFacadeNotePlan` + `TAU_FACADE_NOTES` + `prereg-notes.ts` + `facadeNotes: three-level` — the arm is resolved from the registration, and refuses the floor pair, an unknown value, and a single declared level beside it | done, 9 + 4 tests |
+| P0 | three facades over one store, one learning phase, one seed; `standard` stays the arm `poc-l4` grades | done |
+| P0 | `poc-l4-facade-notes.json` — three arms, two contrasts against `standard`, census per arm, and `packIdentity` as the control | done, 38 tests |
+| P0 | `l4-note-identity` gate + `eval:note-facade-readback` — `IDENTITY_BROKEN` blocks, `NO_DELIVERY` warns | done |
+| P0 | `r53_readback.py` — four predictions, four refutations, three states, eleven self-test cases | done, wired into `eval:verifiers` and CI |
+| P0 | `facadeNotes` was parsed, validated and then not returned, so the workflow would have read `false` for a registration saying `three-level` (AUDIT 34.70) | done, the test is on the return value |
+| P1 | R55.0 readback — the `supportTasks` distribution and the register gap | **running**, run `42463064049` |
+| P1 | R55.1 or its replacement, conditional on R55.0 | blocked on R55.0 |
+| P1 | R56's two lost predictions re-read on R55.0's artefact (tool-name share, a tool name in a pack) | free, not a dispatch |
+| P2 | **R53 — dispatchable once R55.0 reads.** The blocking capability exists; what remains is the one-lane rule: no comparison is interpreted while another is open | registered, dispatch-ready |
+| P2 | U6b / U4 / U5 / U6a, store-level poisoning, R57 | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+**What R53 will measure, now that it can.** Three levels of one sentence over one store: `none`,
+`standard` (the level every committed artefact ran) and `hardened` (the calibration sentence the 2026
+memory-failure literature says is the intervention: MemTrapBench recovers performance with an
+inference-time instruction, MemCalib finds over-use rather than under-use dominates, RPEval finds
+humans ignore an irrelevant preference at 0.86 and GPT-5 at 0.12). Two contrasts against `standard`,
+the parse rate and the abstention census per arm, and one control that has to hold before any of it is
+read: for every request two arms both saw, the same items in the same order.
+
+The one thing this iteration did **not** change is what R55.0 executes. The three-facade branch is off
+unless a registration declares it, `budgetBasis` is unset on every dispatch that does not, and the
+`TAU_FACADE_NOTES` the workflow now passes renders empty for a registration without the header.
+
+Coverage after the change, every dimension: **99.95 lines / 99.67 branches / 100 functions / 99.95
+statements**. `note-facade.ts` is 100 on all four. Two pre-existing branch gaps were closed with tests
+that assert behaviour rather than lines — `diff-corpus.ts` 83.33 → 100, `tau2-admission.ts` 93.10 →
+95.83 — and one remains at 94.44 in `ablations.ts`, which TECH-DESIGN §13.6 records as unreachable
+because the store has no delete.

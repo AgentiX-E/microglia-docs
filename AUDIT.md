@@ -5380,3 +5380,59 @@ once already, for the same family of defect (a header describing the previous ex
 was too. Three repairs to two registrations before either ran is a rate worth naming: the cost of a
 bad registration is now paid in a paragraph rather than in three two-hour dispatches and an ABANDONED
 artefact nobody can reuse.
+
+### 34.69 The annotation competed with the thing it annotated
+
+The note is an attribute of the wrapper, and the wrapper is charged to the character budget
+(`overhead = open.length + close.length + 1`, `used` starts at `overhead`). So a longer note buys
+itself room by dropping rules. The `hardened` sentence is about 110 characters longer than the
+`standard` one, which at a 1,200-character budget is one rule and at a tight budget is the last rule
+and then the only rule: with eight items and a budget of 320, the `standard` arm carried one item and
+the `hardened` arm carried **none**.
+
+That is not a sentence differing between two arms. It is a sentence *and a pack*, and R53's first
+refutation — the three levels' delivery censuses must be identical to the digit — would have fired on
+exactly the confound it was written to detect, from the only direction it cannot diagnose. The run
+would have been abandoned for a reason that had nothing to do with the note, and the abandonment would
+have been honest and useless.
+
+The defect was found by a test written before the fix, in the same hour the three-level capability was
+being built, which is the only reason it cost a paragraph instead of three two-hour dispatches. The
+test asserts the invariant rather than the example: for every budget from 320 to 1,600 in steps of 17,
+the three levels carry the same ids.
+
+`RenderOptions.budgetBasis` separates the two accounting rules:
+
+| Basis | What the budget covers | Why it exists |
+| --- | --- | --- |
+| `note-included` (default) | the wrapper, note and all | every committed artefact was produced by it; an upgrade must not change what a published number measured |
+| `note-excluded` | the block's data, counting the wrapper as if it carried no note | three levels then have identical capacity by construction, so the arm varies one sentence |
+
+`note: 'none'` renders exactly the note-free block, so under `note-excluded` the original guarantee
+survives verbatim — what is rendered never exceeds the allowance — and a test holds that too. The one
+thing that changes is stated rather than hidden: under the new basis the *rendered block* may exceed
+`budget` by the note's length, and `tokens` reports the whole block as it always did.
+
+### 34.70 The fifth loss with no trace, and it happened while the guard was being written
+
+`facadeNotes` was added to the pre-registration header as a known key, parsed, validated against its
+two legal values, cross-checked against `facadePair` for the two-variable refusal — and then not
+returned. The `Prereg` object literal lists its fields by hand, and the new one was not in it. So
+`eval:prereg-notes` printed `false` for a registration whose seventh line says `facadeNotes:
+three-level`, the workflow would have read `false`, and the dispatch would have run the single-note
+path while its own artefact and its own registration said three levels.
+
+This is the same class as 34.62, 34.64, 34.65 and 34.67: a value that is read, checked, and never
+travels. The four previous instances were found by reading readbacks; this one was produced by the
+person writing the guard against them, in the same commit, which is the useful part of the record —
+the failure mode is not a lapse of attention, it is what a hand-written mapping between two shapes
+does by default.
+
+The repair is a test on the *return value* rather than on the parse: `readPrereg(...).prereg
+?.facadeNotes` must equal `'three-level'`. The parse-level assertion is the one that would have
+passed. Three other cases hold the rest: an absent key stays `undefined` (every pre-R53 registration),
+an unknown value is refused, and the pair-plus-three-level combination is refused with the reason.
+
+The general form still stands as a review target, and now has one more concrete rule: **a parser's
+own object literal is a projection, and every projection in this repository has either a compile-time
+decision table or a test over the field that was added last.**

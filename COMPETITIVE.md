@@ -3009,3 +3009,24 @@ named entries; IBM `gpt-5.5` airline 82.0 remains the published SOTA overall and
 move, it is the removal of a candidate that was never a row. The honest summary of this iteration on
 the competitive axis is that a hypothesis about *why* we trail was tested, cost us an arm, and did
 not pay: the prompt was not the missing piece, and the material question is still open.
+
+**The note axis, and what the 2026 literature says our rank would depend on.** R53's arm is the only
+one in this project that is a *publication's own intervention* rather than our design: MemTrapBench
+recovers a memory-below-no-memory deficit with an inference-time instruction and no retraining;
+MemCalib reports over-use dominating and the best frontier model scoring 46.25 of 100 on calibrated
+influence; RPEval reports humans ignoring an irrelevant preference at 0.86 against GPT-5 at 0.12. If a
+single sentence in the pack can move `pass^4` by the resolution of a 57-task split, then the gap to
+IBM is partly a prompt-calibration gap and the leaderboard is winnable without changing the unit. If
+it cannot, the note axis is closed for this store and the unit question from L.31 stands alone.
+
+Neither IBM nor any competitor in L.23 publishes a three-level note ablation on τ², so this
+measurement is the first of its kind on the benchmark as much as it is ours — which also means it
+cannot move the ranking by itself. It can only decide **which of the two remaining explanations we
+spend the next arm on**, and that is the shape every decision in the last ten iterations has taken:
+the table does not move, the search gets narrower.
+
+Ranking unchanged this iteration, and unmoved for a reason worth stating plainly: the work added a
+capability and found two defects, and a capability is not a result. microglia is fifth of six named
+entries; IBM `gpt-5.5` airline 82.0 is the published SOTA overall; IBM `gpt-4.1` retail 67.5 leads
+that domain; and the τ² retail number this lane can defend is the paired memory-versus-reference
+reading it already had.

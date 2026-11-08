@@ -11670,3 +11670,43 @@ asserting an equality between runs that stochastic corrections forbid.
 The rule this deposits: **a control must be checkable within one artefact or one run.** If it cannot
 be, the treatment is not within-run either, and the registration is describing two things it cannot
 hold apart.
+
+### 172.28 — The capability R53 was blocked on, built and then made safe
+
+R53's arm is no longer blocked on a switch. The note is a rendering option of one recall
+(`RecallQuery.note`), the three levels run as three facades over one store in one dispatch
+(`TAU_FACADE_NOTES`, resolved from `facadeNotes: three-level` in the registration), and the control
+R53 asks for is a number in the artefact (`packIdentity`) rather than an assertion about dispatches.
+
+| Piece | State | Evidence |
+| --- | --- | --- |
+| `RecallQuery.note` — the level per recall, host default when absent | done | three capture tests: the request wins, the host stands, all three levels carry the same items |
+| `RenderOptions.budgetBasis` — the note stops competing with the items | done, red first | the invariant holds for 76 budgets; the historical default is byte-identical |
+| `resolveFacadeNotePlan` + `facadeNotes` header + `eval:prereg-notes` | done | 9 plan tests, 4 header tests, two refusals (pair, single declared level) |
+| three facades in the driver, `standard` as the graded arm | done | `noteFacadeReading`, 21 contract tests |
+| `poc-l4-facade-notes.json` + `l4-note-identity` gate + readback | done | `readNotedFacadeArtifact`, 12 refusal cases |
+| `r53_readback.py` — four predictions, four refutations, three states | done | 11 self-test cases wired into `eval:verifiers` |
+| `eval:note-facade-readback` in `sota.yml` | done | `IDENTITY_BROKEN` blocks, `NO_DELIVERY` warns |
+
+The defect found while building it is the iteration's real yield: the note was charged to the same
+character budget as the rules it annotates, so the longer sentence bought its room by dropping rules —
+`standard` carried one item at budget 320 and `hardened` carried none. Three arms that carry different
+packs are three treatments, and R53's first refutation would have abandoned the run for a reason that
+had nothing to do with the sentence (AUDIT 34.69).
+
+The second yield is 34.70: the new header field was parsed, validated and not returned, so the workflow
+would have read `false` for a registration that says `three-level`. Fifth instance of one class, found
+in the same commit as the guard against it, and now held by a test on the return value rather than on
+the parse.
+
+Coverage, every dimension: **99.95 lines / 99.67 branches / 100 functions / 99.95 statements**. New
+files are at 100% on all four (`note-facade.ts`, 38 tests). Two pre-existing branch gaps were closed
+with tests that assert behaviour rather than lines: `diff-corpus.ts` 83.33 → **100** (the gold SQL and
+the difficulty a stratification reads), `tau2-admission.ts` 93.10 → **95.83** (an action with no tool
+name, a completion whose entries are not tool names). `ablations.ts` stays at 94.44 on one branch that
+TECH-DESIGN §13.6 records as unreachable: the store has no delete, so the rule the function just
+learned is still there.
+
+R55.0 is still running (run `42463064049`, 95 minutes at the time of writing). Nothing in this
+iteration changes the path it executes: the three-facade branch is off unless a registration turns it
+on, and `budgetBasis` is unset on every dispatch that does not.
