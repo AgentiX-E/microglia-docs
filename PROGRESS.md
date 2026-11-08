@@ -12089,7 +12089,15 @@ record's twenty would have meant inventing an evidence trail and a lifecycle for
 neither. The alternative — re-implementing the line format in `eval` — is the drift the renderer was
 consolidated to prevent.
 
+**The readback, written before the arms.** `eval/verifiers/r57_readback.py`, 13 self-test cases, wired
+into `eval:verifiers`. It grades the instrument first — the arm each directory declares, one rule per
+served request, one digest across the three, and the band's achieved share against the 100% and 76% the
+amendment measured — because an arm whose band did not land is a different treatment rather than a
+weak effect. Then the ledger, which is paired inside one dispatch and so carries none of the
+between-run noise that makes every mean here `UNRESOLVED`; then the order, graded only where it exceeds
+the 3.51pp a control arm has been measured to move on its own. The means are printed as context and
+never claimed, and an arm whose pairing did not run is `NO_MEASUREMENT` rather than a zero.
+
 **Next, in order.** (1) read R60 back when it lands, with the median as the reading that separates a
 binding cap from an episode-limited one; (2) dispatch R57's `far` arm, then `near`, then
-`adversarial`, each paired against the reference; (3) `r57_readback.py`, which must grade the census
-before it grades a delta — an arm whose band did not land cannot be read as an effect.
+`adversarial`, each paired against the reference, and read each with the verifier above.
