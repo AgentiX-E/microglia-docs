@@ -5208,3 +5208,55 @@ readings that must survive an ungraded state — the same five fail against the 
 The pattern across 34.62, 34.63 and 34.64 is one pattern: **each of the three was a loss that left no
 trace.** A projection that omits a key, a check whose input is absent, a verifier that returns before
 it reads. None of them raises, and all three produce a file that looks like a measurement.
+
+### 34.65 The fortieth gate was absent on every pair the lane ever wrote
+
+`V0-instrument-ready` was added this iteration and its subject is the funnel. The driver records the
+funnel, `Tau2ArmRecord` carries it, `tau2ProtocolInput` consumes it, and every pair artefact the lane
+has published reports it **absent** — including R56's, which was dispatched after all three of those
+were in place:
+
+```
+absent  V0-instrument-ready  needs "the lane's own record, which this run did not carry: the counts
+                                    from a correction to a servable rule, so a zero can be located"
+```
+
+The funnel was in that run's memory arm. The sentence is false about the run and true about the code.
+
+The cause is the lane's *second* hand-written projection. `tau2ArmRecordOf` is the only bridge from
+an arm's artefact file to the record the protocol gates read; `tau2ProtocolInput` never sees a file.
+Both `tau2ArmRecordOf` and the `Tau2ArmArtefact['tau2']` type it projects from omitted `funnel`.
+Adding the field to `Tau2ArmRecord` and to the gate's input type therefore did nothing at all: the
+two ends were wired and the bridge between them was not.
+
+Three things make this worse than a plain omission.
+
+**The failure mode is silent and the gate still speaks.** V0 did not fail. It reported `absent`, and
+`absent` in this protocol means *this run did not measure it* — a statement about the dispatch. The
+gate's own vocabulary launders a plumbing defect into a fact about the experiment.
+
+**It is the same class as 34.62, one layer up, one interval later.** The driver's projection lost
+three fields; the pairing projection lost one. Both are hand-written field lists between two shapes,
+and both produce an artefact that reads as complete. The compiler guard added in 34.62 covers
+`Tau2Raw -> Tau2ArmRecord`; this is `Tau2ArmArtefact -> Tau2ArmRecord`, a different pair of shapes,
+and it had no guard.
+
+**A blocking gate that cannot pass is a sentence nobody reads** (WHITEPAPER 3.6.57). V0 blocks. Had
+it not been read back for eighteen hours, the lane would have carried a permanently-red blocking gate
+whose only defect was that nothing carried its input — and the natural repair, applied in a hurry,
+would have been to stop blocking on it.
+
+Repaired red-first: two tests assert the projection carries the funnel and that `tau2ProtocolInput`
+reports it supplyable when present and not when absent. Re-run on R56's real artefact, V0 reads
+
+```
+8 correction(s) -> 8 candidate(s) -> 8 admitted -> 8 stored -> 8 servable (0 refused, 0 failed)
+```
+
+and passes, blocking. A third test holds the projection's *scope*: `writeAdmission`, `storeItems`,
+`distillForm` and `injectionNote` stay out, because they are readback subjects rather than gate
+inputs, and a second copy of a field is a copy that drifts.
+
+The R55.0 dispatch was cancelled at seventeen minutes and re-dispatched from the fix. A pair artefact
+whose blocking instrument gate says `absent` is not a record worth keeping, and the rule that a
+published artefact is not revised after the readout leaves cancellation as the only honest repair.

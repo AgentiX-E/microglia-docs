@@ -11590,3 +11590,31 @@ three produce a file that looks like a measurement.
 
 Gates: 3,327 tests in 160 files, coverage 99.95 / 99.62 / 100 / 99.95; 29 r56 self-test cases, 20
 r54, `_pair.py` shared by both.
+
+### 172.25 — The gate that could not speak, and the dispatch it cancelled
+
+`V0-instrument-ready` was supposed to be the fortieth gate and the first whose subject is the
+pipeline. It reported `absent` on R56's pair, with the sentence *"the lane's own record, which this
+run did not carry"* — and the funnel was in that run's memory arm the whole time.
+
+`tau2ArmRecordOf` is the only bridge from an arm file to the record the gates read, and it omitted
+`funnel`. Both ends were wired; the bridge was not. `absent` in this protocol means *this run did not
+measure it*, which is a sentence about the dispatch — so the gate's own vocabulary turned a plumbing
+defect into a claim about the experiment. It is the same class as 34.62 one layer up: a hand-written
+projection between two shapes, losing a field without a trace.
+
+Two tests written first (carries the funnel; supplyable with one and not without), then the field.
+R56's real artefact now grades
+
+```
+8 correction(s) -> 8 candidate(s) -> 8 admitted -> 8 stored -> 8 servable (0 refused, 0 failed)
+```
+
+passing and blocking. A third test keeps the projection's scope honest: the readback-only fields stay
+out of it.
+
+R55.0 was cancelled at seventeen minutes and re-dispatched from the fix. An artefact whose blocking
+instrument gate says `absent` is not a record worth keeping, and this project does not revise a
+published artefact after the readout — so cancellation was the only repair that left the record true.
+
+Gates: 3,332 tests in 160 files, coverage 99.95 / 99.62 / 100 / 99.95.

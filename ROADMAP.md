@@ -4835,7 +4835,7 @@ making it measurable, not features it needed.
 | P0 | `readings()` before `grade()`: a `NO_MEASUREMENT` still carries census, coverage, funnel, yield and verdict, so an ungraded run is not an erased one (AUDIT 34.64) | done, five cases name the readings that must survive |
 | P0 | `gate-matrix.ts` — `docs/GATE-COVERAGE-MATRIX.md` rendered from the two tables and the last published BIRD artefact, throwing on a gate in neither table (AUDIT 34.60) | done |
 | P1 | R56 readback against its four predictions: coverage ≥ 12%, tool-name share down ≥ 20pp, ≥ 12 items admitted, no tool name in any pack | **read: `NO_MEASUREMENT`** — two predictions lost to the projection defect, two failed, HARM at −8.77pp, revert fires (AUDIT 34.62, 34.63) |
-| P1 | R55.0 — the recurrence distribution, read from an artefact that carries `supportTasks`: how many items reach `supportTasks >= 3`, and how many `>= 2` | **dispatched** as run `42461427066` on `048b4f92`; R56's artefact could not carry it |
+| P1 | R55.0 — the recurrence distribution, read from an artefact that carries `supportTasks`: how many items reach `supportTasks >= 3`, and how many `>= 2` | **running** as run `42463064049` on `482d2d92`; the first attempt (`42461427066` on `048b4f92`) was cancelled at 17 minutes because its pair would have reported the blocking `V0` gate `absent` (AUDIT 34.65) |
 | P1 | R55.1 — admission at `supportTasks >= 3`, same store construction, same recall, same note | blocked on R55.0 |
 | P2 | R53 — the pack's note as the only variable (`none` / `standard` / `hardened`), on whichever store R55 leaves | registered, dispatchable |
 | P2 | U6b (`TAU_WRITE_ADMISSION=neighbours`), U4 pack order, U5 pack ceiling, U6a global consolidation | registered, undispatched |
@@ -4905,6 +4905,10 @@ Deposits this iteration made, each of which is a reading that would otherwise ha
   baseline's ratio beside it. It is the reading that located R56's loss, and it cost one function.
 - **The pair file as the verdict's home.** R54's and R56's revert checks had never been able to fire
   on real evidence, and R54's inverse prediction had been passing on `None`.
+- **A bridge test for every gate input.** `tau2ArmRecordOf` is the second hand-written projection and
+  it had no guard, so `V0` was absent on every pair ever written (AUDIT 34.65). The driver's
+  projection has a compile-time exhaustive decision table now; the pairing projection has red-first
+  tests over the field it dropped, and its scope is asserted so it cannot widen by accident.
 
 Two debts carried forward unchanged, one repaid, one added:
 

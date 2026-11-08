@@ -8107,3 +8107,54 @@ a verifier that returns before it reads are one failure mode: the loss leaves no
 none prints a warning, and all three produce a file that reads as a measurement. The countermeasure
 is not more care. It is a reading that is taken unconditionally, a state that is decided last, and a
 test whose fixture is the *defective* shape rather than the intended one.
+
+### 17.117 The bridge, which is where a gate's input is lost
+
+17.116 wrote down that a projection is a place a field is lost silently, and added a compile-time
+exhaustiveness guard to the driver's projection. One interval later the same loss happened again, in
+a projection the guard does not cover, and it took out a gate.
+
+The τ² lane has two hand-written projections, not one:
+
+```
+Tau2Raw            --armRecordFromDriver-->  Tau2ArmRecord   (in process, after the run)
+Tau2ArmArtefact    --tau2ArmRecordOf------>  Tau2ArmRecord   (in the pairing step, from files)
+```
+
+The first is guarded by `PROJECTION`, whose decision table is typed `{ [K in keyof Tau2Raw]-?: ... }`,
+so a new field cannot reach a green build without a decision. The second had no guard, and its input
+type — `Tau2ArmArtefact['tau2']` — is itself a hand-written subset of what the artefact holds. Adding
+`funnel` to `Tau2ArmRecord` and to `ProtocolGateInput` therefore changed nothing: the two ends the
+author was looking at were wired, and the bridge between them was not.
+
+The consequence was not a crash and not a wrong number. It was a gate that reported `absent`:
+
+```
+absent  V0-instrument-ready  needs "the lane's own record, which this run did not carry"
+```
+
+`absent` in this protocol is a *claim about the dispatch* — that it could not supply the field — and
+the protocol has a whole vocabulary built to keep a capability apart from a measurement
+(`SUPPLYABLE`, `Tau2Field`, the `absent` reasons). That vocabulary is what made this defect invisible:
+a gate that says "the run did not measure this" is doing its job, and it takes a second reading of
+the arm's file to see that the run did.
+
+**Three rules, and the third is the new one.**
+
+1. A field that reaches a gate crosses a bridge, and the bridge is the thing to test — not the
+   endpoints. The red-first test here is `tau2ArmRecordOf('memory', { tau2: { funnel } }).funnel`,
+   which is a test of the bridge and nothing else.
+2. A projection carries what its consumer reads and nothing else. `tau2ArmRecordOf` deliberately
+   leaves `storeItems`, `distillForm`, `injectionNote` and `writeAdmission` out: they are readback
+   subjects, and a second copy of a field is a copy that drifts. A test asserts the omission, so the
+   scope cannot widen by accident either.
+3. **A gate whose input crosses a bridge is not supplyable until a real artefact proves it.** The
+   protocol's `SUPPLYABLE` table says the *type* can produce the field; it says nothing about whether
+   a run did. `gate-matrix` was built on exactly that distinction for the BIRD lane, and this defect
+   is the τ² instance of it: `V0` was listed supplyable, the funnel existed, and the artefact said
+   absent. The matrix's τ² column is the next thing to render from a real pair.
+
+The dispatch that was in flight when this was found was cancelled and re-dispatched from the fix.
+Cancelling is the repair this project uses for this class, because the alternative — re-running the
+pairing step and committing a corrected pair — is revising a published artefact after its readout,
+which is the one thing a pre-registered lane may not do.
