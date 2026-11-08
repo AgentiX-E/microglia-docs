@@ -12038,3 +12038,19 @@ Where this leaves the project: the object (R58), the measure (R59) and the popul
 answered, and the store holds one claim that two tasks derived. What remains is whether that can be
 made to happen at the published rate (10.6% at three tasks) or whether it is a property of
 trajectories and not of traces.
+
+### 172.36 Correction: the population change was removing a cap, not raising it
+
+172.32 and AUDIT 34.75 describe R59's population change as "`TAU_TRAIN_TASKS` moves 32 → 57". The run
+did read 57 learning rows, but the mechanism was different and the record should say which: the
+repository variable is **unset**, and unset means no cap (`TAU_TRAIN_TASKS || '0'`, and `0` means all),
+so the whole learning half is used. R58's 32 came from a cap that no longer exists.
+
+The reading is unaffected — `learning.rows = 57` is in R59's artefact, `edited = 14`, and the split is
+unchanged — but a future dispatch that wants a cap has to set the variable explicitly, and one that
+wants to reproduce R58 has to set it to 32. Recording it here rather than editing the earlier entries:
+the correction is part of the record, not a revision of it.
+
+The same applies to R60's ceiling: `TAU_TRACE_CLAIMS = 6` is a repository variable, so it persists.
+A run registered at three must set it to three, and every artefact carries `traceClaims` so a readback
+does not have to infer which ceiling produced the store.
