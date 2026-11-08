@@ -5246,3 +5246,32 @@ maximum support must reach three and one item must carry it; the group must have
 than folded one task's claims; the store must keep half its items; and the veto must never merge more
 than the setting that replaced it. The paired delta is printed and not claimed — at 57 pairs it has
 never been resolvable, and a reading that cannot resolve is not evidence for or against.
+
+## R61 read, R57 dispatched, R62 named (2026-11-09)
+
+R61 (`42524907557` on `f5654f37`) is **`ABANDONED`**: the instrument held and both graded predictions
+failed.
+
+| reading | R60 | R61 | what it decides |
+| --- | --- | --- | --- |
+| largest group at 0.60 | 2 (plus one of three on the pre-registration store) | **2** | the floor is not the constraint |
+| largest group at any of 36 grid points | 2 | **2** | no threshold finds three |
+| claims / corrections | 37 / 12 | **45 / 14** | the population grew |
+| median claims per correction | 3 | **3** | the ceiling of six is no longer binding |
+| items at support 3 | 0 | **0** | corroboration is a sampling event here |
+| store retained | 36 of 37 | **43 of 45 (95.6%)** | the pass is not the loss |
+| paired delta | not resolved | **+14.04pp, CI [−1.75, 29.82], p 0.115** | the pack helps, the sample cannot say it |
+
+| item | state |
+| --- | --- |
+| P0 | R61 read, `ABANDONED` — the R60 triple was one store's property, not the corpus's | **done** |
+| P0 | R57 `far` arm — `TAU_PLANTED_RULES=far`, dispatch `42534241219`, `bird` resolved to false by `scope` without being asked | **in flight** |
+| P1 | R57 `near`, then `adversarial`, one dispatch each | after `far` reads |
+| P1 | R62 — the population: teach from all 57 trajectories, not the 14 that failed | next registration |
+| P2 | a larger sampled design for the +14.04pp; 540 tasks resolve 5pp, 1,498 resolve 3pp | blocked on a corpus with that many held-out tasks |
+
+**Why the population is now the only lever left standing.** Three rounds moved the ceiling (3 → 6), the
+floor (0.60 → 0.40 over 36 grid points) and the linkage (single → complete), and support stayed at two
+through all three. The claims are clean, the pass keeps 95.6% of the store, and no threshold finds a
+third member — because among 45 claims taught by 14 tasks there is no third member to find. The 43 tasks
+that passed first time teach nothing at all, and that is the population R62 changes.

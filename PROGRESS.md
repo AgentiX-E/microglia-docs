@@ -12297,3 +12297,48 @@ repository. The rule is narrower: format by hand in the shape of the file you ar
 and delta second; (2) R57's `far` arm, then `near`, then `adversarial`, one dispatch each — `bird` now
 resolves to `false` for all three without anyone remembering to say so; (3) R55.1's threshold at
 `supportTasks >= 3` becomes decidable the moment an item reaches three.
+
+### 172.42 R61 read: the instrument passed, the triple did not reproduce, and the arm's best delta is unpaired from it
+
+R61 is read (`42524907557` on `f5654f37`): the memory arm is **`ABANDONED`** — two graded predictions
+failed — while the reference arm and the pair artefact are `DISCARDED` (`unit 'None' is not the trace
+arm this round treats`), the reference being memory-free by construction. The registration predicted a
+group of three at 0.60 and support 3; the store produced neither. Everything the round was built to
+*measure* worked, which is what makes the failure readable.
+
+| prediction | registered | measured | |
+| --- | --- | --- | --- |
+| the sweep's operating point is the pass's own census | equal | equal, 2/2/2 | PASS |
+| every group's weakest pair clears its own floor | invariant | 2 group(s) checked, held | PASS |
+| a group of three exists at the 0.60 statement floor | ≥ 1 | **0**, largest 2 | **FAIL** |
+| max support reaches three | 3 | census 2, store 0 item(s) at ≥ 3 | **FAIL** |
+| a group's union covers a task no member held | ≥ 1 | 2 | PASS |
+| the pass keeps half the store it read | ≥ 50% | 43 of 45 (95.6%) | PASS |
+| the veto's ablation merges no more than operating, at every floor | monotone | 0.40: 9 vs 6, 0.45: 7 vs 5, 0.50: 4 vs 2, 0.55: 3 vs 2, 0.60: 2 vs 2, 0.65+: 0 vs 0 | PASS |
+
+**The floor was never the constraint, and this time the sweep says so directly.** Across 36 grid points
+the largest group anywhere is **two**. R60's group of three was at 0.60 on its own store; R61's store —
+same 57 tasks, same seed, same ceiling of six — holds two groups of two and nothing wider. The two
+groups it does hold are the two obvious families: addressing every affected order *and* the account
+address (weakest pair 0.684), and inspecting records in the order the user listed them (0.667). Both
+are carried by two tasks.
+
+**So the R60 triple was a property of one store, not of the corpus.** That is the round's finding, and
+it is worth more than the prediction it refutes: at 14 corrections and 45 claims, a three-way collision
+is a sampling event. The population grew (12 → 14 corrections, 37 → 45 claims, median 3, max 5, ceiling
+6 no longer binding) and the corroboration count did not move, which is the third time in three rounds
+that the cap moved and support stayed at two.
+
+**The paired arm is the best number this lane has ever produced, and it is not what R61 graded.**
++14.04pp on 57 retail pairs, gained 14 / lost 6, 1,946 packs served — `UNRESOLVED`, because 57 pairs
+resolve only 21.98pp (p = 0.115, CI [−1.75, 29.82]). Resolving 5pp needs 540 tasks and 3pp needs 1,498,
+so no retail-sized design can settle it. What it does settle is the round's fourth refutation: the
+corroboration does not survive into the served pack *only if* the pack does not help, and the pack
+helped by more than the 3.51pp control drift. Refutation cleared.
+
+**What this closes and what it opens.** Corroboration through *merging* is closed for this population:
+no matcher threshold finds three, because there are not three to find. The next lever is the one R60's
+second refutation named and R61 kept failing to avoid — the **population**: 43 of 57 learning tasks
+teach nothing because they passed first time, and only the 14 that failed produce claims. Teaching from
+every trajectory is the experiment that can separate "the corpus is the constraint" from "the distiller
+is", and it is the next registration rather than a knob on this one.
