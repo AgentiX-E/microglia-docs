@@ -5578,3 +5578,91 @@ already paid for twice.
 
 Coverage after the change, every dimension: **99.96 lines / 99.68 branches / 100 functions / 99.96
 statements**; `consolidate.ts` and `tau2-trace.ts` are 100 on all four. 3,454 tests over 166 files.
+
+### 34.74 The unit worked, and the pass could not see that two claims were one
+
+R58 is read (`42476580076` on `9ad59e96`, memory arm then reference, `prereg/R58-trace-unit.md`).
+Two refutations fired, three predictions failed, and the iteration is `ABANDONED` on its own terms —
+while the thing it was built to change did change, and the reason the pass stayed inert is a
+measurable property of the measure rather than of the mechanism.
+
+| Prediction | Reading |
+| --- | --- |
+| ≥ 1 item reaches support 3 | **0 of 15** |
+| ≥ 25% of items reach support 2 | **0 of 15** (0.0%) |
+| the pass keeps ≥ 50% of the store | **15 of 15** |
+| median non-zero coverage ≥ 12% | **8.33%**, over 4,000 pairs |
+| ≥ 80% of corrections carry a trace | **7 of 7** (100%), 32 traces read |
+| the run is the registered trial count | k=4, 57 tasks |
+
+Refutations: *nothing recurs* **FIRED** (`{1: 15}`), *the pass is inert* **FIRED** (0 groups over 15
+items), *the pass bought support by halving the store* clear. `l4-support-recurrence` passed: the
+census reconciles, so the two zeros are about the store and not about the instrument.
+
+**What the unit did do.** Seven corrections produced **fifteen claims** — 2.14 per trace against 1.0
+by construction — and the register moved. The store's conditions are in the requester's words
+(*"The user asks to update stored details but declines to repeat them, saying they are already on
+file."*), the tool-name ban **refused nothing** (R55.0: 9 of 16), and no statement names a tool. The
+`trace` form's constraints held without the host ban having to fire, which is the first dispatch in
+this lane where the prompt did the work the ban was added to do.
+
+| Reading | R54 (`lesson`) | R55.0 (`lesson` + ban) | R58 (`trace`) |
+| --- | --- | --- | --- |
+| corrections | 10 | 7 | 7 |
+| claims | 20 | 16 | **15** (2.14/trace) |
+| candidates refused by the ban | — | 9 of 16 | **0 of 15** |
+| items stored | 20 | 7 | 15 |
+| coverage p50 | 8.33% | 7.14% | **8.33%** |
+| items per pack | 1.417 | 1.577 | **2.000** |
+| paired `pass^4` | +5.26pp (p=0.63) | +10.53pp (p=0.21) | **+1.75pp** (p=1.00) |
+
+**Defect one: the registration's population was wrong, and the error is mine.** It says *"32
+corrections, so at most 96 distillation calls against 32"*. The run had **32 learning tasks and 7
+corrections**: the learning half's model passes 25 of 32 tasks at one trial, so `learnableCorrections`
+sees 7 failures. Every number in the registration that multiplied by 32 — the cost, the expected store
+size, and the implicit assumption that a claim recurring in three traces was reachable — was computed
+on a population that does not exist. The trace reader still found all 7 (100% traced), so the arm is
+*measured*; the population the mechanism needs was simply smaller than the document claimed. The
+general form is the one this file keeps recording: a number that travelled from an earlier run's
+description into a registration without being recomputed from *this* run's artefact.
+
+**Defect two: the consolidation measure cannot see a paraphrase of a long sentence.** The store holds
+two items that are one claim:
+
+> *"When a request bundles several changes, carry out every requested change in the order the requester
+> stated them, **and do not stop after the first one succeeds**."*
+> *"When a request bundles several changes, carry out every requested change in the order the requester
+> stated them, **and stop once all are applied rather than adding extra lookups or calculations**."*
+
+Their Jaccard overlap is **0.483**, and the threshold was 0.70, so the pass skipped them before it
+looked at their conditions. Across all 105 pairs in the store: median 0.081, p90 0.188, **maximum
+0.483** — and the maximum *is* the true duplicate, while the next-highest pair (0.250) is two
+different claims ("apply the change to every affected order" versus "finish one order before fetching
+the next"). No Jaccard floor can separate them: the true pair sits below any value that would keep the
+false one out.
+
+Containment — `|A ∩ B| / min(|A|, |B|)` — puts the same pair at **0.700** and the false one at
+**0.533**, a 0.167 gap, and a floor of **0.60** merges exactly the true pair and nothing else. That is
+the measure whose scale matches the object: two statements that share their whole premise and differ
+in a trailing clause are one claim said with an extra caveat, and Jaccard charges the extra caveat
+twice because it grows both the intersection's denominator and the union's.
+
+**The pair, and a control that moved more than the treatment.** Memory 64.91% against the reference
+arm's **63.16%**: **+1.75pp paired [−14.04, +15.79], p = 1.000, n = 57**, 10 gained against 9 lost,
+`UNRESOLVED`. R55.0's reference arm on the same split read **54.39%**. Two dispatches of the
+*memory-free* configuration, differing by nothing but the run, differ by **8.77pp** — larger than
+every treatment effect this lane has ever reported. That is the most useful number in this entry: it
+says the 19.66pp within-run resolution understates the noise a cross-run comparison carries, and it
+retroactively explains why R55.0's +10.53pp had to be read as `UNRESOLVED` rather than as the lane's
+best arm.
+
+**What this iteration establishes, stated as narrowly as the evidence allows.**
+
+1. The trace unit changes what the distiller writes: 2.14 claims per episode, in the requester's
+   register, with the ban idle. That is a property of the object, and it is the first positive result
+   about the write side this project has.
+2. A store built from 7 traces cannot contain a claim three traces corroborate. The population, not
+   the mechanism, is the binding constraint at this scale — and it is 7 because 78% of the learning
+   tasks are already solved, not because the fold is small.
+3. Consolidation at 0.70 Jaccard is inert on this register by construction, and the calibrated
+   replacement is a containment floor at 0.60, measured on the store rather than guessed.

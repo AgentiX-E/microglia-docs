@@ -11820,3 +11820,51 @@ Where this leaves the project:
 | 4 | R57, U6b / U4 / U5 / U6a | registered, undispatched |
 | 5 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
 | — | cortex release | excluded by standing instruction |
+
+### 172.31 — R58 read: the unit moved, the population did not, and the pass was blind to a paraphrase
+
+`42476580076` on `9ad59e96`. Two refutations fired, three predictions failed, `ABANDONED` on the
+registration's own terms — and the write side produced the first positive result this project has.
+
+| Prediction | Reading |
+| --- | --- |
+| ≥ 1 item at support 3 | 0 of 15 |
+| ≥ 25% at support 2 | 0 of 15 |
+| ≥ 50% of the store kept | 15 of 15 |
+| coverage p50 ≥ 12% | 8.33% |
+| ≥ 80% of corrections traced | 7 of 7 (32 traces read) |
+| k = 4 on 57 tasks | yes |
+
+**What worked.** 7 corrections → **15 claims** (2.14 per trace, against 1.0 by construction), all
+conditions in the requester's words, **0 tool names, ban refused 0** (R55.0 refused 9 of 16). The
+`trace` form's constraints held without the host ban having to fire.
+
+**Defect: the registration's population.** It says 32 corrections; the run had **7** (`rows: 32`,
+`edited: 7` — the learning half solves 25 of 32 at one trial). Every cost and store-size number in
+the document multiplied by 32, including the assumption that three traces could agree.
+
+**Defect: the measure.** The store's two closest items are one claim (same premise, different trailing
+clause). Jaccard 0.483 against a 0.70 floor; the store's *maximum* pairwise Jaccard is 0.483 and the
+next-highest is 0.250. Containment puts the same pair at 0.700 against 0.533, so a 0.60 floor
+separates them. The pass was inert because the metric charges a trailing caveat twice.
+
+**The pair, and the control.** Memory 64.91% against reference 63.16%: **+1.75pp [−14.04, +15.79],
+p = 1.000, n = 57**, 10 gained, 9 lost, `UNRESOLVED`. The reference arm read 54.39% in R55.0 — an
+**8.77pp swing in the memory-free control** between two dispatches of the same configuration, which
+is larger than every treatment effect this lane has reported and is the reason no cross-run delta may
+be quoted.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | R58 readback on the real artefact; `l4-support-recurrence` passed (the census reconciles) | read |
+| P0 | R59 — the measure becomes containment at 0.60, and the learning population rises so a claim can be derived three times | next |
+| P1 | R53 — three note levels over one store | dispatch-ready, after R59 |
+| P1 | R55.1 — a recurrence threshold | still conditional: no item has reached 3 yet |
+| P2 | R57, U6b / U4 / U5 / U6a | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+Where the project stands: the *object* question is answered (a trace produces more, better-registered
+claims), the *populations* question is now open and is arithmetic rather than design — 7 traces cannot
+corroborate anything three times, and raising the training population from 32 tasks is a variable the
+lane has never varied.
