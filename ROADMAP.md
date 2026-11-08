@@ -617,11 +617,12 @@ prompt; both are about what the store contains.
 
 | # | Registration | Question | Decision it can carry | Status |
 | --- | --- | --- | --- | --- |
-| 1 | **R54** same-domain | does the distiller's condition name the request, at 12% coverage? | whether the write path is the defect | **running**, `42438746694` |
-| 2 | **R55.0** material | does any claim recur? `supportTasks` on the store sample | whether support can exist here at all | registered, blocked on R54 |
-| 3 | **R55.1** material | does admitting at support ≥3 change the pack and the register? | the mechanism reading; `pass^4` reported, underpowered by construction | registered, conditional on 2 |
-| 4 | **R53** note levels | does a licence to disregard a rule recover what the rule costs? | the reader-side variable, on whatever the store holds | registered; header repaired before dispatch |
-| 5 | **U6b** write admission | does deciding at write time (add/update/noop) beat appending? | the write-side architecture | built, unregistered |
+| 1 | **R54** same-domain | does the distiller's condition name the request, at 12% coverage? | whether the write path is the defect | **read** `42438746694`: write path works (20/20 conditions, 1,951/1,951 served, 1.417 items), coverage **8.33% vs 12%**, paired **+5.26pp `UNRESOLVED`** (resolution 20.27pp) |
+| 2 | **R56** register | is the trigger decided by the form the distiller is asked for? | whether the 8.33% is a vocabulary defect | **registered**, dispatchable |
+| 3 | **R55.0** material | does any claim recur? `supportTasks` on the store sample | whether support can exist here at all | rides on R56's dispatch, no treatment |
+| 4 | **R55.1** material | does admitting at support ≥3 change the pack and the register? | the mechanism reading; `pass^4` reported, underpowered by construction | registered, conditional on 3 |
+| 5 | **R53** note levels | does a licence to disregard a rule recover what the rule costs? | the reader-side variable, on whatever the store holds | registered; header repaired before dispatch |
+| 6 | **U6b** write admission | does deciding at write time (add/update/noop) beat appending? | the write-side architecture | built, unregistered |
 
 **Why material comes before the note.** R53 measures what a model does with a pack; R55 measures
 whether there is a pack. With 16 items and 1.22 served per request, the second question dominates,

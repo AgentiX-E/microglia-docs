@@ -4927,3 +4927,51 @@ have: it executes no tools and renders no external content. Adopting that suite 
 host's injection defences, not this store's isolation. The four store-level attacks the review lists
 beside it (progressive poisoning, contradiction flooding, vocabulary smuggling, adaptive attacker)
 are in scope and are recorded as P2.
+
+### 34.57 R54 read: every write-path prediction held, the coverage bar did not, and one state hid a readable result
+
+Run `42438746694` on `f25c8b56`, 57 retail tasks at k=4, both arms, retail store.
+
+| Reading | R51 | R54 | Registered bar |
+| --- | --- | --- | --- |
+| store items | 16 | 20 | — |
+| items carrying a condition | 16/16 | **20/20** | ≥ 4 |
+| requests served a pack | 1,527/1,527 | **1,951/1,951** | ≥ 75% |
+| mean items per request | 1.222 | **1.417** | 1.4–2.4 |
+| median rule/query coverage | 4.88% | **8.33%** | **12%** |
+| paired `pass^4` | −2.00pp | **+5.26pp** [−8.77, +19.30], p = 0.63 | resolution 20.27pp |
+
+The condition-carrying write path is now doing what it was built for: every servable item states a
+condition, every request is served, the pack is denser, and the contact between a rule's text and
+the request's terms nearly doubled. It did not reach 12%. R54's second refutation fired on its own
+terms — *the conditions exist and do not name the situation* — and the registration says what that
+means: the next registration is about the prompt.
+
+The paired delta is the first non-negative one this lane has produced, and it is worth exactly what
+R50 says it is worth: 57 pairs resolve 20.27pp, so +5.26pp [−8.77, +19.30] at p = 0.63 is
+`UNRESOLVED`. Recording it as encouragement would be the same defect as recording it as a loss;
+neither is a reading. What the ledger does say, and this is a number rather than a direction: of 228
+episodes, 42 were informative, 28 repaired and 26 broke — the first time the repair/break split has
+been available on this lane at all.
+
+**One state, two subjects, and the state is too coarse.** The verifier returns `ABANDONED`, on the
+refutation *the run cannot say what was written*: this artefact predates `storeItems`, so the store's
+own text is not in the file. That refutation is correct and it is about the store sample. The
+coverage prediction does not depend on it — it is measured from `coverageObservations`, whose
+population the verifier itself certified (`2,765 + 0 = 2,765` injected, one population, zero
+distiller failures) — so the run cannot certify the write path and can still be graded on what was
+delivered. A single terminal state that any fired refutation collapses is honest about the run and
+lossy about the evidence.
+
+Two dispositions follow, and they are different on purpose. The run is **ABANDONED for claims about
+what was written** and the store text is recorded as not recoverable; the coverage reading is
+**graded**, because its population is present and reconciled. That is not a reinterpretation of the
+run — it is the distinction the verifier already makes internally between a prediction it cannot
+evaluate and one it can. What is missing is a way to say it in one line, and the repair is a scoped
+refutation (`subject: store | delivery`) rather than a new state. Recorded as debt, not changed
+mid-read.
+
+**What the bar was, and why it stays.** 12% was registered before the run. The reading is 8.33%,
+which is one of 12. A bar that moves after the data is not a bar, so it stays where it is and R56 is
+written against it — including the clause that if the form moves the trigger and the coverage is
+still under 12%, the axis closes.

@@ -11426,3 +11426,35 @@ the index is the thing under test. The design is in TECH-DESIGN §17.112; the fu
 S2c debt list, not yet built.
 
 Pending on the lane: R54's readback (running), then R55.0, then R53's note levels.
+
+### 172.20 — R54 read: the write path works, the register does not, and the delta is undecided
+
+Run `42438746694`, 57 retail tasks at k=4, both arms.
+
+| Reading | R51 | R54 | Bar |
+| --- | --- | --- | --- |
+| conditions present | 16/16 | **20/20** | ≥ 4 |
+| requests served | 1,527/1,527 | **1,951/1,951** | ≥ 75% |
+| items per request | 1.222 | **1.417** | 1.4–2.4 |
+| coverage p50 | 4.88% | **8.33%** | **12% — not met** |
+| paired `pass^4` | −2.00pp | **+5.26pp** [−8.77, +19.30] | resolves 20.27pp → `UNRESOLVED` |
+
+Every write-path prediction held; the coverage bar did not, and R54's second refutation fired on its
+own terms. The paired delta is the lane's first non-negative point estimate and it claims nothing:
+10 tasks gained, 7 lost, 57 pairs, resolution 20.27pp. The repair/break ledger reports for the first
+time on this lane — 42 informative episodes, 28 repaired, 26 broken.
+
+The verifier returns `ABANDONED` because this artefact predates `storeItems`, so the store's text is
+not in the file. That refutation is about the store sample; the coverage reading is measured from the
+delivered observations and its population reconciles (2,765 + 0 = 2,765). Both are true and one state
+cannot say so — recorded as debt (AUDIT 34.57) rather than resolved mid-read.
+
+**R56 is registered**, and it is the registration R54's own text names: the τ² interpreter is built
+with no `form` and therefore defaults to `lesson`, whose `when` guidance asks for "which tables or
+columns it involves" with BIRD's race/raceId example beside it. In a lane whose input is a customer
+asking for a cancellation there is no column to name, so the model names the tools — the procedure's
+register. R56 switches to `procedure` and refuses, host-side, any candidate that names a tool.
+
+R55 (support counted per distinct task) moves behind it, and its measurement stage rides on R56's
+dispatch: `storeItems` gains `supportTasks` there with no treatment, so the recurrence distribution
+costs nothing extra. R53 follows whichever of the two moves the store.
