@@ -11172,3 +11172,30 @@ on all of them.
 `typecheck` and `typecheck:lanes` clean; `pnpm eval:prereg` 39/39 valid. No SOTA
 row moves: IBM `gpt-5.5` airline 82.0 remains the published SOTA and microglia
 remains fifth of six named entries on the columns it has measured.
+
+### 172.13 — the second copy of the unanswerable gate, and R51's readback
+
+R50 removed `delta >= 0 && p` below 0.05 from the pair step. The same condition sat
+in `bin/l4.ts`, where it was graded on a single arm's artefact and therefore always
+took the `paired === undefined` branch: `PASS l4-paired: no reference arm`. A green
+square for a question that file cannot ask. It now grades through `pairedVerdict`
+when a reference arm is supplied and is **omitted** when none is, which is the
+convention the same gate list already states two entries above — omitting a gate is a
+statement, not a pass.
+
+`eval/verifiers/r51_readback.py` joins the `eval:verifiers` script: five predictions,
+five refutations, nine self-test cases. Two of the cases are the ones that matter.
+An absent census reads as **NO_MEASUREMENT**, never as zero, because "the run never
+counted" and "the store produced nothing" are different facts and only one of them is
+evidence. And a failed `l4-paired` treats as harm even when the `verdict` block is
+missing, so an artefact written by an older bin cannot slip through a newer
+verifier's default.
+
+| # | Criterion | Result |
+| --- | --- | --- |
+| 1 | the arm artefact does not claim a pair it cannot see | **met**: gate omitted without a reference arm |
+| 2 | one condition, one implementation | **met**: both call sites route through `pairedVerdict` → `revertRule` |
+| 3 | an unestimable resolution supports no claim | **met**: `Infinity` yields neither `BENEFIT` nor `HARM` on the resolution clause |
+| 4 | the readback refuses an absent census | **met**: `NO_MEASUREMENT`, self-test case 7 |
+| 5 | the readback refuses an unflattering-but-violated design | **met**: five refutations, each with a self-test case |
+| 6 | the suite stays above the gate | **met**: 153 files, 3,217 tests, both verifier self-tests pass |

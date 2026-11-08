@@ -4477,3 +4477,44 @@ registration can use:
   `minCoverage` that turns a scope match into no match. The test asserts the order
   and the lexical scores rather than a count of hits, because the count is a
   property of the scope and not of the condition.
+
+### 34.49 The second copy of the unanswerable gate passed vacuously
+
+34.47 removed `delta >= 0 && p` below 0.05 from `bin/l4-pair.ts` and replaced it with
+the R45 revert rule. It did not remove the *other* copy, which sat in `bin/l4.ts` and
+graded the same condition on a single arm's artefact:
+
+```ts
+{
+  id: 'l4-paired',
+  pass: paired === undefined ? true : paired.delta >= 0 && paired.p < 0.05,
+  actual: paired === undefined ? 'no reference arm' : …,
+  criterion: 'against the same agent without the memory: delta >= 0 at p<0.05',
+}
+```
+
+Two defects in four lines. The condition is the unreachable one — same split, same
+MDE, same impossibility. And the fallback is worse than the condition: an arm
+artefact has no reference arm, so `paired` is `undefined`, so the gate prints
+`PASS l4-paired: no reference arm`. That is a green square for a question the file
+cannot ask, and it is the vacuous pass 34.45 counted as worse than an absent gate —
+R48's reading "passed" this way for three rounds.
+
+The fix follows the convention this file already states two conditions above it:
+*omitting the gate is a statement, not a pass*. When a reference arm is supplied the
+gate is graded by `pairedVerdict` and blocks on harm; when none is, the gate is not
+emitted at all, and the pair step owns the memory-versus-reference question.
+
+The resolution handed to the verdict is `Infinity`, deliberately. This file has the
+delta and the p-value but not the discordance, so it cannot estimate a minimum
+detectable difference — and an unestimable resolution supports neither a benefit
+claim nor an equivalence claim, which is exactly how `pairedVerdict` reads it.
+
+One consequence is recorded rather than papered over: the R49 readback's P6 asserts
+that the main artefact carries an `l4-paired` gate, which was true of every artefact
+written before this change and is no longer true of one written after it. The
+verifier grades R49 — a historical dispatch against a committed fixture — and its
+fixture still carries the gate, so the self-test is unaffected. R51's readback
+(`eval/verifiers/r51_readback.py`) does not read that gate for the same reason it
+does not read the other one: a gate that only ever said "no reference arm" was never
+evidence.
