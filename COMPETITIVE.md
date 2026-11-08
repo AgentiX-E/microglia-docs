@@ -3099,3 +3099,48 @@ What would move the table: an item at support 3 in a store whose coverage clears
 by a `pass^4` that a 57-task split can resolve. What would close the axis: no item at support 2 after
 the pass, which would make the corpus — 57 tasks, one domain, four trials — the constraint rather than
 the mechanism, and would move the next registration from the distiller to the sample.
+
+### R59 — the `sup3` gap is yield per task, not the floor
+
+R58's readback and R59's calibration together say something about this appendix that no earlier
+iteration could, and it moves the comparison away from the number everyone argues about.
+
+The published `sup3` numbers are **31 rules of retail's 292** (10.6%) and **14 of airline's 101**
+(13.9%) surviving a three-distinct-task floor at roughly five guidelines per learning task. This lane
+now knows its own yield exactly: **7 corrections produced 15 claims** (2.14 per episode), and with the
+learning half raised from 32 tasks to 57 the expectation is ~12 corrections and **~26 claims**.
+
+| | IBM ALTK-Evolve (`gpt-5.5`) | this lane (`deepseek-chat`) |
+| --- | --- | --- |
+| learning tasks | ~60 implied by 292 rules at ~5/task | 57 (R59) |
+| guidelines written per task | ~5 | **2.14 claims per *correction***, and only 21.9% of tasks produce one |
+| store size, retail | 292 (lossless) / 31 (`sup3`) | **~26 expected** |
+| items at support ≥ 3 | 31 | 0 (R58), unmeasured at R59's population |
+| `pass^4` retail | 67.5 (lossless) / 60.0 (`sup3`) | 63.16 memory-free control (R58) |
+
+Two consequences, and the second is the useful one.
+
+**The floor is not the gap.** A 26-item store cannot have 31 items at support 3. Even at a perfect
+one-in-ten recurrence rate — IBM's own — this lane's store would hold two or three corroborated items,
+not thirty-one. Importing `sup3` would therefore select almost nothing here for the third time, and
+R59 does not import it: it calibrates a merge floor on this register instead, where the store's own
+repeats are what decides.
+
+**The yield is the gap.** Their distiller writes about five guidelines per learning task from a full
+trajectory and a frontier model; this lane writes 2.14 claims per *correction*, and only about a fifth
+of learning tasks produce a correction at all — roughly **0.5 claims per task**. At equal task counts
+that is a 10× smaller store, and a 10× smaller store cannot be read the way theirs is: their own
+result says selection matters more than volume (292 rules at 67.5 against 31 at 60.0), and selection
+needs a population to select from.
+
+So the next question this record should ask is not "what floor", which R59 answers with the store's
+own distribution, but **"why does one trace yield two claims where a trajectory yields five"** — a
+distiller question (claims per trace, and whether each failed rubric assertion is its own episode)
+rather than a threshold question. That is where a 10× gap lives, and it is measurable without a
+benchmark run: claims per correction is a number the artefact already carries.
+
+The position on the table does not move in this iteration and is not claimed to: **IBM `gpt-5.5`
+airline 82.0 is the published SOTA; SapientAI-Agent-Opus-5 72.0; IBM `gpt-4.1 sup3` 44.0 (airline) and
+60.0 (`pass^4`, retail); this lane 63.16% `pass^4` on retail's 57 held-out tasks with memory off and
+64.91% with it on.** The pair remains `UNRESOLVED`, and the memory-free control moved 8.77pp between
+two dispatches of one configuration, which is larger than any treatment effect reported here.
