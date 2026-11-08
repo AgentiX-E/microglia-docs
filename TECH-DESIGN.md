@@ -8158,3 +8158,36 @@ The dispatch that was in flight when this was found was cancelled and re-dispatc
 Cancelling is the repair this project uses for this class, because the alternative — re-running the
 pairing step and committing a corrected pair — is revising a published artefact after its readout,
 which is the one thing a pre-registered lane may not do.
+
+### 17.118 Knobs, and the difference between a variable and a control
+
+The audit added at the end of this iteration answers a question the lane had never asked: **which of
+the values the code reads can a dispatch actually set?**
+
+Three kinds of knob exist here, and only one of them is visible where it matters.
+
+**A dispatch input** is on the workflow's menu. It is capped at twenty-five by the platform, printed
+on the run's page, and impossible to overlook because the person starting the run sees it.
+
+**A repository variable** is set outside the run and read by the workflow. It is the right home for a
+property of the *experiment* rather than of the run — which claims a store admits, which sentence a
+pack opens with, which form the distiller is asked for — because a registration outlives any single
+dispatch. It is invisible on the run page and visible only in the workflow file, which is why the
+convention is that every one of them is passed explicitly, in both arms, with a comment saying what
+unset means.
+
+**A bare `process.env` read** is neither. It compiles, it has a default, it is exercised by tests that
+construct the environment by hand, and nothing connects it to any workflow. Five such reads existed,
+and two of them were the entire treatment of a registered experiment.
+
+The audit that finds them is deliberately asymmetric. It fails on a name the source reads and no
+workflow mentions, and it does *not* fail on a name a workflow sets and the source ignores — because
+the second class is not decidable from the TypeScript tree (`TAU_CONCURRENCY`, `TAU_RETRIES` and
+`TAU_VERSION` are read by the Python half and by the shell), while the first class is exact. A check
+that reports false positives is a check that gets an exemption list, and an exemption list is where
+the next real defect hides.
+
+The exemption list here has three entries, each a name rather than a pattern, each with a reason in
+the same object that grants it. That is the compromise this repository uses wherever a check cannot be
+made total: **exempt the instance, in the place the check reads, with the reason beside it** — never
+the shape, and never in a comment somewhere else.

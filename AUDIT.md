@@ -5260,3 +5260,82 @@ inputs, and a second copy of a field is a copy that drifts.
 The R55.0 dispatch was cancelled at seventeen minutes and re-dispatched from the fix. A pair artefact
 whose blocking instrument gate says `absent` is not a record worth keeping, and the rule that a
 published artefact is not revised after the readout leaves cancellation as the only honest repair.
+
+### 34.66 A switch no dispatch can set has exactly one value
+
+R53's entire treatment is one environment variable. `TAU_INJECTION_NOTE` selects the sentence a
+knowledge pack opens with, at three levels; the driver resolves it through `resolveInjectionNotePlan`,
+which refuses an unknown spelling; three tests cover the resolution; and the artefact records both the
+level and whether it was *declared*, because `standard` is at once the default and one of the arms.
+
+No workflow passed it. The switch existed, defaulted to `standard`, and no dispatch could move it. A
+registration whose single variable is unreachable is not a registration — it is a run of the default
+arm with a document describing three.
+
+R56's `TAU_DISTILL_FORM` was the same shape one iteration earlier, and the audit that found these two
+found three more in the same sweep:
+
+| Variable | Read by | Reachable from a dispatch |
+| --- | --- | --- |
+| `TAU_INJECTION_NOTE` | `injection-note-plan.ts` | **no** — R53's treatment |
+| `TAU_DISTILL_FORM` | `tau2-register.ts` | **no** — R56's treatment |
+| `TAU_SEED` | `tau2-driver.ts` (recall draw) | **no** |
+| `TAU_MAX_CALLS` | `tau2-driver.ts` (per-run budget) | **no** |
+| `TAU_WRITE_ADMISSION_THRESHOLD` | `write-admission-plan.ts` | **no** |
+
+`TAU_SEED` is the one that should have been caught years earlier. It seeds the recall draw, which
+decides the pack order, and the workflow sets a *different* seed (`TAU_EVAL_SEED`, the evaluation
+draw) while leaving this one at 7 forever. Two runs that differ only in their pack order were
+therefore indistinguishable from two runs of one configuration — the same defect R53's third
+refutation names about note levels, sitting one layer down and unremarked.
+
+The repair is in two parts, because the finding is a class rather than five instances.
+`scripts/audit.mjs` now collects every `TAU_*` the source reads, excluding tests, and fails on any
+name no workflow mentions; three names are allowlisted one at a time with a reason (`TAU_PYTHON`,
+`TAU_WORKDIR`, `TAU_REFERENCE` are local conveniences a test or a hand-started pairing run sets),
+because a pattern-based exemption would swallow the next real switch. The guard was written first and
+failed on exactly those five names and nothing else. Then all five are wired from repository variables
+in both arms, unset meaning empty meaning the default the lane has always run — verified against each
+parser rather than assumed: `resolveInjectionNotePlan('')` is `standard`/`declared: false`,
+`resolveDistillForm('')` is `lesson`, `Number('') || 7` is 7, `Number('') || 400` is 400, and the
+threshold's own empty branch returns no options.
+
+The structural lesson is the one the workflow's own comment already carried about `template` and
+`sample_temperature`: *a knob nobody sets from the menu is a knob whose default is the only value it
+ever has*. That comment accepted the situation for two knobs and did not check whether anyone else was
+in it. A repository variable is reachable; a dispatch input is visible; a bare `process.env` read is
+neither, and only a machine can tell them apart.
+
+### 34.67 The census that two callers computed and one kept
+
+R53's fourth prediction is that *a licence to disregard a rule must not become a licence to stop
+acting*. Its subject is the abstention census: per task, how many trials the agent never called a tool
+in. `evaluateFacade` builds one for every facade it runs.
+
+R49's paired-facade path puts its copy into `observedPair.inaction`, with both facades' censuses and
+the contrast between them. The single-facade path — which is every dispatch since R49 unless the
+paired facade is switched on — assigned it to a local, returned it in `FacadeEvaluation`, and then
+never wrote it. Three thousand three hundred tests were green over a field that one of two callers
+silently dropped.
+
+This is the third instance of the same class in one iteration, and the first one that is not a
+projection. 34.62 was a mapping that listed its fields by hand and omitted three; 34.65 was a second
+mapping between two other shapes; this is a caller that consumed four of five fields from a struct it
+owned. The thing they share is not "a projection": it is that **the field had exactly one live reader
+and one dead one**. R49's switch is off by default, so the dead path was the one every artefact took,
+and the live path was the one the tests happened to exercise.
+
+The repair used the guard added in the same iteration, and that is worth recording as a result in
+itself. Declaring `inaction` on `Tau2Raw` made `PROJECTION` fail to compile until the field was given
+a decision — the guard doing its job on a field that did not exist when the guard was written. Giving
+it `carried` then made the generic *"carries every field it says it carries"* test fail until the
+mapping caught up. Two red states, neither of which needed a person to remember anything.
+
+The driver now writes `primary.inaction`, and the paired path is untouched.
+
+One consequence is recorded rather than repaired. The paired path's census and this one are now two
+copies of one fact in the artefact — `observedPair.inaction` and `tau2.inaction` — and a reader must
+know that the first is the contrast between two facades and the second is the graded facade's own. A
+single field with two shapes would be worse; two fields with one name each is the compromise, and the
+next iteration that touches the paired facade should consider whether the contrast belongs beside the
+census rather than in a sibling block.

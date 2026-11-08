@@ -11618,3 +11618,35 @@ instrument gate says `absent` is not a record worth keeping, and this project do
 published artefact after the readout — so cancellation was the only repair that left the record true.
 
 Gates: 3,332 tests in 160 files, coverage 99.95 / 99.62 / 100 / 99.95.
+
+### 172.26 — Two more losses with no trace, and the audit that turns them into build errors
+
+The R56 readback was one defect in three places; the sweep that followed found two more, in different
+places, which is the argument for sweeping rather than fixing the instance.
+
+**A switch no dispatch can set.** R53's whole treatment is `TAU_INJECTION_NOTE`. The driver resolves
+it, refuses an unknown spelling, records the level and whether it was declared, three tests cover the
+resolution — and no workflow passed it. Five variables were in that state: `TAU_INJECTION_NOTE`,
+`TAU_DISTILL_FORM` (R56's treatment), `TAU_SEED`, `TAU_MAX_CALLS`, `TAU_WRITE_ADMISSION_THRESHOLD`.
+`TAU_SEED` is the one that stings: it seeds the recall draw, so pack order varied with a value no
+dispatch could name, while the workflow set a *different* seed for the evaluation draw. `audit.mjs`
+now fails on any `TAU_*` the source reads and no workflow mentions, with three names allowlisted one
+at a time and a reason each. All five are wired from repository variables; unset means the default the
+lane has always run, checked against each parser rather than assumed.
+
+**A census two callers computed and one kept.** R53's fourth prediction — a licence to disregard a
+rule must not become a licence to stop acting — reads the abstention census. `evaluateFacade` builds
+one per facade; the paired path keeps its copy, the single-facade path dropped it, and the
+single-facade path is the one every dispatch since R49 has taken.
+
+Both repairs rode the guard added for R56's projection and both were red before they were green: the
+compile-time decision table refused to compile until `inaction` had one, and the generic
+"carries every field it says it carries" test then refused to pass until the mapping caught up.
+Neither needed anyone to remember anything, which is the only property that matters in a class of
+defect whose signature is that nothing happens.
+
+The pattern this iteration should be remembered for is not "check your projections". It is that a
+field with **one live reader and one dead one** is invisible: the dead path is the one in production,
+and the live one is the one the tests exercise.
+
+Gates: 3,333 tests in 160 files, coverage 99.95 / 99.63 / 100 / 99.95.

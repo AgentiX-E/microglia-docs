@@ -4930,3 +4930,49 @@ entries. At `sup3` density — 0.54 guidelines per learning task against our 0.6
 we read an unresolved +5.26pp, so density is not the difference; and the mechanism that produces
 `sup3` cannot be transplanted onto a store built one correction at a time. That is the next thing to
 test, and R55.0 is the test.
+
+### The sweep after R56: three losses with no trace, and the guards that replace care (2026-11-08)
+
+R56's readback found one defect — a projection that dropped three fields — and the readback's own
+repair found two more. They are recorded together because they are one class and because the
+conclusion is about guards rather than about attention.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | `armRecordFromDriver` carries `storeItems` / `distillForm` / `injectionNote`; the three fields R56 was dispatched to read (AUDIT 34.62) | done, red first |
+| P0 | `PROJECTION`: one decision per field of `Tau2Raw`, typed `-?` so a new field cannot compile without one; a `reduced` field must not appear verbatim (verified by adding a field and flipping a decision) | done |
+| P0 | `_pair.py` and `--pair`: the verdict and the paired delta live in the pair file, so both readbacks' revert checks could never fire on real evidence (AUDIT 34.64) | done, R54 re-read unchanged |
+| P0 | `readings()` before `grade()`: a `NO_MEASUREMENT` still carries census, coverage, funnel, yield and verdict (AUDIT 34.64) | done, five cases name what must survive |
+| P0 | `tau2ArmRecordOf` carries `funnel`; `V0` was absent on every pair the lane ever wrote (AUDIT 34.65) | done, verified on R56's real artefact |
+| P0 | `audit.mjs` fails on a `TAU_*` the source reads and no workflow can set; five were in that state, two of them a registered treatment (AUDIT 34.66) | done, guard written first |
+| P0 | `inaction` is declared, projected and written; the single-facade path computed the census and dropped it (AUDIT 34.67) | done, the compile guard caught the second half |
+| P1 | R55.0 readback — dispatched as run `42463064049` on `482d2d92` after the first attempt was cancelled for a `V0`-absent pair | running |
+| P2 | `r53_readback.py` — three arms, one per note level, with the identical-delivery-census refutation as its first check | next, before R53's dispatch |
+| P2 | R53 — now dispatchable: `TAU_INJECTION_NOTE` reaches the lane, and the abstention census its fourth prediction reads is in the artefact | registered, after R55.0 |
+| P2 | U6b / U4 / U5 / U6a, store-level poisoning, R57 | registered, undispatched |
+| P3 | `sota.ts` split, W8 dose curve, vitest 4 | pending |
+| — | cortex release | excluded by standing instruction |
+
+**What the three defects have in common, stated once so it can be recognised next time.** A
+projection that lists its fields by hand and omits one; a second projection between two other shapes;
+a caller that consumed four of five fields from a struct it owned. None raises, none warns, and all
+three produce an artefact that reads as complete. The one that is worth naming separately is the
+second: *the field had one live reader and one dead one*, the dead path was the one every artefact
+took, and the live one was the one the tests exercised. R49's paired-facade switch is off by default,
+so for as long as the field has existed, production took the dead path.
+
+**What replaced the care.** Three guards, and each is a machine rather than a habit: a compile-time
+decision table over the driver's record; a red-first test over each bridge a gate's input crosses; and
+an audit rule for knobs that no dispatch can set. The first two were exercised on a field that did not
+exist when they were written, which is the only way to know a guard works.
+
+Debts carried, and one added:
+
+- The verifier's terminal state is still one value while R56's record says two things — `NO_MEASUREMENT`
+  for the recording defect and `HARM` for the number. The report prints both; a state cannot.
+- BIRD's absent gates still have no written reasons; the arm inventory is still the prerequisite.
+- **The paired facade's census and the single-facade census are now two copies of one fact**
+  (`observedPair.inaction` and `tau2.inaction`). A reader has to know that one is a contrast and the
+  other is an arm. Considered and left: one field with two shapes would be worse, and the next
+  iteration that touches the paired facade should decide whether the contrast belongs beside the
+  census.
