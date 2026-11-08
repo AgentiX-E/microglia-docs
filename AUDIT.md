@@ -5723,6 +5723,16 @@ used, not in what is evaluated. At the measured edit rate (7 of 32) the expectat
 and ~26 claims. This is a sample change and is reported as one: no prediction in the registration is
 stated as a delta against R58's pass rate.
 
+**The admissible interval, on a labelled store.** One pair out of the 105 is one claim, and labelling
+it means stating the criterion: *one claim* is the same operative directive — the same object acted on,
+in the same order, with the same exception. Two statements about multi-order requests that act on
+different objects ("apply the change to every affected order", "resolve each order's own payment
+method") are two claims even when they share their subject. Under that reading the store admits exactly
+one floor interval, **(0.533, 0.700]**: at 0.533 the false pair enters, at 0.700 the true pair leaves.
+0.60 is an interior point of the only interval the store allows, which is a stronger statement than
+"0.60 sits between the two readings" — it says no floor inside it can be wrong on this sample, and the
+choice inside it is a preference rather than a measurement.
+
 **Tests.** `consolidate.ts` reads 100 / 100 / 100 / 100 across statements, branches, functions and
 lines over 34 cases, including the arithmetic at both floors, the symmetry of the measure, a trailing
 caveat that Jaccard would have refused, a paraphrased condition that passes the count and a
