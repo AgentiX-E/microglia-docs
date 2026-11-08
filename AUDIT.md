@@ -6015,3 +6015,67 @@ that compared statements only, and at 0.40 it reported **seven** groups where th
 **six**: it merged a `procedure` with a `negative` because their text matched. The module that ships
 checks kind and scope; the measurement that did not was the looser one. Which is the third time this
 round that a defect was found by measuring, and the first time it was found in the measurement.
+
+### 34.82 A command that could not tell an unbought stage from a lost one
+
+`eval:prior` gained a failure mode in R60's wake: exit 2 for "the input is not there", on the argument
+that an axis nobody priced must not look like an axis whose effect is nil. The argument was right and
+the test was wrong: it asked whether the `pool` **key** was present, and the lane writes `pool: null`
+on every case of a run that bought no sampling arm. So a run that bought nothing and a run whose
+candidates were lost produced the same reading, and the message on screen named the second while the
+file described the first.
+
+It went unnoticed because no dispatch since had run the BIRD lane: R60 and R61's first attempt both
+skipped it. The first dispatch that ran it (`42524907557`) paid 1,768 calls and 350 measured questions,
+wrote a complete artefact, and then failed at *Price the memory prior* — a step whose subject,
+`arms: gated,oracle`, samples nothing and never has.
+
+| state of the artefact | meaning | exit before | exit now |
+| --- | --- | --- | --- |
+| no `pool` key anywhere | predates the field; cannot say whether an arm ran | 2 | 2 |
+| `pool: null`, no `sample-N` arm recorded | the run bought no sampling arm | **2** | **0**, named |
+| `pool: null`, a `sample-N` arm recorded | the lane lost what it paid for | 2 | 2 |
+| a pool with no `dbId`/`fold` on any case | unkeyed; a prior over it would invent a corpus | 2 | 2 |
+
+The discriminator is the file's own arm list, not a flag and not the dispatch: a run that says it
+bought nothing is a reading, a run that bought something and produced nothing is a failure. That is the
+same rule the pool, signal, density and union readers already followed — they exit zero and say "no
+pool in this artefact" — which is how the inconsistency survived review: four readers agreed and the
+fifth was the one with a price.
+
+**A diagnosis corrected by its own artefact.** This was first written down as a workflow defect: the
+dispatch's `SOTA_ARTEFACT` was said to name `poc-sota-bird-R61-floor.json` while the lane wrote
+something else. The uploaded artefact is exactly that file, and its `config.prereg` names the
+registration, so the two names agreed and no such defect existed. Two proposed repairs — gating the
+`bird` job on the registration's kind, and computing the name once for the lane — were withdrawn before
+anyone implemented them. The rule that produced the false positive is worth keeping: a workflow defect
+is diagnosed from the artefact the run uploaded, never from the step that went red, because the step
+name says which claim failed and only the file says why.
+
+### 34.83 A default that could not be told from a request, and the lane it bought
+
+`bird` defaulted to `true`. A dispatch that meant to buy the Mini-Dev lane and one that never thought
+about the question were the same string, so no rule in the workflow could act on intent — and none
+tried. R61 showed the bill: a τ² registration, whose arm is measured on τ² retail, bought 1,768 model
+calls and seventeen minutes of a BIRD measurement it does not grade. The measurement still happened,
+still produced a delta (−0.57pp), and still ran a green step, which is why a lane nobody grades is
+harder to notice than a lane that fails.
+
+| rung | statement | lane |
+| --- | --- | --- |
+| 1 | `bird: false` | no |
+| 2 | `bird: true` | yes |
+| 3 | `split: dev` / `train` — BIRD-only corpora | yes |
+| 4 | the registration declares a `recallFloor` (a τ² registration) | no |
+| 5 | the registration declares none (a BIRD registration) | yes |
+| 6 | no registration named (a schedule) | yes |
+
+Two things are worth keeping from the repair itself. The input's default is now **empty** rather than
+`true`, because a default that equals a request cannot be overridden by a rule — the fix for "the
+default decides something nobody chose" is to make the default mean *nothing was chosen*, not to add a
+rule beside it. And the decision is a **function with twelve cases** (`lane-scope.ts`, 100 on all four
+dimensions) rather than an expression in an `if:`, because the workflow's other gates have no tests at
+all and the one that costs seventeen minutes should not be among them.
+
+A third, smaller: the command refuses to run without `EVENT`. Its fallback branch was the one that turns
+a lane *on*, so an absence there failed toward spending rather than toward silence.

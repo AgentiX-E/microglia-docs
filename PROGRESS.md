@@ -12163,7 +12163,7 @@ threshold at `supportTasks >= 3` becomes decidable the moment an item reaches th
 correction rate — 12 of 57 tasks produce a correction — is the next population lever if support stays
 at two.
 
-### 172.39 Two dispatch errors, and the wiring defect the second one exposed
+### 172.39 Two dispatch errors, and the defect the second one exposed
 
 Both mistakes are in the dispatch, not in the lane, and both are recorded because a run list that
 hides them makes the next dispatch repeat them.
@@ -12176,27 +12176,124 @@ re-dispatched (`42524907557`).
 **The second**: that re-dispatch omitted `bird=false`, which R60's dispatch had set. The BIRD lane
 therefore ran, spent **1,768 calls and 17 minutes** across all five folds — `n=350 without=51.71%
 with=51.14% delta=-0.57pp` — and then failed at *Price the memory prior*, not on its measurement but
-on where it looked for its own output.
+on a step that could not tell an unbought stage from a lost one.
 
-**The wiring defect the second error exposed, which is real and independent of the mistake.**
+**The failure, read off the artefact rather than off the step name.** The first draft of this section
+said the dispatch had made the BIRD steps look for `poc-sota-bird-R61-floor.json` while the lane wrote
+some other name. The file refutes that: artifact 13635800600 holds exactly
+`poc-sota-bird-R61-floor.json`, 1,752,708 bytes, 350 cases, and its `config.prereg` reads
+`prereg/R61-floor.md`. `chooseArtefact` and `SOTA_ARTEFACT` agreed. The step failed for a different
+reason, and it is a defect in the command rather than in the dispatch.
 
-```
-SOTA_ARTEFACT: inputs.prereg != '' && format('poc-sota-bird-{0}.json', inputs.prereg) || 'poc-sota-bird.json'
-```
+Every one of the 350 cases carries `pool: null`. `poolFromArtifact` sets `recorded` from
+`cases.some(c => c.pool !== undefined)` — the key exists, so `recorded` is true — and produces no
+questions. `prior.ts` tested `keyed.length === 0` and read `recorded === true` as *"a pool whose cases
+carry no database or fold"*, which is a different state, and exited 2. Because `arms` defaults to
+`gated,oracle`, which samples nothing, **the default BIRD dispatch fails this step after paying for the
+whole lane** — 1,768 calls and 350 measured questions in `42524907557`.
 
-The workflow's artefact name takes its suffix from **any** dispatch input named `prereg`, and the lane
-that writes the file (`pnpm eval:sota`) never receives that variable — it decides its own name. So a
-dispatch that names a τ² pre-registration makes every BIRD step look for
-`poc-sota-bird-R61-floor.json` while the BIRD lane wrote whatever it writes, and the run goes red in a
-step that has nothing to do with the arm. R60 never met it because R60 skipped BIRD.
+| state of the file | what it means | old exit | new exit |
+| --- | --- | --- | --- |
+| no `pool` key anywhere | written before the field; cannot say whether an arm ran | 2 | 2 |
+| `pool: null`, no `sample-N` arm in `config.arms` | the run bought no sampling arm | **2** | **0**, and says so |
+| `pool: null`, a `sample-N` arm recorded | the lane lost what it paid for | 2 | 2 |
+| a pool with no `dbId`/`fold` on any case | unkeyed; a prior over it would invent a corpus | 2 | 2 |
 
-Two candidate fixes, neither taken in this iteration because the graded run was in flight:
+The line that had to move is the one between the second and third rows, and it is drawn from the file's
+own arm list rather than from a flag or from the dispatch: a run that says it bought nothing is a
+reading, a run that bought something and produced nothing is a failure. The fix is `8c7e4e4` on
+`microglia` (`d40ba5c6`), with the two new cases in `prior-pricing.test.ts` pinned to those rows.
 
-| fix | shape | cost |
+**The lesson for the plan, which is the part worth carrying.** Two candidate repairs were written down
+here for a name that was never wrong: gate the `bird` job on the registration's kind, or compute the
+name once and pass it to the lane. Both are withdrawn. A workflow defect should be diagnosed from the
+artefact the run uploaded, not from the step that went red — the step name says which claim failed, and
+only the file says why.
+
+What survives from that list is a cost, not a defect: **a τ² dispatch still buys the BIRD lane.** R61's
+re-dispatch paid 1,768 calls for a lane its registration does not grade. §172.41 fixes it, before the
+R57 arms rather than behind them, because those three dispatches would each have paid it again.
+
+### 172.40 What R61's BIRD lane measured on its way to the wrong question
+
+R61's registration is about consolidation floors in τ² retail; its BIRD lane was bought by mistake and
+grades nothing. The measurement is still an independent replicate of the Mini-Dev arm on the code at
+`f5654f37`, and the only honest use for it is one more point in the run-to-run distribution:
+
+| arm | score | delta | p | pids |
+| --- | --- | --- | --- | --- |
+| without memory | 51.71% | — | — | — |
+| with memory (`full`) | 51.14% | −0.57pp, ci [−3.71, 2.57] | 0.860 | — |
+| `gated` | 51.14% | −0.57pp | 0.871 | 1.73 |
+| `oracle` | 84.29% | +32.57pp | 0.000 | 0.00 |
+
+`n=350`, 1,768 calls, five folds, min-detectable 4.53pp. The `full` arm has now been measured on
+identical code at −4.57, −0.57 and +0.86pp across dispatches: the treatment moves more than this run's
+interval covers, which is the round-to-round variance the paired lane exists to absorb and the reason
+no Mini-Dev delta smaller than ~4.5pp is quotable.
+
+Attribution on the same artefact: 378 of 1,316 rules were ever injected; **24 harmful / 28 helpful /
+326 neutral**, so 7.5% of the injections this pack made belonged to a rule that cost a question. The
+worst fold-1 rule (−2 net over 3 injections) is the bonds/elements join; the best (+2 over 2) is the
+`School Name` column note.
+
+
+### 172.41 The registration decides the lanes, and the input stops being a default
+
+The waste §172.39 measured had one cause and it was not the dispatch: `bird` defaulted to `true`, so a
+dispatch that meant to buy the Mini-Dev lane and one that never thought about it were the same string,
+and nothing in the workflow knew what kind of experiment the registration described. R61 bought 1,768
+calls of a lane its registration does not grade, and the three R57 arms queued behind it would each
+have bought it again.
+
+**The decision is a function now.** `laneScope` in `packages/eval/src/lane-scope.ts` resolves the BIRD
+lane in the order the argument has force:
+
+| rung | statement | answer |
 | --- | --- | --- |
-| the `bird` job refuses a pre-registration that does not name a BIRD question | needs a step that reads `prereg/<id>.md` and gates the job on it, since `if:` cannot read files | a job gate, and an end-to-end check that a τ² dispatch skips BIRD |
-| the artefact name is computed once from the prereg's own frontmatter and passed **to** the lane | removes the second source of truth | touches every BIRD step's env |
+| 1 | `bird: false` — the dispatch refuses the lane | no |
+| 2 | `bird: true` — the dispatch asks for it | yes |
+| 3 | `split: dev` or `train`, splits that exist for nothing else | yes |
+| 4 | the registration declares a `recallFloor`, so it is a τ² registration | no |
+| 5 | the registration declares none, so it is a BIRD registration | yes |
+| 6 | no registration named (a schedule) | yes, its own measurement |
 
-The second is the root fix: one artefact name, computed once, given to the lane rather than guessed
-about it. It is the next iteration's first item, with a test that a τ² pre-registration and a BIRD
-pre-registration produce different, correct names.
+The order is the design: an explicit statement outranks a split, a split outranks the registration's
+kind, and the registration's kind outranks a default. The input's own default is now **empty** — *the
+registration decides* — because a default of `true` is indistinguishable from a request, which is what
+rung 2 needs to be.
+
+**A `scope` job resolves it once, before anything is spent**, and `bird` is gated on
+`needs.scope.outputs.bird == 'true'`. That is one job gate with twelve cases behind it, where every
+other workflow expression in this repository has none: the workflow cannot evaluate a testable function
+inside an `if:`, so the function lives in the package and the job calls it.
+
+Two smaller repairs came with it. The `adjudicate` steps tested `inputs.bird == 'true'`, which with an
+empty default would never have been true again; they now depend on the job's own gate, which is the
+question they were trying to ask. And the command refuses to run without `EVENT`, because its default
+branch is the branch that buys a lane — a command that answers "scheduled" to a missing event turns a
+lane on rather than off, which is the wrong way for an absence to fail.
+
+**Instrumentation.** 12 new cases (7 on the decision, 5 on the command: it appends to `$GITHUB_OUTPUT`
+rather than truncating it, refuses an unreadable registration instead of guessing a scope, and prints to
+stdout when there is no output file). `lane-scope.ts` is **100 on all four dimensions**. Repository:
+**173 files, 3,575 tests, 99.96 / 99.68 / 100 / 99.96**. Pushed as `8c41a4a3`; remote tree 615/615 blobs
+identical to local.
+
+**One process defect, recorded because it shipped.** `npx prettier --write` with no config in reach
+formats to prettier's defaults — double quotes — and `8c7e4e4` therefore carried two files in the wrong
+style under a diff that was mostly quote churn. Re-run with `--single-quote --print-width 100
+--trailing-comma all`, shipped as `1c1ea74a`.
+
+**And the obvious fix is wrong, which is why it is written down.** A `.prettierrc` holding exactly those
+three settings looks like the repair, and was tried before this paragraph was written: **316 of the
+repository's TypeScript files** fail `prettier --check` under it. The style here is not prettier's — it is
+hand-formatted, single-quoted, wrapped at 100 by hand, with comment blocks prettier would reflow. Adding
+the config would either assert a conformance nobody maintains or arm a check that rewrites a fifth of the
+repository. The rule is narrower: format by hand in the shape of the file you are editing, and treat
+`prettier --write` without flags as a rewrite of the whole file, because that is what it is.
+
+**Next, in order.** (1) read R61 with `r61_readback.py` once the reference arm lands, instrument first
+and delta second; (2) R57's `far` arm, then `near`, then `adversarial`, one dispatch each — `bird` now
+resolves to `false` for all three without anyone remembering to say so; (3) R55.1's threshold at
+`supportTasks >= 3` becomes decidable the moment an item reaches three.
