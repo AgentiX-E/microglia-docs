@@ -11387,3 +11387,42 @@ check that refuses a census reporting more conditioned items than servable ones
 fourteen it had when it was pushed, and each addition came from a defect found by reading.
 
 Pending: R54's readback, then U6b.
+
+### 172.19 — Two reviews read against the tree: four corrections, and the store is the variable
+
+Two external reviews of this project (both written at the R49 snapshot) were checked line by line on
+2026-11-08. They agree with the documents on the large questions — the instrument layer was the
+defect layer, the negative effect is a finding rather than a bug, the exchange rate and not a p-value
+is what says the store is unprofitable — and they are wrong in four places that would each have sent
+the next iteration somewhere else.
+
+| Their claim | What the tree says | Disposition |
+| --- | --- | --- |
+| 38% of requests got an empty pack, so the pack is too thin | that was R49's `minCoverage 0.01` floor clearing 571 of 1,516 packs; the as-is facade served 1,435 of 1,527, and R51 served **1,527 of 1,527** at 1.222 items | quotation withdrawn; the store is thin, but for the other reason |
+| coverage floor cost −4.00pp | `UNRESOLVED`: 50 tasks at `pass^4` resolve 13.73pp, and R50 replaced the rule with a three-state verdict | reading corrected |
+| 9 of 39 gates reachable on τ² | 13, since R29 stage 2; the 9/30 was stale prose in two files beside a 13/26 table | prose fixed to name the constant |
+| the memory unit and its position are wrong; move to the output side | IBM ALTK-Evolve leads τ² retail with the same object — a prose block in the system prompt — at +10.0pp `pass^4` | **rejected**; the difference is material, not position |
+
+**What replaced it.** Their ablation, re-read from the primary write-up: 292 guidelines from ~57
+training tasks is ~5 per task against R51's 0.50, and `sup3` keeps only the guidelines derived from
+≥3 distinct tasks. The equivalent filter on BIRD kept **0 of 1,296** rules (iteration 65), which is
+why that axis has never been measured here: BIRD has no recurrence by construction. So the next
+variable is what the store contains, and R55 is registered around it — R55.0 counts
+`supportTasks` on the sample with no treatment, R55.1 admits at ≥3.
+
+**Three defects the review produced, and they are the reason it was worth reading.**
+
+| Found | What it had been doing | Repair |
+| --- | --- | --- |
+| `eval:prior` exited 0 with no pool | the command that prices the only positive axis has never had an input — no committed artefact carries a pool — and said so in a sentence CI cannot read | exits 2 with `cannot price`, distinguishing absence from a nil reading; 5 tests |
+| the gate index contradicted itself | 13/26 in the table, 9/30 in two paragraphs, 9/30 in the artefact | prose names the constant; the artefact stays as the record of what the index was that day |
+| R53 would have run the wrong scenario | `sample: 200` (the cross-domain pair's size) and **no domain trio**, so the workflow would have fallen back to `TAU_TEST_DOMAIN=airline` and compared a retail store against airline tasks | header repaired before dispatch: 228 episodes, retail/retail/retail, verified by `eval:prereg-scenario` |
+
+Also recorded: four of the six checks the review proposed as a new `V0` gate already exist (the
+pre-flight probe, the model-alias translation, `V1`, and `V44`'s `stored > 0`, which is the exact
+`0 <= 0` it cites). What is missing is the closure between corrections, candidates and admitted
+items, and its proposed sixth check — `expectedGates(a.lane)` inside the gate — is circular, because
+the index is the thing under test. The design is in TECH-DESIGN §17.112; the funnel is P0 on the
+S2c debt list, not yet built.
+
+Pending on the lane: R54's readback (running), then R55.0, then R53's note levels.

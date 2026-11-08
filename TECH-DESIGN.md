@@ -7842,3 +7842,107 @@ the dispatch measured a different experiment), `ABANDONED`. `DISCARDED` is a sta
 a conclusion because a wrong configuration is not evidence about the mechanism. Its
 `--self-test` runs fourteen artefacts, and `pnpm eval:verifiers` runs every verifier's
 self-test, now as a CI step rather than only from `pnpm check`.
+
+### 17.112 Instrument funnel, support as a count of tasks, and what a gate may not check
+
+Three designs, taken together because they all answer the same question: *what has to be true before
+a number from this repository may be read.* Each is a boundary rather than a check, and each one
+moves a decision that currently lives in a lane into a place a test can reach.
+
+#### The funnel is one function with three call sites
+
+R42's failure was not a missing check; it was that the run's own accounting was internally
+consistent. Thirty-two prompts, zero items, `failures: 0`, and a gate (`V44`) that passed on
+`0 <= 0 + 0`. Four of the six checks a review later proposed already exist by 2026-11-08 — the
+pre-flight probe, the model-alias translation, `V1`'s non-empty rate and `V44`'s non-empty store.
+What does not exist is the **closure** between the three counts a distillation produces:
+
+```
+corrections ──interpreter──▶ candidates ──admission──▶ items ──recall──▶ packs
+     │                            │                        │
+     └── events ──────────────────┴──── distilled ─────────┘
+```
+
+A run in which `events > 0` and `candidates === 0` has an interpreter defect; `candidates > 0` and
+`distilled === 0` has an admission defect; `distilled > 0` and `servable === 0` has a scope defect.
+Those are three different repairs and the artefact currently reports one number, `meanPackIds`,
+which is zero for all three.
+
+```ts
+export type InstrumentFunnel = {
+  readonly events: number;
+  readonly candidates: number;
+  readonly distilled: number;
+  readonly servable: number;
+  /** Completions the interpreter answered with its rule fallback rather than the model. */
+  readonly fallback: number;
+  readonly model: { readonly name: string; readonly accepted: boolean };
+};
+
+export function instrumentFunnel(input: InstrumentFunnel): readonly InstrumentFailure[];
+```
+
+`InstrumentFailure` is a closed set of codes (`EMPTY_STORE`, `INTERPRETER_PRODUCED_NOTHING`,
+`ADMISSION_REJECTED_ALL`, `SCOPE_UNREACHABLE`, `PROVIDER_REFUSED_ALL`, `INVALID_MODEL_NAME`,
+`ALL_FALLBACK`) so that a driver, a gate and a verifier cannot disagree about what went wrong.
+
+**Three call sites, one function.** The driver calls it after distillation and **stops before the
+evaluation loop**, which is the difference between learning that the store is empty in ninety
+seconds and learning it after an hour of pack-free evaluation. `V0-instrument-ready` calls it and
+makes publication conditional, for a run that got past the driver some other way. The readback
+verifier calls it and returns `NO_MEASUREMENT` rather than grading predictions against a store that
+does not exist. Three call sites that each decided for themselves is the defect this whole family of
+instruments exists to remove, so they share one predicate and one vocabulary.
+
+**What the gate may not check.** The proposed version of `V0` ended with
+
+```ts
+const missing = expectedGates(a.lane).filter((g) => !a.firedGates.includes(g));
+```
+
+which reads the lane's own index to decide whether the lane fired the gates the index says it can.
+The index is the thing under test: a lane that silently stopped running an arm would agree with its
+own stale table and pass. Coverage is a property of the harness, not of the run, and it is asserted
+in the lane's test by comparing a **fresh** run's `protocol.evaluable` against the index constants —
+with the constants as the expected value, because a test that derives its expectation from the code
+under test cannot fail.
+
+The same argument fixes where **support** may be counted. `supportTasks` is computed by the store
+from `evidence[].taskId` (falling back to `runId` when no task was opened, which is the existing
+contract), so a test can construct eight evaluations of one task and assert they count once. It is
+not computed by the pack, by the renderer, or by the verifier.
+
+#### `minSupport` is a weight, and the store has no count
+
+```ts
+minSupport: 0.8   // policy.ts, a *weight* threshold
+```
+
+One correction at trust 0.9 carries weight 0.9, so **every single-observation claim activates**. The
+distinction between "a claim seen once" and "a claim derived twice" exists in the schema
+(`evidence: EvidenceRef[]`, `taskId` optional) and in the prose, and it is not applied anywhere that
+decides what may be injected. The measurement that would need it does not exist either: iteration
+65's corroboration arm found **0 of 1,296** BIRD rules with two independent corrections, and on τ²
+nobody has looked.
+
+The design is therefore a count, not a threshold on a ratio:
+
+```ts
+/** Distinct tasks whose evidence supports this item. One task is one observation. */
+readonly supportTasks?: number;
+```
+
+carried in `storeItems` (the artefact's sample) beside `support` and `contradictions`, so a readback
+can ask the question without re-distilling. Absent means "the store did not record it", which the
+readback reports as `NO_MEASUREMENT` rather than as a store with no recurrence — the distinction
+`eval:prior` was just taught.
+
+#### Coverage is generated, not narrated
+
+`protocol.evaluable` and `protocol.absent` are already in the τ² pair artefact and sum to
+`GATE_ORDER` by construction. What is missing is (a) an assertion that a fresh run's sets equal the
+index, and (b) the same accounting for BIRD, which fires 10–11 of 39 gates and has never said why
+the rest are absent. The BIRD index is derived from committed artefacts — the fired ids are in every
+file — plus one written reason per absent gate, and `docs/GATE-COVERAGE-MATRIX.md` is rendered from
+both indexes so that the document cannot disagree with the table. A review found three numbers for
+one table this week; the answer is to stop writing the number down twice.

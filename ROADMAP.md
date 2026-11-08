@@ -4,7 +4,7 @@ The plan, in stages, with the gate that ends each one. A stage that misses its g
 roll forward into the next with a caveat. This document is the contract between the design and the
 work, and it is updated only when a stage closes or a gate changes for a stated reason.
 
-Status as of **2026-10-31**.
+Status as of **2026-11-08**.
 
 ## Stage map
 
@@ -13,7 +13,8 @@ Status as of **2026-10-31**.
 | **S0 Mechanism** | Does feedback become knowledge that transfers? | **done** | G1–G15 green in `AgentiX-E/microglia` |
 | **S1 Host shadow** | Does it help on one real product, offline? | next | +3pp chart top-1 on 1,300 adjudicated cases, κ ≥ 0.7; no SQL regression |
 | **S2 Public benchmarks** | Does it beat the same backbone on published data? | **read at n=352: no benefit (−2.84pp)** | BIRD-Interact +5pp at n=600; nvBench 2.0 +3pp; no memory-substrate regression |
-| **S3 SOTA push** | Can it lead a named benchmark, not merely improve on a baseline? | conditional | preregistered result beating the published best under the same protocol |
+| **S3 SOTA push** | Can it lead a named benchmark, not merely improve on a baseline? | **frozen** (2026-11-08) | preregistered result beating the published best under the same protocol |
+| **S2c Lane roles** | Which lane may supply product evidence, and which may only falsify? | **fixed 2026-11-08** | a number from one lane may not be quoted as the other's; τ² same-domain is the evidence lane, BIRD the hostile case |
 
 ## S0 — Mechanism (done)
 
@@ -587,11 +588,81 @@ Next by the plan, in order:
 L2b's remaining question is about the *reader* — a `negative`-lesson channel — not about the corpus or the
 protocol.
 
-## S3 — SOTA push (conditional)
+## S2c — Lane roles, and the four registrations that follow from them (fixed 2026-11-08)
+
+S2c is not a new corpus. It is a decision about which of the two existing lanes is allowed to say
+what, and it was forced by one measurement and one external ablation.
+
+**The measurement.** Iteration 65 admitted only rules corroborated by ≥2 independent corrections:
+**0 of 1,296** qualified, the arm injected nothing on all 350 questions, and the run became the
+lane's noise floor. BIRD has no recurrence by construction — every question is new — so a mechanism
+whose quality axis is "this claim was derived more than once" cannot be measured there. Reporting
+BIRD's null as evidence about the mechanism was a category error of the same kind as comparing its
+absolute EX to a leaderboard cell, and it is the one this stage retires.
+
+**The ablation.** The τ² retail leaderboard is led by a system with our exact shape — natural-language
+guidelines appended to a system prompt, no weights, no fine-tuning, no retrieval — at +10.0pp
+`pass^4` (57.5 → 67.5), with 31 support-counted guidelines out of 292. Two numbers separate it from
+R51's store: it holds ~5 items per learning task against our 0.50, and it keeps only guidelines
+derived from ≥3 distinct tasks. Neither difference is about position, register, retrieval or the
+prompt; both are about what the store contains.
+
+| Lane | Role | What may be quoted from it |
+| --- | --- | --- |
+| **τ² same-domain** | product evidence | paired `pass^4` with its interval, its MDE and its resolution; store-side counts (items, support, register share) |
+| **BIRD dev / train** | hostile case | the negative delta and its exchange-rate arithmetic, and nothing else; never an absolute EX beside a leaderboard row |
+| **τ² cross-domain** | transfer | only as a transfer reading, never as product evidence |
+
+### The queue, in order, with what each one can decide
+
+| # | Registration | Question | Decision it can carry | Status |
+| --- | --- | --- | --- | --- |
+| 1 | **R54** same-domain | does the distiller's condition name the request, at 12% coverage? | whether the write path is the defect | **running**, `42438746694` |
+| 2 | **R55.0** material | does any claim recur? `supportTasks` on the store sample | whether support can exist here at all | registered, blocked on R54 |
+| 3 | **R55.1** material | does admitting at support ≥3 change the pack and the register? | the mechanism reading; `pass^4` reported, underpowered by construction | registered, conditional on 2 |
+| 4 | **R53** note levels | does a licence to disregard a rule recover what the rule costs? | the reader-side variable, on whatever the store holds | registered; header repaired before dispatch |
+| 5 | **U6b** write admission | does deciding at write time (add/update/noop) beat appending? | the write-side architecture | built, unregistered |
+
+**Why material comes before the note.** R53 measures what a model does with a pack; R55 measures
+whether there is a pack. With 16 items and 1.22 served per request, the second question dominates,
+and a note that improves the reader of a thin store would be a result about a store nobody has.
+
+### The instrument debt this stage carries, in priority order
+
+| # | Item | Why it is not optional |
+| --- | --- | --- |
+| P0 | `instrumentFunnel` + `V0-instrument-ready` | the three zero-store defects (`INTERPRETER_PRODUCED_NOTHING`, `ADMISSION_REJECTED_ALL`, `SCOPE_UNREACHABLE`) currently report as one number; four of the six checks already exist, the closure does not |
+| P0 | `eval:prior` exits 2 when it has no pool | done 2026-11-08: the command that prices the only positive axis had no failure mode and no input |
+| P1 | coverage assertion over a fresh run, both lanes | 13 supplyable / 2 informative is a fact about the lane, and nothing checks it; three places reported 9/30 for a table that says 13/26 |
+| P1 | BIRD index and `docs/GATE-COVERAGE-MATRIX.md`, generated | BIRD fires 10–11 of 39 gates and has never said why the rest are absent |
+| P2 | `capture/experiment.ts` + online protocol, verdict `built, unrun` | the causal quantity is unidentifiable offline; a host needs exact assignment and a CUPED covariate or it will run an unpowered experiment. No host has run it, so it can carry no claim |
+| P2 | store-level poisoning set: progressive, contradiction flood, vocabulary smuggling, adaptive | the four attacks a store can suffer; AgentDojo's tool-output injection is a surface this library does not have |
+
+## S3 — SOTA push (frozen 2026-11-08)
 
 Only if S2 replicates. Requires a preregistration (frozen protocol, frozen prompts, frozen sample)
 before the run, and a result that beats the published best *under the same protocol* — not a different
 split, not a different metric.
+
+**Frozen rather than scheduled, and the reason is not the four negative readings.** S2's own rule is
+that S3 does not start until S2b's direction replicates, and it has not: +4.79pp fell to +2.05pp at
+p = 0.250. But a stuck gate is not a reason to rewrite the gate, so the two arguments that actually
+retire it are structural.
+
+1. **The comparison is against systems the design excludes.** The published BIRD cells at 73–83%
+   carry a fine-tuned generator, five to twenty-one heterogeneous candidates, a trained selector and,
+   in one case, Oracle Knowledge. `TECH-DESIGN §2` lists every one of those as a non-goal. A gate
+   that can only be met by abandoning the constraint the project is built on is not a goal; it is a
+   different project wearing this one's name.
+2. **The mechanism the gate would need is now known, and it is not a benchmark score.** S2c and R55
+   moved the question from "which arm wins" to "does the store contain anything that recurs": 0 of
+   1,296 BIRD rules were ever derived twice, so the quality axis this project claims cannot be
+   measured on that corpus at all. Leading a leaderboard and having a mechanism that works are two
+   different achievements, and the second one is the product.
+
+What replaces it is not a smaller version of the same ambition. It is S2c: a lane whose workload
+repeats, where the store can be dense enough for the mechanism to exist, measured by the same
+protocol and reported with the same intervals — and never called a leaderboard entry.
 
 ## Standing work, outside the stage gates
 

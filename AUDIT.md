@@ -4815,3 +4815,115 @@ plumbing exercise behind a switch of the kind `NoteMode` and `WriteAdmission` al
 Not implemented before R54's readback, deliberately. Whether this is the next arm depends on a
 number that does not exist yet, and shipping a prompt change first would make the readback
 unable to say which of two variables moved.
+
+### 34.56 A review read against the repository: six claims, four that did not survive, and a command that never had an input
+
+Two external reviews of this project were read on 2026-11-08 and checked line by line against the
+tree they describe. Both are unusually well informed — they quote `prereg/R42-instrument.md`,
+`COMPETITIVE.md §5`'s channel asymmetry and the 0.79-versus-1.393 exchange rate correctly — and both
+were written at the R49 snapshot, which is five registrations old. What follows is not a scorecard.
+It is the four places where their reading and the repository disagree, because each one would have
+sent the next iteration somewhere else.
+
+**What they get right, and it is most of it.** The instrument layer has been the defect layer
+(§2, §22–§34) while the product layer was clean; the negative effect survived every repair and is a
+finding rather than a bug; the exchange-rate arithmetic, not a p-value, is what says the store is
+unprofitable; BIRD is a hostile case and the README's largest section is about it; and the
+leaderboard comparison was a category error that the documents had already admitted three times.
+
+**Claim 1 — "38% of requests received an empty pack, so the pack is too thin."** This was the
+report's second-largest diagnosis and it is an artefact of the floor under test. R49 ran with
+`minCoverage 0.01`, and that floor cleared 571 of 1,516 packs by itself; the same run's as-is facade
+served 1,435 of 1,527. R51, with the condition-carrying write path, served **1,527 of 1,527** and
+averaged **1.222** items per request. So the store is thin — 1.2 items is not a block of guidance —
+but the eight-tenths-empty figure was the instrument's own cut, and quoting it as a property of the
+distiller is the same error the coverage medians were committed to prevent (§34.53).
+
+**Claim 2 — "the coverage floor cost −4.00pp, which shows the pack cannot be trimmed into
+usefulness."** That reading is `UNRESOLVED`, not negative. R49's pair ran 50 tasks at `pass^4`,
+where the minimum detectable difference is 13.73pp; `l4-paired` required `delta >= 0` *and*
+`p < 0.05`, which that sample cannot produce in either direction. R50 replaced the rule with a
+three-state verdict, so a number that cannot decide is now published as undecided rather than as a
+loss. A review written against the pre-R50 rule correctly reports what the file said; what the file
+said was wrong.
+
+**Claim 3 — "only 9 of 39 gates are reachable on τ², so the gate set is a catalogue."** The count
+is 13: R29 stage 2 made the four transfer ids reachable from one cross-domain arm, and the table in
+`tau2-gates.ts` has said 13 and 26 for as long as two paragraphs in two files have said 9 and 30.
+The review read the prose. **This entry fixes the prose rather than the count** — `gates.ts` and
+`tau2-gates.ts` now name the constant instead of a remembered number, because a table that must sum
+to `GATE_ORDER` cannot drift and a sentence can.
+
+The larger point the review makes about that count stands and is worse than it says: 13 supplyable
+gates, of which 2 are informative. The artefact carries the accounting (`protocol.evaluable`,
+`protocol.absent`, `supplyable`, `armIndexed`) and nothing asserts it against a fresh run. That is a
+real gap and it is scheduled, not argued.
+
+**Claim 4 — "the memory unit and its position are wrong; move memory to the output side."** This is
+the review's central prescription and the nearest external evidence contradicts it. IBM's
+ALTK-Evolve tops the τ² retail leaderboard with a **markdown block of natural-language guidelines
+appended to the system prompt** — no weights, no fine-tuning, no retrieval — at +10.0pp `pass^4`
+(57.5 → 67.5) on retail and +10.0pp (35.0 → 45.0) on airline with 14 support-counted guidelines.
+The object it moves is the object every arm this project has run against a bypassed memory says is
+negative, on the same benchmark,
+the same metric and the same stock scaffold. So "prefix injection is the wrong unit" is refuted as
+a general claim; what differs has to be something else, and one difference is measurable:
+
+| Store | learning tasks | items | items per learning task |
+| --- | --- | --- | --- |
+| ALTK-Evolve retail (lossless) | ~57 | 292 | ~5.1 |
+| ALTK-Evolve airline (lossless) | ~50 | 101 | ~2.0 |
+| R51 (τ² retail) | 32 | 16 | 0.50 |
+| BIRD dev (5 folds) | — | 1,296 | — |
+
+**The fourth row is the one that closes an axis.** Iteration 65 admitted only claims corroborated by
+≥2 independent corrections and **0 of 1,296 qualified**; the arm injected nothing on all 350
+questions and became the lane's within-run noise floor at +0.29pp. That is not a threshold failing.
+It is a corpus in which no claim is ever derived twice, because every question is new: recurrence is
+absent by construction, so a mechanism built on recurrence cannot be measured there at all. It is
+also the sharpest statement available of why BIRD is a hostile case and τ² is the product lane, and
+it is a stronger argument than "problems do not repeat", which was prose.
+
+**What the review found that this project had not.** Three things, in descending order of
+seriousness.
+
+1. **`eval:prior` had no failure mode.** It is the command that prices the only position for memory
+   this repository has never put a number on — memory judging a candidate rather than proposing one.
+   On the committed artefact it printed *this artefact predates the pool field* and exited 0. No
+   committed artefact carries a pool: `poc-sota-bird-dev.json` is a two-arm run with no `candidates`
+   on any of its 1,534 cases. So the pricing command has never had an input, has never run in CI,
+   and has never said so, and every pool-dependent claim — the oracle ceiling, "235 of 350 collapse
+   to one answer", the selector rankings — rests on a run whose per-question candidates were not
+   committed. That is the one family in the repository that cannot be recomputed from a file, and
+   it is the family with the only positive ceiling. The command now exits **2** with `cannot price`
+   and distinguishes absence from a nil reading: a pool whose draws all collapsed is a finding and
+   still exits 0.
+2. **The index contradicted itself in three places.** 13/26 in the table, 9/30 in two paragraphs,
+   9/30 in the committed artefact. Fixed in the prose, recorded here, and the artefact stays as it
+   is: it is a record of what the index was on the day it ran.
+3. **The proposed `V0` gate would not compile and would be circular.** Its sketch reads
+   `a.learning.distilled`, `a.tau2.meanPackIds` and `a.provider.acceptsModelName`, none of which are
+   fields of `ProtocolGateInput`, and its sixth failure mode is
+   `expectedGates(a.lane).filter(g => !a.firedGates.includes(g))` — a gate that reads the lane's own
+   index to decide whether the lane fired the gates the index says it can. The index is the thing
+   under test. Coverage is a property of the harness, and it belongs to a test over a fresh run, not
+   to a gate inside it.
+
+**What was already built, against the review's estimate of what was missing.** The review's first
+recommendation was a `V0-instrument-ready` gate with six failure codes, because "R42's three lessons
+are not hard assertions". Four of the six are: `provider-probe.ts` classifies a pre-flight probe into
+READY / DEGRADED / NO_MEASUREMENT and stops a run before it is paid for; `restModelOf` translates
+`deepseek/deepseek-chat` to the endpoint's id and records the stripped alias; `V1` refuses
+`meanPackIds === 0`; and `V44` refuses a store of zero items (`stored > 0`), which is the exact
+`0 <= 0 + 0` the review cites — that gate was repaired before this review was written. What is
+genuinely missing is the **funnel**: corrections → candidates → admitted, and `llmFailed === events`
+as a separate treatment. That is now designed (§17.112) around one pure function with three call
+sites, rather than six checks scattered across a lane.
+
+**And one recommendation rejected with its reason.** The review proposes an AgentDojo-style
+continuous poisoning set. Our poison arms are store-level — a fabricated high-trust rule — while
+AgentDojo attacks prompt injection through tool output, which is a surface this library does not
+have: it executes no tools and renders no external content. Adopting that suite would measure the
+host's injection defences, not this store's isolation. The four store-level attacks the review lists
+beside it (progressive poisoning, contradiction flooding, vocabulary smuggling, adaptive attacker)
+are in scope and are recorded as P2.

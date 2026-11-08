@@ -2873,3 +2873,50 @@ whose delivered median is near zero cannot be compared to those rows by quoting 
 
 No ranking changes. IBM `gpt-5.5` airline 82.0 remains the published SOTA and microglia remains
 fifth of six named entries; nothing in this iteration moves `pass^4`.
+
+### L.29 — The ablation and the leaderboard row are the same system at two populations (2026-11-08)
+
+L.19 listed six reasons IBM's 82.0 could not be copied. This entry re-read the primary write-ups on
+2026-11-08 and records the ablation table itself, because for the first time it says something about
+*our* store rather than about their score.
+
+Both domains, 4 trials, stock ReAct scaffold, `gpt-4.1` agent and `gpt-5.5` user simulator:
+
+| Domain | Configuration | Guidelines | Mean accuracy | pass^4 |
+| --- | --- | --- | --- | --- |
+| retail | baseline | 0 | 78.1% | 57.5% |
+| retail | `sup3` | 31 | 78.8% | 60.0% |
+| retail | lossless | 292 | 82.5% | **67.5%** |
+| airline | baseline | 0 | 57.5% | 35.0% |
+| airline | `sup3` | 14 | 60.0% | **45.0%** |
+| airline | lossless | 101 | 65.0% | 40.0% |
+
+Three things this table settles, and one it does not.
+
+**The unit is not the defect.** Their treatment is a markdown block of prose appended to the system
+prompt after the domain policy — the object our dose curve prices at −1.7pp per item and four stages
+concluded could not work. It works at 14, at 31 and at 292 items on the same benchmark, the same
+metric and the same scaffold we run. Any claim of the form "prefix injection is the wrong position
+for memory" has to survive this row, and ours does not.
+
+**The dose is not monotone, and the inversion is informative.** Airline: 14 guidelines beat 101 by
+5pp on `pass^4` while losing 5pp on mean accuracy. Retail: the full set wins on both. So the quantity
+of guidance is a per-domain parameter, not a constant — the same conclusion our own W8 reached from
+the other direction (accuracy falls ~1.7pp per item injected, and content is indistinguishable from
+volume). Two systems, two corpora, one shape of answer.
+
+**What separates the stores is material, and it is countable.** 292 guidelines from a training split
+of roughly 57 tasks is ~5 per task; R51's 16 items from 32 tasks is 0.50. And `sup3` keeps only
+guidelines derived from ≥3 distinct tasks — 10.6% of retail's set, 13.9% of airline's. On BIRD, the
+equivalent filter kept **0 of 1,296** rules, which is why the axis has never been measured here.
+
+**What does not transfer.** The test sets are 40 retail and 20 airline tasks, where one airline task
+is 5pp of `pass^4`; both leaderboard submissions are open, unverified PRs that declare modified
+prompts; retail's guidelines were learned from a train split the base evaluation includes; and the
+same `sup3` configuration appears as 45.0 held-out and 44.0 on the leaderboard, which is one system
+at two populations rather than a discrepancy. Copy the mechanism — support counted per distinct
+task, dose tuned per domain, provenance kept — not the numbers.
+
+**Ranking unchanged.** IBM `gpt-5.5` airline 82.0 remains the published SOTA, IBM `gpt-4.1` retail
+67.5 leads that domain, and microglia remains fifth of six named entries with nothing in this
+iteration moving `pass^4`.
