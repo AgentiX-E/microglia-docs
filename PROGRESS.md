@@ -12342,3 +12342,30 @@ second refutation named and R61 kept failing to avoid — the **population**: 43
 teach nothing because they passed first time, and only the 14 that failed produce claims. Teaching from
 every trajectory is the experiment that can separate "the corpus is the constraint" from "the distiller
 is", and it is the next registration rather than a knob on this one.
+
+### 172.43 R57's `far` arm dispatched by a lane that picked itself, and R62 registered
+
+**The `scope` job proved itself on its first production dispatch.** `42534241219` names `R57-toxicity`,
+sets `l4` and says nothing about `bird`; the new job read the registration, found the `recallFloor`
+header, and the BIRD job was **skipped without anyone asking it to be**. That is 1,768 calls and
+seventeen minutes not spent, which is the whole of §172.41's argument in one run list.
+
+One cosmetic defect came with it: a job skipped by a `needs`-gated `if` renders its `name:` expression
+**literally** in the run list (`BIRD ${{ (((github.event.inputs.split == 'dev') && 'dev') || …`), so the
+skipped lane is unreadable where it used to say `Mini-Dev`. The name is not evaluated for a skipped
+job, and the nested ternary is what makes that visible. Not fixed in this iteration because the arm it
+would have been fixed during was in flight; it is a name, not a gate.
+
+| item | state |
+| --- | --- |
+| R57 `far` — `TAU_PLANTED_RULES=far`, dispatch `42534241219` on `1ecb6418` | memory arm running, ~2h total |
+| R57 `near`, `adversarial` | one dispatch each, after `far` reads |
+| R62 — `prereg/R62-population.md`, `a791aeb8` | **registered**, undispatched by the one-lane rule |
+| `fetch_evidence.py --artifact` | fixed (`aec7b57`): it selected by name and passed the name as an id |
+
+**R62 is the last knob the corroboration pass has.** `TAU_DISTILL_SCOPE=edited|all`: the second asks a
+passing trajectory what it did that a naive attempt would not, turning 14 teaching tasks into 57. Its
+predictions are >= 112 claims with >= 60 from passes, at least one group of three at 0.60, and a paired
+delta that does not fall below the 3.51pp drift — and its own refutation is the outcome most likely to
+matter: if 112 claims still hold no triple, claims are bespoke to their task at every population this
+corpus can supply, and recurrence has to be counted on tasks rather than on claims.
