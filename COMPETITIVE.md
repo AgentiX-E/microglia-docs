@@ -3416,3 +3416,48 @@ mechanism the field ships checks the store against itself.** The next experiment
 write-time **contradiction** gate as opposed to a consistency gate — checking a candidate rule against
 the episode's own trace rather than against the other rules — and it is registered as the round after
 R62, because it is the one mechanism none of the three sources above has an implementation of.
+
+## The denominator: 43% of questions never see the rule (2026-11-09)
+
+Every memory ablation in this repository — and, as far as the sources above show, every ablation in the
+field — publishes a delta over **tasks**. A delta over tasks divides by the number of questions asked.
+The memory was consulted on the number of questions where it changed the answer, and the gap between
+those two denominators is measurable from artefacts that were already committed: the harness writes both
+SQL strings per case, so an identical pair is a question on which the pack changed nothing observable.
+
+| artefact | n | identical SQL | changed | won / lost | delta per task | delta per change |
+| --- | --- | --- | --- | --- | --- | --- |
+| `poc-sota-bird-dev` | 1534 | 680 (44.3%) | 854 | 47 / 68 | −1.37pp | **−2.46pp** |
+| `R24-dev-split` | 1534 | 662 (43.2%) | 872 | 64 / 73 | −0.59pp | **−1.03pp** |
+| `R26-channels` | 1534 | 657 (42.8%) | 877 | 67 / 62 | +0.33pp | **+0.57pp** |
+| `R37-lexicon-grain` | 1534 | 666 (43.4%) | 868 | 78 / 67 | +0.72pp | **+1.27pp** |
+
+Four artefacts, four configurations, and the inert share lands in a **1.5pp window (42.8–44.3%)**. That
+stability is the reading: it is not a property of a prompt version or a lexicon, it is a property of
+what a 1.9-rule pack can do to a text-to-SQL decoder.
+
+**This is the same quantity AM-Sentry reports as ~60% activation, measured a different way.** Their
+number comes from whether a planted memory was used; ours comes from whether the output moved. 56–57%
+effective here against ~60% there is close enough that the two are plausibly the same phenomenon, and
+they are independent instruments. The consequence for every table in this repository is arithmetic:
+**the per-task column understates what the memory does when it acts by a factor of 1/0.566 ≈ 1.77.**
+
+**The bound's direction matters, and it is stated rather than implied.** Identical text proves the
+memory did nothing on that question. Differing text does **not** prove it did something — the decoder
+may have sampled differently — so `inert_share` is a lower bound on not-using and `effective_share` an
+upper bound on using. This is a denominator, not an attribution, and it is implemented as such
+(`eval/verifiers/use_rate.py`, registered in `pnpm eval:verifiers`).
+
+One structural assertion rides with it, and it is graded before any share is printed: a question whose
+two SQL strings are identical must carry the same verdict on both arms. If it does not, the artefact's
+`predictedSql` and its `correct` are describing different runs, and no rate computed over them means
+anything. The state is `INCONSISTENT` and the fixture that reaches it is a two-row artefact that
+contradicts itself — a check that cannot be shown to reject is not a check.
+
+**What it changes about our own claims.** R57's 7.02pp for `adversarial` is a per-task number on a
+τ-bench population where the injected rule is in every served request by construction, so its
+denominator is 100% and the correction factor for that arm is 1.0 — the arm is not affected. What is
+affected is the BIRD lane: the +0.72pp that made R37 the first non-negative memory arm is +1.27pp per
+change, and the −1.37pp that every earlier table quoted is −2.46pp per change. **Neither reading is
+wrong and the second is the one a mechanism comparison should use**, because a competitor's activation
+rate is not ours and dividing by tasks silently assumes it is.

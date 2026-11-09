@@ -12896,3 +12896,41 @@ than a better retriever.
 | coverage, all four dimensions | 100 | 100 |
 | dispatch inputs used | 25 / 25 | 25 / 25 (unchanged — the arm is not an input) |
 | arms per dispatch on `l4` | 1 | **1 + len(plantedArms)** |
+
+### 172.54 The denominator was never measured, and it is 43%
+
+Four BIRD dev artefacts, four configurations, one number in a 1.5pp window: **42.8% to 44.3% of
+questions produce byte-identical SQL with and without memory.** The pack changed nothing observable on
+those, so they cannot carry any of the effect, and every delta over tasks in this repository has been
+dividing by 1534 where the mechanism acted on 854–877.
+
+| artefact | identical | changed | won / lost | per task | per change |
+| --- | --- | --- | --- | --- | --- |
+| `poc-sota-bird-dev` | 680 (44.3%) | 854 | 47 / 68 | −1.37pp | −2.46pp |
+| `R24-dev-split` | 662 (43.2%) | 872 | 64 / 73 | −0.59pp | −1.03pp |
+| `R26-channels` | 657 (42.8%) | 877 | 67 / 62 | +0.33pp | +0.57pp |
+| `R37-lexicon-grain` | 666 (43.4%) | 868 | 78 / 67 | +0.72pp | +1.27pp |
+
+`eval/verifiers/use_rate.py` computes it from the two SQL strings the harness already writes, so the
+measurement cost nothing and needed no dispatch. The 56–57% effective share is the same quantity
+AM-Sentry reports as ~60% activation, from an independent instrument — theirs asks whether a memory was
+used, ours asks whether the output moved.
+
+**Two states exist so that the number cannot be quoted when it is not there.** A artefact where every
+case produced the same SQL is `NO_MEASUREMENT`, not 0% — there is no change to take a rate over. And an
+artefact where two identical SQL strings carry two different verdicts is `INCONSISTENT`, because then
+`predictedSql` and `correct` describe different runs and no rate over them means anything. Both have
+fixtures; the second one is a two-row artefact that contradicts itself, which is the only way to prove
+the check can say no.
+
+**The direction of the bound is written down rather than assumed.** Identical text proves the memory did
+nothing; differing text does not prove it did something, because the decoder may have sampled
+differently. So 43% is a lower bound on not-using and 57% an upper bound on using. A denominator, not an
+attribution — and the reason the per-change column is the one a cross-system comparison should quote.
+
+| reading | before | after |
+| --- | --- | --- |
+| verifiers in `pnpm eval:verifiers` | 12 | **13** |
+| tests | 3653 | 3653 (python verifier, self-test only) |
+| BIRD memory effect, per task | +0.72pp (R37) | +0.72pp |
+| BIRD memory effect, per change | not measured | **+1.27pp** |

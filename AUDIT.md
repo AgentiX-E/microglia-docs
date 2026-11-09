@@ -6445,3 +6445,45 @@ The rule this adds to the list in 34.90: **a check has to be able to say no to t
 — and here, the check could not say *yes* to the thing it was supposed to check, because it was not
 looking at it. "Which artefact did this read" is a question every validator should be able to answer,
 and a validator that resolves its own package name is answering "the last build".
+
+### 34.92 A delta divided by the number of questions, when the mechanism acted on 57% of them
+
+Every memory arm in this repository reports `delta_pp` as the paired difference in accuracy over the
+evaluation set. That is the right number for "does the system answer more questions", and it is the
+wrong denominator for "what does the memory do", because the memory was consulted on the subset where it
+changed the output and the table divides by the whole set. Four independent artefacts put that subset at
+**56–57%**:
+
+| artefact | inert share | delta per task | delta per change |
+| --- | --- | --- | --- |
+| `poc-sota-bird-dev` | 44.3% | −1.37pp | −2.46pp |
+| `R24-dev-split` | 43.2% | −0.59pp | −1.03pp |
+| `R26-channels` | 42.8% | +0.33pp | +0.57pp |
+| `R37-lexicon-grain` | 43.4% | +0.72pp | +1.27pp |
+
+The mistake is not arithmetic — both columns are computed from the same ledger and both are correct.
+It is a **comparison error that the table invites**: a competitor publishing an activation rate of 60%
+and we publishing a per-task delta are not on the same axis, and a reader will put them side by side
+because both are percentages of a benchmark. The factor is 1.77 and it is stable enough across artefacts
+to be treated as an instrument property rather than a finding.
+
+Two things made this findable, and both are worth keeping:
+
+1. **The harness already stored the evidence.** `predictedSql` and `baselineSql` are written for every
+   case because a human occasionally reads them. Nobody had diffed them in aggregate, and the aggregate
+   is a measurement that cost zero dispatches. The lesson is the same one that produced the ledger and
+   the band: **a field written for legibility is often a field that was never aggregated**, and the
+   aggregation is where the denominator lives.
+2. **The two states had to be invented before the number could be trusted.** "No case changed" is not
+   0%, it is no measurement — there is nothing to take a rate over, and a verifier that prints `0.0%`
+   there is reporting a number it did not measure. And "two identical SQL strings, two different
+   verdicts" is a contradiction in the artefact rather than a reading of it. Without those two states
+   the share would have been printable in situations where it means nothing, which is the failure mode
+   34.90 and 34.91 are both about.
+
+The bound's direction is the part most likely to be misread later, so it is in the output: identical
+text proves the memory did nothing, differing text does not prove it did something (the decoder may have
+sampled differently). `inert_share` is therefore a lower bound on not-using, `effective_share` an upper
+bound on using, and the per-change column inherits the same asymmetry — it is an upper bound on the
+per-use effect, not an estimate of it. Every number in the table above is quotable only with that
+sentence attached.
