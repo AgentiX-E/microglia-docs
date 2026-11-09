@@ -5275,3 +5275,39 @@ floor (0.60 → 0.40 over 36 grid points) and the linkage (single → complete),
 through all three. The claims are clean, the pass keeps 95.6% of the store, and no threshold finds a
 third member — because among 45 claims taught by 14 tasks there is no third member to find. The 43 tasks
 that passed first time teach nothing at all, and that is the population R62 changes.
+
+## R57 `far` read: the arm was right and the step said `failure` (2026-11-09)
+
+Run `42534241219` on `1ecb6418` (`TAU_PLANTED_RULES=far`, `l4`, `bird` skipped by `scope`):
+
+| reading | value | registered |
+| --- | --- | --- |
+| planted rules inside their band | 1934 / 1934 (99.3%) | the plant did what it was told |
+| paired ledger | broke 9, repaired 9 of 57 episodes | net zero |
+| excess | **+0.00pp** (half-width 14.59pp) | a distractor is not free and not harmful |
+| `pass^4` | 0.5789 | published 0.575 |
+| conclusion | `GRADED` (partial: 1 of 3 arms) | — |
+| **job status** | **`failure`** on `l4-pass4 >= published + 0.05` | the bar is the treatment's |
+
+The arm agreed with its registration in every field and the step was red anyway: `l4-pass4` is the
+treatment's claim, and a distractor's hypothesis is that it *misses* it. Repaired in `597788d`
+(`sampleGates` omits the bar for a declared plant, `published_bar_applies: 0`, `planted_arm`) and, on the
+same day, one step later in the same job (`4083945`): `l4-paired` would have failed `near` for being
+right. Both are `AUDIT 34.86` / `34.87`; the rule is **a gate belongs to the arm whose hypothesis it
+states.**
+
+| item | state |
+| --- | --- |
+| P0 | R57 `far` — read: net-zero ledger, band 99.3%, `GRADED` (partial) | **done** |
+| P0 | the two gates that misread a planted arm (`l4-pass4`, `l4-paired`+`l4-effect-resolved`) | **fixed**, `597788d`, `4083945` |
+| P0 | R57 `near` — `TAU_PLANTED_RULES=near`, dispatch `42544865267` on `71457278` | **in flight** |
+| P1 | R57 `adversarial` — one dispatch, after `near` reads | next |
+| P1 | R62 — `TAU_DISTILL_SCOPE=all` + `TAU_DISTILL_UNIT=trace` | **built**, after R57's three arms |
+| P2 | four arms on one clock — the registration carries the arm, a job output carries it to L4 | blocked at 25 dispatch inputs; needs either a freed slot or a matrix over registered arms |
+| P2 | the ~40 `?.`/`??` fallbacks that keep branch coverage at 99.76 | a campaign, one invariant read per site |
+
+**Why `near` still runs alone.** `TAU_PLANTED_RULES` is a repository variable, a variable is global, and
+the dispatch menu has no slot left for an arm. The correct fix is the rule `lane-scope` already encodes —
+the registration decides the experiment — which means an arm list in `prereg/R57-toxicity.md`'s header
+and a matrix over it. That is a workflow change with its own verification dispatch, and it must not be
+made while an arm it would re-dispatch is in flight.
