@@ -7210,3 +7210,31 @@ re-execute 1,534 statements to know how many questions an arm could touch.
 the pipeline itself rejected, it is measurable for free from artefacts that already exist, and it
 belongs in the registration *before* the dispatch — R64's prediction was off by a factor of five, and
 the only reason that cost nothing is that the arm and the audit share their trigger.
+
+### 35.03 Four gates broke on the size of the tree, and none of them was about the tree
+
+Committing one published artefact turned four checks red, in four different files, for one reason:
+each of them had pinned how large the repository is rather than what shape it has.
+
+| where | what it pinned | what it should have asked |
+| --- | --- | --- |
+| `prereg/R63` header | the gate set the lane emitted when the file was written | `eval:protocol` refuses an artefact whose registration does not name a gate the run emitted — correctly, so the three new gates went into the header with a dated note |
+| `scripts/check-coupling-ledger.mjs` | `deferred.length === 14` | every deferral carries a reason longer than a placeholder, and there is at least one |
+| `ci.yml`, the ledger step | `a.family.datasets === 18 && a.family.positive === 6` | the same contrast reverses in more artefacts than it holds in, and the three buckets account for every dataset |
+| `sota.yml`, the `max_calls` description | dev at four arms costs 6,504 calls | the same figure cold is 12,383, which is why R64 stopped after its first fold |
+
+**The last one is the expensive one.** R64 went out with a cap of 9,000 against a measured 12,383 and
+lost a fold — 2,293 calls, about a quarter of the run's budget — to a number that had been true once.
+The lane printed the forecast and refused, which is why the loss was one fold and not five, and that is
+the design working: `MG_E_BUDGET_EXCEEDED` is a refusal, not a failure.
+
+**The general form.** Every one of these was written to be a *relation* and ended up a *count*. A
+count is true of one tree and false of the next, and its repair is always an edit to the number, which
+teaches the project to edit checks. A relation is true of every tree it was meant to hold for, and it
+still goes red when the property it names stops holding — which is the only red worth having.
+
+The two ledger checks now assert relations and keep their discriminating power: the coupling
+self-test blanks a reason instead of flipping a verdict the scanner cannot produce, and the ledger gate
+checks that the reversal is a majority and that the statement quotes its own counts. The `max_calls`
+description now carries the cold figure next to the warm one, because the difference between them is
+the entire reason the cap was wrong.
