@@ -6234,3 +6234,52 @@ answer is "none", the choice is to move the check into a script that both call, 
 check can only ever be discovered after a push — and to say so out loud, in the step, so the next person
 knows a green local run has not tested it. What is not acceptable is the third option this round took
 twice: leaving the check inline and assuming the local gate covers it because the local gate is green.
+
+### 34.88 The fallback that cannot fire, and the test that certified nothing
+
+Two findings from one afternoon of reading a coverage report, and they turn out to be the same defect
+seen from opposite ends: **code and tests that agree with each other instead of with the input.**
+
+**The fallback.** Four sites in this repository carried a defensive default on a lookup that cannot
+miss:
+
+| site | the fallback | what makes it total |
+| --- | --- | --- |
+| `sql/src/schema-link.ts` | `byColumn.get(column) ?? []` | the map is filled from the same blocks, two loops above |
+| `eval/src/within-run-pair.ts` | `comparison.paired === 0 → unmeasured` | `validArm` refuses an empty arm, and the two id sets are compared on the previous line |
+| `eval/src/facade-pair.ts` | three `typeof !== 'number'` re-checks | the guard forty lines up tested the same three fields |
+| `eval/src/ablations.ts` | `items[0]?.status ?? 'missing'` | `learn()` admitted one rule; `status: 'all'` filters nothing |
+
+None is a bug. All four are *uncovered branches*, and that is the cost: a fallback no input can reach is
+a line that reads as safety, that no test can pin, and that appears in the report as the file's only
+uncovered code. The second-order cost is worse than the first: when the report has been telling a
+reader for months that some lines are simply never covered, the report stops being a signal — and
+`ablations.ts` sat at 94.44% branch coverage, the worst in the repository, because of one unreachable
+`??`. Each site is now asserted by construction with a paragraph naming the invariant, so breaking the
+invariant crashes there instead of silently doing less.
+
+**The test.** `tau2-admission.test.ts` has a case called "refuses an action that names no tool". It
+passed an object-shaped `before`:
+
+```ts
+tau2EditSemantics(
+  { actions: [{ name: '', arguments: {} }] },   // before — NOT the shape complete() writes
+  { actions: [{ name: 'cancel_pending_order', arguments: { order_id: '1' } }] },
+)
+```
+
+`tau2EditSemantics` opens with `if (!isDriverCompletion(before) || !isGoldVerifiedCorrection(after))`.
+`isDriverCompletion` requires `actions` to be an array of **strings**; the object-shaped `before` fails
+it, the `||` short-circuits, and `isGoldVerifiedCorrection` — the validator the test is named for — was
+never called. The assertion (`undefined`) held for an entirely different reason, and had held since R58.
+
+That is the failure mode a coverage report exists to catch and a test name cannot: the test was green,
+the code was correct, and the pair of them certified a claim neither had tested. Line 53's `return
+false` was the last uncovered statement in the file, which is what gave it away.
+
+**What the two have in common, and the rule that follows.** Both are places where a second statement of
+a fact hides the first: the fallback restates a precondition the code already established, and the test
+restates an outcome the short-circuit already produced. A restatement cannot disagree with what it
+restates, so it adds nothing except the appearance of rigour. The discipline that removes both is the
+same one: **state the invariant once, in prose, at the place it is established; then let code and tests
+be about behaviour rather than about reassurance.**

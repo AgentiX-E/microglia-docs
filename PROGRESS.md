@@ -12615,3 +12615,58 @@ list to thirteen.
 
 `near` is unaffected throughout: it dispatched at `71457278` and its job pins that sha. It is in the
 memory arm, ~2h.
+
+### 172.49 Statements reach 100, and three fallbacks that no input could reach
+
+Coverage before this stretch: **99.97 statements, 99.69 branches, 100 functions, 99.97 lines**. Four
+files carried uncovered **statements**, which is the only category that means "behaviour nobody has ever
+run":
+
+| file | uncovered | what it is |
+| --- | --- | --- |
+| `packages/node/src/mcp.ts` | 229-230 | the feedback tool's catch: a `MicrogliaError` and a rethrow |
+| `packages/eval/src/facade-pair.ts` | 256-257, 459-460 | a task row with no id; a duplicated numeric guard |
+| `packages/eval/src/within-run-pair.ts` | 194-195 | a pair with no common task set |
+
+Two were **real gaps and became tests**. `mcp.ts` had no test that made `recordFeedback` fail, so the
+one branch that decides whether a store failure is a tool error the model can read or a host defect
+that escapes had never executed. The test injects a `TypeError` through the facade and asserts the
+handler rethrows: the `MicrogliaError` branch tells the model what to do differently, and a `TypeError`
+tells it nothing, so swallowing it would report a broken deployment as a refused request. The
+`facade-pair` gap became a test with a nameless task row: the conversion refuses it before pairing, and
+the verdict carries the refusal as `NO_MEASUREMENT` rather than crashing the step.
+
+Three were **fallbacks no input could reach**, which is a different defect and is recorded separately
+(`AUDIT 34.88`):
+
+| site | the fallback | why it cannot fire |
+| --- | --- | --- |
+| `sql/src/schema-link.ts:212` | `byColumn.get(k) ?? []` | the map is filled from the same blocks, two loops up |
+| `eval/src/within-run-pair.ts:193` | `paired === 0 → unmeasured` | `validArm` refuses an empty or duplicate-id arm, and the id sets are compared on the line above |
+| `eval/src/facade-pair.ts:454` | three `typeof !== 'number'` re-checks | the guard forty lines up tested the same three fields |
+| `eval/src/ablations.ts:98` | `items[0]?.status ?? 'missing'` | `learn()` admitted one rule, and `status: 'all'` filters nothing |
+
+Each is now asserted by construction with a paragraph saying what makes it total, so a future refactor
+that breaks the invariant crashes there instead of silently doing less. `ablations.ts` went from the
+repository's worst branch coverage (94.44) to 100.
+
+**And one test that had been passing for the wrong reason.** `tau2-admission.test.ts`'s "refuses an
+action that names no tool" passed an object-shaped `before`, so `isDriverCompletion(before)` failed
+first and `tau2EditSemantics` returned `undefined` without ever reaching the validator the test is named
+for. It had been certifying nothing since R58, and the coverage report was the only thing that noticed —
+`return false` at line 53 was the file's last uncovered statement. The `before` side is now the shape
+`complete()` writes, and two shapes that were never exercised (a name that is not a string; no
+`arguments` object) have cases.
+
+| reading | before | after |
+| --- | --- | --- |
+| statements | 99.97 | **100** |
+| branches | 99.69 | **99.76** |
+| functions | 100 | **100** |
+| lines | 99.97 | **100** |
+| tests | 3623 | **3627** |
+
+The remaining 0.24pp of branches is the same pattern at scale: ~40 files carry a `?.`/`??` fallback on a
+lookup that cannot miss. Closing them is a campaign rather than a commit, and it is queued as such —
+each one needs its invariant read before the fallback is removed, and in a measurement path an invariant
+read wrongly is worse than a branch left uncovered.
