@@ -5337,3 +5337,37 @@ distance-based retrieval tuning cannot reach the defect.
 | P1 | R62 population experiment (`TAU_DISTILL_SCOPE=all`) | **next**, after the re-dispatch clears the variable |
 | P2 | four arms on one clock — the registration carries the arm, a job output carries it to L4 | blocked at 25 dispatch inputs |
 | P2 | the ~40 `?.`/`??` fallbacks | **closed** — the branch dimension is at 100 |
+
+## The arm moved out of the variable, and the ladder closed (2026-11-09)
+
+R57's three arms each needed a dispatch because `TAU_PLANTED_RULES` is a repository variable and the
+dispatch menu is at its 25-input ceiling. The fix was the rule `lane-scope` already states — **the
+registration decides the experiment** — and it is now mechanical: `prereg/R57-toxicity.md` carries
+`plantedArms: far,near,adversarial` in its header, an `arms` job renders that line into a matrix, and the
+`l4` job takes its arm from `matrix.arm` (`f2330f8`). One dispatch buys all three arms, in parallel, with
+`fail-fast: false` and one artefact per arm (`l4-evidence-<arm>`).
+
+What matters about this is not the saved dispatch but the failure it removes: **an arm is now a value
+that travels from the registration to the job, so a round cannot inherit an arm it did not declare.** An
+unregistered round emits `[""]` and plants nothing, and the renderer is a single exported function
+(`plantedArmMatrix`) with one test per shape — the empty case is a test, not a comment.
+
+| item | state |
+| --- | --- |
+| P0 | the arm as a registered value, one dispatch per matrix (`f2330f8`) | **done**, first use is R57's reproduction |
+| P0 | R57 `adversarial` re-dispatched for an artefact whose `claim` is `null` | in flight, `42568927112` |
+| P1 | R62 — `TAU_DISTILL_SCOPE=all`, `TAU_DISTILL_UNIT=trace`, teaching population 14 → 57 | **next** |
+| P1 | write-time **contradiction** gate — check a candidate rule against the episode trace, not against the other rules | registered after R62; see `COMPETITIVE` (2026-11-09) |
+| P2 | the use rate of a served rule — 60% activation means excess loss per use is not excess loss per task | needs a new artefact field, nothing measured yet |
+| P2 | `sota.ts` split, W8 dose curve, vitest 4 | carried |
+
+**Why the contradiction gate is the next mechanism and not the next parameter.** The three 2026 sources
+read this week (MemPoison's L1/L2/L3, AM-Sentry's tiered admission plus retrieval screen, InMind's
+implicit-association blind spot) all ship a defence that compares a candidate claim to *the store*.
+MemPoison prices that defence at one grade out of three: it removes L1 and leaves L2 and L3 at ~23% and
+~28%. R57 measured the same asymmetry from the loss side — a near, true rule costs nothing (+0.00pp,
+−3.51pp), a contradictory rule costs 7.02pp — and the retrieval-relevance panel shows relevance predicts
+*difficulty* rather than harm (−1.21pp on-topic vs −1.49pp off-topic, 0.28pp apart). The unclaimed
+mechanism is therefore the one that checks the candidate against **the trace it was distilled from**:
+a rule that its own episode contradicts is the only class that arrived with the evidence needed to reject
+it, and no competitor implementation does this.

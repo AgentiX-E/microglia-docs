@@ -3326,3 +3326,93 @@ resolution language — the memory arm's −1.37pp is inside the annotation nois
 R61's +14.04pp τ² measurement is inside its own confidence interval at 57 pairs. Two independent
 evaluations, one conclusion: **this lane's remaining lever is not the size of the effect but the
 precision of the instrument**, and that is why the next four dispatches are instrument rounds.
+
+## The poison is graded, and the write path only filters the easiest grade (2026-11-09)
+
+Three 2026 sources arrived after R57's three arms read, and each one describes a shape our own
+measurement has a number for. They are recorded here because they change the *ranking of the remaining
+work*, not because they change any row we have published.
+
+**MemPoison (arXiv 2607.14651, 2026) turns "poisoning" into a ladder, and the ladder is the finding.**
+The attack is graded by how much inference the stored falsehood demands of the reader:
+
+| grade | what is planted | what a reader has to do | activation after a write-time consistency check |
+| --- | --- | --- | --- |
+| L1 | a false fact, directly stated | repeat it | **≈5%** |
+| L2 | two true facts whose combination is false | combine them | **≈23%** |
+| L3 | a rule that is conditionally true and generally false | apply it outside its condition | **≈28%** |
+
+The write-time consistency check is the defence every serious memory layer ships — Mem0's
+`ADD`/`UPDATE`/`DELETE`/`NOOP`, Zep's bi-temporal invalidation, our own `admission` and credit
+assignment. MemPoison's contribution is to price it: **it removes one grade out of three.** A check that
+asks "is this consistent with what I already hold" can reject a claim that contradicts the store; it
+cannot reject a claim that agrees with the store and is wrong in combination. L2 and L3 survive because
+they are, item by item, true.
+
+That is the same asymmetry R57 measured from the other end, and the numbers line up in an uncomfortable
+way:
+
+| R57 arm | what was planted | excess loss | MemPoison grade it corresponds to |
+| --- | --- | --- | --- |
+| `far` | rules from unrelated domains | **+0.00pp** | none — a true rule applied where it does not apply is L3, but a rule with no occasion is inert |
+| `near` | rules from the same domain, correct ones | **−3.51pp** (repaired more than it broke) | L1 reversed — a true and relevant rule |
+| `adversarial` | rules that contradict the episode | **+7.02pp** | L2/L3 — the rule agrees with the store and is wrong here |
+
+**Proximity cost nothing; contradiction cost 7pp.** MemPoison's ladder says why, and says something we
+had not stated: the reason `near` was free is not that near rules are harmless, it is that a rule which
+*agrees* with the episode is doing the same job as the context and the reader can ignore it. The
+expensive rule is the one that is consistent with the store and inconsistent with the episode —
+MemPoison's L2, our `adversarial`. **Write-time consistency is structurally blind to exactly the grade
+that costs the most**, and no amount of retrieval-distance tuning reaches it, because distance is a
+property of the request text and the band rate was identical across polarities (35.4% vs 37.3%, 1.8pp
+apart).
+
+**GhostWriter / AM-Sentry (arXiv 2607.06595) prices the other half.** Injection succeeds ~98% of the
+time, activation ~60%: **roughly two in five planted memories are never used even when they are there.**
+The defence it proposes is two-stage — a severity-tiered write admission, then a retrieval-time screen —
+which is the same shape as our `admission` parameter plus the condition-carrying rule (`V12`, 100% of
+2,691 injected rules carried a `when` in R37). The number worth carrying forward is the 60%: our own
+arms measure *excess* loss conditional on injection, and never ask how often a rule was consulted at all.
+A store can be 7pp harmful per *use* and harmless per *task* if the use rate is 20%, and nothing in our
+artefacts separates those. That separation is now on the roadmap as a first-class measurement rather
+than an inference.
+
+**InMind's blind spot is the one our own data already has, in a worse form.** InMind reports that a
+directly-queryable memory reaches ~100% while an implicitly-associated one reaches 14.4% — the memory
+is there and the query does not name it. Our retrieval-relevance panel from R26 measures something
+adjacent and, read correctly, more alarming:
+
+| pack served | questions | accuracy with memory | accuracy without | delta |
+| --- | --- | --- | --- | --- |
+| on-topic (the pack matches the question) | 663 | 50.98% | 52.19% | **−1.21pp** |
+| off-topic (the pack does not match) | 871 | 60.28% | 61.77% | **−1.49pp** |
+
+The absolute gap between those two rows (50.98 vs 60.28) is **not** a memory effect and reading it as
+one is the trap: on-topic packs are served on the questions that *need* a rule, and a question that needs
+a rule is a hard question. The effect is the delta column, and the deltas are the same (−1.21 vs −1.49,
+0.28pp apart, both inside a 1.96pp minimum detectable difference). So on this slice **retrieval relevance
+predicts difficulty, not harm** — and InMind's blind spot, "the memory is not reached", is not the failure
+mode we have. Ours is "the memory is reached and does not help", which is the mode MemPoison's L2 predicts
+and the mode a relevance-filtered retriever cannot fix.
+
+**What this changes in the table above.** Nothing in the ranking; one row in our own pair:
+
+| rank | system | test EX | dev EX |
+| --- | --- | --- | --- |
+| — | microglia, no memory (BIRD dev, 1,534 q) | — | **57.63** |
+| — | microglia, memory arm (BIRD dev, 1,534 q, best published reading) | — | **57.76** |
+
+57.76 is R37's `lexicon-grain` arm, whose own baseline on the same folds was 57.04 (−0.72pp lower than
+the 57.63 read elsewhere, a seed-and-prompt difference between artefacts, not a difference in the
+system). **The two rows cannot be subtracted from each other**: the paired delta inside R37 is
+**+0.72pp, 95% CI [−0.85, +2.28], p = 0.41** — the first memory-arm reading in this repository that is
+not negative, and still not distinguishable from zero. Stated as a rule for this table: a row quotes the
+arm and its own control from the same artefact, and a cross-artefact difference is a difference between
+two instruments.
+
+Three sources, one sentence, and it is the same sentence R57 arrived at: **the defect is not that memory
+is stored, retrieved, or near — it is that a stored claim and the episode can disagree, and every
+mechanism the field ships checks the store against itself.** The next experiment this suggests is a
+write-time **contradiction** gate as opposed to a consistency gate — checking a candidate rule against
+the episode's own trace rather than against the other rules — and it is registered as the round after
+R62, because it is the one mechanism none of the three sources above has an implementation of.

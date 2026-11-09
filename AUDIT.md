@@ -6389,3 +6389,59 @@ close with no delay at all, while the child is still booting — and three conse
 The rule that covers all three, and it is the same rule: **a check has to be able to say no to the thing
 it is checking.** Write down the reading it rejects; if that reading is one nobody claimed, the check is
 not checking anything. If it rejects only sometimes, it is a coin.
+
+### 34.91 A validator that reads the last build, and an arm that was a global variable
+
+Two defects of the same shape — **a thing that appears to be about this run and is about an earlier
+one** — found in the same change, one by reading and one by running.
+
+**The arm was a global variable.** `TAU_PLANTED_RULES` is a repository variable, so the arm a run
+measured was whatever the last write to that variable said. R57 has three arms; they were dispatched
+one at a time because the dispatch menu is full, and the next round was one forgotten `PATCH` from
+measuring a distractor its registration does not declare. The variable is not wrong in itself — the
+scenario pair and the recall floor are variables too — but those two are *also* in the prereg header,
+and the arm was the only per-experiment value that existed only outside the experiment.
+
+The repair makes the registration the source: `plantedArms: far,near,adversarial`, an `arms` job, a
+matrix, one leg per arm. The property worth naming is not the saved dispatch, it is that
+**an absent declaration now produces an absent arm** (`[""]`, which the driver already read as "plant
+nothing") rather than inheriting the previous one. A default that is *the last value somebody set* is
+not a default; it is a leak between experiments, and it fails silently in exactly the direction that
+looks like a result.
+
+**The validator was grading the previous compilation.** `pnpm eval:prereg` — the first command a
+dispatch runs — rejected `plantedArms` as an unknown key, on the commit that added it, with the parser
+that declares it sitting in the same tree. The cause is one import:
+
+```ts
+// packages/eval/src/bin/prereg.ts, before
+import { parsePrereg } from '@agentix-e/microglia-eval';   // resolves to dist/
+// after
+import { parsePrereg } from '../prereg.js';                // resolves to src/
+```
+
+Every other bin in this repository already imported `../`; this one imported the package by name, so it
+ran the previous build. Nothing about it is subtle once seen, and that is the reason to write it down:
+
+| the check | what it validated | what it claimed |
+| --- | --- | --- |
+| `bin/prereg.ts` importing its own package name | `dist/`, i.e. the last `pnpm build` | the source in the working tree |
+| `TAU_PLANTED_RULES` as a variable | whatever the last `PATCH` set | the arm this round registered |
+
+Both are the same error in different materials: **the check read state that this run did not
+produce.** The tests could not catch the first one — the unit tests import `src/prereg.ts` directly and
+were green — and no amount of coverage would have, because the defect is in *which file is loaded*, and
+that is a property of the CLI rather than of the module. What caught it was running the command the
+workflow runs, against a registration that declared a key added that morning.
+
+| dimension | before | after |
+| --- | --- | --- |
+| tests | 3647 | **3653** |
+| files | 179 | 179 |
+| statements / branches / functions / lines | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| dispatch inputs consumed by the arm | 1 (a variable) | **0** (a header line) |
+
+The rule this adds to the list in 34.90: **a check has to be able to say no to the thing it is checking**
+— and here, the check could not say *yes* to the thing it was supposed to check, because it was not
+looking at it. "Which artefact did this read" is a question every validator should be able to answer,
+and a validator that resolves its own package name is answering "the last build".

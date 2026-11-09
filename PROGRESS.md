@@ -12835,3 +12835,64 @@ gap (`d5b6ee6`).
 | lines | 99.97 | **100** |
 | tests | 3627 | **3647** |
 | files | 178 | **179** |
+
+### 172.53 The arm became a line in the registration, and three 2026 sources price the ladder
+
+**The dispatch menu ran out, and the workaround was the defect.** R57 has three distractor arms.
+`TAU_PLANTED_RULES` is a repository variable, a variable is global, and `sota.yml` is at its
+twenty-five-input ceiling — so "run the ladder" meant three six-hour runs that could not overlap, and
+the *next* experiment was one forgotten `PATCH` away from measuring a distractor nobody had declared.
+The scenario pair and the recall floor were already registration-header values; the arm was the only
+per-experiment value still living outside the experiment.
+
+| before | after |
+| --- | --- |
+| `TAU_PLANTED_RULES` repository variable, read by `l4` | `plantedArms: far,near,adversarial` in the prereg header |
+| one arm per dispatch, three dispatches, no overlap | one `arms` job renders a matrix, `l4` fans out, `fail-fast: false` |
+| artefact `l4-evidence` overwritten per run | `l4-evidence-<arm>`, one per leg |
+| a round with no arm left the variable as the last round set it | a round with no `plantedArms` emits `[""]` and plants nothing |
+
+`""` is the value the driver already reads as "plant nothing", so the control leg needs no branch
+anywhere — the empty case is a matrix element, not an `if`. `plantedArmMatrix` is exported and tested
+per shape (列表、无头、重复、非法名、空声明), and `pnpm eval:prereg-arms` is the renderer the workflow
+calls, so the matrix the job fans out over is a value a test can inspect rather than a `yq` expression
+in YAML.
+
+**The validator a dispatch runs first was grading the last build.** `pnpm eval:prereg` refused R57 with
+`unknown key: plantedArms` — about a key its own source had just declared. The cause: `bin/prereg.ts`
+was the one bin in the repository importing `@agentix-e/microglia-eval`, which resolves to `dist/`, so
+the first thing a dispatch checks was the previous compilation. Every other bin imports `../`; this one
+does now too. The general lesson is worth a line: **a CLI that resolves its own package name is testing
+the build, not the source**, and it will keep passing until the day it is supposed to fail.
+
+**Three 2026 sources, and what each one prices.** Read after R57's three arms, so they were graded
+against a measurement rather than absorbed as background (`COMPETITIVE`, 2026-11-09):
+
+| source | the number | what it says about our defect |
+| --- | --- | --- |
+| MemPoison (arXiv 2607.14651) | write-time consistency leaves L1 ≈5%, L2 ≈23%, L3 ≈28% | a check that compares a claim **to the store** removes one grade of three |
+| GhostWriter / AM-Sentry (arXiv 2607.06595) | inject ~98%, activate ~60% | excess loss per *use* is not excess loss per *task*; we measure only the former |
+| InMind | direct query ~100%, implicit association 14.4% | "the memory is not reached" is not our failure mode |
+
+The first one is the important one, because it explains an asymmetry R57 measured and could not
+explain: `near` — true, relevant rules — cost **nothing** (−3.51pp, i.e. it repaired more than it
+broke), and `adversarial` — rules that agree with the store and contradict the episode — cost
+**7.02pp**. A rule that agrees with the episode can be ignored by the reader; the expensive rule is the
+one that agrees with everything the reader already holds. That is MemPoison's L2, and it is the grade
+write-time consistency cannot see.
+
+The third one is a correction to how our own relevance panel should be read. R26's `retrieval_relevance`
+splits packs into on-topic (663 questions, 50.98% with memory vs 52.19% without) and off-topic (871,
+60.28% vs 61.77%). The 9.3pp absolute gap between the rows is **difficulty, not harm** — a question that
+needs a rule is a hard question — and the effect is the delta: −1.21pp vs −1.49pp, 0.28pp apart, both
+inside a 1.96pp minimum detectable difference. **Relevance predicts difficulty, not harm**, which is why
+a relevance-filtered retriever cannot fix this and why the next mechanism is a contradiction gate rather
+than a better retriever.
+
+| reading | before | after |
+| --- | --- | --- |
+| tests | 3647 | **3653** |
+| files | 179 | 179 |
+| coverage, all four dimensions | 100 | 100 |
+| dispatch inputs used | 25 / 25 | 25 / 25 (unchanged — the arm is not an input) |
+| arms per dispatch on `l4` | 1 | **1 + len(plantedArms)** |
