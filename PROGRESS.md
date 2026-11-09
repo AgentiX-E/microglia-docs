@@ -12467,3 +12467,52 @@ to carry an override. The correct fix is not another input — it is the rule `l
 encodes: **the registration decides the experiment**, so the arm belongs in `prereg/*.md`'s frontmatter
 and reaches the L4 job through a job output. That is the next change to the workflow, and it is written
 down here rather than improvised at the end of a queue.
+
+### 172.46 A planted arm was graded as the treatment, and the arm was the one that was right
+
+Run `42534241219` on `1ecb6418` dispatched R57's `far` arm — one irrelevant rule planted in every pack,
+at the published population. The reading came back exactly as the registration predicts, and the step
+concluded `failure` anyway.
+
+| reading | value | registered |
+| --- | --- | --- |
+| planted rules landing inside their band | 1934 / 1934 (99.3%) | the plant did what it was told |
+| paired ledger | broke 9, repaired 9 of 57 episodes | net zero |
+| excess | **+0.00pp** (half-width 14.59pp) | a distractor is not free and not harmful |
+| `pass^4` | 0.5789 | published 0.575 |
+| corpus digest | `0585fafcc817841a` | Mini-Dev, pinned |
+
+The `L4 arm — memory` step failed on `l4-pass4`: `0.5789473684210527 (>= published + 0.05)`. That bar is
+the treatment's. A distractor arm's own hypothesis is that it **does not clear** it — the arm's answer of
+0.5789 against a 0.575 published number, with a ledger that broke and repaired the same nine episodes, is
+the arm agreeing with its registration, and the gate read that agreement as a miss. This is the seventh
+instance of one defect class (AUDIT 34.86): six `sota` runs whose memory arm was green and whose
+memory-free control failed a bar no control can pass, and now a planted arm failing the bar it was
+registered to miss.
+
+**The fix is the control's fix, one arm over.** `SampleGateInput` gains `planted?: { arm }`;
+`l4-pass4` is omitted when a plant is declared, and the two gates every arm owes — coverage and a fully
+scored grid — stay exactly where they were, because planting a distractor does not license a small or
+partial sample. The artefact says the bar does not apply rather than going quiet about it:
+`published_bar_applies: 0`, and a new `planted_arm: far`. `delta` is omitted for a planted arm for the
+same reason the gate is — a difference against the published number is the competitive reading, and this
+arm is read by its paired ledger.
+
+**The reading moves, it does not disappear.** `eval/verifiers/r57_readback.py` grades the plant census,
+the trial count and the paired excess arm by arm, which is what it was built for; `sample-gates.ts` owes
+a planted arm only the statement that the competitive bar is not its bar. Four new cases pin it: a
+planted arm carries two gates, a small or partly-unscored planted arm still fails, an arm that planted
+nothing keeps the bar (`undefined` and an absent key are the same statement), and the two remaining
+criteria are named so a future edit that quietly re-adds the bar lands on a red test.
+
+**The readback tool also learned to read what ran.** It refused a set of fewer than three arms with
+`NO_MEASUREMENT`, which discarded a dispatch that had measured everything about itself — instrument,
+plant share, trial count and ledger all present and all consistent. A partial set is now graded for what
+it can answer: the state stays `GRADED`, a `partial:` line above the predictions states `1 of 3 arms
+(far); missing near, adversarial, so the order is not graded`, and the order prediction becomes `n/a`
+rather than a failure, because an arm that has not run is not an arm that failed. An empty set is still
+`NO_MEASUREMENT`.
+
+Queue unchanged and now unblocked: `near` → `adversarial` (each needs `TAU_PLANTED_RULES` set before
+dispatch, since a repository variable is global) → R62 (`TAU_DISTILL_SCOPE=all`, `TAU_DISTILL_UNIT=trace`).
+173 → 176 files, 3613 tests, coverage 99.96 / 99.69 / 100 / 99.96.

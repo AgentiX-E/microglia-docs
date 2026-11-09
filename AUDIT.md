@@ -6142,3 +6142,48 @@ exactly what a duplicate collapses into. A checker that has only ever been shown
 agrees with whatever it assumes. The second is the degraded path: a check that refuses to run because a
 Python library is absent trades a silent failure for a loud wrong one, so the two rules that need no
 parser run regardless and the absence is printed rather than swallowed.
+
+### 34.86 A bar is a statement about the treatment, and it was applied to the distractor
+
+Seventh instance of one defect class, and the first one where the *arm* was right and the *gate* was
+wrong rather than the reverse.
+
+`sampleGates` grades an L4 arm. It was extracted from the driver in the first place because a gate must be
+testable, and its first correction was the memory-free control: six consecutive `sota` runs concluded
+`failure` with the memory arm green, because the control was held to `published + 5pp`, a bar a control
+cannot pass and is not supposed to. The control's own hypothesis is that it scores *lower*. The
+replacement was not "no gate" but the gate the control actually owes the pairing step — every task it
+claims to have scored was scored.
+
+R57 added a third kind of arm and the same paragraph applies to it verbatim. A **planted distractor** arm
+puts one irrelevant or misleading rule into every pack and asks what it costs; its registered answer is
+"not free, not harmful", which means its `pass^4` is *expected* to sit at the published number rather than
+five points above it. Run `42534241219` measured 0.5789 against a published 0.575 with a paired ledger of
+nine broken and nine repaired episodes — excess **+0.00pp** against a half-width of 14.59pp, an arm
+agreeing with its registration in every field — and the `L4 arm` step printed `failure` because
+`l4-pass4` asked it to clear `published + 0.05`.
+
+| what the gate asked | of which arm | whether that arm can pass it |
+| --- | --- | --- |
+| `pass^4 >= published + 5pp` | the memory arm | yes, that is the treatment's claim |
+| the same bar | the memory-free control | **no** — its hypothesis is the opposite direction |
+| the same bar | a planted distractor | **no** — its hypothesis is that the plant is not worth 5pp |
+
+The failure mode is the same one twice: **a gate that a correctly behaving arm cannot pass converts its
+own correct behaviour into a red status**, and a red status that is always red is a status nobody reads.
+The cost is not the wasted dispatch. It is that the round's real signal — an excess of 0 and a band share
+of 99.3% — arrives in a run whose conclusion says `failure`, so the next person to look at the run list
+learns nothing and the next person to look at the artefact has to reconstruct what the status meant.
+
+The repair keeps the shape of the first one. The bar is omitted for a planted arm and the omission is
+*stated* in the artefact (`published_bar_applies: 0`, `planted_arm: far`) rather than left to the absence
+of a key; the two gates every arm owes — coverage, and a completely scored grid — are untouched, because
+planting a distractor does not license a small sample; and the reading that replaces the bar already
+exists and is not in this file: `eval/verifiers/r57_readback.py` grades the plant census, the trial count
+and the paired excess arm by arm. What is left in `sample-gates.ts` is one clause and four tests, and the
+tests name the two surviving criteria so that re-adding the bar fails instead of passing quietly.
+
+**The general rule, since this is now the second time it has been paid for:** a gate belongs to the arm
+whose hypothesis it states. When a new arm is added, the question to ask is not "does it clear the bar"
+but "whose claim is this bar", and if the answer is "not this arm's", the correct edit is an omission
+that is written down — never a threshold moved until the arm goes green.
