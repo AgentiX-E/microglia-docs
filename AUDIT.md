@@ -6975,3 +6975,36 @@ resolves about 6pp at 80% power. R63 therefore cannot confirm a 2pp effect and m
 having refuted one. The registration says so in the header of the file rather than in a footnote,
 because the alternative — reading a null from a 350-question slice as evidence of absence — is the
 error this project keeps finding in its own history.
+
+### 34.99 The cap that stopped a run after it had paid for a fifth of it
+
+The first real dispatch of `recall-order` (`42634151808`) ended at fold 1 of 5 with
+`MG_E_BUDGET_EXCEEDED`: 757 calls spent, 4,088 needed, cap set to 4,000. The cap was the dispatcher's
+estimate, not the lane's — and the estimate was 88 calls short of a number the lane computes after its
+first fold.
+
+Three observations, in order of how much they matter.
+
+**The forecast did what it exists for.** It stopped the run after one fold rather than after five,
+which turned a 4,088-call loss into a 757-call one. That is the designed behaviour and it held.
+
+**And the run still produced nothing.** A stop preserves the folds that finished in a `.partial`
+artefact, and that file is deliberately never published as evidence — correctly, because one fold of
+five cannot support a registered claim. So a budget stop costs the whole run in evidence even when it
+saves calls in money. The lesson is not that the forecast should publish; it is that **the cap is a
+prediction and a prediction needs a measurement behind it**. The workflow's own description of the
+input now carries the number the first fold produced:
+
+| split | arms | calls |
+| --- | --- | --- |
+| dev | four | 6,504 |
+| **minidev** | **four** | **about 4,100** |
+| train | two, 6,600 questions | about 14,600 |
+
+**The existing default was already correct.** `max_calls` defaults to 8,000, which covers every split
+this repository dispatches. The run failed because a dispatcher overrode a good default with an
+estimate. That is a specific and repeatable failure mode: *a knob whose default is measured gets
+overridden by a person who is being careful about money.* The description is the only place the
+correction can live, because the value is per-split and per-arm-count.
+
+The re-dispatch used 5,200, which is the measurement plus a quarter.
