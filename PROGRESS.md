@@ -12670,3 +12670,42 @@ The remaining 0.24pp of branches is the same pattern at scale: ~40 files carry a
 lookup that cannot miss. Closing them is a campaign rather than a commit, and it is queued as such —
 each one needs its invariant read before the fallback is removed, and in a measurement path an invariant
 read wrongly is worse than a branch left uncovered.
+
+### 172.50 The planted arm's wiring, end to end, and the variable state the next two dispatches need
+
+`sampleGates` and `pairGates` were unit-tested and the **wiring between them and the environment was
+not**. That gap is not hypothetical: the same wiring produced a `string` written into
+`Record<string, number>` (`9f63398`, caught only by CI) and, a day earlier, a bar applied to an arm whose
+registered hypothesis is that it misses the bar. Two modules agreeing in isolation says nothing about the
+dispatch that drives both.
+
+`packages/eval/src/__tests__/l4-planted-arm.test.ts` runs the two bins the workflow runs, with a driver
+module standing in for the τ² environment, and reads what they published:
+
+| case | asserted |
+| --- | --- |
+| `TAU_PLANTED_RULES=near`, every task passing | `arm: 1`, `published_bar_applies: 0`, `planted_arm: 1`, no `l4-pass4`, `l4-coverage` and `l4-fully-scored` intact, no `delta` |
+| the same run with the variable cleared | `published_bar_applies: 1`, `planted_arm: 0`, no `tau2`, `l4-pass4` present **and passing** |
+| a pair over a HARM reading, memory artefact carrying `plant.arm: near` | no `l4-paired`, no `l4-effect-resolved`, `l4-same-split` passing, `planted_arm: near`, the comparison and the `HARM` verdict still published |
+| the same rows with no plant census | `l4-paired` **fails and blocks** — the exemption is keyed on the arm's own artefact, not on the environment the step ran in |
+
+The last row is the one that makes the other three mean something: without it a bug that removed
+`l4-paired` for *every* pair would pass all of them.
+
+**The variable state the next two dispatches run under**, recorded because three of these decide what the
+run measures and one of them is a landmine:
+
+| variable | value | who consumes it |
+| --- | --- | --- |
+| `TAU_PLANTED_RULES` | `near` | `tau2-driver` plants; `l4.ts` decides the bar; **must be cleared before R62** |
+| `TAU_DISTILL_UNIT` | `trace` | the distiller's unit (R58) — shared by both R57 arms, so they stay comparable |
+| `TAU_DISTILL_SCOPE` | *unset* (`edited`) | R62 sets it to `all`; the R57 arms must run at the published population |
+| `TAU_TEST_DOMAIN` | `airline` | overridden per-dispatch by the registration (`retail`), which is the R54 fix doing its job |
+| `TAU_MIN_TASKS` | `40` | the split floor |
+| `TAU_ENV_READY` | `false` | so the L4 job needs `l4: true` on every dispatch |
+| `TAU_TRACE_CLAIMS` | `6` | R60's ceiling |
+
+The landmine is the first row: R62 is dispatched with `TAU_DISTILL_SCOPE=all` and **without** a plant, so
+`TAU_PLANTED_RULES` has to be cleared in the same edit that sets the scope. A population experiment run
+with a distractor in every pack would measure the distractor, and nothing in its artefact would say the
+two variables were changed together.
