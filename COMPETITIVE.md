@@ -3526,3 +3526,64 @@ evidence. Part of the 21pp is the model, not the method, and no amount of schema
 backbone gap. The rows above should be read as *"these components are worth this much on a fixed
 backbone"*, which is exactly why the ablation numbers — 61.2 against 59.6 — are the ones quoted rather
 than the leaderboard positions.
+
+## Where the gradient actually is: 33pp of hint, and one point of us (2026-11-09)
+
+Every number below was already in a committed artefact. Reading each artefact's `arms` field — 63
+paired readings over 30 artefacts — turns the leaderboard gap from an argument about mechanisms into an
+error budget.
+
+| arm | what it changes | delta | p | n |
+| --- | --- | --- | --- | --- |
+| `oracle` | the true table set instead of a link | **+33.14pp** (50.00 → 83.71) | 2.4e-35 | 350 |
+| `full-noevidence` | the prompt without BIRD's evidence hint | **−16.30pp** | 1.4e-44 | 1534 |
+| `none-noevidence` | no memory and no evidence | **−17.01pp** | 1.1e-41 | 1534 |
+| **`linked`** | **schema linking, as implemented** | **−9.58pp** | **6.4e-21** | **1534** |
+| `full-verified` | a second-pass verification prompt | +5.71pp | 1.2e-03 | 350 |
+| `values` | column value annotations | +5.43pp / +0.85pp | 4.3e-03 / 0.34 | 350 / 1534 |
+| `full-transferred`, `full-anchored` | pack position, anchoring | +4.29 to +4.57pp | ≤1.7e-02 | 350 |
+| `gated` | the distiller's admission gate | +0.29pp | 1.0 | 350 |
+
+**The first two rows are one finding seen from both ends.** BIRD ships a human-written hint with every
+question; every leaderboard row above 67.41% uses it; giving the model the *true table set* instead of a
+retrieved one is worth 33pp, and removing the hint costs 16–17pp. So the benchmark's own supervision is
+worth more than an order of magnitude more than anything this project has built — and that is not a
+criticism of the project, it is a statement about what the remaining 21pp between us and fourth place is
+made of.
+
+**The third row is a regression, and it is the mechanism the field prices highest.** MCS-SQL reports
++2.1 points from schema linking with the same backbone. Here it is −9.58pp at p=6.4e-21, with 202
+questions broken against 55 repaired, and the artefact carries the mechanism of the failure: errors
+where a gold table is absent go from 107 to 291 and 44 predictions lose their `FROM` entirely. A
+pruner that removes a table the answer needs cannot be rescued by the model, because the model writes a
+query over what it can see.
+
+| what the top four do | what it costs | our measurement of it |
+| --- | --- | --- |
+| schema linking (AskData: **SQL-first**, generate then inspect the SQL's own references; DataGallery: 99.1% column recall) | free on the common path | **−9.58pp as a lexical pruner.** The gap is not the idea, it is that ours decides *before* the SQL exists |
+| profiled field descriptions (AskData: 61.2 against 59.6 human, 63.2 fused) | one-time, amortised | `values` is the cheap half of it: +5.43pp on 350, **+0.85pp on 1,534** |
+| multi-path candidate generation + confidence selection | ×3–5 calls | `full-sampled` +0.86pp, `gated` +0.29pp — not the constraint at this size |
+| evidence / oracle hint | already paid by the benchmark | **the whole gradient** |
+
+**So the ordering that follows is not the ordering of the papers, it is the ordering of the gradient.**
+
+1. **Stop pruning; start verifying.** AskData's linker is SQL-first for a reason we can now state as a
+   measurement: a pruner's failure mode is silent and unrecoverable (−9.58pp), while a verifier's is one
+   extra call on the minority of questions whose identifiers do not resolve. The next arm is the
+   additive form: never drop a table, annotate and order instead, and repair a hallucinated identifier
+   rather than hiding the table it belonged to.
+2. **Learn the oracle's subset, do not guess it.** `oracle` is +33pp over our best linking attempt on
+   the same questions. That gap is supervision we are paying the benchmark for and not using: the gold
+   table set of a training question is exactly the kind of artefact `admit`/`curate` exists to hold.
+   This is the first arm in this repository whose expected value is measured in tens of points rather
+   than single ones.
+3. **Field semantics, one-time.** `values` did not replicate at full size, so it is a lead and not a
+   result; AskData's ablation says the full version is worth 1.6–3.6pp and is amortised to zero.
+4. **Multi-candidate selection last.** It costs 3–5× and the arms measured here say the constraint is
+   not candidate count.
+
+**And the honest bound on all of it.** The 21pp to fourth place is not 21pp of memory. On this evidence
+it is: a linking mechanism that does not subtract 9.6pp, plus the table-subset supervision the oracle
+row says is worth 33, minus the part of that we already get from BIRD's hint. A memory layer that
+recovers *some* of the oracle's subset is a plausible 5–10pp; a memory layer that recovers all of it is
+a claim the field has not made.

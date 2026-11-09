@@ -13019,3 +13019,64 @@ candidate generation, not metadata. SQL-first linking costs **zero extra calls**
 because the SQL is already generated and its columns and literals are free supervision. Multi-candidate
 selection costs **×3–5** and is therefore last, submitted-only. **The ordering that saves money and the
 ordering that raises the score happen to agree for the first two items and disagree only on the third.**
+
+### 172.57 The instrument could not see the effects, and the artefacts contained the answer
+
+Three readings this round, all from data that was already committed, none of which cost a dispatch.
+
+**The `k` in `pass^k` was choosing the answer.** Every four-trial run also contains `pass^1`..`pass^3`,
+so re-reading the same 228 episodes at each `k` is free arithmetic. For R57's three arms:
+
+| arm | k=1 | k=2 | k=3 | k=4 | spread | sign stable |
+| --- | --- | --- | --- | --- | --- | --- |
+| `far` | +0.00 | −8.77 | −1.75 | +0.00 | 8.77pp | yes |
+| `near` | +3.51 | −3.51 | −7.02 | −3.51 | **10.53pp** | **no** |
+| `adversarial` | +5.26 | +7.02 | +14.04 | +7.02 | 8.78pp | yes |
+
+Not one cell reaches p<0.05 (best: `adversarial` at `pass^3`, p=0.096, and that is not the registered
+`k`). At `n=57` the smallest detectable effect at 80% power is **17.0–20.9pp**; the observed 7.02pp
+would need **504 tasks**. So the "contradictory rule costs 7pp" sentence, which went into three
+internal documents and a competitive analysis, is withdrawn (`prereg/R57-toxicity.md` Amendment 5).
+
+Trials were the expensive dimension and the one that bought nothing: `pass^4` compresses four draws into
+one per task, so the discordant count *grows* with `k` (16 pairs at `k=1`, 18 at `k=4`) and the paired
+interval with it — ±14.59pp at `k=4` against ±13.75pp at `k=1`. **Four trials produced a wider interval
+than one would have, at four times the cost.** And the control arm, an identical condition, moved
+14.04pp at `pass^2` and 5.26pp at `pass^4` across three dispatches, against a drift constant of 3.51pp
+taken from a single pair.
+
+**31% of the remaining errors are a table the model should not have read.** The per-case record splits
+them: `table-extra` 94 (6.13pp), `table-missing` 47 (3.06pp), `table-both` 62 (4.04pp), same-tables
+445. **Schema linking's ceiling on this artefact is 13.23pp** — repairing every table-selection error
+takes 57.76% to 70.99%. `table-extra` at double `table-missing` says the model over-reaches, so the
+lever is a sharper pruner; the share rises to 42–43% on `challenging` questions.
+
+**And then the arm that had already run.** Reading every artefact's `arms` field — 63 readings across
+30 artefacts, none of them ever read in aggregate — produced the largest effect in the repository and
+its sign is wrong:
+
+| arm | delta | broke | repaired | p | n |
+| --- | --- | --- | --- | --- | --- |
+| `oracle` | +33.14pp | 0 | 116 | 2.4e-35 | 350 |
+| **`linked`** | **−9.58pp** | **202** | **55** | **6.4e-21** | **1534** |
+| `full-noevidence` | −16.30pp | 300 | 50 | 1.4e-44 | 1534 |
+| `values` | +5.43pp | 11 | 30 | 4.3e-03 | 350 |
+| `values` | +0.85pp | 74 | 87 | 3.4e-01 | 1534 |
+| `gated` | +0.29pp | 0 | 1 | 1.0e+00 | 350 |
+
+Schema linking, which MCS-SQL prices at +2.1 points, **costs 9.58pp here**, and the same artefact says
+why: that arm's errors where a gold table is absent go 107 → 291 and 44 predictions lose their `FROM`.
+The pruner removed tables the answer needed.
+
+The oracle row is the other half of the message: **on the same 350 questions the benchmark's own hint is
+worth +33.14pp and every product-side arm is worth under one point.** That is where the headroom is.
+
+| reading | before | after |
+| --- | --- | --- |
+| verifiers in `pnpm eval:verifiers` | 13 | **16** |
+| tests | 3653 | 3654 |
+| files | 179 | 179 |
+| coverage, four dimensions | 100 | **100** |
+| arms read in aggregate | 0 of 63 | **63** |
+| R57 effects quotable as findings | 3 | **0** |
+| `l4` dispatch guard | none | **refused inside a peak window** |

@@ -6618,3 +6618,171 @@ factor of two.**
    when the lane was built and is a silent redirect now. The default is pinned to a name that exists
    on the date of the commit, the mode is requested explicitly, and the value is asserted in a
    self-check that fails if the retired name returns as a default.
+
+### 34.95 The instrument could not see the effects it was reporting, and the arithmetic was free
+
+A week of R57 dispatches produced one sentence — "a contradictory rule costs about 7pp" — that was
+written into three internal documents and one competitive analysis. This audit recomputes it from the
+artefacts and finds that **at 57 tasks the instrument cannot resolve anything smaller than about 21
+percentage points**, so the sentence was never supported, and the proof cost nothing to obtain.
+
+**Every `pass^4` run contains every smaller `k`.** A four-trial run stores one reward per
+`(task, trial)`, so it also contains `pass^1`, `pass^2` and `pass^3`. Recomputing the same 228 episodes
+at each `k` is arithmetic over committed data. For the three arms:
+
+| arm | k=1 | k=2 | k=3 | k=4 | spread across k | sign stable |
+| --- | --- | --- | --- | --- | --- | --- |
+| `far` | +0.00 | −8.77 | −1.75 | +0.00 | **8.77pp** | yes (sits on zero) |
+| `near` | +3.51 | −3.51 | −7.02 | −3.51 | **10.53pp** | **no** |
+| `adversarial` | +5.26 | +7.02 | +14.04 | +7.02 | **8.78pp** | yes |
+
+Positive is cost. The published ladder is the `k=4` row; `k=2` reverses `near` and turns `far` into an
+8.77pp *gain*. **The aggregation chose the answer, and nothing in the repository asked it not to.**
+
+**And then the p-values.** Exact McNemar on the paired cells, at every `k`, for every arm:
+
+| arm | best p across k=1..4 | reading at the registered k=4 |
+| --- | --- | --- |
+| `far` | 0.383 | +0.00pp, p=1.000 (b=9, c=9) |
+| `near` | 0.424 | +3.51pp, p=0.774 (b=5, c=7) |
+| `adversarial` | **0.096** | +7.02pp, p=0.481 (b=11, c=7) |
+
+Not one cell reaches 0.05. The most favourable reading anywhere in the grid is `adversarial` at
+`pass^3`, p=0.096 — and that is the *wrong* `k` from the one the registration named.
+
+**The power calculation that should have preceded the dispatch.** For a paired comparison the standard
+error is `sqrt(discordance / n_tasks)`, and there is no term for trials. At `n=57` with the discordance
+these artefacts actually show (16–18 of 57 tasks), the smallest effect detectable at 80% power is
+**17.0–20.9pp**. Resolving the observed 7.02pp would need **504 tasks**; resolving 3.51pp, **1343**.
+
+| question | n needed | n used | shortfall |
+| --- | --- | --- | --- |
+| does a contradictory rule cost 7pp? (`adversarial`) | 504 | 57 | **×8.8** |
+| does a near rule cost 3.5pp? (`near`) | 1343 | 57 | **×23.6** |
+
+**Trials were the expensive dimension and the one that bought nothing.** Because `pass^4` compresses
+four Bernoulli draws into one per task, the discordant count *grows* with `k` (far: 16 pairs at `k=1`,
+18 at `k=4`), and McNemar's standard error grows with it. So four trials produced a **wider** interval
+than one would have (`±14.59pp` against `±13.75pp`) at four times the cost. **The cheapest reading of
+the same run was also the sharpest, and the lane was configured for the opposite.**
+
+**And the drift constant was one observation presented as a bound.** `CONTROL_DRIFT_PP` was 3.51pp,
+taken from a single pair (R58 63.16%, R59 66.67%). Adding R57's three legs — whose control arm is an
+identical condition, because the plant is applied to the memory arm only — gives:
+
+| k | control readings (57 tasks, nothing changed) | spread |
+| --- | --- | --- |
+| 1 | 0.8596, 0.8070, 0.8772 | **7.02pp** |
+| 2 | 0.6491, 0.6667, 0.7895 | **14.04pp** |
+| 3 | 0.5965, 0.5789, 0.7193 | **14.04pp** |
+| 4 | 0.5789, 0.5789, 0.6316 | **5.26pp** |
+
+A noise floor has to be an upper bound of the spread, not a sample of it. It is now 5.26pp at the graded
+`k`, computed from the artefacts (`eval/verifiers/power.py`) rather than from a comment.
+
+**Two smaller defects found on the way, both of the same shape as the ones in 34.90–34.94.**
+
+1. **One report, two sign conventions.** `r57_readback.py` prints each arm twice: as a ledger
+   (`excess`, broken minus repaired, positive = a cost) and as the artefact's paired change
+   (`deltaPp`, memory minus control, positive = a *gain*). For `adversarial` that produced
+   `excess +4` and `pass^4 -7.02pp` in the same block of text, and the second one reads as "the memory
+   helped by 7pp". Fixed at the boundary: a `cost_pp` property negates the artefact's sign once, and a
+   self-check asserts the two lines agree rather than merely both being present.
+2. **A self-check whose verdict depended on the hour it ran.** `selfcheck_usage.py` called
+   `_cost(...)` with no timestamp, which read the wall clock, so the case asserting "1M missed input
+   plus 1M output at peak costs $1.50" passed between 01:00 and 10:00 UTC on a weekday and failed
+   otherwise. It was green in CI and red at 09:47 UTC today. `_cost` now takes the moment, and the
+   case asserts **both** bands from fixed instants — which is also the only form of the test that can
+   catch a rate card read backwards.
+
+**The cost implication, which is the point of the whole audit.** The instrument that cannot resolve
+7pp is the expensive one: 456 episodes per arm, each a multi-turn conversation with a growing prompt.
+The instrument that resolves **2.2pp** is BIRD dev: 1,534 questions, one call each, discordance
+145/1534 from R37's own artefact. Same repository, same provider, ~9.5× the precision at a fraction of
+the calls. **The last four R57 legs bought statistical power on the wrong lane**, and no gate in the
+repository was in a position to say so because no artefact recorded what an effect had to be before it
+counted.
+
+That gate exists now, and it is a verifier rather than a convention:
+
+```
+python3 eval/verifiers/power.py --arm far=/tmp/r57-far --arm near=/tmp/r57-near --arm adversarial=/tmp/r57-adv
+```
+
+### 34.96 Thirty artefacts, sixty-three arm readings, and the biggest effect was a regression
+
+The BIRD lane has been able to run several prompt variants inside one dispatch for months, and every
+artefact stores a per-case verdict for each of them under `arms`. Nothing had ever read that field in
+aggregate. One pass over the 30 committed artefacts produces 63 paired readings, 17 of which resolve:
+
+| arm | what it is | delta | broke | repaired | p | n |
+| --- | --- | --- | --- | --- | --- | --- |
+| `oracle` | the true table set instead of a link | **+33.14** | 0 | 116 | 2.4e-35 | 350 |
+| `oracle` | same, four other artefacts | +30.0 to +45.5 | 1–3 | 67–119 | ≤1.9e-29 | 145–350 |
+| `full-noevidence` | the prompt without the evidence hint | **−16.30** | 300 | 50 | 1.4e-44 | 1534 |
+| `none-noevidence` | no pack and no evidence | **−17.01** | 331 | 70 | 1.1e-41 | 1534 |
+| **`linked`** | **schema linking, as implemented** | **−9.58** | **202** | **55** | **6.4e-21** | **1534** |
+| `full-verified` | the second-pass verification prompt | +5.71 | 8 | 28 | 1.2e-03 | 350 |
+| `values` | column value annotations | +5.43 | 11 | 30 | 4.3e-03 | 350 |
+| `full-transferred` / `full-anchored` | pack position / anchoring | +4.29 to +4.57 | 10 | 25–26 | ≤1.7e-02 | 350 |
+| **`values`** | **the same arm, on the full dev set** | **+0.85** | 74 | 87 | **3.4e-01** | 1534 |
+| `gated` | the distiller's admission gate | +0.29 | 0 | 1 | 1.0e+00 | 350 |
+
+**1. Schema linking is the largest regression in the repository, and the paper says it is the second
+largest gain in the field.** MCS-SQL measures +2.1 points from schema linking with the same model; here
+it is **−9.58pp at p=6.4e-21**, on 1,534 questions, with 202 broken against 55 repaired. This is not a
+small effect that failed to replicate — it is the most significant number the project has ever
+produced, and its sign is wrong.
+
+The explanation is in the same artefact and costs nothing to extract: classify every error by whether
+the gold query reads a table the prediction does not.
+
+| error class | primary arm | `linked` arm | change |
+| --- | --- | --- | --- |
+| a gold table is absent (`table-missing` + `table-both`) | 107 (16.5% of errors) | **291 (36.6%)** | **+184** |
+| an extra table (`table-extra`) | 95 | 71 | −24 |
+| same tables, wrong answer | 446 | 389 | −57 |
+| no readable `FROM` | 0 | **44** | **+44** |
+
+The pruner did exactly what its own docstring warned it would: it removed tables the answer needed, and
+the model wrote a query over what it could see. The 44 unparseable predictions are the same failure in
+its extreme form — a question whose every column lived in a pruned table. `linkSchema` already carries a
+guard for this ("every ambiguity resolves towards keeping"), and the guard was not strong enough: it
+fires only when nothing matches or when the closure covers two thirds of the database, which on BIRD's
+thirteen-table dumps leaves plenty of room to prune a bridge table two joins away.
+
+**2. The evidence hint is worth 33pp and everything this project builds is worth under one.** On the
+same 350 questions: `oracle` +33.14pp (50.00% → 83.71%), `gated` +0.29pp with p=1.0, `full-grounded`
++0.00pp. On 1,534: removing the evidence costs 16–17pp. **Every product-side arm measured here —
+grounding, sampling, gating, value annotations, lexicons, anchoring, transfer — moves between −10 and
++5.7pp, and the ones that resolve are mostly under one point on the full set.** The gradient in this
+benchmark is the hint, not the memory, and no amount of mechanism-building changes that until the
+mechanisms are measured on the part of the gradient they can actually reach.
+
+**3. `values` did not replicate, and it is the same lesson as 34.95 on a different lane.**
+
+| population | n | `values` | p | verdict |
+| --- | --- | --- | --- | --- |
+| the dev split | 350 | **+5.43pp** | 0.0043 | HELPED |
+| the full dev set | 1534 | +0.85pp | 0.34 | UNRESOLVED |
+
+One arm, two populations, opposite significance verdicts. The 350-case reading is the one that would
+have been quoted — it is significant, it is the larger number, and it arrived first. **A result that
+resolves on a fifth of the data and dissolves on the whole of it is not a result about the mechanism; it
+is a result about the fifth.** The two populations are not identical (49.71% primary on the split,
+57.76% on the full set), which is itself the point: a subset drawn from the front of a benchmark is a
+different difficulty distribution, so a subset reading is a reading of *that* distribution.
+
+**What this changes, in the order it should be acted on.**
+
+| # | finding | consequence |
+| --- | --- | --- |
+| 1 | `linked` is −9.58pp at p=6.4e-21 | **the linker must not ship in any arm until a variant measures non-negative**; the additive form (never drop a table, order and annotate instead) is the one to test, because a pruner whose failure mode is "the answer needed that table" has no safe threshold |
+| 2 | `oracle` is +33pp, product arms ≤1pp | the roadmap's next round is not another memory mechanism, it is **the gap between 50% and 83.7% on the same prompt** — the oracle's own table subset, which is supervision we are not using |
+| 3 | `values` reverses between populations | every arm reading is quoted with its `n`, and a subset reading is labelled as a reading of that subset |
+| 4 | 46 of 63 readings are unresolved | consistent with 34.95: most of these runs could not have resolved anything at the sizes they were run |
+
+**The rule this adds.** `pnpm eval:verifiers` now reads every artefact's arms and grades them
+(`eval/verifiers/arm_ablation.py`, 17 self-checks). An ablation that is not read is not an ablation; it
+is a field in a JSON file, and this one sat in a JSON file for eleven rounds while the documents called
+schema linking the next thing to build.

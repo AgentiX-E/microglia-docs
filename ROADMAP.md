@@ -5429,3 +5429,39 @@ Metadata is worth 1.6–3.6pp. Everything above that is schema linking and candi
    thinking at the output rate.
 3. **Nothing in the pipeline may have a cost that only the operator's time zone controls.** Peak is
    double, and every long leg so far started inside it because the operator is awake in UTC+8.
+
+## The next four rounds, ordered by measured headroom rather than by papers (2026-11-09)
+
+Three verifiers run this round (`power.py`, `error_budget.py`, `arm_ablation.py`), and between them they
+rewrote the plan. The old order was "schema linking, then field semantics, then candidates", taken from
+the literature. The new order is taken from the artefacts.
+
+| priority | round | measured reason | expected | calls |
+| --- | --- | --- | --- | --- |
+| **P0** | **the additive linker** — never drop a table; order the DDL by relevance, annotate the anchors, and repair an identifier that does not resolve instead of hiding the table it lived in | `linked` is **−9.58pp at p=6.4e-21**, 202 broken against 55 repaired, with `table-missing` errors 107 → 291 and 44 predictions losing their `FROM` | recovers the 9.6pp and makes the 13.23pp ceiling reachable at all | 0 on the common path, 1 per unresolved identifier |
+| **P0** | **the oracle's subset as memory** — a training question's gold table set is supervision the benchmark gives away; hold it, curate it, retrieve it by question | `oracle` is **+33.14pp on the same 350 questions** where every product arm is under one point | the only arm in this repository with a two-digit expected value | 0 extra (the packs already carry the text) |
+| **P1** | **field-description distillation**, through `admit`/`curate` so a wrong description can be retired — something a static manual cannot do | `values` is +5.43pp on 350 and **+0.85pp on 1,534**: a lead, not a result; AskData's ablation prices the full version at 1.6–3.6pp | 1–3pp, amortised | one-time, per column, cached |
+| **P1** | **a powered R57**, if it is re-run at all: `n ≥ 504` for a 7pp effect, off-peak, and read by `power.py` before it is quoted | at `n=57` the smallest detectable effect is 20.9pp and no cell reaches p<0.05 | replaces a withdrawn claim | 504 tasks × 2 arms |
+| **P2** | multi-path candidate generation | `full-sampled` +0.86pp, `gated` +0.29pp: the constraint is not candidate count at this size | a few points, for 3–5× | expensive, last |
+| **P3** | `sota.ts` split, W8 dose curve, vitest 4 | carried | maintenance | 0 |
+
+**Three rules the verifiers make enforceable, which is the point of writing them down.**
+
+1. **An effect is quoted with its smallest detectable alternative.** `power.py` prints, for every arm,
+   the effect size this design could have seen at 80% power — 20.85pp at 57 tasks, 2.20pp at BIRD dev's
+   1,534. A number below that floor is not a finding, and the verifier says so rather than leaving it to
+   a reader's judgement.
+2. **A ceiling is computed before a mechanism is built.** `error_budget.py` splits the errors into the
+   classes each mechanism can act on: table selection is 31.3% of them, so schema linking is worth at
+   most 13.23pp here and candidate generation at most 29pp. A mechanism whose ceiling is under the
+   noise floor should not be built at all.
+3. **Every arm in every artefact is read.** `arm_ablation.py` grades 63 readings across 30 artefacts in
+   one pass. The largest effect in the repository — a 9.58pp regression at p=6.4e-21 — sat unread in a
+   committed file for eleven rounds while the documents called that mechanism the next thing to build.
+
+**And the cost policy that came out of the same week.** `TAU_REQUIRE_OFF_PEAK` refuses an `l4` dispatch
+inside a peak-rate window before its first provider call, because peak is exactly double and UTC
+01:00–10:00 is 09:00–18:00 in UTC+8. The trial count is a knob and not a virtue: at `n=57`, four trials
+produced a **wider** interval than one would have (±14.59pp against ±13.75pp), because `pass^4`
+compresses four draws into one per task and the discordant count grows with `k`. Precision is bought
+with tasks, and tasks are what BIRD has 1,534 of for the price of one τ² leg.

@@ -4375,3 +4375,46 @@ The measurement that mattered was taken before anything was dispatched, on the s
 had already produced: at the unchanged threshold, that store holds **one group of three** — three
 tasks, one lesson — and at the failed round's trigger floor it holds none. The corroboration was
 there the whole time. The rule for finding it was excluding it.
+
+## What the benchmark pays for, measured against what we build
+
+A product claim needs an honest denominator, and this one is uncomfortable enough to state first: on
+1,534 BIRD questions, giving the model the **true table set** instead of a retrieved one is worth
+**+33.14 percentage points**, and removing the benchmark's own evidence hint costs **16–17 points**.
+Every mechanism this project has built and measured — grounding, sampling, admission gating, value
+annotations, lexicon coverage, anchoring, transfer — lands between −10 and +5.7 points, and the ones
+that survive replication on the full set are under one.
+
+That is not an argument that memory is worthless. It is an argument that **the gradient in this
+benchmark is the schema, and the field's headline mechanisms are schema mechanisms.** A memory layer
+competes for points in a place the benchmark already pays for, and the honest way to compete is to
+measure which part of that payment is not yet collected.
+
+Three findings from the same body of artefacts, each of which changed what we build next:
+
+**A pruner has no safe threshold.** Schema linking, which the literature prices at about +2 points, cost
+us **9.58 points at p = 6.4e-21** in the only arm that measured it: 202 questions broken against 55
+repaired, errors where the answer's table was absent rising from 107 to 291, and 44 predictions left
+with no `FROM` at all. The mechanism of failure is structural rather than a tuning error — a pruner
+decides before the SQL exists, and when it is wrong the model cannot ask for what it cannot see. The
+repair is not a better threshold; it is moving the decision to after the SQL, where the model's own
+references are evidence.
+
+**Evidence is worth more than any of our mechanisms, and it is measurable per question.** Splitting the
+errors shows that 31.3% of them are a table the model should not have read, and that the over-reaching
+direction is twice the under-reaching one. That is a budget: schema work can be worth at most 13.2
+points on this artefact, and candidate generation at most 29. A mechanism whose ceiling is below the
+noise floor should not be built, and the ceiling is arithmetic over a committed file.
+
+**And a small sample will always hand you the answer you wanted.** The same arm reads +5.43 points at
+p = 0.0043 on 350 questions and +0.85 at p = 0.34 on 1,534. At 57 tasks, the effect size an experiment
+could detect at 80% power is 21 points — so a 7-point reading from that design was never a measurement,
+and four dispatches were spent producing it. Both facts now have verifiers rather than conventions:
+`power.py` prints the smallest detectable effect beside every arm, `error_budget.py` prints the ceiling
+before a mechanism is built, and `arm_ablation.py` reads every variant every run ever recorded.
+
+The product claim that survives all of this is narrower and more defensible than the one we started
+with: **a memory layer is worth something when it recovers supervision the benchmark gives away and the
+model does not yet use** — and it is worth nothing, or less than nothing, when it removes context the
+model needed. The first half is now a roadmap item with a two-digit expected value. The second half is
+now a regression test.
