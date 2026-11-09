@@ -6283,3 +6283,43 @@ restates an outcome the short-circuit already produced. A restatement cannot dis
 restates, so it adds nothing except the appearance of rigour. The discipline that removes both is the
 same one: **state the invariant once, in prose, at the place it is established; then let code and tests
 be about behaviour rather than about reassurance.**
+
+### 34.89 A prediction calibrated on one population, graded on another
+
+`prereg/R57-toxicity.md` graded "the band landed on at least 60% of requests" for the `near` and
+`adversarial` arms. The arm measured **35.4% of 1972** and the readback called the instrument broken.
+
+The number 60 was not invented. Amendment 1 measured the drafted rules against *this domain's own
+requests* — the 114 task instructions in the retail corpus — and found 76%, then set the bar at 60% to
+leave room for drift. What the census counts is a different population:
+
+| population | size | what it is |
+| --- | --- | --- |
+| task instructions | 114 (one per task, per trial reuse) | the text Amendment 1 measured |
+| recall requests | **1972** over 228 episodes (8.6 each) | every message the agent sends |
+
+`microglia_agent.generate_next_message` calls `recall(message.content)` — the *current* message, not the
+conversation and not the task. Turn one is the instruction; turns two onward are tool results and one-word
+replies. A rule authored to share two of the question's content terms is a `near` rule for the question
+and a `far` rule for `{"order_id": "#W1234"}`, and 35.4% is what that arithmetic predicts once two thirds
+of the requests are mid-conversation.
+
+**The general shape, which is R51's shape one layer down.** R51 graded a retail store's rules on airline
+questions and the readback said so. This graded a rule's *level* on a population the level was never
+authored for, and the bar was calibrated on the population that did not run. Both are the same mistake:
+**a number is a number only together with the population it was measured on**, and a registration that
+states the number without the population has left the readback free to pick the wrong denominator.
+
+The repair is not a lower bar — fitting the threshold to the observed 35.4% would be choosing the
+contrast after seeing it, which is what pre-registration exists to prevent. The graded claim becomes a
+between-arm equality (*the two polarities sit at the same level, within 10pp*), which is the confound
+the contrast exists to remove, needs no absolute threshold, and is measured on the population the census
+actually records. The absolute share is reported beside it, ungraded, with its denominator named.
+
+**The same defect appeared a second time inside the repair.** The verifier's self-test carried a case
+called "a near arm below its band share did not run its band", asserting the state `ABANDONED` and the
+fragment `band landed` against a *rendered report*. When the near band stopped being graded the case
+still passed, because the far arm's passing line reads `far: the band landed on at least 95% of
+requests`. A fragment matched a line about a different arm, in a test whose subject was the arm that no
+longer had a line at all. The two cases that replace it name the gap in percentage points and the exact
+reported-share sentence, so the next change to this readback fails them instead of sliding past.

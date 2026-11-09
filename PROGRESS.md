@@ -12709,3 +12709,53 @@ The landmine is the first row: R62 is dispatched with `TAU_DISTILL_SCOPE=all` an
 `TAU_PLANTED_RULES` has to be cleared in the same edit that sets the scope. A population experiment run
 with a distractor in every pack would measure the distractor, and nothing in its artefact would say the
 two variables were changed together.
+
+### 172.51 R57 `near` read: it repaired more than it broke, and the band was graded on another population
+
+Run `42544865267` on `71457278` — `TAU_PLANTED_RULES=near`, the published population, `bird` skipped by
+`scope`. **The job concluded `success`**, the first planted arm to do so: the `sampleGates` repair shipped
+at `597788d` is what turned the previous arm's `failure` into a reading.
+
+| reading | `far` | `near` |
+| --- | --- | --- |
+| one rule planted per served request | 1934 of 1934 | 1972 of 1972 |
+| in band, of planted requests | 1920 (99.3%) | 699 (**35.4%**) |
+| broke / repaired, of 57 pairs | 9 / 9 | **5 / 7** |
+| excess | +0 | **−2 (−3.51pp)** |
+| paired `pass^4` | +0.00pp (half-width 14.59) | +3.51pp (half-width 11.91) |
+| verdict | `UNRESOLVED` | `UNRESOLVED` |
+| gates in the arm artefact | `l4-pass4` present | **absent**, `published_bar_applies: 0` |
+
+The readback returns **`ABANDONED`**: `near broke more episodes than it repaired` is **false** — it
+repaired seven and broke five. That is the registered sign split, and it did not appear. It is not a
+benefit: +3.51pp is exactly the drift a control arm has been measured to move on its own, and the
+half-width is 11.91pp, so the honest sentence is *the predicted cost was not observed at this sample*,
+which is the outcome the registration said would make the arm uninformative rather than wrong.
+
+**The second failure was the registration's, not the arm's.** The band was graded at "60% of requests"
+and measured 35.4%. Amendment 1 calibrated 60% on *task instructions*. The census counts *every recall
+request*, and `eval/drivers/tau2/microglia_agent.py` sends the current message's content on each turn:
+
+```python
+def generate_next_message(self, message, state):
+    text = getattr(message, "content", None)
+    pack = recall(text if isinstance(text, str) else "")
+```
+
+8.6 requests per episode over 228 episodes is 1972 requests, of which the first carries the task's own
+words and the rest are tool results and replies. A rule authored to share two of the *question's* terms
+cannot be expected to share two of `{"order_id": "#W1234"}`. The arm was graded against a population it
+never ran on — R51's defect one layer down (`AUDIT 34.89`).
+
+**Amendment 2, written before `adversarial` was dispatched and not after it read.** The per-request
+band share becomes a reported distribution; the graded prediction becomes the one the contrast exists
+for — *the two polarities sit at the same level*, within 10pp of each other — because Amendment 1's
+argument was that polarity must not move the dose, and a between-arm equality needs no absolute
+threshold. `r57_readback.py` implements it, and its self-test grew two cases: one that the gap abandons
+the account, one that a lone arm's share is *reported* (the old case named a near band failure and was
+passing because the far line contains the words "band landed" — a test passing for the wrong reason, in
+the tool whose job is to catch that).
+
+**`adversarial` is in flight** (`42556573088` on `e55d1028`, `TAU_PLANTED_RULES=adversarial`), on the
+commit that carries `pairGates` — the arm most likely to produce a significant `HARM` is the one for
+which that gate most needed to stop blocking.
