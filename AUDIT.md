@@ -6187,3 +6187,16 @@ tests name the two surviving criteria so that re-adding the bar fails instead of
 whose hypothesis it states. When a new arm is added, the question to ask is not "does it clear the bar"
 but "whose claim is this bar", and if the answer is "not this arm's", the correct edit is an omission
 that is written down — never a threshold moved until the arm goes green.
+
+**The same bar, in a second home, found before it fired (`4083945`).** The rule above is cheap to state
+and was not yet cheap to obey: asking "where else does the treatment's bar live" found `l4-paired`,
+which lives on the step immediately after the one that had just been repaired. For a planted arm a
+`HARM` verdict is its registered prediction, so the gate would have failed `near` for being right, one
+step after `l4-pass4` had failed `far` for being right. Both are now omitted for a planted arm with the
+omission recorded in the artefact, and the three pair gates moved out of the `bin/` file into
+`pair-gates.ts` so that they have tests — the reason they had none is that `bin/` is excluded from
+coverage, and "no test" is how a gate ends up stating the wrong arm's hypothesis twice.
+
+The general rule, restated because the second instance arrived the same day as the first: **when an arm
+is added, every gate on its path is re-read against that arm's hypothesis.** The failure mode is never
+a gate being written wrongly; it is a gate being written once, for one arm, and then inherited.

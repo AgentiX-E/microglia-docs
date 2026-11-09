@@ -12516,3 +12516,46 @@ rather than a failure, because an arm that has not run is not an arm that failed
 Queue unchanged and now unblocked: `near` → `adversarial` (each needs `TAU_PLANTED_RULES` set before
 dispatch, since a repository variable is global) → R62 (`TAU_DISTILL_SCOPE=all`, `TAU_DISTILL_UNIT=trace`).
 173 → 176 files, 3613 tests, coverage 99.96 / 99.69 / 100 / 99.96.
+
+### 172.47 The same bar in a second place, found before it fired, and the run list stops printing source
+
+`near` was dispatched at `71457278` (`42544865267`, `TAU_PLANTED_RULES=near`, `l4`, `bird` left empty so
+`scope` skipped the BIRD lane again) and is in the memory arm. While it ran, the question from AUDIT
+34.86 was asked of the rest of the lane: **where else does the treatment's bar live?**
+
+Two places, and one of them is on the path `near` is about to walk.
+
+| gate | home | whose hypothesis it states | what it would do to `near` |
+| --- | --- | --- | --- |
+| `l4-pass4 >= published + 5pp` | `l4.ts` → `sampleGates` | the treatment's | failed `far` at 0.5789 vs 0.575 — **fixed, `597788d`** |
+| `l4-paired` | `l4-pair.ts` | the treatment's | fails the moment `near`'s registered harm is significant |
+| `l4-effect-resolved` | `l4-pair.ts` | a claim the arm makes | grades a benefit sentence a distractor never claims |
+
+`near` predicts it breaks more episodes than it repairs. A pair verdict of `HARM` is that prediction
+**confirmed**, and the second row would have turned it into a red job — the same defect that had just
+been repaired one file over, waiting one step later in the same job. Nothing had fired yet, which is the
+only reason this is a fix rather than a second incident.
+
+`l4-paired`, `l4-effect-resolved` and `l4-same-split` move out of `bin/l4-pair.ts` into
+`packages/eval/src/pair-gates.ts`, where they are testable for the first time — a `bin/` file is
+excluded from coverage, so three gates that decide whether the lane publishes a harm had never had a
+test. For a planted arm the first two are omitted, the omission is recorded (`planted_arm` in
+`poc-l4-pair.json`), and `l4-same-split` stays, because it is a property of the two files on disk rather
+than a hypothesis about either of them. The plant is read from **the arm's own artefact**
+(`tau2.plant.arm`), not from the dispatch's environment: an arm filed under `near` that carries no plant
+census planted nothing, and its pair is a control pair whatever the variable said.
+
+**The run list stopped printing source.** `42534241219` rendered the skipped BIRD job as
+
+> `BIRD ${{ (((github.event.inputs.split == 'dev') && 'dev') || ((((github.event.inputs.split == 'train') && 'train (out-of-sample)') || 'Mini-Dev'))) }} (cross-fitted, memory on/off)`
+
+because a job that is skipped never evaluates its `name:`. The nested ternary was written to put the
+split in the title, and where the lane *is* skipped — the exact place a reader is trying to work out why
+something is missing — it produced the longest line in the run list. It is now
+`BIRD ${{ github.event.inputs.split || 'minidev' }} (cross-fitted, memory on/off)`, which renders as
+`BIRD minidev (cross-fitted, memory on/off)` when the lane runs and as two short words when it does not.
+`train` loses the `(out-of-sample)` suffix, which was a warning against quoting the number; that warning
+is in the `split` input's description, shown beside the title on the run page, and in the artefact name.
+
+176 → 177 files, 3623 tests, coverage 99.96 / 99.69 / 100 / 99.96, `pair-gates.ts` 100 on all four.
+`scripts/check-workflows.py` still parses all five workflows at or under twenty-five inputs.
