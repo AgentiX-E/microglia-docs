@@ -4451,3 +4451,44 @@ asked, which is the only kind of question that finds this.
 The consequence for how this project measures anything: **compute the ceiling before building the
 mechanism, and prefer the instrument that costs no calls.** The table-ordering ceiling needed gold
 queries and a schema on disk. It took seconds, it changed the plan, and it found a committed defect.
+
+## The mechanism and the measurement are one implementation
+
+A ceiling that is computed by one piece of code and then pursued by another is a ceiling about
+nothing. The two agree for as long as nobody changes either, and the way that fails is not a test
+failure: it is a dispatch that reports 48% where the measurement promised 56.65%, and a week spent
+asking whether the signal is weaker than believed rather than whether the arm is the same arm.
+
+So the ordering signal is four functions. `anchorTables` says what a question names. `goldIndex`
+groups the training rows by the database they were asked against, because a table name means nothing
+outside its own schema. `recalledFor` unions the gold tables of the nearest five neighbours.
+`orderSchema` keeps every table and puts a given order in front of it. The lane calls all four in that
+order; the measurement bin calls all four in that order; and the bin reproduces the numbers it
+published before the refactor to the second decimal, which is the only evidence that the two are
+telling the same story.
+
+There is a corollary about what a reproducibility claim is worth. A seeded bootstrap over a paired
+vector returns *a* interval, not *the* interval: regrouping a loop by fold changed the lower bound
+from 10.30 to 10.63 on identical data. That is not an error in the statistics, and it is fatal to a
+comparison anyway — an interval that moves when nothing moved cannot be checked against itself. The
+pairing order is now part of the measurement rather than an accident of how a loop happened to be
+written.
+
+## Prove the wiring before paying for the run
+
+Every mechanism in this project has a free half and a paid half, and the paid half is where wiring
+defects become results. The stand-in endpoint has existed for rounds for exactly this reason and was
+never used to qualify a new arm until now: a forty-line HTTP server that answers `SELECT 1`, twenty
+questions on the dev split, ninety seconds, no bill. It printed both arms' scores, the ordering block
+computed from the prompts actually sent, and a $0.0103 bill — and then the lane refused to publish a
+claim, because a stand-in that answers every question the same way cannot support one.
+
+That refusal is the design working. The two failures this catches are the two that unit tests cannot:
+an arm that is inert (the parser returned zero blocks, so no ordering happened, and the null was
+published as a finding about ordering) and an arm that is wired to a different decision than the one
+that was measured. Both are invisible in a green build and indistinguishable from a real result in an
+artefact.
+
+The rule that follows is the cheapest one in this document: **if a dispatch can be rehearsed for
+nothing, rehearse it.** The cost of the rehearsal is minutes; the cost of skipping it is a run whose
+number has to be explained rather than read.

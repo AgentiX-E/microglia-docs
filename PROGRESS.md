@@ -13179,3 +13179,83 @@ deliver the 13.23pp that `error_budget` prices schema linking at.
 have yet: it needs the learn rows' gold table sets indexed by database at evaluation time, which is
 plumbing rather than research, and the measurement above is the reason to build it. It is the only
 remaining P0 whose expected value is a two-digit number of *orderings* rather than of points.
+
+### 172.60 The arm the ceiling chose, and the stand-in that proved it before it was paid for
+
+Round 63 lands `recall-order` — the arm the free measurement argued for — and it does it in the only
+order that makes the number trustworthy: the mechanism was measured first (round 62, zero calls),
+then built out of the same functions the measurement uses, then proved against a stand-in endpoint,
+then registered, then dispatched.
+
+**What the arm is.** The schema keeps every table; the ones the nearest five training questions in
+the same database read come first, the lexical anchors after them, the rest in declaration order.
+One decision separates it from `linked-additive`, which is what makes the comparison paired: the
+ordering *inside* the moved group.
+
+| | `linked-additive` (control) | `recall-order` (new) |
+| --- | --- | --- |
+| what moves a table to the front | a word in the question | the gold table set of the five nearest training questions |
+| the order inside the moved group | declaration order | the signal's own priority |
+| measured clean orderings, dev | 42.89% | **56.65%** |
+| tables moved per question | — | 4.88 |
+| prompts changed | — | 1,534 of 1,534 |
+
+**Why the shared implementation is the point.** `bin/table-recall.ts` no longer builds its own
+neighbour pool; it calls `goldIndex` and `recalledFor`, the two functions `runFold` calls. Re-run
+against the dev split it reproduces its predecessor exactly — 42.89 / 56.58 / 56.65 and +13.75pp
+[+10.30, +16.88] — and that reproduction is the only evidence that the mechanism being paid for is
+the mechanism that was measured.
+
+One trap came out of the refactor and is now a comment where it happened: regrouping the loop by fold
+permuted the paired vector, and the seeded bootstrap returned [10.63, 17.01] instead of [10.30, 16.88]
+for identical data. A bootstrap interval is not bit-invariant to permutation, and an interval that
+moves when nothing moved cannot be compared against itself. The array is filled at the row's own
+position now.
+
+**Proved before it was paid for, for the first time in this lane.** `DEEPSEEK_ENDPOINT` has existed
+for rounds; this is the first arm to use it. A 40-line HTTP server answering `SELECT 1`, twenty
+questions on the dev split:
+
+```
+[sota] arm linked-additive: 5.00%
+[sota] arm recall-order: 5.00%
+[sota] recall-order: clean=13/20 (65.00%) depth=35.44% precision=39.19% recall=96.67% retrieved=80.00% k=5
+[sota] model=deepseek-flash thinking=provider-default [sota] usage: prompt=142,800 (cached=95,200, 66.7%)
+       completion=4,760 bill=$0.0103 (peak 0.0%) reasoning=0
+[sota] failed: MG_E_CONFIG: The benchmark ran but cannot support a claim (V5-resolution: not estimable …)
+```
+
+Both arms fired, the ordering block was computed from the prompts actually sent, the bill was
+computed from the parsed usage, and the run then refused to publish a claim — which is the gate doing
+its job on a stand-in that answers every question the same way.
+
+**Two dispatch failures, both before any spend.**
+
+| what happened | what caught it | what changed |
+| --- | --- | --- |
+| `prereg` input given as `prereg/R63-recall-order.md`, which the description read as a path | the `Which lane this dispatch buys` job, in eleven seconds and zero calls | the input is documented as a bare id and the step refuses a path, naming the fix in the message |
+| the same string also names the artefact | — | the refusal now happens before the artefact name is used, so a typo cannot lose a twenty-minute run into a subdirectory nobody publishes |
+
+`preregFileOf` normalises all three forms (`id`, `id.md`, `prereg/id.md`) for the CLI, which does
+take a path; the dispatch refuses the path instead, because two places build the file name from it
+and only one of them is in TypeScript.
+
+**Registered before it ran.** `prereg/R63-recall-order.md`: the arm fires on ≥95% of questions, the
+clean share lands within ±5pp of 56.65%, `retrieved_share` above 90%, accuracy within ±4pp of zero,
+the memory arm still null, the bill computable, the lane reliable. And the resolution stated in the
+file rather than in a footnote: **at n=350 the design resolves about 6pp**, so a 2pp effect can be
+neither confirmed nor refuted, and a null from 350 questions is not evidence of absence.
+
+| reading | before | after |
+| --- | --- | --- |
+| tests | 3,735 | **3,757** |
+| files | 181 | 181 |
+| coverage, four dimensions | 100 | **100** |
+| preregs | 62 | **63** |
+| arms dispatchable | 62 | **63** |
+| `pnpm check` | green | **green** |
+
+**Dispatched.** `sota` run `42634151808` on `71b0649c`, off-peak (14:20 UTC), minidev, arms
+`none,full,linked-additive,recall-order`, `max_calls=4000`, transfer measurement off because the
+registration does not declare it. The first run of this dispatch (`42633671279`) failed in eleven
+seconds on the `prereg` form and spent nothing.

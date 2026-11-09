@@ -6892,3 +6892,86 @@ zero model calls. Three consequences, none of which were visible before:
    schema linking at; it can only reach the share of it that ordering touches.
 3. **The measurement is worth more than the dispatch it was meant to justify.** It cost nothing, and
    it found a parser defect that had already been committed, tested and reviewed.
+
+### 34.98 The arm and the measurement are now the same code, and a stand-in proved it before it was paid for
+
+Round 63 ships the arm the free ceiling argued for. The interesting part is not that ordering by
+retrieved gold tables is better than ordering by lexical anchors — that was measured last round at
++13.75pp of clean orderings for zero calls. It is that the two now share an implementation, so the
+number a dispatch reports and the number the measurement predicted cannot drift apart without one of
+them being wrong.
+
+**One reordering primitive, composed twice.**
+
+`orderSchema(ddl, preferred, source)` keeps every table and puts the given ones first *in the order
+given*. `annotateSchema` is now `anchorTables` + `orderSchema(…, 'named')` and its output is
+byte-identical, which the existing tests assert rather than trust. The distinction that forced the
+split is one line of semantics:
+
+| ordering | who decides the order inside the moved group |
+| --- | --- |
+| `annotateSchema` (the control arm) | the DDL's declaration order |
+| `orderSchema` (the new arm) | the signal's own priority |
+
+Under declaration order a signal can only add a table ahead of the first non-gold one and can never
+demote a wrong anchor, so a *better* signal is structurally unable to produce a better ordering — and
+a null from it would be a null about the ordering rather than about the evidence. Changing that is
+what made measuring the good version possible, so the arm had to change it too. The two arms now
+differ in exactly one decision, which is what a paired comparison needs.
+
+**The measurement bin now calls the lane's functions.**
+
+`bin/table-recall.ts` used to build its own neighbour pool with its own fold filter. It now calls
+`goldIndex` and `recalledFor` — the same two functions `runFold` calls — and reproduces its
+predecessor's numbers exactly: 42.89% anchors, 56.58% recalled, 56.65% both, +13.75pp
+[+10.30, +16.88]. That reproduction is the only evidence that the lane runs the mechanism that was
+measured, and it is worth more than the refactor's tidiness.
+
+**A trap the refactor set, and the comment it earned.** Regrouping the loop by fold changed the order
+of the paired vector, and the seeded bootstrap returned [10.63, 17.01] instead of [10.30, 16.88] for
+identical data. Nothing was wrong with the statistics — a bootstrap interval is not invariant to
+permutation bit-for-bit — but a published interval that moves when nothing moved cannot be compared
+against itself. The array is now filled at the row's own position, and the reason is written where
+the loop is.
+
+**The artefact reports the ordering, from the prompts the arm actually sent.**
+
+`ordering` carries `summariseOrderings` — the same function `tableRecallOf` uses — over
+`readOrdering('both', …)` readings built from the DDL this arm emitted, plus `retrieved_share` and
+`recall_k`. So a dispatched run states whether it reproduced the ceiling it was chosen on. A clean
+share outside ±5pp of 56.65% is a wiring defect and says nothing about ordering; `V7-channel`'s floor
+of 0.01 remains the alarm for the case where the arm says nothing at all.
+
+**Proved against a stand-in before it was paid for.**
+
+The lane has had `DEEPSEEK_ENDPOINT` for rounds and this is the first time it was used to prove a new
+arm. A 40-line HTTP server answering `SELECT 1` with a fixed usage block, `SOTA_LIMIT=20`, the dev
+split on disk:
+
+```
+[sota] arm linked-additive: 5.00%
+[sota] arm recall-order: 5.00%
+[sota] recall-order: clean=13/20 (65.00%) depth=35.44% precision=39.19% recall=96.67% retrieved=80.00% k=5
+[sota] model=deepseek-flash thinking=provider-default [sota] usage: prompt=142,800 (cached=95,200, 66.7%)
+       completion=4,760 bill=$0.0103 (peak 0.0%) all-off-peak would be $0.0103 reasoning=0
+[sota] failed: MG_E_CONFIG: The benchmark ran but cannot support a claim (V1-pack-not-empty: 0.00
+       rules/question; V5-resolution: not estimable; V32-fold-learning-intact: 19 distillation failure(s))
+```
+
+Every mechanism this round added appeared in that output, and the run then refused to publish a claim
+because a stand-in that answers every question with `SELECT 1` cannot support one. **That refusal is
+the gate working**, and it is the difference between a smoke test and a rumour.
+
+**Two priors the free measurement had to supply before the dispatch could state a prediction.**
+
+| quantity | value on the dev split | why the dispatch needs it |
+| --- | --- | --- |
+| `prompts_changed_share` | 1,534 of 1,534 (100%) | turns the channel floor from an alarm into a prediction |
+| `retrieved_share` | 1,534 of 1,534 (100%) | bounds "the arm fired through its anchors, not its signal" |
+| mean tables moved | 4.88 per question | says how much of the schema the head of the prompt becomes |
+
+**And the resolution, stated before the run.** At n=350 and a paired discordance near 18%, the design
+resolves about 6pp at 80% power. R63 therefore cannot confirm a 2pp effect and must not be read as
+having refuted one. The registration says so in the header of the file rather than in a footnote,
+because the alternative — reading a null from a 350-question slice as evidence of absence — is the
+error this project keeps finding in its own history.

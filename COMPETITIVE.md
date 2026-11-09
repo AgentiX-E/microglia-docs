@@ -3632,3 +3632,51 @@ contribution is indistinguishable from zero. The board's top four — AskData 83
 DataGallery 82.39, SiriusAI-SQL 82.28 — are 25 points away, and every one of them is above the
 67.41% line where BIRD's evidence hint stops being the dominant term. **The memory layer is not what
 closes that gap this round; the instrument that can finally see the gap is.**
+
+## What a reordering is worth, and what the board pays for a pruner (2026-11-09)
+
+The published claims about schema handling are all about *pruning*: MCS-SQL reports +2.1 points from
+schema linking alone, CHASE-SQL attributes nearly half its failures to it, AskData's SQL-first linker
+is what its own ablation credits for part of its 83.40 dev cell. This project measured that a pruner
+has no safe threshold on BIRD — `linked` reads **−9.58pp at p=6.4e-21**, 202 questions broken against
+55 repaired, with gold-table-absent errors going 107 → 291 — and turned to the additive form instead.
+
+The additive form's ceiling is now measured, at zero model calls, and the arm that reaches it is in
+the air:
+
+| mechanism | what it does to the prompt | clean orderings | tables lost | extra calls |
+| --- | --- | --- | --- | --- |
+| none | the whole schema, declaration order | 0% by construction | 0 | 0 |
+| `linked` (published-claim analogue) | drops the tables the question does not name | n/a — it removes | 202 questions broken | 0 |
+| `linked-additive` | names first, two-line header | 42.89% | 0 | 0 |
+| **`recall-order`** | **the tables similar training questions read first, anchors after** | **56.65%** | **0** | **0** |
+| reductive + retrieval | prune to the retrieved set | not measured | unbounded | 0 |
+
+**The comparison worth making is between two ceilings, not two deltas.** A pruner's ceiling is
+bounded by how many questions it can safely drop from; an ordering's is bounded by how many questions
+have a table set the question determines at all. On BIRD dev that second bound is **56.65%** — four
+questions in ten have gold tables no table-set signal determines — which is why the honest expectation
+for the arm is a fraction of the published +2.1 and why the dispatch is registered at a 6pp
+resolution rather than a 2pp one.
+
+Three things the free measurement settled in the comparison's favour, none of which needed a call:
+
+1. **Retrieval beats lexical matching by 13.75pp of orderings** [+10.30, +16.88], p < 1e-4. AskData
+   arrives at the same place from the other direction — start from the SQL, match literals to fields
+   — and this is the cheapest independent confirmation of that choice.
+2. **Anchors are nearly redundant once recall is present**: 868 → 869 clean questions (+0.07pp) while
+   precision falls 8.7 points. The signal ships recall-first with anchors as the fallback for what
+   retrieval cannot serve, which is what the arm does.
+3. **Ordering cannot lose a table, so its failure mode is a reader ignoring a comment** rather than a
+   query that cannot be written. That asymmetry is the whole reason the additive line survives a
+   −9.58pp pruner reading and the pruner does not.
+
+**Where microglia sits, and it has not moved yet.** BIRD dev 57.63% without memory, 57.76% with it
+(paired +0.72pp, [−0.85, +2.28], p=0.41); the 2026-11-09 minidev run read 53.14% against 51.71%
+(−1.43pp). The board's top four are AskData 83.40 (dev 78.49), GrainSQL 82.95 (77.77), DataGallery
+82.39 (78.10) and SiriusAI-SQL 82.28 (77.77), against a human ceiling of 92.96; all four sit above the
+67.41% line where BIRD's evidence hint stops being the dominant term in the prompt. The gap is 25
+points. An ordering arm cannot be the mechanism that closes it: its entire budget is the 56.65% of
+questions a table set determines, and on the other 43.35% it does nothing at all — which is why the
+next two priorities are a retrieved-exemplar arm and field-description distillation rather than a
+better ordering signal.

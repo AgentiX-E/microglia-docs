@@ -5502,3 +5502,48 @@ mechanism can do. Paired, n=1,534: **+13.75pp [+10.30, +16.88], p < 1e-4**.
 3. **A bill belongs to the lane that spends the money.** The rate card is data with two readers, the
    usage is accumulated per band, and the cron is off-peak — because a cron expression is a dispatch
    nobody re-reads, and the cheapest run to schedule had been the most expensive one to buy.
+
+## R63 is dispatched: the ordering arm, and what each outcome selects (2026-11-09)
+
+The free ceiling (round 62) said what ordering can achieve; round 63 built the arm it named and put it
+in the air against the arm it replaces. Nothing else changes in the plan until that number exists,
+because every downstream priority was ordered by a measurement this run either reproduces or
+contradicts.
+
+| item | what it is | why now |
+| --- | --- | --- |
+| **dispatched** | `none,full,linked-additive,recall-order` on minidev, off-peak, `max_calls=4000`, run `42634151808` | the only mechanism change whose supporting number is already two-digit, and the first run that can state its own bill |
+| **reading it** | `ordering.cleanShare` against 56.65% ±5pp, then `recall-order` against `linked-additive` at a 6pp resolution | a clean share outside the band is a wiring defect and voids the accuracy columns |
+
+**What each outcome selects, written before the number arrives.**
+
+| outcome | reading | next |
+| --- | --- | --- |
+| `recall-order` ≥ +6pp over `linked-additive` | ordering is a lever, and a bigger one than any memory arm measured here | dose: `SOTA_RECALL_K` at 1 and 10, then column-level ordering inside the moved tables |
+| interval excludes +6pp and contains zero (predicted) | ordering is a diagnostic, not a lever | the retrieved-exemplar arm — the nearest training question's **gold SQL** as a worked example, the lawful approximation of `oracle` at +33.14pp |
+| `recall-order` ≤ −6pp | position is attended to, and declaration order is better than a signal | close the ordering line entirely; no variant of it gets a call |
+| clean share outside 56.65% ±5pp | the wiring is wrong | fix the wiring and re-run; the accuracy columns are unreadable |
+
+**The standing order of the remaining work, re-priced by `error_budget` and `arm_ablation`.**
+
+| priority | item | measured reason | expected | calls |
+| --- | --- | --- | --- | --- |
+| **P0** | read R63, then the outcome's next stage | above | — | 0 |
+| **P0** | retrieved gold SQL as a worked example | `oracle` +33.14pp at p=2.4e-35 against every product arm under one point; a training question's gold query is supervision the benchmark gives away | the only remaining mechanism with a two-digit prior | 1 arm × n |
+| **P1** | field-description distillation through `admit`/`curate` | `values` +5.43pp at n=350 and +0.85pp at n=1,534: a lead, not a result | 1–3pp | — |
+| **P1** | a powered R57, if re-run: `n ≥ 504`, off-peak, read by `power.py` first | at n=57 the smallest detectable effect is 20.9pp | replaces a withdrawn claim | 504 × 2 |
+| **P2** | multi-path candidate generation | candidate ceiling 29pp, the largest single bucket in `error_budget` | a few points, for 3–5× | expensive, last |
+| **P3** | `sota.ts` split, W8 dose curve, vitest 4 | carried | maintenance | 0 |
+
+**Two rules this round adds to the standing list.**
+
+4. **The mechanism and the measurement must share an implementation.** The bin that priced the
+   ordering now calls the two functions the lane calls, and reproduces its own numbers exactly. A
+   measurement that is composed differently from the arm is a description of a mechanism nobody
+   dispatches — and the difference is invisible until the two numbers disagree for a reason nobody
+   can name.
+5. **Prove the wiring against a stand-in before paying for the run.** `DEEPSEEK_ENDPOINT` existed for
+   rounds and this is the first arm to use it. Twenty questions against a server that answers
+   `SELECT 1` printed both arms' scores, the ordering block, and a $0.0103 bill, in ninety seconds,
+   for nothing. The `schemaBlocks` defect in round 62 was exactly the class of failure this catches
+   and unit tests did not.
