@@ -5311,3 +5311,29 @@ the dispatch menu has no slot left for an arm. The correct fix is the rule `lane
 the registration decides the experiment — which means an arm list in `prereg/R57-toxicity.md`'s header
 and a matrix over it. That is a workflow change with its own verification dispatch, and it must not be
 made while an arm it would re-dispatch is in flight.
+
+## R57 read, three arms: the ladder has two rungs (2026-11-09)
+
+| arm | planted / served | in band | broke | repaired | excess |
+| --- | --- | --- | --- | --- | --- |
+| `far` | 1934 / 1934 | 1920 (99.3%) | 9 | 9 | +0.00pp |
+| `near` | 1972 / 1972 | 699 (35.4%) | 5 | 7 | −3.51pp |
+| `adversarial` | 1910 / 1910 | 712 (37.3%) | 11 | 7 | **+7.02pp** |
+
+`far ≈ near` (refutation fired, 3.51pp apart against a 3.51pp drift); `adversarial` is 10.53pp worse
+than `near`. **Proximity costs nothing; contradiction costs 7pp.** The two polarities land in the band at
+the same rate (1.8pp apart), so the band is a property of the request texts rather than of the rule, and
+distance-based retrieval tuning cannot reach the defect.
+
+| item | state |
+| --- | --- |
+| P0 | R57 `far` | done — net zero, band 99.3% |
+| P0 | R57 `near` | done — repaired more than it broke, inside drift |
+| P0 | R57 `adversarial` | done — +7.02pp, the only arm with a real dose |
+| P0 | the two gates that graded a distractor as the treatment (`l4-pass4`, `l4-paired`) | fixed, `597788d`, `4083945` |
+| P0 | the claim a planted arm published | fixed, `fc28a34`; arm re-dispatched for a clean artefact |
+| P0 | the order prediction that could not fail | fixed, `4a638b3` |
+| P0 | coverage 100 on all four dimensions, reproducibly | done, `d5b6ee6` |
+| P1 | R62 population experiment (`TAU_DISTILL_SCOPE=all`) | **next**, after the re-dispatch clears the variable |
+| P2 | four arms on one clock — the registration carries the arm, a job output carries it to L4 | blocked at 25 dispatch inputs |
+| P2 | the ~40 `?.`/`??` fallbacks | **closed** — the branch dimension is at 100 |
