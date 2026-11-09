@@ -4418,3 +4418,36 @@ with: **a memory layer is worth something when it recovers supervision the bench
 model does not yet use** — and it is worth nothing, or less than nothing, when it removes context the
 model needed. The first half is now a roadmap item with a two-digit expected value. The second half is
 now a regression test.
+
+## The bill is part of the instrument
+
+A measurement that cannot state its cost cannot be scheduled, and a pipeline whose schedule is chosen
+by an operator's time zone is a pipeline whose price is chosen by that time zone. Both of those were
+true here, in the lane that runs on a schedule, for as long as the lane read one number — total tokens
+— and threw away the three that explain a bill.
+
+Three principles came out of it, and they are design rules rather than operational advice.
+
+**A rate card is data with more than one reader.** The same six prices were hardcoded twice, in two
+languages, and the first thing the shared card caught was that one lane had been asking for a retired
+model without noticing. Prices are facts about a date; a fact in two places is a fact that is
+eventually wrong in one of them, and nothing detects the drift until somebody computes the same bill
+twice.
+
+**Cost is accumulated where it is incurred, not where the run ends.** A run that begins at 03:50 and
+ends at 04:20 was billed at two rates. Pricing it at the band in force when it finished is not an
+approximation of its bill — it is a different number, and the clock picks which one gets published.
+The same reasoning applies to the peak guard: it refuses *before* the first provider call, because a
+refusal that arrives after the spending is a receipt.
+
+**And the instrument finds what the tests do not.** The first free reading of the schema-ordering
+ceiling reported that a fifth of the benchmark's gold tables were not in its schemas. That number was
+implausible, so it was checked, and the check found that a backticked `CREATE TABLE` parsed to nothing
+— which meant the arm under construction was inert on three databases and would have published its own
+absence as a null about ordering. No unit test could have found it: the unit tests asked whether the
+parser handled the inputs the parser was written for. The measurement asked a question nobody had
+asked, which is the only kind of question that finds this.
+
+The consequence for how this project measures anything: **compute the ceiling before building the
+mechanism, and prefer the instrument that costs no calls.** The table-ordering ceiling needed gold
+queries and a schema on disk. It took seconds, it changed the plan, and it found a committed defect.

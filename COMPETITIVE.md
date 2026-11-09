@@ -3587,3 +3587,48 @@ it is: a linking mechanism that does not subtract 9.6pp, plus the table-subset s
 row says is worth 33, minus the part of that we already get from BIRD's hint. A memory layer that
 recovers *some* of the oracle's subset is a plausible 5–10pp; a memory layer that recovers all of it is
 a claim the field has not made.
+
+## Schema linking, priced against what the board pays for it (2026-11-09)
+
+The published claims are the ones to beat, and they were made on the same benchmark with the same
+kind of model: **MCS-SQL reports +2.1 points from schema linking alone**, CHASE-SQL reports schema
+linking among the top causes of failure, and **AskData's SQL-first linker** is the part of its 83.40
+dev cell that its own ablation attributes to the mechanism rather than to the model. This round
+measured what our ordering can put in front of a reader, without spending a call.
+
+| mechanism | what it does to the prompt | clean orderings | extra calls |
+| --- | --- | --- | --- |
+| none | the whole schema, declaration order | 0% by construction | 0 |
+| lexical anchors — `linked-additive` | names first, two-line header | 42.89% | 0 |
+| **retrieved gold tables, k=5** | the tables similar training questions read first | **56.58%** | 0 |
+| both, recall first | recall then anchors, then the rest | **56.65%** | 0 |
+| reductive linking — `linked` | drops the tables the question does not name | n/a — it removes | 0 |
+
+**The number that matters for comparison: 56.65% is the share of the 1,534 dev questions where an
+ordering-only signal can put every table the gold query reads ahead of every table it does not.** It
+is not accuracy and it is not comparable to MCS-SQL's +2.1: that is a delta on a *pruner*, and a
+pruner's ceiling is bounded by how many questions it can safely drop from, while an ordering signal's
+is bounded by how many questions have a table set the question determines at all. Four questions in
+ten do not, which is why the honest expectation for the arm is a fraction of the published figure.
+
+What the comparison does establish is the ordering of effort, and it is not the ordering the papers
+suggest:
+
+1. **Retrieval beats lexical matching by 13.75pp of orderings, and anchors are then redundant**
+   (868 → 869 clean, precision −8.7). AskData arrives at the same place from the other direction — it
+   starts from the SQL and matches literals to fields, rather than matching question words to table
+   names — and this reading is the cheapest independent confirmation of that choice.
+2. **A pruner has no safe threshold on this benchmark.** `linked` measured −9.58pp at p=6.4e-21 with
+   202 questions broken, and this round's parser fix means it now prunes on three more databases,
+   so the reading was measured on a *less* aggressive pruner than the code now is.
+3. **The oracle row is still the largest gap**: `oracle` +33.14pp against every product arm under one
+   point. A table set is the cheapest lawful approximation of it, and retrieval is how the training
+   split's table sets become usable on a test question.
+
+**Where microglia sits, unchanged and honestly.** BIRD dev 57.63% without memory, 57.76% with it
+(paired +0.72pp, [−0.85, +2.28], p=0.41); the 2026-11-09 scheduled run read **53.14% against 51.71%
+on the 350-question minidev slice, −1.43pp**, which is the third population in which the memory
+contribution is indistinguishable from zero. The board's top four — AskData 83.40, GrainSQL 82.95,
+DataGallery 82.39, SiriusAI-SQL 82.28 — are 25 points away, and every one of them is above the
+67.41% line where BIRD's evidence hint stops being the dominant term. **The memory layer is not what
+closes that gap this round; the instrument that can finally see the gap is.**

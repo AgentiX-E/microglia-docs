@@ -5465,3 +5465,40 @@ inside a peak-rate window before its first provider call, because peak is exactl
 produced a **wider** interval than one would have (±14.59pp against ±13.75pp), because `pass^4`
 compresses four draws into one per task and the discordant count grows with `k`. Precision is bought
 with tasks, and tasks are what BIRD has 1,534 of for the price of one τ² leg.
+
+## The ordering ceiling is measured, and it is 56.65% (2026-11-09)
+
+Round 62 computed a ceiling before buying a mechanism, for zero model calls. The reading reorders the
+next rounds again, because it prices the thing the last two plans assumed.
+
+| signal | clean ordering | mean depth | precision | recall of gold |
+| --- | --- | --- | --- | --- |
+| lexical anchors — what `linked-additive` ships | 42.89% | 49.63% | 49.98% | 87.38% |
+| retrieved gold tables of the 5 nearest training questions | 56.58% | 44.04% | 47.93% | 95.05% |
+| both, recall first | **56.65%** | **43.00%** | 39.27% | **99.66%** |
+
+`clean` = every gold table ahead of every non-gold one, which is the strongest thing an ordering-only
+mechanism can do. Paired, n=1,534: **+13.75pp [+10.30, +16.88], p < 1e-4**.
+
+| priority | round | measured reason | expected | calls |
+| --- | --- | --- | --- | --- |
+| **P0** | **recall-first ordering in the lane** — index the learn rows' gold table sets by database, retrieve the 5 nearest, order the DDL by their union, anchors as fallback | the measurement above: +13.75pp of clean orderings, and **anchors add 0.07pp once recall is present** while costing 8.7 points of precision | the only mechanism change whose supporting number is already two-digit | 0 |
+| **P0** | **a dispatch that can say what it cost** — the arm readings and the bill in one artefact, off-peak, `linked-additive` and `values` re-measured after the `schemaBlocks` fix | both arms changed behaviour on three databases this round; their old readings are not comparable | replaces two numbers rather than adding one | 2 arms × 1,534 |
+| **P1** | **field-description distillation through `admit`/`curate`** — unchanged from the last plan, and still the only arm whose evidence survives a change of population | `values` +5.43pp at n=350 and +0.85pp at n=1,534: a lead, not a result | 1–3pp | — |
+| **P1** | **a powered R57**, if it is re-run: `n ≥ 504`, off-peak, read by `power.py` before it is quoted | at n=57 the smallest detectable effect is 20.9pp | replaces a withdrawn claim | 504 × 2 |
+| **P2** | multi-path candidate generation | `error_budget` puts the candidate ceiling at 29pp, the largest single bucket | a few points, for 3–5× | expensive, last |
+| **P3** | `sota.ts` split, W8 dose curve, vitest 4 | carried | maintenance | 0 |
+
+**The three rules this round adds.**
+
+1. **A ceiling that costs nothing is bought first.** The table-ordering ceiling needed gold queries
+   and a schema on disk. It was computed in seconds and it changed the plan — and it found a parser
+   defect that three rounds of testing had not, because the defect only matters when someone asks a
+   question the tests never asked.
+2. **A parser that returns nothing is a mechanism that does nothing.** `schemaBlocks` parsed a
+   backticked `CREATE TABLE` to zero blocks, and zero blocks is `single-table` in `annotateSchema`,
+   which means "return the DDL unchanged". The arm was inert on three of eleven databases and no gate
+   could see it: an instrument that cannot fire publishes its own absence as a null.
+3. **A bill belongs to the lane that spends the money.** The rate card is data with two readers, the
+   usage is accumulated per band, and the cron is off-peak — because a cron expression is a dispatch
+   nobody re-reads, and the cheapest run to schedule had been the most expensive one to buy.

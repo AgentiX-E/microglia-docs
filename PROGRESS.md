@@ -13118,3 +13118,64 @@ matters — theirs never removes a table either.
 | coverage, four dimensions | 100 | **100** |
 | arms in the union | 73 | **74** |
 | `pnpm check` | green | **green** |
+
+### 172.59 The bill is now part of the instrument, and the ceiling was measured before it was bought
+
+Round 62 fixes the measurement gap on the lane that runs on a schedule, and spends no model calls
+doing it. The order was deliberate: the previous round's P0 was a dispatch of `linked-additive`, and
+dispatching an arm whose ordering signal had never been measured would have been the mistake this
+repository keeps finding in its own history.
+
+**What the BIRD lane could not say, and now can.**
+
+| question | before | after |
+| --- | --- | --- |
+| what did this run cost | nothing was recorded | `usd`, `peak_usd`, `usd_if_all_off_peak` in the artefact and on stdout |
+| how much of the prompt was cached | discarded | `prompt_tokens`, `cached_tokens`, `cache_hit_rate` |
+| was thinking on, and what did it cost | never sent, never read | `SOTA_THINKING`, `reasoning_tokens` |
+| which model answered | the retired id was recorded | `deepseek-flash` by default, `model` beside `configured_model` |
+| what does the weekly run cost extra | 03:00 UTC Monday, double | 18:00 UTC Monday, single |
+
+The rate card moved to `eval/manifests/model-rates.json` and has two readers: `packages/eval/src/cost.ts`
+and `eval/drivers/tau2/run_split.py`. Both used to hold their own copy. A test asserts the TypeScript
+constant equals the file; a Python self-check asserts the driver's bill and its peak windows equal it.
+**A price that appears in two languages is a price that is eventually wrong in one of them.**
+
+**The bug the instrument found on its first run.**
+
+`schemaBlocks` returned zero blocks for a backticked `CREATE TABLE`. BIRD's dumps use three quoting
+conventions and the identifier pattern knew two, so `toxicology`, `thrombosis_prediction` and
+`student_club` parsed to nothing — and `annotateSchema` treats a zero-block schema as `single-table`
+and returns the DDL unchanged. The arm that was about to be dispatched was **inert on three of eleven
+databases**, and its null would have been published as a statement about ordering. Two more defects
+came out of the same check: a foreign key's target table arriving as a column of this one, and
+case-sensitive name matching that made 298 of 1,534 questions unscoreable (`postHistory` declared,
+`posthistory` queried).
+
+**The ceiling, measured for free.**
+
+| signal | clean | mean depth | precision | recall |
+| --- | --- | --- | --- | --- |
+| anchors (shipped) | 42.89% | 49.63% | 49.98% | 87.38% |
+| recalled, k=5 | 56.58% | 44.04% | 47.93% | 95.05% |
+| both, recall first | **56.65%** | **43.00%** | 39.27% | **99.66%** |
+
+**+13.75pp of clean orderings, [10.30, 16.88], p < 1e-4, n=1,534, zero model calls.** Anchors add
+0.07pp over recall alone and cost 8.7 points of precision, so the ordering to ship is recall-first
+with anchors as the fallback. The ceiling is 56.65% and not 100%: four questions in ten have gold
+tables that no table-set signal determines, which is why an ordering arm cannot be expected to
+deliver the 13.23pp that `error_budget` prices schema linking at.
+
+| reading | before | after |
+| --- | --- | --- |
+| tests | 3660 | **3735** |
+| files | 179 | **181** |
+| coverage, four dimensions | 100 | **100** |
+| verifiers | 16 | 16 (two new self-check cases inside the existing ones) |
+| lanes | — | `pnpm eval:table-recall` (zero calls) |
+| `pnpm check` | green | **green** |
+
+**What this changes for the next round.** The recall-first ordering is a mechanism the lane does not
+have yet: it needs the learn rows' gold table sets indexed by database at evaluation time, which is
+plumbing rather than research, and the measurement above is the reason to build it. It is the only
+remaining P0 whose expected value is a two-digit number of *orderings* rather than of points.

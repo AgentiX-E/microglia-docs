@@ -6786,3 +6786,109 @@ different difficulty distribution, so a subset reading is a reading of *that* di
 (`eval/verifiers/arm_ablation.py`, 17 self-checks). An ablation that is not read is not an ablation; it
 is a field in a JSON file, and this one sat in a JSON file for eleven rounds while the documents called
 schema linking the next thing to build.
+
+### 34.97 The lane that spends the money had no bill, and the arm was inert on three databases
+
+Two rounds ago the τ² lane was given a bill because it had reported `calls: 0` for two months. The
+BIRD lane was not, and it is the lane that runs on a schedule. Four defects were still live in it,
+and the fifth was found only because the first four made it visible.
+
+**1. The bill was thrown away at the only place it existed.**
+
+`model-client.ts` read `body.usage.total_tokens` and discarded `prompt_tokens`, `completion_tokens`
+and the cache split. Those three numbers are the entire explanation of a bill: a prompt token that
+hits the prefix cache costs a fiftieth of one that misses, and two runs with identical totals can
+differ by a factor of fifty. The 2026-11-09 scheduled run made **1,917 calls** in fourteen minutes
+and the artefact could not say what it cost, in which band, or how much of the prompt was cached.
+
+Fixed in four places, and the shape is the point:
+
+| piece | what it holds |
+| --- | --- |
+| `eval/manifests/model-rates.json` | the rate card, as data with two readers |
+| `packages/eval/src/cost.ts` | the arithmetic and the peak calendar, 38 self-checks |
+| `model-client.ts` | prompt / completion / cached / reasoning per reply, accumulated **per band** |
+| `sota-bird.ts` | one `[sota] usage:` line and a `usage` block in the artefact |
+
+Per band and not per run is load-bearing. A run that starts at 03:50 and ends at 04:20 was billed
+peak for ten minutes and off-peak after that; booking the whole run at the band in force when it
+*ended* is not an approximation, it is a different number, and it is the clock that decides it —
+which is exactly the defect class this repository spent a week removing. `run_split.py` reads the
+same card now instead of its own hardcoded copy, and a self-check asserts the driver's rates equal
+the file's, so the two readers cannot drift.
+
+**2. The lane asked for a model that no longer exists, and the workflow never set the variable.**
+
+`const MODEL = process.env['SOTA_MODEL'] ?? 'deepseek-chat'`. The BIRD job's env block sets fourteen
+`SOTA_*` variables and not that one, so every BIRD run asked for the retired id, was silently routed
+to the current model, and recorded the name it had asked for. `bin/lib.ts` held the same literal a
+third time. The τ² lane was corrected when this was found there; this one was not, which is how one
+defect survives a fix — **a default is a fact with an expiry date, and there were three places
+holding it.**
+
+**3. Thinking was never controlled and never counted.**
+
+Nothing in this lane sent a thinking switch or read `reasoning_tokens`, and the provider's default
+for the current model is to think. A reasoning token is billed as an output token — four times an
+uncached input token on this card — and is invisible in every field except a count nobody read. The
+lane now records the reasoning share and can send either switch; the default is left at the provider's
+so that the baseline under every published BIRD cell does not move silently. **The decision is left
+to a number, not to an assumption about which direction is better.**
+
+**4. The one recurring cost in the repository was scheduled inside a peak window.**
+
+`cron: '0 3 * * 1'` is 03:00 UTC Monday, squarely inside 01:00–04:00, where every rate is exactly
+double. A cron expression is a dispatch nobody re-reads: the cheapest run to schedule was the most
+expensive one to buy, once a week, whether or not anyone was watching. It now runs at 18:00 UTC,
+outside the card's windows and outside the provider's published discount boundary as well, so the
+choice survives a correction to either.
+
+**5. And then the instrument found the bug that mattered more than any of them.**
+
+The first offline reading of the schema-ordering ceiling — zero model calls — reported 443 of 1,534
+dev questions as "the gold table is not in the schema". That is not a plausible number, so it was
+checked, and the check found two defects in the parts everybody trusts:
+
+- **`schemaBlocks` parsed a backticked `CREATE TABLE` into zero blocks.** SQLite stores the statement
+  as written, and BIRD's dumps use three quoting conventions: double quotes, backticks, and none. The
+  identifier pattern knew two of them, so `toxicology`, `thrombosis_prediction` and `student_club`
+  parsed to nothing — and `annotateSchema` reads `blocks.length <= 1` as `single-table` and returns
+  the DDL unchanged. **The `linked-additive` arm was inert on those databases**, and its next dispatch
+  would have published a null about ordering from three databases in which no ordering ever happened.
+  An instrument that cannot fire reports its own absence as a result.
+- **The same shortcut read the foreign key's target table as a column of this one**, because it
+  returned every quoted name in the statement in order. It kept tables rather than dropping them, so
+  it never broke an answer; it did put another table's name in this table's anchor set.
+- **Names were compared case-sensitively.** SQLite resolves identifiers case-insensitively and BIRD
+  relies on it — `postHistory` is declared and `posthistory` is queried, in **298 of 1,534** dev
+  questions. Every one of those read as a harness defect invented by the measurement.
+
+All three are fixed with tests that fail first: a backticked statement, a foreign key that must not
+become a column, and a case that must resolve. `schemaBlocks`'s fix is a **behaviour change to two
+measured arms** — `linked` now prunes on databases where it previously did nothing, and `values`
+annotates schemas it previously left alone — so the −9.58pp regression is, if anything, understated,
+and both arms are re-measured rather than compared against their old readings.
+
+**The free measurement, and the number it exists to produce.**
+
+`schemaBlocks` fixed, the ceiling can be computed in seconds from gold queries:
+
+| signal | clean ordering | mean depth | precision | recall of gold |
+| --- | --- | --- | --- | --- |
+| lexical anchors (the shipped arm) | 42.89% | 49.63% | 49.98% | 87.38% |
+| retrieved gold tables, k=5 | 56.58% | 44.04% | 47.93% | 95.05% |
+| both, recall first | **56.65%** | **43.00%** | 39.27% | **99.66%** |
+
+`clean` is every gold table ahead of every non-gold one — the strongest thing an ordering-only
+mechanism can do. Paired on the same 1,534 questions, **+13.75pp [+10.30, +16.88], p < 1e-4**, for
+zero model calls. Three consequences, none of which were visible before:
+
+1. **Anchors are nearly redundant once recall is present**: 868 → 869 clean questions (+0.07pp) while
+   precision falls 8.7 points. The signal to ship is recall-first, and the anchor pass is a
+   fallback for the questions retrieval cannot serve.
+2. **The ceiling is 56.65%, not 100%.** More than four questions in ten cannot be ordered cleanly by
+   any table-set signal, because the gold query's tables are not determined by the question. An
+   ordering arm therefore cannot be expected to deliver the 13.23pp that `error_budget` prices
+   schema linking at; it can only reach the share of it that ordering touches.
+3. **The measurement is worth more than the dispatch it was meant to justify.** It cost nothing, and
+   it found a parser defect that had already been committed, tested and reviewed.
