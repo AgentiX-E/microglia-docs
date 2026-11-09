@@ -5371,3 +5371,33 @@ MemPoison prices that defence at one grade out of three: it removes L1 and leave
 mechanism is therefore the one that checks the candidate against **the trace it was distilled from**:
 a rule that its own episode contradicts is the only class that arrived with the evidence needed to reject
 it, and no competitor implementation does this.
+
+## The variable is gone, the reproduction is registered, and the denominator is measured (2026-11-09)
+
+Three loose ends from the matrix change, closed in the order they could bite.
+
+**The old variable was deleted, not left as a fallback.** `TAU_PLANTED_RULES` is now set by the matrix
+on every leg, so the repository variable had no reader left. Leaving it would have been a second source
+of truth that is *only* consulted when the registration declares nothing — which is exactly the case
+where nobody is looking. Deleting it makes "no declaration" resolve to "no plant" through the one path
+that exists.
+
+**What a reproduction may decide is now written down before the dispatch** (`prereg/R57-toxicity.md`,
+Amendment 3). The three arms were three dispatches on three commits; one dispatch on one clock is a
+reproduction, and a reproduction that is graded after the numbers arrive is not a reproduction. The
+threshold is the same 3.51pp drift the ordering is already graded against, and the rule for a
+disagreement is two numbers and a named instrument problem rather than the newer one.
+
+**The denominator every ablation divides by is now a verifier.** `eval/verifiers/use_rate.py` reads the
+SQL pair the harness already stores: **42.8–44.3% of questions are byte-identical with and without
+memory**, so the mechanism acts on 56–57% of the population and every per-task delta in this repository
+understates the per-use effect by 1.77×. Four artefacts, a 1.5pp window, no dispatch spent.
+
+| item | state |
+| --- | --- |
+| P0 | the arm is a registered value, one dispatch per matrix (`f2330f8`) | **done** |
+| P0 | `TAU_PLANTED_RULES` repository variable deleted — no second source of truth | **done** |
+| P0 | reproduction of the three arms on one clock, judged by Amendment 3 | **in flight** (`42568927112` is the adversarial leg of the *previous* schedule; the matrix dispatch follows it) |
+| P0 | `use_rate.py` — inert share 43%, per-change delta 1.77× the per-task column | **done**, `5356ae2` |
+| P1 | R62 — `TAU_DISTILL_SCOPE=all`, teaching population 14 → 57 | **next**, needs the variable set after R57's matrix clears |
+| P1 | write-time contradiction gate — replay a candidate rule against its own episode | registered after R62 |
