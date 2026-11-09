@@ -6079,3 +6079,41 @@ all and the one that costs seventeen minutes should not be among them.
 
 A third, smaller: the command refuses to run without `EVENT`. Its fallback branch was the one that turns
 a lane *on*, so an absence there failed toward spending rather than toward silence.
+
+### 34.84 A count whose name said one thing and whose value said another, and the payload that would have lied
+
+Two defects were built into R62 before it ran, and neither would have failed a test that was not written
+for it.
+
+**The first: `learning.edited` counted every teaching record.** The field predates the population
+question — it was written when every record *was* a repair, and it was read by five readbacks as "how
+many corrections the fold produced". Under `TAU_DISTILL_SCOPE=all` the same expression counts fifty-seven
+records, of which fourteen are repairs, so a widened store and a repaired store would report the same
+number under a name that says one of them. The repair is not to add a field: it is to make the name true
+(`edited` = repairs) and to read the population from `provenance`, where the two counts sit beside each
+other and neither can stand in for the other. Every existing readback keeps working because under the
+published scope the two definitions coincide.
+
+**The second: the payload `traceOf` would have built for a passing record.** Its contract took
+`expected: readonly string[]` and wrote `expected: []` when a task stated no calls — a shape that is
+*correct* for a rubric-only repair, because the reference trajectory really is empty, and *false* for a
+pass, where it says the reference does nothing. The prompt reads `expected` as "what the trajectory does
+instead", so the second reading turns every success into a divergence the model is then asked to explain.
+The fix has three parts and all three are asserted: `expected` becomes optional, `met: true` replaces it
+with `rubricMet`, and supplying **both** throws — because resolving that contradiction in a caller's
+favour means the model resolves it instead, by guessing.
+
+| state of the reference | payload | what it is for |
+| --- | --- | --- |
+| `expected: [...]` | `{attempt, expected, rubric?, omitted}` | a repair: the attempt beside what should have happened |
+| `expected: []` or absent, no `met` | `{attempt, expected: [], omitted}` | a rubric-only repair: the reference states no calls |
+| `met: true` | `{attempt, rubricMet: true, rubric?, omitted}` | a pass: the attempt **is** the reference |
+| `met: true` **and** `expected` | throws `RangeError` | a contradiction nobody may paper over |
+
+**The third, smaller, and the one most likely to be repeated.** The passing sentences were first written
+straight into `TRACE_RULES`, which is the array every trace dispatch reads. That would have changed the
+prompt of a lane that distils repairs alone — R61's arm — so the round's own comparison would have been
+between two prompts rather than two populations, and nothing in the artefact would have said so. The
+sentences are appended only when the caller declares the scope, and the test is a diff over the prompt's
+lines: exactly two added, none removed. A containment test would have passed through a reflow of the
+shared rules; a diff cannot.

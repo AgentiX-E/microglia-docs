@@ -5267,7 +5267,7 @@ failed.
 | P0 | R61 read, `ABANDONED` — the R60 triple was one store's property, not the corpus's | **done** |
 | P0 | R57 `far` arm — `TAU_PLANTED_RULES=far`, dispatch `42534241219`, `bird` resolved to false by `scope` without being asked | **in flight** |
 | P1 | R57 `near`, then `adversarial`, one dispatch each | after `far` reads |
-| P1 | R62 — the population: teach from all 57 trajectories, not the 14 that failed | next registration |
+| P1 | R62 — the population: teach from all 57 trajectories, not the 14 that failed | **built** (`9aa538ee`), dispatched after R57's three arms |
 | P2 | a larger sampled design for the +14.04pp; 540 tasks resolve 5pp, 1,498 resolve 3pp | blocked on a corpus with that many held-out tasks |
 
 **Why the population is now the only lever left standing.** Three rounds moved the ceiling (3 → 6), the

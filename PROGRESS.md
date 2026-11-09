@@ -12369,3 +12369,61 @@ predictions are >= 112 claims with >= 60 from passes, at least one group of thre
 delta that does not fall below the 3.51pp drift — and its own refutation is the outcome most likely to
 matter: if 112 claims still hold no triple, claims are bespoke to their task at every population this
 corpus can supply, and recurrence has to be counted on tasks rather than on claims.
+
+### 172.44 R62 built: one switch, one join, and three things that had to be right rather than added
+
+R62 is implemented and pushed (`9aa538ee`). The arm is not dispatched yet: R57's `far` arm is in flight,
+and the repository variables are global, so two graded runs at once would read one another's settings.
+
+**The switch.** `TAU_DISTILL_SCOPE=edited|all`, resolved by `resolveDistillScope` in
+`packages/eval/src/tau2-scope.ts`. Four cases, and the fourth is the one that matters: `correction` —
+the *unit*'s word — is refused rather than guessed. A misspelt scope measures the control and reports the
+control's numbers under a treatment's name, which is the exact failure `resolveDistillUnit` already
+refuses and `resolveDistillForm` accepts on purpose.
+
+**The record.** `Correction.provenance` is required (`edited` | `passed`), so a default cannot make every
+record a repair by omission. `learnableCorrections` takes the scope as its fourth argument; `teachingOf`
+now answers in three states and the order of its two tests is the design: an unscored task teaches
+nothing under either scope (a missing measurement is not a pass), a pass with no stated criteria teaches
+nothing (there is no rule to state), and only then does the scope decide.
+
+**Three things that had to be right rather than merely added.**
+
+- **`traceOf` refuses a payload carrying both `expected` and `rubricMet`.** A passing record has no
+  reference to differ from — the attempt *is* the reference — and a payload that says "here is what
+  should have happened instead" beside "nothing should have happened instead" asks the model to guess.
+  A guess inside a prompt is an undeclared measurement, and this round's central reading is whether the
+  distiller can say anything about a trajectory that succeeded.
+- **The prompt grows two sentences only when the scope declares them**, and the test is a *diff*: adding
+  the passing lines to the shared rules must change exactly those two lines and remove none, so a
+  repair-only dispatch still reads R61's prompt byte for byte. A prompt change that silently moves a
+  published arm's numbers is the kind of upgrade this repository refuses.
+- **`provenanceCensus` joins a claim to its record through `EvidenceRef.runId`**, and returns four
+  counts rather than a share. A percentage reads identically for a store of pure passes and for a store
+  whose every claim was taught by a repair *and* a pass — and the second is the collision the round
+  exists to find. An item citing a run the round never opened is counted separately, as
+  `itemsUnattributed`, because it means the join does not hold and every reading above it is void.
+
+| reading the artefact now carries | why it is a count and not a share |
+| --- | --- |
+| `provenance.edited` / `passed` | two populations, and a store that grew without changing character has to be distinguishable from one that changed character |
+| `provenance.tasksEdited` / `tasksPassed` | support is counted on tasks, so the denominator differs from the claim count by construction |
+| `provenance.itemsEditedOnly` / `itemsPassedOnly` / `itemsMixed` | the mixture is the finding; a share would round it away |
+| `provenance.itemsUnattributed` / `evidenceUnattributed` | an instrument failure, not a category: a claim from nowhere invalidates the split for the rest too |
+
+**`learning.edited` now means what its name says** — corrections from a repair. Under the published
+scope that is the same number every existing readback already reads; under the widened scope the
+population is read from `provenance` instead, which is the point of recording both.
+
+**Instrumentation.** 22 new cases on the modules (4 on the resolver, 7 on the census, 5 on the payload
+shape, 6 on the prompt), 1 end-to-end driver case that produces **one repair and two passes** from the
+stub benchmark and checks that every stored claim is attributed and at least one came from a pass, and
+**21 self-checks** in `eval/verifiers/r62_readback.py` — instrument first, then the four registered
+predictions and the four refutations. Repository: **176 files, 3,604 tests, 99.96 / 99.68 / 100 /
+99.96**; `tau2-scope.ts` and `tau2-provenance.ts` are **100 on all four dimensions**.
+
+**One ordering decision, written down so it is not re-litigated.** The queue is R57 `far` (in flight) →
+`near` → `adversarial` → R62. The R57 arms answer the question the project was founded on — does a
+planted distractor reach the store, and does the pack then do harm — and they must run at the published
+population, which is what an unset `TAU_DISTILL_SCOPE` gives. R62 is the population experiment and runs
+last of the four.
