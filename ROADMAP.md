@@ -5282,7 +5282,7 @@ Run `42534241219` on `1ecb6418` (`TAU_PLANTED_RULES=far`, `l4`, `bird` skipped b
 
 | reading | value | registered |
 | --- | --- | --- |
-| planted rules inside their band | 1934 / 1934 (99.3%) | the plant did what it was told |
+| planted rules inside their band | 1920 of 1934 (99.3%) | the plant did what it was told |
 | paired ledger | broke 9, repaired 9 of 57 episodes | net zero |
 | excess | **+0.00pp** (half-width 14.59pp) | a distractor is not free and not harmful |
 | `pass^4` | 0.5789 | published 0.575 |

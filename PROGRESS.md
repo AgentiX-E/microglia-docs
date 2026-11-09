@@ -12476,7 +12476,7 @@ concluded `failure` anyway.
 
 | reading | value | registered |
 | --- | --- | --- |
-| planted rules landing inside their band | 1934 / 1934 (99.3%) | the plant did what it was told |
+| planted rules landing inside their band | 1920 of 1934 (99.3%) | the plant did what it was told |
 | paired ledger | broke 9, repaired 9 of 57 episodes | net zero |
 | excess | **+0.00pp** (half-width 14.59pp) | a distractor is not free and not harmful |
 | `pass^4` | 0.5789 | published 0.575 |
