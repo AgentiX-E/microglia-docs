@@ -13298,5 +13298,8 @@ question — the number that was prose for twenty rounds is now a field.
 | eval binaries | 61 | **62** |
 | `pnpm check` | green | **green** |
 
-**Dispatched.** Nothing yet this round: R63's dispatch (`42645682353`, on `3da87985`) was the
-decoding fix being paid for, and it published. R64 is registered, amended and ready.
+**Dispatched.** R63's run (`42645682353`, on `3da87985`) paid for the decoding fix and published. R64
+went out twice: `42658429537` stopped after its first fold — `MG_E_BUDGET_EXCEEDED`, 2,293 calls spent
+against a forecast of 12,383 and a cap of 9,000 taken from a *warm* distillation cache — and
+`42661260446` is running with a cap of 14,000. The recipe costs one fold to learn; the forecast is the
+lane refusing to spend the other four on a number it knows is wrong.
