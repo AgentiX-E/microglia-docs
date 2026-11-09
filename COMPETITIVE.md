@@ -3461,3 +3461,68 @@ affected is the BIRD lane: the +0.72pp that made R37 the first non-negative memo
 change, and the −1.37pp that every earlier table quoted is −2.46pp per change. **Neither reading is
 wrong and the second is the one a mechanism comparison should use**, because a competitor's activation
 rate is not ours and dividing by tasks silently assumes it is.
+
+## What the top four actually do, and which parts are cheap to copy (2026-11-09)
+
+The gap that matters in this file is 78.49 against 57.63 on BIRD dev. It is worth stating plainly
+what fills it, because the answer is *not* "a better memory" and pretending otherwise would cost
+another month:
+
+| rank | system | dev EX | test EX | the mechanism it is known for |
+| --- | --- | --- | --- | --- |
+| 1 | AskData (AT&T) | 78.49 | 83.40 | automatic metadata extraction: database profiling summarised by an LLM into field descriptions, plus **SQL-first schema linking** |
+| 2 | GrainSQL (Purdue) | 77.77 | 82.95 | not published at time of reading; leaderboard entry only |
+| 3 | DataGallery (Huawei) | 78.10 | 82.39 | a **semantic layer / data manual** built offline, dynamic schema linking (99.1% column recall), multi-path generation with confidence-based selection |
+| 4 | SiriusAI-SQL (Tencent) | 77.77 | 82.28 | leaderboard entry only |
+| — | microglia, no memory | 57.63 | — | DDL + evidence, one candidate, lexical linker |
+
+**AskData's ablation is the single most useful number in this file.** On BIRD MiniDev, with no oracle
+hints (arXiv 2505.19988):
+
+| metadata supplied | accuracy |
+| --- | --- |
+| the benchmark's own human-written metadata | 59.6 |
+| **automatically profiled and LLM-summarised field descriptions** | **61.2** |
+| both fused | **63.2** |
+
+So *"replace the human metadata with profiled metadata"* is worth **+1.6pp** and *"add it to what you
+already have"* is worth **+3.6pp**. Everything above 63 is something else, and the paper says what:
+its second mechanism is a **SQL-first schema linker** — generate candidate SQL over several schema
+variants, collect the columns and literals the SQL actually references, match question literals to
+fields by locality-sensitive hashing over sampled values, and revise the SQL when a literal is
+unmatched. The stated reason is task alignment: *LLMs are reliable at writing SQL and unreliable at
+direct schema selection.*
+
+**What that means for us, component by component.**
+
+| component | AskData / DataGallery | microglia today | cost to copy |
+| --- | --- | --- | --- |
+| schema pruning | model-guided, SQL-first, 99.1% column recall reported | **lexical, deterministic** (`schema-link.ts`) — prunes on token overlap, declines when nothing matches | **+0 calls** for the first pass (reuse the SQL we already generate), +1 call per unmatched literal for the revision |
+| field semantics | profiled statistics → LLM summary, offline, per database | none — we ship raw DDL | one-time, ~1 call per column, cacheable, **amortised to zero** over a benchmark |
+| candidate generation | multi-path (few-shot, skeleton-first, self-reflection) + confidence selection | **one candidate** in the published arm; sample-N exists behind `SOTA_RESAMPLES` | **×3–5 calls** — directly opposed to the cost reduction this week is about |
+| external knowledge | evidence oracle used by every row above 67.41 | evidence used (`evidenceBlockOf`) | already paid |
+| the store itself | static data manual, rebuilt when the schema changes | **online, distillable, invalidatable, episode-traced** | already ours |
+
+**The ordering that follows is not the ranking.** Reading the table by "what does this cost per call"
+rather than by "what does this gain per paper" gives a different sequence, and it is the one that fits
+a budget:
+
+1. **SQL-first linking** (zero extra calls on the common path). We already generate a SQL. Every column
+   and literal in it is a free supervision signal about which part of the schema the question needed,
+   and the current lexical linker throws that signal away. This is also the one place where being
+   *behind* is cheap to fix: the mechanism is described, it needs no model training, and the first
+   pass costs nothing.
+2. **Profiled field descriptions, stored in microglia** (one-time, then amortised). This is where the
+   product claim and the literature point at the same thing from opposite ends: AskData builds a static
+   manual offline, and our whole thesis is that such knowledge should be *distilled, attributed and
+   retractable*. Copying their pipeline and putting its output through `admit`/`curate` would test the
+   thesis on the one workload where a static manual is the incumbent.
+3. **Multi-candidate selection** — last, and only for a submission run. It is worth a few points and it
+   multiplies the bill, and a repository that just spent a day finding out what its bill was should not
+   buy points with the thing it just learned to measure.
+
+**One honest bound.** AskData, DataGallery and the rest run on GPT-4o-class backbones with the oracle
+evidence. Part of the 21pp is the model, not the method, and no amount of schema linking closes a
+backbone gap. The rows above should be read as *"these components are worth this much on a fixed
+backbone"*, which is exactly why the ablation numbers — 61.2 against 59.6 — are the ones quoted rather
+than the leaderboard positions.

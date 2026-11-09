@@ -5401,3 +5401,31 @@ understates the per-use effect by 1.77×. Four artefacts, a 1.5pp window, no dis
 | P0 | `use_rate.py` — inert share 43%, per-change delta 1.77× the per-task column | **done**, `5356ae2` |
 | P1 | R62 — `TAU_DISTILL_SCOPE=all`, teaching population 14 → 57 | **next**, needs the variable set after R57's matrix clears |
 | P1 | write-time contradiction gate — replay a candidate rule against its own episode | registered after R62 |
+
+## Cheap first, then expensive: the order the leaderboard gap actually decomposes into (2026-11-09)
+
+The 21pp between our dev reading and the fourth-place row is not one thing, and the decomposition
+decides the order of the next four rounds. AskData's own ablation (arXiv 2505.19988, MiniDev, no hints)
+is the key: profiled metadata **61.2** against the benchmark's human metadata **59.6**, fused **63.2**.
+Metadata is worth 1.6–3.6pp. Everything above that is schema linking and candidate generation.
+
+| priority | item | extra calls | expected | why now |
+| --- | --- | --- | --- | --- |
+| **P0** | **SQL-first schema linking** — take the columns and literals out of the SQL we already generated, match question literals to fields by LSH over sampled values, revise once when a literal is unmatched | **0** on the common path, **1** per unmatched literal | the single largest published component; our linker is lexical and discards the signal | zero marginal cost, and the signal is already being paid for |
+| **P0** | re-dispatch R57 under Amendment 4, and read the cache-hit rate per arm | — | the ladder, on one clock, with a bill attached | the mechanism changed; the published numbers are re-labelled, not replaced |
+| **P1** | the retry that lowers its concurrency — a 429 must slow the run, not end it | 0 | turns a refused dispatch from a loss into a slower one | a 50-minute run died twice this week for want of it |
+| **P1** | profiled field descriptions **stored through `admit`/`curate`** — AskData's pipeline, with its output as memory rather than as a static manual | one-time, amortised to zero | +1.6pp standalone, more if the store can retire a wrong description (which a static manual cannot) | this is the thesis tested against its own incumbent |
+| **P2** | R62 population 14 → 57 (`TAU_DISTILL_SCOPE=all`) | dispatch only | teaching-set size | blocked on the account, not on code |
+| **P2** | multi-candidate generation and confidence selection | **×3–5** | a few points | last, and submission-only: a repository that just learned what its bill was should not buy points with it |
+| **P3** | `sota.ts` split, W8 dose curve, vitest 4 | 0 | maintenance | carried |
+
+**The three rules this week added, kept here because they will be needed again.**
+
+1. **A comparison between two arms is also a comparison between two bills.** The memory arm was paying
+   the cache-miss rate on work the reference arm paid the hit rate for, at a factor of fifty, and the
+   delta was published without it.
+2. **A configuration that names a model is a fact with an expiry date.** `deepseek-chat` was right when
+   the lane was built and is a silent redirect now, to a model that thinks by default and bills the
+   thinking at the output rate.
+3. **Nothing in the pipeline may have a cost that only the operator's time zone controls.** Peak is
+   double, and every long leg so far started inside it because the operator is awake in UTC+8.

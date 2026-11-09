@@ -6536,3 +6536,85 @@ that is a property of the driver rather than of the account.
 What this cost, stated plainly: two arms, fifty minutes, and the re-dispatch that R57's `adversarial`
 reading was waiting for. The artefact from `42568927112` therefore does not exist, and the three-arm
 readback still rests on the three separate dispatches Amendment 3 was written to replace.
+
+### 34.94 The bill had four causes and the lane could see none of them
+
+The question that started this audit was not "what is the score" but "why did a day of dispatches cost
+what it cost". Nothing in the repository could answer it, and that inability is the first finding:
+
+| the field | what it recorded | what it could not say |
+| --- | --- | --- |
+| `calls: { total, failed, scope }` | a **turn** count, or a distillation prompt count | tokens, or money |
+| `diagnostics.agent_turns` | how many turns ran | how long each one was |
+| `samples` | four gate verdicts | anything about cost |
+
+`calls: 0` appears on every arm in `eval/results/history/`. So the four causes below were found by
+reading the agent and the rate card, not by reading a dashboard — and each of them had been in place
+long enough that its cost had become the cost of doing business.
+
+**Cause 1: the memory arm destroyed its own prefix cache, on every turn.**
+
+`MicrogliaAgent.generate_next_message` called `recall()` with the current turn's message and appended
+the result as a *second system message*. The message sequence on turn N was therefore
+`[system(policy), system(pack_N), user, assistant, …]` and on turn N+1 `[system(policy), system(pack_{N+1}), …]`.
+
+| | reference arm | memory arm, before |
+| --- | --- | --- |
+| divergence point between consecutive calls | end of the conversation | the **second message** |
+| tokens billed at the miss rate per turn | the new turn only | everything after the pack |
+| tokens billed at the hit rate per turn | the entire history so far | the system policy only |
+
+DeepSeek bills a cache hit at a fiftieth of the miss rate ($0.006 vs $0.30 per million), and an
+episode's prompt is dominated by its own history. So the two arms of a paired comparison were being
+billed at rates that differ by an order of magnitude on identical work, and the difference grew with
+episode length — the longest episodes, which are the ones that matter for the hardest tasks, were the
+most distorted.
+
+**Cause 2: the treatment was not constant, and that is a science defect as much as a bill.**
+
+A pack recalled per turn is a different intervention per turn. Every arm this repository has published
+with a facade — including R57's three — measured a *sequence* of packs, and reported it as "the effect
+of the memory". The two causes are the same line of code seen from two sides: the fix (settle the pack
+on the first turn, hold it) removes the cost and the confound together.
+
+**Cause 3: `deepseek-chat` is retired, and it still resolved.**
+
+The name is scheduled for discontinuation and no longer in the provider's model list; while it
+resolves, it resolves to `deepseek-flash`, whose **thinking mode is on by default**. Reasoning tokens
+are billed at the output rate. τ²'s agent makes one tool call per turn, so a few hundred tokens of
+deliberation before `get_order_status` is paid on every turn of every episode and cannot change the
+reward. Two settings were therefore uncontrolled and unpriced: which model, and whether it thought.
+
+**Cause 4: the peak window is exactly double, and every long run started inside one.**
+
+| band | input, cache miss | input, cache hit | output |
+| --- | --- | --- | --- |
+| off-peak | $0.15 | $0.003 | $0.60 |
+| peak (UTC 01–04, 06–10, Mon–Fri) | **$0.30** | **$0.006** | **$1.20** |
+
+Reading the dispatch history against that table: `05:43`, `03:28`, `01:18`, `00:28` UTC — four
+consecutive R57 legs, all inside a peak window. The person dispatching is awake in UTC+8, and UTC
+01:00–10:00 is 09:00–18:00 there. **The lane's schedule was set by the operator's time zone, at a
+factor of two.**
+
+**What was done about each, and what is still open.**
+
+| cause | repair | where |
+| --- | --- | --- |
+| cache destroyed per turn | pack settled on the first turn and held; 10 self-check cases | `a276f80`, `selfcheck_agent.py` |
+| treatment not constant | same change, registered before the next dispatch | `prereg/R57` Amendment 4 |
+| retired model, thinking on | `deepseek/deepseek-flash` pinned, `thinking: disabled` on both arms, recorded in the artefact | `run_split.py`, `sota.yml` |
+| peak band | band and both bills reported by every run; scheduling is an operator action | `usage_stats()`, 12 self-check cases |
+| nothing counted | `litellm` success callback → tokens, cache-hit rate, cost in both bands | `run_split.py` |
+| **a retry that does not lower its concurrency** | **open** — `num_retries` retries the same refusal | see 34.93 |
+
+**Two rules this adds.**
+
+1. **A comparison between two arms is also a comparison between two bills, and the second one is
+   invisible unless it is counted.** A per-task delta from an arm that paid ten times the input cost of
+   its control is a valid delta and an invalid economic comparison, and every table in this repository
+   was quoting the first without being able to say the second.
+2. **A configuration that names a model is a fact with an expiry date.** `deepseek-chat` was correct
+   when the lane was built and is a silent redirect now. The default is pinned to a name that exists
+   on the date of the commit, the mode is requested explicitly, and the value is asserted in a
+   self-check that fails if the retired name returns as a default.

@@ -12974,3 +12974,48 @@ dispatched against a balance that caps concurrency at 5. Two conclusions follow,
 | `TAU_CONCURRENCY` default | 2 (task-level) | **1** |
 | arms lost to a rate limit | 0 | **2** (`42568927112`) |
 | open defects on the l4 lane | 0 | **1** — a retry that does not lower its concurrency |
+
+### 172.56 The bill had four causes, none of them visible from inside the lane
+
+A day of dispatches cost more than it should have, and the first finding is that **nothing in the
+repository could say why**: `calls: 0` on every arm in `eval/results/history/`, no token count, no
+cache-hit rate, no money. The four causes were found by reading the agent and the rate card (`AUDIT`
+34.94), and three of the four share one shape — **a number about an experiment that the experiment did
+not choose.**
+
+| # | cause | the number it moved | state |
+| --- | --- | --- | --- |
+| 1 | the pack was recalled **per turn**, so the second system message changed on every call and the prefix cache broke after it | memory-arm input billed at the **miss** rate on the whole history, against the reference arm's **hit** rate | **fixed** (`a276f80`) |
+| 2 | the same line made the treatment different every turn | every published facade arm measured a *sequence*, not a store | **fixed**, registered (`R57` Amendment 4) |
+| 3 | `deepseek-chat` is retired and silently routes to a model whose **thinking mode is on by default** | reasoning tokens at the output rate, every turn of every episode, for a tool call | **fixed** (pinned name + `thinking: disabled`, both arms) |
+| 4 | peak is exactly **double**, and every long leg started inside one | ×2 on everything | **measured**; scheduling is an operator action |
+| — | a retry that does not lower its concurrency | a refused run is four refusals and a dead job | **open** |
+
+The schedule detail is worth recording because it is not a code defect: peak is 01:00–04:00 and
+06:00–10:00 UTC, which is 09:00–18:00 in UTC+8, and the four consecutive R57 legs started at `05:43`,
+`03:28`, `01:18` and `00:28`. **The lane's schedule was set by the operator's time zone, at a factor
+of two.**
+
+**What the lane can now say about itself.** `usage_stats()` reports prompt, completion,
+`prompt_cache_hit_tokens`, the derived uncached share, the cache-hit rate, and the bill in both bands
+with the rate card and its date. Every phase prints it, and the driver writes one unconditional
+`[tau2] usage:` line beside the score. Two self-checks run without tau2 or litellm installed — 10
+cases for the agent's recall clock, 12 for the arithmetic and the calendar — because a test that needs
+a 400MB benchmark to check a loop counter does not run in `pnpm check`.
+
+| reading | before | after |
+| --- | --- | --- |
+| tests | 3653 | 3653 |
+| files | 179 | 179 |
+| coverage, four dimensions | 100 | **100** |
+| self-checks in `pnpm eval:verifiers` | 15 | **17** |
+| token accounting | none | per phase, per call, with band and cost |
+| recalls per episode | one per turn | **one** |
+
+**What it costs to copy the leaderboard, and what it costs to keep the bill down.** Read in the same
+session (`COMPETITIVE`, 2026-11-09): AskData's own ablation puts profiled metadata at **+1.6pp** over
+human metadata, +3.6pp fused — everything above 63 on MiniDev is *SQL-first schema linking* and
+candidate generation, not metadata. SQL-first linking costs **zero extra calls** on the common path,
+because the SQL is already generated and its columns and literals are free supervision. Multi-candidate
+selection costs **×3–5** and is therefore last, submitted-only. **The ordering that saves money and the
+ordering that raises the score happen to agree for the first two items and disagree only on the third.**
