@@ -13080,3 +13080,41 @@ worth +33.14pp and every product-side arm is worth under one point.** That is wh
 | arms read in aggregate | 0 of 63 | **63** |
 | R57 effects quotable as findings | 3 | **0** |
 | `l4` dispatch guard | none | **refused inside a peak window** |
+
+### 172.58 The additive linker exists, and it is the arm the regression asked for
+
+`linked` is the largest effect in this repository and its sign is wrong: −9.58pp at p=6.4e-21, 202
+questions broken against 55 repaired, with the mechanism visible in the same file — errors where a gold
+table is absent go 107 → 291, and 44 predictions lose their `FROM`. The failure is structural rather
+than a tuning error: a pruner decides before the SQL exists, so when it is wrong the model cannot ask
+for what it cannot see, and no threshold changes that. The guard the function already carries (decline
+when nothing matches, decline when the key closure covers two thirds of the database) fires on the easy
+cases and leaves BIRD's thirteen-table dumps room to prune a bridge table two joins away.
+
+`annotateSchema` is the variant that cannot reproduce that failure. It keeps every table, moves the
+named ones to the front, and prefixes two lines: how many tables the question names, and that none was
+removed. The only things it adds are recoverable by a reader that ignores them, which is what makes it
+free beta on the literature's claim — a model is more reliable at writing SQL than at selecting tables,
+so anything that draws attention without removing options is upside with no downside.
+
+| item | state |
+| --- | --- |
+| `annotateSchema` in `packages/sql/src/schema-link.ts` | **done**, six cases |
+| the `linked-additive` arm and its channel floor | **done** — a run where the header never appears is refused, not published as a null |
+| `ChannelKind` as a named union, `CHANNEL_FLOORS` as a `Record` over it | **done** — "add a channel without a floor" is now a compile error, and four copies of `'values' \| 'linked'` that had to be edited together are gone |
+| measured delta | **pending the next BIRD dispatch** |
+
+**What the arm can and cannot conclude.** It cannot conclude anything about pruning — that question is
+closed. It can say whether ordering and labelling are worth anything, and a null result is the useful
+one: it would mean the lever is not attention but verification, and the next variant generates a
+candidate SQL first and repairs an identifier that does not resolve instead of hiding the table it
+lived in. That is AskData's mechanism, and this repository now has the measurement that says why it
+matters — theirs never removes a table either.
+
+| reading | before | after |
+| --- | --- | --- |
+| tests | 3654 | **3660** |
+| files | 179 | 179 |
+| coverage, four dimensions | 100 | **100** |
+| arms in the union | 73 | **74** |
+| `pnpm check` | green | **green** |
