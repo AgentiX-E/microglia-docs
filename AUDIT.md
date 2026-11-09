@@ -7057,3 +7057,73 @@ propose building a `self-correct` arm; had it been committed unread, the next ro
 duplicate of a mechanism that has been in `OPTIONAL_ARMS` for twenty rounds, and the duplicate would
 have had a different prompt and therefore a different number. **A claim about what has not been
 measured is a claim about the code, and it has to be checked against the code.**
+
+### 35.01 The answer budget was 700 tokens and the model started spending it before writing
+
+The first *valid* R63 run failed its own validity gate, and that is the most useful thing that has
+happened to this lane in three rounds.
+
+```
+[sota] n=350 without=30.29% with=32.57% delta=2.29pp ci=[-1.43, 6.00] p=0.2800 calls=1989
+[sota] arm linked-additive: 30.29%
+[sota] arm recall-order: 30.00%
+[sota] recall-order: clean=157/350 (44.86%) retrieved=100.00% k=5
+[sota] usage: prompt=2,030,685 (cached=1,349,893, 66.5%) completion=1,423,622 bill=$0.9603
+       reasoning=1354007
+[sota] failed: MG_E_CONFIG: the benchmark ran but cannot support a claim
+       (V3-parse-rate: 51.43%; V32-fold-learning-intact: 612 distillation failure(s) (43.7%))
+```
+
+**1,354,007 reasoning tokens out of 1,423,622 completion tokens.** Across 1,989 replies that is 681
+tokens of thinking per reply against a `max_tokens` of 700, which left about nineteen for a SQL
+statement. Half the replies were truncated before they contained one.
+
+**The comparison that makes it a regression rather than a discovery.**
+
+| dispatch | model asked for | `V3-parse-rate` | `none` accuracy | reasoning tokens |
+| --- | --- | --- | --- | --- |
+| 2026-11-09, scheduled | `deepseek-chat` (retired, routed) | **100.00%** | **53.14%** | not recorded |
+| 2026-11-09, R63 | `deepseek-flash` | **51.43%** | **30.29%** | 1,354,007 (95%) |
+
+Same split, same 350 questions, same lane, same four arms, comparable call counts (1,917 against
+1,989). The only thing that changed between them is round 62's correction of the model name — a change
+made so the artefact would stop recording a model that did not answer.
+
+**What that correction actually was.** `deepseek-chat` is a retired alias the endpoint keeps answering
+by routing it somewhere else. The route it chose did not think. `deepseek-flash` does, by default.
+So a correction to a *string* silently changed the *decoding regime*, and the lane's 700-token budget
+— correct for as long as no model thought — became an answer budget of nineteen tokens.
+
+**Why nothing caught it for a round.** `thinking` was never sent and never recorded, so every artefact
+before round 62 describes a run whose reasoning share is unknown, and every artefact after it describes
+one where the share is 95%. A table that mixes them is a table of two regimes under one heading. The
+only reason the second run is interpretable at all is that round 62 added the `max_completion_tokens`
+and reasoning fields **before** this happened rather than after.
+
+**What the gate did.** `V3-parse-rate` requires 95% and the run produced 51.43%, so the lane refused to
+publish and the workflow's publish step found nothing. That is the second time this round that a
+refusal cost a run and saved a claim; the first was the budget cap. Both are the same design principle
+working: *a lane that cannot support a claim must not produce an artefact that looks like one.*
+
+**The fix, and why `off` is not a preference.**
+
+`packages/eval/src/decoding.ts` holds the measured quantity. `THINKING_HEADROOM` is 1,200 — the 681
+observed, rounded up with room for the tail — and `answerBudget(answerTokens, thinking)` adds it, so a
+thinking run asks for the answer it wants *plus* the room to think rather than trading one for the
+other. The lane's default is now `off`, which is the regime every published BIRD cell in this
+repository was produced in. The comment that said the opposite — *"every published BIRD cell in this
+repository was produced with thinking on"* — was a fact nobody had measured, sitting directly above the
+switch that measured it.
+
+**And a second defect from the same run, in the verifier rather than the lane.**
+`ordering.py` compared this run's `cleanShare` (44.86% on minidev) against the dev prior (56.65%) and
+would have called it divergent, while the run's precision (39.98% against 39.27%) and gold recall
+(99.48% against 99.66%) said the mechanism was identical. A clean-ordering share is a property of the
+question set as much as of the signal, so the verifier now returns `INCOMPARABLE` across splits and
+`prereg/R63-recall-order.md` carries an amendment recording that its second criterion was written
+against the wrong population.
+
+**The general form.** A default that names a *thing* can change a *behaviour*, and the artefact has to
+record the behaviour. `model` was recorded and `thinking` was not, so for one round the repository had
+a column of numbers it could not attribute — and the only reason it is now attributable is that the
+third defect (parse rate) was loud where the first two were silent.
