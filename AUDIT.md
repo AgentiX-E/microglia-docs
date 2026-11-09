@@ -6117,3 +6117,28 @@ between two prompts rather than two populations, and nothing in the artefact wou
 sentences are appended only when the caller declares the scope, and the test is a diff over the prompt's
 lines: exactly two added, none removed. A containment test would have passed through a reflow of the
 shared rules; a diff cannot.
+
+### 34.85 The gate that never read the other workflow
+
+`ci.yml` never parsed `.github/workflows/sota.yml`. That is not a missing check on one file; it is the
+reason a twenty-sixth `workflow_dispatch` input could be pushed to a file holding twenty-five and be
+greeted with a green build. GitHub's own limit is a hard cap and the rejection is total — the file does
+not parse, so no dispatch of *any* workflow in the repository can start — but the rejection appears as a
+run named after the file path rather than as a check on the push, so nothing upstream of a human reading
+the run list noticed.
+
+| reading | before | after |
+| --- | --- | --- |
+| does `sota.yml` parse | nobody checked | `scripts/check-workflows.py`, in `pnpm check` |
+| dispatch inputs | unbounded by us | refused above twenty-five, with the consequence in the message |
+| a duplicate input key | invisible (YAML keeps the last) | counted literally and refused |
+| a job without a runner | invisible | refused |
+| a runner image without PyYAML | — | the cap and the duplicate count still run, and the output says the files were counted rather than parsed |
+
+Two things about the checker are worth keeping. The first is that **its self-test found two bugs in it
+before it shipped**: the counter assumed eight-space indentation where `sota.yml` uses six, so it
+counted zero inputs on the broken file and called it clean, and it counted into a dictionary, which is
+exactly what a duplicate collapses into. A checker that has only ever been shown well-formed input
+agrees with whatever it assumes. The second is the degraded path: a check that refuses to run because a
+Python library is absent trades a silent failure for a loud wrong one, so the two rules that need no
+parser run regardless and the absence is printed rather than swallowed.

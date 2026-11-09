@@ -3264,3 +3264,65 @@ tasks produce a correction at all, so there are 12 failure episodes to mine and 
 argument is bounded by that. Second, the claim unit: three to four claims per correction against the
 published five per learning task. Third, the end-to-end average, which stays `UNRESOLVED` at 57 pairs
 and needs ~400 for a three-point effect on the rate endpoint.
+
+## The board moved under every row, and one paper says why (2026-11-09)
+
+Two readings from outside this repository change how the BIRD column below should be read, and neither
+is a re-ranking of our own work.
+
+**The board as of 29 October 2026**, in the order it is published:
+
+| rank | system | test EX | dev EX |
+| --- | --- | --- | --- |
+| 1 | human (data engineers and students) | **92.96** | — |
+| 2 | AskData (AT&T CDO / DSAIR) | **83.40** | 78.49 |
+| 3 | GrainSQL | 82.95 | 77.77 |
+| 4 | DataGallery-Text2SQL (Huawei) | 82.39 | 78.10 |
+| 5 | SiriusAI-SQL | 82.28 | 77.77 |
+| 6 | Agentar-Scale-SQL (Ant Group) | 81.67 | 74.90 |
+| — | **microglia, no memory (dev, minidev)** | — | **57.63** |
+| — | **microglia, memory arm (dev, minidev)** | — | **56.26** |
+
+The top of the board has moved **under two points in thirteen months** (Agentar 81.67 in September
+2025, AskData 83.40 in October 2026), which is the first time this table has been able to say that the
+frontier is stalling rather than accelerating. It also means the 25.77pp between our row and the first
+place is not a gap that a better prompt closes: it is the generator-plus-candidate-pool gap, and
+XiYan's own ablation prices its two halves at −2.91 (fine-tuned generator) and −2.74 (selection model),
+neither of which this harness buys.
+
+**The paper that makes the whole column a distribution rather than a number.** *Pervasive Annotation
+Errors Break Text-to-SQL Benchmarks and Leaderboards* (Jin, Choi, Zhu and Kang, January 2026) had
+experts re-review the gold annotations: **52.8% of BIRD Mini-Dev** and **62.8% of Spider 2.0-Snow** were
+wrong. Re-scoring sixteen open-source agents on a corrected BIRD Dev subset moved relative performance
+by **−7% to +31%** and shifted rankings by **up to nine places**. BIRD shipped a Mini-Dev update with
+corrected annotations on **28 October 2026**.
+
+Three consequences, in the order they affect us:
+
+1. **Our corpus is pinned, and that is now a validity property rather than an engineering habit.**
+   `eval/manifests/bird-minidev.json` names one archive by `sha256`
+   (`cc48ba16…c13b92f`, 800,943,648 bytes, `v1-2024-06-20`), so the 28 October 2026 correction did not
+   silently move any number this repository has published. A run on the corrected corpus would need a
+   manifest change, which is a recorded act rather than a floating `resolve/main`.
+   **But one path in the lane is not pinned**: when the archive is absent and `BIRD_DIR` points at a
+   directory without the question file, `loadDataset` falls back to two floating URLs
+   (`bird-critic-1.0-sqlite/resolve/main`, `bird_mini_dev/resolve/main`). That path is not taken on CI,
+   and it is the one place where a published number could be measured on a corpus nobody can name. It
+   is the next change to this lane: digest the parsed questions into the artefact and record whether
+   the source was the pinned archive or a URL.
+2. **A three-point difference on 350 questions is not a difference.** If more than half the gold answers
+   are contested, an evaluation slice of this size cannot resolve the 2–4pp that separates ranks 3 to 6,
+   and it certainly cannot resolve our own 1.37pp. This is the same conclusion R59's resolution column
+   reached from the sample side, now with an independent source.
+3. **Evidence hints are the conditioning nobody states.** Every published row above 67.41% test EX uses
+   BIRD's per-question evidence, and 67.41% is the best row without it. Our lane's prompts carry the
+   evidence block (`EVIDENCE_LABEL`, and the `drops-evidence` control arm measures what happens when
+   they do not), so our rows sit in the conditioned band — the comparison is like-for-like on that axis,
+   and it should be stated every time the number is.
+
+**What this changes about our own claims, none of it a retreat.** The BIRD row stays where it is: 57.63
+dev EX without memory, 56.26 with, both measured on a pinned corpus with evidence. What changes is the
+resolution language — the memory arm's −1.37pp is inside the annotation noise of the slice, exactly as
+R61's +14.04pp τ² measurement is inside its own confidence interval at 57 pairs. Two independent
+evaluations, one conclusion: **this lane's remaining lever is not the size of the effect but the
+precision of the instrument**, and that is why the next four dispatches are instrument rounds.

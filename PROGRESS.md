@@ -12427,3 +12427,43 @@ predictions and the four refutations. Repository: **176 files, 3,604 tests, 99.9
 planted distractor reach the store, and does the pack then do harm — and they must run at the published
 population, which is what an unset `TAU_DISTILL_SCOPE` gives. R62 is the population experiment and runs
 last of the four.
+
+### 172.45 A cap of twenty-five, and the gate that did not exist
+
+Two commits after R62 went green, I tried to add two `workflow_dispatch` inputs so four independent arms
+could share the wall clock. GitHub refused to parse the file —
+
+> Invalid Argument - failed to parse workflow: you may only define up to 25 `inputs` for a
+> `workflow_dispatch` event
+
+— because `sota.yml` already had exactly twenty-five. **The consequence was total and CI was green**:
+the push produced a run named after the file path and nothing else, no dispatch of any workflow in the
+repository could start, and `ci.yml` succeeded on the same commit because it never looked at the other
+workflow files. That is the failure mode this project spends its time on — a gate that reports success
+because it is not looking.
+
+| step | what it shows |
+| --- | --- |
+| the push | a run named `.github/workflows/sota.yml`, conclusion `failure`, no jobs |
+| `ci.yml` on the same sha | **success** |
+| the next dispatch attempt | `422`, "failed to parse workflow" |
+| after the revert | workflow state `active`, dispatch accepted |
+
+The revert shipped first (`1441fd4c`) because an unparseable workflow is every gate at once. Then the
+gate: `scripts/check-workflows.py`, wired into `pnpm check`, asserts that every workflow parses, declares
+at most twenty-five dispatch inputs, declares no input twice, and names a runner on every job. Its own
+self-test found **two defects in it before it shipped** — the counter assumed eight-space indentation
+while `sota.yml` writes six (so it counted zero inputs on the very file it exists for), and it counted
+into a dictionary, which cannot hold the duplicate it was looking for. The indentation is derived from
+the `inputs:` line now, the declarations are a list, and there is a case for each.
+
+PyYAML is optional: the cap and the duplicate count are counts over literal text, so an image without
+the library loses the validity check and nothing else, and says so on its own line rather than turning
+the build red for a missing import.
+
+**What this costs, stated plainly.** The four arms stay serial. `TAU_PLANTED_RULES` and
+`TAU_DISTILL_SCOPE` are repository variables, a variable is global, and there is no dispatch input left
+to carry an override. The correct fix is not another input — it is the rule `lane-scope` already
+encodes: **the registration decides the experiment**, so the arm belongs in `prereg/*.md`'s frontmatter
+and reaches the L4 job through a job output. That is the next change to the workflow, and it is written
+down here rather than improvised at the end of a queue.
