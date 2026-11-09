@@ -12759,3 +12759,79 @@ the tool whose job is to catch that).
 **`adversarial` is in flight** (`42556573088` on `e55d1028`, `TAU_PLANTED_RULES=adversarial`), on the
 commit that carries `pairGates` — the arm most likely to produce a significant `HARM` is the one for
 which that gate most needed to stop blocking.
+
+### 172.52 R57 read in full: the ladder has two rungs, and the first one is flat
+
+Three arms, all on the published population, all on one 114-task retail split with 57 paired tasks.
+`far` and `near` were read earlier (`42534241219`, `42544865267`); `adversarial` ran as
+`42556573088` on `e55d1028`.
+
+| arm | planted / served | in band | broke | repaired | excess | `pass^4` delta |
+| --- | --- | --- | --- | --- | --- | --- |
+| `far` (shares nothing) | 1934 / 1934 | 1920 (99.3%) | 9 | 9 | **+0.00pp** | +0.00 (half-width 14.59) |
+| `near` (shares two terms) | 1972 / 1972 | 699 (35.4%) | 5 | 7 | **−3.51pp** | +3.51 (half-width 11.91) |
+| `adversarial` (contradicts) | 1910 / 1910 | 712 (37.3%) | 11 | 7 | **+7.02pp** | −7.02 (half-width 14.59) |
+
+**What the registration predicted, and what it got.**
+
+| prediction | registered | measured | verdict |
+| --- | --- | --- | --- |
+| one rule in every served request | all three arms | 1934/1934, 1972/1972, 1910/1910 | pass |
+| the two polarities sit at the same level | within 10pp | **1.8pp apart** | pass |
+| `far` harmless beyond drift | not worse than 3.51pp | +0.00pp | pass |
+| `near` worse than `far` | beyond 3.51pp | **−3.51pp, i.e. better** | **fail** |
+| `adversarial` worse than `near` | beyond 3.51pp | **+10.53pp** | pass |
+| refutation: `far` ≈ `near` | fires if within drift | **fired** | refutation |
+
+**The finding, stated as the registration allows it to be stated.** Proximity of vocabulary does not
+cost accuracy at this sample: `near` broke five episodes and repaired seven, and its excess sits
+inside the drift a control arm moves on its own. Contradictory content does cost accuracy:
+`adversarial` broke eleven and repaired seven, ten and a half points worse than `near`, well outside
+the same drift. The dose ladder is therefore **two rungs, not three** — 0 and +7pp — and the variable
+that separates them is not distance but **whether the injected statement is contradicted by the
+correct behaviour**.
+
+That is the answer to the question R57 was dispatched to ask, and it is the opposite of the design
+the negative-effect literature is usually read as supporting. Retrieval-distance tuning cannot reach
+it: the two polarities land in the band at the *same* rate (35.4% vs 37.3%), because the band share is
+a property of the request texts rather than of the rule, and the arm that hurt is the one whose rules
+*matched the right questions and said the wrong thing*. The defence is write-side (admission,
+contradiction resolution, credit assignment), which is where R55–R56 put it.
+
+**The readback said `ABANDONED`, and the reason is a defect in the readback.** Two graded lines
+contradicted each other on one pair of numbers: `near is worse than far` passed at −3.51pp against
++0.00pp while the refutation fired on the same two values, "indistinguishable, inside a drift of
+3.51pp". The prediction read `near_pp - far_pp > -drift`, which is "near is not much *better* than
+far" — it passes when near is worse, equal, or better by up to the drift. A predicted order needs the
+gap in the direction the order names, so it now reads `near_pp - far_pp > drift` (`4a638b3`). The
+three-arm reading changes from "one prediction failed" to "one prediction failed and the ladder's
+first rung does not exist", which is the sentence the data supports.
+
+**`adversarial`'s job was red, and not for the arm's reason.** The pair measured HARM, which for a
+distractor is the prediction being confirmed, and `l4-paired` no longer blocks on it (`4083945`). The
+block was `V5-resolution`: the artefact had published `the memory costs accuracy: -7.02pp` — the
+sentence `HARM` carries — at a sample whose minimum detectable difference is 20.86pp. The gate was
+right and the artefact was wrong: on a planted arm the loss is the distractor's, and attributing it to
+the memory is a false sentence in a machine-readable file. A planted pair now reports `claim: null`
+and the state stays (`fc28a34`), so `V5` reads `claims no direction`, which is true. `adversarial` was
+re-dispatched on that commit; the numbers above are from the run before it and the re-run is a
+reproduction rather than a new measurement.
+
+**And coverage reached 100 on all four dimensions, reproducibly.** The campaign is in 172.49; this
+stretch closed the last twenty branches, nine by tests and nine by removing fallbacks no input could
+reach (`present()` in the kernel states the invariant and throws), and two by writing a guarantee as a
+property of the writer rather than as a branch (`curate`'s tie-break is the sort's stability over a
+bucket that already arrives in id order; `journal` appends the newline per row rather than per file).
+The last one, `sql-guard`'s send callback, read 100% on one full run and 99.98% on the next, on the
+same suite — it is reached when `close()` races the write, and the existing case waited 150 ms first.
+A case that closes with no delay at all makes it deterministic, and three consecutive runs report no
+gap (`d5b6ee6`).
+
+| reading | before this stretch | after |
+| --- | --- | --- |
+| statements | 99.97 | **100** |
+| branches | 99.77 | **100** |
+| functions | 100 | **100** |
+| lines | 99.97 | **100** |
+| tests | 3627 | **3647** |
+| files | 178 | **179** |

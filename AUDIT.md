@@ -6323,3 +6323,69 @@ still passed, because the far arm's passing line reads `far: the band landed on 
 requests`. A fragment matched a line about a different arm, in a test whose subject was the arm that no
 longer had a line at all. The two cases that replace it name the gap in percentage points and the exact
 reported-share sentence, so the next change to this readback fails them instead of sliding past.
+
+### 34.90 Three ways a check can be present and wrong
+
+One day produced three, and they are different failures of the same instinct: writing something that
+*looks* like a check and reading its green as agreement.
+
+**A prediction that could not fail.** `r57_readback.py` graded the ladder's first rung as
+
+```python
+near_pp - far_pp > -CONTROL_DRIFT_PP
+```
+
+Positive is harmful in this unit, so "near is worse than far" means `near_pp > far_pp`. The written
+predicate is `near_pp > far_pp - 3.51`, which is true when near is worse, true when near is equal, and
+true when near is better by **any** margin at all — the only reading it rejects is "near is more than
+3.51pp better than far", which is the one reading a harm prediction is never asked about. It is the
+negation of the claim on its own label. The measured values were near −3.51pp and far +0.00pp — the pair
+3.51pp *better*, inside the drift — and the account printed both
+
+> `PASS  near is worse than far  (-3.51pp against +0.00pp)`
+
+and, four lines below,
+
+> `FIRED far and near are indistinguishable  (the two arms differ by -3.51pp, inside a drift of 3.51pp)`
+
+Two graded statements about one pair of numbers, disagreeing, in a report whose entire job is to be the
+account of one experiment. The repair is the direction and the unit: a predicted order is graded as a gap
+in that order, against the drift that decides whether a gap exists.
+
+The general shape: **a threshold with the wrong sign is indistinguishable from a threshold by reading
+it.** Every one of these predicates should be read as "which readings does this reject", and a predicate
+that rejects only readings nobody claimed is not a prediction. This class is not exotic — it is the
+reason `--self-test` fixtures assert the *rejecting* direction, and the fixture that would have caught it
+is "near better than far by more than the drift", which the file did not have.
+
+**A claim that misattributes its own loss.** R57's `adversarial` arm measures HARM, which is its
+registered prediction, and the pair artefact published the sentence `HARM` carries: `the memory costs
+accuracy: -7.02pp`. On an arm whose rules were planted to be wrong, that sentence is false: the memory
+did not cost 7pp, the distractor did. The protocol's `V5-resolution` blocked on it — correctly, since
+−7.02pp is finer than the 20.86pp the sample can resolve — and the tempting repair was to exempt the gate
+for calibration arms, as `l4-paired` had been exempted one commit earlier.
+
+That would have been the wrong repair, and the distinction matters. `l4-paired` states the *treatment's*
+harm hypothesis, so on an arm whose hypothesis is the opposite it grades the wrong claim. `V5` states a
+property of the *artefact*: does this file publish a direction its sample cannot resolve. It does. The
+file was wrong, not the gate. Suppressing the claim makes the artefact true and leaves the gate doing its
+job; suppressing the gate would have left a false sentence standing in a machine-readable file that the
+next reader would quote.
+
+**A branch that is covered one run in three.** The send-failure path in `sql-guard`'s `#ask` reported
+100% on a full run and 99.98% on the next, same suite, same commit. It is reached when `close()` lands
+between the child's readiness signal and the write, and the existing case waited 150 ms before closing —
+long enough that the message had already left. **Intermittent coverage is not coverage**: a dimension
+that reaches its number by winning a race cannot certify a change, because the next push may report 99.98
+and nobody can say which reading is true. The repair is a case that constructs the race deliberately —
+close with no delay at all, while the child is still booting — and three consecutive runs that agree.
+
+| the check | what it looked like | what it was |
+| --- | --- | --- |
+| `near_pp - far_pp > -drift` | a prediction about the ladder | a predicate that passes unless the opposite happens |
+| `claim: the memory costs accuracy` on a planted arm | a finding | an attribution to the wrong thing |
+| 100% branch coverage from a race | a gate met | a gate met sometimes |
+
+The rule that covers all three, and it is the same rule: **a check has to be able to say no to the thing
+it is checking.** Write down the reading it rejects; if that reading is one nobody claimed, the check is
+not checking anything. If it rejects only sometimes, it is a coin.
