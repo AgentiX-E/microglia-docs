@@ -12934,3 +12934,43 @@ attribution — and the reason the per-change column is the one a cross-system c
 | tests | 3653 | 3653 (python verifier, self-test only) |
 | BIRD memory effect, per task | +0.72pp (R37) | +0.72pp |
 | BIRD memory effect, per change | not measured | **+1.27pp** |
+
+### 172.55 The adversarial re-run died on a rate limit, and the limit was in the wrong unit
+
+`42568927112` ran fifty minutes and failed both legs at 06:36, one minute apart:
+
+```
+RateLimitError: your current concurrency is 6, which exceeds your concurrency limit of 5
+               based on your remaining balance
+```
+
+The lane was passing `TAU_CONCURRENCY=2`. Both numbers are honest and they count different things:
+`max_concurrency` is tau2's **task** count, the provider's is a **request** count, and an episode holds
+an agent, a user-simulator and an evaluator call at once — so two tasks are five or six requests. The
+limit is also a function of the account balance, which is why a value that had been in place since the
+lane was built was refused for the first time on the longest run it has ever attempted.
+
+| item | state |
+| --- | --- |
+| the unit confusion, expressed at the value (`fc23de1`) | **fixed**, task-level 1 |
+| `litellm`'s `num_retries=4` retrying at the same concurrency | **open** — four attempts at one refusal, then `run_tasks` dies with all 228 episodes |
+| R57 `adversarial` clean artefact | **blocked** on the account, not on the code |
+| the three-arm readback | unchanged — it still rests on the three separate dispatches |
+| DeepSeek account | **needs topping up**; concurrency falls with balance and every l4 run is long |
+
+**What this means for the plan rather than for the paper.** Nothing about R57's numbers changes — the
+three reads stand and Amendment 3's reproduction is still the right next dispatch, it simply cannot be
+dispatched against a balance that caps concurrency at 5. Two conclusions follow, and they are ordered:
+
+1. **No further l4 dispatch until the account is topped up.** A 6-hour matrix that dies at minute 50
+   costs three legs and returns nothing, and it does that by design rather than by accident: the
+   retry does not lower what it is retrying at.
+2. **The work that does not need the provider goes first.** `use_rate.py` (172.54) and the coverage and
+   documentation work needed no calls at all; R63's contradiction gate is implementation plus tests
+   before it is a dispatch, and it can be built while the account is sorted out.
+
+| reading | before | after |
+| --- | --- | --- |
+| `TAU_CONCURRENCY` default | 2 (task-level) | **1** |
+| arms lost to a rate limit | 0 | **2** (`42568927112`) |
+| open defects on the l4 lane | 0 | **1** — a retry that does not lower its concurrency |

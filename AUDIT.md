@@ -6487,3 +6487,52 @@ sampled differently). `inert_share` is therefore a lower bound on not-using, `ef
 bound on using, and the per-change column inherits the same asymmetry — it is an upper bound on the
 per-use effect, not an estimate of it. Every number in the table above is quotable only with that
 sentence attached.
+
+### 34.93 Two quantities called concurrency, and a retry that retried nothing
+
+Both legs of `42568927112` failed at 06:36, one minute apart, after fifty minutes of work:
+
+```
+litellm.RateLimitError: DeepSeekException - {"error":{"message":"Too many requests. Your current
+concurrency is 6, which exceeds your concurrency limit of 5 based on your remaining balance..."}}
+```
+
+The configured value was **2**. The error was not wrong and neither was the configuration; they were
+counting different things.
+
+| quantity | unit | who counts it | value |
+| --- | --- | --- | --- |
+| `max_concurrency` | **tasks** in flight | tau2's `run_tasks` | 2 |
+| the provider's limit | **requests** in flight | DeepSeek, from the account balance | 5 |
+
+One episode holds an agent call, a user-simulator call and an evaluator call at once, so two tasks
+arrive as five or six requests. The lane had passed 2 since it was built and had never been refused,
+because the provider's limit is a function of the remaining balance: it sits at 8 or 16 for a funded
+account and falls to 5 when the balance does. **A limit that moves with the balance fails precisely
+when a run has spent enough to be worth protecting**, which is the first time in this repository that a
+unit confusion has been invisible for months and then expensive once.
+
+Task-level 1 cannot exceed a request-level 2 for this workload and is the only value that is safe at a
+balance nobody controls from inside the workflow (`fc23de1`). The number alone reads as a conservative
+choice and is not one, so the unit distinction is written next to the value with the failure attached.
+
+**The second defect is the one worth keeping.** `litellm` was configured with `num_retries=4`, which
+looks like the standard defence against a 429. It retried four times **at the same concurrency**, met
+the same wall four times, and then propagated the error out of `run_tasks`, which took all 228 episodes
+with it. A retry that does not change the condition that caused the failure is not a retry; it is the
+same request performed again with a different request id. The escape from a concurrency limit is *less
+concurrency*, and no retry count produces that.
+
+| the check | what it did | what it was |
+| --- | --- | --- |
+| `max_concurrency: 2` | limited tasks | a request limit expressed in the wrong unit |
+| `num_retries: 4` | repeated a refused call | four attempts at the identical refusal |
+
+Neither is fixed by a larger number. The first needed the unit named; the second needs a retry that
+lowers the concurrency it is retrying at, which is not implemented and is now the open item on this
+lane. **Until it is, a refused l4 run is four refusals and a dead job** rather than a slower run, and
+that is a property of the driver rather than of the account.
+
+What this cost, stated plainly: two arms, fifty minutes, and the re-dispatch that R57's `adversarial`
+reading was waiting for. The artefact from `42568927112` therefore does not exist, and the three-arm
+readback still rests on the three separate dispatches Amendment 3 was written to replace.
