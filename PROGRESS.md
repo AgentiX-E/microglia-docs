@@ -13259,3 +13259,44 @@ neither confirmed nor refuted, and a null from 350 questions is not evidence of 
 `none,full,linked-additive,recall-order`, `max_calls=4000`, transfer measurement off because the
 registration does not declare it. The first run of this dispatch (`42633671279`) failed in eleven
 seconds on the `prereg` form and spent nothing.
+
+### 172.61 The population was measured before it was paid for, and it was five times smaller
+
+The round opened with two questions and closed both of them without a wasted dispatch.
+
+**R63 published.** `recall-order` on minidev, n=350, 1,923 calls, $0.2165 off-peak: `full` +0.57pp
+[−2.86, +4.00], `linked-additive` **+2.00pp** [−0.29, +4.29], `recall-order` **+0.86pp** [−1.43,
++3.14]. All blocking gates pass, parse 100.00%, `reasoning_tokens` 0. The free ceiling it was
+dispatched against — +13.75pp of ordering quality — converts to under a point of accuracy, which is
+the branch the registration named in advance: **the ordering line is closed for accuracy** and the
+next P0 in that line is the retrieved-exemplar arm (the nearest training question's gold SQL as a
+worked example), the lawful approximation of `oracle` at +33.14pp.
+
+**R64's population, measured for free.** `pnpm eval:retry-population` re-executes the baseline
+statements in an existing artefact against the split's databases and counts what a retry arm would
+have acted on: `minidev 26/350 (7.43%)`, `dev 98/1534 (6.39%)`, `no-query=0`. The registration had
+predicted ≥140 on minidev by reading base accuracy as failure count; a retry acts on what the
+*pipeline* rejected, not on what was wrong. The floor cannot be reached on either split, and R64 is
+amended to `dev` with a floor of 90 before dispatch rather than after.
+
+**What the empty results are.** Same pass, no extra cost: of the 89 empty results on dev,
+**54 (60.67%) read exactly the gold tables** and **32 (35.96%) are missing a gold value** — the
+classic value-spelling miss. Only 35 are table-selection misses, the bucket R63 just measured as not
+moving. The retry line's deficit is values, not schema text, and that is recorded in the amendment
+before the arm is dispatched.
+
+**And the mechanism is now one function.** `retryTriggerOf` holds the three conditions; the lane's
+retry prompts and the audit both call it, so the population counted and the population acted on
+cannot disagree. Every artefact from here records `retry_population` per run and `retryReason` per
+question — the number that was prose for twenty rounds is now a field.
+
+| | before | after |
+| --- | --- | --- |
+| tests | 3,762 | **3,786** |
+| files | 182 | **184** |
+| coverage, four dimensions | 100 | **100** |
+| eval binaries | 61 | **62** |
+| `pnpm check` | green | **green** |
+
+**Dispatched.** Nothing yet this round: R63's dispatch (`42645682353`, on `3da87985`) was the
+decoding fix being paid for, and it published. R64 is registered, amended and ready.

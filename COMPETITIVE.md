@@ -3742,3 +3742,35 @@ ceiling rather than a hoped-for one.
 GrainSQL 82.95, DataGallery 82.39, SiriusAI-SQL 82.28, human 92.96, microglia dev 57.63/57.76 — and
 what the literature adds is not a number but a diagnosis: **25 points are not in the memory layer and
 are not in schema linking either.** They are in what the pipeline does with a wrong answer.
+
+## The board pays for schema linking less than the papers do, and now we can price it (2026-11-09)
+
+R63 is the first arm in this repository whose effect can be divided by a measured signal improvement.
+The published record says lexical schema linking on BIRD dev is worth **−1.56pp (p = 0.035)** and that
+embedding linking, at 96.5% gold-table recall, is **indistinguishable from not linking**
+(arXiv:2606.29733). This repository's own numbers, in order of increasing aggression:
+
+| treatment | tables removed | accuracy effect | source |
+| --- | --- | --- | --- |
+| order by retrieved gold tables | none | **+0.86pp** [−1.43, +3.14] | R63, n=350 |
+| order by named tables (`linked-additive`) | none | **+2.00pp** [−0.29, +4.29] | R63, n=350 |
+| prune to named tables (`linked`) | most | **−9.58pp** | R26, n=350 |
+
+Three points, one monotone story that matches the literature: **the more a linker changes what the
+model can see, the worse the model does, and ordering — which changes position only — is the one
+variant that never hurts.** The board's leaders do not win on schema linking; they win on execution
+feedback and on ensembles of generation. That is where the 33pp sits.
+
+What R63 adds that the papers do not have is the exchange rate. The ordering signal improves the
+strict table-ordering criterion from 42.89% to 56.65% of dev questions — **+13.75pp** [10.30, 16.88],
+p < 1e-4 — and converts to +0.86pp of accuracy. A signal-to-accuracy rate of about **6%** on this
+benchmark, measured rather than assumed. Any competitor comparison that quotes a schema-linking
+improvement has to be read through that rate unless it also reports accuracy on the same split.
+
+The other side of the same ledger is where the errors are. Of the 89 dev questions whose first attempt
+returned no rows, **54 read exactly the right tables** and **32 filter on a value the database does
+not spell that way**. The published diagnosis of BIRD-style errors is the same shape: the binding step
+is mostly values and column semantics, not table discovery, and a database with ~40 tables per schema
+answers a typical question from **2.4** of them. Our measurement says the remaining error mass is on
+the value side, which is where the `values` arm (+5.43pp at n=350) already sits — and where the next
+registration goes.

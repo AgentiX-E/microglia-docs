@@ -4492,3 +4492,26 @@ artefact.
 The rule that follows is the cheapest one in this document: **if a dispatch can be rehearsed for
 nothing, rehearse it.** The cost of the rehearsal is minutes; the cost of skipping it is a run whose
 number has to be explained rather than read.
+
+## A ceiling on the signal is not a ceiling on the answer
+
+The system's interface to a model is a prompt, so every mechanism in it can be described as an
+improvement to that prompt. It is tempting to treat the size of the prompt improvement as the size of
+the expected gain, and this project has now measured that conversion once, end to end:
+
+- ordering the schema so that every gold table precedes every non-gold one, using the gold table sets
+  of the five nearest training questions: **56.65%** of dev questions against **42.89%** for lexical
+  anchors, **+13.75pp** [10.30, 16.88], p < 1e-4, measured with no model in the loop;
+- shipping that ordering in the lane: **+0.86pp** of execution accuracy, interval [−1.43, +3.14].
+
+The signal moved by 13.75 points of prompt quality and the answer moved by under one. That is why the
+product does not ship a schema linker: ordering never hurt (unlike pruning, which costs 9.58pp), but
+it also never paid, and the free measurement that chooses between mechanisms has to be read as a
+ceiling on the *prompt*, not on the model.
+
+The same discipline applies to a mechanism's population. A retry loop acts only on the questions the
+pipeline itself rejected — no query, an execution error, no result rows — and that set is 6.4% of the
+benchmark, not the 47% that a base accuracy of 53% would suggest. It is measurable with no model calls,
+from artefacts the system already writes, because the trigger and the counter are one function. A
+mechanism whose denominator is assumed rather than measured is a mechanism whose effect will be
+reported against the wrong base.

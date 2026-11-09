@@ -7127,3 +7127,86 @@ against the wrong population.
 record the behaviour. `model` was recorded and `thinking` was not, so for one round the repository had
 a column of numbers it could not attribute — and the only reason it is now attributable is that the
 third defect (parse rate) was loud where the first two were silent.
+
+### 35.02 The retry population is 6.4% of the benchmark, and the arm registered for it could not have run
+
+The first valid R63 run published, and the same iteration measured the population that the next
+registration was written around — without spending a call on either question twice.
+
+**The decoding fix, read back.** Same split, same 350 questions, same four arms:
+
+| dispatch | `V3-parse-rate` | `none` accuracy | reasoning tokens | completion | bill |
+| --- | --- | --- | --- | --- | --- |
+| before, `deepseek-flash` thinking on | 51.43% | 30.29% | 1,354,007 (95%) | 1,423,622 | $0.9603 |
+| after, `thinking=off` | **100.00%** | **51.43%** | **0** | **163,916** | **$0.2165** |
+
+Thinking was spending 8.7× the completion budget to make the answer 21 points worse. The lane now
+sends the switch, records it, and adds `THINKING_HEADROOM` to the answer budget when it is on.
+
+**R63's result, and the branch it selects.** `recall-order` (schema ordered by the gold tables of the
+five nearest training questions) came in at **+0.86pp** against `none`, CI [−1.43, +3.14], p = 0.65.
+`linked-additive` (same ordering, no pruning) came in at **+2.00pp**, CI [−0.29, +4.29], p = 0.14.
+The ordering line is closed **for accuracy** — the branch the registration named in advance — while
+the free ceiling and the `ordering` block stay, because they price schema linking for every later
+arm.
+
+What makes the number readable is the free measurement it is compared with: ordering by retrieved
+gold tables wins the strict criterion on **56.65%** of dev questions against **42.89%** for lexical
+anchors, **+13.75pp** [10.30, 16.88], p < 1e-4. So the largest free ceiling this project has ever
+measured converts to **+0.86pp of accuracy, indistinguishable from zero**. That is not a failure of
+R63; it is the conversion factor between "the prompt contains the right information in the right
+order" and "the model answers differently", and it is now a measured quantity rather than an
+assumption behind four rounds of schema work.
+
+The instrument also reproduced the offline audit exactly — precision 39.98%, gold recall 99.48%,
+retrieved 100%, depth 51.00%, all equal to the values `pnpm eval:table-recall` computes with no model
+at all — because the arm and the audit call the same functions. Only `cleanShare` differed (44.86%
+on minidev against 56.65% on dev), which is a property of the question set and was recorded as
+non-transposable in R63's Amendment 1 *before* the dispatch.
+
+**Then the population, which is the part worth the audit entry.** R64 registers `retry-blank` — the
+arm whose +0.57pp (2 gained, 0 lost) has been quoted for twenty rounds with no artefact behind it —
+and it predicted that "at least 140 of the 350 questions" would be retried, reasoning from a 53% base
+accuracy to 165 failures. A retry arm does not act on failures. It acts on the questions the
+**pipeline** rejected: no query, an execution error, or a result set with no rows. Those three facts
+are decidable without the answer key, which means the population is a property of the pipeline and
+could have been counted from artefacts already in the repository.
+
+It was:
+
+```
+split=minidev  retried=26/350  (7.43%)  no-query=0 error=1 empty=25
+split=dev      retried=98/1534 (6.39%)  no-query=0 error=9 empty=89
+```
+
+The registration's floor of 140 cannot be reached on **either** split — 98 is the whole population on
+dev — so a dispatch would have burned a run to discover that its own void condition had fired. The
+prose numbers turn out to be invertible, which is how the population is confirmed from the other
+side: 0.57pp × 350 = exactly 2 questions and 1.43pp × 350 = exactly 5, and both were repairs out of
+**26**. A 7.7% repair rate measured on 26 questions has a 95% interval of roughly [1%, 25%], which is
+why neither reading was ever published as a rate.
+
+**What the empty results are made of**, from the same pass, at zero additional cost:
+
+```
+examined=89  same-tables=54 (60.67%)  value-miss=32 (35.96%)  ranking-miss=5
+             missing-table=19  extra-table=16
+```
+
+**36% of the entire retry population is a query that read exactly the right tables and filtered on a
+value the database does not spell that way.** Only 39% is a table-selection miss — the bucket R63 just
+measured as not moving. So the retry line's information deficit is values and aggregation, not schema
+text; and the R64 amendment records that before the dispatch rather than after, because a positive
+delta from the arm alone cannot tell "the second attempt re-read the question" from "the second
+attempt found the right spelling".
+
+**The mechanism and the report are one function.** `retryTriggerOf` holds the three conditions, the
+lane's retry prompts read it, and `pnpm eval:retry-population` — the audit that counts the population
+— calls the same function against the same execution. Every artefact from this round forward records
+`retry_population` per run and `retryReason` per question, so the next reader does not have to
+re-execute 1,534 statements to know how many questions an arm could touch.
+
+**The general form.** A control arm's population is not the failure count. It is the set of questions
+the pipeline itself rejected, it is measurable for free from artefacts that already exist, and it
+belongs in the registration *before* the dispatch — R64's prediction was off by a factor of five, and
+the only reason that cost nothing is that the arm and the audit share their trigger.

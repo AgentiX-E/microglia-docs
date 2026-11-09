@@ -5593,3 +5593,43 @@ in three pre-registrations and is recoverable from none of them: the dispatch th
 artefact, and the repository's own rule — recompute before quoting — was never applied to it because it
 was never the arm under test. The arm that keeps turning out to be the only non-negative one is the arm
 whose evidence is missing.
+
+## The ceiling was worth 13.75pp of ordering and 0.86pp of accuracy (2026-11-09)
+
+R63 published and closed the ordering line for accuracy. The free measurement said ordering by the
+gold tables of five retrieved training questions beats lexical anchors on 56.65% of dev questions
+against 42.89%; the arm that ships it scored **+0.86pp** [−1.43, +3.14] against `none` and **−1.14pp**
+against `linked-additive`. The registration named that branch in advance, so this is a result rather
+than a reinterpretation.
+
+| ranked by | measured | source | next |
+| --- | --- | --- | --- |
+| retrieved-exemplar arm (gold SQL of the nearest training questions) | `oracle` **+33.14pp**, p = 2.4e-35 | existing artefact | **P0** — registered next, the ceiling this lane has and has never spent |
+| values / field-description distillation | +5.43pp at n=350, +0.85pp at n=1,534 | R24, R25 | P0 — and now the largest bucket of the retry population |
+| `linked-additive` (order, do not prune) | +2.00pp [−0.29, +4.29], p = 0.14 | R63 | P1 — the only schema arm with a non-negative point estimate |
+| `recall-order` (order by retrieved tables) | +0.86pp [−1.43, +3.14], p = 0.65 | R63 | closed for accuracy |
+| `linked` (prune to named tables) | −9.58pp | R26 | closed — deleting tables costs accuracy |
+
+**Rule 8.** *A measured ceiling is a ceiling on the signal, not on the model.* The 13.75pp was a real
+difference in prompt content — every gold table ahead of every non-gold one on 13.75pp more questions
+— and it moved accuracy by less than a point. Any future arm whose case rests on "we can measure a
+large improvement in the prompt" has to state the conversion factor this lane has now measured, or it
+is pricing the signal and shipping the prompt.
+
+## The control arm's population is measurable before the dispatch (2026-11-09)
+
+R64 was registered for `retry-blank` with a prediction of ≥140 retried questions on minidev, reasoning
+from base accuracy to failure count. Measured, for free, from artefacts already committed: **26 of
+350** on minidev and **98 of 1,534** on dev. A retry arm acts on what the pipeline rejected — no
+query, an execution error, no rows — and not on what was wrong.
+
+That number is now a command (`pnpm eval:retry-population`) and a field (`retry_population` in every
+artefact, `retryReason` per question). The registration is amended to dev with a floor of 90 before
+its dispatch, and the same pass measured the composition: **60.67% of empty results read exactly the
+gold tables and 35.96% miss a gold value**, so the retry line's deficit is values rather than schema
+text.
+
+**Rule 9.** *A conditional treatment's denominator is part of its registration, and it is measurable
+without the treatment.* R64's prediction was off by a factor of five in the direction that would have
+burned a run on its own void condition. The remedy is not a better guess: it is that the trigger and
+the counter are one function, so the population can be counted from any artefact already in the tree.
