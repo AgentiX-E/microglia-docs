@@ -5561,16 +5561,22 @@ under R63 more than it changes R63.
 | self-consistency, m=5 | +0.13pp for ~5× tokens, p=0.86 | same |
 | schema abstraction / partitioning / renaming | +2.6 … +4.2pp on BIRD-Union, complementary to few-shot | arXiv:2606.03145 |
 
-**The gap this exposes is ours.** `none` in this lane means "no feedback and no memory", and every
-feedback arm here is memory-on-retry (`retry-blank`, `retry-keyed`). A plain *execute, feed the error
-back, revise* control has never been measured on BIRD, so the +3pp that three model families reproduce
-sits in an empty cell of our own design table. It also means every memory delta published here is a
-delta against a baseline that had headroom the model was never offered.
+**The gap this exposes is smaller than the first draft of this section said, and it is worse.** The
+first draft claimed a plain *execute, feed the error back, revise* control had never been measured
+here. It has: `retry-blank` is exactly that arm — the retry prompt carries the failed attempt, the
+execution error and an empty pack — and R17 quotes it at **+0.57pp, 2 gained and 0 lost**. What the
+arm has never had is a registered run whose artefact is in the repository: `grep -rl retry-blank
+eval/results/` returns nothing, now or at any point in its history. **A number in prose is not a
+measurement**, which is the rule `power.py` and `arm_ablation` exist to enforce.
+
+So the missing thing is not the mechanism, it is the evidence — and the mechanism is the only arm
+family this project has ever measured as non-negative (`full-onretry` +1.43pp with 5 gained and 0
+lost, `retry-blank` +0.57pp with 2 gained and 0 lost).
 
 | priority | item | measured or published reason | expected | calls |
 | --- | --- | --- | --- | --- |
 | **P0** | read R63 against its registration | the ordering arm is in the air | places ordering above or below a 6pp bar | 0 |
-| **P0** | **`self-correct` control arm** — after a failed execution, re-prompt with the error and the failed SQL, no memory | +3.06pp at p=2e-11 and +3.65pp at p=6e-11 across two families, replicated; and `none` currently denies the model any feedback at all | the largest prior of any arm not yet measured here | 1 extra call per failed question |
+| **P0** | **a registered `retry-blank`** — the self-correction control that already exists, dispatched on the full split against `none` | it is the only arm family here ever measured non-negative (+0.57pp, 2/0; `full-onretry` +1.43pp, 5/0) and **no artefact in the repository contains either reading**; the published +3.06pp at p=2e-11 is the same mechanism at an operating point with more headroom | a small positive, now with evidence | 1 extra call per failed question |
 | **P0** | retrieved gold SQL as a worked example | `oracle` +33.14pp at p=2.4e-35; a training question's gold query is supervision the benchmark gives away | two-digit ceiling, unknown realisation | 1 arm × n |
 | **P1** | field-description distillation through `admit`/`curate` | `values` +5.43pp at n=350, +0.85pp at n=1,534 | 1–3pp | — |
 | **P1** | a powered R57, if re-run: `n ≥ 504`, off-peak, `power.py` first | n=57 resolves 20.9pp | replaces a withdrawn claim | 504 × 2 |
@@ -5578,6 +5584,12 @@ delta against a baseline that had headroom the model was never offered.
 | **P3** | multi-candidate generation; `sota.ts` split; W8 dose curve | candidate ceiling 29pp in `error_budget` | a few points for 3–5× | last |
 
 **Rule 6.** *A baseline that denies the model something every published competitor gives it is not a
-baseline, it is a handicap.* `none` has no feedback, and the three families in 2606.29733 all gain from
-it. Until a `self-correct` control exists, every memory delta in this repository is measured against an
-arm that is behind the published state of the art on a mechanism nobody here registered as missing.
+baseline, it is a handicap.* `none` has no feedback and the three families in 2606.29733 all gain from
+it, so the 57.63% dev cell understates what this pipeline can do and every memory delta is measured
+against a prompt that is behind the published state of the art.
+
+**Rule 7.** *A number in prose is a memory, not a measurement.* `retry-blank`'s +0.57pp has been quoted
+in three pre-registrations and is recoverable from none of them: the dispatch that produced it left no
+artefact, and the repository's own rule — recompute before quoting — was never applied to it because it
+was never the arm under test. The arm that keeps turning out to be the only non-negative one is the arm
+whose evidence is missing.

@@ -7008,3 +7008,52 @@ overridden by a person who is being careful about money.* The description is the
 correction can live, because the value is per-split and per-arm-count.
 
 The re-dispatch used 5,200, which is the measurement plus a quarter.
+
+### 35.00 A claim written before the code was read, and the arm that was there all along
+
+While the R63 dispatch ran, the literature on schema linking and self-correction was read and written
+into `COMPETITIVE.md` and `ROADMAP.md`. The first draft of both said the same thing: *self-correction
+with no memory has never been measured in this lane, and `none` denies the model feedback every
+published competitor gives it.* The second half is true. The first half was false, and it was written
+without opening the retry path.
+
+`retry-blank` is that control, exactly. The retry pass in `sota-bird.ts` builds its prompt from the
+failed attempt, the execution error and the pack — and for `retry-blank` the pack is `''`. That is
+*execute, feed the error back, revise, with no memory*, which is the mechanism arXiv:2606.29733 reports
+at +3.06pp (p=2e-11) on CodeLlama-7B and +3.65pp (p=6e-11) on Llama-3.1-8B.
+
+And the number exists — in prose. `prereg/R17-framing.md` quotes `retry-blank` at **+0.57pp, 2 gained
+and 0 lost**, beside `full-onretry` at +1.43pp with 5 gained and 0 lost. Those two are the only
+non-negative readings this project has ever recorded for any arm family. Neither is checkable:
+
+```
+$ grep -rl retry-blank eval/results/            # nothing
+$ git log --oneline -S retry-blank -- eval/results   # nothing
+```
+
+Not now and not at any point in the repository's history. A dispatch that leaves no artefact produces a
+number that lives in a pre-registration's prose, and prose is the one place this project's own standard
+(`power.py`, `arm_ablation`, `--artefact` on every verifier) says a reading cannot live.
+
+**Three things this changes, in order of how much they cost.**
+
+1. **The published +3pp and our +0.57pp are not in conflict.** Their measurement is on open-weight
+   models at 21–50% execution accuracy and their own text says self-correction gains "wherever models
+   have headroom". At 53% on minidev this lane has less of it. The honest expectation for a
+   re-measurement is a small positive — which is exactly what the unquotable number says, and that
+   agreement is not evidence, it is a coincidence until an artefact exists.
+2. **`none` is a handicap baseline, and that stands.** Whatever the arm's size, the 57.63% dev cell is
+   produced by a pipeline that never retries, while the published systems above it all do. Every memory
+   delta in this repository is therefore a delta between two arms that are both behind the state of the
+   art on a mechanism nobody registered as missing.
+3. **The arm whose evidence is missing is the arm that keeps winning.** Two of two non-negative
+   readings in the whole record are retry arms, and both are prose. That is the pattern the
+   `arm_ablation` verifier was written for — *the largest effect in the repository was a regression
+   nobody read* — repeating in the one direction the verifier cannot look, because there is no file.
+
+**The fix is a re-measurement, not a new arm.** `retry-blank` already exists, already costs one extra
+call per failed question, and needs a registration and a split. The draft of this section was going to
+propose building a `self-correct` arm; had it been committed unread, the next round would have built a
+duplicate of a mechanism that has been in `OPTIONAL_ARMS` for twenty rounds, and the duplicate would
+have had a different prompt and therefore a different number. **A claim about what has not been
+measured is a claim about the code, and it has to be checked against the code.**

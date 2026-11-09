@@ -3708,11 +3708,19 @@ Three things follow, and two of them are uncomfortable for this repository's own
    that had to be the answer**: 56.65% of BIRD dev can be ordered cleanly at all, and ordering is the
    *weaker* intervention. A mechanism whose input is right 96.5% of the time and whose output still
    moves nothing is a mechanism operating on a channel the model does not use.
-3. **The reliable lever in their ablation is one this repository has never measured: self-correction
-   with no memory.** Every arm here is either a single pass or memory-on-retry (`retry-blank`,
-   `retry-keyed`), so `none` is not "no feedback", it is "no feedback and no memory" — and the +3pp
-   that three model families reproduce is sitting in a cell of our own design that is empty. R63's
-   registration does not cover it; the next one must.
+3. **The reliable lever in their ablation is one this repository has measured once and cannot
+   quote.** `retry-blank` *is* self-correction with no memory — the retry prompt carries the failed
+   attempt and the execution error and an empty pack — and R17 records it at **+0.57pp, 2 gained and
+   0 lost**. That reading is not quotable: it was taken at a scale nobody registered, and no artefact
+   in this repository or its history contains it, so by the standard `power.py` and `arm_ablation`
+   enforce it is a number in prose. The cell is not empty; it holds a measurement whose evidence is
+   gone.
+
+   The size difference has a cause and it is worth naming rather than excusing: their +3pp is measured
+   on open-weight models at 21–50% execution accuracy, and their own text says self-correction gains
+   "wherever models have headroom". At 53% on minidev this lane's model has less of it. So the
+   published effect and ours are not in conflict — they are the same mechanism at two operating
+   points, and the honest expectation for a re-measurement here is a small positive, not +3pp.
 
 **arXiv:2606.03145 — schema representation as the intervention.** Abstraction, partitioning and
 renaming of the schema give **+2.6 to +4.2pp** on BIRD-Union, complementary to few-shot retrieval, with
