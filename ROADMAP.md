@@ -5547,3 +5547,37 @@ contradicts.
    `SELECT 1` printed both arms' scores, the ordering block, and a $0.0103 bill, in ninety seconds,
    for nothing. The `schemaBlocks` defect in round 62 was exactly the class of failure this catches
    and unit tests did not.
+
+## The literature re-orders the queue: self-correction is a lever we have never measured (2026-11-09)
+
+Read after R63 was built, so recorded as a check rather than a justification — and it changes the item
+under R63 more than it changes R63.
+
+| published recipe | effect | source |
+| --- | --- | --- |
+| schema linking, lexical | **−1.56pp**, p=0.035 | arXiv:2606.29733, BIRD dev, paired McNemar |
+| schema linking, embedding at 96.5% gold-table recall | indistinguishable from none | same |
+| **self-correction (feed back the execution error)** | **+3.06 / +3.65 / +1.04pp** over three families, p=2e-11 / 6e-11 / 0.08 | same |
+| self-consistency, m=5 | +0.13pp for ~5× tokens, p=0.86 | same |
+| schema abstraction / partitioning / renaming | +2.6 … +4.2pp on BIRD-Union, complementary to few-shot | arXiv:2606.03145 |
+
+**The gap this exposes is ours.** `none` in this lane means "no feedback and no memory", and every
+feedback arm here is memory-on-retry (`retry-blank`, `retry-keyed`). A plain *execute, feed the error
+back, revise* control has never been measured on BIRD, so the +3pp that three model families reproduce
+sits in an empty cell of our own design table. It also means every memory delta published here is a
+delta against a baseline that had headroom the model was never offered.
+
+| priority | item | measured or published reason | expected | calls |
+| --- | --- | --- | --- | --- |
+| **P0** | read R63 against its registration | the ordering arm is in the air | places ordering above or below a 6pp bar | 0 |
+| **P0** | **`self-correct` control arm** — after a failed execution, re-prompt with the error and the failed SQL, no memory | +3.06pp at p=2e-11 and +3.65pp at p=6e-11 across two families, replicated; and `none` currently denies the model any feedback at all | the largest prior of any arm not yet measured here | 1 extra call per failed question |
+| **P0** | retrieved gold SQL as a worked example | `oracle` +33.14pp at p=2.4e-35; a training question's gold query is supervision the benchmark gives away | two-digit ceiling, unknown realisation | 1 arm × n |
+| **P1** | field-description distillation through `admit`/`curate` | `values` +5.43pp at n=350, +0.85pp at n=1,534 | 1–3pp | — |
+| **P1** | a powered R57, if re-run: `n ≥ 504`, off-peak, `power.py` first | n=57 resolves 20.9pp | replaces a withdrawn claim | 504 × 2 |
+| **P2** | representation-level intervention (renaming, views) | +2.6 … +4.2pp published for the family, and ordering is its weakest member | the family's upper bound, minus what ordering already gets | expensive |
+| **P3** | multi-candidate generation; `sota.ts` split; W8 dose curve | candidate ceiling 29pp in `error_budget` | a few points for 3–5× | last |
+
+**Rule 6.** *A baseline that denies the model something every published competitor gives it is not a
+baseline, it is a handicap.* `none` has no feedback, and the three families in 2606.29733 all gain from
+it. Until a `self-correct` control exists, every memory delta in this repository is measured against an
+arm that is behind the published state of the art on a mechanism nobody here registered as missing.

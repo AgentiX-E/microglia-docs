@@ -3680,3 +3680,57 @@ points. An ordering arm cannot be the mechanism that closes it: its entire budge
 questions a table set determines, and on the other 43.35% it does nothing at all — which is why the
 next two priorities are a retrieved-exemplar arm and field-description distillation rather than a
 better ordering signal.
+
+## The published record measured the same thing, and it says the lever is somewhere else (2026-11-09)
+
+Three papers bear directly on what this project has spent four rounds measuring, and they were read
+after the arm was built rather than before, which is why they are recorded as a check rather than as a
+justification.
+
+**arXiv:2606.29733 — on-prem open models, BIRD dev, paired McNemar across three families.**
+
+| recipe | effect | significance |
+| --- | --- | --- |
+| schema linking, lexical | **−1.56pp** | p = 0.035 |
+| schema linking, embedding at 96.5% gold-table recall | indistinguishable from none | n.s. |
+| self-correction (feed back the execution error, revise) | **+3.06pp / +3.65pp / +1.04pp** across CodeLlama-7B, Llama-3.1-8B, Llama-3.3-70B | p = 2e-11, 6e-11, 0.08 |
+| self-consistency, m=5 | +0.13pp for ~5× tokens | p = 0.86 |
+
+Three things follow, and two of them are uncomfortable for this repository's own plan.
+
+1. **Our `linked` reading is the same sign as theirs and an order of magnitude larger** (−9.58pp versus
+   −1.56pp). The difference is mechanism, not disagreement: their pruner keeps the tables a retriever
+   scores highly, ours closes over join keys and prunes whenever a third of the schema is untouched,
+   and the error taxonomy says 291 gold-table-absent errors against 107. Two independent
+   measurements agreeing on the sign is the strongest evidence this project has that schema linking is
+   not the lever — stronger than any single arm here.
+2. **They measure a null for embedding linking at 96.5% gold-table recall, and our ceiling says why
+   that had to be the answer**: 56.65% of BIRD dev can be ordered cleanly at all, and ordering is the
+   *weaker* intervention. A mechanism whose input is right 96.5% of the time and whose output still
+   moves nothing is a mechanism operating on a channel the model does not use.
+3. **The reliable lever in their ablation is one this repository has never measured: self-correction
+   with no memory.** Every arm here is either a single pass or memory-on-retry (`retry-blank`,
+   `retry-keyed`), so `none` is not "no feedback", it is "no feedback and no memory" — and the +3pp
+   that three model families reproduce is sitting in a cell of our own design that is empty. R63's
+   registration does not cover it; the next one must.
+
+**arXiv:2606.03145 — schema representation as the intervention.** Abstraction, partitioning and
+renaming of the schema give **+2.6 to +4.2pp** on BIRD-Union, complementary to few-shot retrieval, with
+renaming lifting table-set match from 64.7% to 94.1%. It also supplies a scale fact: BIRD databases
+average about 40 tables, while a typical question touches **2.4**. Our own measurement has the same
+shape — 4.88 tables moved per question, mean depth 43% of the schema — which says the head of the
+prompt is a third of the schema rather than a tenth of it.
+
+Ordering is the weakest member of that family: it renames nothing, adds no views, and only permutes.
+So the published +2.6 to +4.2pp for the family is an upper bound that R63 is *not* entitled to, and a
+null from R63 must not be read as a null for representation-level interventions in general.
+
+**CT2S (Neurocomputing, 2025)** reports that 74% of Spider samples mention schema items in the same
+order the SQL uses them, and gains >2% from sequential-consistency prompts built on that. So the
+ordering hypothesis has published support on Spider; R63 is the BIRD test of it, with a measured
+ceiling rather than a hoped-for one.
+
+**What this changes about microglia's position.** The board is unchanged — AskData 83.40 (dev 78.49),
+GrainSQL 82.95, DataGallery 82.39, SiriusAI-SQL 82.28, human 92.96, microglia dev 57.63/57.76 — and
+what the literature adds is not a number but a diagnosis: **25 points are not in the memory layer and
+are not in schema linking either.** They are in what the pipeline does with a wrong answer.
