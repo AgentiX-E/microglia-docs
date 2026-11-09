@@ -6200,3 +6200,37 @@ coverage, and "no test" is how a gate ends up stating the wrong arm's hypothesis
 The general rule, restated because the second instance arrived the same day as the first: **when an arm
 is added, every gate on its path is re-read against that arm's hypothesis.** The failure mode is never
 a gate being written wrongly; it is a gate being written once, for one arm, and then inherited.
+
+### 34.87 A CI step with no local twin is a gate half the project cannot run
+
+Two pushes went red on 2026-11-09 with every local gate green, and the causes were unrelated except in
+shape: **both were checks that existed in `ci.yml` and nowhere else.**
+
+| CI step | local command that ran it | what it caught |
+| --- | --- | --- |
+| `pnpm build` (+ `pnpm typecheck` when a person runs it) | yes | everything in `packages/*/src` |
+| `pnpm typecheck:lanes` | **no** — the composite build excludes `src/bin` | a string written into `Record<string, number>`, two commits running |
+| the coupling-ledger `node -e` block | **no** — `pnpm check` rewrote the ledger and never compared it | a committed snapshot describing a 166-module tree that had grown to 167 |
+
+Neither was a wrong check. Both were checks placed where only the runner could perform them, and the
+local workflow — which is the one that runs a hundred times per change — was structurally unable to
+disagree. The failure mode is not "CI is strict"; it is **the local gate certifying a state that CI will
+reject**, which trains a person to read green as "nothing to do" and then to treat the red as noise.
+
+There are two repairs and they are the same repair applied at two layers.
+
+The first is mechanical: `pnpm typecheck` now chains the bin compiler run, so the obvious command covers
+the same files as the two CI steps. The cost is eight seconds of duplicate `tsc` in CI, which is left in
+place deliberately — the step is also the place where the reason is written down.
+
+The second is structural: an inline `node -e` block in a workflow is a check that no fixture can reach
+and no local command can run. The eleven coupling claims moved into `scripts/check-coupling-ledger.mjs`,
+which takes a directory or scans for itself, and both `ci.yml` and `pnpm check` call it. It has eight
+fixtures, and the fixtures are the point: a predicate that stopped discriminating — `>=` where `===` was
+meant, a count compared to itself — would have passed forever inside a YAML string.
+
+**The rule to carry forward.** For every step in `ci.yml`, name the local command that runs it. Where the
+answer is "none", the choice is to move the check into a script that both call, or to accept that the
+check can only ever be discovered after a push — and to say so out loud, in the step, so the next person
+knows a green local run has not tested it. What is not acceptable is the third option this round took
+twice: leaving the check inline and assuming the local gate covers it because the local gate is green.
