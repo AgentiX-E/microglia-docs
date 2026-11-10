@@ -7483,3 +7483,55 @@ the reason to notice that the price was luck rather than design.
 quoting rules embedded in a file with a different quoting language embedded in YAML. Every tool in
 that stack can be individually correct while the composition is not, which is why the only reliable
 check is the innermost language's own parser, run on the outermost file's actual content.
+
+## 35.09 An arm that was bought and not reported, in a run where every gate passed (2026-11-10)
+
+**Finding.** R69 registered six arms. Its artefact published five, and the one row that was supposed
+to be the comparison's *other* rung was mislabelled:
+
+| registered | published | what the row actually contains |
+| --- | --- | --- |
+| `sample-5-oracle` | present, 61.14% | the best of **ten** draws, under a name that says five |
+| `sample-10-oracle` | **absent** | — |
+| `sample-5-first`, `sample-10-first`, `sample-5-exec`, `sample-10-exec` | present | correct |
+
+The lane searched the union for *the* oracle arm — singular — kept the first match in union order,
+and scored it over `verdicts` whole rather than over the arm's own `n`. So the registration's primary
+estimand, `ceiling(10) − ceiling(5)`, could not be read from the artefact at all, and the one ceiling
+row it did publish was labelled with a width it had not measured.
+
+**Why every gate passed.** Every gate in the lane asks whether a measurement is *valid*, not whether
+it is *complete*. The pool reconciled (3,500 candidates, all signed, `V18`/`V19` green), the partition
+held, the parse rate was 1.00, the resolution gate saw a sample large enough for its own claim. An arm
+that was never built produces no row, and no gate was looking at the arm list on one side and the row
+list on the other. `V69-every-arm-is-a-row` reads the *ledger across artefacts*, not the dispatch
+against its own table.
+
+**The cost, and the shape of it.** Two points of ceiling — the whole width effect — were missing from
+a run that had already been paid for. They were recoverable, because the pool records every candidate
+and `ceilingAmong` is arithmetic over the verdicts already in the file; the outcome section in
+`R69-pool-width.md` recovers them and reports the delta as **+2.00pp**. This is the fourth time the
+pool has paid for a question the artefact table could not answer, and the second time it has rescued a
+number that the run itself failed to publish.
+
+**Two fixes, and both are at the level the failure lived at.**
+
+- `ceilingAmong(verdicts, width)` in `sota.ts`, called once per registered ceiling arm: a ceiling is
+  "the best of the n draws *this arm* names", so two ceilings are two readings of one pool instead of
+  one reading wearing two names. Four tests, one of which is the exact failure — a right answer at
+  draw 7 must be invisible to a five-draw ceiling.
+- `V77-every-requested-arm-is-a-row`, blocking, appended last so it reads the final table. R69's own
+  artefact would fail it.
+
+**The general lesson.** A silent omission is the only class of defect that a validity gate cannot see:
+validity is a property of what was measured, and the missing arm was never measured at all. The check
+has to compare the *request* against the *report*, and both are in the artefact — `config.arms` and
+`arms[]` — which means the gate costs nothing and could have existed for four iterations.
+
+**Second-order: the same shape in the denominators.** The signal gate reported three survivors by Holm
+on this pool (`empty` 0.545, `column-shape` 0.556, `value-type` 0.562) and a composite worth +2.9pp —
+over the 138 questions where at least two distinct results existed. The arm built from the shape
+composite scored **1.14pp below** the first draw over all 350. Both numbers are correct and they are
+about different populations, and the record had been quoting the first kind beside results of the
+second kind for several iterations. R71's readout now has to print the eligible population beside the
+whole one, or it will repeat this.

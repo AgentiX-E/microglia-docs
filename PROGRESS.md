@@ -13603,3 +13603,60 @@ checker is the fix: `scripts/check-workflows.py` now runs `bash -n` over every `
 workflow — parse, not execute — and two self-test cases pin it.
 
 Gate state: 3,868 tests over 187 files, four coverage dimensions at **100%**, `pnpm check` green.
+
+### 173.11 Width buys two points, and the run published five arms of six
+
+Dispatch `42796339905`, minidev, n = 350, 5 folds, **4,829 calls, $0.3967, `off_peak`**, 3,500
+candidates signed and reconciled, 14 gates, every one green.
+
+| arm | accuracy | vs `none` (52.00%) |
+| --- | --- | --- |
+| `full` | 50.57% | −1.43pp |
+| `sample-5-first` / `sample-10-first` | 51.71% | −0.29pp |
+| `sample-5-exec` | 50.86% | −1.14pp |
+| `sample-10-exec` | 50.57% | −1.43pp |
+| `sample-5-oracle` | 61.14% | +9.14pp |
+| `sample-10-oracle` | **absent** | — |
+
+**The published ceiling row is the ten-draw ceiling under a five-draw name, and the ten-draw arm was
+never built.** The lane looked for *the* oracle arm, kept the first in union order, and read the pool
+whole. Every gate passed anyway: a gate checks whether a measurement is valid, and the missing rung
+was never measured. Recovered from the pool at zero cost — which is what the pool is for:
+
+| reading | value |
+| --- | --- |
+| `first` (same draw at both widths) | 51.71% |
+| `ceiling(k=5)`, best of the first five | 59.14% |
+| `ceiling(k=10)`, best of all ten | 61.14% |
+| **width effect, paired within the run** | **+2.00pp** |
+| majority, k = 5 / k = 10 | 51.71% / 52.29% |
+
+**Branch: width saturates** (delta within the registered 3pp band). Five draws already contain what
+this model produces at this prompt; ten buy two points of ceiling and nothing at the selector —
+`sample-10-exec` is 1.14pp *below* the first draw. The registered instruction is to stop buying draws
+and vary **what the draw is asked**, which is R71.
+
+**The replication check held, which is what makes the delta readable**: `first` 51.71 vs R67's 50.86,
+ceiling 59.14 vs 59.71, `exec` 50.86 vs 52.00 — the day moved by under a point.
+
+**Two fixes, both at the level the failure lived at.** `ceilingAmong(verdicts, width)` reads the best
+of *the arm's own* first n draws, so two ceilings are two readings of one pool (four tests, one of
+which is the exact failure: a right answer at draw 7 must be invisible to a five-draw ceiling).
+`V77-every-requested-arm-is-a-row` is blocking and appended last so it reads the final table. R69's
+own artefact would fail it now.
+
+**And the module R71 needs.** `content-signal.ts` scores a candidate by what it *says* — does the
+result name something the question names, does the query carry a literal the question carries — on
+the same question-clustered interval the shape signals get, which required extracting `aucReading`
+out of `signalReading` rather than copying the bootstrap. With `sql` and `columns` now recorded per
+candidate, R71's first stage costs no model calls: it is arithmetic over a pool that has already been
+bought.
+
+**A denominator lesson, recorded because it has now bitten twice.** The signal gate found three
+survivors by Holm on this pool (`empty` 0.545, `column-shape` 0.556, `value-type` 0.562) and a
+composite worth +2.9pp — over the 138 questions where at least two distinct results existed. The arm
+built from that composite scored 1.14pp *below* the first draw over all 350. Both numbers are true;
+the record had been quoting the first kind beside results of the second kind.
+
+Gate state: 3,890 tests over 188 files, four coverage dimensions at **100%**, `pnpm check` green,
+coupling ledger 177 modules / 20 deferred / `core` 0.
