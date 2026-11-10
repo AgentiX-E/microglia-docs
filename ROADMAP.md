@@ -5850,11 +5850,23 @@ both are recorded in the file:
   a run that measures both, because both actions are observed on every question: off-policy evaluation
   with full support, no approximation. The dispatch drops to two arms, ≈18,500 calls, ≈$1.5.
 
-**R73 — the writer is the price.** One model call per question writes three executable assertions
-(column present, literal present, row count); a deterministic reader scores each candidate by how many
-it satisfies. 350 calls, **$0.03**, over R70's pool. The bar is +3pp over the first draw with an
-interval excluding 0.5; if it misses, no per-question reader recovers the gap on this corpus and the
-selection line closes for good.
+**R73 — the writer is the price, and it is now built.** One model call per question writes three
+executable assertions (column present, literal present, row count); arithmetic scores each candidate by
+how many it satisfies. The implementation reports the three kinds separately as well as their sum,
+because the registration is a claim about *which sentence* carries the ranking, and a `rows:` assertion
+is a shape signal this lane already knows is inert while a `column:` assertion is the content claim
+nobody here has priced without a model.
+
+Two things changed while it was built, both recorded as an amendment **before dispatch**: the header
+names the control (`sample-5-first,sample-5-assert`), because R66 taught that a header without its
+control lets the dispatch omit it; and the writer runs *inside* the dispatch rather than beside it,
+because an assertion written against a pool re-read from another day's file is an assertion about a
+schema believed to be the same one. The reading stays offline: `pnpm eval:assertion` takes the artefact
+and prints four signals with zero calls.
+
+≈2,800 calls, **≈$0.23**, 350 of them the writer. The bar is +3pp over the first draw with an interval
+excluding 0.5; if it misses, no per-question reader recovers the gap on this corpus and the selection
+line closes for good.
 
 **A note on what none of the three does.** None of them changes the prompt, and none of them adds a
 memory mechanism. Fourteen iterations have priced the prompt and the memory: worked examples

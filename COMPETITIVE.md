@@ -4053,3 +4053,26 @@ arithmetic per candidate, 350 calls and $0.03 — and its bar is +3pp over the f
 interval that excludes 0.5. If it misses, no per-question reader recovers the gap on this corpus and
 the selection line closes; if it clears, the writer is the mechanism and the next registration prices
 what the writer needed to know.
+
+### The writer is built, and the three kinds are separable
+
+The table above prices the *free* half of CHESS's selection step and finds it inert. The paid half is
+now implemented rather than argued about: `sample-5-assert` asks a model, once per question, for three
+executable assertions — a column the result must carry, a literal the query must write, a row count —
+and scores every candidate by how many it satisfies. No model grades the candidates; the writer
+describes and arithmetic decides, which is the only arrangement under which the arm's number is a
+statement about the mechanism rather than about a model's judgement.
+
+What this record can now say that it could not before is **which sentence carries the ranking**. The
+reading reports `assertion-column`, `assertion-value`, `assertion-rows` and their sum separately. That
+matters because the three are not the same claim: `rows:` is a shape signal this lane priced seven ways
+and found inert, `value:` is close to the free `literal-match` that was constant on 342 of 350
+questions, and `column:` is the content claim that has never been priced without a model. A winner made
+of row counts would say the competitor's gain is not reading at all; a winner made of column names would
+say it is, and would locate it.
+
+Cost is the other half of the comparison. CHESS spends its writer per question and its assertions per
+candidate; this arm spends 350 calls on 350 questions and executes the assertions in arithmetic over a
+pool that was already bought, so the reading costs **$0.03** on top of the dispatch and can be
+re-derived from the artefact for nothing. If the arm clears its bar, the gap is a price this project can
+pay; if it does not, the gap is not a per-question reader and the selection line closes.

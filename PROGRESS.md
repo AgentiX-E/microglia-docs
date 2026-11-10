@@ -13774,3 +13774,77 @@ coupling ledger **178 modules / 20 deferred / `core` 0**. R72 is in flight on `t
 (≈2.7 hours). R68's second-backbone dispatch never got a runner — it sat `in_progress` for an hour with
 no update after the setup step — and was cancelled rather than left holding the concurrency group; it is
 re-dispatched once R72 clears.
+
+### 173.14 A gate written over an empty list agrees with everything, and the fallback behind it was unreachable twice
+
+R72 was dispatched three times before it started measuring anything. The three failures are one
+defect with three layers, and the run that finally went out is the first two-arm `train` dispatch this
+project has priced.
+
+**Layer one: the gate.** `V77`'s sibling — the arm check — asked whether every arm a registration
+*declares* had been bought. R72's header declares `arms: full`, and the two baselines are dropped from
+both sides, so the declared list is empty, and "every element of the empty set is bought" is true for
+any dispatch at all. A dispatch of `gated,oracle` — the R67 ladder — passed the check written to catch
+exactly that, measured two planted arms the file never names on 1,566 questions, and stopped only when
+the budget forecast added up the remaining folds: **7,235 calls, $0.58, 21 minutes**.
+
+**Layer two: the correction, and the default that made it unreachable.** The rule is now equality in
+both directions and reports `unbought` and `undeclared` separately, because "the dispatch buys an arm
+the file never names" and "the file names an arm the dispatch does not buy" are different facts that
+need different sentences. It was not enough. The dispatch had been sent with an empty `arms` field, the
+workflow fell back to a literal `gated,oracle`, and the fallback was **the third representation of one
+fact** — worse, the input carried `default: 'gated,oracle'`, so GitHub substituted the default when the
+field was empty and the `||` fallback never ran at all. The second dispatch died in 90 seconds on the
+corrected check, which is the check earning its keep rather than the check being the plan.
+
+**Layer three: the default is the registration.** `SOTA_ARMS` now falls back to
+`steps.registration.outputs.value`, produced by `pnpm eval:prereg-arms --csv prereg/<id>.md` — the same
+pattern the sampling temperature already used, for the same reason. An empty header resolves to "the
+two baselines" rather than to somebody else's ladder, and the input's default is gone.
+
+**What the void run bought, at $0.58.** The first measurement of a two-arm `train` dispatch:
+
+| per fold (1,566 questions) | calls | note |
+| --- | --- | --- |
+| answering, two arms | 6,264 | **two** calls per question-arm, not one |
+| distillation, `learn_sample` 700 | 711 | warm cache |
+| adjudication | 260 | |
+| fold total | 7,235 | 21 minutes |
+| five folds | **39,069** | $3.15 off-peak |
+
+The estimate in R72's amendment was $1.5 and it was wrong by a factor of two for one reason: answering
+costs a generation call **and** a repair call, and only the fold totals showed it. The re-dispatch went
+out at cap 44,000, deadline 175 minutes.
+
+**R73 is implemented, and the writer is one call per question.** CHESS's selection step is a *writer*:
+assertions authored for this question against these results, executed per candidate. R71 priced the
+free approximation and found it inert — the signals were not weak, they were not per-question facts.
+`assertion.ts` is the other half, and it is all arithmetic:
+
+- the grammar is three executable kinds — `column:<name>`, `value:<literal>`, `rows:<n>` — and nothing
+  else, because a comparison operator is a second grammar and a disjunction a third, and a writer that
+  can say anything can say something no arithmetic can refute;
+- three assertions per kind, which is the registration made binding: the scorer counts satisfied
+  assertions, so a writer that emitted twenty sentences would outvote one that emitted three without
+  being more informative;
+- the parser is tolerant of prose and intolerant of a malformed count — `rows:several` is dropped
+  rather than read as zero, because zero is an assertion the writer never made;
+- the reading reports `assertion-column`, `assertion-value`, `assertion-rows` and their sum on the same
+  question-clustered axis as every other selector, because the arm is a claim about *which sentence*
+  carries the ranking and a combined number alone could not say that.
+
+The writer runs in the lane, one call per question, and its reply lands in the same `per_case` entry as
+the candidates it scores — so `pnpm eval:assertion` re-derives the reading from the artefact with zero
+calls. `SOTA_ASSERTION_CACHE` keys a reply on the full prompt, so a replay of the same split pays
+nothing for the assertions and measures the same ones.
+
+**A gate that was missing, found while declaring the arm.** R73's header named `sample-5-assert` before
+the arm existed, and nothing noticed until `parseArms` would have refused it at dispatch — R67 lost a
+dispatch exactly that way, to `sample-5-exec`. `pnpm eval:prereg` now refuses any header naming a
+`sample-` arm the lane cannot buy. The restriction to that prefix is deliberate: the header is read by
+three vocabularies (this lane's `sample-N-selector` family, tau-bench's `memory`/`reference`, and the
+retired BIRD arms), and "every arm must exist" would refuse files that are correct.
+
+Gate state: **3,946 tests over 190 files**, four coverage dimensions at **100%**, `pnpm check` green,
+coupling ledger **179 modules / 21 deferred / `core` 0**. R72 is in flight on `train` (five folds,
+≈2.7 hours, ≈$3.2); R73 is registered at 350 writer calls and ≈2,800 calls total, ≈$0.23.
