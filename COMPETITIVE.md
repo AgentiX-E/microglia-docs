@@ -3991,3 +3991,32 @@ shown to carry ranking information in a competitor's ablation, and the most expe
 the answer more often (R69/R70), then a selector that can *read* a candidate rather than measure its
 shape (CHESS's unit tests, XiYan's trained ranker). The second costs a call per candidate; the first
 costs k calls per question. Both are priced above; neither is bought yet.
+
+## The one selection step we never ran: voting (2026-11-10)
+
+Every published pipeline's "+SC" suffix is self-consistency — draw several queries, keep the answer
+the most of them agree on. DAIL-SQL+SC and CHESS+SC both carry it, and the 17.6 points between them
+and their single-pass cells include whatever it is worth. This lane had never measured it at k = 5:
+R67's five arms were `first`, `random`, `exec`, `prior`, `oracle`, and majority was not among them.
+
+It can be computed from R67's recorded pool at zero cost, because the pool stores which draws
+executed to the same result. On 350 questions:
+
+| selection | accuracy | vs `first` | share of the 8.85pp ceiling |
+| --- | --- | --- | --- |
+| `first` | 50.86% | — | — |
+| **majority of the largest agreeing group** | **51.71%** | **+0.86pp** | **9.7%** |
+| `sample-5-exec` (shape composite) | 52.00% | +1.14pp | 12.9% |
+| `sample-5-random` | 52.00% | +1.14pp | 12.9% |
+| `sample-5-oracle` | 59.71% | +8.85pp | 100% |
+
+**Voting is worth less than a coin flip's worth of luck, and the reason is the pool, not the vote.**
+At T = 0.7 the five draws are near-duplicates: there is usually nothing to vote on, so the mode of
+the multiset *is* the first draw most of the time. Self-consistency is not a weak mechanism — it is a
+mechanism that needs disagreement as input, and this lane's temperature does not produce enough.
+
+That converts temperature from a curiosity into the gating variable for the one published technique
+this project has not adopted. R70 carries `sample-5` for exactly this reason: at T = 1.0, if majority
+clears +2pp the mechanism is diversity and voting becomes free accuracy on every future dispatch; if
+it does not, voting is dead here and the remaining eight points are a *reading* problem — which is
+R71, not another draw.
