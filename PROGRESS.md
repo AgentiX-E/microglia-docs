@@ -14191,3 +14191,89 @@ was never a mixture.
 Gate state: **4,021 tests over 193 files**, four coverage dimensions at 100% (branch 99.87),
 `pnpm check` green at `f3aa22c`, coupling ledger 182 modules / 21 deferred / `core` 0. In flight: R77
 (6,875 / 7,600) and R68's third attempt on `zhipu:glm-4.7-flashx`.
+
+### 173.24 The relabel population was two populations, and every mini-dev accuracy was 8.7pp too low
+
+R75 re-scored fourteen mini-dev artefacts against the corrected labels and reported a mean effect of
+**−2.72pp → −1.33pp**. The corrected file is the `sql_only` configuration of Arcwise-Plat, which by its
+own description keeps the questions and replaces only the gold. It keeps *its* questions: **67 of the
+350 questions in this slice have different text in it**, because BIRD shipped further Mini-Dev
+revisions after the `v1-2024-06-20` this repository pins — its 2026 release realigned the ids to 0–499
+and rewrote the questions again. On 44 of the 67 the gold moved too.
+
+So the population is two, and they are different instruments:
+
+| population | n | Δ original | Δ corrected | what it is |
+| --- | --- | --- | --- | --- |
+| whole slice, as first reported | 350 | −2.71pp | −1.33pp | a mixture |
+| **question unchanged** | **283** | **−3.03pp** | **−1.34pp** | a relabelling |
+| question rewritten | 67 | ≈0 | ≈0 | a corpus revision |
+
+**The conclusion survives intact and two wrong numbers became visible.**
+
+| reading, on the 283 | pinned labels | corrected labels |
+| --- | --- | --- |
+| memory arm | 59.67% | 58.30% |
+| baseline | **62.69%** | **59.64%** |
+| paired Δ | −3.03pp | **−1.34pp** |
+
+The mixture reported **54.02% → 51.26%** for the baseline, so every mini-dev accuracy this lane has
+quoted was about **8.7pp too low**: the 67 mis-paired rows score 14.93% and 16.31% and drag both arms
+down by seven points. They cancel out of a paired difference — both arms are equally wrong on a question
+neither was asked — which is why the *effect* was right and the *level* was wrong. 11 of 14 artefacts
+keep their sign on the clean population; the two that land on exactly 0.00pp are nulls becoming null
+rather than verdicts being withdrawn.
+
+**The instrument is now a pinned revision rather than a reading.** `eval/manifests/gold/` holds the
+corrected labels beside the pinned corpus, with their digest and citation in the manifest, identified
+offline by the two null-`evidence` rows its own card names (ids **1507** and **1528**) — a lookalike
+built from the `full` configuration shares all 498 ids and would fail that check. `reviseGold` replaces
+the labels it can and **drops** the rows it cannot, because grading an answer to question A against
+question B's label is a corpus revision wearing a relabelling's name. A dispatch chooses
+(`gold: corrected`), and every artefact now records the revision it scored against, how many labels it
+replaced, and how many questions it could not score. `vendor` stays the default, so no published cell
+moved, and a run that keeps it now says so in a field that did not exist.
+
+### 173.25 R77's first dispatch was authorised for two thirds of itself
+
+`42915903394` ran fold 1 and stopped:
+
+```
+[sota] fold 1/5: eval=400 learn=700 ... calls=1952
+[sota] budget forecast after fold 1/5: the run needs about 10541 calls, the ceiling is 7600 (short by 2941)
+```
+
+1,952 calls, no artefact. **The ceiling did what R74's amendment built it to do** — only a ceiling may
+end a run — but it ended a run whose *authorisation* was wrong rather than one whose forecast was.
+Nothing was overspent; the run was refused permission to finish.
+
+The projection came from `pnpm eval:budget`, which priced 2,000 questions × 3 arms at R74's measured
+**1.0416 calls per question per draw**. That rate is a mixture, and the mixture is the defect: R74's
+bill was two costs. Evaluation scales with the population; the learning pass scales with the fold count
+and with `learn_sample`, and R74's `GenerationCache` answered **2,624 of its 3,500** learning requests,
+so 96% of its rate was marginal. Multiplied onto a fifth of its questions with a cold cache, the cheap
+part is priced correctly and 700 calls per fold go unpriced.
+
+**This is the third instance of one error class, and each instance moved up a level.** R64 sized a run
+by arm count; R68 found the arm count was a draw count; this one found that a per-question rate is a
+rate only over the part of the bill that is per question.
+
+`planBudget` now subtracts the prior's learning from its bill before deriving the rate, prices the
+dispatch's learning separately, and splits the two numbers by what they can know: the **projection**
+prices learning at the share the prior's cache answered, and the **ceiling** prices it in full plus 20%,
+because the first fold of any run has nothing to hit and the share cannot transfer.
+
+| R77 as priced | before | after |
+| --- | --- | --- |
+| rate | 1.0416 | **1.0043** |
+| projected | 6,875 | 7,593 |
+| ceiling | 6,875 | **11,249** |
+| the run's own forecast | 10,541 | 10,541 — now inside the ceiling |
+
+`amortisedLearning` marks the case that produced the error: a dispatch that learns against a prior that
+does not say how much of its bill was learning still gets a number, and the number says it is a ratio
+over a mixture. Re-dispatched as `42922152605` at 11,000 forecast / 12,000 ceiling / deadline 200.
+
+Gate state: **4,055 tests over 194 files**, coverage 100/99.88/100/100, `pnpm check` green at `717809e`,
+coupling ledger **183 modules / 22 deferred / `core` 0**. In flight: R77 second dispatch, R68's third
+attempt on `zhipu:glm-4.7-flashx`.
