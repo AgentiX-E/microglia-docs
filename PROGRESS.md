@@ -13432,3 +13432,23 @@ check: the Refutation section used a numbered list where the checker wants bulle
 been piped into `tail -2`, whose exit status is the pipeline's. The repository was fixed in the next
 commit, the CI run on the broken commit is the evidence, and the rule is now "never pipe a gate into a
 pager".
+
+### 173.6 A 7B model beating us is a statement about its scaffold, and the confound is now removable
+
+DPC's re-runs put Qwen2.5-Coder-7B at **48.6%** with DAIL-SQL+SC, **53.0%** as XiYanCoder-7B and
+**66.2%** with CHESS+SC on BIRD dev; this lane reads **58.02%** single-pass. At a fixed model the
+scaffold is worth **+17.6pp**; at a fixed scaffold class our single draw is **+9.4pp ahead** of
+theirs. So the thing to copy is CHESS's three stages, not the 7B — and the record already has measured
+opinions on two of them (value retrieval is load-bearing and our empty executions are 36% value
+misses; XiYan's selection model is −2.74 EX when removed, GradeSQL's outcome reward +4.33, our own
+model-comparison selector −1.14pp, which is why `exec-signature.ts` compares shapes).
+
+What was missing was not reading: it was that the comparison could not be **run** here. The model id
+and the endpoint were variables and the credential was not, so a backbone swap would have spent
+DeepSeek's key on another provider's host, tripped the breaker and been reported as a dead endpoint.
+That is fixed in `packages/eval/src/credential.ts` — `SOTA_API_KEY` where the lane points,
+`DEEPSEEK_API_KEY` only at `api.deepseek.com` and at a stand-in on this machine, refusal before the
+first call otherwise, and `model_credential` in the artefact so two backbones stay tellable apart.
+**R68** is registered on top of it: R67's three arms, one host, one variable moved, ceiling share
+reported on both backbones, and Rule 14 — *absolute points are not comparable across baselines; the
+share of the ceiling is* — is the axis both rows finally share.

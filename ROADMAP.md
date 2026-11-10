@@ -5719,3 +5719,55 @@ So the next P0 after R65's replication is not another prompt: it is **generation
 `sample-n` draws with execution-consistency and prior-based selectors, the machinery this repository
 already has (`pool.ts`, `union.ts`, `prior.ts`, `sample-*` arms) but has never pointed at this split
 with a registered estimand. That is where 10–20pp lives, and it costs calls rather than knowledge.
+
+## The 7B row, and the confound that has been printed beside it for weeks (2026-11-10)
+
+The comparison the project keeps being asked about is a **7B model**. DPC's re-runs of the two best
+published prompting pipelines on BIRD, with Qwen2.5-Coder-7B as the backbone:
+
+| row | backbone | scaffold | BIRD dev |
+| --- | --- | --- | --- |
+| DAIL-SQL + SC | Qwen2.5-Coder-7B | few-shot prompting, self-consistency | **48.6%** |
+| XiYanCoder-7B | Qwen2.5-Coder-7B (SQL-tuned) | prompting | **53.0%** |
+| CHESS + SC | Qwen2.5-Coder-7B | candidate generation + unit-test selection | **66.2%** |
+| **this lane, `retry-blank`** | `deepseek-flash` | one deterministic prompt, one draw | **58.02%** |
+| this lane, best prompt-content arm | `deepseek-flash` | one prompt + three gold exemplars | **56.57%** |
+
+Two facts sit in that table and only one of them is usually quoted. At a **fixed model**, the
+scaffold is worth **+17.6pp** (48.6 → 66.2), which is the largest single lever anyone has published
+on this benchmark. At a **fixed scaffold class**, our single draw is **+9.4pp ahead** of their
+single draw. So "a 7B beats us" is a statement about CHESS, not about the 7B — and the thing worth
+copying is the three stages CHESS buys with its 17.6 points, not the model.
+
+**But the table cannot settle it, and we should stop pretending it can.** Those rows vary the
+backbone, the scaffold *and* the judge at once. Three explanations remain live:
+
+1. **scale** — our backbone is stronger and our scaffold is weaker, which nets to +9.4 over their
+   prompting baseline and −8.2 under their pipeline;
+2. **scaffold** — the 17.6 points are the mechanism, and any backbone carrying it clears 66;
+3. **baseline** — most of those 17.6 points are what a **48.6%** baseline buys. R64 already
+   measured the arithmetic in this repository: *an arm that repairs a fifth of its population moves
+   a 30%-accurate model by six points and a 57%-accurate model by one.* Selection is a per-failure
+   mechanism too, so its absolute yield is set by how many failures there are, not by how good the
+   selector is.
+
+**Rule 14.** *Absolute points are not comparable across baselines. The comparable quantity is the
+share of the ceiling a mechanism recovers.* For selection that is
+`(sample-5-exec − first) / (sample-5-oracle − first)`, which is dimensionless, defined on any
+backbone, and the only form in which a published delta and ours can be placed on the same axis.
+
+**Rule 15.** *A caveat that survives in a table for many iterations is a missing experiment.*
+"on a different backbone" has been printed beside the DPC row since the row was entered. Until this
+iteration it could not be removed: `SOTA_MODEL` and `DEEPSEEK_ENDPOINT` were variables and the
+**credential was not** — the lane read `DEEPSEEK_API_KEY` and nothing else, so pointing it at
+another provider's host would have sent this provider's key, arrived as a `4xx`, been classified as
+a refusal, tripped the eight-prompt breaker, and been reported as "the endpoint is not answering".
+A caveat that cannot be tested because a configuration value was hardcoded is not a caveat; it is a
+bug that reads like humility.
+
+Both are now registered: **R67** prices width and selection on this lane's own backbone (the
+scaffold half), and **R68** repeats R67's three arms on a second backbone and reports the ceiling
+share on both (the scale half). R68 explicitly cannot be a replication of the DPC row — there is no
+credential or hosting here for Qwen2.5-Coder-7B — and it is written to say so in its own refutation,
+because a scale ladder on one host read as a replication of somebody else's row would be the exact
+error this section is about.

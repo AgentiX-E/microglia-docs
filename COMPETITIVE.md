@@ -3864,3 +3864,56 @@ three valid runs the arm is **+3.81pp** (95 gained / 55 lost, n = 1,050, exact p
 **+4.28pp** against the memory pack, which is null on all three. The row above therefore stands at
 ≈ **56%** with the honest interval, and the closing rule R65 registered before those runs — a pooled
 estimate inside ±4pp closes the line — is what the pooled number triggered.
+
+## What a 7B model with somebody else's scaffold is actually saying (2026-11-10)
+
+The question that keeps arriving, in its strongest form: *Qwen2.5-Coder-7B is a small model, and with
+CHESS's pipeline it scores 66.2% on BIRD dev against our 58.02%. Shouldn't we be learning from it?*
+
+Yes — and the arithmetic below says **what** to learn, because the 7B is not the part that wins.
+
+| row | backbone | scaffold | BIRD dev | calls per question |
+| --- | --- | --- | --- | --- |
+| DAIL-SQL + SC | Qwen2.5-Coder-7B | few-shot prompt, self-consistency | 48.6% | ≫1 |
+| XiYanCoder-7B | Qwen2.5-Coder-7B, SQL-tuned | prompting | 53.0% | 1 |
+| **CHESS + SC** | Qwen2.5-Coder-7B | schema/value retrieval + up to 5 candidates + unit-test selection + revision | **66.2%** | ~10 |
+| this lane, `retry-blank` | `deepseek-flash` | one prompt, one draw, one repair attempt on reject | **58.02%** | 1.06 |
+| this lane, `oracle` (ceiling, not deployable) | `deepseek-flash` | the item written for this question | +33.14pp over `none` | — |
+
+Read down the backbone column: at a **fixed model** the scaffold is worth **+17.6pp** (48.6 → 66.2).
+Read across the scaffold row: at a **fixed scaffold class** our single draw is **+9.4pp ahead** of
+their single draw (58.02 against 48.6). Both statements are true and the second is the one that
+usually goes missing. "A 7B beats us" is a claim about CHESS's three stages, not about the 7B.
+
+### The three stages, and what this record already knows about each
+
+| CHESS stage | what the literature says it is worth | what this record has measured |
+| --- | --- | --- |
+| **value retrieval** (LSTM index over column values, exact string match into the prompt) | CHESS calls it the load-bearing step; its own ablation is the one that hurts most | our empty-result taxonomy puts **36%** of empty executions on a value that was spelled differently in the database; R66 prices the fix at **98 calls** |
+| **candidate generation** (up to 5 draws at non-zero temperature) | CHESS's pool is where its 17.6 points start | `oracle` **+33.14pp** says the pool's ceiling on this lane is enormous; R67 measures whether five draws reach it |
+| **unit-test selection + revision** | the difference between CHESS and DAIL-SQL on the same 7B | XiYan-SQL's selection model is **−2.74 EX when removed**; GradeSQL's outcome-reward ranking beats execution-based Best-of-N by up to **+4.33**; our own attempt at letting a model compare two result sets read **−1.14pp**, which is why `exec-signature.ts` compares shapes instead of asking |
+
+That last row is the honest part of the answer. We have already read their code and tried their
+ideas: the model-comparison selector failed here, the execution-order signal converted at +0.86pp
+against a +13.75pp retrieved signal, and `linked` pruning lost 9.58pp. What has never been tried is
+the stage CHESS says matters most, at the width CHESS uses — and that is a registration problem, not
+a reading problem.
+
+### Why the published gap still cannot be attributed
+
+Three variables move between those rows at once — backbone, scaffold, judge — so three explanations
+are live: **scale** (stronger model, weaker scaffold, net −8.2), **scaffold** (the 17.6 points are
+the mechanism), and **baseline** (most of the 17.6 points are what a 48.6% baseline buys, per the
+per-failure arithmetic R64 measured: *a fifth of the population is six points at 30% and one point
+at 57%*).
+
+The comparable quantity is the **share of the pool ceiling** a selector recovers,
+`(exec − first) / (oracle − first)`. R67 measures it on this lane's backbone; R68 measures it on a
+second one and reports both. If the share travels, selection is a mechanism and its absolute points
+are a function of the baseline. If it does not travel, the published gap is a baseline effect and
+the next lever is the ceiling rather than the selector.
+
+**One thing this record will not claim.** That our backbone is "bigger" than a 7B. The provider does
+not publish the parameter count of `deepseek-flash`, so the honest statement is only that the two
+rows use *different* backbones — which is exactly why R68 exists. A comparison whose scale is
+assumed is a comparison whose conclusion is assumed.

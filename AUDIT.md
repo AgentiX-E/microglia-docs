@@ -7367,3 +7367,37 @@ used a numbered list where the checker wants bullets — and the commit went out
 was piped into `tail -2` and a pipeline's exit status is `tail`'s. The docs repository records the
 consequence below; the lesson is that a verification step whose result is filtered is not a verification
 step.
+
+## 35.06 The confound that a half-variable configuration made permanent (2026-11-10)
+
+**Finding.** Three values decide where a run's tokens are bought: the model id, the host, and the
+credential. Two of them were variables (`SOTA_MODEL`, `DEEPSEEK_ENDPOINT`) and one was a literal —
+`process.env['DEEPSEEK_API_KEY']` read at the top of the lane with no alternative. The consequence is
+narrow and it survived for weeks: the lane could be *pointed* at another provider's host while still
+*sending* this provider's key, so the one comparison this project keeps promising — the same scaffold
+on a different backbone — could not be run, and the table kept printing "on a different backbone" as a
+caveat. **A confound that cannot be removed by configuration reads like an acknowledged limitation and
+behaves like an unexamined assumption.** Rule 15 in `ROADMAP.md` is the general form: a caveat that
+survives many iterations beside the same number is a missing experiment.
+
+**Why the failure mode is worse than a rejected request.** A key for the wrong provider does not
+arrive as a status code a reader sees. It arrives as `4xx` → `verdictOf` classifies it `refusal` → the
+eight-prompt breaker trips → the artefact says the endpoint stopped answering. The τ² lane already paid
+for this exact shape once: 32 prompts, 32 empty answers, and a store with no knowledge in it, reported
+as a finding about the model. So the fix refuses the combination *before the first call*, and the
+credential's origin is written into the artefact as `model_credential: lane | deepseek | none`.
+
+**Finding, second order — the fix nearly broke the workflow it was protecting.** The first version
+refused every borrowed key on every foreign host, and the repository's own documented rehearsal
+(`eval/drivers/stand-in.mjs` behind `DEEPSEEK_ENDPOINT`, which spends the real key against a dummy
+server that authenticates nobody) is exactly that combination. Nothing in the test suite would have
+caught it: the stand-in has no test that sets both variables. It was caught by reading `README.md`
+while writing the paragraph that documents the new variable. The loopback hosts are now exempt by
+name, decided on the host rather than on the port, and the exemption is pinned by a test that iterates
+`127.0.0.1:8123`, `localhost:3000`, `[::1]:9000` and `0.0.0.0` — plus one that refuses
+`localhost.example`, because a substring test would have passed that too.
+
+**Verification.** 14 tests on the new module, four coverage dimensions at 100% for the repository
+(3,819 tests, 186 files), `pnpm typecheck:lanes` green, coupling ledger 175 modules / 16 deferred /
+`core` 0. The new registration is `prereg/R68-backbone-scale.md`, and it states in its own refutation
+that it is a scale ladder on one host rather than a replication of the published Qwen2.5-Coder-7B row.
