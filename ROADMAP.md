@@ -5956,3 +5956,40 @@ in this project whose evidence was never graded by a label anyone has since corr
 **Next, in order.** R74's reading on train (in flight, 27,846 / 33,416); R68's third attempt sized from
 its own measured fold (5,220 / 6,300, deadline 300); then the corrected-gold manifest (R76) and, behind
 it, the dose randomised on train rather than on the demoted slice.
+
+### R74 landed — the rule verdict is real in direction, two thirds artefact in size, and too small to act on
+
+`train`, three arms, 24,465 calls. `full` 55.66% against `loo` 55.65%: **withholding one rule per
+question moves nothing** (−0.01pp, p = 1.0).
+
+| class | in-sample | cross-fitted |
+| --- | --- | --- |
+| harmful | +2.37pp [1.54, 3.21] | **+0.82pp [−0.08, 1.73], p 0.098** |
+| helpful | −2.84pp [−3.84, −1.88] | −0.33pp [−1.42, 0.77], p 0.62 |
+
+The in-sample table is a regression to the mean: a question the `full` arm failed is a question whose
+rules were labelled harmful, and a re-draw on it improves regardless. Deciding the class on the other
+four folds removes **65% of the harmful signal and 88% of the helpful one**.
+
+**Three decisions.**
+
+1. **`attribution.ts` is not a decision input.** Its per-rule verdicts are two thirds artefact and are
+   now labelled that way wherever the lane reads them.
+2. **No pruning this iteration.** +0.82pp on 43% of questions is +0.35pp on the split, against a paired
+   interval of ±0.4pp. An intervention the instrument cannot see is an intervention that cannot be
+   validated, and this project does not ship those.
+3. **The next question is the inert share.** A pack cannot help if most of its 540 rules change no
+   answer at all, and nobody has measured how many do. R77 randomises *which* rule is withheld across
+   draws rather than holding one hash draw per question, and reports the share of rules that are inert
+   in both directions.
+
+**Also recorded:** `pnpm eval:loo` had never produced output — the binary exported `main` and never
+called it, so the command exited zero and printed nothing while sixteen tests and every gate passed.
+That is the worst shape a defect can take, and it is the second time an instrument in this lane was
+silently blind (the first was the arm-coverage gate). The class table in this section exists only
+because it was finally run.
+
+**Position.** Two of the three coordinates of the negative effect are now closed as *interventions*:
+position (R72, gating recovers the harm but never creates gain) and content (R74, the per-rule signal is
+real but 0.35pp). **Dose is the only one left with a live mechanism**, and it is now measurable on
+train — the only split whose labels nobody has corrected.

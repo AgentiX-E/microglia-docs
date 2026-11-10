@@ -14093,7 +14093,56 @@ repository's own workflow checker refused the push. The transfer and density kno
 variables; forty registrations had never varied them, and a form field nobody varies spends a slot on a
 constant.
 
-Gate state: **4,017 tests over 193 files**, four coverage dimensions at **100%**, `pnpm check` green,
+Gate state: **4,021 tests over 193 files**, four coverage dimensions at **100%**, `pnpm check` green,
 coupling ledger **182 modules / 21 deferred / `core` 0**. R74 is in flight on `train` (three arms,
 27,846 forecast / 33,416 ceiling); R68's third attempt is in flight on `zhipu:glm-4.7-flashx` sized
 from its own measured fold (5,220 / 6,300, deadline 300).
+
+### 173.22 The attribution was two thirds selection effect, and the residue cannot pay for a pruning
+
+R74 ran on `train`: three arms, **24,465 calls**, 105 minutes, and `config.budget.cap_in_force = 29,587`
+against a forecast of 27,846 — **the ceiling fired on its first live run**, which is why this file has
+an outcome instead of a second void.
+
+| reading | value |
+| --- | --- |
+| `full` | 55.66% |
+| `loo` (one rule withheld per question) | 55.65% |
+| whole-split Δ | **−0.01pp** [−0.52, 0.51], p = 1.0000 |
+| withheld rules | 532 distinct, median 10 draws, max 88 |
+
+**The class table says two opposite things depending on where the class was decided.**
+
+| class | in-sample Δ | p | cross-fitted Δ | p |
+| --- | --- | --- | --- | --- |
+| harmful | **+2.37pp** [1.54, 3.21] | < 0.0001 | **+0.82pp** [−0.08, 1.73] | 0.0978 |
+| helpful | **−2.84pp** [−3.84, −1.88] | < 0.0001 | −0.33pp [−1.42, 0.77] | 0.6241 |
+| neutral | −0.51pp [−1.38, 0.36] | 0.2888 | −0.43pp [−1.25, 0.37] | 0.3379 |
+
+A rule is called harmful *because* the `full` arm failed on the questions that drew it, and the effect
+is then measured on those same questions: **a question that was unlucky is a question whose rules were
+labelled harmful, and a second draw on it improves regardless of the rule.** `looCrossFitted` decides
+each rule's class on the other four folds and measures on the fifth. **65% of the harmful signal and
+88% of the helpful one were the fold that produced the label.**
+
+**What survives.** Only a direction, at p = 0.0978, on the harmful class — the first out-of-sample
+evidence this project has that any per-rule quality signal exists. It is not a lever: +0.82pp on the
+43% of questions that drew a harmful rule projects to **+0.35pp on the split**, where one question is
+0.013pp and a paired interval is ±0.4pp. **The intervention would be indistinguishable from noise**, and
+the helpful class has no measured basis at all, so the pruning can only be one-sided.
+
+**The consequence for what memory contains.** The per-rule verdicts this project has been using to
+decide what goes into the pack are **two thirds regression artifact**, which is a defect in
+`attribution.ts` as a *decision input*. And the residual is too small to act on. So the whole-split null
+now has a third explanation that neither the in-sample nor the cross-fitted table can rule out: **most
+rules are inert**, and a pack cannot help if most of its rules do nothing.
+
+**The next registration follows from that sentence.** Its question is not "which rules are harmful" but
+**"how many of the 540 rules change any answer at all"** — the inert share — measured by randomising
+*which* rule is withheld across draws rather than holding one hash draw per question. Registered
+separately, because it is a different instrument.
+
+**A defect that had been silent for two iterations.** `pnpm eval:loo` had **never produced output**: the
+command was registered in `package.json`, the module had sixteen tests, and the binary exported `main`
+without calling it. A script that exits zero and prints nothing — every gate in the repository passed,
+and the numbers above only exist because the reading was finally run.

@@ -4176,3 +4176,33 @@ Three recent results frame the negative effect, and this lane's numbers sit diff
 | I2S, arXiv 2509.23196 | adding demonstrations **consistently degrades** accuracy even when optimal; **semantic misguidance** (verbatim step copying) at high similarity | our high-similarity tercile is a **wash**, not a harm — the opposite ordering. The two settings differ in what is copied: a reasoning trace can be imitated step by step, a rule cannot |
 | LMS3, ICML'25 | reasoning efficacy is bounded by **semantic similarity and inference stability** of the demonstrations; adds an explicit **demonstration-rejection** mechanism | R71 and R73 are two measurements of the rejection side: `column-mention` AUC 0.514, `assertion-value` AUC 0.500 with a zero-width interval. **Rejection needs a signal that varies, and on a five-draw pool at 51% the candidates agree about everything a cheap reader can see** |
 | ExpeL, Agent Workflow Memory, AutoGuide, ACE-style playbooks | report positive cells for prompt-prefix memory | every one reports a cell at a baseline far below ours and none reports the unaugmented arm at the same baseline. A rule pack built from a corpus's own failures can be worth points at 35% and zero at 51% — R64 already showed a per-failure mechanism's yield is set by how many failures exist |
+
+### Per-rule attribution is two thirds regression, and no competitor's pruning survives the check either
+
+The published memory systems that prune (ExpeL's rule dropping, AWM's workflow induction, AutoGuide's
+experience selection, and the ACE-style playbooks) all score a memory item on the tasks that retrieved
+it and then remove the ones that look bad. R74 shows what that procedure is worth when it is measured
+properly, and it is the only such check in this comparison table.
+
+| estimate | harmful rules | helpful rules |
+| --- | --- | --- |
+| scored on the questions that drew them (what every published pruning does) | **+2.37pp [1.54, 3.21]** | **−2.84pp [−3.84, −1.88]** |
+| scored on folds the label never saw | **+0.82pp [−0.08, 1.73], p 0.098** | −0.33pp [−1.42, 0.77], p 0.62 |
+
+A rule is labelled harmful *because* the model failed where it was injected, so a paired re-draw on
+those same questions improves by construction. **65% of the harmful signal and 88% of the helpful one
+were the fold that produced the label.** The neutral class is the only one that does not move.
+
+Two consequences for reading anyone's pruning numbers:
+
+- **A pruning result that does not cross-fit its labels is a regression-to-the-mean estimate.** The
+  magnitude of the artefact is set by how noisy the per-question outcome is, which is why pruning looks
+  better on small benchmarks with hard questions — exactly the setting the memory papers report in.
+- **The residue is real but small.** +0.82pp on the 43% of questions that drew a harmful rule projects
+  to +0.35pp on a 7,829-question split whose paired interval is ±0.4pp. This lane will not claim it.
+
+LMS3 (ICML'25) is the closest published relative to get this right — it rejects demonstrations on a
+*stability* criterion computed independently of the target question rather than on the target's own
+outcome — and its gain is reported as selection quality rather than as a pruning count. That is the
+right shape, and it is where this lane's next registration goes: **measure how many rules change any
+answer at all**, before deciding which to keep.
