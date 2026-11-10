@@ -14005,5 +14005,5 @@ trusted, and the next experiment is R66's position); **the dose is what hurts** 
 registration is a causal dose curve).
 
 Gate state: **3,976 tests over 191 files**, four coverage dimensions at **100%**, `pnpm check` green,
-coupling ledger **179 modules / 21 deferred / `core` 0**. R68's second backbone is in flight on
+coupling ledger **180 modules / 21 deferred / `core` 0**. R68's second backbone is in flight on
 `zhipu:glm-4.7-flashx`; R74 is in flight on `train` (three arms, cap 28,000, ≈$2.0).
