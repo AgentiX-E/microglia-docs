@@ -14146,3 +14146,48 @@ separately, because it is a different instrument.
 command was registered in `package.json`, the module had sixteen tests, and the binary exported `main`
 without calling it. A script that exits zero and prints nothing — every gate in the repository passed,
 and the numbers above only exist because the reading was finally run.
+
+### 173.23 The zero the validator refused was the lane's deterministic form
+
+R77 asks the question R74 left behind — **does a rule change what the model writes at all** — and it can
+only be asked at temperature zero: a deterministic decoder given two prompts that differ by one rule
+returns the same query if and only if the rule did not matter. The header validator refused that
+outright, holding `temperature` to `(0, 2]`, and the reason it gave was right and aimed at the wrong set
+of registrations:
+
+> a zero here is a deterministic run wearing a sampling arm's name, and it would be reported as a pool
+> of identical draws without saying so.
+
+That is exactly true of a registration declaring `sample-<n>` — five draws at zero are one draw counted
+five times. It is not true of one declaring `none` and `loo`, which has one draw and no pool to
+degenerate. Applied there, the rule protected nothing and made the lane's ordinary deterministic form
+inexpressible; it also made R74's temperature invisible, because a file that says nothing inherits the
+workflow's 0.7 and nothing in the artefact records what was inherited. The rule now follows the reason
+rather than the number: the interval is `[0, 2]` and zero is refused **only** when a `sample-` arm is
+present.
+
+| registration | at T = 0 | before | now |
+| --- | --- | --- | --- |
+| `arms: sample-5-first` | five draws are one draw | refused | refused — `whose draws would all be one draw` |
+| `arms: none,loo` | one draw, no pool | refused — `describes no draw` | **accepted** |
+
+**R77's own header was 50% light, in the same way R68's was.** The first version priced it at 4,600
+calls for "two arms"; the run buys three, because `none` and `full` are measured on every dispatch
+whether or not a header names them, and `loo` is the third. Priced from R74's measured 24,465 calls at
+**1.0416 per question per draw** (`pnpm eval:budget`, the draw-weighted planner that replaced
+per-arm pricing after R68 under-reported by 18%), 2,000 questions over `none,full,loo` projects to
+**6,875**, ceiling **7,600**, ≈$0.60. The correction is the same error class the budget gate was built
+for: a projection computed over the arms a file happens to list rather than the arms the run bills.
+
+Dispatched as `42915903394` — `train`, 2,000 questions, `none,full,loo`, `temperature: 0`, forecast
+6,875 / ceiling 7,600 / deadline 150. The reading is a **count over `per_case`**, not a model call:
+`predictedSql` is the `full` arm's query, `armSql.loo` is the same question with one rule withheld, and
+the pair is *live* when the two normalise differently. Three branches: **above 70%** and the pack's
+premise is wrong rather than its dose (the next intervention is the distillation prompt); **below 30%**
+and most rules are live in the wrong direction (the dose is the only remaining axis); **within 2pp of
+R74's 52.0%** and the temperature-0.7 decoder was nearly deterministic on this prompt, so the mixture
+was never a mixture.
+
+Gate state: **4,021 tests over 193 files**, four coverage dimensions at 100% (branch 99.87),
+`pnpm check` green at `f3aa22c`, coupling ledger 182 modules / 21 deferred / `core` 0. In flight: R77
+(6,875 / 7,600) and R68's third attempt on `zhipu:glm-4.7-flashx`.
