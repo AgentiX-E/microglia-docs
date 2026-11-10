@@ -13493,3 +13493,47 @@ every rehearsal here uses it.
 
 Gate state: 3,857 tests over 187 files, four coverage dimensions at **100%**, `pnpm check` green,
 coupling ledger 176 modules / 17 deferred / `core` 0.
+
+### 173.8 The pool holds 8.85 points and the selectors cannot see any of them
+
+Dispatch `42749802682`, minidev, n = 350, 5 folds, **2,930 calls, $0.4708** at 100% peak pricing
+($0.2354 off-peak), cache 77.4%, 1,750 candidates signed and reconciled, all gates green.
+
+| arm | accuracy | vs `none` | vs `sample-5-first` |
+| --- | --- | --- | --- |
+| `none` | 52.29% | — | — |
+| `full` | 51.43% | −0.86pp [−4.00, +2.00], p = 0.71 | — |
+| `sample-5-first` | 50.86% | −1.43pp, p = 0.42 | — |
+| `sample-5-random` | 52.00% | −0.29pp | **+1.14pp** |
+| `sample-5-exec` | 52.00% | −0.29pp | **+1.14pp** |
+| `sample-5-prior` | 53.14% | +0.86pp, p = 0.70 | **+2.28pp** |
+| `sample-5-oracle` | **59.71%** | +7.43pp, p < 1e-4 | **+8.85pp** |
+
+Four readings.
+
+**Temperature costs 1.43pp; the pool repays 8.85.** Five draws at T = 0.7 contain the answer on
+8.85pp more questions than the first draw — below R67's predicted +10…+25pp, which is the prediction
+being wrong in the conservative direction and is recorded as such.
+
+**Execution-shape selection is worth exactly a coin flip.** `sample-5-exec` and `sample-5-random` are
+not approximately equal, they are the same number: 52.00%, +1.14pp over `first`, 12.9% of the
+ceiling. And the reason is measured rather than argued: on the 120 disagreeing questions (296 pairs)
+**every one of the seven signals has an AUC interval straddling 0.5** — draw-order 0.510 [0.421,
+0.596], null-share 0.492, empty 0.535, duplicate-share 0.537, column-shape 0.541, value-type 0.542,
+row-shape 0.546. A selector built from signals that cannot rank cannot rank.
+
+**The prior selector is the only one above chance** (+2.28pp, 25.8% of the ceiling) and its own
+report says not to trust it: `db-signature` reads +10.00pp on 80 questions, 36 with any support,
+in sample — an upper bound for a verifier, not a result.
+
+**The branch that fires is R67's own third one: narrow to the pool.** `exec − first` is under +8pp
+(1.14) *and* the ceiling is under +15pp (8.85), so the registration's instruction is to widen or
+diversify generation before any further selector work. **R69 is registered** on exactly that: k = 10
+at the existing temperature, and k = 5 at T = 1.0, two dispatches, ceiling and ceiling-share as the
+axis. Its arms (`sample-10-*`) are the same class of gap that cost R67 a dispatch, and the file says
+so in its header rather than discovering it at runtime.
+
+**R66 is still in flight** (`42750334097`, dev, n = 1,534, 15,000-call cap). Its first attempt,
+`42747637476`, measured fold 1 and refused: the forecast said 13,479 calls against a 12,000 cap,
+because the cap had been set from R64's *bill* rather than from a cold-cache forecast. The refusal
+cost a fold and no result, which is the mechanism working.

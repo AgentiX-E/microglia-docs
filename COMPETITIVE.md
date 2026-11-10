@@ -3917,3 +3917,38 @@ the next lever is the ceiling rather than the selector.
 not publish the parameter count of `deepseek-flash`, so the honest statement is only that the two
 rows use *different* backbones — which is exactly why R68 exists. A comparison whose scale is
 assumed is a comparison whose conclusion is assumed.
+
+## CHESS's selection step is content-aware, and that is why it is worth 17.6 points (2026-11-10)
+
+R67 finally priced the step every published pipeline above us has and this lane did not: choosing
+among several generated queries. On 350 questions with 1,750 candidates, five draws at T = 0.7
+contain the right answer on **+8.85pp** more questions than the first draw, and the best selector
+built from execution **shape** recovers **12.9%** of that — scoring *identically to a random pick*
+(`sample-5-exec` 52.00%, `sample-5-random` 52.00%).
+
+The measurement that explains it is the one worth carrying to the board: on the 120 questions where
+the draws disagreed, the AUC of all seven shape signals straddles chance.
+
+| signal | AUC [95%] | top-pick rate |
+| --- | --- | --- |
+| draw-order | 0.510 [0.421, 0.596] | 24.2% |
+| null-share | 0.492 [0.457, 0.520] | 25.8% |
+| empty | 0.535 [0.510, 0.566] | 24.2% |
+| duplicate-share | 0.537 [0.500, 0.578] | 25.8% |
+| column-shape | 0.541 [0.500, 0.583] | 25.0% |
+| value-type | 0.542 [0.504, 0.582] | 25.8% |
+| row-shape | 0.546 [0.494, 0.598] | 25.8% |
+
+This is the difference between CHESS's selector and every shape signal we have. CHESS writes **unit
+tests from the question** — "the result must have a column named `County`", "the answer must be one
+row" — and executes them against each candidate. Those assertions are *content-aware*: they come from
+the question's own vocabulary, not from a property every SQL result has. Shape signals are the
+opposite by construction: they are cheap, deterministic and free, and this measurement says they
+carry no ranking information on this pool. XiYan-SQL's trained selection model (−2.74 EX when
+removed) is content-aware in the same way and costs a model call per comparison; that is the price
+the 17.6-point gap actually has.
+
+The consequence for this project is a cost decision, not an architecture one: reaching that band
+means paying for a verification call per candidate, which changes the per-question bill by the width
+of the pool. R66 (value spellings, 98 calls) and R69 (wider and hotter pools) are what this lane is
+buying first, because both are cheaper than that and neither has been priced yet.
