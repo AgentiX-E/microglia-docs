@@ -13537,3 +13537,69 @@ so in its header rather than discovering it at runtime.
 `42747637476`, measured fold 1 and refused: the forecast said 13,479 calls against a 12,000 cap,
 because the cap had been set from R64's *bill* rather than from a cold-cache forecast. The refusal
 cost a fold and no result, which is the mechanism working.
+
+### 173.9 The value block fires on three empty retries in four and moves three questions
+
+Dispatch `42750334097`, `dev`, n = 1,534, 5 folds, **5,594 calls, $0.7078**, cache 73.5%, `V76`
+passed, every other gate green, 0 call failures.
+
+| arm | accuracy | vs `none` | gained / lost |
+| --- | --- | --- | --- |
+| `none` | 56.71% | — | — |
+| `full` | 56.58% | −0.13pp [−1.83, +1.56], p = 0.94 | 82 / 84 |
+| `retry-blank` | 58.08% | +1.37pp [+0.85, +1.96], p = 9.5e-07 | 21 / 0 |
+| `retry-values` | 58.28% | +1.56pp [+0.98, +2.22], p = 1.2e-07 | 24 / 0 |
+
+**The mechanism works; the mechanism is nearly worthless; those are different claims.** The block
+reached 69 of the 91 empty retries (**75.82%**, against a predicted floor of 60%), which is what
+confirms the literal matcher is reading the right columns and writing short, specific lines (112
+lines, 141 characters mean, none dropped). It then converted **six questions `retry-blank` did not**
+— and broke **three that `retry-blank` had repaired**. Net **+2.97pp on the retried population**,
+exact McNemar p = **0.51**, and **+0.20pp** on the benchmark.
+
+The `0 lost` column is why this needs spelling out. Every arm reports gained and lost **against
+`none`**, and against `none` a retry cannot un-answer anything: both retry arms are strictly additive
+by construction. Against its own control the block is 6 up and 3 down, and 69 questions received
+evidence that changed nothing.
+
+**Registered branch: narrowed.** A positive under +8pp leaves the value explanation "one contributor
+among several" and means the composition's 35.96% share "overstates what is recoverable" — three
+questions out of 1,534 is the size of that overstatement. The tempting re-description, *the block
+fired on 76% of retries so the mechanism is confirmed*, is exactly what the registration forbade in
+writing: firing is not converting.
+
+**Two predictions held, one failed, one was mis-priced.** Fired share 75.8% (held); non-value
+failures undamaged (held trivially — `error` 0/10 in *both* arms, where R64 repaired one of ten);
+delta +0.20pp at the floor of the predicted +0.2…+1.1 band (held); repaired rate **23.76%** against a
+predicted 25–40% (failed, and the predicted "+4 to +16 more repairs out of 98" was actually +3 of
+101). The bill was +6.7% in calls but **1.6× in money**, and the artefact says why: the dispatch ran
+at **03:34 UTC**, inside the 01:00–04:00 window that bills at exactly double. $0.235 bought nothing.
+
+### 173.10 The width ladder, and a quote that cost two dispatches
+
+R69 is dispatched as one run rather than two. Its five-draw arms ride **beside** its ten-draw arms —
+one pass of ten draws contains the five-draw pool as its first five, so the width effect becomes a
+paired difference inside a run instead of a comparison across two days, two caches and two endpoint
+states. R69's temperature half became **R70**, because a registration header carries one temperature
+and R69 wanted 0.7 and 1.0: a header that lies to one of two dispatches is worse than two files.
+
+Three instruments moved to close the same shape at three different layers:
+
+- **`temperature:` is a header key**, read by `eval:prereg-temperature`, refused outside `(0, 2]`, and
+  refused on a registration that draws nothing. `SOTA_SAMPLE_TEMPERATURE` is a repository variable,
+  and a variable is global: an experiment that moves it moves it for every queued dispatch. This is
+  the third knob to leave the variable space, after the template and the model.
+- **`config.sample_temperature` is in the artefact.** It was in the environment and in one stdout
+  line and nowhere in the record, so R69 and R70 would have been indistinguishable from their numbers
+  — the same gap `model_credential` closed one iteration earlier.
+- **`armsAgainstRegistration`** makes the lane refuse an arm list that disagrees with the
+  registration it claims to execute. Containment rather than equality: every declared arm must be
+  bought, and a dispatch may buy more, because R66's header names `retry-values` while its dispatch
+  buys `retry-blank,retry-values` — a treatment without its control is not a measurement.
+
+Then both dispatches died in **one second**, on `Resolve the sampling temperature`, on an apostrophe
+inside a parameter expansion (`AUDIT.md` § 35.08). No calls, no folds, two dispatch objects. The
+checker is the fix: `scripts/check-workflows.py` now runs `bash -n` over every `run:` block in every
+workflow — parse, not execute — and two self-test cases pin it.
+
+Gate state: 3,868 tests over 187 files, four coverage dimensions at **100%**, `pnpm check` green.

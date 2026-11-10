@@ -3952,3 +3952,42 @@ The consequence for this project is a cost decision, not an architecture one: re
 means paying for a verification call per candidate, which changes the per-question bill by the width
 of the pool. R66 (value spellings, 98 calls) and R69 (wider and hotter pools) are what this lane is
 buying first, because both are cheaper than that and neither has been priced yet.
+
+## Where this lane stands, 2026-11-10 (BIRD dev, 1,534 questions)
+
+The comparison that survives a changed backbone, a changed judge and a changed scaffold is the one
+this file keeps returning to. Stated as plainly as the record allows:
+
+| system | BIRD dev EX | what carries the number | comparable to ours? |
+| --- | --- | --- | --- |
+| CHESS + self-consistency | **66.2%** | CHESS candidate generation + unit-test selection, Qwen2.5-Coder-7B | no — scaffold and backbone both differ |
+| CHESS (paper cell) | 66–78% | the same, at its own SC width | no |
+| DAIL-SQL + SC | 48.6% | prompting baseline, same 7B | no — backbone differs, scaffold is a prompt |
+| **microglia, single prompt** | **58.02%** | `full`, 1,534 questions, 5-fold cross-fit | — |
+| microglia, memory arm (`none` vs `full`) | 56.71 → 56.58% | memory is null on this split (−0.13pp, p = 0.94) | — |
+| microglia, best arm on the split | **58.28%** | `retry-values`, +1.56pp, 24 repairs / 0 losses | — |
+
+Three readings, in the order they matter:
+
+**Rank, stated honestly: 2nd of 3 published cells, first among single-pass systems.** This lane sits
+**+9.4pp above** the 7B prompting baseline and **−7.9pp below** the 7B CHESS pipeline. The published
+SOTA on BIRD dev remains CHESS at 66.2% with self-consistency. The gap is no longer "somewhere in the
+scaffold": R67 measured the pool at +8.85pp of ceiling and the shape selectors at 12.9% of it, which
+is the 8.2-point arithmetic — CHESS's selection step is **content-aware** and ours is not, and that
+difference is priced per candidate call.
+
+**The absolute numbers are not comparable across baselines (Rule 14), and R68 is the test.** Our
+58.02% baseline leaves 42pp of headroom; the 7B's 48.6% leaves 51pp entirely. A per-failure mechanism
+that repairs a fifth of its population moves a 48.6% model by six points and a 58.0% model by one.
+The invariant being measured is the **ceiling share**, not the points.
+
+**The cheapest remaining levers, ranked by measured cost per point.** Value spellings: 3 repairs per
+1,534 questions for $0.71 — closed as a line, priced and negative. Pool width: 3,500 candidate calls
+for a predicted +3…+11pp of ceiling — R69, in flight. Temperature: 2,450 calls for a predicted
++1…+11pp — R70. Content-aware verification: one call per candidate, the only lever that has been
+shown to carry ranking information in a competitor's ablation, and the most expensive.
+
+**What would move us to first.** Nothing in the prompt. The measured path is: a pool that contains
+the answer more often (R69/R70), then a selector that can *read* a candidate rather than measure its
+shape (CHESS's unit tests, XiYan's trained ranker). The second costs a call per candidate; the first
+costs k calls per question. Both are priced above; neither is bought yet.

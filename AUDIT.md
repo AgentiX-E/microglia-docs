@@ -7434,3 +7434,52 @@ GitHub's cap of 25. One input with a closed vocabulary fixes both, and `density_
 repository variable is the payment. A linter that fails on a count is not a linter that fails on a
 design error, but here it forced the design error into the open, which is worth recording: the cap
 was the reason the model/host/key decision got collapsed into something that cannot be set half-way.
+
+## 35.08 One expansion is not inside the quotes it appears to be inside (2026-11-10)
+
+**Finding.** R69's and R68's first dispatches both died **one second** into the BIRD job, before a
+single model call, on the step this iteration added:
+
+```
+/home/runner/work/_temp/….sh: line 10: unexpected EOF while looking for matching `'
+Process completed with exit code 2.
+```
+
+The line was `echo "${VALUE:-the lane's default (…)}"`. Inside the `word` part of a parameter
+expansion, the shell parses quote characters **even though the whole expansion sits inside double
+quotes**, so the apostrophe in an English sentence opened a string that never closed. Reproduced
+locally in one command after the fact; it would have been reproduced in one command before the
+dispatch, which is the whole distance between a rehearsal and a hope.
+
+**Why it is the fourth instance of one shape rather than an accident.** The repository has now paid
+four times in three iterations for the same structure: a value exists, a second place reads it, and
+nothing checks that the two agree.
+
+| iteration | the value | the reader | what was never checked |
+| --- | --- | --- | --- |
+| R65 | `SOTA_RETRY_FLOOR` | the artefact's floor gate | the amendment that lowered it to 90 |
+| R66 | `retry-values` | the arm list the lane parses | whether the arm was in `OPTIONAL_ARMS` |
+| R67 | `sample-5-exec` | the same parser, by regex | the same membership list |
+| R69/R68 | `SOTA_SAMPLE_TEMPERATURE` | a `run:` block | whether the block was a shell script |
+
+The first three are registrations against arms and are now closed by `armsAgainstRegistration`, which
+the lane applies before its first model call. The fourth is a **workflow against a parser**, and it
+cannot be closed by any amount of care in the workflow, because the failure is not semantic — the
+step was correct English and correct YAML.
+
+**The fix is the checker, not the sentence.** `scripts/check-workflows.py` now runs `bash -n` over
+every `run:` block in every workflow file. It parses and does not execute: no step runs, no variable
+is read, and `${{ }}` expressions are just characters to the parser. Five files are covered by one
+check, and the class it catches is the whole class — an unbalanced quote, a missing `fi`, an unclosed
+heredoc. Two self-test cases sit beside the six that existed: the apostrophe that would have failed,
+and a well-formed loop that must stay clean, so the check cannot pass by refusing everything.
+
+**What it cost.** Two dispatch objects, no model calls, no artefact, no folds — the smallest possible
+price for this class, and only because the step was *before* the run rather than inside it. A step
+that failed forty minutes in would have cost five folds, and the ledger in the previous paragraph is
+the reason to notice that the price was luck rather than design.
+
+**The general lesson, stated so it is checkable.** A shell expansion is a language with its own
+quoting rules embedded in a file with a different quoting language embedded in YAML. Every tool in
+that stack can be individually correct while the composition is not, which is why the only reliable
+check is the innermost language's own parser, run on the outermost file's actual content.
