@@ -13955,6 +13955,55 @@ injected on hard questions and withheld from easy ones looks harmful whatever it
 next experiment randomises the dose**, which is the one design that turns the observational attribution
 into a causal one at a price this lane can pay.
 
-Gate state: **3,955 tests over 190 files**, four coverage dimensions at **100%**, `pnpm check` green,
+### 173.18 The rule verdict was a selection effect, and one withheld rule per question is the fix
+
+`attribution.ts` reports **267 harmful, 236 helpful, 1,206 neutral** rules of the 1,709 ever injected,
+and 33.2% of all injections belong to a harmful rule. Every one of those verdicts is observational: a
+rule is scored on the questions that happened to retrieve it, and retrieval is a similarity function
+over content, which is a function of topic, which is a function of difficulty. A rule that fires on
+hard questions reads as harmful whatever it says, and pruning 267 rules on that evidence would be
+acting on a selection effect worth about 4.4pp of the negative if real and nothing if not.
+
+**R74 makes it causal, and it is the first arm in this lane that prices a rule rather than a pack.**
+
+- **The arm.** `loo` renders the pack `full` renders with **exactly one rule removed**, chosen by
+  `looIndex(pack.items.length, question + fold)` — a hash of the question's own text. Nothing is
+  re-retrieved and nothing is re-cut, so if the cell moves, the withheld rule moved it.
+- **The pairing.** Within a question the other rules and the model are held fixed, so `loo − full` is
+  attributable to one rule. Across the split a rule is withheld on a random subset of the questions
+  that drew it, so a **group** verdict — harmful, helpful, neutral, one-rule packs, three-rule packs —
+  is unconfounded.
+- **The classes are computed from the same artefact**, by the arithmetic `attribution.ts` uses. One
+  file joined to itself is what makes the class reproducible; a reading that needed a second stage's
+  output could not be re-derived from the run.
+- **The reading is free.** `pnpm eval:loo` prints the whole-split delta, the class table, the pack-size
+  table and the draw distribution, with zero calls.
+- **`looIndex` returns −1 for an empty pack, not 0.** A question the retriever offered nothing for has
+  no rule to withhold; filing it as "dropped the first rule" would put every empty pack in the same
+  bucket as the one-rule packs and silently compare two different things.
+- **The hash, not a draw.** A `--seed` on a dispatch puts the seed outside the registration, and a rule
+  chosen by a number nobody recorded makes "the effect of dropping rule r" a statement about one run
+  of one script.
+
+| item | calls | note |
+| --- | --- | --- |
+| answering, three arms | 23,487 | 2 calls per question-arm |
+| distillation, `learn_sample` 700 | 711 | R70's rate |
+| adjudication, three arms | 390 | |
+| **total** | **≈24,600** | **≈$2.0** off-peak, ≈90 minutes |
+
+Dispatch `42856739453`, cap 28,000, deadline 170. The cap is R72's own fold totals scaled to a third
+arm rather than a table estimate, because the last three registrations each discovered that the
+budget was the moving part.
+
+The four branches are ordered and partition: **void** (under 5,000 pairs, or a withheld share under
+60%); **the attribution is causal** (harmful recovers ≥ +1.0pp and helpful loses ≥ 1.0pp, both
+excluding zero → prune the 267, the first intervention here that *removes* memory); **the confound is
+the whole story** (both extreme classes straddle zero → no per-rule verdict in this project can be
+trusted, and the next experiment is R66's position); **the dose is what hurts** (the whole split clears
++0.5pp with no separation between classes → the pack is too large at 1.86 rules and the next
+registration is a causal dose curve).
+
+Gate state: **3,976 tests over 191 files**, four coverage dimensions at **100%**, `pnpm check` green,
 coupling ledger **179 modules / 21 deferred / `core` 0**. R68's second backbone is in flight on
-`zhipu:glm-4.7-flashx` (three arms, 350 questions, ≈9,000-call cap).
+`zhipu:glm-4.7-flashx`; R74 is in flight on `train` (three arms, cap 28,000, ≈$2.0).
