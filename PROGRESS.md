@@ -14277,3 +14277,48 @@ over a mixture. Re-dispatched as `42922152605` at 11,000 forecast / 12,000 ceili
 Gate state: **4,055 tests over 194 files**, coverage 100/99.88/100/100, `pnpm check` green at `717809e`,
 coupling ledger **183 modules / 22 deferred / `core` 0**. In flight: R77 second dispatch, R68's third
 attempt on `zhipu:glm-4.7-flashx`.
+
+### 173.26 The pair-level inert share is a count at temperature zero, and the tool to read it costs nothing
+
+R74 measured that with one rule withheld, **4,074 of 7,829 questions produced byte-identical SQL** — 52%
+— and the number cannot be separated from the temperature it was measured at. At T = 0.7 the same prompt
+returns the same query twice by chance, so "unchanged" is a mixture of a rule that did nothing and a
+decoder that did not move. At T = 0 it is not a statistic: a deterministic decoder given two prompts
+that differ by one rule returns the same query **if and only if** the rule did not matter. R77 buys that
+reading; `pnpm eval:inert` reads it from the artefact at zero calls.
+
+Three judgement calls live in the code rather than in a paragraph. A pair whose statement failed to
+parse is **not** inert — a rule that breaks the query did something, and counting it as nothing would
+report a pack as harmless because it is destructive. Case is **not** folded into the main reading, so
+`select 1` and `SELECT 1` count as live and the number of pairs that differ only by case is printed
+beside the share. A question nothing was withheld from is excluded, because it says nothing about a rule.
+
+Run on R74's own file, where the tool itself prints that the temperature is not zero:
+
+| reading | value |
+| --- | --- |
+| pairs compared | 7,822 (7 with no statement on one side, excluded) |
+| inert | 4,250 — **54.33%** |
+| live pairs that differ only by case | 19 |
+| rules ever withheld | 532; draws per rule median 10, p90 34, max 88 |
+| **rules that changed no answer on any draw** | **26 — 4.9% of the pack** |
+| live share 25–50% / 50–75% / 75–100% | 218 / 178 / 76 rules |
+| concentration | the busiest tenth of the rules produced **34.4%** of the live answers |
+
+**Two things follow, and both were predictions R77 registered.** Half the pairs are identical while
+almost no rule is wholly inert, which is what a 54% pair-level share and a 5% per-rule inertness look
+like together: a rule drawn ten times and live five of them contributes five inert pairs and is not
+inert. And the liveness is concentrated — a third of it from a tenth of the pack — which is the shape a
+distillation prompt that over-produces would leave. Neither number can be believed at T = 0.7, where
+both coincidence and sampling noise are doing the work; both are what R77 exists to settle.
+
+`R76` is registered alongside it: `minidev` on the **283** questions the correction can label, with
+`gold: corrected`, 1,015 calls projected and a 2,494 ceiling. Its refutations are all instrument
+failures — `n` of 350 means the revision was applied after the pool was drawn, `dropped` of anything but
+67 means the manifest and the corpus disagree about which questions those are, a null `dataset_gold`
+means the dispatch's choice never reached the loader, and a baseline within 1pp of 51.26% means the
+67 mis-paired rows are still in the denominator. It is a validation that is *registered* because an
+instrument tested only in pieces is the shape of every silent failure this lane has recorded.
+
+Gate state: **4,071 tests over 195 files**, coverage 100/99.86/100/100, `pnpm check` green at `c6b5d4a`.
+In flight: R77 second dispatch (11,000 / 12,000), R68's third attempt on `zhipu:glm-4.7-flashx`.
