@@ -5873,3 +5873,49 @@ memory mechanism. Fourteen iterations have priced the prompt and the memory: wor
 +3.81pp pooled, schema ordering +0.86pp, memory packs null on four splits, pruning −9.58pp, value
 spellings +0.20pp. The remaining gap to the published pipelines is in *how many queries are drawn,
 which one is kept, and what the keeper is allowed to read* — which is exactly R69, R70 and R71.
+
+### R72 and R73 landed — the routing axis is real and its whole domain is negative; reading is bounded by the pool
+
+Both closed on the same day, and the two answers are more informative together than either alone.
+
+**R72 on `train` (7,829 questions, 16,876 calls, $1.4039).** Memory costs **−0.84pp** `[−1.44, −0.26]`,
+p 0.0054, and the routing table names where:
+
+| tercile | injecting | gate gain at 0.30 |
+| --- | --- | --- |
+| low (overlap 0.081) | **−1.46pp [−2.45, −0.50], p 0.0042** | +2.91pp [1.00, 4.91] |
+| middle (0.197) | −0.69pp [−1.69, 0.31] | +1.38pp [−0.61, 3.37] |
+| high (0.355) | −0.38pp [−1.49, 0.69] | +0.61pp [−0.61, 1.84] |
+
+The registered branch fires (*overlap is the axis*), and the sentence that must travel with it is that
+the gate recovers the harm and not its opposite: at 0.20 the routed policy scores **−0.22pp** against
+injecting nothing. Cross-fitted thresholds landed at 0.35–0.37 on all five folds; the policy flips **+9**
+against always-injecting's **−66**. The prefix position is closed as a source of accuracy.
+
+**R73 on `minidev` (3,165 calls).** Four questions moved. Every signal's interval straddles 0.5, the
+arm is +1.15pp over its own control, and `assertion-value` returns **AUC 0.500 [0.500, 0.500]** — zero
+width on all 115 eligible questions, because a literal the question states is present in all five draws
+or in none. The registration predicted 145 eligible questions and got 115, which puts the detection
+floor at about 0.59: the mechanism is underpowered, not refuted. `rows:` (0.562) beat `column:` (0.544),
+inverting the file's own prior.
+
+**What the pair implies for the next registration.** Memory's negative effect is now located on three
+coordinates and only one of them is measured with a confounded instrument:
+
+| coordinate | state | instrument |
+| --- | --- | --- |
+| position (prefix) | **closed** as a source of accuracy | R72, randomized by split, 7,829 questions |
+| dose (1.86 rules/question) | **observational only** | attribution: 267 harmful / 236 helpful / 1,206 neutral rules of 1,709 ever injected; 33.2% of injections belong to a harmful rule |
+| content (2,628 rules from 7,829 failures) | **observational only** | same |
+
+A rule injected on hard questions and withheld from easy ones looks harmful whatever its content is.
+**R74 randomises the dose** — the third arm injects a per-rule Bernoulli half of the pack — which is the
+one design that turns the attribution into a causal claim at 7829 × 2 calls, ≈$1.4, and it separates
+three explanations the observational table cannot: too much memory, the wrong rules, or memory that
+cannot work in this position at all. `pnpm eval:overlap` and `pnpm eval:assertion` both re-derive their
+readings from artefacts at zero calls, so R74's reading costs the dispatch and nothing else.
+
+**R68's second backbone is in flight** (`zhipu:glm-4.7-flashx`, three arms, 350 questions, cap 9,000).
+It is the only open experiment that is not about memory: `(exec − first) / (oracle − first)` on a
+baseline far below ours is what decides whether the published 8.2-point gap is a scaffold deficit or a
+baseline effect.

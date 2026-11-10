@@ -4076,3 +4076,60 @@ candidate; this arm spends 350 calls on 350 questions and executes the assertion
 pool that was already bought, so the reading costs **$0.03** on top of the dispatch and can be
 re-derived from the artefact for nothing. If the arm clears its bar, the gap is a price this project can
 pay; if it does not, the gap is not a per-question reader and the selection line closes.
+
+### The writer answered, and the answer is that the pool is the binding constraint
+
+R73 ran and the predictions did not hold. The arm moved **four questions**, every interval straddles
+0.5, and the number that explains both is `assertion-value` at **AUC 0.500 with a 95% interval of
+[0.500, 0.500]** — exactly zero width, on 115 eligible questions:
+
+| reader | AUC | 95% CI | note |
+| --- | --- | --- | --- |
+| `assertion-column` | 0.544 | [0.481, 0.604] | the content claim, priced for the first time |
+| `assertion-value` | 0.500 | **[0.500, 0.500]** | constant on every eligible question |
+| `assertion-rows` | 0.562 | [0.494, 0.626] | the shape kind the record called inert, strongest of the three |
+| `assertion-hits` | 0.581 | [0.492, 0.667] | sum; +3.48pp top-pick — four questions |
+
+A zero-width interval is not a weak effect, it is a **structural** one. A `value:` assertion names a
+literal the question states, and all five draws of a question either return that literal or none of them
+do. So the writer wrote something true, checkable and useless, because the thing it was asked to check
+is the same for every candidate it was asked to rank. CHESS's assertions work on CHESS's pool — nine
+candidates from a decomposition, at a baseline far below ours. On a five-draw pool at 56%, the draws
+agree about almost everything a cheap assertion can see.
+
+**What this changes about the competitive comparison.** The honest reading of the 8.2-point gap is now
+narrower than "we are behind on selection": we are behind on **pool construction**, and the selector is
+downstream of it. R68's share-of-ceiling formulation was the right instrument all along —
+`(exec − first) / (oracle − first)` — and R73 supplies the reason it has to be quoted as a share rather
+than as points: the absolute pool a selector has to work with is a property of the generator, and the
+generated pool here has an answer in it a third of the time but a *distinguishable* answer far less
+often than that.
+
+The second number worth carrying into the next comparison is `rows: 0.562` against `column: 0.544`. The
+record's prior said the shape kind was inert and the content kind was where the signal lived; the
+measurement says the opposite for a written reader. Any competitor row that reports a single
+"assertion" number cannot say which kind it won with, and this lane now can.
+
+### Memory's sign, priced against the competitors who inject unconditionally
+
+R72 answers a question no published BIRD row reports, because those rows either inject memory
+unconditionally or not at all: **where does prompt-prefix memory hurt?**
+
+| tercile by pack/question overlap | mean overlap | n | injecting vs not | gate gain |
+| --- | --- | --- | --- | --- |
+| low | 0.081 | 2,609 | **−1.46pp [−2.45, −0.50], p 0.0042** | +2.91pp [1.00, 4.91] |
+| middle | 0.197 | 2,609 | −0.69pp [−1.69, 0.31] | +1.38pp [−0.61, 3.37] |
+| high | 0.355 | 2,611 | −0.38pp [−1.49, 0.69] | +0.61pp [−0.61, 1.84] |
+
+The damage is concentrated where the pack shares least of the question's vocabulary, and the gate
+recovers it. Two facts keep this from being a competitive claim. The top two thirds are a **wash**, so
+there is no regime where the pack pays. And at the in-band 0.20 threshold the routed policy scores
+56.35% against injecting nothing at all at 56.57% — **−0.22pp**. The gate does not make memory useful;
+it makes memory free.
+
+That is worth stating against the published memory rows (ExpeL, Agent Workflow Memory, AutoGuide, and
+the ACE-style playbooks), because every one of them reports a positive cell and none reports the
+unaugmented arm at the same baseline. A rule pack built from a corpus's own failures can be worth
+several points at a **35%** baseline and zero at **56%** — R64 already showed a per-failure mechanism's
+absolute yield is set by how many failures exist — and R72 adds the routing detail those rows would need
+to reproduce: the help, if it exists, is not in the position they put it.

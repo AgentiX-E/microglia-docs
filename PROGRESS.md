@@ -13845,6 +13845,116 @@ dispatch exactly that way, to `sample-5-exec`. `pnpm eval:prereg` now refuses an
 three vocabularies (this lane's `sample-N-selector` family, tau-bench's `memory`/`reference`, and the
 retired BIRD arms), and "every arm must exist" would refuse files that are correct.
 
-Gate state: **3,946 tests over 190 files**, four coverage dimensions at **100%**, `pnpm check` green,
-coupling ledger **179 modules / 21 deferred / `core` 0**. R72 is in flight on `train` (five folds,
-≈2.7 hours, ≈$3.2); R73 is registered at 350 writer calls and ≈2,800 calls total, ≈$0.23.
+### 173.15 The negative effect has a coordinate, and its whole domain is negative
+
+R72 landed on `train`: 7,829 questions, five folds, two arms, **16,876 calls, $1.4039, 78.1% cache
+hit**. The headline is the third independent population on which the prefix pack is negative, and the
+first one narrow enough to exclude zero:
+
+| reading | without | with | delta | 95% CI | p |
+| --- | --- | --- | --- | --- | --- |
+| whole split, 7,829 | 56.57% | 55.73% | **−0.84pp** | [−1.44, −0.26] | 0.0054 |
+
+**The routing table is the finding, and it is monotone.**
+
+| tercile | mean overlap | n | injecting (95% CI, p) | gate gain at 0.30 (95% CI, p) |
+| --- | --- | --- | --- | --- |
+| low | 0.081 | 2,609 | **−1.46pp [−2.45, −0.50], p 0.0042** | **+2.91pp [1.00, 4.91], p 0.0042** |
+| middle | 0.197 | 2,609 | −0.69pp [−1.69, 0.31], p 0.1973 | +1.38pp [−0.61, 3.37] |
+| high | 0.355 | 2,611 | −0.38pp [−1.49, 0.69], p 0.5287 | +0.61pp [−0.61, 1.84] |
+
+The registered branch fires — *overlap is the axis*, +2.91pp with an interval that excludes zero — and
+three things have to travel with it, because the branch sentence alone would be read as a win.
+
+**One: the sign never turns positive.** The registered expectation was "low overlap hurts, high overlap
+helps"; what replicates is "below-median overlap hurts and the top two thirds are a wash". Only the low
+tercile's interval excludes zero.
+
+**Two: "high overlap" here means "less unrelated", not "on topic".** Every tercile mean sits below 0.5 —
+0.081, 0.197, 0.355 — because a pack of a few dozen rules does not repeat half of a question's
+vocabulary. So overlap measures **how much damage a pack does** and never measures gain.
+
+**Three: the gate's benefit is entirely the absence of harm, and against injecting nothing it is zero.**
+At 0.30 the routed policy scores 56.55% against `none`'s 56.57% — **−0.02pp**. At the in-band 0.20 it
+scores 56.35%, **−0.22pp**. Every positive number in the policy column is measured against
+always-injecting, which is the worse arm. A gate that withholds 77% of its packs and lands one hundredth
+of a point below "do not inject" has not made memory useful; it has made memory **free**.
+
+Both statements are true and only one is a result: the pack is not harmful when it shares the question's
+vocabulary, and it is not helpful when it does. The prefix position is closed as a **source of accuracy**
+— not as a mechanism subject of study.
+
+`pnpm eval:overlap` gained `tercileVerdicts`, so the three readings are recomputable from any artefact:
+injecting, routing and gate gain per tercile, each with the McNemar interval the branch condition names
+and the tercile table alone could not supply.
+
+### 173.16 Reading is bounded by the pool, and the pool is one third the size it was registered at
+
+R73 landed on `minidev` in 24 minutes: **3,165 calls** against the 5,600 cap that Amendment 2 bought.
+350 writer replies, zero failures, all cached.
+
+| arm | accuracy | delta vs none | 95% CI | p |
+| --- | --- | --- | --- | --- |
+| `none` | 52.57% | — | — | — |
+| `full` | 53.43% | +0.86pp | [−2.00, 3.71] | 0.7011 |
+| `sample-5-first` | 51.14% | −1.43pp | [−4.00, 1.14] | 0.4049 |
+| `sample-5-assert` | 52.29% | −0.29pp | [−2.57, 2.00] | 1.0000 |
+
+The arm against its control is **+1.15pp**. Four questions.
+
+| signal | AUC | 95% CI | top pick | eligible |
+| --- | --- | --- | --- | --- |
+| `assertion-column` | 0.544 | [0.481, 0.604] | 28.70% | 115 |
+| `assertion-value` | **0.500** | **[0.500, 0.500]** | 26.09% | 115 |
+| `assertion-rows` | 0.562 | [0.494, 0.626] | 26.96% | 115 |
+| `assertion-hits` | 0.581 | [0.492, 0.667] | 29.57% | 115 |
+
+Every interval straddles 0.5, so the registered branch is *the writer is not the price*. Three
+diagnostics outlive the null:
+
+- **`assertion-value` is exactly 0.500 with a zero-width interval.** The signal does not vary on any of
+  the 115 eligible questions: a `value:` assertion names a literal the question states, and all five
+  draws of a question either return that literal or none of them do. This is R71's `literal-match`
+  phenomenon taken to its limit — R71 varied on 8 of 350, this varies on none of 115. **A reader cannot
+  rank candidates on a property the candidates agree about.** Third zero-width interval in this lane,
+  third time the width was the tell.
+- **The strongest single kind is the one the file pre-dismissed.** The registration expected `column:`
+  to carry the claim and called `rows:` a shape signal "this lane already knows is inert". Measured:
+  `rows:` 0.562 against `column:` 0.544. The prior was inverted.
+- **The ceiling was the population.** The file predicted 205 of 350 questions would collapse to a single
+  distinct result; 235 did, so the eligible population is **32.9%** of the split and the detection floor
+  is an AUC of about **0.59**. A 115-question population excludes a strong reading and cannot exclude a
+  weak one, so the mechanism is underpowered by construction rather than refuted.
+
+### 173.17 What four experiments say together about memory's negative effect
+
+R70 through R73 each closed one candidate explanation, and the four answers stack into a coordinate
+system rather than a list.
+
+| experiment | question | answer | size of the effect |
+| --- | --- | --- | --- |
+| R70 | does sampling width buy accuracy? | yes, at 21% entropy conversion | +2.29pp from five draws, ceiling +1.71pp over first |
+| R71 | can content be read for free? | no, twice on two signal families | AUC 0.514 / 0.509, both straddle 0.5 |
+| R72 | is the sign a routing property? | yes, monotone and negative everywhere | −1.46 / −0.69 / −0.38pp by tercile |
+| R73 | does a written per-question reader recover it? | not at this population size | 0.581, interval [0.492, 0.667], four questions |
+
+The negative effect is now located on three coordinates, and only one of them has been priced:
+
+- **position** — a pack shown *before* the question. R72 closes it as a source of accuracy: the best
+  regime is a wash, and gating reaches the harm but not the benefit.
+- **dose** — 1.86 rules per question, 33.2% of injections belonging to a rule whose net contribution is
+  negative (267 harmful against 236 helpful rules out of 1,709 ever injected). This is an **observational**
+  attribution: a rule's sign is estimated from the questions it happened to be injected on, and rules
+  are not injected at random.
+- **content** — 2,628 rules built out of 7,829 questions' failures, of which 1,206 are neutral. The
+  distillation writes a rule per failure and most failures do not generalise.
+
+The third coordinate is the one the user's own hypothesis points at — that what we memorise and how we
+use it are wrong — and it is the only one still measured by a confounded instrument. A rule that is
+injected on hard questions and withheld from easy ones looks harmful whatever its content is. **The
+next experiment randomises the dose**, which is the one design that turns the observational attribution
+into a causal one at a price this lane can pay.
+
+Gate state: **3,955 tests over 190 files**, four coverage dimensions at **100%**, `pnpm check` green,
+coupling ledger **179 modules / 21 deferred / `core` 0**. R68's second backbone is in flight on
+`zhipu:glm-4.7-flashx` (three arms, 350 questions, ≈9,000-call cap).
