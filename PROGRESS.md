@@ -13303,3 +13303,87 @@ went out twice: `42658429537` stopped after its first fold — `MG_E_BUDGET_EXCE
 against a forecast of 12,383 and a cap of 9,000 taken from a *warm* distillation cache — and
 `42661260446` is running with a cap of 14,000. The recipe costs one fold to learn; the forecast is the
 lane refusing to spend the other four on a number it knows is wrong.
+
+## 173 — The retry was worth one point, and the bar could not have been cleared
+
+R64 published, the only two-digit arm in the register was implemented, and both findings are about
+documents disagreeing with the things that read them.
+
+### 173.1 One rejection in five is repaired, and the ceiling is the population
+
+Run `42661260446`, `dev`, n=1,534, 5 folds, 5,241 calls, 0 call failures, **$0.44**, cache 73.79%,
+band `off_peak`. Every amended prediction held: 98 retried questions, a repaired rate of **20.41%**
+[13.27, 28.57] (p = 1.9e-06), a net delta of **+1.30pp** [+0.78, +1.89] with **20 gained and 0 lost**.
+`full` was null for the fourth time: +0.07pp, 87 gained / 86 lost.
+
+| reading | value |
+| --- | --- |
+| retried population | 98 / 1,534 = 6.39% (`empty` 88, `error` 10, `no-query` 0) |
+| repaired | 20 / 98 = 20.41%, spread over all five folds (1, 3, 5, 6, 5) |
+| by trigger | `empty` 19/88 = 21.6%, `error` 1/10 = 10.0% |
+| by difficulty | simple 14/49, moderate 5/41, challenging 1/8 |
+| ceiling if every rejection were repaired | **+6.39pp** — this arm took a fifth of it |
+
+The zero-cost measurement made before the dispatch from R63's artefact predicted 98 and produced 98;
+one question moved from `empty` to `error`. That is the smallest error a measurement that spends
+nothing can have, and it is the reason the floor was amended from 140 to 90 *before* the run rather
+than after it.
+
+### 173.2 The promotion bar was above the band it was paired with
+
+Promotion required the repaired rate's lower bound to exceed 25%; the bound is 13.27%. Closing required
+the upper bound to fall below 10%; it is 28.57%. The result therefore sits in the only region the
+document did not assign, and neither bar is wrong in isolation — both are wrong *together* with the
+prediction they sit beside:
+
+- at n = 98 a rate near 20% carries a standard error of about 4.1pp, so a lower bound above 25% needs a
+  point estimate near **35%** — the top of the predicted band, not the middle the document said to
+  expect;
+- a promotion condition expressed as an interval bound is strictly more demanding than the same
+  condition expressed as a point estimate, by a margin that is easy to write and hard to notice.
+
+Recorded as **Rule 10** in the roadmap: a promotion bar is part of the prediction and must be reachable
+by it. The mechanism is neither promoted nor closed, and that outcome is now written into the
+registration rather than left to the next reader to interpret.
+
+### 173.3 One stale default, found by reading the artefact against the document
+
+`retry_population.meetsFloor` came back **false**. The registration had lowered the floor to 90 two
+hours before the dispatch; the lane's constant still said 140. The value now lives beside the
+summariser that reports it and a test asserts it equals the figure R64's amendment registers, so the
+next amendment has to touch code rather than only prose. This is the third instance of the same class
+in this record — a number that lives in a document and a number that lives in a lane — and the first
+one fixed at the seam instead of at the instance.
+
+### 173.4 The `examples` arm exists, and its void conditions are a gate
+
+`oracle` at **+33.14pp** is the largest positive in the record and is undeployable: it injects the
+memory item whose evidence is the question being asked. R65 was registered before the code existed, and
+the code now exists:
+
+- **Same database only** — a gold query names tables that exist in one schema; a neighbour from another
+  database is not a weaker example, it is an unusable one;
+- **the tree's own similarity** — `similarityOf`, the function table recall already ranks with, so the
+  two arms move together if retrieval is ever replaced;
+- **whole exemplars or none** — the 1,200-character cap drops the last exemplars instead of truncating
+  one, because a truncated `WHERE` clause is a wrong query the model is invited to copy.
+
+`V75-exemplars-delivered` turns R65's two void conditions (fires on ≥80% of questions, cap hit on ≤5%)
+into a blocking gate, pushed whenever the arm is configured — including when it fired on nothing, which
+is a wiring defect rather than a vacuous pass.
+
+| | before | after |
+| --- | --- | --- |
+| tests | 3,786 | **3,809** |
+| files | 184 | **185** |
+| coverage, four dimensions | 100 | **100** |
+| eval modules | 173 | **174** |
+| evaluated binaries | 62 | **62** |
+| `pnpm check` | green | **green** |
+
+**Dispatched.** R65 (`42725249396`, on `ff4a6450`) on minidev, `arms=examples`, cap 6,000 calls. The
+first dispatch (`42724002873`) was cancelled before it started: the commit it pointed at used the
+moved floor constant without importing it, so `pnpm build` would have failed at the first step. That is
+a process finding in its own right: the gate had been run on the tree *before* the floor moved, and
+the commit that moved it was pushed unverified. A green check is a statement about a tree, not about a
+session.

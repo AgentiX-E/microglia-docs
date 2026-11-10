@@ -4515,3 +4515,46 @@ benchmark, not the 47% that a base accuracy of 53% would suggest. It is measurab
 from artefacts the system already writes, because the trigger and the counter are one function. A
 mechanism whose denominator is assumed rather than measured is a mechanism whose effect will be
 reported against the wrong base.
+
+## A mechanism's ceiling is the size of the set it may touch
+
+The retry control is the first arm in this record measured on an artefact with its population in the
+same file, and the arithmetic it makes visible is the point.
+
+The arm may act only on the questions the pipeline itself rejected: no query, an execution error, or a
+result set with no rows. That is **6.39%** of BIRD dev — 98 questions out of 1,534. So:
+
+- even a retry that repaired **every** rejection would move the benchmark by **+6.39pp**;
+- this one repaired **20 of 98** (20.41% [+13.27, 28.57], p = 1.9e-06) and moved it by **+1.30pp**,
+  with 20 gained and 0 lost;
+- 1.30 is therefore **20% of the ceiling**, not "a small effect", and the difference between those two
+  readings is entirely the population number.
+
+A system that reports the delta without the denominator invites both mistakes at once — dismissing a
+real mechanism because a sixth of a benchmark is small, and claiming a large per-failure repair rate as
+if it were a headline. Reporting the pair also tells you where the next work is: the ceiling is a
+property of the *pipeline's rejection behaviour*, not of the retry, so widening the population (giving
+the model a second chance on wrong-but-executable answers, which is a different mechanism with a
+different cost) is a bigger lever than sharpening the repair.
+
+The same shape governs worked examples. `oracle` — injecting the memory item whose evidence is the
+question being asked — is **+33.14pp**, and it is not a mechanism: it prices the value of showing a
+model something written for this question by someone who knew the answer. The lawful approximation is
+the nearest *training* questions of the same database with their gold queries, cross-fitted so no
+question sees its own row. It is bounded by the corpus rather than by the pipeline, which is why it is
+the one remaining arm in the register that can move accuracy by two digits.
+
+## The bar has to be inside the band
+
+R64's registration predicted a repaired rate between 15% and 45% with the point estimate above 25%,
+and promoted the mechanism only if the interval's **lower bound** exceeded 25%. At 98 questions that
+requires a point estimate near 35%: a standard error of about 4.1pp puts the lower bound at
+`p̂ − 1.96 · 0.041`, which crosses 25% only at `p̂ ≈ 0.35`. The bar therefore tested the top of the
+band while the prediction named the middle of it, and a result that satisfied every stated prediction
+landed in a region the document had not assigned — neither promoted nor closed.
+
+The rule this produces is structural rather than statistical: **write the promotion condition in the
+same units as the prediction** (a point estimate above a value the predicted band contains, with an
+interval excluding zero) **and compute, at registration time, that the bar is reachable by the value
+you actually expect.** A threshold on an interval bound looks more conservative than a threshold on a
+point estimate and is strictly more demanding, by a margin that is easy to write and hard to notice.

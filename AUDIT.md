@@ -7238,3 +7238,61 @@ self-test blanks a reason instead of flipping a verdict the scanner cannot produ
 checks that the reversal is a majority and that the statement quotes its own counts. The `max_calls`
 description now carries the cold figure next to the warm one, because the difference between them is
 the entire reason the cap was wrong.
+
+### 35.04 The promotion bar sat above the band it was paired with
+
+R64 came back inside all three of its amended predictions and still could not be promoted, and the
+reason is arithmetic that was available before the run.
+
+**The reading.** 98 retried questions out of 1,534, 20 of them repaired, +1.30pp on the benchmark with
+nothing regressed and gains spread over all five folds (1, 3, 5, 6, 5). The zero-cost measurement made
+from R63's artefact predicted 98 and produced 98; one question moved from the `empty` bucket to the
+`error` bucket. The retry line exists, it repairs one rejection in five, and it costs $0.44 to see.
+
+**Finding 1 — a registration that amends a threshold amends prose, and the lane reads a number.**
+The artefact says `retry_population.meetsFloor: false`. It says that because `SOTA_RETRY_FLOOR`
+defaulted to **140**, the floor the registration opened with, while Amendment 1 had lowered it to
+**90** two hours earlier. 98 clears 90. The document and the dispatch disagreed about whether the
+evidence cleared its own bar, and the artefact took the dispatch's side.
+
+This is the third instance of the same defect in this record, and the pattern is exact: a number is
+written in a registration, read by a lane, and changed in only one of the two places. The repairs so
+far have been per-instance. This one moves the floor out of the lane and into `retry-trigger.ts`, next
+to the summariser that reports it, and adds a test that asserts the constant equals the figure R64's
+amendment registers. The next amendment therefore has to touch the code, which is what makes the drift
+impossible rather than merely noticed.
+
+**Finding 2 — a bar that the prediction beside it can never reach.**
+Promotion required the repaired rate's *lower* bound to exceed 25%. At n = 98 a rate near 20% carries a
+standard error of about 4.1pp, so the measured lower bound is 13.27%. For a lower bound above 25% the
+point estimate has to be ≈35% — half a standard error inside the top of the band the same document
+predicted (15–45%), and well above the value it said to expect ("ours has less headroom, so the lower
+half of the band is the expected one"). The bar and the prediction were written one page apart and
+they describe different worlds: the bar tests whether this model behaves like a model with twice its
+error mass.
+
+Closing had the mirror-image problem: the upper bound had to fall below 10%, and it is 28.57%. So the
+result is in the only region the document did not assign: not promoted, not closed, and not void.
+
+**Finding 3 — a void condition in prose is a condition somebody has to remember.**
+R65 states two ways a dispatch stops being the test it describes: the arm fires on fewer than 80% of
+questions, or its character cap drops an example on more than 5%. Both are properties of the *prompt*,
+both are measurable from the plan alone, and neither is visible in an accuracy delta — an arm that
+fired on half the questions and one that fired on all of them can produce the same number. They are now
+`V75-exemplars-delivered`, pushed whenever the arm is configured, including when it fired on nothing:
+that state is a wiring defect and the gate fails rather than signing a vacuous pass.
+
+The block itself is capped by dropping the *last* exemplars and never by truncating one. A truncated
+`WHERE` clause is not a shorter lesson, it is a wrong query that the model is invited to copy, and this
+record already has one arm whose entire effect was imitation.
+
+**What the audit changes in the plan.** Two rules go into the roadmap's measurement section:
+
+1. **A promotion bar is part of the prediction, not a second document.** If a registration predicts
+   `p̂ ∈ [15, 45]%` with a point above 25%, its promotion threshold has to be expressible as "point
+   above X with an interval excluding zero" for an X the band contains. A lower-bound bar at the band's
+   midpoint is a bar that requires the top of one's own prediction.
+2. **The ceiling of a conditional treatment is its population share, and that is measurable before the
+   treatment exists.** A retry cannot move this benchmark by more than 6.39pp; measuring a fifth of
+   that ceiling is a real effect, and knowing the ceiling first is what stops a small number from being
+   read as a failed mechanism or a large claim.

@@ -5633,3 +5633,45 @@ text.
 without the treatment.* R64's prediction was off by a factor of five in the direction that would have
 burned a run on its own void condition. The remedy is not a better guess: it is that the trigger and
 the counter are one function, so the population can be counted from any artefact already in the tree.
+
+## The bar and the band are one document (2026-11-10)
+
+R64 published the first artefact in this record for a retry arm, and it landed in the only region its
+registration had not assigned: 20 of 98 rejections repaired (+20.41pp on the population, p = 1.9e-06),
+**+1.30pp** on 1,534 questions with nothing regressed — not promoted, because promotion required the
+interval's *lower* bound to exceed 25%, and not closed, because closing required the upper bound to
+fall below 10%. Both bars were mine, and both were wrong for the same reason.
+
+**Rule 10.** *A promotion bar is part of the prediction, and it must be reachable by it.* A threshold
+on an interval's lower bound is a threshold on the point estimate minus its standard error, so at
+n = 98 a lower bound of 25% requires a rate near **35%** — the top of a band whose middle the same
+document had already said not to expect. The form that cannot do this is "point estimate above X with
+an interval excluding zero", with X chosen inside the band. Writing the bar as an interval bound
+feels more conservative and is in fact more demanding, by a margin nobody computes at registration
+time.
+
+**Rule 11.** *A conditional treatment's ceiling is its population share, and it is knowable before the
+treatment exists.* The retry family cannot move this benchmark by more than **6.39pp** even if every
+rejection is repaired; this arm moved it by 1.30pp, a fifth of its ceiling. That comparison is only
+available because the population was measured before the dispatch. Without it, +1.30pp reads as a weak
+mechanism; with it, +1.30pp reads as 20% of everything that arm can ever do — and the next question
+becomes whether the population can be widened rather than whether the mechanism can be sharpened.
+
+The third thing the run settled is what the register of arms should cost: a repair rate per rejection
+is the only retry number that transfers between models, because it does not contain the base accuracy.
+arXiv:2606.29733's +3.06pp on CodeLlama-7B and our +1.30pp on a 57%-accurate model are the same
+mechanism at two populations, and quoting either as a mechanism constant is a category error.
+
+## What is left, in the order it will be attempted (2026-11-10)
+
+| ranked by | measured | source | next |
+| --- | --- | --- | --- |
+| retrieved-exemplar arm (`examples`) | `oracle` **+33.14pp**; published band 48–66% on BIRD prompting systems | existing artefact, arXiv:2604.15163 | **in flight** — R65, the only arm left that can move accuracy by two digits |
+| value-missed empty results | 32 / 89 of the empty population; 19 of 20 repairs came from that bucket | R64 + Amendment 1 pass | **P0 next** — a value-aware retry, registered against `retry-blank` on the same 98 questions |
+| `retry-keyed` (memory at the moment of failure) | unmeasured; promotion clause of R64 | R64 | P1 — the one place memory can be priced cleanly, now that the population is a field |
+| `values` / field-description distillation | +5.43pp at n=350, +0.85pp at n=1,534 | R24, R25 | P1 — largest single content lever after exemplars |
+| `linked-additive` | +2.00pp [−0.29, +4.29], p = 0.14 | R63 | P2 — only schema arm with a non-negative point estimate |
+| `recall-order` | +0.86pp [−1.43, +3.14], p = 0.65 | R63 | closed for accuracy |
+| `linked` | −9.58pp | R26 | closed — deleting tables costs accuracy |
+| `full` (the memory arm) | null on four splits: minidev +0.57, dev +0.07, train, original panel | R17, R24, R63, R64 | P3 — do not re-dispatch without a change of content |
+| generation and selection | CHESS-class pipelines at 66–78% EX | arXiv:2405.16755, arXiv:2604.15163 | after R65: candidates and selectors, where the 10–20pp lives |

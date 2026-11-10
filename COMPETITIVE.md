@@ -3774,3 +3774,59 @@ is mostly values and column semantics, not table discovery, and a database with 
 answers a typical question from **2.4** of them. Our measurement says the remaining error mass is on
 the value side, which is where the `values` arm (+5.43pp at n=350) already sits — and where the next
 registration goes.
+
+## The retry is real, it is small, and its ceiling is its population (2026-11-10)
+
+R64 is the first time this repository has measured a retry arm on an artefact. The number it replaces
+was prose: `retry-blank` was quoted at **+0.57pp with 2 gained and 0 lost** since R17, and
+`grep -rl retry-blank eval/results/` returned nothing. What the run says, on 1,534 BIRD dev questions
+for $0.44:
+
+| reading | value |
+| --- | --- |
+| population the arm may touch | **98 / 1,534 = 6.39%** (`empty` 88, `error` 10) |
+| repaired | **20 / 98 = 20.41%** [13.27, 28.57], p = 1.9e-06 |
+| whole-benchmark delta | **+1.30pp** [+0.78, +1.89], 20 gained / 0 lost |
+| ceiling if the arm repaired everything | **+6.39pp** |
+
+Beside the published retry rows this is the smallest effect of its family, and the reason is
+structural rather than a difference in mechanism quality. arXiv:2606.29733 reports **+3.06pp**
+(p = 2e-11, CodeLlama-7B) and **+3.65pp** (p = 6e-11, Llama-3.1-8B) for a retry that carries the
+failed attempt and the execution error. Those models sit far below this one on the same benchmark, so
+their *population of rejected questions* is far larger: an arm that repairs a fifth of its population
+moves a 30%-accurate model by six points and a 57%-accurate model by one. The practitioner claim that
+a retry loop is worth "+5–10% with two or three attempts" is the same arithmetic read from the other
+end — it is a statement about models with headroom, and it is not transferable as a constant.
+
+The number that travels is the **conditional** one: 20.41% of what the pipeline rejects, repaired, with
+nothing regressed. That is directly comparable to any competitor's per-failure reading and it does not
+depend on the model's baseline accuracy.
+
+## What the exemplar literature predicts, including the part that predicts harm (2026-11-10)
+
+R65 buys the cheapest lawful approximation of `oracle` (+33.14pp): the three nearest training
+questions of the same database, each shown with its gold query, under a 1,200-character budget equal
+to `full`'s pack. Two published lines bear on it and they disagree, which is why it is a registration
+rather than an assumption.
+
+| source | population | published effect | what it implies here |
+| --- | --- | --- | --- |
+| DAIL-SQL (arXiv:2308.15363, VLDB 2024) | BIRD / Spider, GPT-4 | 86.6% EX Spider; 5–10 curated examples close much of the gap to fine-tuning | exemplars are a first-order lever, not a cosmetic one |
+| CHESS (arXiv:2405.16755) | BIRD, GPT-4 | ≈73% EX, and value retrieval is the load-bearing step | matches our 36% value-miss share in empty results |
+| DPC (arXiv:2604.15163, ACL 2026) | BIRD, Qwen2.5-Coder-7B | DAIL-SQL+SC **48.6%**, CHESS+SC **66.2%**, XiYanCoder-7B **53.0%** | the prompting band on this benchmark is 48–66%; our `none` is 56.71% and `retry-blank` 58.02% on a different backbone |
+| From Harm to Help (arXiv:2509.23196) | reasoning LLMs, CoT demos | **more exemplars consistently degrade accuracy**, even when the demos are optimal; mechanisms are semantic misguidance (verbatim copying) and strategy-transfer failure | predicts that k = 3 is worse than k = 1 for this arm, and names the failure mode to look for |
+| RAG as noisy ICL (arXiv:2506.03100) | theory + QA corpora | an **intrinsic ceiling** on RAG generalisation that ICL does not have; more retrieved passages can degrade | the formal version of the 6% signal-to-accuracy rate R63 measured |
+| RAGuard (arXiv:2502.16101, NeurIPS 2025) | fact checking, 8 models | misleading retrieval costs **−46.5% relative** on average; every model falls below 50% | our `wrong-scope` arm is the same manipulation at a smaller dose |
+
+Three of those rows are the negative-effect literature this project keeps being asked about, and they
+now have a measured analogue here: **a retrieval channel is not free, its dose is not monotone, and
+the harm is produced after retrieval rather than by it** (L.26). The exemplar arm is the cleanest test
+of that in this record because its content is a *correct* query: if k = 3 lands below k = 1, copying is
+the mechanism and no amount of example quality fixes it.
+
+The leaderboard position, stated plainly: on BIRD dev this lane's prompting-only numbers (56.71%
+`none`, 58.02% `retry-blank`) sit inside the published band for prompting systems on a mid-size
+backbone and well below the two-digit gap that CHESS's multi-agent pipeline and execution-guided
+ensembles open (66–78%). The gap is not in the prompt and not in the schema text — R63 priced that at
++0.86pp against a +13.75pp signal — it is in **generation and selection**, which is where the next
+registrations after R65 go.
