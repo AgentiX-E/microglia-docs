@@ -5675,3 +5675,47 @@ mechanism at two populations, and quoting either as a mechanism constant is a ca
 | `linked` | −9.58pp | R26 | closed — deleting tables costs accuracy |
 | `full` (the memory arm) | null on four splits: minidev +0.57, dev +0.07, train, original panel | R17, R24, R63, R64 | P3 — do not re-dispatch without a change of content |
 | generation and selection | CHESS-class pipelines at 66–78% EX | arXiv:2405.16755, arXiv:2604.15163 | after R65: candidates and selectors, where the 10–20pp lives |
+
+## The branches have to tile, and the interval has to be over dispatches (2026-11-10)
+
+R65 measured the register's last two-digit lever and produced the most informative negative of the
+iteration: **three correct worked examples from the same database are worth +5.43pp on 350 questions**
+[+1.43, +9.43], 36 gained / 17 lost, and **+5.71pp against the memory arm** [1.71, 9.71], p = 0.0078 —
+for $0.12. Not two digits, and not zero.
+
+Two structural lessons came out of the same run, and both are cheap at registration time.
+
+**Rule 12.** *A refutation must partition the outcome space.* R65 promoted at Δ ≥ +6pp, closed at
+|Δ| ≤ 4pp, and left (4, 6) unassigned — where the estimate landed. R64 promoted at a lower bound above
+25%, closed at an upper bound below 10%, and left everything between unassigned — where its estimate
+landed too. Two registrations, one iteration, the same defect: a list of conditions is not a classifier.
+The branches must be written as an ordered partition with a named outcome for every region, the way
+`classifyEmptyAttempt` had to be rewritten to be exhaustive.
+
+**Rule 13.** *An interval computed inside one dispatch is not an interval over dispatches.* The same arm,
+with prompt content that does not change between runs, measured **+1.71pp** and **+5.43pp**. The
+controls moved too: `none` by 0.86pp, and `full` by 3.14pp on a store that differed by four
+distillations (680 → 684 corrections, 1,321 → 1,313 active items). At n=350 the dispatch-level spread is
+3–4pp — the size of the bootstrap interval itself. Every claim this record has published below 4pp on
+350 questions is a claim about one draw, and the honest interval is the spread over dispatches.
+
+The consequence for the plan is immediate: R65's answer will be read from **three valid dispatches**
+(pooled delta, between-run spread reported), not from one. That is what Amendment 2 fixes, and it is the
+first time this project has priced a mechanism by replicating it rather than by widening the sample.
+
+## Where the two-digit gap actually is (2026-11-10)
+
+The register is now nearly empty of prompt-content levers, and the measurements say why:
+
+| lever | this lane | published best | what the gap is made of |
+| --- | --- | --- | --- |
+| order the schema by retrieved gold tables | +0.86pp | — | the signal was real (+13.75pp) and did not convert |
+| show three worked examples from the same database | **+3.81pp pooled** over three dispatches (+5.43 / +3.14 / +2.86) | DAIL-SQL / CHESS report first-order gains | closed at the pooled value — the band was ±4pp |
+| inject the memory pack (`full`) | null on four splits | — | the store's content is not what the corpus lacks |
+| inject the item written for this question (`oracle`) | **+33.14pp** | — | not deployable: it needs the answer key |
+| multi-candidate generation plus execution-guided selection | unmeasured here | CHESS 66.2%, CHESS+SC at 66–78% on BIRD | **the remaining two-digit region** |
+
+So the next P0 after R65's replication is not another prompt: it is **generation and selection** —
+`sample-n` draws with execution-consistency and prior-based selectors, the machinery this repository
+already has (`pool.ts`, `union.ts`, `prior.ts`, `sample-*` arms) but has never pointed at this split
+with a registered estimand. That is where 10–20pp lives, and it costs calls rather than knowledge.

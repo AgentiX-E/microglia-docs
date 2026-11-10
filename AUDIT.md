@@ -7296,3 +7296,74 @@ record already has one arm whose entire effect was imitation.
    treatment exists.** A retry cannot move this benchmark by more than 6.39pp; measuring a fifth of
    that ceiling is a real effect, and knowing the ceiling first is what stops a small number from being
    read as a failed mechanism or a large claim.
+
+### 35.05 The exemplars work, the interval is a lie, and the branches had a hole
+
+R65 was the register's last two-digit lever: `oracle` is +33.14pp and undeployable, and the lawful
+approximation is three correct worked examples from the same database. Two dispatches measured it.
+
+| | run `42725249396` (void) | run `42729684852` (valid) |
+| --- | --- | --- |
+| dose delivered | 2 exemplars on 9.71% of questions | 3 on 98.3% (`V75` pass) |
+| `none` | 52.00% | 51.14% |
+| `full` | 54.00% (+2.00pp) | 50.86% (−0.29pp) |
+| `examples` | 53.71% (+1.71pp) | **56.57% (+5.43pp [+1.43, +9.43])** |
+| `examples − full` | −0.29pp | **+5.71pp [+1.71, +9.71], p = 0.0078** |
+| bill | $0.1352 | $0.1236 |
+
+**Finding 1 — the void clause did its job, and the repair was the instrument.** The first run's gate
+fired because 34 of 350 questions could not hold the third exemplar at a 1,200-character budget. The
+lane refused the run. Amendment 1 raised the budget to 1,600 and left the hypothesis, the dose and the
+thresholds untouched; the re-run delivered the registered dose on 98.3% of questions.
+
+**Finding 2 — the interval in an artefact is conditional on the dispatch.** The arm's prompt content is
+deterministic, and the same arm measured +1.71pp and +5.43pp on two dispatches. The movement is not
+confined to the treatment: `none`, a fixed prompt with no store, moved **0.86pp**; `full` moved
+**3.14pp**, and its store genuinely differed — **680 → 684 corrections, 1,321 → 1,313 active items,
+38 → 42 fresh distillations** against a warm cache. So the between-dispatch spread on 350 questions is
+3–4pp, the same size as the bootstrap interval and larger than every sub-4pp effect this record has
+published.
+
+That does not overturn any direction — both runs put `examples` above `none` and at or above `full` — but
+it does mean a single dispatch cannot decide a 5pp question here. The `min_detectable_pp` gate (4.31 at
+n=350) has been read as a property of the sample; it is also, and more bindingly, a property of the
+*dispatch*.
+
+**Finding 3 — the branches of a refutation must tile the outcome space.** The valid run landed at
++5.43pp: above the +4pp closing threshold, below the +6pp promotion threshold. The result is neither
+promoted, nor narrowed, nor closed — because the registration left a two-point hole between its
+branches. R64 has the same defect in a different shape (promote at a lower bound above 25%, close at an
+upper bound below 10%), and it too returned a result in the unassigned region. Two registrations, one
+iteration, the same structural error:
+
+- R64's space: `LB > 25` / `UB < 10` — everything with 10 ≤ UB and LB ≤ 25 is unassigned.
+- R65's space: `|Δ| ≤ 4` / `Δ ≥ 6` — everything in (4, 6) is unassigned.
+
+The repair is the one `classifyEmptyAttempt` needed two iterations ago: an ordered classifier that
+partitions, not a list of conditions that might. Amendment 2 does it for R65 by fiat — a result in the
+gap is not promoted and not closed, it is **replicated** — and the rule goes into the roadmap so the
+next registration writes branches that tile.
+
+**Finding 4 — the replication lowered the answer, and the rule said it would.** Two further dispatches
+of the same configuration read **+3.14pp** and **+2.86pp**; pooled over three valid runs the arm is
+**+3.81pp** (95 gained / 55 lost, n = 1,050, exact p = 0.0014) and +4.28pp against the memory pack,
+which is null on all three. The pooled estimate is inside the ±4pp closing band that Amendment 2 named
+before those runs existed, so the line closes — at the pooled value, not at the best single dispatch.
+Three dispatch-level readings of one deterministic prompt (+5.43, +3.14, +2.86) are the practical
+statement of Finding 2.
+
+The substantive result: **three correct worked examples from the same database are worth about four
+points**, so `oracle`'s +33.14pp is a fact about the answer key rather than about the prompt. That is
+what the registration said a delta inside the band would mean, and it is now measured rather than
+argued.
+
+**What the audit changes.** Rule 12: *a refutation must partition the outcome space*. Rule 13: *an
+interval computed within one dispatch is not an interval over dispatches; a claim below the dispatch
+spread is a claim about one draw*. Both are cheap to check at registration time and both have now cost
+a run.
+
+**And one process finding, at the same level.** `eval:protocol` refused R67 — the Refutation section
+used a numbered list where the checker wants bullets — and the commit went out anyway, because the check
+was piped into `tail -2` and a pipeline's exit status is `tail`'s. The docs repository records the
+consequence below; the lesson is that a verification step whose result is filtered is not a verification
+step.

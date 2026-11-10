@@ -13387,3 +13387,48 @@ moved floor constant without importing it, so `pnpm build` would have failed at 
 a process finding in its own right: the gate had been run on the tree *before* the floor moved, and
 the commit that moved it was pushed unverified. A green check is a statement about a tree, not about a
 session.
+
+### 173.5 The exemplars were worth four points, and the replication is why we know
+
+R65 was the register's last two-digit lever. Three valid dispatches of the same deterministic prompt —
+`42729684852`, `42732114335`, `42732137586` — on minidev, n=350, each about 1,440 calls and $0.12–0.22:
+
+| run | `none` | `full` | `examples` | `examples − full` |
+| --- | --- | --- | --- | --- |
+| 1 | 51.14% | 50.86% (−0.29) | **56.57% (+5.43)** [1.43, 9.43] | +5.71 [1.71, 9.71] |
+| 2 | 52.57% | 51.71% (−0.86) | **55.71% (+3.14)** [−0.86, 7.14] | +4.00 [0.00, 8.00] |
+| 3 | 52.57% | 52.29% (−0.29) | **55.43% (+2.86)** [−0.86, 6.57] | +3.14 [−0.86, 7.14] |
+| **pooled** | — | **null on all three** | **+3.81pp**, 95 / 55, n=1,050, p=0.0014 | **+4.28pp** |
+
+The first dispatch of the arm was **void by its own gate**: at the registered 1,200-character budget the
+third exemplar did not fit on 34 of 350 questions (9.71% against a 5% allowance), the lane refused the
+run, and `V75` published the reason instead of a claim. Amendment 1 raised the budget to 1,600 and left
+the hypothesis, the dose and the thresholds untouched; the re-run delivered three exemplars on 98.3% of
+questions and passed all thirteen gates.
+
+Three things follow, and the second is the one that changes how this project reports.
+
+1. **The two-digit lever is closed.** Three correct worked examples from the same database are worth
+   about **four points**, so `oracle`'s +33.14pp is a fact about the answer key rather than about the
+   prompt. The registration said in advance that a delta inside ±4pp would mean exactly that, and the
+   pooled estimate is inside it.
+2. **The interval in an artefact is conditional on the dispatch.** The same arm read +5.43, +3.14 and
+   +2.86 on three runs with identical prompt content, and the controls moved with it: `none` by up to
+   1.43pp, `full` by 3.14pp on a store that differed by four distillations. At n=350 the dispatch spread
+   is 3–4pp — the width of the bootstrap interval itself. **Rule 13** now requires a mechanism to be
+   replicated before it is believed, and R65 is the first arm this project has priced that way.
+3. **The branches of a refutation have to tile.** R65's valid run landed at +5.43pp: above the +4pp
+   close and below the +6pp promote. R64 landed in a gap of the same kind. **Rule 12** now requires an
+   ordered partition with a named outcome for every region, and R67 is written that way.
+
+**R67 is registered and undispatched.** The prompt's content is spent — ordering +0.86pp, memory null
+on four splits, exemplars +3.81pp, pruning −9.58pp — and the published pipelines that reach 66–78% on
+BIRD do it by drawing several queries and selecting one. `sample-5-first`, `-random`, `-exec`, `-prior`
+and an oracle pool ceiling, four branches that partition the space, and two dispatches from the start
+because of Rule 13.
+
+**And one process failure worth recording.** R67's first commit went out with a red `eval:protocol`
+check: the Refutation section used a numbered list where the checker wants bullets, and the check had
+been piped into `tail -2`, whose exit status is the pipeline's. The repository was fixed in the next
+commit, the CI run on the broken commit is the evidence, and the rule is now "never pipe a gate into a
+pager".

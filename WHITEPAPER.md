@@ -4558,3 +4558,29 @@ same units as the prediction** (a point estimate above a value the predicted ban
 interval excluding zero) **and compute, at registration time, that the bar is reachable by the value
 you actually expect.** A threshold on an interval bound looks more conservative than a threshold on a
 point estimate and is strictly more demanding, by a margin that is easy to write and hard to notice.
+
+## An interval computed inside one dispatch is not an interval over dispatches
+
+Every artefact this project publishes carries a paired bootstrap interval, and until this iteration
+those intervals were read as statements about the mechanism. They are not. They are statements about
+*one run*: one store, one set of draws, one cache.
+
+The measurement that changed the reading: the same exemplar arm, with prompt content that is
+deterministic by construction (same training rows, same k, same similarity, same renderer), measured
+**+1.71pp** on one dispatch and **+5.43pp** on the next. The controls moved too — `none`, a fixed prompt
+with no store, by 0.86pp; the memory arm by 3.14pp, on a store that genuinely differed
+(680 → 684 corrections, 1,321 → 1,313 active items, 38 → 42 fresh distillations against a warm cache).
+
+So at n=350 the dispatch-level spread is 3–4pp, which is the width of the bootstrap interval itself. A
+claim below that spread is a claim about one draw, and the honest uncertainty is the spread over
+dispatches. Two consequences follow for how this system reports:
+
+1. **A mechanism is replicated before it is believed.** R65's answer is read from three valid
+   dispatches pooled, with the between-run spread printed beside the pooled estimate — not from the run
+   with the better number.
+2. **Resolution is a property of the dispatch, not only of the sample.** `min_detectable_pp` says what
+   the questions can resolve; the dispatch spread says what the *lane* can resolve, and it is three
+   times larger for anything that depends on a distilled store.
+
+Neither of those is a reason for despair about the mechanisms; they are reasons for the arithmetic to
+include the second variance component, which is what a serious instrument does.

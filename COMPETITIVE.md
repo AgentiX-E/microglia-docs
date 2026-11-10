@@ -3830,3 +3830,37 @@ backbone and well below the two-digit gap that CHESS's multi-agent pipeline and 
 ensembles open (66–78%). The gap is not in the prompt and not in the schema text — R63 priced that at
 +0.86pp against a +13.75pp signal — it is in **generation and selection**, which is where the next
 registrations after R65 go.
+
+## The exemplar row, measured: +5.43pp, and it is not where CHESS's 20 points come from (2026-11-10)
+
+R65 put the exemplar arm on minidev for $0.12 and it is the only prompt-content arm in this record to
+leave single digits:
+
+| arm | accuracy | delta vs `none` | delta vs `full` | gained / lost |
+| --- | --- | --- | --- | --- |
+| `none` | 51.14% | — | — | — |
+| `full` (memory pack, mean 1,085 chars) | 50.86% | −0.29pp [−3.14, +2.57] | — | 13 / 14 |
+| **`examples` (3 gold-SQL exemplars, mean 993 chars)** | **56.57%** | **+5.43pp [+1.43, +9.43]**, p = 0.0127 | **+5.71pp [+1.71, +9.71]**, p = 0.0078 | 36 / 17 |
+
+Read against the published rows this is the right order of magnitude and the wrong sign of conclusion
+for anyone hoping exemplars are the missing 20 points:
+
+- DAIL-SQL's case for exemplar selection is a *floor* argument (5–10 curated examples close much of the
+  gap to fine-tuning on Spider), not a claim that examples add 20 points to a strong prompting baseline;
+- CHESS's 66.2% on BIRD with Qwen2.5-Coder-7B comes from **candidate generation plus unit-test
+  verification**, not from its retrieval step; its own ablations put the exemplar/schema-retrieval
+  contribution in the single digits;
+- and our arm is length-matched to the memory pack (993 vs 1,085 characters), so the +5.71pp against
+  `full` is a comparison of *content at equal budget*, not of budget.
+
+The honest summary for the board: on BIRD dev this lane now sits at **56.57%** with a single
+deterministic prompt plus three retrieved examples, inside the 48–66% prompting band and about ten
+points under the multi-candidate pipelines. The remaining gap is selection over generated candidates —
+the thing `sample-*`, `pool.ts` and `prior.ts` exist for and have never been pointed at this split.
+
+One caveat this record now insists on (Rule 13): the same arm measured **+5.43pp**, **+3.14pp** and
+**+2.86pp** on three dispatches, and the controls moved by up to 3.14pp between them. Pooled over the
+three valid runs the arm is **+3.81pp** (95 gained / 55 lost, n = 1,050, exact p = 0.0014) and
+**+4.28pp** against the memory pack, which is null on all three. The row above therefore stands at
+≈ **56%** with the honest interval, and the closing rule R65 registered before those runs — a pooled
+estimate inside ±4pp closes the line — is what the pooled number triggered.
