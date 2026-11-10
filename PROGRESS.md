@@ -13693,3 +13693,84 @@ out-of-sample for every published dev cell), because a 4pp tercile contrast need
 questions** to resolve at 80% power and dev is short by a factor of four. Its first branch —
 "overlap is the axis" — would make routing the lane's default and put every later memory mechanism on
 a gated regime instead of a mixture of two.
+
+### 173.13 Heat buys entropy, and a free reader reads nothing
+
+Two registrations closed this iteration and one defect that had been hiding inside a gate got fixed at
+the level it lived at. Both readings came from a dispatch that cost **$0.2380** for 2,953 calls — a
+third of R66's bill for a quarter of its calls per question, which is what three dispatches outside the
+double-priced window now look like.
+
+**R70: temperature is not the lever.** At T = 1.0 against R69's 0.7, on the same 350 questions, the
+five-draw ceiling moved **+1.71pp** and the first draw **−0.85pp**. That lands on the registered
+`Otherwise` branch — under 5pp of ceiling without a baseline loss — so heat bought no pool and cost no
+baseline, and the temperature line is closed.
+
+**The number that decided it is not in the arm table.** Five draws hold **1.446 distinct answers per
+question at 0.7** and **1.620 at 1.0**: 234 questions collapsed to a single result at the lower
+temperature, 205 at the higher. Heat did what it is supposed to do — 29 more questions got a genuinely
+plural pool — and the ceiling gained **6 questions**. Twenty-nine plural pools converted into six
+ceilings (21%); the other four fifths of the new entropy is additional *wrong* answers, which is what a
+hotter distribution is. Diversity was necessary and nearly inert.
+
+**Voting and shape-selection are the same selector here.** `sample-5 − sample-5-first` is **+2.29pp**
+[0.00, 4.57] with 13 gained and 5 lost; `sample-5-exec − sample-5-first` is the same **+2.29pp** with
+19 and 11; and `sample-5 − sample-5-exec` is **0.00pp with 16 flips in each direction**. The
+registration predicted the first and expected the second to stay at chance, so its numbers held and its
+expectation did not — which is the more useful half.
+
+**R71: reading a candidate's content is as inert as reading its shape.** Over R70's pool, zero calls:
+`column-mention` **AUC 0.514** [0.458, 0.571], `literal-match` **0.509** [0.500, 0.524],
+`content-mean` 0.523, against the baseline draw order 0.509 and the shape family's best of 0.595. The
+best top-pick gain on the eligible population is **+0.7pp** against a registered bar of +4pp. Branch:
+**content is not free**.
+
+**The narrow interval was the finding.** `literal-match`'s interval is 0.024 wide — the narrowest of the
+eight signals this lane has priced — and it is not precision. The signal is constant across the draws
+on **342 of 350 questions** (967 candidates at exactly 0, 658 at exactly 1, **8 questions with any
+variation**), so the question-clustered bootstrap resamples the same number five times. A width of
+0.024 over 1,750 candidates is a statement about how few comparisons exist, not about how well anything
+is known. `column-mention` is the same shape less extremely: 783 candidates at exactly 0, variation on
+107 of 350. Third time this record has found a number true of its own denominator and false of the run,
+and the first time the interval width itself was the tell.
+
+**The defect: a gate written against a list instead of against the table.** `V77` refused R70 — a
+complete run of four bought arms, every other gate green — with the message "missing none of 6 bought
+arm(s)". `none` is not a row; it is the baseline every row is a delta against. The gate is now
+`armCoverageGate` with six tests, `armCoverageOf` replays it against a file, and `pnpm eval:arm-coverage`
+walks the repository: **21 artefacts, 62 bought arms, every row present**. The run was deliberately not
+re-bought — a re-dispatch draws new samples, so it buys a different measurement rather than a verdict on
+the old one — and the replay is a step of `pnpm check` from now on, which turns "did the lane publish
+what it paid for" into a property of the repository instead of a property of a run that has already
+ended.
+
+**R73 is registered, and it is cheap for an unusual reason.** R71's branch says the next thing to price
+is the *written* reader — CHESS's assertions, authored once per question by a model and then executed
+per candidate by code. One call per question, 350 calls, **$0.03**, over a pool that already exists.
+
+**R72 was amended before dispatch, and the amendment deleted an arm.** The estimator the registration
+was built on now exists as code, and re-deriving it from R66's artefact reproduced the tercile means to
+three decimals (0.165 / 0.303 / 0.484) and the whole-population net to the digit (−2, −0.13 per 100) —
+while moving two things: the middle tercile is **−3** rather than +2, so the sign change is between
+*middle and high*; and the cross-fitted threshold region is **0.38–0.41** rather than 0.32–0.43, which
+puts the frozen 0.34 outside it and puts the withheld share at the optimum at **71.8%**, 1.8 points
+outside the registration's own 30–70% instrument band. The band gives way, in the open, with the
+withheld share reported at every threshold and void reserved for a degenerate gate.
+
+**And `full-overlap` no longer needs to exist.** A rule that chooses between `none` and `full` per
+question is *evaluated exactly*, not estimated, from a run that measures both: every question has both
+actions observed, so the counterfactual for any deterministic rule over the recorded pack text is
+already in the file. Support is full, so this is off-policy evaluation without the approximation. The
+dispatch drops from three arms to two — `none` and `full`, `train`, 7,829 questions, ≈18,500 calls,
+≈2.7 hours, ≈$1.5 — and the policy is read afterwards for nothing.
+
+**The trap the committed estimator avoids, recorded because it flips the sign.** Rebuilding the pack
+from `packIdList` and the item store instead of reading `injected` gives **+0 / +5 / −7** flips — the
+opposite gradient — because a store item's `statement` is that item's content in whichever fold wrote
+the snapshot, not the text injected under that id.
+
+Gate state: **3,912 tests over 189 files**, four coverage dimensions at **100%**, `pnpm check` green,
+coupling ledger **178 modules / 20 deferred / `core` 0**. R72 is in flight on `train`
+(≈2.7 hours). R68's second-backbone dispatch never got a runner — it sat `in_progress` for an hour with
+no update after the setup step — and was cancelled rather than left holding the concurrency group; it is
+re-dispatched once R72 clears.

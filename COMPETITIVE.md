@@ -4020,3 +4020,36 @@ this project has not adopted. R70 carries `sample-5` for exactly this reason: at
 clears +2pp the mechanism is diversity and voting becomes free accuracy on every future dispatch; if
 it does not, voting is dead here and the remaining eight points are a *reading* problem — which is
 R71, not another draw.
+
+### The free half of CHESS's selection step, priced at zero
+
+CHESS's contribution to the published stack is a **selection** step, not a generation step: for each
+question it writes assertions ("the answer must have a column named `County`") and executes them
+against each candidate result. The 17.6 points between DAIL-SQL+SC and CHESS+SC include whatever that
+worth. This record could not previously say whether the mechanism was the assertion or the writer.
+
+R71 splits the mechanism and prices the free half. Two deterministic readings of a candidate's content
+— the share of the question's content words its **column names** account for, and the share of the
+question's **literals** its query writes — over 350 questions × 5 draws, on the same question-clustered
+interval every shape signal gets:
+
+| reader | AUC | 95% CI | top-pick gain over the first draw |
+| --- | --- | --- | --- |
+| `column-mention` | 0.514 | [0.458, 0.571] | +0.00pp |
+| `literal-match` | 0.509 | [0.500, 0.524] | +0.29pp |
+| `content-mean` | 0.523 | [0.466, 0.583] | +0.29pp |
+| shape family's best, for scale | 0.595 | [0.554, 0.640] | — |
+
+**Both are inert, and the reason is the one the shape family already taught.** The property a free
+reader can see is shared by every draw of a question: where the columns do mention the question's
+words, all five candidates mention them, so nothing is ranked. `literal-match` is constant across the
+draws on **342 of 350 questions**; `column-mention` varies on 107. A selector built from a property all
+candidates share is not a weak selector, it is a constant.
+
+So the published gap is **the price of reading**, not a signal nobody had extracted: CHESS's assertions
+can distinguish because they are written *for this question against these results*. R73 is the
+registration that prices exactly that — one model call per question, three executable assertions,
+arithmetic per candidate, 350 calls and $0.03 — and its bar is +3pp over the first draw with an
+interval that excludes 0.5. If it misses, no per-question reader recovers the gap on this corpus and
+the selection line closes; if it clears, the writer is the mechanism and the next registration prices
+what the writer needed to know.

@@ -5824,6 +5824,38 @@ measuring; if it does not, then the 8.2 points are not reachable by cheap conten
 honest conclusion is that the gap is the *cost* of verification rather than a missing signal — which
 would be the first time this project could say that with a measurement behind it.
 
+**How the three closed.** R69: width saturates — the k = 10 ceiling is **2.00pp** above k = 5, and the
+shape selector is *below* the first draw at both widths. R70: heat is not the lever either — ceiling
++1.71pp, first draw −0.85pp, and the interesting number is that five draws hold 1.446 distinct answers
+per question at 0.7 and 1.620 at 1.0, so 29 more plural pools bought **6 more questions** of ceiling
+(21% conversion). R71: the free content reader is inert (0.514 and 0.509, variation on 107 and 8 of 350
+questions respectively) — the 8.2 points are the *price of reading*, not a missing cheap signal. All
+three are in `PROGRESS.md` §173.13 with their branch and their cost.
+
+### R72–R73 — the routing question and the written reader
+
+The two registrations open now, one of which is a rewrite of a file that had not been dispatched.
+
+**R72 — memory's sign is a routing property.** Memory's aggregate effect has been a null four times; the
+per-tercile reading of R66's dev artefact says why — net flips **−7 / −3 / +8** across terciles of
+lexical overlap between pack and question. Dev cannot resolve the contrast (33 discordant questions out
+of 1,534), so the run is on `train`, 7,829 questions. Two amendments were made **before dispatch** and
+both are recorded in the file:
+
+- the estimator now exists as code (`overlap.ts`, `pnpm eval:overlap --policy`), and re-deriving the
+  registered numbers with it moved the cross-fitted threshold region to **0.38–0.41** and the withheld
+  share at the optimum to **71.8%** — outside the file's own 30–70% instrument band, which gives way in
+  the open rather than being quietly rewritten;
+- **`full-overlap` is withdrawn.** A rule choosing between `none` and `full` is *evaluated exactly* from
+  a run that measures both, because both actions are observed on every question: off-policy evaluation
+  with full support, no approximation. The dispatch drops to two arms, ≈18,500 calls, ≈$1.5.
+
+**R73 — the writer is the price.** One model call per question writes three executable assertions
+(column present, literal present, row count); a deterministic reader scores each candidate by how many
+it satisfies. 350 calls, **$0.03**, over R70's pool. The bar is +3pp over the first draw with an
+interval excluding 0.5; if it misses, no per-question reader recovers the gap on this corpus and the
+selection line closes for good.
+
 **A note on what none of the three does.** None of them changes the prompt, and none of them adds a
 memory mechanism. Fourteen iterations have priced the prompt and the memory: worked examples
 +3.81pp pooled, schema ordering +0.86pp, memory packs null on four splits, pruning −9.58pp, value
