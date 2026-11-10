@@ -14004,6 +14004,96 @@ trusted, and the next experiment is R66's position); **the dose is what hurts** 
 +0.5pp with no separation between classes → the pack is too large at 1.86 rules and the next
 registration is a causal dose curve).
 
-Gate state: **3,976 tests over 191 files**, four coverage dimensions at **100%**, `pnpm check` green,
-coupling ledger **180 modules / 21 deferred / `core` 0**. R68's second backbone is in flight on
-`zhipu:glm-4.7-flashx`; R74 is in flight on `train` (three arms, cap 28,000, ≈$2.0).
+### 173.19 The instrument was mislabelled, and half of every minidev effect was the label
+
+Jin, Choi, Zhu and Kang (*Pervasive Annotation Errors Break Text-to-SQL Benchmarks and Leaderboards*,
+PVLDB 19(5):931–944, 2026) put BIRD Mini-Dev's annotation error rate at **52.8%** and showed that
+re-scoring sixteen published agents against corrected gold moved relative accuracy by −7% to +31% and
+ranks by up to nine places. This repository pinned Mini-Dev at `v1-2024-06-20`, and against the
+corrected release **151 of the 350 questions in the transfer slice — 43.1% — have a different gold**.
+
+Every small effect in this lane was measured on that slice. R73's entire finding was "four questions
+moved". So the experiments were not re-run — a new sample of the same population carries the same
+labels — the **artefacts were re-scored**: `per_case` holds `predictedSql`, `baselineSql` and `dbId`,
+so both arms can be re-executed against corrected gold with **zero model calls**.
+
+**Fourteen minidev artefacts, all 350 questions matched in every file.**
+
+| reading | uncorrected labels | corrected labels |
+| --- | --- | --- |
+| mean Δ (memory − no memory) | **−2.72pp** | **−1.33pp** |
+| runs with Δ < 0 | 13 of 14 | 11 of 14 |
+| runs whose Δ excluded zero | 5 | 2 |
+| no-memory baseline | 54.02% | **51.26%** |
+| memory arm | 51.14% | 49.81% |
+
+**Branch 2 of R75 fires**: five significant verdicts before, one stable and four `fragile` after, none
+reversed. The registered sentence is the finding — *nothing measured on 350 questions may be called a
+finding again* — and four things travel with it.
+
+**The direction is robust; the magnitude is not.** Across fourteen dispatches and seven memory
+mechanisms (dose, framing, transfer, anchoring, clearance, substrate, repair), **no memory variant has
+produced a positive effect on this slice** under either grading. That is the strongest replication the
+lane has, and it is a claim about a sign rather than a size.
+
+**The correction costs the baseline more than the memory arm.** 54.02 → 51.26% for no-memory (−2.76pp)
+against 51.14 → 49.81% for memory (−1.33pp). **Part of the harm this project measured was the baseline
+being graded too kindly** — a finding that belongs to nobody's hypothesis, and the mechanical
+explanation is that the corrected gold is often a different question, and a pack built from the
+corpus's own failures happens to agree with it slightly more often than a bare prompt does.
+
+**The absolute numbers were inflated by 2.8pp.** 54.02% was not this lane's minidev baseline; **51.26%**
+is. Every published minidev cell moves by that much.
+
+**The instrument is now the size of the effect.** One question is 0.286pp at n = 350 and the detection
+floor for a paired difference is about 2.5pp; corrected effects are 1.4–3.1pp. Two decisions follow:
+**minidev is demoted to a smoke test** and may not carry a finding — the smallest population that may
+is dev's 1,534 (0.065pp per question), the preferred one train's 7,829 — and **the corrected labels
+become the default grading for minidev**, which is a manifest revision plus a patch overlay, registered
+separately because a run before the change is not comparable to one after it.
+
+**R72's −0.84pp on train is untouched**: the corrected release covers mini-dev only, and the 336 id
+matches against train are collisions between two id spaces. The out-of-sample split is now the only
+population whose effect sizes this lane will quote.
+
+### 173.20 Two defects the reading found in its own instrument
+
+**A null cannot be reversed.** `relabelVerdict` classified a sign flip as `reversed` before checking
+whether the original delta had ever excluded zero, so R73's +0.86pp (p = 0.70) becoming −0.57pp
+(p = 0.86) was reported as the withdrawal of a published verdict. There was no published verdict. The
+classifier now returns `absent`, and R75's branch 3 is read only against deltas that had an interval.
+
+**A reading tool that does not close its pool is indistinguishable from a slow database.**
+`BoundedSql` holds child processes; a bin that never closes them finishes its work and then idles at
+zero CPU until the step timeout. Three runs were killed that way — each having done two minutes of work
+and then waiting forty — before the cause was found. The pool is closed in a `finally` now.
+
+### 173.21 The budget was an estimate wearing a bound's clothes, and R68 paid for it twice
+
+R74's dispatch measured fold 1 at 5,483 calls, projected 29,609, and stopped against a 28,000 cap,
+**discarding the fold it had just paid for**. Two defects in two layers:
+
+- **An estimate had a bound's authority.** `forecastBudget` compared the projection against the same
+  number the operator wrote as the cap. Only the **ceiling** may end a run now: a projection that
+  exceeds the cap but fits the ceiling raises the cap to itself (`LlmClient.authoriseCalls`, upward
+  only, non-finite ignored) and says so, and the artefact records `cap`, `ceiling` and `cap_in_force`.
+- **The estimate was arithmetic in a Markdown table**, and it was the moving part in four consecutive
+  registrations. `pnpm eval:budget` derives it from an artefact: the measured rate, the projection, and
+  a ceiling that is a *multiple* rather than a number whenever a requested arm was never measured.
+
+**R68 found the second defect in that tool one level down.** Its projection assumed arms cost alike;
+R68's three arms are five-draw sampling arms, so the run was dispatched at 4,179 calls for a run that
+needed 5,638. `planBudget` now counts **draws rather than arms** — 350 × 16 draws × the per-draw rate =
+4,642 with a 1.3× ceiling of 6,035, which covers the measured need. The measured miss is 18% after
+weighting against 35% before, and the multiple is 1.3 because it has to cover the next miss rather than
+the last one.
+
+`ceiling_calls` would have been the twenty-sixth `workflow_dispatch` input and GitHub's cap is 25 — the
+repository's own workflow checker refused the push. The transfer and density knobs moved to repository
+variables; forty registrations had never varied them, and a form field nobody varies spends a slot on a
+constant.
+
+Gate state: **4,017 tests over 193 files**, four coverage dimensions at **100%**, `pnpm check` green,
+coupling ledger **182 modules / 21 deferred / `core` 0**. R74 is in flight on `train` (three arms,
+27,846 forecast / 33,416 ceiling); R68's third attempt is in flight on `zhipu:glm-4.7-flashx` sized
+from its own measured fold (5,220 / 6,300, deadline 300).

@@ -5919,3 +5919,40 @@ readings from artefacts at zero calls, so R74's reading costs the dispatch and n
 It is the only open experiment that is not about memory: `(exec − first) / (oracle − first)` on a
 baseline far below ours is what decides whether the published 8.2-point gap is a scaffold deficit or a
 baseline effect.
+
+### R75 landed — the slice was demoted, and the direction survived the relabel
+
+**Zero model calls.** Fourteen minidev artefacts, 350 questions each, re-executed against the corrected
+gold released by Jin et al. (PVLDB 2026), which puts BIRD Mini-Dev's annotation error rate at 52.8%.
+Against it, **151 of this lane's 350 golds differ — 43.1%**.
+
+| reading | uncorrected | corrected |
+| --- | --- | --- |
+| mean Δ over 14 dispatches | −2.72pp | **−1.33pp** |
+| significant harms | 5 | **2** (1 `stable`, 4 `fragile`, 0 reversed) |
+| no-memory baseline | 54.02% | **51.26%** |
+
+**The direction is robust and the size is not.** Thirteen of fourteen deltas are negative before the
+correction, eleven of fourteen after it, and the three exceptions are +0.29 / +0.29 / +0.86pp with
+p ≥ 0.69. Across seven memory mechanisms, **nothing this project has built makes minidev better**.
+
+**Two decisions, and they are the point of the iteration.**
+
+1. **minidev is a smoke test.** One question is 0.286pp there and the paired detection floor is about
+   2.5pp, while the corrected effects are 1.4–3.1pp: the instrument is the same size as the effect.
+   A finding may only be carried by dev (1,534 questions, 0.065pp each) or train (7,829).
+2. **The corrected labels become the default grading for minidev**, as a manifest revision plus a patch
+   overlay — its own registration, because a run before the change is not comparable to one after it.
+
+**R72's −0.84pp on train is outside the correction's reach** and is now the only effect size this lane
+quotes. The out-of-sample split is the population whose labels nobody has questioned.
+
+**What this says about the negative effect.** R70–R73 located it on three coordinates — position
+(closed), dose, content — and all of the dose and content evidence came from minidev. The relabel does
+not overturn those readings; it removes the precision from them. The 267 harmful rules of R74's
+attribution are computed from train, so the causal test now in flight is **the first memory experiment
+in this project whose evidence was never graded by a label anyone has since corrected**.
+
+**Next, in order.** R74's reading on train (in flight, 27,846 / 33,416); R68's third attempt sized from
+its own measured fold (5,220 / 6,300, deadline 300); then the corrected-gold manifest (R76) and, behind
+it, the dose randomised on train rather than on the demoted slice.

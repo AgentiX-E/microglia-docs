@@ -4133,3 +4133,46 @@ unaugmented arm at the same baseline. A rule pack built from a corpus's own fail
 several points at a **35%** baseline and zero at **56%** — R64 already showed a per-failure mechanism's
 absolute yield is set by how many failures exist — and R72 adds the routing detail those rows would need
 to reproduce: the help, if it exists, is not in the position they put it.
+
+### The leaderboard's own labels are wrong, and the corrected numbers are 2.8 points lower
+
+The competitive comparison in this file has quoted minidev cells of 52–57% against published BIRD rows
+of 48.6–83.4%. Both sides of that comparison now need a correction, and the correction is not ours.
+
+Jin, Choi, Zhu and Kang (PVLDB 19(5):931–944, 2026) measured **52.8% annotation error on BIRD
+Mini-Dev**, re-scored sixteen published agents against corrected gold, and reported relative accuracy
+movements of −7% to +31% with rank moves up to nine places — CHESS, seventh on the public board, moves
+to first. Their release covers mini-dev, and against it **151 of the 350 questions in this lane's slice
+have a different gold**.
+
+| | uncorrected | corrected |
+| --- | --- | --- |
+| this lane, no memory, minidev | 54.02% | **51.26%** |
+| this lane, memory prefix, minidev | 51.14% | 49.81% |
+| mean memory − no-memory, 14 runs | −2.72pp | −1.33pp |
+
+So **51.26%** is this lane's honest minidev baseline, and the 8.2-point gap to CHESS+SC on Qwen2.5-Coder
+is a gap to a number whose labels moved CHESS *up* four ranks when they were fixed. Two consequences for
+how this file compares anything:
+
+- **Every published row above 67.41% test EX uses oracle evidence**, and every row below is a different
+  kind of claim. The corrected-label literature adds a third axis: rows scored on uncorrected mini-dev
+  are not comparable to rows scored on corrected gold, and most published rows do not say which they used.
+- **Ranks are not stable under the correction** (Spearman r_s = 0.32 between corrected-subset and
+  full-dev rankings, against 0.85 for the uncorrected subset). A rank is only as good as the labels it
+  was computed from, and the field's labels are the thing under repair.
+
+**What survives of the memory comparison.** Across fourteen dispatches and seven mechanisms, **no
+memory variant has produced a positive effect on this slice** under either grading. That is a statement
+about a sign, not a size, and it is now the only claim this lane makes about minidev.
+
+### Where the memory literature and this lane disagree, measured
+
+Three recent results frame the negative effect, and this lane's numbers sit differently against each.
+
+| source | mechanism | this lane, measured |
+| --- | --- | --- |
+| Xiong et al., *How Memory Management Impacts LLM Agents* (arXiv 2505.16067) | **experience-following**: high input similarity yields high output similarity, regardless of memory quality; **error propagation** and **misaligned replay** follow | R72 finds the gradient **monotone in damage and never positive**: −1.46 / −0.69 / −0.38pp by pack-question overlap tercile. Their "similarity transfers output" is our "similarity transfers *nothing useful*" — at a 51% baseline with a rule pack rather than a trajectory |
+| I2S, arXiv 2509.23196 | adding demonstrations **consistently degrades** accuracy even when optimal; **semantic misguidance** (verbatim step copying) at high similarity | our high-similarity tercile is a **wash**, not a harm — the opposite ordering. The two settings differ in what is copied: a reasoning trace can be imitated step by step, a rule cannot |
+| LMS3, ICML'25 | reasoning efficacy is bounded by **semantic similarity and inference stability** of the demonstrations; adds an explicit **demonstration-rejection** mechanism | R71 and R73 are two measurements of the rejection side: `column-mention` AUC 0.514, `assertion-value` AUC 0.500 with a zero-width interval. **Rejection needs a signal that varies, and on a five-draw pool at 51% the candidates agree about everything a cheap reader can see** |
+| ExpeL, Agent Workflow Memory, AutoGuide, ACE-style playbooks | report positive cells for prompt-prefix memory | every one reports a cell at a baseline far below ours and none reports the unaugmented arm at the same baseline. A rule pack built from a corpus's own failures can be worth points at 35% and zero at 51% — R64 already showed a per-failure mechanism's yield is set by how many failures exist |
