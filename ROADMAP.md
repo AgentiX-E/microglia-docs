@@ -5993,3 +5993,41 @@ because it was finally run.
 position (R72, gating recovers the harm but never creates gain) and content (R74, the per-rule signal is
 real but 0.35pp). **Dose is the only one left with a live mechanism**, and it is now measurable on
 train — the only split whose labels nobody has corrected.
+
+### R77 re-dispatched, and the corrected labels became an instrument rather than a reading
+
+**Where the lane is.** Two of the three coordinates of the negative effect are closed as interventions:
+position (R72) and content (R74, +0.35pp against a ±0.4pp interval). Dose is the one left with a live
+mechanism, and the question standing in front of it is more basic than the dose: **do the rules change
+any answer at all.**
+
+**R77** buys that on `train`, 2,000 questions, `none,full,loo`, `temperature: 0`. Its first dispatch was
+authorised for two thirds of itself — 6,875 / 7,600 against a run that needed 10,541 — because
+`pnpm eval:budget` applied a per-question rate from a run whose learning pass its cache had mostly
+absorbed. The ceiling stopped it after fold 1, correctly, and the planner now separates the marginal cost
+from the per-fold one: for R77 that is **7,593 projected / 11,249 authorised**. Re-dispatched at 11,000 /
+12,000.
+
+**`pnpm eval:inert` reads it at zero calls**, and run against R74's own file it already shows the shape:
+**54.33% of pairs identical, but only 26 of 532 rules (4.9%) inert on every draw they got**, with a third
+of the liveness coming from the busiest tenth of the pack. Half the pairs are the same because a rule
+drawn ten times and live five of them contributes five identical pairs — which is why pair-level
+inertness and per-rule inertness are different numbers, and only the first has been quoted.
+
+**The corrected labels are now a pinned revision rather than a reading.** R75's re-scoring of fourteen
+artefacts was split in two by its own amendment: the release is the `sql_only` configuration, and it
+keeps *its* questions — 67 of the slide's 350 have different text, because BIRD shipped Mini-Dev
+revisions after the pin. On the 283 questions the correction can label, the baseline is **62.69%**
+(pinned) / **59.64%** (corrected), where the mixture reported **54.02% / 51.26%**: every mini-dev
+accuracy this lane has quoted was about **8.7pp too low**, and the effect was right because both arms are
+equally wrong on a question neither was asked.
+
+`eval/manifests/gold/` holds the correction beside the corpus with its digest, citation and an offline
+identity check; `reviseGold` drops the rows it cannot score; every artefact records which labels it was
+measured against. `R76` is registered to prove the path on a real dispatch — 283 questions,
+`gold: corrected`, 1,015 calls — with refutations that are all instrument failures.
+
+**Next, in order.** R77's reading (in flight, 11,000 / 12,000); R68's third attempt on
+`zhipu:glm-4.7-flashx` (in flight, 5,220 / 6,300); then R76's validation, and behind it the dose
+randomised on train rather than on the demoted slice — because if R77 puts the pair-level inert share
+above 70%, the next intervention is the distillation prompt and not the dose at all.
