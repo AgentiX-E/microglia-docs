@@ -13660,3 +13660,36 @@ the record had been quoting the first kind beside results of the second kind.
 
 Gate state: 3,890 tests over 188 files, four coverage dimensions at **100%**, `pnpm check` green,
 coupling ledger 177 modules / 20 deferred / `core` 0.
+
+### 173.12 Memory's sign follows one unrecorded number, and dev cannot resolve it
+
+The standing question — *is our memory wrong, or is the way we use it wrong* — got its first
+quantitative answer this iteration, from an artefact that was already paid for. R66's dev run records,
+per question, the rules that were injected and whether the answer with memory was right where the
+answer without it was not. Splitting the 1,534 questions by **how much of the question's own
+vocabulary the pack accounts for**:
+
+| tercile of overlap | mean overlap | n | net flips | per 100 |
+| --- | --- | --- | --- | --- |
+| low | 0.168 | 511 | **−13** | **−2.54** |
+| middle | 0.304 | 511 | +2 | +0.39 |
+| high | 0.485 | 512 | **+9** | **+1.76** |
+
+Monotone, and it changes sign. Memory is not null; memory is **two regimes averaged into a null**, and
+the axis that separates them is lexical overlap between the pack and the question.
+
+**The lane's own signal does not find it.** `coverage` — the field built to describe how much of a
+question a rule reaches — has nine points of spread with no direction across its range: −1.72 per 100
+at coverage 0 (n = 58), +3.85 at 0.2 (n = 130), −4.67 at 0.333 (n = 150), +12.96 at 0.4 (n = 54). The
+number that predicts the sign is the one nobody was recording.
+
+**Both limits, before anything is built on it.** The contrast is **+2.34pp with a bootstrap interval of
+[−1.81, +6.46]** — it crosses zero, because 1,534 questions carry 33 discordant flips in total. And a
+threshold chosen from these labels is in-sample; cross-fitted it is stable (**0.32–0.43 on all five
+folds**) and worth **+5 flips against always-injecting's −2** — +0.46pp, inside its own noise.
+
+So **R72** registers the experiment rather than the reading: two arms on `train` (7,829 questions,
+out-of-sample for every published dev cell), because a 4pp tercile contrast needs about **6,000
+questions** to resolve at 80% power and dev is short by a factor of four. Its first branch —
+"overlap is the axis" — would make routing the lane's default and put every later memory mechanism on
+a gated regime instead of a mixture of two.
