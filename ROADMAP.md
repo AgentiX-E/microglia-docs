@@ -5787,3 +5787,45 @@ for weeks — the same scaffold on a second model — could not be run without m
 later dispatch inherits. The fix is one dispatch input with a closed vocabulary rather than three
 free-form ones, because `model` + `endpoint` + `credential` can be set half-way, and the half-way
 setting is precisely the defect (a key for one provider sent to another provider's host).
+
+### R69–R71 — the pool, the heat, and the step that reads a candidate
+
+The three registrations that follow R67, in the order their costs justify.
+
+**R69 — width, paired.** `sample-10-first`, `sample-10-oracle`, `sample-10-exec` at the lane's
+T = 0.7, **beside** the same three at k = 5 in one dispatch. One pass of ten draws contains the
+five-draw pool as its first five, so the width effect is a paired difference inside a run rather
+than a comparison across two days. R67's own refutation names this branch: selection can only
+recover what generation produced. 4,200 calls.
+
+**R70 — heat.** The same five-draw arms at T = 1.0, now declared in the registration header rather
+than in a repository variable. The reading is a *pair* of deltas against R69 — ceiling and first
+draw — because a hotter distribution moves both ends, and "diversity" and "damage" are what the two
+deltas distinguish. 2,450 calls.
+
+**R71 — a selector that reads the candidate.** This is the 8.2-point step, and it is the only lever
+a competitor's ablation shows carrying ranking information: CHESS writes *unit tests from the
+question* — "the result must have a column named `County`", "the answer must be one row" — and
+executes them against each candidate. Those assertions are content-aware; this lane's seven
+signals are all shape, and R67 measured every one of their AUC intervals straddling 0.5.
+
+R71 has a prerequisite this iteration pays for in bytes rather than calls. Until now the artefact
+kept each candidate's *signature* and threw the query away, so the content question could not be
+asked of a pool that had already been bought: pricing a content-aware selector meant buying a new
+pool. `sql` and `columns` are recorded per candidate from R69's successor onward, and
+`pool.rereadable` counts them, so **R71's first stage costs no model calls at all** — it computes a
+deterministic, question-derived score (does the result name something the question names; does the
+query carry a literal the question carries) and reports its AUC with the same question-clustered
+interval every shape signal gets.
+
+The bar is the one R67 set for shape: an interval that excludes 0.5. If it excludes it, R71 buys one
+call per candidate for the model-written version and measures the difference between reading and
+measuring; if it does not, then the 8.2 points are not reachable by cheap content either, and the
+honest conclusion is that the gap is the *cost* of verification rather than a missing signal — which
+would be the first time this project could say that with a measurement behind it.
+
+**A note on what none of the three does.** None of them changes the prompt, and none of them adds a
+memory mechanism. Fourteen iterations have priced the prompt and the memory: worked examples
++3.81pp pooled, schema ordering +0.86pp, memory packs null on four splits, pruning −9.58pp, value
+spellings +0.20pp. The remaining gap to the published pipelines is in *how many queries are drawn,
+which one is kept, and what the keeper is allowed to read* — which is exactly R69, R70 and R71.
