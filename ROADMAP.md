@@ -5771,3 +5771,19 @@ share on both (the scale half). R68 explicitly cannot be a replication of the DP
 credential or hosting here for Qwen2.5-Coder-7B — and it is written to say so in its own refutation,
 because a scale ladder on one host read as a replication of somebody else's row would be the exact
 error this section is about.
+
+**Rule 16.** *A fact kept in two places will disagree with itself, and the copy that gets updated is
+the copy that has a test.* Three instances in two iterations: the retry floor stayed at 140 in the
+lane while the amendment said 90, `retry-values` was registered while the arm was not yet in the
+union (deliberately, and written down), and `sample-5-exec` existed as a parser formula while missing
+from the membership list that the lane actually checks. The union has a test that pins every arm; the
+parser has a test; the document had neither. The general remedy is not "be careful" — it is to make
+the second copy executable, so that a disagreement is a red build rather than a dispatch that dies.
+
+**And the corollary, from the same iteration.** *A configuration value that cannot be set per run is
+a value that will eventually be set globally, for everything, by accident.* The backbone was a
+repository variable that the cache key also read, so the experiment the record has been asking for
+for weeks — the same scaffold on a second model — could not be run without mutating the state every
+later dispatch inherits. The fix is one dispatch input with a closed vocabulary rather than three
+free-form ones, because `model` + `endpoint` + `credential` can be set half-way, and the half-way
+setting is precisely the defect (a key for one provider sent to another provider's host).

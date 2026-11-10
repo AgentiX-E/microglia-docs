@@ -7401,3 +7401,36 @@ name, decided on the host rather than on the port, and the exemption is pinned b
 (3,819 tests, 186 files), `pnpm typecheck:lanes` green, coupling ledger 175 modules / 16 deferred /
 `core` 0. The new registration is `prereg/R68-backbone-scale.md`, and it states in its own refutation
 that it is a scale ladder on one host rather than a replication of the published Qwen2.5-Coder-7B row.
+
+## 35.07 Three ways one fact acquired two representations (2026-11-10)
+
+**Finding.** In two iterations, three separate defects had the same shape: a fact recorded twice, one
+copy updated.
+
+| fact | the stale copy | what it cost |
+| --- | --- | --- |
+| the retry population floor | `SOTA_RETRY_FLOOR = 140` in the lane while the amendment said 90 | an artefact that failed its own floor on a population that met it |
+| the existence of `retry-values` | R66's header said the arm was not implemented; the union agreed | nothing — the registration was written that way on purpose, as a target |
+| the existence of `sample-5-exec` | the parser accepts `sample-N-SELECTOR`; `OPTIONAL_ARMS` did not list it | a dispatch that died in two seconds with no calls spent |
+
+The third one is the interesting one, because the first two were *known*: R65's floor drift was found
+by reading an artefact against a document, and R66 wrote its own not-implemented status into its
+header so a reader could not mistake it for a plan. R67 assumed the machinery. "The selector is
+generic" is a claim about the parser; "the arm exists" is a claim about a membership list; and
+nothing in the repository required the second to follow from the first.
+
+**Why the price was right, and what is still missing.** The refusal happens on the arm list, before
+the first model call: two seconds, zero calls, one wasted dispatch object. That is the correct place
+for the check and it is why the fix is a one-line union entry rather than a new gate. What is missing
+is a *pre-commit* check, and it cannot be a naive one: prereg headers use two vocabularies — BIRD arms
+and τ² planted arms (`memory`, `reference`, `self-knowledge`) — so a global "every header arm exists"
+test would report 28 false positives across R26–R62 and be suppressed within a week. The honest
+version is per-lane, and the lane already refuses correctly.
+
+**Second finding, second order.** The backbone input took two attempts. The first, three dispatch
+inputs, reproduced the original defect — it could move the host while leaving the key — and the
+repository's own `scripts/check-workflows.py` caught the *other* problem with it: 28 inputs against
+GitHub's cap of 25. One input with a closed vocabulary fixes both, and `density_panel` becoming a
+repository variable is the payment. A linter that fails on a count is not a linter that fails on a
+design error, but here it forced the design error into the open, which is worth recording: the cap
+was the reason the model/host/key decision got collapsed into something that cannot be set half-way.

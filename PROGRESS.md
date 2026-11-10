@@ -13452,3 +13452,44 @@ first call otherwise, and `model_credential` in the artefact so two backbones st
 **R68** is registered on top of it: R67's three arms, one host, one variable moved, ceiling share
 reported on both backbones, and Rule 14 — *absolute points are not comparable across baselines; the
 share of the ceiling is* — is the axis both rows finally share.
+
+### 173.7 The retry learns the spelling, and the backbone becomes a variable
+
+Two registrations that had been sitting undispatched are now runnable, and one of them was not when
+it was dispatched.
+
+**R66 `retry-values` is implemented.** R64 repaired 20 of 98 rejects and 19 came from the empty
+bucket; 32 of the 89 empty results read exactly the gold tables and filtered on a value the database
+does not spell that way. The arm appends, per literal the failed attempt wrote, one line: what it
+wrote and what the column actually holds. Built from the attempt's own text plus a read of the
+database at **zero model calls**, so it costs exactly the 98 calls `retry-blank` costs — which is the
+whole reason it is registered at dev rather than at minidev. `V76-values-delivered` implements the
+file's own void condition (fires on < 30% of empty retries) as a blocking gate, on the `V75`
+precedent. Dispatch `42747637476`, dev, n = 1,534, in flight at the time of writing.
+
+**The 5-draw execution selector did not exist.** R67's first dispatch, `42747647806`, died in two
+seconds: `Unknown arm 'sample-5-exec'`. The selector has been in `SAMPLING_SELECTORS` since they were
+factored into one list, the parser accepts any `sample-N-SELECTOR`, `sample-3-exec` is a registered
+arm — so the formula was constructible, plannable and absent from `OPTIONAL_ARMS`, which is the list
+membership is checked against. This is the third instance in two iterations of **one fact with two
+representations where only one was updated**: `RETRY_POPULATION_FLOOR` stayed 140 while the
+amendment said 90; `retry-values` was registered while the arm did not exist (R66's own header says
+so); now an arm whose parser form exists but whose name does not. R66 wrote the sentence about
+itself; R67 assumed the machinery. The refusal cost two seconds and no calls, which is the right
+price; the arm is in the union, pinned by the test that pins every other arm, and R67 records the
+void dispatch as Outcome 0 rather than deleting it. Re-dispatched as `42749802682`.
+
+**The backbone is a dispatch input, and it took two attempts to get right.** `SOTA_MODEL` was a
+repository variable that the distillation cache key also read, so a backbone swap was a global
+mutation two backbones could not share. The first design added three inputs — `model`, `endpoint`,
+`credential` — and that was the original defect wearing a fix: it could move the host and leave this
+provider's key behind. The repository's workflow linter then refused the file outright, for declaring
+28 `workflow_dispatch` inputs against GitHub's cap of 25. The answer is **one** input, `backbone`,
+with a closed vocabulary: empty leaves every published run where it was, `zhipu:MODEL` moves the
+model, the host and the key together. `density_panel` became a repository variable at the same
+default to pay for the slot — the precedent this file already set for `template` and
+`sample_temperature`. `SOTA_ENDPOINT` joins `SOTA_API_KEY`; `DEEPSEEK_ENDPOINT` still works, because
+every rehearsal here uses it.
+
+Gate state: 3,857 tests over 187 files, four coverage dimensions at **100%**, `pnpm check` green,
+coupling ledger 176 modules / 17 deferred / `core` 0.
