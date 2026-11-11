@@ -15553,3 +15553,81 @@ This is the third hole of the same kind in two days, and they are worth stating 
 same each time: **a fact stated in two places needs one check that compares them**. The arm list (R67), the sample
 (R68), the split (this iteration), and — beside them — the input arrays that two arms share (§173.66) and the
 plans that were collected before they existed (§173.67).
+
+### 173.69 — R81 closed the memory line: four mechanisms, four nulls, one population
+
+Fifth dispatch, 1,534 questions, five folds, `learn_sample = 64`, all 14 gates passing, **37 minutes and
+$0.5338** (9,290 calls, all off-peak, 71.3% cache hit).
+
+| arm | accuracy | vs `none` | vs `full` | n |
+| --- | --- | --- | --- | --- |
+| `none` | 57.43% | — | — | 1534 |
+| `full` | 56.71% | −0.72pp [−2.15, +0.65], p = 0.36 | — | 1534 |
+| `full-reconstructed` | 56.39% | −1.04pp [−2.09, −0.07], p = 0.060 | **−0.33pp [−1.76, +1.11], p = 0.72** | 1534 |
+| `full-reconstructed-shuffled` | 56.84% | −0.59pp [−1.50, +0.33], p = 0.25 | **+0.13pp [−1.30, +1.56], p = 0.93** | 1534 |
+
+Both contrasts against `full` straddle zero and land inside ±1.5pp, which is the branch the registration named
+**`Reconstruction is not the problem either`** — and it wrote the consequence into that branch before the run
+existed:
+
+> **The memory line closes for good**, and it closes with four independent mechanisms measured null at this
+> population (content, quantity, persistence, and the foreign control), which is a result rather than a
+> failure: the SDK's memory component is worth nothing on BIRD dev at 57.6%, and saying so is worth more than
+> a fifth tuning knob.
+
+Every clause of that is now measured, and each by a different registration:
+
+| mechanism | registration | reading |
+| --- | --- | --- |
+| content — which rules enter the pack | R71 / R74 / R78 | every content signal ≈ 0.5 AUC; `full-grounded` vs `full-sampled` +0.57 vs +0.86pp, p = 1.0 |
+| quantity — how many | R25 / R58 / R63 / R80 | about −1.7pp **per rule injected**; pruning at random matches pruning by checkability |
+| persistence — whether the advice is stored | **R81** | rebuilt per question: **−0.33pp [−1.76, +1.11]** against the stored pack |
+| foreign control — whether the advice is *about this question* | **R81** | another question's notes: **+0.13pp [−1.30, +1.56]** against the stored pack |
+
+The two R81 contrasts are the ones that matter together. `reconstructed − shuffled` asks whether the advice's
+*subject* matters and answers **−0.46pp**, inside the interval that contains zero. `shuffled − none` asks what
+one extra call with a hint-shaped prompt is worth and answers **−0.59pp**, also containing zero. So this is not
+"persistence was the problem" (the rebuilt arm does not beat the stored one), and it is not "the call is the
+treatment" (the foreign control does not beat nothing). The pack is inert at this population, whatever it is
+made of and however it is produced.
+
+**The writer declined on 86.4% of questions.** `V80` reports 209 of 1,534 carrying advice; the per-fold census
+says 37, 34, 41, 40 and 57 written against 270, 273, 266, 267 and 250 declined. Told not to restate the notes,
+not to describe tables or columns, and not to write SQL, a strong model says `NONE` about seven times in eight —
+which is itself a reading about this store: there is not much a rule can add to a question the schema already
+answers.
+
+### 173.70 — R83 was cancelled by reading the store instead of buying it, and the arithmetic is the reason
+
+R81's artefact carries `items`: a per-item projection of all 254 claims over the five folds. The containment the
+consolidation pass uses can be computed on it for nothing, before any dispatch:
+
+| fold | claims | same-scope pairs | pairs at containment ≥ 0.60 |
+| --- | --- | --- | --- |
+| 0 | 45 | 128 | 1 |
+| 1 | 47 | 138 | 1 |
+| 2 | 57 | 168 | 0 |
+| 3 | 54 | 143 | 1 |
+| 4 | 51 | 124 | 0 |
+| **total** | **254** | **633** | **3** |
+
+Three groups, and all three are the *same* pair of statements in three different folds — one claim about naming
+entities stated two ways at containment **0.714** against the pass's 0.60 floor. Six questions are touched out of
+1,534, so the ceiling on any accuracy effect is **0.39pp**, while this lane's minimum detectable effect
+(`V5-resolution`) is **1.99pp**. The arm is underpowered by a factor of five **by construction**.
+
+So it is not dispatched, and `R83-consolidation.md` keeps the table and the arithmetic rather than being deleted.
+This is the same rule the record has applied to thresholds ("a threshold chosen by its own result") applied one
+step earlier: **a run whose ceiling sits below its own detection floor is not an experiment.** What it would have
+bought is a null that cannot tell "the merge does nothing" from "the merge does something too small to see" —
+published, under a registration number, as if it were a finding.
+
+And the same arithmetic closes the follow-up the registration proposed: raising `learn_sample` from 64 to the
+full 1,227 corrections a fold multiplies the store about nineteen-fold, which puts the repeats at roughly twenty
+groups — under 3% of questions, still below the floor. The merge is not the missing mechanism. The store is too
+small to have one, and at 52 claims a fold that is a statement about the learning population rather than about
+the consolidator.
+
+**What is left is the one variable that was never bought: the model.** R82 is registered, its three instrument
+gaps are closed, and its cell is 350 questions where the minimum detectable effect is 4.67pp against a predicted
+effect of six points or more — power it actually has.
