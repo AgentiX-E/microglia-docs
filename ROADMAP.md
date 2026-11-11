@@ -6031,3 +6031,27 @@ measured against. `R76` is registered to prove the path on a real dispatch — 2
 `zhipu:glm-4.7-flashx` (in flight, 5,220 / 6,300); then R76's validation, and behind it the dose
 randomised on train rather than on the demoted slice — because if R77 puts the pair-level inert share
 above 70%, the next intervention is the distillation prompt and not the dose at all.
+
+### The silent tail gets its draws, and the validation came back
+
+**R76 returned and the instrument holds.** 910 calls, `n` 283, `dataset_gold` naming the pinned revision
+with 129 labels replaced and 0 unmatched, baseline **59.36%** against R75's replayed **59.64%** — 0.28pp,
+a tenth of the paired noise. Every refutation stayed silent. The mini-dev level correction is now
+end-to-end rather than second-hand, and the dev cells that carry the competitive ranking are untouched
+because the revision is built on Mini-Dev.
+
+**R77's 23.9% dead weight is 15.9%.** At the rate the rules that fired demonstrated — 49.9% per draw —
+38 of the 113 silences are chance, so the dead-weight claim that survives is **74.8 rules**, and **105 of
+the 113 hold fewer than five draws**, the point at which silence is chance once in twenty. Bringing all
+of them to five costs **346 loo draws**. That is the next registration: not a pruning, a top-up, with
+both directions stated in advance — if the excess is real about 75 stay silent, and if it was chance
+about 38 do, which would collapse the dead-weight claim to the 8 rules that already hold five draws.
+
+**Still in flight.** R68's third attempt on `zhipu:glm-4.7-flashx`, 5,220 calls authorised over 6,300,
+whose reading is `(exec − first)/(oracle − first)`. Its deadline is 300 minutes and it has been running
+since 21:24 UTC.
+
+**Behind it, in order.** R78's targeted top-up; `retry-keyed` against `retry-blank`; the `values` block
+in the first prompt; and the dose randomised on train, which is the only mechanism left alive after
+R77 failed to move the pair-level share into either of its branches.
+

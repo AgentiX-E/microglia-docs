@@ -14384,3 +14384,57 @@ out-of-sample negative reading this lane has, and the first at temperature zero.
 is not a pruning: 113 rules at a median of 3 draws is weak evidence per rule, so those 113 get **more
 draws** before anything is deleted.
 
+### 173.28 — The correction reached the scorer, and the level it predicted was right to 0.28pp
+
+R76 ran end to end: `42931789908`, **910 calls** against 1,015 projected, five folds, 283 questions,
+`none,full`, `temperature: 0.7`, gates all pass. This is the first dispatch in the record that asked the
+loader for a **corrected label set** instead of re-scoring somebody else's artefact.
+
+| the registration said | the artefact says |
+| --- | --- |
+| `n` is 283, not 350 | `n.total` 283, `n.eval` 283, `qualifying` 283 |
+| 67 of the slice's questions are unlabelable | 350 − 283 = 67; the revision's drop list holds 81 for all of Mini-Dev, 67 inside this slice |
+| `dataset_gold` is not null | `bird-minidev-arcwise-sql-only.json`, digest `e7bf7640…e8395`, 498 entries, **129 replaced, 288 already agreed, 0 unmatched, 81 dropped** |
+| baseline in 57–63% | **59.36%** (168 of 283) |
+| baseline not near 51.26% | 8.1pp above it — the 8.7pp the mixture was short by |
+| memory arm within 4pp | **0.00pp**: 59.36% against 59.36% |
+
+**59.36 against 59.64 is the number that matters.** R75 re-scored fourteen artefacts with a different
+instrument and predicted this population's corrected baseline at 59.64%; the dispatch measured 59.36%,
+**0.28pp apart**, a tenth of the paired noise on 283 questions. Until now this lane predicted directions;
+this is the first level it predicted.
+
+**Zero delta with 283 of 283 statements differing.** The pack rewrote every answer's text and moved no
+verdict: the same 168 questions are right in both arms. That is R74's reshuffle at a fifth of the
+population and a fifth of the cost, and it is only visible because the artefact carries statements
+rather than verdicts. A delta of exactly zero would otherwise be indistinguishable from an arm that was
+never rendered.
+
+**And the nine hundred calls were 90% cache**: 859 of 920 distillation requests came back from the
+restored cache, which is the amortised shape Amendment 1 priced.
+
+### 173.29 — The quarter of the pack that never fired is really about a sixth, and 346 draws would say which
+
+R77's headline was that **113 of 472 rules (23.9%) never changed an answer**. The draw counts make that
+number unusable as a pruning criterion: 59 of the 113 were drawn **once**, the median is three, and a
+rule live on half its draws is silent on three of them 12.5% of the time.
+
+`silenceReading` prices the silence against the rate the rules that *fired* demonstrated:
+
+| reading | value |
+| --- | --- |
+| per-draw live rate of the rules that fired | **49.9%** |
+| silences that rate predicts among the 113 | **38.2** |
+| **excess: rules the draw counts cannot explain** | **74.8 — 15.9% of the pack, not 23.9%** |
+| silent rules holding fewer than 5 draws (silence = chance < 5%) | **105 of 113** |
+| extra draws that would bring every silent rule to 5 | **346** |
+
+Rules that never fired are excluded from the rate estimate, because including them is circular — nine
+rules silent on ten draws each would drag a pack-wide rate to 1/92 and then declare all nine expected.
+A zero rate returns a zero target rather than a number: silence is then not a chance event at any sample
+size, and a number would read as "more draws would settle it" when nothing would.
+
+So the honest statement about R77's pack is **"about 75 rules are dead weight, and 105 of the 113 have
+not been drawn enough to tell"**, and the experiment that separates them costs **346 loo draws** —
+roughly a sixth of R77's evaluation bill. That is the next registration rather than a pruning.
+
