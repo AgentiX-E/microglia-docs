@@ -632,6 +632,11 @@ and a note that improves the reader of a thin store would be a result about a st
 
 | # | Item | Why it is not optional |
 | --- | --- | --- |
+| P0 | **`tau2-driver.ts:757` sizes the τ² distiller at a bare literal 1200** | The BIRD lane's equivalent was `3000 : 2000` at a call site, unrecorded and uncoupled from the regime, and it produced 572 failed distillations in R84. The τ² lane's number is smaller, is not in the artefact at all, and is the budget R56 is currently running on. The fix waits for R56's `distillFailed` count: if it is zero the number was not binding and the change is naming plus recording, if it is not the change has a measurement attached |
+
+
+| # | Item | Why it is not optional |
+| --- | --- | --- |
 | P0 | `instrumentFunnel` + `V0-instrument-ready` | the three zero-store defects (`INTERPRETER_PRODUCED_NOTHING`, `ADMISSION_REJECTED_ALL`, `SCOPE_UNREACHABLE`) currently report as one number; four of the six checks already exist, the closure does not |
 | P0 | `eval:prior` exits 2 when it has no pool | done 2026-11-08: the command that prices the only positive axis had no failure mode and no input |
 | P1 | coverage assertion over a fresh run, both lanes | 13 supplyable / 2 informative is a fact about the lane, and nothing checks it; three places reported 9/30 for a table that says 13/26 |
