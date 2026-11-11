@@ -4295,12 +4295,24 @@ different settings:
 | AskData | 78.49 | 83.40 | proprietary pipeline; this file's previous SOTA row |
 | **MARS-SQL** (ICML 2026) | **77.84** | — (89.75 Spider) | RL-trained multi-agent with **live-database execution feedback** |
 | R³-SQL | 75.03 | — | — |
+| **SQLoom** (arXiv:2611.03298, Nov 2026) | **73.4** | — (89.2 Spider dev/test) | **fine-tuned**, set-contrastive supervision at three levels on a 1.7B backbone |
 | CHASE-SQL | 73.01 | 73.0 | divide-and-conquer + pairwise-optimised selection |
+| Memo-SQL (ACL 2026) | 68.5 | — | **training-free** SOTA on open backbones: decomposition + RAG-filtered self-correction, >10× cheaper than test-time scaling |
+| VCoT-SQL (arXiv:2611.00815) | 66.82 | — (86.8 Spider) | fine-tuned: clause-level CoT verified by execution + a dedicated SQL validator |
+| GBV-SQL (ACL 2026) | 63.23 | — | training-free back-translation (SQL→NL) verification loop, 5.8pp over MAC-SQL on the same backbone |
 | DecoSearch (arXiv:2606.17821) | 70.53 | — (88.31 Spider) | training-free complexity routing + DAG decomposition |
 | XiYan-SQL full | 71.58 | — | — |
 | **microglia (no-memory arm)** | **57.63** (n = 1,534) | — | single-shot + schema + a memory pack that measures null |
 | XiYan-SQL + M-Schema | 55.15 | — | — |
 | XiYan-SQL baseline | 53.52 | — | — |
+
+**The board has to be read in backbone tiers, or it says nothing.** The rows above mix three regimes:
+fine-tuned on the task (SQLoom 73.4 on a 1.7B model, VCoT-SQL 66.82 on a 7B), training-free on a frontier
+closed backbone (CHASE-SQL 73.01, AskData 78.49, Gemini-SQL2 80.04), and training-free on open backbones
+(Memo-SQL 68.5, DecoSearch 70.53). microglia belongs to the third tier — `deepseek-flash`, one prompt, no
+training — and the honest row for that tier is **Memo-SQL 68.5 against microglia 57.63**, an 11pp gap that
+belongs to decomposition plus RAG-filtered self-correction rather than to memory. SQLoom's 73.4 is the
+ceiling of the *first* tier and is not reachable by any scaffold change.
 
 **Read the column on the right before the score column.** Every system above 70 uses at least one
 mechanism this project has now measured and found *null on its own backbone*: execution feedback and
