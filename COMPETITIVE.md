@@ -4337,3 +4337,92 @@ Agents*, arXiv:2610.27406), replaying a retrieved experience verbatim causes neg
 tested *that anything is stored at all*, by writing advice for one question from the store and discarding
 it. If that arm is also null, the product claim follows the evidence: the memory component earns nothing on
 BIRD dev at this baseline, and the SDK should be sold on the parts that were measured to work.
+
+## Appendix M — The flywheel is the target, and this is the table it is ranked on (2026-11-11)
+
+**The correction this appendix exists to make.** Appendix L and the entry before it end on BIRD: a 57.63%
+row, the ceiling priced at 8.86pp, and a comparison against cells at 73–83%. That framing is wrong for this
+project, and it was wrong in the one way that costs iterations rather than words — it pointed the queue at a
+benchmark the record had already disqualified as a memory substrate, and it read four nulls measured there as
+a verdict on the mechanism. S2c settled this on 2026-11-08: **τ² same-domain is the product-evidence lane,
+BIRD is the hostile case, and an absolute EX may never be quoted beside a leaderboard row.** The line just
+below it is the operative one — *"BIRD has no recurrence by construction — every question is new — so a
+mechanism whose quality axis is 'this claim was derived more than once' cannot be measured there."*
+
+So the target is stated once, in the terms the product is actually sold in:
+
+> **SOTA in this domain is the largest paired lift in task success that a fixed model obtains from
+> experience it extracted itself, on a workload that recurs, reported with its interval, its minimum
+> detectable effect, and the store-side counts that say the treatment was delivered.**
+
+Everything else is instrumentation. Absolute EX on a one-shot benchmark is instrumentation. A BIRD null is
+instrumentation, and a null there is *expected* by the shape of the population, not evidence about the
+mechanism.
+
+### M.1 The competitive set, ranked on the flywheel's own axis
+
+The column that separates the entries is not the size of the claim. It is **whether the claim has a control
+that isolates experience from everything else**, and **whether the sample could have resolved the effect it
+reports**. Six of the eight entries below fail one of those two, which is why the domain's leaderboard is not
+the thing to beat — the measurement standard is.
+
+| system | artefact distilled | population, and whether it recurs | control | claimed lift | what the control leaves open | resolution |
+| --- | --- | --- | --- | --- | --- | --- |
+| **ALTK-Evolve** (IBM Research, 2026-10-20; τ²-bench PRs #542 / #551) | 31–292 short behavioural rules distilled from the agent's own train trajectories, appended after the domain policy | τ² retail / airline, 4 trials per task, **same tasks recurring across trials** | none: baseline row only | Pass^4 retail **57.5 → 67.5** (lossless 292 rules), **57.5 → 60.0** (`sup3`, 31 rules); airline **35.0 → 45.0** (`sup3`, 14 rules) | model (`gpt-5.5` as agent *and* extractor), modified prompts, and a train split the base split overlaps. Its own airline cell reverses: 101 rules score **40.0**, below `sup3`'s 45.0 on 20 tasks | **20 tasks = 5pp per task.** The reversal it publishes is under its own floor |
+| **ExpeL** (arXiv 2308.10144) | natural-language insights, with upvote/downvote counts | cross-task, recurring task families | ablation by insight count | positive on its own suite | its own ablation shows insights specific to one task **hurt** on another — the same negative transfer R9.4 measured independently (repair 6.7% / break 10.4%) | not published per cell |
+| **ACE** (arXiv 2510.04618) | a "playbook" of bullets, each carrying `helpful`/`harmful` counters assigned during generation | recurring, long-horizon | self-reported counters | curation beats append | the counters are the model's own tags; measured the strict way here, a per-item counter has split-half reliability **−0.31** and −0.06pp out-of-sample discrimination [−1.97, +1.56] | none published |
+| **Agent Workflow Memory** (arXiv 2409.07429) | induced **workflows** abstracted from past trajectories, reused as exemplars | recurring web tasks | not a paired control | substantial on its suite | it abstracts at the trajectory level; whether the abstraction or the extra exemplar tokens carries the gain is not separated | none published |
+| **Dynamic Cheatsheet** (Suzuki et al., 2025) | append-only strategies, similarity-retrieved, **no per-item scoring** | recurring | none | positive | nothing prunes, so the store grows monotonically; no delivery column | none published |
+| **Mem0 / MemGPT** (arXiv 2504.19413 / 2310.08560) | extracted facts / paged memory blocks | conversation, **preference recurrence** | none | efficiency claims (tokens, latency), not task success | neither publishes a task-success lift against a no-memory control on a recurring workload | — |
+| **MemPABench** (arXiv 2610.30485) | *benchmark*, not a system | 99 sessions, 14 preferences, 4 months, 5 preference changes | **Yes** — No Memory is a row | **Mem0, MemOS and plain RAG do not beat No Memory** | — | — |
+| **MemSyco-Bench** (arXiv 2607) | *benchmark* | recurring | retrieval trace is instrumented | **61–62%** of errors occur *after* the relevant memory was already retrieved (Mem0, A-Mem, LightMem) | — | — |
+
+**Read the table as a ranking of evidence, not of systems.** Two entries claim a task-success lift with no
+control (ALTK-Evolve, Dynamic Cheatsheet), one claims a lift whose counter is self-reported (ACE), one
+publishes its own negative transfer (ExpeL), two claim efficiency rather than success (Mem0, MemGPT), and two
+are benchmarks whose finding is that the shipped systems **lose to not having memory at all**. The domain's
+headline number and the domain's own benchmarks point in opposite directions. That gap is the opening, and it
+is not closed by having a better pipeline.
+
+### M.2 Where microglia stands, on the same axis
+
+| axis | this project | the SOTA holder | verdict |
+| --- | --- | --- | --- |
+| paired control, same model, same prompt, empty-pack arm | **yes** — `none` arm from the same folds, and a paired per-episode ledger | no | **we are the only entry with this** |
+| pre-registration with the refutation written before dispatch | **yes**, 72 registrations, and five voids taken on arithmetic | no | ours |
+| delivery instrumented (store.active, recall.served, pack size) | **yes** — and three zero-store defects now have named codes | no row in their table reports any of it | ours |
+| minimum detectable effect published beside every estimate | **yes** (19.41pp at n = 50 on τ²; 1.99–5.13pp on BIRD) | no | ours |
+| **items per learning task** | **0.50** (R51 store: 16 items, 1.22 served per request) | **~5** (31 `sup3` rules from retail's train split) | **their store is ten times denser** |
+| **selection rule** | support by distinct **tasks**, ≥3 admitted — **same axis, built, not yet read** | support by distinct tasks, ≥3 — and it is the cell that flips their sign | same axis, we are behind on supply |
+| a positive product-lane reading | **one**: R54 paired **+5.26pp `UNRESOLVED`** against a **20.27pp** resolution, coverage 8.33% vs 12% named | +10.0pp Pass^4 retail | **we have the sign and not the resolution** |
+
+The honest sentence is short: **this project is ahead on every column the field does not publish and behind
+on the only column it does.** The distance between the two rows is not model capability, not scaffold, and
+not position — it is **0.50 items per learning task against ~5**, and the record already names it (S2c:
+*"neither difference is about position, register, retrieval or the prompt; both are about what the store
+contains"*).
+
+### M.3 What this retires, and what it promotes
+
+**Retired as a competitive axis: BIRD's absolute row.** It stays in the record for exactly two jobs — the
+hostile case's negative delta with its exchange-rate arithmetic, and the ceiling/selector arithmetic that
+prices what breadth is worth. It is not a place this product competes, and four nulls there neither close nor
+open the flywheel. They close **BIRD as a memory substrate**, which S2c had already decided on the arithmetic
+(0 of 1,296 rules derived twice) rather than on a reading.
+
+**Promoted to the main line: store supply on the recurring lane.** Every remaining item that can move the
+product claim is a supply item:
+
+1. **Does any claim recur at all on τ²?** (`supportTasks` on the store sample) — the precondition, and it
+   costs nothing beyond a dispatch that was already going to run.
+2. **Does admitting at support ≥3 change the pack and the register?** — the SOTA holder's own winning cell,
+   and the one that flipped its sign between domains.
+3. **Is the 8.33% coverage a vocabulary defect?** — the register question, because a store that holds items
+   the reader never sees is a supply failure wearing a retrieval costume.
+4. The write-side architecture (add / update / noop at write time), which is the only structural difference
+   left between an append-only store and a bounded one.
+
+**And the reason this is not a retreat.** The one number in this repository that is genuinely ahead of the
+field is not an accuracy at all: it is that every claim here has a control, a resolution and a delivery
+count, and that five experiments were voided on arithmetic before they spent anything. A domain whose own
+benchmarks contradict its own leaderboard needs that before it needs a better pipeline.

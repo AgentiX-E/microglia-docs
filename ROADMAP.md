@@ -6282,8 +6282,48 @@ reader that captures a fifth of the ceiling returns to level with a single deter
 questions never produce a second distinct answer at all (distinct 1.33, median 1), and every content signal
 still covers 0.5 AUC at 4.4× R71's population while every shape signal now clears it (0.54–0.56).
 
-**Next, in order.**
-1. **R81 — read, and it closed the memory line.** Fifth dispatch, 1,534 questions, 14 gates passing, $0.5338.
+**The target, stated once, because the queue below was drifting away from it.** SOTA in this domain is the
+largest **paired lift in task success that a fixed model obtains from experience it extracted itself, on a
+workload that recurs**, reported with its interval, its minimum detectable effect and the store-side counts
+that say the treatment was delivered. Absolute EX on a one-shot benchmark is instrumentation. A BIRD null is
+instrumentation, and it is *expected* there by the shape of the population rather than informative about the
+mechanism. S2c already said this on 2026-11-08 (*"an absolute EX may never be quoted beside a leaderboard
+row"*); Appendix M of `COMPETITIVE.md` is the competitive table that follows from it, and it is the only table
+this project is ranked on. **The competitive set is ALTK-Evolve, ExpeL, ACE, AWM, Dynamic Cheatsheet, Mem0 and
+MemGPT — not the BIRD cells at 73–83%**, which is why the last four iterations' readouts are filed below as
+hostile-case closeout rather than as the state of the product.
+
+**Next, in order — and the first four items are supply, because supply is the only column where this project
+is behind.**
+
+1. **R55.0 — does any claim recur on τ² at all?** `supportTasks` over the store sample, as a census on a
+   dispatch that is going to run anyway. This is the precondition for the product claim: the SOTA holder's
+   store carries **~5 items per learning task** and every one of them is admitted by support across **≥3
+   distinct tasks**, against this lane's **0.50** items per task. Nothing else on this list can be read until
+   this number exists, and no model call buys it.
+2. **R56 — is the 8.33% coverage a vocabulary defect?** The register question, and it is supply wearing a
+   retrieval costume: a store that holds items the reader never sees has already lost before the reader is
+   involved. 20/20 conditions named the request and 1,951/1,951 were served — the write path works — so what
+   remains is whether the *form the distiller is asked for* decides the trigger rate.
+3. **R55.1 — does admitting at support ≥3 change the pack and the register?** This is the SOTA holder's own
+   winning cell (`sup3`, 31 rules, Pass^4 57.5 → 60.0) **and the cell that flips its sign between domains**
+   (airline: 101 rules score below 14). It is the one hypothesis in the record that is on the same axis as the
+   domain leader, and it is registered and conditional on item 1.
+4. **U6b — deciding at write time** (add / update / noop) rather than appending. Built; the only structural
+   difference left between an append-only store and Mem0's bounded consolidation, and the reason a store can
+   stay dense without being long.
+5. **R53 — the reader-side variable**, on whatever store items 1–3 produce. A note that improves the reader of
+   a thin store is a result about a store nobody has, which is why it is fifth and not first.
+6. **Then, and only then, the hostile case's leftovers:** R78's store-local top-up, `retry-keyed` vs
+   `retry-blank`, and breadth (R67's ceiling arm is still the cheapest +8.86pp in the record).
+
+**R84 is in flight and it is instrumentation.** `SOTA_THINKING=on` on `sample-5-first`, the same 350 BIRD
+questions: it prices one variable on a lane that cannot carry a product claim, and its only use is to stop the
+record from saying "the strong model is worse" when what was measured is "the strong model at zero reasoning
+budget". It is bought and it will be read; it does not move the queue above.
+
+**The hostile case, closed out — and explicitly not a verdict on the flywheel.**
+1. **R81 — read, and it closed BIRD as a memory substrate.** Fifth dispatch, 1,534 questions, 14 gates passing, $0.5338.
    Against `full`, the rebuilt arm is **−0.33pp [−1.76, +1.11]** and the foreign control **+0.13pp [−1.30, +1.56]**;
    both straddle zero inside 1.5pp, which is the branch the registration named *Reconstruction is not the problem
    either*. Four mechanisms — content, quantity, persistence, foreign control — are now measured null at BIRD dev
@@ -6298,22 +6338,29 @@ still covers 0.5 AUC at 4.4× R71's population while every shape signal now clea
    registration's four branches was entered** (Void missed by 1.5 questions, the ceiling is 8.57pp not 13.29pp,
    the reader's points are short of +3pp, and the baseline fell instead of rising): the guard sentence that covers
    this outcome was written under *Prediction*, so the partition has a hole (§173.71). $5.90 per correct answer
-   against $2.57 — the expensive model is not a lever, and the money belongs in breadth.
+   against $2.57 — the expensive model is not a lever, and the money belongs in breadth. **Filed as hostile
+   case:** this cell compares two backbones on a population with no recurrence, so it says nothing about
+   whether experience transfers; it says which generator writes better SQL when it has no experience to
+   transfer. Those are different claims and only the second one was bought.
 3. **R83 — cancelled before dispatch, by arithmetic.** The store R81 published holds 633 same-scope pairs and 3
    above the consolidation pass's 0.60 floor: the same pair of statements in three folds. Six questions of 1,534
    is a 0.39pp ceiling against this lane's 1.99pp floor, so the arm is underpowered by five times by
    construction. Raising `learn_sample` nineteen-fold puts the repeats at roughly twenty groups, still under 3%.
    The merge is not the missing mechanism — the store is too small to have one (§173.70).
-4. **R84 — no reasoning at all, which is the one thing R82 held fixed.** The token cap is not the throttle: pro
-   spent 82.5 output tokens a call against a 700 budget, truncated 0.64% of statements against flash's 0.67%, and
-   left no dangling SQL. What `thinking: off` removes is every reasoning token (`reasoning_tokens: 0`), and a
-   model built to think is being judged on the one regime it was not built for. One arm (`sample-5-first`, which
-   buys `none` as the baseline — the arm the contrast reads), `SOTA_THINKING=on`, the same 350 questions, about a
-   dollar. The decision rule is a **paired pro@on against pro@off**, and only a move of +6pp or more earns the
-   2 × 2 that would attribute it. Until it runs, "the strong model is worse" is a statement about this host at
-   this budget, and the record should say it that way.
-5. The store-local top-up (force-recall) design, still open from R78; then `retry-keyed` vs `retry-blank`; then
-   breadth — R67's ceiling arm is still the cheapest +8.86pp in the record at a third of R82's bill.
+4. **R84 — in flight, and it is instrumentation only.** No reasoning at all is the one thing R82 held fixed. The
+   token cap is not the throttle: pro spent 82.5 output tokens a call against a 700 budget, truncated 0.64% of
+   statements against flash's 0.67%, and left no dangling SQL. What `thinking: off` removes is every reasoning
+   token (`reasoning_tokens: 0`), and a model built to think is being judged on the one regime it was not built
+   for. One arm (`sample-5-first`, which buys `none` as the baseline — the arm the contrast reads),
+   `SOTA_THINKING=on`, the same 350 questions, about a dollar. The decision rule is a **paired pro@on against
+   pro@off**, and only a move of +6pp or more earns the 2 × 2 that would attribute it. It prices a variable on
+   a lane that cannot carry a product claim; it is bought, it will be read, and it does not enter the flywheel
+   queue above.
+
+**No item on this list is a leaderboard entry**, and the four above are the closeout of a hostile case: BIRD
+has no recurrence by construction, so the mechanism this product claims — an artefact that pays because the
+same task comes back — has nothing to act on there. Reading four nulls there as a verdict on the flywheel is
+the same category error S2c retired when it forbade quoting this lane's absolute EX.
 
 ### Why memory harms, in six measurements, and what it changes
 

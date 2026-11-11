@@ -15761,3 +15761,69 @@ checker is green on the same 25-input ceiling that made this necessary.
 regime, and whose header did not declare it. The header check caught it before the field was an hour old, which
 is the smallest possible demonstration of why the check exists: the file would otherwise have been dispatched as
 a second copy of R82 at $1.90, and the artefact would have said `thinking: off` in a run registered to move it.
+
+### 173.73 — The drift was not rhetorical: the last four readouts were filed on a lane the record forbids
+
+**What was wrong.** The iteration report immediately before this one closed with a "competitor refresh" quoting
+BIRD dev's top cells — the leader at 78.49%, a second system at 78.1, a single-model system at 80.04 on test —
+and placed this lane's 57.43% beside them to explain why it was not a leaderboard contender. Every number in
+that sentence is correct, and the paragraph was still the wrong paragraph, in a way the record had already
+ruled on. **S2c, fixed 2026-11-08, says: τ² same-domain is the product-evidence lane, BIRD is the hostile case,
+and BIRD's row is quotable for exactly two things — the negative delta with its exchange-rate arithmetic, and
+never as an absolute EX beside a leaderboard row.**
+
+So the failure is a lane-role violation, and it is the same class as the five defects the last six iterations
+found: a rule the repository had written down, applied to a layer the current work was not looking at. The
+first five were in code (population field, input array, plan pairing, ceiling, refutation set). This one is in
+**what the numbers are filed as**, and it is the one that costs the most, because a misfiled readout redirects
+the queue rather than a single dispatch.
+
+**What the target actually is.**
+
+> SOTA in this domain is the largest **paired lift in task success that a fixed model obtains from experience it
+> extracted itself, on a workload that recurs**, reported with its interval, its minimum detectable effect, and
+> the store-side counts that say the treatment was delivered.
+
+Absolute EX on a one-shot benchmark is instrumentation. So is a null on a population with no recurrence.
+
+**The consequence, which is the part that changes the plan.** The sentence "the memory line is closed", written
+across §173.65–§173.69, is **true of BIRD and false as a statement about the flywheel**. BIRD has no recurrence
+by construction — the record established this on arithmetic before it established it on a reading: **0 of 1,296**
+rules were ever derived twice, and the corroboration gate that encodes the mechanism's quality axis therefore
+admitted nothing on all 350 questions. Four mechanisms measured null there (content, quantity, persistence,
+foreign control) are four measurements of a mechanism with **nothing to act on**. They close *BIRD as a memory
+substrate*, which S2c had already decided. They cannot close the product claim, and filing them as if they did
+retired the main line for four iterations.
+
+**What the field's own numbers say, once they are put in one table** (`COMPETITIVE.md` Appendix M).
+
+| | this project | the domain's SOTA holder (ALTK-Evolve, τ² PRs #542/#551) |
+| --- | --- | --- |
+| paired control on the same model and prompt | **yes** — `none` arm from the same folds, per-episode ledger | no: baseline row only |
+| pre-registration with refutation before dispatch | **yes**, 72 registrations, five voids on arithmetic | no |
+| delivery instrumented (`store.active`, `recall.served`, pack size) | **yes** | no row reports any of the three |
+| minimum detectable effect published beside the estimate | **yes** (19.41pp at n = 50 on τ²) | no — and its own published reversal (101 rules at 40.0 below 14 rules at 45.0) sits under a 5pp-per-task floor |
+| a positive product-lane reading | **one**: R54 paired **+5.26pp `UNRESOLVED`** against 20.27pp resolution, coverage 8.33% vs 12% | **+10.0pp Pass^4** (57.5 → 67.5), and +5.0pp for the 31-rule `sup3` cell |
+| **items per learning task** | **0.50** (16 items, 1.22 served per request) | **~5** (31 `sup3` rules) |
+| **selection rule** | support by distinct **tasks**, ≥3, built — same axis, unread | support by distinct tasks, ≥3 — the cell that flips its sign between domains |
+
+**This project is ahead on every column the field does not publish and behind on the only column it does.** The
+distance is not model capability, scaffold, position, register or retrieval. It is **0.50 items per learning
+task against ~5**, which is the sentence S2c already wrote: *"neither difference is about position, register,
+retrieval or the prompt; both are about what the store contains."*
+
+**And the domain's own literature points the same way.** Of eight entries in Appendix M, two claim a
+task-success lift with no control, one claims a lift whose counter is the model's own tag (and measured the
+strict way here, a per-item counter has split-half reliability **−0.31**), one publishes its own negative
+transfer, two claim efficiency rather than success, and two are benchmarks whose finding is that the shipped
+systems **lose to not having memory at all** (MemPABench: Mem0, MemOS and plain RAG do not beat No Memory;
+MemSyco-Bench: 61–62% of errors occur *after* correct retrieval). The domain's leaderboard and the domain's
+benchmarks disagree. That disagreement is the opening, and it is not closed by a better pipeline — it is closed
+by a **measurement standard**, which is the one thing here that already exists.
+
+**What moves in the queue.** Supply, in order, on the recurring lane: **R55.0** (does any claim recur on τ² at
+all — a census, no model call), **R56** (is the 8.33% coverage a vocabulary defect — supply wearing a retrieval
+costume), **R55.1** (support ≥3 — the SOTA holder's own winning cell and the cell that reverses its sign),
+**U6b** (write-time add/update/noop), then **R53** on whatever store those produce. The hostile-case closeout
+(R81–R84) is filed below the line and R84, in flight, is labelled instrumentation in its own registration's
+header before it lands.
