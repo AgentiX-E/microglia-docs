@@ -4540,3 +4540,45 @@ dense enough to have effects to measure.**
    resolution; theirs reports a point estimate on 40 tasks and three seeds with a stdev of 0.014–0.038. On the
    axis the product actually sells, **nobody in this domain has published a resolvable gain** — which is a
    statement about the field, and a target worth more than 78% on a text-to-SQL leaderboard.
+
+### N.6 What the winning 31 are about, counted
+
+The 31 entries at `n = 3` are committed in the playbook, so the question "what kind of claim transfers" is
+answerable without a run:
+
+| what the sentence is about | entries |
+| --- | --- |
+| confirm, summarise, or obtain explicit approval before acting | **13 / 31** |
+| the domain policy itself (refund rules, payment method, eligibility) | 7 / 31 |
+| authenticate the user before any order action | 6 / 31 |
+| do not mix tool calls with user-facing messages; one action at a time | 5 / 31 |
+| present variants/options, and only the available ones | 6 / 31 |
+| rely on tool data rather than assumptions | 3 / 31 |
+
+The categories overlap, which is the point: **the winning set is workflow discipline, not database knowledge.**
+Six of the 31 are about authentication, thirteen about confirmation and summarisation, and not one names a
+table, a column, or a value. Mean length **253 characters**, against **200** for the 144 entries that never
+recurred — the tail is shorter and more specific, the core is longer and more general.
+
+**Two consequences, and the second is the one that changes a design.**
+
+1. **`supportTasks ≥ 3` is a proxy for generality, not for quality.** A rule true of the whole domain is derived
+   by many tasks' failures; a rule true of one task is derived once. That is why the filter works at all, and it
+   explains a result this project already has: content-based filters on *specificity* bought nothing
+   (`full-grounded` against `full-sampled`, +0.57 vs +0.86pp, p = 1.0), because they measure the wrong quantity.
+   The quantity that matters is *how many tasks could have produced this sentence*, and a derivation count is a
+   cheap estimator of it.
+2. **Our `procedure` form's tool-name ban would not have emptied a store like theirs.** Of the 31 winning rules,
+   **2 name a snake_case action** (`find_user_id_by_name_zip`, both in the authentication cluster) and 29 name
+   none. R56's `accept` predicate refuses candidates whose statement or condition contains a name from the tool
+   inventory; measured against the leader's own core, that ban removes about 6% of what wins, and none of the
+   confirmation or policy rules. The registration's first refutation — *"if the accepted store is empty, `accept`
+   is too strict"* — is therefore a live risk stated in advance but an unlikely one, and the size of the store is
+   the field that decides it.
+
+**And the reason this matters for the product claim.** The 292-entry store is a record of *behaviour under a
+policy*, and the 31 that survive recurrence are the sentences a competent operator already knows. That is a
+different artefact from a store of database facts, and it is the one a "data flywheel" should be built around:
+**the flywheel's product is not knowledge about the data, it is discipline about the process** — which is
+exactly the axis on which our own store has been thin (0.62 items per learning row, and a `lesson` form that
+asks `when` to name tables and columns).
