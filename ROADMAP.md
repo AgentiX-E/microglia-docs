@@ -6285,9 +6285,11 @@ still covers 0.5 AUC at 4.4× R71's population while every shape signal now clea
 **Next, in order.**
 1. **R81** (`full-reconstructed`, `full-reconstructed-shuffled`) — dispatched with `not_before: 10:00Z`, so
    it starts inside the off-peak window instead of being remembered there.
-2. **Decomposition candidate generation** — three *different* prompts (divide-and-conquer, execution-plan
-   chain of thought, instance-aware examples as CHASE-SQL does) against one prompt spun five times. This is
-   now the binding constraint, and it is the lever R70 named when it closed temperature.
+2. **The backbone ladder on this same cell** — not a fourth prompt shape. Iteration 107 already bought four
+   different generators (union ceiling +8.57pp, distinct answers 1.557 against 1.46 for five draws of one
+   prompt, and both generators lost: `gen-plan` −5.43pp, `gen-decompose` −3.14pp), and R68 gave the scaling
+   law that makes the ceiling a property of the model's reach. What has never been measured is a *stronger*
+   backbone on the dev cell that produces the leaderboard row.
 3. The store-local top-up (force-recall) design, still open from R78; then `retry-keyed` vs `retry-blank`.
 
 ### The band lever became a dispatch field

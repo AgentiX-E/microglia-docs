@@ -15076,9 +15076,17 @@ interval-excluding-zero share in the record. R73's null was a power failure, exa
 
 **And the pool explains why the ceiling is small**: 7,670 candidates, distinct answers per question mean
 **1.33**, median 1 — 1,157 of 1,534 questions never produced a second distinct result across five draws.
-The registered bar calls that NARROW. So the selector is fine and the *candidate generator* is the
-constraint: the same prompt spun five times opens 7.37pp, and every published system above 70% generates
-its candidates from different prompts.
+The registered bar calls that NARROW, so the selector is fine and the pool it reads is thin.
+
+**The lever that thinness invites was already bought and refuted, and this iteration nearly re-bought it.**
+Iteration 107 ran four *different* procedures on the same questions (`plain`, `gen-plan`, `gen-decompose`,
+`m-schema`): the union ceiling was **+8.57pp**, the four procedures collapsed to **1.557** distinct answers
+— barely wider than the 1.46 that five draws of one prompt produced — and the two generators lost on their
+own (`gen-plan` −5.43pp, p = 0.004; `gen-decompose` −3.14pp). R80's 7.37pp and iteration 107's 8.57pp are
+the same quantity, and R68's scaling law already explains both: five draws rescue about a fifth of the
+failures, proportionally, so the ceiling is a property of the model's reach rather than of the shape of
+what gets fanned out. **A stronger backbone on this same cell is the remaining lever; a fourth prompt shape
+is not.**
 
 ### 173.53 — The content signals still cover zero at 4.4× the population; the shape signals finally clear it
 
