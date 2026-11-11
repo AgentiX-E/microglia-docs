@@ -6296,31 +6296,46 @@ hostile-case closeout rather than as the state of the product.
 **Next, in order — and the first four items are supply, because supply is the only column where this project
 is behind.**
 
-1. **R55.0 — does any claim recur on τ² at all?** `supportTasks` over the store sample, as a census on a
+1. **R56 — dispatched `43115503600`, and it carries R55.0's census for free.** τ² retail same-domain, 57
+   tasks × 4 trials × 2 arms, the distiller's form read from the registration's own header
+   (`distill correction/procedure`), BIRD correctly skipped by the scope resolver. Its two readings, both
+   stated before the run: the median rule/query coverage against the 12% bar R54 missed at 8.33%, and the
+   tool-name share among admitted items. The store sample and the recurrence census ride on the same
+   artefact with no treatment, which is what makes item 2 free.
+2. **R55.0 — does any claim recur on τ² at all?** `supportTasks` over the store sample, as a census on a
    dispatch that is going to run anyway. This is the precondition for the product claim: the SOTA holder's
    store carries **~5 items per learning task** and every one of them is admitted by support across **≥3
    distinct tasks**, against this lane's **0.50** items per task. Nothing else on this list can be read until
    this number exists, and no model call buys it.
-2. **R56 — is the 8.33% coverage a vocabulary defect?** The register question, and it is supply wearing a
+3. **R56's register reading** — is the 8.33% coverage a vocabulary defect? The register question, and it is supply wearing a
    retrieval costume: a store that holds items the reader never sees has already lost before the reader is
    involved. 20/20 conditions named the request and 1,951/1,951 were served — the write path works — so what
    remains is whether the *form the distiller is asked for* decides the trigger rate.
-3. **R55.1 — does admitting at support ≥3 change the pack and the register?** This is the SOTA holder's own
+4. **R55.1 — does admitting at support ≥3 change the pack and the register?** This is the SOTA holder's own
    winning cell (`sup3`, 31 rules, Pass^4 57.5 → 60.0) **and the cell that flips its sign between domains**
    (airline: 101 rules score below 14). It is the one hypothesis in the record that is on the same axis as the
    domain leader, and it is registered and conditional on item 1.
-4. **U6b — deciding at write time** (add / update / noop) rather than appending. Built; the only structural
+5. **U6b — deciding at write time** (add / update / noop) rather than appending. Built; the only structural
    difference left between an append-only store and Mem0's bounded consolidation, and the reason a store can
    stay dense without being long.
-5. **R53 — the reader-side variable**, on whatever store items 1–3 produce. A note that improves the reader of
+6. **R53 — the reader-side variable**, on whatever store items 1–3 produce. A note that improves the reader of
    a thin store is a result about a store nobody has, which is why it is fifth and not first.
-6. **Then, and only then, the hostile case's leftovers:** R78's store-local top-up, `retry-keyed` vs
+7. **Then, and only then, the hostile case's leftovers:** R78's store-local top-up, `retry-keyed` vs
    `retry-blank`, and breadth (R67's ceiling arm is still the cheapest +8.86pp in the record).
 
-**R84 is in flight and it is instrumentation.** `SOTA_THINKING=on` on `sample-5-first`, the same 350 BIRD
-questions: it prices one variable on a lane that cannot carry a product claim, and its only use is to stop the
-record from saying "the strong model is worse" when what was measured is "the strong model at zero reasoning
-budget". It is bought and it will be read; it does not move the queue above.
+**R84 is read and it is `Void` on the branch its own registration wrote first** — parse **73.14%** against a
+95% floor, and the distiller failing 572 of 1,400 replies because its 2,000-token budget is not coupled to the
+regime. Reasoning was **95.84%** of completion tokens and the bill was **$6.9051 (7.2× R82)** for a cell that
+cannot be read. To hold parse the ceiling needs ~3,500 tokens, which is **$13–14** to price a variable that is
+already 6.00pp worse when it is off: **the thinking axis is closed for this host**, on arithmetic rather than on
+a preference (§173.74). The defect it found — a regime that changes token economics changes only the answer's
+budget, never the distiller's — is recorded behind the closure.
+
+**Four switches have now moved out of repository variables and into registrations** (`backbone`, `thinking`,
+`distillForm`, `distillUnit`), because a variable is one experiment's setting applied to every queued dispatch
+and the fourth one was *live*: `vars.TAU_DISTILL_UNIT` still held `trace` from the recurrence arm, so R56 would
+have run the wrong arm under its own name (§173.75). Seven switch lines in `sota.yml` now prefer the step output
+over the variable, and a test parses the workflow to keep it that way.
 
 **The hostile case, closed out — and explicitly not a verdict on the flywheel.**
 1. **R81 — read, and it closed BIRD as a memory substrate.** Fifth dispatch, 1,534 questions, 14 gates passing, $0.5338.

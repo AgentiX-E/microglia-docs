@@ -15827,3 +15827,104 @@ costume), **R55.1** (support ≥3 — the SOTA holder's own winning cell and the
 **U6b** (write-time add/update/noop), then **R53** on whatever store those produce. The hostile-case closeout
 (R81–R84) is filed below the line and R84, in flight, is labelled instrumentation in its own registration's
 header before it lands.
+
+### 173.74 — R84 entered its own Void branch in 130 minutes, and the branch was written down before the run
+
+R84 asked the one question R82 left fixed: the expensive backbone was measured 6.00pp *below* the cheap one with
+`thinking: off`, and a model built to think was being judged in the regime it was not built for. The answer is
+that the regime **cannot be measured on this host at a budget the lane can pay**, and the artefact says so in the
+branch its own registration wrote first:
+
+> **Void** — the probe says `absent`, or the parse rate is under 95%, or `sample-5-first` lands below 45%.
+
+| gate | reading |
+| --- | --- |
+| `V3-parse-rate` | **FAIL — 73.14%** (the branch's second clause) |
+| `V32-fold-learning-intact` | **FAIL — 796 corrections, 572 distillation failures (40.9%)** |
+| `V48-statements-answered` | pass — 10 of 5,303 statements hit the deadline, 30 truncated |
+| everything else | pass; 2,812 calls, 13 retries, 0 failures, 0 timeouts |
+
+The arms, published only to show why they are not readable: `none` **41.14%**, `full` **41.71%**,
+`sample-5-first` **36.29%** (MDE 4.38pp). Against pro@off on the same 350 questions, the same arm fell
+**9.14pp**. With 26.9% of answers unparseable, that difference is a property of the parser, not of the model.
+
+**What actually happened, in the token ledger, because it is one sentence.**
+
+| | R82 (off) | R84 (on) | ratio |
+| --- | --- | --- | --- |
+| `max_completion_tokens` | 700 | **1,900** | the headroom the design added |
+| completion tokens | 332,000 | **3,326,000** | 10.0× |
+| of which reasoning | **0** | **3,187,470 (95.84%)** | — |
+| calls | 3,346 | 2,812 | 0.84× |
+| bill | $0.9563 | **$6.9051** | **7.2×** |
+| per call | $0.000286 | **$0.002456** | **8.6×** |
+
+The headroom was sized for the answer and spent on the reasoning: mean reasoning is **1,133 tokens per call**,
+and at a 1,900-token ceiling that leaves too little for the JSON on 26.9% of them, which is exactly the parse
+rate. The distiller is worse, and its failure is a different defect: its budget is `distill_max_tokens: 2000`,
+resolved **without reference to the regime**, so reasoning consumed it and the response arrived empty
+(`MG_E_INVALID_SIGNAL: LLM response is not JSON :: `) or truncated mid-object
+(`{"candidates":[{"kind":"constraint",…`). 572 of 1,400.
+
+**The decision, and the arithmetic that makes it one.** To hold parse at 95% the ceiling has to cover the
+*P95* of a distribution whose mean is 1,133 — the artefact's own failed third says ≥3,500, which at 8.6× R82's
+per-call price is **$13–14 for one cell**. And that cell would price a variable that, off, is already 6.00pp
+below the cheap model. There is no version of this measurement that is worth its bill, so **the thinking axis is
+closed for this host** — not because the model is worse, but because the regime's cost is per-token in a budget
+that also has to carry the answer. R84 is the second cell in the record to be voided by its own arithmetic
+after R83, and the first to be voided by a branch rather than by a ceiling.
+
+**The defect it found is worth more than the reading.** `answerBudget` couples the answer's ceiling to the
+regime; nothing couples the distiller's. A regime that changes token economics has to change **every** budget
+that spends those tokens, and the distiller is the one place a run spends tokens on a second model call per
+fold. That is the fifth "second code path not updated" defect in seven iterations, and the fix is mechanical —
+but it is *behind* the closure, not in front of it: there is no dispatch in the queue that sets
+`thinking: on`, and the field's only job now is to refuse the next one that tries without sizing both budgets.
+
+### 173.75 — The switches were in variables, and one of them was still holding another experiment's value
+
+Writing R56's dispatch found that the lane could not be dispatched at all, for a reason no gate could name:
+**`vars.TAU_DISTILL_UNIT` held `trace`** — set for the recurrence arm weeks earlier — while R56's entire
+treatment is the *form*, which only takes effect when the unit is `correction`. A dispatch would have run the
+trace arm, recorded `unit: trace` in the artefact, and published it as an experiment whose registration says
+nothing about a unit at all. `vars.TAU_TEST_DOMAIN` held `airline` for the same reason, one registration away
+from grading a retail store on airline questions, which is R51's defect verbatim.
+
+The record has now closed the same shape four times, and only the fourth was caught before it cost a run:
+
+| switch | where it lived | how it was closed |
+| --- | --- | --- |
+| the model | `vars.SOTA_MODEL` | R68 → `backbone` header (R82) |
+| the thinking regime | `vars.SOTA_THINKING` | R84 → `thinking` header + `thinkingProblem` |
+| the distiller's form | `vars.TAU_DISTILL_FORM` | **R56 → `distillForm` header + `distillFormProblem`** |
+| the distilling unit | `vars.TAU_DISTILL_UNIT` | **same round: `distillUnit` header + `distillUnitProblem`** |
+
+Four fields, three refusal functions and two bins, all in `prereg.ts` where they are testable without a
+process, and one rule stated once: **the registration is authoritative for every switch it declares, an unset
+variable is not a second opinion, and a stated disagreement is refused before the first model call.** The third
+clause is what would have caught the live defect: `trace` in the variable against `correction` in the header is
+a refusal, not a preference, because a silent win for either representation is how a run gets published under a
+registration it does not execute.
+
+`distillFormProblem` also refuses the case neither field can resolve on its own: **a trace dispatch that
+replaces the form**. The driver picks `trace` when the unit is a trace, so a registration that fixes
+`procedure` and a dispatch that distils traces produces a run whose registered variable was inert — one
+experiment, two variables, one of them never firing.
+
+**The wiring is now tested rather than promised.** `sota.yml` reads seven switches from the step that parses the
+header — floor, pair, notes, three domains, form, unit — and a test parses the workflow and asserts that each of
+the seven prefers `steps.recall_floor.outputs.*` over its variable, and that each of those outputs is actually
+emitted. A preference for an output nobody writes is an empty string, which restores the variable silently:
+the same failure one layer down, which is why both halves are checked.
+
+**The repository's own instrument caught the author inside the hour.** The first push went red on
+`V72-every-coupled-module-has-a-verdict`: `prereg.ts` had gained the word **BIRD** — in a refusal *string*,
+which is code, not a comment — and a validator that names a scenario is exactly what the coupling gate exists to
+keep out of the protocol layer. The message now reads *"that split is the hostile case: its questions never
+recur"*, which says the same thing without the proper noun. 191 modules, 24 deferred with a reason, 11 checks
+passing.
+
+4,328 tests, **100/100/100/100** on every dimension, 72/72 registrations parse, `audit:repo` ok, workflow
+checker green on the same 25-input ceiling. **R56 is dispatched** (`43115503600`): τ² retail same-domain, 57
+tasks × 4 trials × 2 arms, `distil correction/procedure` read from its header, BIRD correctly skipped by the
+scope resolver, R55.0's recurrence census riding on the same artefact for free.
