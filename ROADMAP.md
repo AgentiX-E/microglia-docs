@@ -6283,28 +6283,21 @@ questions never produce a second distinct answer at all (distinct 1.33, median 1
 still covers 0.5 AUC at 4.4× R71's population while every shape signal now clears it (0.54–0.56).
 
 **Next, in order.**
-1. **R81** (`full-reconstructed`, `full-reconstructed-shuffled`) — third attempt. The first two died of wiring and
-   both causes are now invariants (§173.62–173.64): the pass was written inside the sampling block, then the
-   registration reader depended on a build. The third found a fourth instance of the same shape — a donor library
-   filled by a different arm's branch — and `requireInput` now refuses that class of dispatch at the top of the
-   first fold instead of at the last gate (§173.66).
-2. **R82, the backbone ladder — registered, and the dispatch was the hard part.** Not a fourth prompt
-   shape: iteration 107 already bought four different generators (union ceiling +8.57pp, distinct answers
-   1.557 against 1.46 for five draws of one prompt, and both generators lost: `gen-plan` −5.43pp,
-   `gen-decompose` −3.14pp), and R68 gave the scaling law that makes the ceiling a property of the model's
-   reach. What has never been measured is a *stronger* backbone on the dev cell that produces the
-   leaderboard row. It could not be dispatched: the `backbone` vocabulary was closed to `zhipu:`, nothing
-   asked the host what it serves, the rate card had one row and would have billed the stronger model at
-   4.4×-too-low input rates, and the registration could not fix the model its claim is about. All four are
-   closed (§173.56–173.58), and `R82-backbone-upward.md` names `deepseek-v4-pro` in its header.
-3. **R83, merge first — registered as `prereg/R83-consolidation.md`, one arm.** Not "persist more" and not
-   "persist nothing": **fold the store before asking it for two witnesses.** `active_corroborated: 0` of 258 says
-   every claim has one observation, which makes the corroboration floor an arm that would inject an empty pack —
-   `none` under a second name. `consolidateKnowledge` answers exactly this question and has never run on this lane
-   (§173.64). The arm is implemented, not merely registered (§173.65), and the *first* reading it produces is the
-   census, computed before the first model call. The store is ≈52 claims a fold, so a zero `merged` is a live
-   branch of the refutation rather than a defect: it would say the repeat never occurs at this learning
-   population, and the next registration raises `learn_sample` instead of touching the merger.
+1. **R81 — read, and it closed the memory line.** Fifth dispatch, 1,534 questions, 14 gates passing, $0.5338.
+   Against `full`, the rebuilt arm is **−0.33pp [−1.76, +1.11]** and the foreign control **+0.13pp [−1.30, +1.56]**;
+   both straddle zero inside 1.5pp, which is the branch the registration named *Reconstruction is not the problem
+   either*. Four mechanisms — content, quantity, persistence, foreign control — are now measured null at BIRD dev
+   57.4%, each by a different registration (§173.69). The writer declined on 86.4% of questions.
+2. **R82 — dispatched.** The one variable never bought: the backbone. 350 questions, `sample-5-first` against
+   `sample-5-assert`, `deepseek-v4-pro` read from the registration's own header, cap 3,600. The instrument gaps
+   that made this undispatchable (a closed `backbone` vocabulary, no catalogue probe, a one-row rate card that
+   would have billed the stronger model at 4.4× under) are closed in §173.56–173.58, and its minimum detectable
+   effect of 4.67pp is power against a predicted effect of six points or more.
+3. **R83 — cancelled before dispatch, by arithmetic.** The store R81 published holds 633 same-scope pairs and 3
+   above the consolidation pass's 0.60 floor: the same pair of statements in three folds. Six questions of 1,534
+   is a 0.39pp ceiling against this lane's 1.99pp floor, so the arm is underpowered by five times by
+   construction. Raising `learn_sample` nineteen-fold puts the repeats at roughly twenty groups, still under 3%.
+   The merge is not the missing mechanism — the store is too small to have one (§173.70).
 4. The store-local top-up (force-recall) design, still open from R78; then `retry-keyed` vs `retry-blank`.
 
 ### Why memory harms, in six measurements, and what it changes
