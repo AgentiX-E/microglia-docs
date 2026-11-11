@@ -6283,8 +6283,11 @@ questions never produce a second distinct answer at all (distinct 1.33, median 1
 still covers 0.5 AUC at 4.4× R71's population while every shape signal now clears it (0.54–0.56).
 
 **Next, in order.**
-1. **R81** (`full-reconstructed`, `full-reconstructed-shuffled`) — dispatched with `not_before: 10:00Z`, so
-   it starts inside the off-peak window instead of being remembered there.
+1. **R81** (`full-reconstructed`, `full-reconstructed-shuffled`) — third attempt. The first two died of wiring and
+   both causes are now invariants (§173.62–173.64): the pass was written inside the sampling block, then the
+   registration reader depended on a build. The third found a fourth instance of the same shape — a donor library
+   filled by a different arm's branch — and `requireInput` now refuses that class of dispatch at the top of the
+   first fold instead of at the last gate (§173.66).
 2. **R82, the backbone ladder — registered, and the dispatch was the hard part.** Not a fourth prompt
    shape: iteration 107 already bought four different generators (union ceiling +8.57pp, distinct answers
    1.557 against 1.46 for five draws of one prompt, and both generators lost: `gen-plan` −5.43pp,
@@ -6294,15 +6297,14 @@ still covers 0.5 AUC at 4.4× R71's population while every shape signal now clea
    asked the host what it serves, the rate card had one row and would have billed the stronger model at
    4.4×-too-low input rates, and the registration could not fix the model its claim is about. All four are
    closed (§173.56–173.58), and `R82-backbone-upward.md` names `deepseek-v4-pro` in its header.
-3. **R83, the admission gate — the one measurement this record has never made.** Not "persist more" (the
-   current store) and not "persist nothing" (R81): **persist what at least k independent folds
-   corroborated.** SEMV (arXiv:2609.27175) measured the gap between those designs directly — unverified
-   memory updates give 46.4% positive and **5.7% negative** transfer, verification-gated gives 91.88%
-   accuracy with **0.2% negative** — so the axis is *what is admitted*, not how much, and MemTrim
-   (arXiv:2610.07311) shows that simply removing entries deletes the benefit with the harm. The two arms
-   are a filter over an accumulator that already exists: `looCrossFitted` counts a rule's independent
-   support per fold, and every arm already records `lost` per question, so the harm rate is measurable
-   without a new instrument.
+3. **R83, merge first — registered as `prereg/R83-consolidation.md`, one arm.** Not "persist more" and not
+   "persist nothing": **fold the store before asking it for two witnesses.** `active_corroborated: 0` of 258 says
+   every claim has one observation, which makes the corroboration floor an arm that would inject an empty pack —
+   `none` under a second name. `consolidateKnowledge` answers exactly this question and has never run on this lane
+   (§173.64). The arm is implemented, not merely registered (§173.65), and the *first* reading it produces is the
+   census, computed before the first model call. The store is ≈52 claims a fold, so a zero `merged` is a live
+   branch of the refutation rather than a defect: it would say the repeat never occurs at this learning
+   population, and the next registration raises `learn_sample` instead of touching the merger.
 4. The store-local top-up (force-recall) design, still open from R78; then `retry-keyed` vs `retry-blank`.
 
 ### Why memory harms, in six measurements, and what it changes

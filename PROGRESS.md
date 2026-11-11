@@ -15385,3 +15385,88 @@ pack and measure `none` under a new name — but **merge first, then ask what th
 `full` as it stands, the same store after consolidation, and the same store behind a support floor. The
 census already reports what the fix bought, in items merged and in groups whose union covers a task no
 single member held.
+
+### 173.65 — The merge arm was registered and implemented in the same iteration, because a registered arm that is not implemented is how R81 lost two dispatches
+
+`full-consolidated` is in `OPTIONAL_ARM_TABLE` and it is also *code*. `packages/eval/src/consolidated.ts` takes a
+store, reads it, runs the product's own `consolidateKnowledge` over it, writes the survivors into a second
+`EmbeddedMemory` and hands back a host that recalls from that copy. Six tests hold it to the six things that
+can be wrong with it, and one of them is the comparison's own integrity:
+
+| test | what it would catch |
+| --- | --- |
+| two statements of one claim become a survivor carrying both witnesses | `supportAfter {1: 1, 2: 1}` against `supportBefore {1: 3}` — the distribution, not the item count |
+| the source store is untouched | every item still `active`, every item still holding one piece of evidence. A pass in place would make `full` and `full-consolidated` the same arm read twice |
+| the recall no longer sees what was absorbed | the control's host returns **2** ids for the same question, the merged host returns **1**, and that one carries two evidence entries |
+| the merged store wears the store's clock | `updatedAt === 1_700_000_000_000`, not `Date.now()`. The pass stamps survivors, and this lane writes nine years behind the wall clock |
+| a store with nothing to fold reports nothing | `groups: 0`, `supportAfter {1: 2}` — the empty case is a reading, not a failure |
+| one task observed twice is not a corroboration | `refusedDuplicateEvidence: 1`, `maxSupportAfter: 1` |
+
+The merge is a **copy** for a reason that is not tidiness: `full` reads the store the distiller wrote, and a pass
+applied in place would change what `full` means from the position it ran at. The two arms would then differ in the
+order their questions arrived rather than in what they inject, and the comparison would be of two stores that were
+each other's history.
+
+**The clock correction matters more than it looks.** The pass writes `updatedAt: <now>` into every survivor and
+every item it retires. Taking `Date.now()` there would have dated a store built on a stepping clock nine years
+into the future — a number belonging to the dispatch rather than to the pass, in the one field a later reader uses
+to ask when a claim was last supported. `now` is the latest write the store actually holds, and the fourth test
+above pins it.
+
+**The artefact carries the manipulation check**, because an arm that reads like `full` must be able to say
+whether the merge found nothing or found something that did not matter. `metrics.consolidation` sums across folds:
+`considered`, `groups`, `merged`, `retained`, `cross_task_groups`, the four `refused*` counts (condition, payload,
+duplicate evidence, linkage), `support_before` beside `support_after`, and `max_support_before/after`. The floors
+are read from the pass's own report rather than from a constant in the lane, because a threshold chosen by a lane
+is a threshold nobody can test.
+
+**And the number that changes the prediction.** `active_total: 258` is a *sum over five folds*: R81 reports
+`knowledge_active_mean: 51.6`, `distill_created: 258` and `corrections_learned: 133`. So the population the merger
+sees is **≈ 52 claims per fold**, distilled from 64 corrections — about two corrections per claim. There are 1,326
+pairs among them, and the pass has to find a pair on which it will call two items one claim. That may not exist,
+and R83's Refutation section says so before the dispatch: a zero `merged` is **not** a defective merger, it is a
+statement that the repeat never occurs in a store this small.
+
+**R83 is therefore one arm, not two.** The support floor over the merged store (`minEvidence: 2`) is the obvious
+fourth arm and it is deliberately not bought: it is only a distinct arm if the merge produces a claim with two
+witnesses, and whether it does is the question the file is asking. `prereg/R83-consolidation.md` registers
+`full-consolidated` alone against `full` and `none` on R81's own cell — 1,534 questions, five folds,
+`learn_sample = 64` — for ≈ 4,600 calls, which is R81's bill rather than a multiple of it. The first reading it
+produces is the census, and the census is computed before the first model call of the fold.
+
+### 173.66 — R81's third attempt found the same defect in a second array, and the fix is a check that speaks first
+
+The reconstruction pass ran. `V77` reported `full-reconstructed-shuffled missing of 3 bought arm(s)` and **not**
+`full-reconstructed`, so the move out of the sampling block did what it was supposed to do.
+
+The control arm had no donor. `packLibrary` — the size-matched donor library the shuffled arms draw from — was
+built under `ARMS.has('full-shuffled')` alone:
+
+```ts
+const packLibrary: PackCell[] = ARMS.has('full-shuffled') ? [...rawPacks].map(...) : [];
+```
+
+R81 buys `full-reconstructed` and `full-reconstructed-shuffled`. It does not buy `full-shuffled`. So the library
+was `[]`, `shuffledSource([], …)` returned `undefined`, no donor plan was pushed, no call was made, no row was
+written — and the run paid forty-two minutes to be told by the last gate that one of its two arms was absent.
+The treatment row was complete, which is why nothing upstream could see it.
+
+That is the **fourth instance of one shape in three iterations**: the reconstruction pass written inside the
+sampling block, `full-corroborated` declared and never dispatched, the consolidator present and never wired, and
+now an input array filled by a different arm's branch. The shape is not "a bug in a condition". It is that this
+lane has arms which *depend on inputs that other arms fill*, and nothing states that dependency anywhere a reader
+or a checker can see it.
+
+Two things changed, and they are different kinds of thing:
+
+1. **The condition is the union of the readers.** `packLibrary` is now built when `full-shuffled` *or*
+   `full-reconstructed-shuffled` is bought, and the comment above it names R81 as the reason.
+2. **`requireInput` speaks at the top of the first fold.** It takes an arm, the array that arm reads, and a
+   sentence about it; if the arm was bought and the array is empty it raises `MG_E_CONFIG` before the first model
+   call. `V77` remains the backstop — no arm can hide from a comparison against the dispatch's own list — but it
+   can only speak at the end, and the difference between those two moments is $0.23 and forty-two minutes.
+
+`packages/eval/src/__tests__/sota-source.test.ts` gained two structural tests: the initialisation condition of
+`packLibrary` must name both arms that read it, and each of those arms must have a `requireInput` call after the
+declaration. The second one is the one that matters — a later edit that narrows the union would fail the first,
+but a later edit that deletes the check would fail neither the union test nor any gate until the run was paid for.
