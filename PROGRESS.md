@@ -14935,3 +14935,61 @@ and the cheap signals are at chance.** The two ways forward it leaves are both e
 costs five calls per question (R71's own branch), or a baseline low enough for ranking to be possible,
 which is a product statement about which models this SDK should be pointed at, not an experiment about
 BIRD.
+
+### 173.48 — An artefact records a claim, and the hour and the host are not claims
+
+`pnpm check` runs every lane, and every lane writes its artefact back into the tree, so the gate dirtied
+the working copy on every run. That was invisible until an experiment's commit arrived carrying **279
+lines of a sandbox's p50/p95** beside two outcomes — a reader could not tell those numbers from evidence,
+because they are not evidence: they describe the machine that ran the gate.
+
+`splitClaim` now separates the two at any depth. The committed file keeps what is a claim about the
+code; the clock (`ranAt`) and the host (`p50Ms`, `p95Ms`, `p99Ms`, and the snake-case lanes'
+`p50_ms`/`p95_ms`/`p99_ms`/`slowest_ms`) go to a `.volatile/` sidecar that `.gitignore` holds. The list
+is **exact key names, not a pattern**, and the census is why: of the forty timing-shaped keys in the
+committed corpus, six were observed changing between two runs of the same code, and a pattern would have
+deleted `p95_budget_ms` — a threshold the study *claims* — as if it were a measurement.
+
+Two consequences beyond the strip:
+
+- **`eval:claim-check`** reads the committed corpus instead of trusting the walk — 67 artefacts, and it
+  refuses a file that arrives with a clock through any other route (hand edit, a lane with its own
+  writer, a new field invented in the shape of the old ones). It runs in `pnpm check` and in CI.
+- **One sentence had to change**, not just be stripped: the delivery lane's note interpolated its own
+  loopback p95 into prose, so the *prose* churned between hosts after the fields were gone. It now says
+  the floor is recorded beside the artefact rather than quoting a value that changes with the machine.
+
+**The migration also produced one honest small finding.** Adding `widthArguments` pulled the word `bird`
+into `width.ts` — the `--bird` flag name — and the coupling gate refused the tree: a module with a
+scenario word in code and no written reason is `general`, and `general` fails. The gate was right about
+the letter and the module is right about the substance, so `width` joins `DEFERRALS` with the reason
+that its only scenario word is the flag every reading in this package uses for "the artefact to read".
+A reviewer can disagree with that sentence; that is what the table is for.
+
+### 173.49 — The share reading had to be told which arm, and a CLI nothing tests is how it forgot once
+
+R80 buys `sample-5-first` and `sample-5-assert`. The first and oracle arms keep their names across every
+width dispatch, the middle one does not: `eval:width-share` was hard-coded to `sample-5-exec`, so pointed
+at R80 it would have printed a ceiling for an arm that dispatch never bought. That is the wrong-file
+defect of §173.44 one flag over, and it is cheap to avoid.
+
+`--selected <arm>` now names the middle arm. Three decisions that are worth their lines:
+
+| decision | rule | why |
+| --- | --- | --- |
+| unknown flag | error | `pool.ts` accepted `--bird`, ignored it, and described a different file |
+| flag whose value is another flag | error | `--bird --with b.json` would read a path called `--with` and drop `b.json` |
+| flag given twice | error | two answers to one question, and picking either one is picking for the caller |
+
+**A named arm is checked against what the artefact bought; the default is not.** Naming an arm is an
+assertion the artefact can contradict, and `this artefact did not buy 'x'; it bought …` is the sentence
+that stops a reading before it prints a number. The default is different: a directory scan can land on
+an artefact that never bought `sample-5-exec`, and that invocation is *expected* to report "no question
+carries all three" with the arms it did buy — a second, differently worded error for the same condition
+would be noise. `explicit` therefore survives the parse rather than being recomputed from equality,
+because naming the default arm on purpose is still a claim.
+
+**All of it lives in `width.ts`, not in the CLI.** `packages/*/src/bin/**` is excluded from coverage on
+the stated rule that the logic a CLI calls lives in the package — and `pool.ts` is the demonstration of
+what an untested argument parser does. `widthArguments`, `selectedArmProblem` and `widthCases` are covered
+there: ten cases over the parser, three over the arm check, three over the mark selection.

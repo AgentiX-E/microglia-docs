@@ -6230,3 +6230,18 @@ whatever machine ran it. The R70/R71 commit carried **279 lines of a sandbox's l
 experiment outcomes; reverted, and the split is now a roadmap item: the deterministic claim stays
 committed, the machine-local measurement goes to an ignored path. Nothing in CI compares those files, so
 nothing went red — which is precisely why it was noticed by reading the diff rather than by a gate.
+
+### The gate stopped rewriting evidence, and the reading learned to be told which arm
+
+`pnpm check` rewrote its own committed artefacts on every run — `ranAt` plus the host's p50/p95 — so the
+gate dirtied the tree and once put 279 lines of a sandbox's latency inside an experiment's commit.
+`splitClaim` keeps the claim and moves the clock and the timings to an ignored `.volatile/` sidecar, by
+exact key name (a pattern would have eaten `p95_budget_ms`, a threshold the study claims). `eval:claim-check`
+reads the committed 67 artefacts and runs in `pnpm check` and CI. One prose sentence interpolated its own
+loopback p95 and had to be rewritten, not stripped.
+
+`eval:width-share --selected <arm>` names the middle arm, because R80 buys `sample-5-assert` where every
+earlier share divided by `sample-5-exec`. A named arm is validated against the artefact's own arm list; the
+default is not, so an artefact without `exec` still reports "no question carries all three" rather than a
+second error. The parser lives in `width.ts` because `bin/**` is outside coverage by the package's own rule
+and an untested parser is exactly what `pool.ts` was.
