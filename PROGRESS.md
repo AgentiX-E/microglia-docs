@@ -15289,3 +15289,64 @@ than a comment.
 
 4,251 tests, and all four dimensions read 100. The 99.88 branch figure that stood for three iterations was
 five lines of dead code wearing the shape of defensive programming.
+
+### 173.62 — R81 ran, produced a complete artefact, and its two arms had never existed
+
+The first dispatch of R81 (`42982496385`) ran sixteen minutes, spent **3,154 calls and $0.2299** at
+off-peak, and wrote a 3.7 MB artefact whose arm table holds one row: `full`. Both reconstruction arms are
+absent, `V77` failed on them, and `V80` failed with `0 of 0 question(s) carried advice (0.0%)`.
+
+The cause is a nesting error. The reconstruction pass was written at the end of the block that begins
+
+```ts
+if (samplingArmsThisRun.length > 0 || wantsCeiling || priorRequested) {
+```
+
+which the lane enters only when a `sample-*`, ceiling or prior arm is bought. R81 buys neither, so the
+block was skipped, and three hundred lines of new instrumentation were unreachable while **every static
+check in the repository passed**: it typechecked, it linted, it was covered by unit tests that call
+`reconstructPrompt` and `parseGuidance` directly, and it never executed. `mean_pack_ids` was 1.86 for the
+run, so the store was full the whole time — the pass simply was not there.
+
+That asymmetry is the finding. `V80` was built to catch "the writer declined everything", and it caught
+the consequence exactly: `0 of 0` is what a run looks like when a pass never runs *and* when it runs and
+produces nothing. A gate on an artefact cannot tell those apart, because the artefact contains no record
+of code that did not execute.
+
+The fix is a pure move — the line multiset before and after is identical, asserted rather than described —
+to the top level of `runFold`. What keeps it there is a new test that parses the lane's own source:
+
+1. the declaration the pass is gated on has a `Block` for a parent, so it is in the function body and not
+   inside any `if`;
+2. no ancestor of that declaration is an `IfStatement` mentioning `samplingArmsThisRun`;
+3. `reconstructPasses.push(` occurs after that sampling block ends.
+
+A pass that costs one call per question must not be conditional on a different arm's configuration, and
+the invariant is now stated where a machine reads it.
+
+### 173.63 — The re-dispatch died in eleven seconds on a job whose only task was to print a line
+
+`ERR_MODULE_NOT_FOUND: .../packages/eval/node_modules/@agentix-e/microglia-core/dist/index.js imported
+from packages/eval/src/model-client.ts`. `prereg.ts` had begun importing `restModelOf` from
+`model-client.ts` when the `backbone:` header was added; `model-client.ts` imports the core package for its
+error type; the core package's entry point is `dist/index.js`, which does not exist until something builds
+it. The `BIRD` job builds before it reads anything and never noticed. The two jobs that answer "which lane
+is this" and "which arms does this registration run" do not build, and both failed.
+
+**So the registration reader had an undeclared dependency on a build.** The translation is a string
+rewrite, and it now lives in `model-id.ts`, which imports nothing. `model-client.ts` re-exports it and
+keeps the refusal an empty id deserves at the point a request is composed; `splitProvider` answers an empty
+id with an empty id and leaves the refusal to its caller, because a translator that throws makes every
+reader depend on the type it throws — the mechanism that produced the edge.
+
+Verified by the condition that produced the failure rather than by a proxy: with `packages/core/dist`
+moved out of the tree, `eval:lane-scope`, `eval:prereg`, `eval:prereg-arms` and `eval:prereg-population`
+all run. `prereg-imports.test.ts` walks the **relative import closure** of `prereg.ts` and refuses any edge
+into `@agentix-e/microglia-*`, skipping `import type` by the same rule the bundler uses.
+
+**Two dispatches, one cause class.** `V77` and `V80` reported that the reconstruction arms produced
+nothing; `ERR_MODULE_NOT_FOUND` reported that the reader could not load. Neither could say "this code
+cannot run here", which is what both defects were — and both were in code that passed every check this
+repository has. The difference between the two is that the first produced an artefact that looked
+complete, and the second produced nothing at all: a run that fails loudly costs eleven seconds, and a run
+that fails quietly costs sixteen minutes and $0.23.
