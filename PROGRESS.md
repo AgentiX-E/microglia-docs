@@ -14322,3 +14322,65 @@ instrument tested only in pieces is the shape of every silent failure this lane 
 
 Gate state: **4,071 tests over 195 files**, coverage 100/99.86/100/100, `pnpm check` green at `c6b5d4a`.
 In flight: R77 second dispatch (11,000 / 12,000), R68's third attempt on `zhipu:glm-4.7-flashx`.
+
+### 173.27 — The forecast charged the cold fold's learning to four folds that read it from the cache
+
+R77's reading arrived: `42922152605`, **6,946 calls, $0.531**, five folds, 2,000 questions,
+`none,full,loo` at temperature 0. It is inside the **7,600** the *first* dispatch was authorised for,
+which means the first dispatch was never under-sized — it was stopped by the in-run forecast. Fold 1
+cost 1,952 (1,200 evaluation, **700 learning**, 52 other); `forecastBudget` multiplied that fold by five
+and reported 10,541 against a 7,600 ceiling. In the completed run the `GenerationCache` answered
+**2,623 of 3,500** learning requests, so the entire learning pass cost **877 calls and not 3,500**.
+
+This is the third level of one error class, and each level was found by the layer above failing:
+
+| level | instrument | what it conflated | found by |
+| --- | --- | --- | --- |
+| R64 | `planBudget` | arms with questions | a run 4× over |
+| R68 | `planBudget` | arms with draws | a run 2× over |
+| R77 Amd 1 | `planBudget` | per-question rate with cache-warm rate | forecast 10,541 for a 6,946 run |
+| R77 Amd 2 | `forecastBudget` | a start-up cost with a per-fold price | the same dispatch, actually finishing |
+
+`FoldSpend.learning` now carries the learning calls **measured around the pass** (`llm.stats.calls`
+before and after `buildFoldMemory`), not inferred from the question count, and the extrapolation takes
+the maximum of `calls - learning` rather than of `calls`. Netting before the maximum rather than after
+keeps the original rule — remaining folds are priced at the dearest one — while refusing to charge a
+one-off to folds that read it from a cache.
+
+Replayed on both ledgers, with nothing else changed:
+
+| dispatch | forecast then | forecast now | actual | error then | error now | cap |
+| --- | --- | --- | --- | --- | --- | --- |
+| R77 (1,952 after fold 1, 700 learning) | 10,541 | **7,461** | 6,946 | +52% | **+7.4%** | 7,600 — finishes, 139 spare |
+| R74 (5,483 after fold 1) | 29,609 | **≤ 26,529** | 24,465 | +21% | ≤ +8.4% | 28,000 — finishes above 366 learning calls |
+
+R74's row is a **threshold, not a replay**: its artefact records calls per fold and not learning per
+fold, because the field did not exist. The break-even is 366 calls of learning in fold 1 and the pass
+cost 877 in a run built the same way, so the direction is not in doubt and the figure is a bound. The
+test carrying it asserts the break-even rather than a measurement the artefact cannot support — the
+same discipline that made R75's correction a pinned revision instead of a patched file.
+
+Three tests pin the behaviour (R77 replay, R74 break-even, net-of-maximum when a *later* fold is dearer)
+and two pin the edges that make shipping it safe: a fold with no `learning` field forecasts **exactly**
+as before, so no published figure moves, and `learning > calls` is clamped rather than subtracted,
+because a negative cost would quietly raise the ceiling the run believes it has. `writeStop` now records
+`learning_calls` per completed fold so the next partial artefact shows which part of a fold's bill the
+remaining folds inherit and which part they get free. **21 tests in `call-budget.test.ts`, 4,076 over
+195 files, coverage 100/99.86/100/100, `pnpm check` green.**
+
+What the mistake cost: **1,952 calls, about $0.15**, and one discarded fold. What it bought is the
+distinction the lane had been missing since R64 — a run's bill is a per-question part and a one-off
+part, and only the first belongs in a rate.
+
+**`R77`'s outcome, recorded in the same file.** 55.73% of pairs are inert at T = 0 (1,114 of 1,999),
+**113 rules — 23.9% of the pack — never changed an answer on any draw**, and the busiest tenth produced
+33.3% of the live answers. Prediction 1 (30–55%) is falsified by 0.73pp **and in the direction that
+matters**: the deterministic share is *above* the mixture it was supposed to be a component of, which
+kills the "52% was coincidence" explanation. Prediction 2 was arithmetically impossible as written —
+per-rule inertness is an extreme and pair-level inertness an average, so the extreme is *below* the
+average unless the pack is bimodal. No branch fired. `none` 61.55% / `full` 61.80% / `loo` 60.90%:
+withholding one rule **improves** accuracy by −0.90pp [−1.90, 0.10], p = 0.0886, the widest-sample
+out-of-sample negative reading this lane has, and the first at temperature zero. The next measurement
+is not a pruning: 113 rules at a median of 3 draws is weak evidence per rule, so those 113 get **more
+draws** before anything is deleted.
+
