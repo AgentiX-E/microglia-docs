@@ -15719,3 +15719,45 @@ without permission to is a different regime, and it is reachable from the existi
 700 + 1,200 tokens per call — flash's own measurement puts the cost of that regime at 680 reasoning tokens a
 reply, which the headroom covers. That is a new registration with its own control, not a reinterpretation of
 this artefact; and the honest price of it is one arm and about a dollar, not a 2 × 2.
+
+### 173.72 — R84 was registered and undispatchable inside the same hour, because the regime it moves is a repository variable
+
+R84's whole claim is that one variable moves: the thinking switch, held at `off` in every published cell
+because that is the regime the lane's 100% parse rate was measured in. Writing the registration found that the
+switch **cannot be set per dispatch**. `SOTA_THINKING` is read from `vars.SOTA_THINKING` — a repository
+variable — and the dispatch menu is full at exactly **25 inputs**, which the workflow checker asserts on every
+push. That is R68's defect in its original shape: a variable is one experiment's setting applied to every queued
+dispatch, two regimes cannot be run side by side, and a forgotten value keys a run that its registration never
+described. `SOTA_MODEL` and `SOTA_SAMPLE_TEMPERATURE` were both promoted out of exactly this, and the third one
+was still sitting there because nothing had needed to move it before.
+
+So the regime went where the record has already decided a property of the experiment belongs: the
+registration's header, beside `arms`, `backbone`, `split`, `temperature` and `looTargets`.
+
+- **`thinking: on | off`** — two values and **no synonyms**. `SOTA_THINKING` accepts `enabled`, `disabled`,
+  `true` and `false` because a human types it into a variable box once; a header is read by every later
+  dispatch and compared against that variable, so a declaration spellable four ways is a declaration that
+  cannot be compared. `on` and `off` or a named problem before any call is spent.
+- **`thinkingProblem(configured, declared)`** in `prereg.ts`, where it can be tested without a process.
+  `null` for the configured side is the variable being **unset**, which is not a second opinion: an unset
+  variable and `thinking: on` in the file is one regime. A **stated** disagreement is refused, so neither
+  representation can overwrite the other in silence — the arrangement `backboneProblem` already has.
+- **The lane derives the regime**, `THINKING_ENV ?? declared ?? 'off'`, **before** `answerBudget` computes
+  `COMPLETION_BUDGET`; a regime discovered after the budget would give 700 tokens to a run that thinks and
+  truncate every answer the headroom exists to protect.
+- **The artefact records the derived value**, `usage.thinking`, never the raw variable — an unset variable is
+  `null`, which the artefact has no value for, and a set one the header overruled would be a different run's
+  regime wearing this one's name.
+
+Nine tests, no mocks: five on the header (reads `on`, reads `off`, absent stays absent, refuses `yes`, refuses
+`enabled`), four on the comparison (no declaration, agreement, unset variable, both disagreements), and three
+structural invariants on the lane — that it derives through `thinkingProblem`, that it reads the header before
+the budget it decides, and that the artefact cannot report the variable where it means the run. `prereg.ts`
+stays at **100/100/100/100**, the suite at **4,294 passing**, all **72** registrations parse, and the workflow
+checker is green on the same 25-input ceiling that made this necessary.
+
+**The new field's first customer was its own registration.** `R84-thinking-budget.md` was written with
+`backbone: deepseek-v4-pro`, `split: minidev` and no `thinking:` line — a registration whose title is the
+regime, and whose header did not declare it. The header check caught it before the field was an hour old, which
+is the smallest possible demonstration of why the check exists: the file would otherwise have been dispatched as
+a second copy of R82 at $1.90, and the artefact would have said `thinking: off` in a run registered to move it.
