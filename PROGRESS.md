@@ -14625,3 +14625,68 @@ R68 is the only experiment in flight that improves a `none` number (self-consist
 draws). Every arm from R10 to R77 varied the component whose total contribution is inside the noise of
 the measurement. That is not a reason to stop measuring it; it is a reason to stop expecting the SOTA
 number to move from it.
+
+### 173.37 — R78 reproduced the pack to a fifth of a point, and the draw plan did not travel
+
+`42951989979`: 1,900 questions at `offset = 2000`, three arms, **6,943 calls**, **$1.11**.
+
+| reading | R77 (offset 0) | R78 (offset 2,000) |
+| --- | --- | --- |
+| pairs compared | 1,999 | 1,899 |
+| **inert pairs at T = 0** | **55.73%** | **55.87%** |
+| rules ever withheld | 472 | 484 |
+| **wholly inert** | **113** | **109** |
+| per-draw live rate | 49.9% (47.6–52.2) | 49.6% (47.2–52.0) |
+| **excess** | **74.8** (72.5–77.1) | **71.0** (68.6–73.4) |
+| memory effect | +0.25pp (−0.90 … +1.40) | **−0.32pp** (−1.58 … +0.95) |
+
+**Two disjoint populations, two independently distilled stores, 0.14pp apart.** Inertness is a property
+of this pack, not of the questions it was measured on, and the excess intervals overlap on **71 to 75
+rules of about 480** — 15%, not the 24% the raw silence count reads as.
+
+**The plan bought 97 draws of the 346 it ordered, and the reason is a property of the instrument.**
+`looTargets` names rule ids from R77's store. A rule id is a content hash, so a rule survives into a store
+learned from *different questions* only when the same sentence was learned again — 97 of the 105 did, and
+they are the general ones. **A draw plan is store-local**: it buys draws for one learning pass and a
+top-up over another population cannot inherit it. The balancer was right (`targetedLooIndex` spent every
+available draw on the least-drawn target and never fell back to its hash), the purchase order was not.
+
+**The registration's third prediction named the wrong noun.** It said the wholly-inert *count* would land
+between 38 and 75; the count is **109**, and 38 and 75 were the *chance* and *excess* components of it.
+The excess, **71.0**, is inside 38–75. The arithmetic was right about the quantity it computed and the
+sentence named a different one.
+
+**And the last-rule finding did not survive.** R77 had `full` beating `loo` by +0.90pp (p = 0.089) and read
+it as the last rule being worth more than the pack. R78 has `loo` beating `full` by **−0.32pp**. Same
+instrument, opposite sign, neither significant: per-rule effect is noise at this sample size, and the
+dose-response reading R77's Amendment 4 proposed has no support.
+
+### 173.38 — The cost mechanism existed and nothing called it
+
+`bandOf` and `nextOffPeak` have been in `cost.ts` since the rate card was written, with the comment that a
+guard saying "not now" without saying "at 16:30 UTC" is a guard an operator overrides. **Nothing called
+either of them.** R78 is what that costs:
+
+| band | R77 (23:19 UTC) | R78 (03:19 UTC) |
+| --- | --- | --- |
+| peak spend | **$0.000** | **$1.054** |
+| off-peak spend | $0.531 | $0.057 |
+| same tokens, all off-peak | $0.531 | **$0.584** |
+
+Same model, same provider, same cache hit rate (70.2% vs 70.5%), 6% more prompt tokens — and **1.90×** the
+bill, entirely because the run started nine minutes into a peak window. `pnpm eval:band` is now the call
+site: it prints the band and, when the moment is peak, the hour the identical run becomes half price. It
+warns rather than refuses, because an experiment that was ready to run is a real thing to lose.
+
+### 173.39 — The forecast's own field was written by the wrong artefact writer
+
+A completed artefact's `per_fold` carried `eval`, `learn`, `edited`, `active` — and neither `calls` nor
+`learning_calls`. The **partial** artefact, written when a run stops, has carried both since R77. So the
+learning term `forecastBudget` subtracts could be measured while a run was dying and never after one
+succeeded.
+
+That is why R77's Amendment 3 records R74's row as a **threshold** (`≤ 26,529`) rather than a replay: "its
+artefact records calls per fold and not learning per fold — the field is new". The field was not new; it
+was in the other writer, one function below. Both keys are now written by the completed artefact from the
+same `FoldSpend` the forecast reads. R78 predates the fix and cannot be replayed either — recorded rather
+than repaired by re-running 6,943 calls for a bookkeeping field.

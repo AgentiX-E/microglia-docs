@@ -6119,3 +6119,29 @@ move accuracy much; the case for it is cost.
 **Unchanged behind it.** R68's fourth attempt and its `(exec − first)/(oracle − first)` share; then
 `retry-keyed` against `retry-blank`, the `values` block in the first prompt, and the dose randomised on
 train.
+
+### R78 came back: the pack reproduced, the purchase order did not
+
+Two disjoint populations and two independently distilled stores scored **55.73%** and **55.87%** inert
+pairs, **113** and **109** wholly-inert rules, excess **74.8 (72.5–77.1)** and **71.0 (68.6–73.4)**. The
+inertness and the dead weight are properties of this pack, not of the questions — that question is
+closed, and the answer is 15% of the pack, not 24%.
+
+**The plan bought 97 of its 346 draws.** `looTargets` names rule ids from R77's store; a rule id is a
+content hash, so a rule survives into a store learned from other questions only when the same sentence
+was learned again. The balancer was right and the purchase order was store-local. A future top-up either
+plans against its own store or forces the recall.
+
+**`full` against `loo` flipped sign** (+0.90pp in R77, −0.32pp in R78, neither significant), so per-rule
+effect at this size is noise and R77's dose-response reading has no support.
+
+**Cost is now a printed number, not a habit.** R77 paid $0.531 for 6,946 calls at 23:19 UTC; R78 paid
+$1.111 for 6,943 at 03:19 UTC — 95% of it peak, 1.90× for the same tokens and the same cache rate.
+`bandOf` and `nextOffPeak` had been in `cost.ts` unused since the rate card was written; `pnpm eval:band`
+is now called by the workflow and names the hour the identical run halves. **Scheduling at off-peak is
+the cheapest lever this project has and it costs nothing to pull.**
+
+**Next, in order.** R79's pruning pair (`pruned` against `full` on R78's slice, so the distill cache pays
+for it) — the first arm whose counterfactual is less memory; R68's `(exec − first)/(oracle − first)`
+share, which `pnpm eval:width-share` will read from the artefact against R67's question ids; then
+`retry-keyed` against `retry-blank`.
