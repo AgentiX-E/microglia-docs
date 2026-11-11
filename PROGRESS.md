@@ -15350,3 +15350,38 @@ cannot run here", which is what both defects were — and both were in code that
 repository has. The difference between the two is that the first produced an artefact that looked
 complete, and the second produced nothing at all: a run that fails loudly costs eleven seconds, and a run
 that fails quietly costs sixteen minutes and $0.23.
+
+### 173.64 — The store is 258 claims with one witness each, and the merger that would fix it has never run on this lane
+
+The R81 artefact carries a field nothing had read: `active_corroborated: **0**` against `active_total:
+258`. Every active claim in the store is supported by exactly one observation. The per-item export says
+the same thing from the other side — 258 items, `evidence` = 1 for all of them — and `supportTasks` never
+reaches 2, let alone the 3 that the published competitive arm requires before a guideline is admitted.
+
+That number reframes the whole memory line, and it does so in the direction the literature points:
+
+| finding | this store |
+| --- | --- |
+| agent-memory promotion ladder: L1 → L2 needs ≥ 3 distinct sessions spanning ≥ 2 days | every claim is at L1 and injected as if it were L2 |
+| SEMV: unverified memory updates give 46.4% positive and **5.7% negative** transfer; verification-gated gives 0.2% negative | verification rate is **0 of 258** |
+| arXiv:2610.07100: value/belief claims are only 77.9% source-supported versus 96.2% elsewhere, and one global threshold cannot separate the categories | the threshold in this codebase (`minEvidence: 2`) would admit nothing, so it has never been dispatched |
+| MemTrim: removing or compressing entries drops the harm *and* the benefit | every pruning arm this record ran (R25, R58, R63, R74) reported nothing, which is what this predicts |
+
+**And the merger exists.** `consolidateKnowledge` groups items that state one claim by token
+containment on the claim's own words (floor 0.60, calibrated on a real pair at 0.700 against the closest
+non-repeat at 0.533), unions their evidence, re-scores survivors with the policy, and reports
+`supportBefore` / `supportAfter` / `crossTaskGroups`. It runs on the τ² lane and on the consolidation
+sweep. **The BIRD lane has never called it**, so its 258 claims are whatever the distiller wrote, one per
+correction, and no pass has ever asked which of them are one claim.
+
+This is the third instance of one shape in two days: `full-corroborated` (an arm declared in the table and
+never dispatched), the reconstruction pass (written inside another arm's `if`), and now the consolidator
+(present, tested, and not wired to the lane that needs it). The common cause is that this repository's
+gates all read the *artefact*, and an artefact cannot report code that never ran. `V80` and `V77` said so
+about R81; nothing says it about a function nobody calls.
+
+The next registration is therefore not "filter the single-witness claims" — that arm would inject an empty
+pack and measure `none` under a new name — but **merge first, then ask what the support count is worth**:
+`full` as it stands, the same store after consolidation, and the same store behind a support floor. The
+census already reports what the fix bought, in items merged and in groups whose union covers a task no
+single member held.
