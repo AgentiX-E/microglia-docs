@@ -6312,9 +6312,13 @@ is behind.**
    involved. 20/20 conditions named the request and 1,951/1,951 were served — the write path works — so what
    remains is whether the *form the distiller is asked for* decides the trigger rate.
 4. **R55.1 — does admitting at support ≥3 change the pack and the register?** This is the SOTA holder's own
-   winning cell (`sup3`, 31 rules, Pass^4 57.5 → 60.0) **and the cell that flips its sign between domains**
-   (airline: 101 rules score below 14). It is the one hypothesis in the record that is on the same axis as the
-   domain leader, and it is registered and conditional on item 1.
+   winning cell **and the cell that flips its sign between domains** (airline: 101 rules score below 14). It is
+   the one hypothesis in the record that is on the same axis as the domain leader, and it is registered and
+   conditional on item 1. **Reading their source changed its design** (Appendix N): their treatment is *admit at
+   `n ≥ 3`* **and inject every admitted entry into the system prompt, in both ReAct phases, with no retrieval and
+   no budget** — 31 bullets, billed twice a turn. Ours serves 1.42 items per request through a 1,200-character
+   pack. So the arm becomes two: `sup3-retrieved` against `sup3-prefix`, one variable, and the second is the only
+   cell in this project that can be compared with their published number at all.
 5. **U6b — deciding at write time** (add / update / noop) rather than appending. Built; the only structural
    difference left between an append-only store and Mem0's bounded consolidation, and the reason a store can
    stay dense without being long.
