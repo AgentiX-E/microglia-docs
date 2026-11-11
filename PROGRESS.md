@@ -14799,3 +14799,51 @@ distill cache serving 97.0% of R79's distillations because it re-scored R78's sl
 all-off-peak counterfactual was $0.584; R79 came in 7.6% under it, which is what the cache bought on top
 of the band. `pnpm eval:band` refuses nothing — it prints the band and, when the moment is peak, the hour
 the identical dispatch halves.
+
+### 173.44 — A reading that answered a question nobody had asked
+
+R71's registered reading is `pnpm eval:pool` against R70's artefact. Checking the instrument before R70
+returned, `pnpm eval:pool --bird /…/R68.json` printed **"this artefact predates the pool field: the run
+could not have recorded candidates"** — about a run whose 350 questions carry 1,750 recorded candidates.
+
+**`pool.ts` never read `process.argv`.** The flag was accepted by the shell, ignored by the program, and
+the reading described whatever `chooseArtefact` picked out of `eval/results`. The failure mode is the one
+this project keeps re-finding: a plausible sentence about the wrong object is worse than a crash,
+because it produces a decision. This is the second time in two iterations that a reading was pointed at
+one artefact and computed on another (`eval:inert` in R78's iteration took a path instead of `--bird`).
+
+`artefactArgument(argv, fallback)` is now the only way a reading takes a path: `--bird <path>` is read,
+and **anything else is an error**. Applied to `pool.ts`, with five cases — no argument, a named path,
+an unknown flag, `--bird` with no path, and a second stray path. The nine other readers that ignore
+`argv` are listed in the roadmap; none of them documents a flag, so none is silently wrong today, and
+the sweep is a mechanical follow-up rather than a correctness emergency.
+
+**The instrument, on R68's pool (not R71's population — R70 is that, and it was still running).** 350
+questions × 5 draws = 1,750 candidates, 1,749 signed; 263 questions eligible (≥2 distinct results); the
+oracle 149 against the first draw's 98 = **14.57pp**, which is exactly the arm table's ceiling, so the
+reader and the lane agree about the same run.
+
+| signal | AUC, 95% | top-pick on 263 |
+| --- | --- | --- |
+| `empty` | **0.706 [0.665, 0.747]** | **27.0%** |
+| `column-shape` | 0.708 [0.667, 0.751] | 26.6% |
+| `row-shape` | 0.685 [0.638, 0.729] | 25.5% |
+| `column-mention` (content) | 0.633 [0.590, 0.681] | 26.2% |
+| `literal-match` (content) | 0.504 [0.480, 0.526] | 22.4% |
+| first draw | — | 22.4% |
+
+**The shape family that was worthless at 51% is the strongest signal at 28%.** R67 priced seven shape
+signals with every AUC interval straddling 0.5 and R69 replicated it at k = 10; on this pool `empty`
+reaches **0.706**. Nothing about the signals changed — the population of failures did. That is R68's
+finding stated at the level of a single question: **a selector's worth is a property of the baseline it
+runs at**, and the same composite that is worth +0.57pp at 51% is worth +6.86pp at 28%.
+
+**`literal-match` is the exception and it failed in the predicted direction anyway**: R71 predicted AUC
+0.52–0.64 with the wider interval, and it came in at 0.504 [0.480, 0.526] — the narrowest interval of
+the seven, and indistinguishable from chance. BIRD questions paraphrase their literals, so the signal
+has almost nothing to match against; the prediction got the *reason* right and the *sign* of its
+magnitude wrong.
+
+None of these is R71's reading. R71's population is R70's five draws at T = 1.0, and it stays unread
+until R70 returns — the numbers above are what the instrument says about a different pool, recorded so
+that a reader can tell an instrument check from a registered result.
