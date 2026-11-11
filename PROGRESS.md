@@ -14493,3 +14493,81 @@ that is never recalled cannot be measured by withholding it from a pack it is no
 undispatched with both designs costed; nothing is pruned on the strength of 113 silences, 105 of which
 have not been drawn five times.
 
+
+### 173.32 — The six hours were another backbone's, and the fix was in a different experiment's log
+
+R78 was registered **undispatched** on the strength of one row: *wall clock at the measured 15.6
+calls/minute = six hours, past the job limit*. Every other row of that table was right. The rate was not.
+
+`15.6 calls/minute` is `zhipu:glm-4.7-flashx` — the backbone R68 dispatches. This lane runs
+`deepseek-flash`, and R77's own job says what it does: 6,946 calls between 23:27:00 and 23:55:45, which
+is **248 calls/minute**.
+
+| reading | value |
+| --- | --- |
+| R77's model calls | 6,946 |
+| R77's model window | 28.7 min |
+| measured rate on `deepseek-flash` | **248 calls/min** |
+| R78's projected calls (5,700 evaluation + ~3,500 learning on new questions) | **9,200** |
+| wall clock at the measured rate | **37 min** |
+| the job's own limit | 340 min |
+
+**The error has a shape worth naming**: a throughput figure was carried from one experiment to another
+because both were "this repository's BIRD lane". A cache key, a provider and a concurrency setting each
+make that borrowing false without anybody editing a number, and the number had been used to *reject* an
+experiment rather than to size one. The register now says the rate and the artefact it came from.
+
+### 173.33 — A top-up cannot be a prefix, and nothing compared the sample with the header
+
+`SOTA_LIMIT` could only return the first N questions. R77 scored questions 0–1,999, so "size it at 1,875"
+would have scored **1,875 of the same 2,000** and re-bought every pair it already held: at temperature
+zero, the same pack without the same rule is the same call, so a re-draw cannot return new information.
+
+`offset` now exists in three places that are checked against each other:
+
+| layer | before | now |
+| --- | --- | --- |
+| the lane | `ordered.slice(0, limit)` | `ordered.slice(offset, offset + limit)`, refusing an offset past the corpus |
+| the registration | no key | `offset:` in the header, `-1` and `1.5` refused |
+| the dispatch | nothing to say | resolved **from the header** by `eval:prereg-population`, so the two cannot drift |
+
+The corpus this split can score is **7,829** questions (`[sota] selection: 7829 of 9428` in R77's log).
+R78 declares `offset: 2000, n: 1900`, so it scores questions 2,000–3,899 with **zero overlap** and 3,930
+still unused behind it.
+
+**And `sample` had never been compared with anything.** It has been in every header since the first
+registration; the lane read `SOTA_LIMIT` and the artefact reported whatever that was. `populationAgainstRegistration` refuses a dispatch that draws a different population from the file it claims to execute —
+the same defect as R67's arm list, found in the field next to it four days later.
+
+### 173.34 — The plan was one draw short, and a test now reads the header instead of the sentence
+
+346 draws at the measured 18.45% hit rate need **1,876** questions. The registration said 1,875, which is
+345.9, which floors to **345** — one draw short of a plan that needs 346, and the difference between a
+plan fully bought and one that is not.
+
+The test reads this file's own header and asserts `floor(sample × 369 / 2000) ≥ 346`, so the sentence can
+no longer be right about its method and wrong about its arithmetic by one unit. `n = 1,900` buys 350.
+
+### 173.35 — The excess has an interval, and its lower bound is two thirds of the estimate
+
+R77's most-quoted number was 74.8 rules of dead weight — a point estimate whose input, the 49.9% per-draw
+live rate of the rules that fired, is itself **a measured proportion**. `silenceReading` now reports the
+interval, and reports it without resampling: the excess is strictly increasing in the rate, so the bounds
+are the same arithmetic evaluated at the rate's own Wilson endpoints and a replay returns the same
+numbers.
+
+| reading | value | 95% |
+| --- | --- | --- |
+| per-draw live rate of the rules that fired | 49.9% | **47.6 – 52.2%** |
+| silences that rate explains | 38.2 | — |
+| **excess** | **74.8** | **72.5 – 77.1** |
+| share of the 472 rules | 15.85% | **15.36 – 16.33%** |
+
+**Dead weight exists**: the lower bound is 72.5 rules, 15.4% of the pack, and no plausible error in the
+working rate closes the interval onto zero. "55.73% inert pairs might be entirely a sampling artifact" is
+refuted by the file that produced it. What the interval cannot say is **which** rules, and a pruning
+needs identities — which is the whole remaining job of R78, now dispatched at 2,000/1,900.
+
+`silenceReading` calls the same `wilsonInterval` the published-cell catalogue uses rather than carrying a
+second copy: two Wilson intervals in one package that disagreed in the fourth decimal would be two
+numbers a reader has to reconcile, and the copied one would be the one nobody re-derived.

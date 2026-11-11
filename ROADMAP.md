@@ -6055,3 +6055,33 @@ since 21:24 UTC.
 in the first prompt; and the dose randomised on train, which is the only mechanism left alive after
 R77 failed to move the pair-level share into either of its branches.
 
+
+### R78 flies, because the number that grounded it belonged to another model
+
+**The registration was right and its clock was wrong.** R78 was written `undispatched` against one row —
+*wall clock at 15.6 calls/minute = six hours, past the job limit*. That rate is `zhipu:glm-4.7-flashx`,
+R68's backbone. This lane runs `deepseek-flash`, whose rate is in R77's own job: 6,946 calls in 28.7
+minutes, **248 calls/minute**. R78's 9,200 projected calls are **37 minutes**, and the experiment was
+rejected by a figure carried over from a different provider because both were "the BIRD lane".
+
+**It also could not have measured what it claimed.** `SOTA_LIMIT` returns a prefix, so `n = 1875` meant
+1,875 of the 2,000 questions R77 had already scored — and a `loo` pair at temperature zero cannot be
+drawn twice. `offset` now names where a slice starts, in the registration and in the lane, and the lane
+refuses a dispatch whose population disagrees with its header. R78 scores questions **2,000–3,899** of
+the **7,829** this split can score: zero overlap, 3,930 unused behind it.
+
+**The dead weight is now an interval, not a point.** The excess is monotone in the working rate, so its
+interval is the same arithmetic at the rate's Wilson endpoints — no resampling, reproducible. R77's 74.8
+is **72.5–77.1** at 95%: dead weight exists at **15.4–16.4%** of the pack, and the "it might all be
+chance" reading is refuted by the same file that produced it. What the interval cannot give is
+identities, and a pruning needs them.
+
+**So the remaining question narrowed.** R78 no longer tests whether dead weight exists; it moves 105
+rules from "silent on one to four draws" to "silent or live on five", which is the only form in which a
+pruning can name what it deletes. Its answer must land between **35.9 and 40.5** wholly-inert rules if the
+49.9% rate is right, and outside that band is a statement about the rate rather than about the pack.
+
+**Next, in order.** R78's readback (in flight, 11,000 / 12,000, 1,900 questions at offset 2,000); R68's
+fourth attempt and its `(exec − first)/(oracle − first)` share, intersected with R67's question ids before
+anything is computed; then `retry-keyed` against `retry-blank`, the `values` block in the first prompt,
+and the dose randomised on train.
