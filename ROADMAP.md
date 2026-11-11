@@ -6145,3 +6145,54 @@ the cheapest lever this project has and it costs nothing to pull.**
 for it) — the first arm whose counterfactual is less memory; R68's `(exec − first)/(oracle − first)`
 share, which `pnpm eval:width-share` will read from the artefact against R67's question ids; then
 `retry-keyed` against `retry-blank`.
+
+### The share came back, and it came back because the baseline fell
+
+R68's fourth dispatch scored 28.00% `first`, 35.43% `exec`, 42.57% `oracle` on glm-4.7-flashx, and the
+share `(exec − first)/(oracle − first)` is **0.51 [0.33, 0.67]** against **0.13 [−0.27, 0.40]** on this
+lane's own backbone. The registered branch **`Baseline-bound`** fires: the published +17.6pp between
+DAIL-SQL+SC and CHESS+SC was bought at a 48.6% baseline, and a selector that recovers half of a 14.57pp
+ceiling at 28% recovers an eighth of an 8.86pp one at 51%.
+
+**Its ceiling prediction failed by half, and the failure is the more useful number**: +14.57pp against a
+registered +30…+50pp. Five draws rescue **18.0%** of failures at 51% accuracy and **20.2%** at 28% — the
+ceiling scales with the failure population, proportionally rather than super-linearly, and all of the
+difference between the two rows is in how much of it a selector finds.
+
+**Deployable and significant on the weak backbone**: `exec` against `full` **+6.86pp [2.86, 11.14],
+p = 0.0022**, 41 gained / 17 lost; on ours +0.57pp [−2.57, 3.71]. `first` against `full` is −0.57pp on
+both, so it is selection and not temperature.
+
+**The branch sends the next registration to the ceiling, not to another selector.** Width is spent
+(R69: k = 10 bought +2.00pp over k = 5 for twice the calls, and `sample-10-exec` came in below the first
+draw). Temperature has never been measured: **R70-temperature is dispatched** (`42965249014`) at
+T = 1.0 on R67's exact 350 questions, 3,600-call forecast under a 4,400 cap, off-peak.
+
+### Pruning a fifth of the pack moved one question
+
+R79 withheld all 105 rules R77's plan names — **694 of 3,497 placements, 19.8% of the injected text** —
+from 1,900 questions: `full` 57.63%, `pruned` 57.68%, **+0.05pp [−0.79, +0.84], 33 gained / 32 lost**.
+The 116 packs the pruning emptied scored 67.24% against 65.52% and 66.38% — no result on 116 questions.
+
+So the dead weight is inert in the strict sense, and it could not have been otherwise on this slice:
+`full` against `none` is **−0.11pp**, so the whole component is inside its own noise before pruning.
+
+**The reach prediction missed upward and that is the finding**: 33.8% of packs held a named rule against
+a registered 18.4%, because the plan names rules that were *drawn and never decisive* and such a rule is
+generic — a rule that resembles everything is drawn against everything and decides nothing. **Dead
+weight is not a rule being useless; it is a rule being generic**, which is the same fact R78 found from
+the store side.
+
+### The artefact's own field was zero because nobody was there to increment it
+
+`config.loo_targets.given` read **0 of 105** on a run that withheld 694 placements of those rules: the
+counter lives inside the `loo` arm and R79 bought `pruned` alone. `planCoverage` now reports `present`
+(store's own answer), `given` (`null` without `loo`) and `withheld` (`null` without `pruned`) — R79's
+should have read `present: 97, withheld: 97`, the same 97 R78 counted on the same slice.
+
+**Cost, measured**: R79 paid **$0.5398** for 6,663 calls at 04:18 UTC against R78's **$1.111** for 6,943
+at 03:19 with 95% of it peak — 96% of the calls for 49% of the money, with the distill cache serving
+97.0% of the distillations.
+
+**Next, in order.** R70 (temperature, dispatched, ~$0.5) — the only unspent ceiling lever; then
+`retry-keyed` against `retry-blank`; then the store-local top-up design (force-recall, 692 calls).

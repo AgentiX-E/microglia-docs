@@ -14690,3 +14690,112 @@ artefact records calls per fold and not learning per fold — the field is new".
 was in the other writer, one function below. Both keys are now written by the completed artefact from the
 same `FoldSpend` the forecast reads. R78 predates the fix and cannot be replayed either — recorded rather
 than repaired by re-running 6,943 calls for a bookkeeping field.
+
+### 173.40 — The ceiling share travels, and it travels because the baseline fell
+
+R68's fourth dispatch (glm-4.7-flashx, 350 questions, 3,404 calls, **$1.08**) bought the same three arms
+R67 bought on this lane's own backbone, and the four numbers that decide the question now exist:
+
+| | R67, `deepseek-flash` | R68, `glm-4.7-flashx` |
+| --- | --- | --- |
+| `sample-5-first` | 50.86% | 28.00% |
+| `sample-5-exec` | 52.00% | **35.43%** |
+| `sample-5-oracle` | 59.71% | **42.57%** |
+| ceiling `oracle − first` | 8.86pp | **14.57pp** |
+| captured `exec − first` | 1.14pp | 7.43pp |
+| **share, 95%** | **0.13 [−0.27, 0.40]** | **0.51 [0.33, 0.67]** |
+
+**Branch: `Baseline-bound`.** Not `Void` (28.00% clears the 25% floor and the parse rate is 100%), and
+0.51 is 3.9× R67's 0.13, which is "at least twice" — so the branch fires before `Selector-bound` and
+`Transferred` are reached. The +17.6pp that separates DAIL-SQL+SC from CHESS+SC in the published table
+was bought at a 48.6% baseline, and a selector that recovers half of a 14.57pp ceiling at 28% recovers an
+eighth of an 8.86pp ceiling at 51%.
+
+**One leg of that test is weaker than the sentence it produces.** The doubling is a ratio of point
+estimates: R67's share is indistinguishable from zero, so against its *upper* bound (0.40) the doubling
+fails at 1.28×. What would settle it is a stronger-backbone share whose interval excludes zero, which
+needs a wider ceiling on that backbone — the thing R69 tried to buy and did not get.
+
+**The prediction that failed is the better measurement.** The registration said the weaker backbone's
+ceiling would be +30…+50pp, on the reasoning that more failures means more of them are one draw away. It
+came in at **+14.57pp**, and the reason is arithmetic rather than noise:
+
+| | R67 | R68 |
+| --- | --- | --- |
+| failures under `first` | 49.14pp | 72.00pp |
+| ceiling at five draws | 8.86pp | 14.57pp |
+| ceiling ÷ failures | **18.0%** | **20.2%** |
+
+Five draws rescue about a fifth of the failures on **both** backbones. The ceiling grew 1.64× while the
+failure population grew 1.47×: proportional, not super-linear. Breadth does not get cheaper as the model
+weakens, it converts a constant fraction — and the whole of the difference between the two rows lives in
+how much of that ceiling the selector can *find*.
+
+**And the deployable arm is significant on the weak backbone.** Paired against `full`: `exec` **+6.86pp
+[2.86, 11.14], p = 0.0022**, 41 gained against 17 lost — where the same contrast on this lane's own
+backbone is +0.57pp [−2.57, 3.71]. `first` against `full` is −0.57pp on both, so the whole of it is
+selection and none of it is temperature.
+
+### 173.41 — Pruning a fifth of the pack moved one question
+
+R79 withheld every rule R77's plan names — **694 of 3,497 placements, 19.8% of the injected text** —
+from 1,900 questions on R78's own slice. Paired against `full`:
+
+| arm | accuracy | pack |
+| --- | --- | --- |
+| `none` | 57.74% | — |
+| `full` | 57.63% | 1.84 rules, 1,090 chars |
+| `pruned` | **57.68%** | 1.48 rules, 904 chars |
+
+**+0.05pp, 95% [−0.79, +0.84], p = 1.0, 33 gained against 32 lost.** One question in 1,900. The 116
+packs the pruning emptied scored 67.24% against `full`'s 65.52% and `none`'s 66.38% — on 116 questions
+that is the absence of a result, not a small one.
+
+**So the dead weight is inert in the strict sense**: removing all of it at once moves the number by less
+than a tenth of the interval it was measured with. And it could not have done otherwise here, because
+`full` against `none` on the same slice is **−0.11pp** — the whole component is inside its own noise
+before any pruning happens.
+
+**The prediction about reach missed in a direction that is itself the finding.** The registration said
+18.4% of packs would hold a named rule; **33.8% did**. The plan's 105 rules are 22% of the 472 the store
+ever drew and they sit in a third of the packs, over-represented by 1.5× — because `silenceTargets`
+selects rules that were drawn and never decisive, a rule is drawn because it resembles the question, and
+a rule that resembles everything is drawn against everything and decides nothing. **Dead weight is not a
+rule being useless; it is a rule being generic.** R78 found the same fact from the other side, when the
+97 plan rules that survived into a store learned elsewhere turned out to be the ones with no domain.
+
+The 18.4% was derived from the draw plan (346 draws over 1,900 questions) while a *placement* is a rule
+in a pack: the prediction counted draws where the quantity is placements.
+
+### 173.42 — A counter only its own arm increments reads as zero, and zero reads as a finding
+
+R79's artefact records `config.loo_targets.given = 0` of 105 while 694 placements of those exact rules
+were being withheld from 642 packs. `given` counts draws taken, and only the `loo` arm takes draws; the
+dispatch bought `pruned` alone. **The field was structurally zero and it read as "the plan did not reach
+this store"** — the store-local failure R78 suffered, reported by a run that had not suffered it.
+
+This is R67's arm-table defect one field over: a number that is correct when its own arm runs and
+silently wrong when another does. `planCoverage` now reports three instead of one — **`present`** (rules
+this store holds: a property of the store, no arm required), **`given`** (`null` unless `loo` ran),
+**`withheld`** (`null` unless `pruned` ran). Recomputed from `per_case`, R79's should have read
+`present: 97, withheld: 97` — exactly the 97 R78's `given` counted, same slice and same seed, which is
+the consistency check that says both numbers are now measuring the same thing.
+
+**The general rule, written down because it has now cost two readbacks**: a count whose increment lives
+inside one arm must be reported as `null` when that arm is absent, and the arm-independent quantity must
+be reported beside it. Zero is a measurement; the absence of one must not look like a measurement of zero.
+
+### 173.43 — The band lever was worth 2.1×, and it was pulled by scheduling
+
+| | R78 | R79 |
+| --- | --- | --- |
+| dispatch | 03:19 UTC | 04:18 UTC |
+| band | 95% peak | **100% off-peak** |
+| calls | 6,943 | 6,663 |
+| spend | **$1.111** | **$0.5398** |
+
+96% of the calls for **49%** of the money, on the same model against the same cache keying, with the
+distill cache serving 97.0% of R79's distillations because it re-scored R78's slice. R78's own
+all-off-peak counterfactual was $0.584; R79 came in 7.6% under it, which is what the cache bought on top
+of the band. `pnpm eval:band` refuses nothing — it prints the band and, when the moment is peak, the hour
+the identical dispatch halves.

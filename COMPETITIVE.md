@@ -4206,3 +4206,45 @@ LMS3 (ICML'25) is the closest published relative to get this right — it reject
 outcome — and its gain is reported as selection quality rather than as a pruning count. That is the
 right shape, and it is where this lane's next registration goes: **measure how many rules change any
 answer at all**, before deciding which to keep.
+
+## The 20-point gap is a baseline effect, and the selector's worth travels as a share (2026-11-11)
+
+This file has carried one open question since §1: the published pipelines sit 18–26 points above our
+57.63% dev cell, and every explanation for it varied the scaffold **and** the backbone **and** the judge
+at once. R68 put one variable on a second backbone — same host, same 350 questions, same folds, same
+judge, same temperature — and read the quantity that is comparable across baselines rather than points:
+
+| | our backbone (`deepseek-flash`) | second backbone (`glm-4.7-flashx`) |
+| --- | --- | --- |
+| `sample-5-first` — one deterministic draw | 50.86% | 28.00% |
+| `sample-5-exec` — execution-shape selector | 52.00% | **35.43%** |
+| `sample-5-oracle` — best of five, reads the key | 59.71% | 42.57% |
+| ceiling `oracle − first` | 8.86pp | **14.57pp** |
+| **share of ceiling captured** | **0.13 [−0.27, 0.40]** | **0.51 [0.33, 0.67]** |
+
+**Read as shares, the selector is worth four times more at a 28% baseline than at 51%.** That is the
+arithmetic behind CHESS's +17.6pp over DAIL-SQL+SC: it was measured at a 48.6% baseline, where the same
+machine would have had twice the failure population to work with. It is also why chasing that gap with a
+better selector on *our* backbone is chasing the wrong variable — at 57.63% the entire five-draw ceiling
+is 8.86pp, and this lane's selector finds 1.14pp of it.
+
+**The prediction that failed is the load-bearing one.** This file's §2 has argued that more failures means
+more of them are one draw away; the registered band was +30…+50pp of ceiling. Measured: **+14.57pp**,
+because five draws rescue **18.0%** of failures at 51% accuracy and **20.2%** at 28%. Breadth converts a
+*constant fraction* of failures; it does not compound as the model weakens. So the published gap is not
+a candidate-generation deficit that a weaker model would expose — it is a baseline effect, and the
+remaining levers on this lane are the two that widen the ceiling at a fixed baseline (temperature,
+decomposition) rather than any selector.
+
+**Ranking, unchanged and now with a mechanism.** AskData remains SOTA at 83.40 test / 78.49 dev; this lane
+sits at 57.63 dev, +4.11 over XiYan-SQL's 53.52 on the identical 1,534 questions, +2.48 over XiYan+M-Schema,
+and 20.86 points under AskData's dev cell. What changed is the *map of where those 20.86 points live*:
+five-draw breadth at this baseline is worth at most 8.86pp even with the answer key, selection finds an
+eighth of that, and the memory pack is **−0.11pp** (R79: pruning a fifth of it moved one question in
+1,900, +0.05pp [−0.79, +0.84]).
+
+**One result here does transfer to a product decision.** On the second backbone `exec` against a
+deterministic single draw is **+6.86pp [2.86, 11.14], p = 0.0022**, with `first` against `full` at
+−0.57pp — so at a 28% baseline, selection among five draws pays for its four extra calls and temperature
+pays for nothing. Any deployment of this SDK against a weaker or cheaper model should turn candidate
+generation on; against a strong one it is 1.14pp for five times the calls.
