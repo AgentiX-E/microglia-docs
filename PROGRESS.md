@@ -15150,3 +15150,66 @@ diff shows the two added fields rather than a reformat of the file that carries 
 The change surfaced as `TS2305: Module '"@agentix-e/microglia-eval"' has no exported member 'pricingFor'`
 — a typecheck failure in the barrel (`index.ts`) rather than a silent `undefined` at run time, which is the
 failure mode you want when a name has to be added in two places.
+
+### 173.56 — The card named one model, and the run that needs a second one would have been billed at the first one's rates
+
+The rate card held one `bands` pair and an `appliesTo` list naming `deepseek-flash`. That list was the
+right idea expressed as a claim the file could not keep: the first run on a stronger model would have been
+priced by the weaker model's row — **4.4× under on input, 3.3× under on output** — with `pricing.matches:
+false` beside it calling itself an approximation. A note does not turn a four-fold error into a price, and
+the artefact is the only place that error could have been caught.
+
+One card per **provider**, one price row per **model**: the peak predicate is the provider's (the same two
+windows double for every model it serves) and the numbers are the model's, which is how the provider
+publishes them. `prices` holds the rows, `defaultModel` names the fallback, `bands` is the default row **by
+reference** — asserted by identity in a test, because two objects holding the same six numbers is the
+arrangement in which one of them is eventually edited. `billOf`, `costOf` and `usageLine` take the model
+and price at its own row; an unpriced model still bills at the default row and `pricingFor` names it.
+
+The second reader had to move with it: `eval/drivers/tau2/run_split.py` read `card["bands"]` and now reads
+`card["prices"][card["defaultModel"]]`, with its own self-check comparing the loaded rates to the same
+row. That is the whole reason the card is data — two hardcoded copies is the arrangement in which one is
+wrong, and the driver's own comment says the first thing the shared card ever caught was a retired model
+id.
+
+### 173.57 — A wrong model id costs twenty minutes and a dollar, and the host will answer the question in ten seconds
+
+R82's experiment is the same scaffold on the host's stronger model, and it could not be dispatched. Three
+separate defects stood in the way, and each one is older than the experiment:
+
+1. **The vocabulary was closed.** `backbone` accepted `zhipu:<id>` and nothing else, so the one swap that
+   needs no new credential — same host, same key, the model beside the current one — had to go through the
+   repository variable `SOTA_MODEL`, which is exactly the repository-wide mutation R68 closed. A bare id is
+   now a model on the default host, and an unknown `provider:` prefix is refused rather than swallowed.
+2. **Nothing asked the host what it serves.** A wrong id fails as a `4xx` per prompt, `verdictOf` calls
+   that a refusal, eight of them trip the breaker, and the artefact reports that the endpoint stopped
+   answering — about a host that answered every time. `pnpm eval:backbone-probe` asks `/models` before the
+   first call and refuses a model the host does not list, printing the list it did serve.
+   **The verdict has three values and `unlistable` must not veto**: a host may serve chat completions and
+   no catalogue at all, and a check that cannot run knows nothing. That distinction is the design, not a
+   nicety — a gate that refuses on "I could not tell" breaks the first host whose catalogue lives
+   elsewhere.
+3. **The registration could not fix the model.** R82's claim is that one variable moved, and a claim of
+   that shape cannot be read from an artefact that does not know which model produced it. `backbone:` is
+   now a header field, the workflow defaults to it when the dispatch names none, and `backboneProblem`
+   refuses a dispatch that would call a different model — compared on **what the client sends**, so
+   `deepseek/deepseek-flash` and `zhipu:glm-4.7-flashx` are spellings rather than different models.
+
+`scripts/check-workflows.py` gained a sixth rule: a job that runs the lane must ask the host what it serves
+**before** the lane. Order is the rule and not presence — a probe that runs afterwards reports on money
+already spent — and the self-test has a case for each of the three states.
+
+### 173.58 — R82 registers the upward ladder, and R80's own correction is what points at it
+
+R80 measured one significant thing and then invited the wrong next step. The invitation — a decomposed
+candidate generator — was already refuted six iterations earlier: four generation procedures produced
+**1.557** distinct answers per question against 1.46 for five draws from one prompt, with `gen-plan` at
+−5.43pp (p = 0.004). What R80 leaves standing is narrower and harder: every reading this lane has about
+breadth belongs to `deepseek-flash`, on ≤ 1,534 questions of one split.
+
+`R82-backbone-upward.md` moves that one variable on the cell R67 and R68 already paid for — 350 questions,
+five folds, `sample-5-first` and `sample-5-assert` — with a ceiling prediction bounded by the ratio both
+earlier backbones demonstrated (five draws rescue ≈ 18–20% of the failures) and a refutation block whose
+four branches partition the space. The prediction that makes it worth its cost is the **share**: R68 showed
+a stronger baseline captures a smaller share of its own ceiling, so a reader that holds its share on a
+stronger model is a mechanism, and one that only held its points was reading the baseline.

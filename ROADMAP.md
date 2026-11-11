@@ -6285,11 +6285,15 @@ still covers 0.5 AUC at 4.4× R71's population while every shape signal now clea
 **Next, in order.**
 1. **R81** (`full-reconstructed`, `full-reconstructed-shuffled`) — dispatched with `not_before: 10:00Z`, so
    it starts inside the off-peak window instead of being remembered there.
-2. **The backbone ladder on this same cell** — not a fourth prompt shape. Iteration 107 already bought four
-   different generators (union ceiling +8.57pp, distinct answers 1.557 against 1.46 for five draws of one
-   prompt, and both generators lost: `gen-plan` −5.43pp, `gen-decompose` −3.14pp), and R68 gave the scaling
-   law that makes the ceiling a property of the model's reach. What has never been measured is a *stronger*
-   backbone on the dev cell that produces the leaderboard row.
+2. **R82, the backbone ladder — registered, and the dispatch was the hard part.** Not a fourth prompt
+   shape: iteration 107 already bought four different generators (union ceiling +8.57pp, distinct answers
+   1.557 against 1.46 for five draws of one prompt, and both generators lost: `gen-plan` −5.43pp,
+   `gen-decompose` −3.14pp), and R68 gave the scaling law that makes the ceiling a property of the model's
+   reach. What has never been measured is a *stronger* backbone on the dev cell that produces the
+   leaderboard row. It could not be dispatched: the `backbone` vocabulary was closed to `zhipu:`, nothing
+   asked the host what it serves, the rate card had one row and would have billed the stronger model at
+   4.4×-too-low input rates, and the registration could not fix the model its claim is about. All four are
+   closed (§173.56–173.58), and `R82-backbone-upward.md` names `deepseek-v4-pro` in its header.
 3. The store-local top-up (force-recall) design, still open from R78; then `retry-keyed` vs `retry-blank`.
 
 ### The band lever became a dispatch field
