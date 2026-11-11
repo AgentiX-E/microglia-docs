@@ -4377,6 +4377,13 @@ the thing to beat — the measurement standard is.
 | **MemPABench** (arXiv 2610.30485) | *benchmark*, not a system | 99 sessions, 14 preferences, 4 months, 5 preference changes | **Yes** — No Memory is a row | **Mem0, MemOS and plain RAG do not beat No Memory** | — | — |
 | **MemSyco-Bench** (arXiv 2607) | *benchmark* | recurring | retrieval trace is instrumented | **61–62%** of errors occur *after* the relevant memory was already retrieved (Mem0, A-Mem, LightMem) | — | — |
 
+**A correction that Appendix N forces on the first row.** The `57.5 → 67.5` above is the pair IBM's own
+write-up quotes, and the `57.5` is **another team's leaderboard row** on the base split — not a baseline they
+ran. Their own seed-paired A/B on retail test reports `80.83 → 84.17` mean accuracy from 31 rules, one seed at
+zero, `pass^3` up by one task, and their conclusion that the effect is "real but modest on one split". **The
+controlled claim in this domain is +3.33pp on 40 tasks; the +10pp is a cross-submission difference** and belongs
+in the same bucket as BIRD's 73–83% cells. Appendix N has the source.
+
 **Read the table as a ranking of evidence, not of systems.** Two entries claim a task-success lift with no
 control (ALTK-Evolve, Dynamic Cheatsheet), one claims a lift whose counter is self-reported (ACE), one
 publishes its own negative transfer (ExpeL), two claim efficiency rather than success (Mem0, MemGPT), and two
@@ -4426,3 +4433,110 @@ product claim is a supply item:
 field is not an accuracy at all: it is that every claim here has a control, a resolution and a delivery
 count, and that five experiments were voided on arithmetic before they spent anything. A domain whose own
 benchmarks contradict its own leaderboard needs that before it needs a better pipeline.
+
+## Appendix N — The SOTA holder's source, read: 292 bullets, selected by a count, injected twice a turn (2026-11-11)
+
+Appendix M ranked the field on evidence quality. This appendix does the thing that ranking implies and that
+had not been done: **read the leader's implementation.** `AgentToolkit/altk-evolve-experiments` publishes the
+whole of it — `benchmarks/tau2/guidelines.py`, the two playbook JSONs, the vendored `react_agent.py`, an
+`ARCHITECTURE.md`, a `RESULTS.md` with a seed-paired A/B, and the raw 40 MB result files. Four things follow,
+and the fourth changes what our next arm has to be.
+
+### N.1 The mechanism, in full
+
+| question | answer, from source |
+| --- | --- |
+| what is stored | `{"entries": [{"r": "<guideline text>", "n": <support count>, "e": "<ignored>"}, …]}` — one sentence and one integer per entry |
+| how it is selected | **by `n` alone**: `lossless` keeps `n ≥ 1`, `sup2` keeps `n ≥ 2`, `sup3` keeps `n ≥ 3` (`GUIDELINES_MIN_SUPPORT = {"lossless": 1, "sup2": 2, "sup3": 3}`) |
+| how it is rendered | a markdown section — `## Guidelines learned from past task attempts (follow these carefully):` + one `- {r}` bullet per selected entry |
+| where it goes | appended to the **system prompt** after the domain policy (`merge_special_instructions`: `base + "\n\n" + guidelines`) |
+| when it is paid | the system message is built once and used by **both** phases of the ReAct turn — THINK (`tools=[]`) and ACT — so the whole list is billed **twice per turn**, about 10.7 turns per task |
+| what is *not* there | no retrieval, no similarity, no scope, no per-request budget, no condition filter, no evidence at read time, no retirement |
+
+That last row is the one that matters for replication. Our store serves **1.42 items per request** through a
+1,200-character pack, filtered by a condition and a scope, drawn from a store of 20 items. Theirs appends **all
+292** to every prompt, twice. Those are not two configurations of one treatment; they are two treatments, and no
+number of ours can be compared with a number of theirs until an arm injects the whole admitted set as a prefix.
+
+### N.2 Their store's recurrence shape, measured from their published playbook
+
+The playbook is committed, so the distribution is a fact rather than a claim:
+
+| `n` | entries | share | kept by |
+| --- | --- | --- | --- |
+| 1 | **144** | 49.3% | `lossless` only |
+| 2 | **117** | 40.1% | `lossless`, `sup2` |
+| 3 | **31** | 10.6% | all three |
+| total | **292** | | `sup2` = 148, `sup3` = **31** |
+
+`n` saturates at 3 — no entry carries 4 — so the field is a threshold indicator rather than a true count, and
+`sup3` is exactly the 31 entries at the cap. Two readings a project like ours must take from this: **49.3% of
+the leader's claims recur at all, and 10.6% reach three.** Our R54 store produced **20 items from 32 learning
+rows**; whether anything in it recurs is the question R56's census answers, and it has never been asked.
+
+### N.3 Their own controlled A/B, which is not the leaderboard row
+
+`RESULTS.md` reports retail **test** (40 tasks, three seeds 42/43/44, paired by seed, concurrency 3) — the only
+cell in this domain we have found with a baseline row, a treatment row, and the same seeds:
+
+| config | rules | mean accuracy | pass^3 | tasks solved | paired Δ per seed | stdev |
+| --- | --- | --- | --- | --- | --- | --- |
+| baseline | 0 | 0.8083 | 0.675 (27/40) | 32.33 | — | 0.0382 |
+| **`sup3`** | **31** | **0.8417** | **0.700 (28/40)** | **33.67** | **+0.025 / +0.075 / 0.000** | **0.0144** |
+| `sup2` | 148 | 0.8083 | 0.675 | 32.33 | +0.050 / 0.000 / −0.050 | 0.0382 |
+| `lossless` | 292 | 0.7917 | 0.700 | 31.67 | +0.025 / +0.025 / −0.100 | 0.0382 |
+
+**The controlled SOTA in this domain is +3.33pp of mean task accuracy on 40 tasks, which is 1.33 tasks.** One of
+the three seeds shows exactly zero. `pass^3` moves by **one task**. Their own conclusions say it plainly: the
+effect is *"real but modest on one split"*, and *"the mean-accuracy gains come mostly from tasks flipping
+pass/fail between seeds, not from making shaky tasks reliably solved"*. Turn budget is unchanged (10.48–10.78),
+so the gain is not bought with effort.
+
+**Which means the number this project has been quoting at itself was the wrong one.** Appendix M's row said
++10.0pp Pass^4, from the leaderboard: `67.54%` on the **base split, 114 tasks × 4 trials**, `gpt-4.1` agent with
+a `gpt-5.5` simulator, modified prompts, **learned from a train split the base split overlaps**, self-declared
+`Unverified`, and **no baseline row in the submission at all**. The 57.5% it is differenced against is another
+team's cell. That is a cross-submission comparison of two systems with different prompts and a different split —
+the exact object S3 was frozen for. The controlled claim is 3.33 points, not 10, and it is 1.33 tasks.
+
+### N.4 Their dose curve is our dose curve, measured independently
+
+| rules injected | their Δ mean accuracy | our Δ per rule |
+| --- | --- | --- |
+| 31 | **+3.33pp** | — |
+| 148 | **0.00pp** | — |
+| 292 | **−1.67pp** | — |
+
+Their conclusion: *"Guideline count is inversely related to benefit — monotonic… the supersets contain the same
+31 winning rules plus more low-support ones; each addition dilutes/contradicts the strong rules back to (sup2)
+and below (lossless) baseline."*
+
+Our §W8, from a different lane, a different model and a different selection mechanism: **accuracy falls about
+1.7pp per rule injected**, with content separated from volume by a size-matched control (`full-grounded` vs
+`full-sampled`, +0.57 vs +0.86pp, p = 1.0). Two systems, two corpora, two methods, the same sign and the same
+magnitude per rule. **The quantity of guidance is the defect, and the field's leader knows it.** What it does
+not have is the selection rule that fixes it: `n ≥ 3` is a filter on how often a sentence was derived, not on
+whether it helped — and measured the strict way, a per-item value counter has split-half reliability **−0.31**
+(Appendix F). Their 31 winning rules are winning *as a set of 31*, and nothing in their published work says
+which of the 31 would survive alone.
+
+That is the opening, and it is narrower than "better retrieval" and much narrower than "better pipeline":
+**a selection rule that is a function of measured effect rather than of derivation count, applied to a store
+dense enough to have effects to measure.**
+
+### N.5 What this changes about the next arm
+
+1. **`sup3` cannot be replicated by an admission threshold alone.** Their treatment is *admit at `n ≥ 3`* **and
+   inject everything admitted, twice a turn, as a prefix**. R55.1 as registered changes the pack's contents. A
+   faithful replication needs the second half, and the two halves are separable: `sup3-retrieved` against
+   `sup3-prefix` is one arm and one contrast, and it is the contrast that decides whether their gain came from
+   the rules or from the fact that they were unavoidable.
+2. **The store's shape is the power calculation.** At 49.3% recurrence and a 10.6% core they get 31 rules. Our
+   0.62 items per learning row over 32 learned tasks cannot produce a core of 31 at any threshold: the
+   *learning population* has to grow before the admission rule has anything to admit.
+3. **Reliability is the weakest part of their claim and the strongest part of ours.** `pass^3` 0.675 → 0.700 on
+   40 tasks is one task. A product that promises a flywheel promises *compounding*, which is a `pass^k` claim,
+   and the field's leader moved it by one task. Our protocol reports `pass^4` with its interval and its
+   resolution; theirs reports a point estimate on 40 tasks and three seeds with a stdev of 0.014–0.038. On the
+   axis the product actually sells, **nobody in this domain has published a resolvable gain** — which is a
+   statement about the field, and a target worth more than 78% on a text-to-SQL leaderboard.
