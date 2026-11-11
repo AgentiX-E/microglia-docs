@@ -6091,20 +6091,30 @@ and the dose randomised on train.
 Four dispatches across three splits and two backbones, and the quantity every arm is supposed to move has
 never separated from zero:
 
-| artefact | split | n | effect | 95% |
-| --- | --- | --- | --- | --- |
-| `poc-sota-bird.json` (Oct 26, `deepseek-chat`) | Mini-Dev | 350 | −2.86pp | −6.00 … +0.29 |
-| `R63-recall-order` | Mini-Dev | 350 | +0.57pp | −2.86 … +4.00 |
-| `R77-inert-share` | train | 2,000 | +0.25pp | −0.90 … +1.40 |
+| artefact | split | n | learning | effect | 95% |
+| --- | --- | --- | --- | --- | --- |
+| `poc-sota-bird-dev.json` | **dev** | **1,534** | 64/fold | **−1.37pp** | **−2.74 … 0.00** |
+| `poc-sota-bird.json` | Mini-Dev | 350 | 280/fold | −2.86pp | −6.00 … +0.29 |
+| `R63-recall-order` | Mini-Dev | 350 | 280/fold | +0.57pp | −2.86 … +4.00 |
+| `R77-inert-share` | train | 2,000 | 700/fold | +0.25pp | −0.90 … +1.40 |
 
-R77 is the informative row: **2,000 paired questions bound the effect at ±1.4pp**, which is tighter than
-any of the improvements the arm ladder has tried to measure, and R77's own `full`-against-`loo` pair
-(+0.90pp, p = 0.089) says the *last* rule in a pack does more than the pack does.
+**The dev row changes what the table means**: 1,534 questions, upper bound exactly zero, one-sided
+p = 0.031. The two negative rows are also the two smallest learning samples, which is the confound to
+state first — a store learned from 64 questions is not the store learned from 700. At 700/fold the effect
+is +0.25pp with a ±1.15 interval: **inside ±1.4pp**, tighter than any improvement the arm ladder has tried
+to measure.
+
+**And the cell this project publishes is a `none` number.** `poc-sota-bird-dev.json` scores **57.63%
+without memory** and 56.26% with it. The +4.11pp against XiYan's 53.52 is beaten by the arm that injects
+nothing, and every arm from R10 to R77 varied the other one.
 
 **So the next question is not "which pack" but "does the pack earn its 1,083 characters"**, and the first
-experiment that can answer it is `full` against `full-pruned` on the same questions — which needs R78 to
-name the 105 silent rules first. The honest prior from the table above is that pruning will not help
-accuracy; the case for it is cost, and cost is the thing this project can reliably improve.
+experiment that can answer it is `full` against `full-pruned` on the same questions — R79, registered, to
+be dispatched on R78's slice so the learning cache pays for it. The honest prior is that pruning will not
+move accuracy much; the case for it is cost.
+
+**R68 is now the experiment that can move the published cell**, because it improves a `none` number
+(self-consistency at five draws) rather than the component inside the noise.
 
 **Unchanged behind it.** R68's fourth attempt and its `(exec − first)/(oracle − first)` share; then
 `retry-keyed` against `retry-blank`, the `values` block in the first prompt, and the dose randomised on

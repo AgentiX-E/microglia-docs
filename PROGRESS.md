@@ -14577,17 +14577,29 @@ numbers a reader has to reconcile, and the copied one would be the one nobody re
 Four dispatches, three splits, two backbones, and the one quantity every improvement is supposed to move
 has never been separated from zero:
 
-| artefact | split | n | memory effect | 95% | p |
-| --- | --- | --- | --- | --- | --- |
-| `poc-sota-bird.json` (2026-10-26, `deepseek-chat`) | Mini-Dev | 350 | **−2.86pp** | −6.00 … +0.29 | 0.099 |
-| `R63-recall-order` (`deepseek-flash`) | Mini-Dev | 350 | **+0.57pp** | −2.86 … +4.00 | — |
-| `R77-inert-share` (`deepseek-flash`) | train, offset 0 | 2,000 | **+0.25pp** | −0.90 … +1.40 | 0.731 |
-| `R68` (in flight, `zhipu:glm-4.7-flashx`) | Mini-Dev | 350 | — | — | — |
+| artefact | split | n | learning | memory effect | 95% | p |
+| --- | --- | --- | --- | --- | --- | --- |
+| `poc-sota-bird-dev.json` (2026-10-30) | **dev** | **1,534** | 64/fold | **−1.37pp** | **−2.74 … 0.00** | **0.062** |
+| `poc-sota-bird.json` (2026-10-26) | Mini-Dev | 350 | 280/fold | **−2.86pp** | −6.00 … +0.29 | 0.099 |
+| `R63-recall-order` | Mini-Dev | 350 | 280/fold | **+0.57pp** | −2.86 … +4.00 | — |
+| `R77-inert-share` | train | 2,000 | 700/fold | **+0.25pp** | −0.90 … +1.40 | 0.731 |
 
-The sign moves between dispatches and the interval covers zero every time. **R77 is the informative one**:
-2,000 paired questions put the effect inside **±1.4pp**, which is the tightest statement this project can
-make about its own memory — tighter than any of the improvements the arm ladder has tried to
-measure.
+**The dev row is the one that matters**, and it changes what the table means. Its upper bound is
+**exactly zero** at p = 0.062 — a one-sided test of "memory does not help" rejects at 0.031 — and it is
+measured on 1,534 questions, four times any other row. The two negative rows are also the two with the
+smallest learning samples (64 and 280 questions per fold), which is the confound to state before the
+finding: a store learned from 64 questions produces rules a store learned from 700 does not, and the
+−1.37pp may be the store's size rather than the mechanism.
+
+**So the honest form is conditional and still unfavourable.** At the largest learning sample this project
+has measured (700/fold), the effect is +0.25pp with an interval of ±1.15 — **inside ±1.4pp**, tighter than
+any improvement the arm ladder has tried to measure. At the smallest, it is negative and its interval's
+upper bound touches zero. Nothing in the four rows says the memory is worth its 1,083 characters.
+
+**And the competitive number is the `none` arm.** `poc-sota-bird-dev.json` scores **57.63% without
+memory** and 56.26% with it; XiYan's published 53.52 is beaten by the arm that injects nothing. The
++4.11pp this project quotes against the published baseline is a **no-memory** number, and every arm in
+the ladder moves the arm that is behind it.
 
 **What that reframes.** Every round of arm work has asked *which* formulation of the pack is better,
 at a sample size where a 1pp difference is invisible. On the two splits measured, the whole pack moves the
@@ -14603,7 +14615,13 @@ adding a rule to a one-rule pack are not the same intervention, and the arithmet
 less than the second. That is a dose-response question this lane has never asked at the pack's actual size,
 and it is the mechanism the "memory hurts" reading needs before it can be called a mechanism at all.
 
-**Where that leaves the queue.** R78 names the 105 silent rules so a pruning can have identities; the
-experiment it enables is a `full`-against-`full-pruned` pair on the same questions, which is the first
-test in this project that would ask whether *removing* memory helps. On the numbers above, the honest
-prior is that it does not — and that the effect to chase is not the pack's content but its size.
+**Where that leaves the queue.** R78 names the 105 silent rules so a pruning can have identities, and
+R79 — registered, to be dispatched on R78's slice so the learning cache pays for it — is the
+`full`-against-`full-pruned` pair that asks whether *removing* memory helps. The honest prior from the
+table is that it does not move accuracy much, and that the case for pruning is cost.
+
+**The larger conclusion is about where the effort should go.** The published cell is a `none` number, and
+R68 is the only experiment in flight that improves a `none` number (self-consistency width at five
+draws). Every arm from R10 to R77 varied the component whose total contribution is inside the noise of
+the measurement. That is not a reason to stop measuring it; it is a reason to stop expecting the SOTA
+number to move from it.
