@@ -15213,3 +15213,28 @@ earlier backbones demonstrated (five draws rescue ≈ 18–20% of the failures) 
 four branches partition the space. The prediction that makes it worth its cost is the **share**: R68 showed
 a stronger baseline captures a smaller share of its own ceiling, so a reader that holds its share on a
 stronger model is a mechanism, and one that only held its points was reading the baseline.
+
+### 173.59 — Two of the three remaining branch gaps were dead code, and the third was a decision nobody had written down
+
+Branch coverage stood at 99.88 with two files under it. Three of the gaps could not be taken by any
+input: `map.set(key, [...(map.get(key) ?? []), row])` carries a `[]` that only the first row could need and
+never does, and `order.filter(has).map(get ?? [])` asks the map the same question twice, so the type system
+cannot see that the filter already answered it. Both now append into the array the map holds, and the size
+table iterates its own entries — dead fallbacks removed rather than annotated away, since an unreachable
+line is either a hole a reader must re-derive or a line the coverage report has to be told to ignore.
+
+The reachable gap was the interesting one. A rule that was withheld but **never injected anywhere in the
+split** has no ledger verdict; `looGroups` counts it `neutral` and `looCrossFitted` counts it `unseen` and
+excludes it. That difference is deliberate — the pooled table's label is what R77 published, and
+relabelling its rows now would change numbers already in the record — but nothing said so, and the case had
+never been fed to either function. It is a case now.
+
+`tercileVerdicts` gained the two shapes its fixtures had avoided: a two-row population, where `floor(2/3)`
+is zero so two of three segments are empty (an empty segment printed as `net 0` is indistinguishable from
+one that was measured and did not move), and a call on its own defaults, which is the path the lane takes
+on 1,534 questions.
+
+`overlap.ts` is at 100/100/100/100, `loo.ts` at 94.52 branch from 90.41, and overall branch coverage is
+**99.96** on 4,250 tests. The three lines left in `loo.ts` are the guarded `draws[...] ?? 0` pair and the
+fold map's first-row fallback: provably unreachable, and only reachable through a rewrite that reads worse
+than the fallback does.
