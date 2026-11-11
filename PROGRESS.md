@@ -15126,3 +15126,27 @@ artefact is what its own docblock promises.
 
 **The three occurrences are now a class**: a reading that answers a plausible question about the wrong
 object is worse than a crash, and the guard has to be structural because the defect is a *missing call*.
+
+### 173.55 — A bill is a number with an assumption, and the assumption was the missing half
+
+R68 spent real money on `glm-4.7-flashx`. Its artefact records `usage.model` correctly, and the `usd`
+beside it was computed from DeepSeek's rate card, and **nothing in the file said which card the number came
+from**. Anyone comparing the two backbones' costs was therefore comparing a price to an assumption — and
+the file would have been read as evidence about pricing while being evidence about a guess.
+
+`RATE_CARD` now carries `name` and `appliesTo`, and `pricingFor(model)` returns `{card, pricedAs,
+matches}` into the artefact's `usage.pricing`. `matches: false` is deliberately **not** an error: a second
+backbone is a legitimate experiment and refusing to price it would make the lane unusable for the one
+experiment that needs it. The requirement is only that the bill *say* it is an approximation and name the
+model it approximated with. That is the whole difference between a number with an assumption attached and
+a number presented as a fact.
+
+`appliesTo` lives in `eval/manifests/model-rates.json` and is read from the constant rather than kept as a
+second hand-maintained list, because a second list is exactly the arrangement that produced the original
+defect; one test asserts the constant and the manifest agree, another asserts `pricingFor` derives its
+answer from the card instead of restating it. The manifest keeps its original compact formatting, so the
+diff shows the two added fields rather than a reformat of the file that carries them.
+
+The change surfaced as `TS2305: Module '"@agentix-e/microglia-eval"' has no exported member 'pricingFor'`
+— a typecheck failure in the barrel (`index.ts`) rather than a silent `undefined` at run time, which is the
+failure mode you want when a name has to be added in two places.
