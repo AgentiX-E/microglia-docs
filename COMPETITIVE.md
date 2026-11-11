@@ -4248,3 +4248,37 @@ deterministic single draw is **+6.86pp [2.86, 11.14], p = 0.0022**, with `first`
 −0.57pp — so at a 28% baseline, selection among five draws pays for its four extra calls and temperature
 pays for nothing. Any deployment of this SDK against a weaker or cheaper model should turn candidate
 generation on; against a strong one it is 1.14pp for five times the calls.
+
+## The selection lever is closed at our baseline, and that is now four experiments rather than one (2026-11-11)
+
+This file's §"What a 7B model with somebody else's scaffold is actually saying" left one live explanation
+for CHESS's 17.6 points over DAIL-SQL+SC: candidate generation plus **content-aware** selection. Three
+further readings now say what that mechanism is worth here.
+
+| lever | experiment | reading | verdict |
+| --- | --- | --- | --- |
+| width (k = 5 → 10) | R69 | ceiling +2.00pp for twice the calls, `sample-10-exec` **below** the first draw | saturated |
+| heat (T = 0.7 → 1.0) | R70 | ceiling **+1.14pp**, `first` −1.42pp, `exec` **−4.86pp against `full`, p = 0.016** | closed |
+| voting (majority over five) | R70 | **+0.29pp** over the first draw, −2.86pp against the pack | closed |
+| cheap content signals | R71 | `column-mention` AUC **0.514 [0.464, 0.567]**, `literal-match` **0.506 [0.500, 0.520]**, top-pick −1.3pp | not free |
+
+**The content result is the one that names CHESS's price.** A correct query names the thing the question
+asks about — close to a tautology — and that signal cannot rank five draws of one prompt, because two
+thirds of these questions have *one* distinct result across the five and the candidates agree on their
+columns. **Content-aware selection needs candidates that differ in content.** CHESS gets that by writing
+assertions per question with a model and executing them per candidate: five calls per question, which is
+the one thing in their pipeline this project has not paid for and the next registration does.
+
+**Why it might still be worth paying, and why it might not.** The 8.86pp five-draw ceiling on this lane's
+own backbone is what a perfect reader could recover at five extra calls per question — less than the gap
+to XiYan-SQL's full pipeline (18.06) and further still from AskData (20.86 dev). A reader that recovers
+half of it is worth **+4.4pp**, which would move 57.63 to 62.0 and past XiYan+M-Schema but not near the
+70s. So the honest frame is that **reading is worth single-digit points and the leaderboard's gap is not
+a reading problem** — the two numbers have never been separated in print, and they are now separated here.
+
+**The baseline dependence is the finding with the widest reach.** Across four pools: `empty` scores AUC
+0.535 where 49% of questions are wrong, **0.706 where 72% are**, and **0.633 for `column-mention`** on the
+same weak pool where it is 0.514 on ours. Every cheap signal in this file is worth roughly nothing at
+57.63% and a great deal at 28%. A buyer comparing this SDK to a proprietary pipeline should therefore
+expect the *selection* half of the product to earn its calls only below ~40% EX, and the *memory* half to
+earn nothing anywhere it has been measured (−0.11pp, R79).

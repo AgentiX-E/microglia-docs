@@ -6196,3 +6196,37 @@ at 03:19 with 95% of it peak — 96% of the calls for 49% of the money, with the
 
 **Next, in order.** R70 (temperature, dispatched, ~$0.5) — the only unspent ceiling lever; then
 `retry-keyed` against `retry-blank`; then the store-local top-up design (force-recall, 692 calls).
+
+### R70 and R71 came back: the temperature line closed, and reading costs money
+
+**R70, T = 1.0, 2,966 calls, $0.2385, 100% off-peak, 77.3% cache.** `first` 50.29%, `sample-5` (voting)
+50.57%, `exec` **48.57% (−4.86pp against `full`, p = 0.016)**, `oracle` 58.86%. Against R69's k = 5 arms:
+**Δceiling +1.14pp, Δfirst −1.42pp** — the registered branch is `Otherwise` (it needed a 2pp baseline
+drop to be named `Heat costs` and got 1.42), and the substance closes the line anyway: the deployable arm
+lost 2pp against R69's, and voting paid +0.29pp where it was predicted to pay +2.
+
+**Heat buys diversity, not coverage**: distinct results per question 1.45 → 1.60 and thirty more questions
+disaggregated, while the pool's coverage fell 209 → 206. A hotter sample moves wrong answers around.
+
+**R71, zero calls, read from R70's pool**: `column-mention` AUC **0.514 [0.464, 0.567]**, `literal-match`
+**0.506 [0.500, 0.520]**, top-pick −1.3pp against the first draw. Branch **`Content is not free`**: the gap
+to the published pipelines is **the price of reading**, and CHESS's assertions are five model calls per
+question.
+
+**And the cross-experiment reading**: the same `empty` feature is 0.535 at a 49% failure population and
+**0.706 at 72%**, with every content and shape signal at chance on the hot pool. Signal strength tracks the
+baseline, not the temperature — R68's branch measured at the level of one candidate.
+
+**Next, in order.** (1) **R80 — the price of reading**: one call per candidate, an assertions-style
+verifier written from the question and applied to what each draw returns, priced against the 8.86pp
+ceiling this lane's own backbone actually has. It is the last selection lever with a measured reason, and
+at five calls per question it is the most expensive arm this project has considered. (2) The store-local
+top-up (force-recall) design, still open from R78. (3) `retry-keyed` against `retry-blank`.
+
+### The local gate dirties the tree, and the noise rode in an experiment's commit
+
+`pnpm check` rewrites six committed artefacts — `ranAt` timestamps and wall-clock p50/p95 measured on
+whatever machine ran it. The R70/R71 commit carried **279 lines of a sandbox's latency** beside two
+experiment outcomes; reverted, and the split is now a roadmap item: the deterministic claim stays
+committed, the machine-local measurement goes to an ignored path. Nothing in CI compares those files, so
+nothing went red — which is precisely why it was noticed by reading the diff rather than by a gate.

@@ -14847,3 +14847,91 @@ magnitude wrong.
 None of these is R71's reading. R71's population is R70's five draws at T = 1.0, and it stays unread
 until R70 returns — the numbers above are what the instrument says about a different pool, recorded so
 that a reader can tell an instrument check from a registered result.
+
+### 173.45 — Heat moved the draws around and left the ceiling where it was
+
+R70 ran the same 350 questions, the same five draws and the same arms as R67 with one number changed:
+**T = 1.0**. 2,966 calls, **$0.2385**, 100% off-peak, 77.3% cache hit rate, no timeout and no retry.
+
+| arm | accuracy | against `full` |
+| --- | --- | --- |
+| `none` | 52.29% | — |
+| `full` | 53.43% | — |
+| `sample-5-first` | 50.29% | −3.14pp [−6.29, 0.00] |
+| `sample-5` — majority vote | 50.57% | −2.86pp [−6.00, 0.29] |
+| `sample-5-exec` | **48.57%** | **−4.86pp [−8.57, −1.14], p = 0.016** |
+| `sample-5-oracle` | 58.86% | +5.43pp [2.29, 8.86] |
+
+**Branch: `Otherwise`.** The registered axis was `(Δceiling, Δfirst)` against R69's same-dispatch k = 5
+arms: Δceiling **+1.14pp** (8.57 against 7.43), Δfirst **−1.42pp** (50.29 against 51.71). `Heat pays` and
+`Heat at a price` both need +5pp of ceiling; `Heat costs` needs the baseline down at least 2pp and it came
+in at 1.42, **missing its own bar by 0.58pp**. So no line is adopted and R69's branch stands — but the
+substance is not in doubt: the deployable arm is −4.86pp against the pack at p = 0.016 and −2.00pp against
+R69's `sample-5-exec`. **The temperature line is closed.**
+
+**Voting died with it.** R70 was written to separate "the draws are too alike to vote" from "voting does
+not work here", and the prediction was that heat would make voting pay +2pp. It paid **+0.29pp**. The
+draws were never too alike: majority vote does not work on this task at either temperature, and −2.86pp
+against the pack is the rest of the answer.
+
+**What the pool did, measured rather than described**: distinct results per question 1.45 → **1.60**, and
+the histogram went 231/85/30/3/1 → **201/100/39/9/1** — thirty more questions disaggregated, exactly as
+heat is supposed to do. The number of questions whose pool *contains* the right answer went **209 → 206**,
+and the first draw's 178 → 176. **Heat buys diversity, not coverage.** A hotter sample moves wrong answers
+around; it does not find the right one a cooler sample missed. That is the last cheap ceiling lever: width
+saturates (R69), heat does nothing (here), and what is left is different prompts or a second model.
+
+**The cheapest dispatch yet, and it was cheaper for reasons that changed no science**: 2,966 calls against
+R67's 2,930 for **$0.2385 against $0.4708** — half the money from the off-peak band and a 77.3% cache hit
+rate.
+
+### 173.46 — Content is not free, and the gap is the price of reading
+
+R71's reading, computed from R70's pool with `pnpm eval:pool --bird` for **zero calls**: 1,750 candidates,
+**all 1,750 carrying their query and columns**, 150 questions with at least two distinct results.
+
+| signal | AUC, 95% | top-pick on 150 | against the first draw's 30.0% |
+| --- | --- | --- | --- |
+| `column-mention` (content) | **0.514 [0.464, 0.567]** | 28.7% | **−1.3pp** |
+| `literal-match` (content) | **0.506 [0.500, 0.520]** | 30.7% | +0.7pp |
+| `content-mean` | 0.520 [0.468, 0.574] | 29.3% | −0.7pp |
+| `column-shape` (shape) | 0.565 [0.532, 0.606] | 32.7% | +2.7pp |
+| `empty` (shape) | 0.553 [0.523, 0.590] | 31.3% | +1.3pp |
+
+**Branch: `Content is not free`** — both content intervals straddle 0.5, and the branch's sentence is the
+result: the published gap is **the price of reading**, not a cheap signal nobody computed. CHESS's
+assertions are written by a model per question and executed per candidate: five calls per question, and
+that is now the only selection lever in this project with a measured reason rather than an intuition.
+
+**The prediction was "a correct query names the thing the question asks about — close to a tautology —
+and it should show." It does not show, and the reason is structural.** Two thirds of these questions have
+one distinct result across five draws: the candidates agree on their columns, and a signal computed from
+a name every candidate shares cannot rank them. **Content-aware selection needs candidates that differ in
+content; five draws of one prompt differ in shape.**
+
+The fourth prediction is recorded as **not scoreable** rather than held: it was written as "the gain over
+all 350 should be smaller than the gain over the eligible 138", which presumes a positive gain, and the
+measured gain is negative.
+
+### 173.47 — Signal strength tracks the failure population, not the temperature
+
+Three pools, the same three questions asked of each:
+
+| pool | model | T | eligible | `first` | `oracle` | ceiling | `empty` AUC | `column-mention` AUC |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| R67 | `deepseek-flash` | 0.7 | 120 | 50.86% | 59.71% | 8.86pp | 0.535 | — (no text recorded) |
+| R70 | `deepseek-flash` | 1.0 | 150 | 50.29% | 58.86% | 8.57pp | 0.553 | 0.514 |
+| R68 | `glm-4.7-flashx` | 0.7 | 263 | 28.00% | 42.57% | 14.57pp | **0.706** | **0.633** |
+
+**The same feature is worth 0.535 where 49% of questions are wrong and 0.706 where 72% are**, and every
+signal on the hot pool sits within 0.02 of chance while the same signals at the weak backbone clear it.
+Nothing about the signals changed between the rows. R67 priced seven shape signals with every interval
+straddling 0.5 and R69 replicated that at k = 10; on R68's pool `empty` reaches 0.706.
+
+This is R68's `Baseline-bound` branch measured at the level of a single candidate, and it closes the
+selection line as a *function of the baseline* rather than as a verdict on selectors: **at 51% accuracy
+there is a fifth of the failures to be found, the draws agree on the questions where the choice matters,
+and the cheap signals are at chance.** The two ways forward it leaves are both expensive — a reader that
+costs five calls per question (R71's own branch), or a baseline low enough for ranking to be possible,
+which is a product statement about which models this SDK should be pointed at, not an experiment about
+BIRD.
