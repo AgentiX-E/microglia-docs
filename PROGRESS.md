@@ -14438,3 +14438,58 @@ So the honest statement about R77's pack is **"about 75 rules are dead weight, a
 not been drawn enough to tell"**, and the experiment that separates them costs **346 loo draws** —
 roughly a sixth of R77's evaluation bill. That is the next registration rather than a pruning.
 
+### 173.30 — The step timeout and the lane's deadline were the same claim, and nothing compared them
+
+R68's third attempt (`42904695578`) spent **2,961 calls over four folds and a fifth evaluation** and then
+died at
+
+```
+##[error]The action 'Run the benchmark' has timed out after 200 minutes.
+No files were found with the provided path: eval/results/poc-sota-bird*.partial.json
+```
+
+The dispatch was sent with `deadline_min: 300`; the step carried a literal `timeout-minutes: 200`,
+chosen against the *default* deadline of 130. The lane stops itself before the runner does so that the
+folds it paid for are published as a partial artefact — a dispatch that raises the deadline without
+raising the timeout converts that graceful stop into a kill, and the kill discards everything.
+
+**Structural, not remembered:**
+
+| layer | before | now |
+| --- | --- | --- |
+| the step | literal 200 | `fromJSON(steps.deadline.outputs.timeout)` — the guard computes it |
+| a dispatch | accepted any deadline | `Require a deadline the job can honour` refuses one that cannot fit 340 minutes, **before the first call** |
+| the checker | four rules | five: a step that reads `SOTA_DEADLINE_MIN` may not carry a literal timeout, with a self-test reproducing this case |
+
+The expression had to move into a shell step because GitHub's parser refuses arithmetic inside
+`timeout-minutes` (`Unexpected symbol: '+'`, HTTP 422, the workflow stops parsing entirely) — a fix that
+itself cost one failed dispatch to find.
+
+**And the first correction was wrong.** The instinct was to halve the population to fit the clock. The
+run's own log says a fold is ~530 calls and the whole experiment was ~3,420 calls in ~220 minutes: it was
+**twenty minutes** from finishing. Halving would have paid for a thirty-minute overrun with 1.4× the
+interval on the share, so the amendment withdraws it and re-dispatches at the registered 350 questions
+with `max_calls` 3,700 rather than 6,300 — the cap was a forecast from a plan, and the measurement now
+exists.
+
+### 173.31 — A quarter of the pack is a sixth, and the top-up that would settle it cannot be flown
+
+`silenceTargets` prices R77's tail as a purchase order: **105 rules, 346 draws** short of five, written
+to `eval/manifests/loo/R77-silent-tail.json` and read by the lane from the registration's `looTargets`
+header. `targetedLooIndex` balances those draws — least-drawn target in the pack, hash breaking ties —
+and is mutation-checked both ways.
+
+**Then the plan refuses its own dispatch.** A planned draw lands only when the question's pack contains
+one of the plan's rules, and R77 measures that at **18.4%** (mean pack 1.83 rules). 346 draws therefore
+need **1,875 questions and 5,625 calls — six hours**, past the job limit:
+
+| design | pairs | calls | needs |
+| --- | --- | --- | --- |
+| targeted `loo` over a larger population | 346 | **5,625** | nothing new |
+| force-recall `plant-r` against the pack it was added to | 346 | **692** | a new arm and its gates |
+
+The reason is the finding: **the tail is under-drawn because the retriever rarely offers it**, and a rule
+that is never recalled cannot be measured by withholding it from a pack it is not in. R78 is registered
+undispatched with both designs costed; nothing is pruned on the strength of 113 silences, 105 of which
+have not been drawn five times.
+
