@@ -15238,3 +15238,54 @@ on 1,534 questions.
 **99.96** on 4,250 tests. The three lines left in `loo.ts` are the guarded `draws[...] ?? 0` pair and the
 fold map's first-row fallback: provably unreachable, and only reachable through a rewrite that reads worse
 than the fallback does.
+
+### 173.60 — Six 2026 papers name the mechanism, and it is never "we retrieved the wrong thing"
+
+The question this project has carried since R25 is why a pack of rules distilled from its own corrections
+does not reliably help. The literature from the last four months answers it in a way that reframes the
+question: **the retrieved memory is correct, relevant, and still harmful.** Six independent results:
+
+| Source | Finding |
+| --- | --- |
+| MemTrapBench, arXiv:2608.20202 | Two model families × five memory frameworks: **every** strategy underperformed the no-memory control, the strongest by more than 10%. Names *Reasoning Fixation* and *Belief Distortion*. Recall-style metrics (LoCoMo) cannot see it, because the retrieval was right. |
+| SEMV, arXiv:2609.27175 | Memory ablation on COSMOS: no memory 86.06% → episodic 87.29% → unverified updates 87.59% with **46.4% positive / 5.7% negative transfer** → verification-gated 91.88% with **0.2% negative**. Gating cut negative transfer 28× and cost 7% of the positive. |
+| MemTrim, arXiv:2610.07311 | Harm concentrates at **intermediate** query-memory overlap: memory helps when experience transfers and misleads when only part of the evidence does. Deleting or compressing entries removes the harm *and* the benefit. |
+| FactConsolidation | Raising the evidence budget from 64 to 512 tokens dropped accuracy 45% → 32%, with the newest claim present in every retrieved set. A stale *competing* claim is more toxic than irrelevant noise: 100% → 44.6% when one neutral statement is swapped for an outdated one. |
+| ALTK-Evolve | One guideline-extraction mechanism spanned **+16.1pp to 0.0pp across eight models**. The gain is decided by the model's headroom, not by the memory design. |
+| Agent Memory Leaderboard | 69 submissions, best 58.02/100 on its own designed benchmark. |
+
+Three consequences for this record, and only the first is comfortable:
+
+1. **R81 is a faithful replication of Anti-Persistence (arXiv:2610.27406)** — keep raw trajectories,
+   rebuild guidance per task, throw it away — which is why it is the right next measurement and not a
+   curiosity: of the designs that paper tested, that one had the highest held-out success *and* the
+   lowest average call cost.
+2. **"Store less" is the wrong axis, and the ablation says so.** SEMV's gate keeps 93% of the positive
+   transfer while removing 96% of the negative; MemTrim shows that simply removing entries loses both.
+   The axis is **what is admitted**, not how much.
+3. **This project already owns the evidence the gate needs and does not use it.** Every pack is built
+   from folds other than the one it is scored on, so a rule's *independent support count* is already
+   computed by code that exists (`looCrossFitted`'s per-fold ledger). Injecting a rule that only one
+   fold ever corroborated is exactly the "summary hardened into a permanent rule" case both papers name,
+   and the count that would refuse it is already in hand.
+
+What this record has never measured is the middle case: not "persist everything" (the current store) and
+not "persist nothing" (R81), but **persist what at least k independent folds corroborated**. That is a
+two-arm ablation over an existing accumulator, with the harm rate already countable because every arm
+records `lost` per question.
+
+### 173.61 — Every file is at 100/100/100/100, and the last five lines were not defensive code
+
+`loo.ts` was the only file under 100 on branch. Three gaps were fallbacks no input can reach —
+`draws[half] ?? 0` guards an index derived from the length — and they are gone, replaced by one pass over
+the sorted draws. The append shape (`map.set(key, [...(map.get(key) ?? []), value])`) appeared twice and
+is now one generic `pushInto`.
+
+The fourth gap was a real defect. `row.fold` arrives from an artefact, and `NaN % 5` is `NaN`, which is a
+**legal map key no other-fold filter can ever equal**: a row with a non-integer fold sat alone in a fold
+of its own *and* contributed to every other fold's ledger, inflating a class reading in the direction this
+module exists to prevent. The normalisation is now `foldOf`, with the damaged-record case as a test rather
+than a comment.
+
+4,251 tests, and all four dimensions read 100. The 99.88 branch figure that stood for three iterations was
+five lines of dead code wearing the shape of defensive programming.
