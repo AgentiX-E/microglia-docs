@@ -15928,3 +15928,48 @@ passing.
 checker green on the same 25-input ceiling. **R56 is dispatched** (`43115503600`): τ² retail same-domain, 57
 tasks × 4 trials × 2 arms, `distil correction/procedure` read from its header, BIRD correctly skipped by the
 scope resolver, R55.0's recurrence census riding on the same artefact for free.
+
+### 173.76 — R55.0's question had no instrument, and the distiller's budget had two literals
+
+Two instruments were built while R56 ran, both from defects the previous section found rather than from a
+plan.
+
+**The support distribution is now a reading.** `recurrenceGate` (R58) decides whether a support reading *may*
+be read; nothing computed the reading. `store-sweep` answers a different question — what a consolidation floor
+would do — and prints group counts. So "the store is too thin" was an inference from an item count, when the
+question R55.0 actually asks is a distribution:
+
+```
+$ pnpm eval:recurrence /tmp/synth-l4.json
+store: 4 item(s) sampled, 0 omitted, whole=true
+support: 1×2 2×1 3×1 (max 3)
+corroborated: 2 at ≥2 task(s), 1 at ≥3
+items per learning row: 0.625 (20 distilled of 32 row(s), 1 failed)
+served: mean 1.42 item(s) per request over 57 task(s)
+distiller: correction/procedure
+```
+
+`recurrenceCensus` carries `whole` beside the histogram, because a sample of 64 of 400 items that reports zero
+corroboration is a fact about 64 items: `atLeastThree: 0` over a window is not `atLeastThree: 0` over the store,
+and only one of those is the number the SOTA holder's `sup3` cell is compared against. A pre-R58 artefact
+refuses with *"it predates the field, so this is not a reading of zero recurrence"* rather than printing a zero
+that reads like a finding.
+
+**The distiller's budget had two literals and neither could see the regime.** R84's 572 failed distillations
+were traced to `chat(prompt, form === 'repair' ? 3000 : 2000)` — a literal at a call site — while the artefact
+recorded `distill_max_tokens: 2000`. That is **two** defects, and the second is the worse one:
+
+- the answer's ceiling was coupled to the thinking regime through `answerBudget` for two iterations, and the
+  distiller's was not, so a regime that adds 1,200 tokens of reasoning to every call reached one of the two
+  budgets in the file;
+- the artefact **published a number the run did not use**: a repair run spent 3,000 tokens and reported 2,000.
+
+Both close on one function. `distillBudget(form, thinking)` sits in `decoding.ts` beside `answerBudget`, the
+call site uses it, and the artefact records its two outputs as `distill_max_tokens` and
+`distill_repair_max_tokens`. Two tested values, one source, and the same sentence the rate card earned: *a
+number in the record that is not the number the run ran is a lie with a plausible shape.*
+
+4,336 tests, **100/100/100/100**, 191 modules with 24 deferrals justified, 72/72 registrations parsing, CI green
+on every push in this round. **R56 is still running** (`43115503600`, memory arm at 20 minutes); its two readings
+and R55.0's census land together, and the census needs no further dispatch because the field is written by the
+driver rather than by the arm.
