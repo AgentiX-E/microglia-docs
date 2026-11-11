@@ -15631,3 +15631,91 @@ the consolidator.
 **What is left is the one variable that was never bought: the model.** R82 is registered, its three instrument
 gaps are closed, and its cell is 350 questions where the minimum detectable effect is 4.67pp against a predicted
 effect of six points or more — power it actually has.
+
+### 173.71 — The stronger backbone is the weaker one, and the branch set had no branch for that
+
+R82's first dispatch, 350 questions of `minidev`, five folds, `learn_sample = 64`, **14 gates passing, 3,346
+calls, 0.00% call failures, 84.4% cache hit, `$0.9563` off-peak**. The instrument gaps the registration had to
+close first all held: the catalogue probe returned `listed` with `deepseek-v4-pro` "among 2 model(s)", the rate
+card's row was the model's own (`pricing.matches: true`, `pricedAs: deepseek-v4-pro`), and `backbone` was read
+from the header rather than from `SOTA_MODEL`.
+
+| arm | accuracy | vs `none` | n |
+| --- | --- | --- | --- |
+| `none` | 46.29% | — | 350 |
+| `full` | 45.43% | −0.86pp [−4.57, +2.86], p = 0.76 | 350 |
+| `sample-5-first` | 45.43% | −0.86pp [−3.43, +1.71], p = 0.68 | 350 |
+| `sample-5-assert` | 47.14% | +0.86pp [−1.71, +3.43], p = 0.66 | 350 |
+
+`assert − first` is **+1.71pp [−2.00, +5.43], p = 0.44** (24 gained, 18 lost) and `first − full` is
+**0.00pp**. So the memory scaffold is inert on the strong model too — but the number this dispatch bought is
+not that one. It is the baseline: **46.29% where the registration predicted 57–63%.**
+
+**The cross-backbone contrast, paired per question.** The two artefacts scored the same 350 questions, so the
+difference between backbones can be read per question instead of between means:
+
+| same prompt, same decoding, same 350 questions | both | flash only | pro only | neither | pro − flash | exact McNemar |
+| --- | --- | --- | --- | --- | --- | --- |
+| `none` | 149 | **34** | **13** | 154 | **−6.00pp** | **p = 0.0031** |
+| scored arm (`full`/`assert` family) | 139 | 41 | 20 | 150 | −6.00pp | p = 0.0099 |
+| first draw of the five (R67's pool vs R82's) | 140 | 38 | 19 | 153 | −5.43pp | p = 0.0163 |
+
+This is the first significant reading in the record that runs **against** a registered prediction, and it is
+paired, so it is not population noise wearing a mean difference. `deepseek-v4-pro` loses 34 questions
+`deepseek-flash` answers and wins 13 of the ones it does not.
+
+**It is not an artefact of the lane.** Both runs have the same decoding budget — `thinking: off`,
+`max_completion_tokens: 700`, temperature 0.7 — because that is what makes this one variable; the truncation
+counts are 48 and 49 statements; the parse rate is 100.00% in both; the dangling-SQL count on the `none` arm is
+**0 of 350 in both**; the pool's execution failures are 39 of 1,750 (2.2%) against 7 (0.4%), and none of the 47
+discordant questions is discordant because of a failed execution. The loss decomposes on the 34 flash-wins as
+**7 different column counts, 4 same-columns-different-rows, 23 same-shape-different-values** — that is mostly
+the query being *wrong*, not the answer being formatted differently.
+
+**None of the four branches was entered**, and the arithmetic is why:
+
+| branch | condition | reading | entered |
+| --- | --- | --- | --- |
+| **Void** | probe `absent`, or parse < 95%, or `sample-5-first` < 45% | probe `listed`, parse 100%, first **45.43%** | no — by **1.5 questions** |
+| **Ceiling-bound** | ceiling ≥ 1.5 × 8.86pp *and* share < 0.10 | ceiling **8.57pp**, share **0.20** | no |
+| **Reader-bound** | `assert − first` ≥ +3pp *and* share ≥ 0.19 | **+1.71pp**, share 0.20 | no — points short, share met |
+| **Flat** | `sample-5-first` rises ≥ 6pp *and* `assert − first` < +0.5pp | it **fell 5.43pp** | no |
+
+Four conditions written to partition the space, and the outcome landed outside all four. The registration did
+write the sentence that covers it — *"If the stronger model is not stronger on this split, nothing below can be
+read"* — but it wrote it under **Prediction**, where it is a remark, not an ordered branch under **Refutation**.
+Rule 12's first clause is that the branches **partition** the space; a partition is a claim about the outcome
+space and it needs the same treatment as a threshold. This is the fifth time in six iterations that a defect
+turned up in a layer the previous fix did not touch: the population field (§173.68), an input array
+(§173.66), the plan pairing (§173.67), the ceiling (§173.70), and now **the refutation set itself**. Each of the
+first four cost a dispatch or a reading; this one cost nothing that the artefact did not also pay for, because
+the paired comparison was in the paid data.
+
+**The one claim that remains readable.** `assert − first` is +1.37pp [0.52, 2.22] on flash at n = 1,534 (R80),
++1.15pp on flash at n = 350 (R73: 52.29% against 51.14%), and **+1.71pp on pro at n = 350**. Three cells, two
+backbones, same sign, 1.1–1.7pp. The written reader's *size* is backbone-invariant within the precision these
+cells have; only its significance moves with n. That claim does not come from R82 and is not threatened by it —
+but R82 alone could never have tested it, because the registration predicted **+0.5…+3.0pp against a 5.13pp
+floor**. The same arithmetic that cancelled R83 (ceiling below floor) applies here to a *registered prediction*:
+half of what this file said it would establish was under its own detection floor when it was written.
+
+**The bill.** At $0.9563 for 162 correct answers this cell pays **$5.90 per correct answer**, against $2.57
+(R67, flash) and $1.29 (R73, flash) on the same questions — **2.03× R67's bill for 6.00pp less accuracy**. The
+expensive model is not a lever available to this product; the money is better spent on breadth, where R67's
+ceiling arm bought +8.86pp for a third of the price.
+
+And the ceiling that branch 2 wanted to compare is not stable enough to compare: **8.86pp (R67), 6.57pp (R73),
+8.57pp (R82)** on the same 350 questions. "The ceiling did not widen much" is a sentence this n cannot support
+in either direction.
+
+**What is left is the one variable this cell deliberately held fixed, and it is not the token cap.**
+`thinking: off` and 700 output tokens were chosen for the cheap model and then imposed on the other one, which
+is what made this a single-variable comparison. The cap is demonstrably **not** binding: pro spent 276,047
+completion tokens over 3,346 calls — **82.5 per call against a budget of 700**, truncating 48 of 7,485
+statements (0.64%) against flash's 49 of 7,270 (0.67%), with **0 dangling SQLs on the `none` arm of either
+run**. So "throttled by the budget" reduces to the one thing the switch actually does: **the model was given no
+reasoning tokens at all** (`reasoning_tokens: 0`). Whether a model built to think is worse than a smaller one
+without permission to is a different regime, and it is reachable from the existing `SOTA_THINKING` knob at
+700 + 1,200 tokens per call — flash's own measurement puts the cost of that regime at 680 reasoning tokens a
+reply, which the headroom covers. That is a new registration with its own control, not a reinterpretation of
+this artefact; and the honest price of it is one arm and about a dollar, not a 2 × 2.

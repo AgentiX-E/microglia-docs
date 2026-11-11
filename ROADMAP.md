@@ -6288,17 +6288,32 @@ still covers 0.5 AUC at 4.4× R71's population while every shape signal now clea
    both straddle zero inside 1.5pp, which is the branch the registration named *Reconstruction is not the problem
    either*. Four mechanisms — content, quantity, persistence, foreign control — are now measured null at BIRD dev
    57.4%, each by a different registration (§173.69). The writer declined on 86.4% of questions.
-2. **R82 — dispatched.** The one variable never bought: the backbone. 350 questions, `sample-5-first` against
-   `sample-5-assert`, `deepseek-v4-pro` read from the registration's own header, cap 3,600. The instrument gaps
-   that made this undispatchable (a closed `backbone` vocabulary, no catalogue probe, a one-row rate card that
-   would have billed the stronger model at 4.4× under) are closed in §173.56–173.58, and its minimum detectable
-   effect of 4.67pp is power against a predicted effect of six points or more.
+2. **R82 — read, and the stronger backbone is the weaker one.** 350 questions, `minidev`, 14 gates, $0.9563,
+   3,346 calls, `pricing.matches: true`, catalogue `listed`. `deepseek-v4-pro` scores **46.29% on `none` against
+   `deepseek-flash`'s 52.57% on the same cell**, and paired per question the difference is **−6.00pp (34 flash-only,
+   13 pro-only, exact McNemar p = 0.0031)**; the first draw gives −5.43pp, p = 0.0163. Not an artefact: identical
+   decoding budget, 48 truncations against 49, parse 100% both, 0 dangling SQL, and the 47 discordant questions
+   contain no execution failure. `assert − first` is +1.71pp [−2.00, +5.43] on pro against +1.15pp on flash in the
+   same 350 — the written reader's sign and size travel, only its significance moves with n. **None of the
+   registration's four branches was entered** (Void missed by 1.5 questions, the ceiling is 8.57pp not 13.29pp,
+   the reader's points are short of +3pp, and the baseline fell instead of rising): the guard sentence that covers
+   this outcome was written under *Prediction*, so the partition has a hole (§173.71). $5.90 per correct answer
+   against $2.57 — the expensive model is not a lever, and the money belongs in breadth.
 3. **R83 — cancelled before dispatch, by arithmetic.** The store R81 published holds 633 same-scope pairs and 3
    above the consolidation pass's 0.60 floor: the same pair of statements in three folds. Six questions of 1,534
    is a 0.39pp ceiling against this lane's 1.99pp floor, so the arm is underpowered by five times by
    construction. Raising `learn_sample` nineteen-fold puts the repeats at roughly twenty groups, still under 3%.
    The merge is not the missing mechanism — the store is too small to have one (§173.70).
-4. The store-local top-up (force-recall) design, still open from R78; then `retry-keyed` vs `retry-blank`.
+4. **R84 — no reasoning at all, which is the one thing R82 held fixed.** The token cap is not the throttle: pro
+   spent 82.5 output tokens a call against a 700 budget, truncated 0.64% of statements against flash's 0.67%, and
+   left no dangling SQL. What `thinking: off` removes is every reasoning token (`reasoning_tokens: 0`), and a
+   model built to think is being judged on the one regime it was not built for. One arm (`sample-5-first`, which
+   buys `none` as the baseline — the arm the contrast reads), `SOTA_THINKING=on`, the same 350 questions, about a
+   dollar. The decision rule is a **paired pro@on against pro@off**, and only a move of +6pp or more earns the
+   2 × 2 that would attribute it. Until it runs, "the strong model is worse" is a statement about this host at
+   this budget, and the record should say it that way.
+5. The store-local top-up (force-recall) design, still open from R78; then `retry-keyed` vs `retry-blank`; then
+   breadth — R67's ceiling arm is still the cheapest +8.86pp in the record at a third of R82's bill.
 
 ### Why memory harms, in six measurements, and what it changes
 
