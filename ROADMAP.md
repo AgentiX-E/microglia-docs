@@ -6294,7 +6294,38 @@ still covers 0.5 AUC at 4.4× R71's population while every shape signal now clea
    asked the host what it serves, the rate card had one row and would have billed the stronger model at
    4.4×-too-low input rates, and the registration could not fix the model its claim is about. All four are
    closed (§173.56–173.58), and `R82-backbone-upward.md` names `deepseek-v4-pro` in its header.
-3. The store-local top-up (force-recall) design, still open from R78; then `retry-keyed` vs `retry-blank`.
+3. **R83, the admission gate — the one measurement this record has never made.** Not "persist more" (the
+   current store) and not "persist nothing" (R81): **persist what at least k independent folds
+   corroborated.** SEMV (arXiv:2609.27175) measured the gap between those designs directly — unverified
+   memory updates give 46.4% positive and **5.7% negative** transfer, verification-gated gives 91.88%
+   accuracy with **0.2% negative** — so the axis is *what is admitted*, not how much, and MemTrim
+   (arXiv:2610.07311) shows that simply removing entries deletes the benefit with the harm. The two arms
+   are a filter over an accumulator that already exists: `looCrossFitted` counts a rule's independent
+   support per fold, and every arm already records `lost` per question, so the harm rate is measurable
+   without a new instrument.
+4. The store-local top-up (force-recall) design, still open from R78; then `retry-keyed` vs `retry-blank`.
+
+### Why memory harms, in six measurements, and what it changes
+
+The question this record has carried since R25 — why a pack distilled from its own corrections does not
+reliably help — was never about retrieving the wrong rule. Six results from the last four months put the
+mechanism on the table:
+
+| Source | Measurement |
+| --- | --- |
+| MemTrapBench, arXiv:2608.20202 | Two model families × five frameworks: **every** strategy underperformed no memory, the strongest by >10%. Names *Reasoning Fixation* and *Belief Distortion*; recall metrics cannot see either, because the retrieval was right. |
+| SEMV, arXiv:2609.27175 | 86.06% (no memory) → 87.29% (episodic) → 87.59% (unverified, 46.4% positive / **5.7% negative**) → **91.88% (verification-gated, 0.2% negative)**. |
+| MemTrim, arXiv:2610.07311 | Harm concentrates at **intermediate** query-memory overlap; deleting or compressing entries removes the harm *and* the benefit. |
+| FactConsolidation | Evidence budget 64 → 512 tokens dropped accuracy 45% → 32% with the newest claim present every time; a stale *competing* claim is worse than noise (100% → 44.6% on one swap). |
+| ALTK-Evolve | One mechanism, eight models: **+16.1pp to 0.0pp**. The model's headroom decides, not the design. |
+| Agent Memory Leaderboard | 69 submissions, best 58.02/100. |
+
+Three consequences. R81 is a faithful replication of Anti-Persistence (arXiv:2610.27406) — keep raw
+trajectories, rebuild per task, throw away — and that design had the highest held-out success *and* the
+lowest average call cost of the ones it tested. "Store less" is not the axis: SEMV's gate keeps 93% of the
+positive transfer and removes 96% of the negative. And this project already computes the number the gate
+needs — a rule's independent corroboration count exists inside `looCrossFitted` and has never been used to
+decide what enters a pack.
 
 ### The band lever became a dispatch field
 
