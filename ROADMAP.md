@@ -6085,3 +6085,27 @@ pruning can name what it deletes. Its answer must land between **35.9 and 40.5**
 fourth attempt and its `(exec − first)/(oracle − first)` share, intersected with R67's question ids before
 anything is computed; then `retry-keyed` against `retry-blank`, the `values` block in the first prompt,
 and the dose randomised on train.
+
+### The memory's contribution is inside the noise, and that is now the top of the queue
+
+Four dispatches across three splits and two backbones, and the quantity every arm is supposed to move has
+never separated from zero:
+
+| artefact | split | n | effect | 95% |
+| --- | --- | --- | --- | --- |
+| `poc-sota-bird.json` (Oct 26, `deepseek-chat`) | Mini-Dev | 350 | −2.86pp | −6.00 … +0.29 |
+| `R63-recall-order` | Mini-Dev | 350 | +0.57pp | −2.86 … +4.00 |
+| `R77-inert-share` | train | 2,000 | +0.25pp | −0.90 … +1.40 |
+
+R77 is the informative row: **2,000 paired questions bound the effect at ±1.4pp**, which is tighter than
+any of the improvements the arm ladder has tried to measure, and R77's own `full`-against-`loo` pair
+(+0.90pp, p = 0.089) says the *last* rule in a pack does more than the pack does.
+
+**So the next question is not "which pack" but "does the pack earn its 1,083 characters"**, and the first
+experiment that can answer it is `full` against `full-pruned` on the same questions — which needs R78 to
+name the 105 silent rules first. The honest prior from the table above is that pruning will not help
+accuracy; the case for it is cost, and cost is the thing this project can reliably improve.
+
+**Unchanged behind it.** R68's fourth attempt and its `(exec − first)/(oracle − first)` share; then
+`retry-keyed` against `retry-blank`, the `values` block in the first prompt, and the dose randomised on
+train.

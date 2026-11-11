@@ -14571,3 +14571,39 @@ needs identities — which is the whole remaining job of R78, now dispatched at 
 `silenceReading` calls the same `wilsonInterval` the published-cell catalogue uses rather than carrying a
 second copy: two Wilson intervals in one package that disagreed in the fourth decimal would be two
 numbers a reader has to reconcile, and the copied one would be the one nobody re-derived.
+
+### 173.36 — The memory's net effect is inside ±1.4pp on every split, and that is the project's largest number
+
+Four dispatches, three splits, two backbones, and the one quantity every improvement is supposed to move
+has never been separated from zero:
+
+| artefact | split | n | memory effect | 95% | p |
+| --- | --- | --- | --- | --- | --- |
+| `poc-sota-bird.json` (2026-10-26, `deepseek-chat`) | Mini-Dev | 350 | **−2.86pp** | −6.00 … +0.29 | 0.099 |
+| `R63-recall-order` (`deepseek-flash`) | Mini-Dev | 350 | **+0.57pp** | −2.86 … +4.00 | — |
+| `R77-inert-share` (`deepseek-flash`) | train, offset 0 | 2,000 | **+0.25pp** | −0.90 … +1.40 | 0.731 |
+| `R68` (in flight, `zhipu:glm-4.7-flashx`) | Mini-Dev | 350 | — | — | — |
+
+The sign moves between dispatches and the interval covers zero every time. **R77 is the informative one**:
+2,000 paired questions put the effect inside **±1.4pp**, which is the tightest statement this project can
+make about its own memory — tighter than any of the improvements the arm ladder has tried to
+measure.
+
+**What that reframes.** Every round of arm work has asked *which* formulation of the pack is better,
+at a sample size where a 1pp difference is invisible. On the two splits measured, the whole pack moves the
+verdict by less than the noise it was measured against, while occupying **1,083 characters of every
+prompt** (`mean_pack_chars`, R77) and 1.83 rules of context. The dead weight R77 found — 16% of the pack,
+now with an interval — is a real defect, but it is a defect *inside* a component whose total contribution
+is already indistinguishable from zero. **Pruning it is not how the memory becomes useful; it is how the
+memory becomes cheap.**
+
+**The one thing R77 does separate.** `full` beats `loo` by **0.90pp** (p = 0.089, 59 lost against 41
+gained): the *last* rule in a pack does more than the pack does. Adding a rule to an empty context and
+adding a rule to a one-rule pack are not the same intervention, and the arithmetic says the first is worth
+less than the second. That is a dose-response question this lane has never asked at the pack's actual size,
+and it is the mechanism the "memory hurts" reading needs before it can be called a mechanism at all.
+
+**Where that leaves the queue.** R78 names the 105 silent rules so a pruning can have identities; the
+experiment it enables is a `full`-against-`full-pruned` pair on the same questions, which is the first
+test in this project that would ask whether *removing* memory helps. On the numbers above, the honest
+prior is that it does not — and that the effect to chase is not the pack's content but its size.
