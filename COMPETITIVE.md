@@ -4282,3 +4282,46 @@ same weak pool where it is 0.514 on ours. Every cheap signal in this file is wor
 57.63% and a great deal at 28%. A buyer comparing this SDK to a proprietary pipeline should therefore
 expect the *selection* half of the product to earn its calls only below ~40% EX, and the *memory* half to
 earn nothing anywhere it has been measured (−0.11pp, R79).
+
+## The 2026 leaderboard moved, and the memory literature named the mechanism this project kept measuring around (2026-11-11)
+
+Two things changed in this file's picture and one did not. First the numbers, harvested from the
+literature rather than from a leaderboard page, with the caveat that they are **reported** figures from
+different settings:
+
+| system | BIRD dev EX | BIRD test EX | how it gets there |
+| --- | --- | --- | --- |
+| Gemini-SQL2 (Google, reported June 2026) | — | **80.04** | single model, reasoning backbone |
+| AskData | 78.49 | 83.40 | proprietary pipeline; this file's previous SOTA row |
+| **MARS-SQL** (ICML 2026) | **77.84** | — (89.75 Spider) | RL-trained multi-agent with **live-database execution feedback** |
+| R³-SQL | 75.03 | — | — |
+| CHASE-SQL | 73.01 | 73.0 | divide-and-conquer + pairwise-optimised selection |
+| DecoSearch (arXiv:2606.17821) | 70.53 | — (88.31 Spider) | training-free complexity routing + DAG decomposition |
+| XiYan-SQL full | 71.58 | — | — |
+| **microglia (no-memory arm)** | **57.63** (n = 1,534) | — | single-shot + schema + a memory pack that measures null |
+| XiYan-SQL + M-Schema | 55.15 | — | — |
+| XiYan-SQL baseline | 53.52 | — | — |
+
+**Read the column on the right before the score column.** Every system above 70 uses at least one
+mechanism this project has now measured and found *null on its own backbone*: execution feedback and
+selection (R67–R71, five experiments), breadth (R69), temperature (R70), content-aware reading (R71 at
+cheap cost, R80 at scale). What those systems also have, and this lane does not, is either a far stronger
+backbone or **training** — MARS-SQL is RL-trained on the task, and that is not a scaffold difference this
+project can ablate its way across.
+
+**What did not change is where the gap lives.** At a 57.63% baseline the entire five-draw ceiling is
+8.86pp and the ceiling grows *proportionally* with the failure population (18.0% at 51% accuracy, 20.2% at
+28%), so the published +17.6pp that separates DAIL-SQL+SC from CHESS+SC is a baseline effect. The honest
+statement of this lane's position is: **a 57.63% single-shot row with the ceiling priced, the selectors
+priced, and the memory component measured at −0.11pp.** The row is not a failed attempt at 78; it is a
+measured claim about which of the published components pay at which baseline, and the answer for this
+backbone is "none of the cheap ones".
+
+**And the memory picture now has a mechanism from the literature rather than a hunch.** Three 2026 results
+converge: storing an abstraction lets an error be re-abstracted and regenerated (*More Memory, Worse
+Agents*, arXiv:2610.27406), replaying a retrieved experience verbatim causes negative transfer
+(*MemHarness*, arXiv:2607.28272), and a flat pool of concrete memories degrades as the task set grows
+(*STRATA*, arXiv:2610.19386). Every arm this project ran tests *what is stored*; R81 is the first that
+tested *that anything is stored at all*, by writing advice for one question from the store and discarding
+it. If that arm is also null, the product claim follows the evidence: the memory component earns nothing on
+BIRD dev at this baseline, and the SDK should be sold on the parts that were measured to work.

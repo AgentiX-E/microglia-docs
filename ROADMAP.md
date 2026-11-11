@@ -6245,3 +6245,62 @@ earlier share divided by `sample-5-exec`. A named arm is validated against the a
 default is not, so an artefact without `exec` still reports "no question carries all three" rather than a
 second error. The parser lives in `width.ts` because `bin/**` is outside coverage by the package's own rule
 and an untested parser is exactly what `pool.ts` was.
+
+### The memory question got a mechanism, and R81 is the first arm that tests it
+
+Six arms have varied what the pack stores or how much of it is shown: `full-raw` (the case instead of the
+rule, −0.86pp), `full-shuffled` (another question's pack, +1.14pp vs `full`, interval covering zero),
+`wrong-scope` (foreign database, −0.29pp), `pruned` (a fifth withheld, +0.05pp on 1,900 questions). None
+varies **whether the thing shown was ever stored**. Three 2026 papers say that is the variable: an error in
+a stored abstraction is re-abstracted and regenerated (arXiv:2610.27406), verbatim replay causes negative
+transfer (arXiv:2607.28272), and a flat concrete pool degrades as the task set grows (arXiv:2610.19386).
+
+`R81-reconstruction` is registered and **waits for the off-peak window** (peak until 10:00 UTC, and the
+same tokens cost 2× inside it): `full-reconstructed` writes ≤240 characters of advice for one question from
+its own retrieved notes and writes nothing back; `full-reconstructed-shuffled` makes the same call from
+another question's notes in the same database. dev, 1,534 questions, ≈9,600 calls, gate `V80`.
+
+Its four branches are written before dispatch. The one that matters: if both contrasts straddle zero, **the
+memory line closes with four mechanisms measured null at one population** — content, quantity, persistence
+and the foreign control — which is a result the SDK can be sold on, not a fifth knob to tune.
+
+### R80 came back: the selector works, the candidate generator is the constraint
+
+1,534 questions, 12,194 calls, $1.6272 (all peak; ≈$0.81 off-peak). `none` 57.24%, `full` 56.78%,
+`sample-5-first` 55.93%, **`sample-5-assert` 57.30%**.
+
+| contrast | reading |
+| --- | --- |
+| `assert − first` | **+1.37pp [+0.52, +2.22], p = 0.0025** (33 gained / 12 lost) |
+| `assert − none` | +0.07pp [−1.04, +1.17] |
+| `first − none` | **−1.30pp [−2.41, −0.26], p = 0.025** |
+| ceiling / share | **7.37pp**, **0.19 [0.08, 0.29]** — CAPTURED |
+
+**The written reader is the first significant selector in this project, and it buys exactly what sampling
+costs.** Five draws of one prompt at T = 0.7 open a 7.37pp ceiling but cost 1.30pp on the first draw; a
+reader that captures a fifth of the ceiling returns to level with a single deterministic call. 75% of
+questions never produce a second distinct answer at all (distinct 1.33, median 1), and every content signal
+still covers 0.5 AUC at 4.4× R71's population while every shape signal now clears it (0.54–0.56).
+
+**Next, in order.**
+1. **R81** (`full-reconstructed`, `full-reconstructed-shuffled`) — dispatched with `not_before: 10:00Z`, so
+   it starts inside the off-peak window instead of being remembered there.
+2. **Decomposition candidate generation** — three *different* prompts (divide-and-conquer, execution-plan
+   chain of thought, instance-aware examples as CHASE-SQL does) against one prompt spun five times. This is
+   now the binding constraint, and it is the lever R70 named when it closed temperature.
+3. The store-local top-up (force-recall) design, still open from R78; then `retry-keyed` vs `retry-blank`.
+
+### The band lever became a dispatch field
+
+`pnpm eval:band` existed from the day the rate card was written and had no caller until R78 paid 1.90× for
+nine minutes of clock. The workflow now takes **`not_before: HH:MM`**: the job sleeps until the window, the
+deadline check subtracts the wait from the 340-minute job limit, and the summary prints the band *after* the
+wait so a run says which band it actually started in. R80 was dispatched inside the peak window and paid
+$1.6272 where the identical run off-peak is ≈$0.81.
+
+### The no-argument reader is now refused, not ignored
+
+`arm-pairs --bird <file>` printed a 350-question table about a different file — third occurrence of the
+class (`pool.ts`, `width-share.ts`, this). `noArguments` refuses an argument the reader cannot honour, eight
+readers call it, `arm-pairs` gained a real `--bird`, and a source-level test asserts the invariant so the
+next reader someone adds cannot skip it.

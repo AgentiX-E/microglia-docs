@@ -14993,3 +14993,128 @@ because naming the default arm on purpose is still a claim.
 the stated rule that the logic a CLI calls lives in the package — and `pool.ts` is the demonstration of
 what an untested argument parser does. `widthArguments`, `selectedArmProblem` and `widthCases` are covered
 there: ten cases over the parser, three over the arm check, three over the mark selection.
+
+### 173.50 — Three papers say the problem is that we persist, and this project has never varied that
+
+Every memory arm in this record varies **what is stored** or **how much of it is shown**, and none varies
+**whether the thing shown was ever stored**. The readings, in order:
+
+| experiment | arm | reading |
+| --- | --- | --- |
+| R22 | `full-raw` — the case instead of the rule | **−0.86pp** vs `full`, p = 0.76; 1.43pp below its own shuffled control |
+| iteration 96 | `full-shuffled` — another question's pack, same database | −1.71pp; vs `full` **+1.14pp** [−2.00, 4.29] |
+| iteration 96 | `wrong-scope` — foreign database | −0.29pp, inert |
+| R79 | `pruned` — a fifth of the pack withheld | **+0.05pp** [−0.79, +0.84], one question in 1,900 |
+| R78/R79 | `full` vs `none`, same slice | **−0.11pp** |
+| published dev cell | `full` vs `none`, 1,534 questions | **−1.37pp** [−2.74, 0.00], p = 0.062 |
+
+Three results published within a month converge on persistence as the mechanism:
+
+- **Wang, Panaganti and Zhou, *More Memory, Worse Agents: Error Reproduction and Anti-Persistence in LLM
+  Agents* (arXiv:2610.27406, Oct 2026).** An error inside a stored abstraction propagates through
+  retrieval, shapes the trajectory, and is re-abstracted back into the store: the error is *regenerated*.
+  Their *Anti-Persistence* keeps trajectories and outcomes and **reconstructs guidance on demand,
+  discarding it after execution** — highest held-out success and lowest average call cost of the designs
+  they compare.
+- **Wu et al., *MemHarness: Memory Is Reconstructed, Not Replayed* (arXiv:2607.28272, Jul 2026).** Replaying
+  a retrieved experience verbatim, regardless of the present state, is what causes negative transfer.
+- **Zhu et al., *STRATA* (arXiv:2610.19386, Oct 2026).** A single-level pool of concrete memories degrades
+  as the task set grows and suffers catastrophic negative transfer, repaired by contrast edges that flag
+  direction-opposite experience (ScienceWorld 78.7 → 96.7 within their system).
+
+**R79 is consistent with all three and could not distinguish them**, which is the point: withholding 19.8%
+of the injected text moved one question in 1,900, so the *stored* content is inert — not that memory is.
+
+### 173.51 — R81: persist nothing, rebuild the advice, throw it away
+
+`full-reconstructed` writes at most **240 characters** of advice for one question from that question's own
+retrieved notes, injects only that, and writes nothing back. `full-reconstructed-shuffled` makes the same
+call, with the same prompt shape and the same budget, from **another question's** notes in the same
+database — the donor rule `full-shuffled` already uses. So `reconstructed − shuffled` is the content and
+`shuffled − none` is the cost of asking at all; without the second arm a win would be indistinguishable
+from having been called twice.
+
+The prompt forbids the three substitutions that would make the arm something else: restating the notes (the
+persisted pack under another name), describing tables or columns (the arm's own input), and writing SQL (a
+second answer rather than guidance). `NONE` is a first-class answer, because "nothing here applies" is the
+correct output for most questions and a prompt that cannot say it always says something.
+
+**The budget is a fifth of the pack's 1,090 average**, so a win cannot be a length effect in the
+treatment's favour — the arm injects *less* text than the arm it is measured against.
+
+Registered as `R81-reconstruction`: dev, 1,534 questions, `learn_sample` 64, four arms, ≈9,600 calls,
+gate **`V80`** refusing a run that could not write advice on 5% of its questions. Its four branches are
+written before dispatch, and one of them — `Reconstruction is not the problem either` — closes the memory
+line with four mechanisms measured null at one population rather than with a fifth tuning knob.
+
+### 173.52 — The written reader is real, and the sampling bill eats the whole gain
+
+R80 ran the same assertions R73 wrote, at the population R73's own arithmetic asked for: 1,534 questions,
+5 folds, `learn_sample` 64. **12,194 calls, $1.6272** (all peak — the same run off-peak is ≈$0.81), no
+retry, no timeout, no failed call, every gate passing.
+
+| arm | accuracy | against `full` |
+| --- | --- | --- |
+| `none` | **57.24%** | — |
+| `full` (memory pack) | 56.78% | — |
+| `sample-5-first` | 55.93% | −0.85pp [−2.35, 0.65] |
+| `sample-5-assert` (written reader) | **57.30%** | +0.52pp [−0.98, 2.02] |
+
+| contrast | reading | gained / lost |
+| --- | --- | --- |
+| `assert − first` | **+1.37pp [+0.52, +2.22], p = 0.0025** | 33 / 12 |
+| `assert − none` | +0.07pp [−1.04, +1.17] | 40 / 39 |
+| `full − none` | −0.46pp [−1.89, +0.91] | 55 / 62 |
+| `first − none` | **−1.30pp [−2.41, −0.26], p = 0.025** | 26 / 46 |
+
+**Two findings, and they are the same finding.** The written reader is the first selector in this project
+that is significantly better than the draw it reads (+1.37pp, p = 0.0025). And the first of five draws at
+T = 0.7 is **1.30pp worse than one deterministic call**, so a selector that recovers 1.37pp of it lands
+exactly level with doing nothing (`assert − none` = +0.07pp). The ceiling at this population is **7.37pp**
+(113 questions) and the reader takes **a fifth of it**: share **0.19 [0.08, 0.29]**, the first
+interval-excluding-zero share in the record. R73's null was a power failure, exactly as R73 predicted.
+
+**And the pool explains why the ceiling is small**: 7,670 candidates, distinct answers per question mean
+**1.33**, median 1 — 1,157 of 1,534 questions never produced a second distinct result across five draws.
+The registered bar calls that NARROW. So the selector is fine and the *candidate generator* is the
+constraint: the same prompt spun five times opens 7.37pp, and every published system above 70% generates
+its candidates from different prompts.
+
+### 173.53 — The content signals still cover zero at 4.4× the population; the shape signals finally clear it
+
+`pnpm eval:pool --bird` on R80's artefact, zero calls:
+
+| signal | AUC, 95% | top-pick on 383 eligible |
+| --- | --- | --- |
+| `value-type` (shape) | **0.561 [0.541, 0.582]** | 29.2% |
+| `column-shape` (shape) | **0.553 [0.532, 0.574]** | 29.2% |
+| `empty` (shape) | **0.546 [0.528, 0.564]** | 28.5% |
+| `literal-match` (content) | 0.497 [0.490, 0.502] | 27.2% |
+| `column-mention` (content) | 0.489 [0.460, 0.518] | 26.6% |
+| `content-mean` (content) | 0.486 [0.456, 0.516] | 26.6% |
+
+**R71 replicates and R67 is revised.** Every content interval still covers 0.5 at 4.4× R71's population, so
+`Content is not free` stands. Every shape interval now *excludes* 0.5 — the family R67 priced at chance and
+R69 replicated at k = 10 is worth 0.54–0.56 AUC, which is small, real, and unmeasurable at 350 questions. A
+0.55-AUC signal on a 7.37pp ceiling is worth about half of what the written reader recovers, which is
+exactly the gap between `exec`'s 1.14pp and `assert`'s 1.37pp.
+
+**The prediction that failed is the one the power arithmetic rested on**: "about 32.9% of the split has
+more than one distinct result" came in at **25.0%**, because a colder five-draw pool collapses more often
+than the 350-question slice suggested. The reader was still detected, at p = 0.0025.
+
+### 173.54 — A flag the shell accepts and the program ignores, for the third time
+
+`pnpm eval:arm-pairs --bird R80.json` printed a 350-question table about a different file: `arm-pairs.ts`
+never read `process.argv`, so `--bird` was accepted by the shell, ignored by the program, and the default
+directory scan decided. This is `pool.ts` (§173.44) and `width-share.ts` (R78's iteration) once more, and
+the reason it keeps happening is that *nothing in the suite noticed a reader that reads no arguments*.
+
+`noArguments(argv, what)` is the guard for the eight readers that take none: they now refuse an argument
+instead of ignoring it, and one source-level test asserts the invariant across `packages/eval/src/bin` —
+every reader that resolves an artefact must take its path through `artefactArgument`, refuse arguments, or
+read `process.argv` itself. `arm-pairs` gained `--bird` rather than a refusal, because auditing a *named*
+artefact is what its own docblock promises.
+
+**The three occurrences are now a class**: a reading that answers a plausible question about the wrong
+object is worse than a crash, and the guard has to be structural because the defect is a *missing call*.
