@@ -15470,3 +15470,86 @@ Two things changed, and they are different kinds of thing:
 `packLibrary` must name both arms that read it, and each of those arms must have a `requireInput` call after the
 declaration. The second one is the one that matters — a later edit that narrows the union would fail the first,
 but a later edit that deletes the check would fail neither the union test nor any gate until the run was paid for.
+
+### 173.67 — The reconstruction arms published 0.00%, and every gate passed
+
+R81's fourth dispatch ran to completion in **seven minutes** for **$0.0973**, and its table said this:
+
+| arm | accuracy | delta | n |
+| --- | --- | --- | --- |
+| `full` | 48.57% | **−4.00pp** [−7.43, −0.86], p = 0.0243 | 350 |
+| `full-reconstructed` | **0.00%** | −52.57pp | 350 |
+| `full-reconstructed-shuffled` | **0.00%** | −52.57pp | 350 |
+
+`V77` found a row for both bought arms. `V80` found advice in the prompts. `reconstruct` recorded
+`written: 14, 11, 9, 7, 7` and `declined: 56, 59, 61, 50, 57` out of 70 questions a fold. Not one gate failed.
+
+**The plans were never sent to the model.** `replies` was collected with a single `mapPool(plans, …)` before
+the reconstruction pass appended its own plans, and the judge then paired `plans[index]` with `replies[index]`.
+Every appended plan read another plan's reply, or `undefined` — and the judge reads `undefined` as a reply that
+failed, which is a wrong answer, which is an effect. The 0.00% is the pairing.
+
+This is the fifth instance of one shape and the first that produced a number rather than an absence:
+
+| instance | what was filled by another arm's branch | how it surfaced |
+| --- | --- | --- |
+| the reconstruction pass | written inside the sampling block | `reconstruct: null`, `0 of 0` carried advice |
+| `full-corroborated` | declared in the table, never dispatched | it never ran, so nothing surfaced |
+| the consolidator | present, tested, not wired to this lane | `active_corroborated: 0` |
+| the donor library | built under `full-shuffled` alone | `V77`: one bought arm missing, 42 minutes |
+| **the replies array** | **collected before the plans existed** | **a published 0.00%** |
+
+The difference matters: the first four cost time, and this one cost a *reading*. A gate can see a missing row;
+none of them can see a plan whose prompt was never sent, because an unanswered plan and a wrong answer leave the
+same trace — a missing `correct`.
+
+**Three properties replace the index pairing.** `replyOf` is a `Map` keyed by the plan object, so an appended
+plan cannot read another plan's reply by arithmetic. `askPlanned` batches the asks and is called again after the
+reconstruction pass appends, so a plan that exists is a plan that was sent. And the fold refuses to score when
+`replyOf.size !== plans.length`, raising `MG_E_CONFIG` before the judge rather than publishing a zero after it.
+Five structural tests in `sota-source.test.ts` hold the three, including the ordering that failed here: the second
+`askPlanned` must sit after the reconstruction calls and before the first judge.
+
+**Two readings the same artefact gives away, which no gate was looking at.** The writer **declines on 80% of the
+questions** — 56, 59, 61, 50 and 57 of 70 say `NONE` — so even with the pairing fixed the arm's population is about
+14 questions a fold on minidev, and the estimate will be wide. And the shuffled control's writer accepted **1**
+question in the first fold: shown another question's notes in the same database, the model refuses to write advice
+at all, which is the control behaving exactly as designed and also the reason `shuffled − none` cannot be read as
+"the cost of asking".
+
+The `full` row is a third reading of the same cell and it is consistent with the record: −4.00pp on 350 questions,
+inside the −4.57 to +0.86 band five dispatches have produced. It is not new, and it is not the reason this run
+existed.
+
+The fifth attempt was dispatched with `split: dev` — the population the registration names — because the fourth
+was dispatched with `minidev` by mistake and nothing refused it. That is the next hole: a registration states
+`sample: 1534`, the dispatch said 350, and `populationAgainstPrereg` compares the *limit* rather than the split.
+
+### 173.68 — The registration fixed 1,534 questions and the dispatch scored 350, and nothing refused it
+
+`sample` has been in every header since the first registration and the lane only ever compared it against
+`SOTA_LIMIT`. A split is the other half of the same population: **1,534 is `dev`, 350 is `minidev`, 7,829 is
+`train`**. R81's fourth dispatch declared `sample: 1534`, was sent `split: minidev`, and ran — because `limit`
+was `0` (every usable question) and the limit check therefore agreed with itself. It published a table of three
+arms under the registration's name for $0.0973.
+
+The arm list got this treatment at R67 and the sample got it later; the split is the third representation of the
+same fact and it was the one still unguarded. Two changes:
+
+1. **`split:` is a header key**, validated against the three the workflow offers — `minidev`, `dev`, `train` — so a
+   header naming `Dev` or `minidev2` is refused by `pnpm check` rather than by the first model call of a paid run.
+   R81 and R83 declare `split: dev`; R82 declares `split: minidev`. Every earlier registration keeps working: an
+   absent key is unconstrained, in both directions.
+2. **`populationAgainstRegistration` compares it** when both sides state one, and the refusal names both splits.
+   "This dispatch scores the 'minidev' split, but the registration scores 'dev'" is a sentence about a population,
+   which is what the sample check says about a count.
+
+The asymmetry is deliberate and it is the one the offset check already uses: a file that never stated a split is
+not thereby wrong, and a dispatch that states none is checked against nothing. Three new tests in
+`prereg.test.ts` cover the parse, the invalid value, and the pair that agrees on 350 questions while disagreeing
+about which 350 they are.
+
+This is the third hole of the same kind in two days, and they are worth stating together because the fix is the
+same each time: **a fact stated in two places needs one check that compares them**. The arm list (R67), the sample
+(R68), the split (this iteration), and — beside them — the input arrays that two arms share (§173.66) and the
+plans that were collected before they existed (§173.67).
