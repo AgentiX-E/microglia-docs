@@ -8642,3 +8642,59 @@ which is what trial *t* taught.
 After the store-shape comparison (R85 against R58's arm), because an in-episode arm over a store whose
 items cannot be matched lexically would accumulate lessons into a pack nothing reads — and would
 report that as "accumulation does not help".
+
+### 17.128 The watermark: three absences that must not be collapsed, and two paths that both have to honour it
+
+§17.127 lists four pieces for the in-episode arm and puts a monotonic trial watermark third, "carried in
+the request". This is that piece, built in the kernel rather than in the driver, because the filter has
+to hold for any host that writes between attempts — an evaluation harness, a retry loop, an agent that
+runs a task twice in one session.
+
+| surface | field | absent means |
+| --- | --- | --- |
+| `EvidenceRef.trial` | which attempt produced this observation | the claim was distilled offline; it predates the episode |
+| `RecallQuery.before` | the attempt whose pack this is | no watermark: every published arm |
+| `/v1/recall?before=` | the same, on the wire | the same |
+
+`visibleBefore(item, before)` is one pure function of the claim's evidence, so it can be checked against
+a store a concurrent writer is extending without reading anything else:
+
+```ts
+if (before === undefined) return true;
+return item.evidence.every((ref) => ref.trial === undefined || ref.trial < before);
+```
+
+**Three absences, each decided rather than defaulted.**
+
+1. **No watermark is not a watermark of zero.** `undefined` means "this store was frozen before the first
+   evaluation trial", which is every arm this lane has published. Coercing it to `0` would filter those
+   packs against a trial index nothing declared, and the resulting thin pack would read as memory that
+   learned less — the reading a retrieval defect must not fake.
+2. **No trial declared is not the latest trial.** A claim with no `trial` was distilled offline and every
+   trial may read it. Reading the absence as "later" empties every mixed store, which is the same
+   confusion in the other direction.
+3. **Zero is a real attempt.** `if (trial)` is the shortcut that would let attempt zero's own lesson into
+   attempt zero, so the comparison is `ref.trial < before` and the tests pin `visibleBefore(item@0, 0)`
+   false, `visibleBefore(item@0, 1)` true.
+
+**`every`, not `some`.** The unit a pack serves is the *item*. A merged claim citing trial 0 and trial 2
+has taught the model something trial 2 said, whatever the rest of its support is — so one late
+observation withholds the whole claim. Consolidation is off in the in-episode arm for the reason §17.127
+gives (a fourth record neither episode wrote), and this quantifier is what keeps a store that
+consolidated honest if one ever does.
+
+**Two candidate paths, one filter.** `search` builds candidates twice: from the inverted index, and — when
+a scope is supplied — from every active item that matches it. The second path exists because a rule that
+generalised out of a domain carries none of the question's words. A watermark applied to the first path
+only would leak exactly those rules, and would leak them into a pack where lexical overlap can never
+reveal them. Both loops call `visibleBefore`.
+
+**On the wire, a negative watermark is refused.** `before=-1` matches every item, so it is not a typo
+that fails loudly: it is a leak that presents as a store that taught nothing. `recallQueryOf` refuses it
+with `before is not a trial index`, the same way it refuses `minEvidence: 0` and `limit: 2.5`.
+
+**What this does not yet do.** It does not write during the episode. The remaining two pieces are the
+write endpoint on the driver's recall server and the per-trial boundary in the runner — and `§34.106`
+records why the second one is a serial loop over `run_task` rather than a call to `run_tasks`: upstream
+executes `(task, trial)` pairs in a thread pool and assigns `simulation.trial` after the episode returns,
+so neither the order nor the index exists inside the episode.

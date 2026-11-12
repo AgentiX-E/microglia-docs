@@ -16566,3 +16566,34 @@ taken.
 
 Both dispatches remain queued for the 10:00 UTC window — `R86` (`43187614906`) and `R85`
 (`43189470917`) — and the readbacks that grade them are in the gate (`r86` 12/12, `r85` 15/15).
+
+### 173.85 The attempt is a field, and the scheduler is the arm's precondition
+
+The in-episode arm is sequenced after the store-shape comparison, so R85 is running — and the piece that
+has to exist whichever way R85 lands is the property the arm is a measurement of: trial *t* cannot read
+what trial *t* taught. That is now built at the kernel, tested at both layers, and pushed.
+
+**What shipped.** `EvidenceRef.trial`, `RecallQuery.before`, `visibleBefore` — with three absences kept
+apart (no watermark ≠ watermark of zero; no trial declared ≠ the latest trial; `0` is a real attempt) and
+`every` rather than `some`, because the unit a pack serves is the item. The filter runs on both of
+`search`'s candidate paths, since an item no query word reaches is still reachable through a scope. On the
+wire, `before` reaches `/v1/recall` and a negative bound is refused rather than read as "no watermark".
+
+**What reading upstream found.** Two facts that change how the arm has to be run, both in `§34.106`:
+`run_domain` builds its argument list trial-major but executes it in a `ThreadPoolExecutor`, so with
+`max_concurrency > 1` trial 3 of a task can finish before trial 0 — the arm's unit is order and the
+harness's order is not. And `simulation.trial` is assigned *after* `run_task` returns, so nothing inside
+an episode knows its own attempt number. Serial execution is therefore a precondition to register, and
+the watermark's home is the request because that is the only surface the runner controls.
+
+**And one threshold withdrawn before it could fire.** `r85_readback.py` had grown a one-percent bar on
+the clipped share of the store, written by me and not by `prereg/R85-rawlog-unit.md`, whose write-side
+claim is stated on faithfulness and which names the ceiling as the *cause* of any loss. It is a census
+line again, and the refusal's evidence now says which of the two it was (`§34.105`).
+
+**Delivery.** 215 test files, **4,473 tests**, coverage **100 / 99.88 / 100 / 100**, `pnpm check` exit 0,
+commits `d7272e78` → `27412181`.
+
+Both dispatches left the 10:00 UTC window and are in `L4 arm — memory`: `R86` (`43187614906`) and `R85`
+(`43189470917`). The next readings are `r86_readback.py` (12/12 self-test) and `r85_readback.py`
+(16/16 self-test) against their evidence bundles.

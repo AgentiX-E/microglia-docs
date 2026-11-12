@@ -7760,3 +7760,87 @@ run used — the sentence should say "a floor would remove this" rather than "th
 record, two requests, one floor. That is cheaper than the dispatch it protects — the dispatch is $1.06
 and an hour of a scarce off-peak window — and it is the second time in two days that writing the
 assertion before the run changed what the record says rather than confirming what it already said.
+
+### 34.105 A bar the registration never set can fail an arm on evidence nobody asked for
+
+`r85_readback.py` printed the share of records the 700-character ceiling clipped and then decided
+nothing with it, which read as a hole: a write-side number sat in the *context* while the graded
+predictions were three lines away. So the number was promoted to a prediction and a refusal, at a
+threshold of **one percent**.
+
+That percent came from the readback, not from `prereg/R85-rawlog-unit.md`. The registration states the
+write-side claim on **faithfulness** — *"a number below 0.95 refutes the arm's own claim to be a record
+rather than a summary of one"* — and names the ceiling as the **cause** of any loss, counted per record
+by `rawlog.clipped`. A one-percent bar is a different question (how many records were touched) with a
+different answer (a 700-character ceiling over tool-call transcripts will touch plenty), and it would
+have been able to return `ABANDONED` for an arm that kept every entity, on evidence the registration
+never asked for.
+
+```
+what the arm claims        faithfulness >= 0.95 of the corrections' own entity values
+what carries the claim     the entity pool, not the record count
+what the ceiling is        the named cause, counted, so a reader can attribute the loss
+what one percent would be  a second bar, unwritten before the run, able to overturn the first
+```
+
+**Why this is a class.** A readback that grades more than the registration is not more rigorous; it is a
+registration edited after the run, which is the one thing preregistration exists to prevent. The failure
+is quiet because it looks like diligence: every sentence in the diff is true, the threshold is modest,
+and the code comment even argues for it. The defect is in *provenance* — who wrote the number and when.
+
+**The rule.** A graded prediction in a readback has to be quotable from the registration, and the diff
+that adds one has to be able to point at the sentence. Anything a run reports that the registration did
+not state stays in the context, where it can still be read and still explain a result: the census now
+prints `records clipped by the ceiling: N of M (P%)`, and the refusal's evidence says which of the two
+it was — *the ceiling is the only thing that cut text*, or *nothing was clipped, so the loss is not the
+ceiling*. The fixture that clipped four records and kept every entity grades `GRADED`; it used to
+abandon.
+
+**What it cost.** One commit, one self-test case rewritten, and no dispatch. The 74/74 registration
+validity gate does not read readbacks, which is why this had to be caught by reading the registration
+next to the code rather than by a test — and why the rule above is written in the module's own
+docstring, where the next person adding a threshold will meet it.
+
+### 34.106 Trials are executed by a thread pool, so "the attempt after this one" is not a guarantee
+
+The in-episode arm's unit is **order**: trial *t+1* reads what trial *t* taught, and the number it
+publishes is accumulation. Reading `tau2/run.py` at the pinned ref (`v0.2.0`) to find the seam gives
+two facts that the design in §17.127 did not assume:
+
+```python
+args = [(task, trial, seed, progress) for trial in range(num_trials) for task in tasks]
+with ThreadPoolExecutor(max_workers=max_concurrency) as executor:
+    res = list(executor.map(_run, *zip(*args)))
+...
+simulation.trial = trial      # assigned AFTER `run_task` returns
+```
+
+1. **The list is built trial-major but *executed* concurrently.** With `max_concurrency > 1` a worker
+   takes the next free argument, so trial 3 of task *X* can finish before trial 0 of task *X* started.
+   Under that scheduler "trial *t+1* knows exactly one thing more than trial *t*" is false, and what the
+   arm would publish is the thread pool's ordering wearing accumulation's name. The arm is only
+   well-defined at `max_concurrency = 1`, and that is a **precondition to register**, not a knob to
+   tune after seeing the number.
+2. **Nothing inside the episode knows its trial index.** Upstream assigns `simulation.trial` after the
+   episode returns, so the agent cannot state it and the watermark cannot be built from what the agent
+   knows — it has to come from the runner. This is the mechanical reason §17.127's rule 1 puts the
+   watermark in the request rather than in the store's own memory.
+
+**Why this is a class and not an implementation detail.** Every arm in this repository so far has been
+order-free: a frozen store, `k` trials, an average. An arm whose *treatment is sequence* inherits
+whatever order the harness happens to produce, and the harness here is a thread pool shared with the
+rest of the domain. A measurement that depends on a scheduler and does not say so is the same defect as
+a threshold no run applies (`§34.104`) one layer down: the number is real, and it is not the number the
+sentence next to it describes.
+
+**The rule.** An arm that claims order has to own the order: state the concurrency it requires, run at
+it, and record it in the artefact beside the reading — the way `recallFloor` and `trials` are recorded,
+because the reader cannot otherwise distinguish "accumulation was weak" from "the trials interleaved".
+`run_split.py` therefore runs the in-episode arm through its own serial trial loop calling `run_task`
+per episode, rather than through `run_tasks`, which is the only way this process can name the trial
+before it runs.
+
+**What exists now.** The property the arm needs is built and tested: `EvidenceRef.trial` records the
+attempt, `RecallQuery.before` is the watermark, and `visibleBefore` withholds any claim carrying an
+observation from the running or a later attempt, on both of `search`'s candidate paths. What remains is
+the seam — the serial loop and the write endpoint — and this record is why it is a serial loop.
