@@ -4434,6 +4434,53 @@ field is not an accuracy at all: it is that every claim here has a control, a re
 count, and that five experiments were voided on arithmetic before they spent anything. A domain whose own
 benchmarks contradict its own leaderboard needs that before it needs a better pipeline.
 
+### M.2 Where microglia stands on 2026-11-12, and the arithmetic that decides whether anyone can win this
+
+The table above ranks evidence quality. This is the standing, on the same axis, with the numbers this record
+actually holds.
+
+| column | ALTK-Evolve (`sup3`) | microglia, best cell | who is ahead |
+| --- | --- | --- | --- |
+| controlled paired lift | **+3.33pp** on 40 tasks (their own seed-paired A/B) | **+10.53pp** [−3.51, +24.56], p = 0.210 on 57 tasks (R55.0) | our point estimate is larger and **neither is resolvable** |
+| items per learning task | **~5.1** (retail, 292 from ~57) | **0.50–0.62** (R54 / R55.0 / R56 stores) | they are **8–10×** denser |
+| items admitted by recurrence | 31 of 292 at support ≥3 | **0 of 7** on τ² (R55.0), 0 of 1,296 on BIRD dev | they have recurrence, we have not produced any |
+| delivered items per request | all of them, every call, twice a turn | 1.42 through a 1,200-character pack | they deliver ~20× more material per question |
+| cost per scored task | not published | $0.0087 (R56 reference arm, 228 episodes, off-peak) | — |
+
+**Two of the four rows are supply, and supply is the only column where this project is behind.** The lift row is
+not a comparison: at n = 57 this lane resolves 20.27pp, so a 3.33pp effect is four times below the floor, and
+their own 40-task cell resolves roughly 12pp, so their effect is below their floor too. **Neither number is a
+result, and the table should say so rather than rank them.**
+
+**The bind, stated once because every queue decision now depends on it.**
+
+- Recurrence needs a workload where the same task returns. τ² has that and **114 teachable tasks** (retail) plus
+  50 (airline); a held-out half leaves 57, which resolves ~20pp, and the whole corpus at n = 114 still resolves
+  ~14pp. **No τ² cell can certify an effect smaller than ~13pp, and the domain's own controlled effect is 3.33.**
+- Sample size needs a corpus with thousands of questions. BIRD dev has 1,534 and resolves **1.99pp** — and it has
+  no recurrence by construction: 1,296 rules, **0 derived twice**, four independent mechanisms measured null there.
+- So the flywheel's claim — *experience pays on a workload that recurs* — is **currently undecidable on every
+  public benchmark this project can run**, by us and by the leader. That is not a reason to stop; it is the
+  reason the next two registrations are chosen for n and for recurrence, in that order.
+
+**What would actually settle it, priced.**
+
+1. **Pool the τ² domains** (retail 114 + airline 50 + telecom), one store per domain, pairs pooled: n ≈ 200–260,
+   resolution ≈ 9–10pp. Enough to certify a **+10pp** mechanism, not the leader's 3.33pp. One dispatch per
+   domain pair, ~$3.
+2. **Build a recurring corpus at n ≥ 1,500** out of a public source — BIRD's 7,829 out-of-sample questions over
+   58 databases, where recurrence is real *per database* (a rule about `races` governs every question on that
+   schema) rather than per question. The substrate exists; what does not exist is a distiller that reads the
+   database's questions as one population rather than one question at a time. That is a registration about the
+   **unit** — the same axis R58 is dispatching tonight — at a corpus size where the answer is decidable.
+3. **Report the corpus-level quantity that does not need per-task significance**: repairs per break and its
+   interval (out of sample 0.79, dev 1.08). It is already computed, it has a base and an interval, and it is the
+   only number here that would survive a reviewer asking "how large is the effect you can see".
+
+**Nothing in this appendix is a leaderboard row**, and the row that matters — *paired lift, on a workload that
+recurs, above the lane's resolution* — **is empty for every system in the field**, including the one that writes
+the guidelines.
+
 ## Appendix N — The SOTA holder's source, read: 292 bullets, selected by a count, injected twice a turn (2026-11-11)
 
 Appendix M ranked the field on evidence quality. This appendix does the thing that ranking implies and that
