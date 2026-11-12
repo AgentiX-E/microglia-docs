@@ -16157,3 +16157,33 @@ than the piece that was cheap.
 **193** modules / 7 adapter modules / 24 deferrals / core coupled=0. Both 04:00 UTC dispatches are still
 waiting in the band — R58 (`43140722331`, registration `R58-trace-unit`) and the ten-task R56 smoke
 (`43140726893`, registration `R56-register`) — and neither has spent anything yet.
+
+**The seventh switch landed, and the repository audit is why it landed whole.** `packMode` came in as
+three files and left as seven, because `scripts/audit.mjs` refuses a switch the code reads and no
+workflow can set — *"its default is its only value"*. That check was written for a different defect and
+it caught this one at first commit:
+
+```
+audit failed (1)
+  - workflow: packages/eval/src/pack-mode-plan.ts reads 'TAU_PACK_MODE', and no workflow can set it:
+    its default is its only value
+```
+
+The resolver alone would have been a switch that could not be thrown. So `sota.yml` carries the variable,
+the step output and **both** arms' assignment in the same commit, and `sota-source.test.ts`'s `OWNED`
+list gained the pair — which means the guard that checks *every* assignment of each key (the one written
+after the reference arm was found reading variables under a treatment that read the registration) covers
+the new switch from its first line rather than from the round it is first used.
+
+`prefix` is four knobs and a sentence: `anchoring=scope` and `minCoverage=0` are what stop retrieval —
+either one alone still retrieves, which is why both are asserted by name — and `limit=999` /
+`budget=200000` are the ceilings that make "no budget" renderable, chosen so a store of tens cannot reach
+them and recorded so the claim is checkable. `retrieved` returns an **empty** knob record, so the request
+every committed artefact was written with is reproduced byte for byte; a default that restated the pack
+layer's own policy would have moved the lane's entire history sideways.
+
+**The lane does not pass those knobs to the sidecar yet, and that is one env var.** `microglia_agent.py`
+builds the recall URL; it needs to append what the driver renders. Held deliberately until R58 answers:
+a prefix arm over a store with nothing at support 3 renders an empty block, and the difference between
+"the protocol does not help" and "the protocol was served nothing" would be invisible in exactly the
+artefact that was supposed to be comparable.
