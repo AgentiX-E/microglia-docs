@@ -6479,5 +6479,5 @@ what the sidecar is asked for.
 | P0 | `packMode` in the header, with its two-name validator and its refusal | done, 7 cases |
 | P0 | `pack-mode-plan.ts` — `retrieved` reproduces the historical request byte for byte | done, 6 cases |
 | P0 | `sota.yml`: the variable, the step output, both arms, and the `OWNED` guard | done, 42 source cases |
-| P1 | the lane's passthrough — one env var rendered by the resolver and appended by the agent | **held on R58**, so the first prefix arm cannot be one that served nothing |
+| P0 | the lane's passthrough — the resolver's fragment, carried by `MICROGLIA_PACK_KNOBS` and appended by `recall_url` | **done** (`3dd92ddf`); a malformed pair is dropped, and both sides of the switch are in `OWNED` |
 | P1 | R55.1's registration then names `packMode: prefix` and `minEvidence: 3` on one store | after R58 |

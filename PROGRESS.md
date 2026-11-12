@@ -16187,3 +16187,16 @@ builds the recall URL; it needs to append what the driver renders. Held delibera
 a prefix arm over a store with nothing at support 3 renders an empty block, and the difference between
 "the protocol does not help" and "the protocol was served nothing" would be invisible in exactly the
 artefact that was supposed to be comparable.
+
+**The last mile closed before the window opened.** `pack-knobs` renders the resolver's fragment,
+`MICROGLIA_PACK_KNOBS` carries it to both arms, and `recall_url` appends it in the one place this lane
+builds a request. Two properties are now assertions rather than intentions: the retrieved arm's URL is
+**unchanged character for character** (`task=tau2.act&text=…&domain=retail`, the request every committed
+artefact sent), and the prefix arm's carries all four knobs and precisely seven query pairs. A malformed
+pair is dropped rather than sent, because an empty value comes back a 400, the agent files a 400 as a
+recall failure, and an arm that served nothing would then look like an unreachable sidecar — the same
+category error as reading a silenced pack as an unmatched one.
+
+So R55.1 is dispatchable the moment R58 holds an item at support 3: the header names `packMode: prefix`
+and `minEvidence: 3`, `eval:prereg-form` refuses any dispatch that would run the other place, and the
+lane sends the request the registration describes.
