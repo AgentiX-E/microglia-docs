@@ -6598,3 +6598,28 @@ fixed before the window opened, and both were mine: the number came from reading
 sorted by name, and the missing readback came from treating a diagnostic as too small to need a
 grading rule. A diagnostic is where a grading rule is most valuable, because its outcome decides which
 of three fixes the next month spends.
+
+### Both arms are dispatched, and the premise is a test rather than a paragraph
+
+The raw arm went out with a test behind it instead of an argument. One record written from one task,
+recalled by a second task's question: served at `minCoverage: 0.2`, not served for a request about the
+weather, rendered block carrying `W237` and `item-9`. At the setting the lane actually runs
+(`recallFloor: 0`, no gate) both requests are served — which corrected three documents at once and is
+recorded as §34.104, because a threshold that no run applies is a sentence rather than a measurement.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | `R86` fault census (`43187614906`, `f8d9c84a`) | waiting for 10:00 UTC, under $0.10 |
+| P0 | `R85` raw-record arm (`43189470917`, `798133ff`) | waiting for 10:00 UTC, about $1.06 |
+| P0 | read both: `r86_readback.py`, `r85_readback.py` (self-tests 12/12 and 15/15) | ~12:00 UTC |
+| P1 | the abstraction arm re-run under whatever `R86` names, so `R85` has a same-window comparator | blocked on `R86` |
+| P2 | in-episode arm (Appendix O): the store written after each failed trial | designed, not built |
+| P2 | `R55.1` (`packMode: prefix`, `minEvidence: 3`) | still blocked: no item at support 3 exists |
+
+**What each outcome buys.** If `R86` names the ceiling, the fix is one constant and the abstraction arm
+can be re-run cheaply — which is the comparison that actually decides whether the raw arm is better or
+merely different. If it names the provider, the ceiling and the form are innocent and the next month
+goes to backoff and concurrency rather than to prompts. If `R85` clears 12% coverage with records in
+the store, the two preprints' finding transfers to this corpus and the object is settled in one
+dispatch; if it does not, the constraint was never the object and the next registration is about the
+retrieval function.

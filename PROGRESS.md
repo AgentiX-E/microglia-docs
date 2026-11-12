@@ -16500,3 +16500,40 @@ regenerated, `pnpm check` exit 0.
 
 `R86` was re-dispatched at 09:00 UTC for the 10:00 window (`43187614906`, ten tasks, trace unit,
 memory arm, under $0.10) and `R85` goes out at 16:00 UTC (~$1.06, stated in advance).
+
+### 173.83 — The arm's premise was asserted, not assumed, and one sentence of 173.82 was wrong
+
+Between building the raw arm and spending a dispatch on it, the premise went into a test: one record
+written from one task, recalled by a *different* task's question. It passed, and on the way it
+corrected a sentence this record had just written.
+
+| question, at `minCoverage` | 0 | 0.1 | 0.2 | 0.3 | 0.5 | 0.8 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Please cancel W237, the item is no longer needed` | 1 | 1 | 1 | 1 | 1 | 0 |
+| `What is the weather in Lisbon next Tuesday?` | 1 | **0** | **0** | **0** | **0** | 0 |
+
+**The lane does not gate on coverage.** Every registration here fixes `recallFloor: 0`, which means the
+pack carries whatever is servable and coverage is *measured* rather than enforced. So R58's 10.53% says
+"the block the model read was almost unrelated to the question", not "the item was removed at the
+floor" — the same text-level fact, one mechanism closer to the model and further from the filter. The
+wrong version was in three places (this record, the module's own docstring, and R85's registration) and
+all three are corrected; the numbers are unchanged and the prediction stands, since R58 and R85 run at
+the same setting.
+
+What the table does establish is the discrimination the arm exists for: *with* a floor, the record
+survives a request that shares its words and vanishes for one that does not. An abstracted claim gives
+a floor nothing to act on, which is what 10.53% is a reading of.
+
+**Two smaller facts fell out of the same test.** The record's rendered block carries `W237` and
+`item-9` — the faithfulness claim asserted once at the boundary where the model reads it, rather than
+only in aggregate. And the first version of the test produced an item at confidence 0.5396 against an
+activation threshold of 0.6, because it did not pass the lane's own `editSemantics`: a τ² correction is
+gold-verified and must be priced as one, or the store marks it a candidate. Stored, counted, and
+reachable by nothing — the §34.103 defect, found twice in two days by two different tests.
+
+**Delivery.** 211 test files, **4,435 tests**, coverage **100 / 99.88 / 100 / 100**, `pnpm check` exit 0,
+commit `bc41648` → `798133ff`.
+
+Both dispatches now carry the corrected text: `R86` (`43187614906`, `f8d9c84a`) and `R85`
+(`43189470917`, `798133ff`, re-sent rather than left running under the pre-correction registration).
+Both wait for the 10:00 UTC window; `R86` costs under $0.10 and `R85` about $1.06.

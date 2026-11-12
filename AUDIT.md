@@ -7723,3 +7723,40 @@ store of fallback lessons produced no measurable effect, and it was read at the 
 were not useful". It may have been "the lessons were never offered". Not changed here: it is core's
 generic default and a lane-level override would be a second variable. Recorded, and the raw unit
 scopes to the domain because of it.
+
+### 34.104 A threshold that no run applies is a sentence, not a measurement
+
+Three documents described the coverage floor as the thing that removes an item — this record's
+progress section, the raw arm's own module docstring, and the registration that dispatched it — and no
+run in this repository has ever applied it. Every registration fixes `recallFloor: 0`, so `recall`
+receives `minCoverage: 0`, the pack carries whatever is servable, and coverage is measured after the
+fact.
+
+```
+minCoverage  0     0.1   0.2   0.3   0.5   0.8
+related       1     1     1     1     1     0
+unrelated     1     0     0     0     0     0
+```
+
+The first row is the arm's premise and it holds. The second row is the correction: at the setting every
+dispatch actually runs at, the unrelated request is *also* served the record, because a floor of zero
+removes nothing. The number that survived — R58's median non-zero coverage of 10.53% — is therefore a
+statement about the text the model read, not about a filter's decision, and the difference is one
+mechanism: the same low overlap either produces a pack of irrelevant text or an empty pack, and only
+the second is what "the floor dropped it" describes.
+
+**Why this is a class and not a typo.** A threshold appears in a readback next to a number and reads as
+if it acted on that number, and nothing in the artefact can contradict the sentence, because the
+artefact records the reading and not the setting that would have applied it. The three documents were
+written by the same hand in the same week and agreed with each other, which is exactly how a claim that
+no run supports becomes the record's version of events.
+
+**The rule.** A threshold in a readback has to travel with the setting that applied it, and the setting
+has to come from the artefact rather than from the registration's intention. Where the artefact cannot
+supply it — `coverage.floors[]` records the retained-pack count at *every* floor, but not which one the
+run used — the sentence should say "a floor would remove this" rather than "the floor removed it".
+
+**What the test bought.** The premise is now asserted in-process (`tau2-rawlog-recall.test.ts`): one
+record, two requests, one floor. That is cheaper than the dispatch it protects — the dispatch is $1.06
+and an hour of a scarce off-peak window — and it is the second time in two days that writing the
+assertion before the run changed what the record says rather than confirming what it already said.
