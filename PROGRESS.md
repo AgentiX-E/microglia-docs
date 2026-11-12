@@ -15973,3 +15973,85 @@ number in the record that is not the number the run ran is a lie with a plausibl
 on every push in this round. **R56 is still running** (`43115503600`, memory arm at 20 minutes); its two readings
 and R55.0's census land together, and the census needs no further dispatch because the field is written by the
 driver rather than by the arm.
+
+### 173.77 — R56's re-dispatch stopped at zero candidates, and the funnel could not say who emptied the store
+
+The re-dispatch (`43115503600`) is `NO_MEASUREMENT` again, and this time the refusal sentence was wrong. Its
+memory arm read:
+
+```
+[poc-l4] no measurement: 12 correction(s) -> 0 candidate(s) -> 0 admitted -> 0 stored -> 0 servable
+         (0 refused, 0 failed): the interpreter proposed no candidate over any correction
+```
+
+The reference arm ran the whole cell: 57 tasks × 4 trials, `pass^4 = 0.5614`, 3,548 calls, **$0.4943**, cache
+92.14%. The memory arm paid its learn half — 988 calls, **$0.1345** — distilled twelve corrections, and stopped
+before a single episode. The job's red is the pairing step, which is honest: an arm with no `per_task` rows
+cannot be joined, and the summary says so rather than publishing a control as a pair.
+
+**The sentence blames the interpreter, and the counter cannot see the interpreter's two stages.** `candidates`
+is incremented *after* `parseDistillResponse`, and `distillFailed` counts only throws. Three different breaks
+produce `0 candidate(s), 0 failed`:
+
+| break | what happened | what the record said |
+| --- | --- | --- |
+| the event never arrived | the journal carried nothing to ask about | *the interpreter proposed no candidate* |
+| the parser refused the reply | `kind` outside the five, empty statement, or past 640 characters | *the interpreter proposed no candidate* |
+| the model wrote nothing | a genuine `{"candidates":[]}` | *the interpreter proposed no candidate* |
+
+The core parser has exposed `audit(reason)` since the round that lost a content form to a silent cap, and this
+lane never connected it. So R56's re-dispatch is one number, three causes, and no field that separates them —
+the sixth "a loss that left no trace" in the τ² lane and the first one to stop a run in the same sentence that
+misdiagnosed it.
+
+**What the instrument now says.** `FunnelInput` gains `asked` (events the distiller was asked about) and
+`dropped` (claims the parser parsed and did not keep, by reason). The chain prints the step where it happens —
+`12 correction(s) -> 12 asked -> 0 candidate(s)` — and `emptyStage` has a sentence per cause: the batch when
+nothing reached the interpreter, the parser with its reason census when the reply arrived and did not survive
+the schema, and the model only when it is the model. Absent on every artefact written before the field, so an
+old reading is unchanged rather than read as zero. Both new sentences are driven end to end against the stub
+benchmark: an empty reply reads as `answered all 1 event(s) with no claim`, a reply of an unknown kind reads as
+`dropped every claim the model wrote (1 dropped: unknown-kind 1)`, and each asserts that the other sentence did
+not fire.
+
+The τ² distiller's 1,200-token ceiling also becomes a named value recorded as `distillForm.maxTokens`. R56's
+re-dispatch was read without knowing it, which is exactly the defect R84 closed in the BIRD lane from the other
+side. The ceiling does not move — an instrument fix that also changed a budget would be two variables in one
+dispatch.
+
+**The treatment is not yet reproducible, and that is the honest state of R56.** Same registration, same form,
+same ban: the first run distilled **8 corrections → 8 candidates → 8 items** and read −8.77pp; the re-dispatch
+distilled **12 → 0 → 0**. One of those two is not the treatment's doing. The smoke queued for the 04:00 UTC
+window runs the same header on ten tasks for $0.15 and will name the cause; until then R56's HARM reading stands
+as **one** measurement with an unexplained replication, not as a settled revert.
+
+**Two registrations were about to run arms their headers never named, and one of them tonight.** R58's entire
+treatment is the trace unit and its header said nothing, so the dispatch would have read
+`vars.TAU_DISTILL_UNIT`; R62's is the teaching population and its header said nothing either. Worse, R58's text
+asks for "up to three claims per trace" while `vars.TAU_TRACE_CLAIMS` holds **6** from the round that asked
+whether the cap binds — so the registration would have run at six, under its own name, with its artefact
+agreeing with the variable rather than with the text:
+
+```
+$ pnpm eval:prereg-form prereg/R58-trace-unit.md '' '' '' 6
+[prereg-form] this registration fixes the trace ceiling at 3 claim(s) and this dispatch would run '6',
+              so the ceiling is not the only variable that moved
+```
+
+`distillScope` (`edited`/`all`) and `traceClaims` (1..8) are the fifth and sixth header fields, each with its
+own refusal function, and `eval:prereg-form` emits all six values the workflow now reads from the step that
+parses the header. R58 gains `distillUnit: trace`, `traceClaims: 3`, `distillScope: edited`; R62 gains
+`distillScope: all`.
+
+**The guard that was supposed to catch this read one of the two arms.** The last round's test asserted that each
+of the seven switches prefers `steps.recall_floor.outputs.*` — but it took the *first* assignment of each key,
+and two arms set the same switch. The reference arm was still reading `vars.TAU_DISTILL_FORM` and
+`vars.TAU_INJECTION_NOTE`: a control whose artefact records `lesson` beside a treatment that recorded `procedure`
+is two experiments in one file. Checking every assignment found R53's note level inside the hour —
+`TAU_INJECTION_NOTE` in the memory arm was the variable, so a registration with `facadeNotes: three-level`
+would have run the standard note under the three-level arm's name.
+
+4,369 tests, **100/100/100/100**, 72/72 registrations valid, coupling ledger 11 checks / 191 modules / 24
+deferrals. **Two dispatches are queued for the 04:00 UTC window** (`not_before`, so neither pays the 01:00–04:00
+double rate): R58 on the full cell (~$1.2) and the ten-task R56 smoke (~$0.15). This iteration's own bill was
+**$0.63** for a run that produced no reading — the price of the instrument that makes the next one readable.
