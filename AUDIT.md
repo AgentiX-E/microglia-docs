@@ -7625,3 +7625,53 @@ sides; where one side is a fallback, the disagreement is a fact about the enviro
 environment belong in the run's annotations. The second half of the rule is the one this project keeps
 learning: **the observation still has to reach a reader** — so an override that is only a warning in a log
 nobody opens is the same defect as §34.100, one layer up.
+
+### 34.102 A store that was never built cannot refute the unit that was supposed to build it
+
+R58 came back `ABANDONED` with two refutations fired, and both of them were true statements about a
+store that should not have been graded at all:
+
+```
+FIRED nothing recurs even after the pass: no item reaches support 2  (after {1: 6})
+FIRED the pass is inert: it merged no group, so recurrence appeared to be consolidated  (0 of 6)
+```
+
+Six items. Fifteen corrections. And, one line above in the same artefact, the fact that explains
+both: `llmFailed: 11`. Eleven of the fifteen distillation events threw, `resilientInterpreter`
+answered them with the rule interpreter, the rule interpreter writes nothing for a trace, and the
+store was built from the four answers that survived. The funnel reported `0 dropped` and `0 failed`
+because *nothing was rejected* — the events never arrived.
+
+**The counting was right at every layer and the conclusion was wrong at the top.** `asked: 15`,
+`candidates: 6`, `dropped: 0`, `failed: 0`, `llmFailed: 11` — five numbers, all correct, and the
+readback used four of them to grade a hypothesis the fifth had already voided. This is AUDIT 34.100
+one layer down: the fact existed, in the artefact, in a field beside the ones being read, and the
+reader was not told that the chain from corpus to claim passes through a component that can fail.
+
+**What the reader now does.** `LLM_FAILURE_VOID_SHARE` gates the recurrence predictions on the share
+of events the model actually answered. At or above half, the run is `NO_MEASUREMENT`, the sentence
+names the layer and the codes, and the store's silence is not published as the unit's refutation.
+Below it, the run is graded and the fallback share is printed, because a sample with a stated hole
+is still a sample. The threshold is a judgement and is named as one; what is not a judgement is that
+a store describing 27% of its corpus cannot say whether claims recur.
+
+**Three things had to be fixed for that sentence to be writable, and they are the lesson.**
+
+1. `faults().reasons` was collected by `resilientInterpreter` from the day it was written and reached
+   nothing that survives the process. The count survived; the codes did not. A count with no code is
+   a number that says *something failed eleven times* — which is exactly as actionable as no number.
+2. The bill was computed from the clock at the moment `usage_stats()` was called, which is the *end*
+   of the phase. R58's evaluation opened in the off-peak band and closed in the peak one, and the
+   artefact priced all ninety-three minutes at double: $2.1162 reported against $1.0581 for the same
+   tokens. A cost read at the wrong end of a run is not conservative, it is misleading in the
+   direction of changing a schedule that was already correct.
+3. The readback was willing to grade a run whose earlier stage had failed. Nothing in it was
+   *wrong*; it simply had no notion that its inputs had provenance.
+
+**The general rule, and it is the third form of one this file already states twice.** A metric whose
+value depends on a stage that can fail needs that stage's exit condition recorded beside it, and the
+reader needs to check it before reading. The funnel got this right for the parser (R56), the coverage
+reading got it right for the population (R54), and the recurrence reading had it wrong for the model.
+Written as a rule: **every prediction should name the stage it assumes ran, and the readback should
+refuse to grade it when that stage's own count says it did not.** A refutation is a claim about the
+world, and a claim about the world needs an instrument that was working when it was taken.

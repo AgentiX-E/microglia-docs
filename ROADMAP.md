@@ -6543,3 +6543,29 @@ model calls.
 
 Sequenced after R58 on purpose: a store that does not recur in the offline shape gives an in-episode arm
 nothing to accumulate. Recurrence first, accumulation second.
+
+### R58's window closed on the second arm, and the store closed at four answers
+
+The re-dispatch ran: 15 corrections, 57 traces read, **11 of 15 distillation calls faulted**, six
+items stored, `{1: 6}` before and after a consolidation pass that formed **zero groups at every
+threshold from 0.40 to 0.80**, coverage 10.53% against a 12% bar, `pass^4` **0.6491** against the
+published 0.575, and retention **0.881** over 143 pairs. The reference arm was refused at 06:21 by
+the peak guard, correctly, because the memory arm alone had taken 119 minutes.
+
+Three consequences, in the order they must be addressed.
+
+| Priority | Item | Why it is here |
+| --- | --- | --- |
+| P0 | ten-task trace-unit diagnostic that returns `llmFailedReasons` | 11 faults of 15 is a prompt problem, a token-ceiling problem or a provider problem, and the fixes differ; costs cents |
+| P0 | the scheduling constraint: learn 26 min + evaluate 93 min = 119 min against a 120-min window | a paired dispatch of this size cannot fit; open at 04:00 exactly, split the arms, or state the second arm runs at double price |
+| P1 | the `rawlog` arm (Appendix P.3) — raw-history RAG at the same retrieval scope | the field's baseline is raw RAG, not no-memory, and our reference arm is the wrong control |
+| P1 | the in-episode arm (Appendix O) — memory written after each failed trial | makes hold rate comparable in kind to 0.88/0.65 and tests the anti-persistence finding |
+| P2 | R55.1 (`packMode: prefix`, `minEvidence: 3`) | still blocked: no item at support 3 exists, and R58 did not create one |
+| P2 | R53, R57 | downstream of a store that can be built |
+
+**What the round did settle.** The trace unit reaches the wire and behaves (100% of corrections
+carry a trace, nothing dropped by the parser); six items served at 2.0 per request and did not lose
+points; the consolidation pass is starved rather than inert — six claims from six different tasks
+were never going to overlap; and retention, the instrument added the same night, produced its first
+number and it is 0.881 with the caveat attached. The support axis is neither open nor closed. It is
+unmeasured, twice, for two different reasons, and both reasons are now named in the readback.

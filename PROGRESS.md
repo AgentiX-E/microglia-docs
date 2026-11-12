@@ -16303,3 +16303,90 @@ R58 was re-dispatched at 04:21 UTC on the corrected payload, inside the off-peak
 06:00 (`43154220251`, registration `R58-trace-unit`, whole held-out set, both arms). Its six predictions
 are unchanged and were fixed before the run; the fifth — *the unit ran, at least 80% of corrections carry
 a trace* — is the one that decides whether the arm is a treatment or half a control.
+
+### 173.80 — R58 ran, the unit ran, and the store was built from four of fifteen answers
+
+The re-dispatch (`43154220251`) completed its memory arm at 06:21 UTC and its reference arm was
+refused by the peak guard six seconds later. Between those two facts sits the whole round.
+
+| what | value | where it comes from |
+| --- | --- | --- |
+| corrections, and traces read | **15 corrections, 57 traces, 100% carry a trace** | `distillUnit.traces/traced` |
+| distillation events asked | 15 | `learning.events` |
+| of those, answered by the rule fallback | **11** | `learning.llmFailed` |
+| claims, items stored | 6 claims → **6 items**, all active, all servable | `distillUnit.claims`, `store` |
+| support, before → after the pass | **`{1: 6}` → `{1: 6}`** | `consolidation.supportBefore/After` |
+| groups the consolidation pass formed | **0**, at every threshold from 0.40 to 0.80 | `sweep` lines |
+| median non-zero coverage | **10.53%** on 456 pairs (bar: 12%) | `coverage.medians.medianNonzero` |
+| `pass^4` | **0.6491** on 57 tasks, against the published 0.575 | `metrics.pass4` |
+| retention, first reading in this project | **143 pairs, 126 held, 0.881** | `holdRateOfTrials(per_trial)` |
+| bill | learn **$0.129**; evaluation **$1.0581–$2.1162** (band crossed) | `usage` |
+
+**The first verdict was wrong and the instrument said so.** `r58_readback` graded the run `ABANDONED`
+on two of the registration's own refutations — *nothing reaches support 2* and *the pass is inert* —
+and both fired on a store of six items. Then `learning.llmFailed: 11` of 15, and `candidates: 6`,
+and `0 failed`, `0 dropped`: nothing in that store was rejected, because eleven of the fifteen events
+never reached the model at all. The provider faulted, `resilientInterpreter` answered with the rule
+interpreter, the rule interpreter produced no claims for a trace, and the run carried on to evaluate
+a store built from 27% of its corpus.
+
+That is the "three owners of a zero" rule one layer down: a zero at the census can be an absent
+corpus, an absent parser, or an absent provider, and the funnel counts the first two. The readback
+now refuses to grade the recurrence predictions when half or more of the events faulted, names the
+layer, and prints the codes. Re-read under that rule the run is `NO_MEASUREMENT` with one prediction
+passed (*the unit ran*) and four ungraded.
+
+**What R58 does establish, and it is not nothing.** The trace unit reached the wire and behaved —
+57 traces read, every correction carried one, `0 dropped` by the parser. At **six items** the pack
+still served 2.0 items a request, and the arm scored `pass^4` **0.6491 against the lane's published
+0.575**: +7.41pp, unresolved at n=57 (the registration priced the half-width at 19.66pp before the
+run, and it was right). A six-item store built from four model answers is the smallest memory this
+lane has ever evaluated, and it did not lose points.
+
+**The consolidation pass is not inert, it was starved.** The sweep reports `groups=0` at 0.40, 0.45,
+0.50, 0.55, 0.60, 0.65, 0.70, 0.75 and 0.80 — nine thresholds, no pair above the weakest floor. Six
+claims, one per surviving correction, each written from a different task: nothing in that set was
+ever going to overlap. R55.0's `{1: 7}` and R58's `{1: 6}` are the same reading twice, and neither
+is a statement about whether paraphrases converge on a store that has paraphrases in it.
+
+**Retention's first number is 0.881** — 143 consecutive pairs, 126 held — and it lands within a
+thousandth of the in-episode comparator's published 0.88 while measuring a different thing. Two
+estimators were run over the same artefact (`holdRateOfTrials` from the `per_trial` ledger and
+`holdRate` from `per_task.outcomes`) and they agree to the pair count, which is the only cross-check
+that can catch a derivation that silently drops an arm. The caveat travels with it, as §173.79 said
+it would: this is stability under a fixed store, not accumulation across attempts.
+
+**The reference arm never ran, and the guard was right.** The peak window opened at 06:00; the
+memory arm finished at 06:21. The reference arm was refused in six seconds with
+`tau2-peak-window: dispatched at Thu 06:21 UTC`, which is the guard doing exactly what it was
+written for. The scheduling fact underneath is worth more than the incident: **the trace unit's
+memory arm costs 119 minutes end to end (26 learn + 93 evaluate) against a 120-minute off-peak
+window.** A paired dispatch of this size cannot fit in one window. Every previous paired run fitted
+because the correction unit's evaluation was roughly half as long, and nothing in the workflow says
+so — the next registration has to either open at 04:00 exactly, split the two arms across two
+dispatches, or state that the second arm runs at double price.
+
+**Three defects fixed on the way out, all of them the same shape.**
+
+| # | what was wrong | evidence it was wrong | commit |
+| --- | --- | --- | --- |
+| 1 | the artefact carried *how many* distillation calls the fallback answered and not *why* | `llmFailed: 11`, no codes anywhere; `faults().reasons` died with the process | `d027a76` → `a8b4146a` |
+| 2 | the readback graded a store built from 4 of 15 answers as a refutation of the unit | `ABANDONED` over 6 items, 11 events never reaching the model | `76ee5d5` → `3acbba4b` |
+| 3 | the bill was priced at the hour the phase ended, not the band it ran in | `$2.1162` reported, `$1.0581` in the band the phase opened in | `38a4355` → `2bae3628` |
+
+The third is the one with a recurring cost. A phase that crosses 06:00 is *bounded* by two numbers,
+not known: the artefact now reports the band it opened in, `band_boundary_crossed`, and
+`usd_if_ended_in_its_closing_band`. Every run that outlived its window before today over-reported by
+up to a factor of two, and the over-report pointed at the wrong remedy — moving a window that was
+already fine.
+
+**Delivery.** 208 test files, **4,401 tests**, coverage **100 / 99.98 / 100 / 100**, 72/72
+registrations, coupling ledger 11 checks / 194 modules / 24 deferrals, `pnpm check` exit 0.
+
+**Where this leaves the queue, stated plainly.** The support axis is not closed and it is not open:
+it is unmeasured, twice, for two different reasons — R55.0 for want of a unit that could produce
+overlap, R58 for want of a provider that could produce the store. The next dispatch is a **ten-task
+diagnostic at the trace unit**, whose only job is to return `llmFailedReasons`, because eleven faults
+of fifteen is either a prompt problem, a token-ceiling problem or a provider problem, and those three
+have three different fixes. It costs cents. Nothing downstream of it should be scheduled until it is
+read.
