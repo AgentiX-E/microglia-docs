@@ -4840,3 +4840,52 @@ If (2) fails with records in the store, the two preprints' finding is about thei
 about this one, and the next registration is about the retrieval function rather than the object. That
 is written into the registration's refutation section before the run, which is the only time it can be
 written honestly.
+
+## Appendix R — What n=57 can and cannot claim, and the cheapest way to double it (2026-11-12)
+
+Every lift this lane has reported is a difference of a few points on 57 held-out tasks, with a 95%
+half-width near 13pp. That is enough to report a direction and not enough to claim a ranking, and this
+appendix states the arithmetic before the next number is quoted.
+
+### R.1 The interval, stated as a formula rather than felt
+
+A per-task `pass^4` is a Bernoulli, so the standard error is `sqrt(p(1-p)/n)`:
+
+| n | p = 0.575 | p = 0.65 | half-width at 95% |
+| --- | --- | --- | --- |
+| 57 (one domain's held-out split) | 0.0655 | 0.0632 | **±12.4–12.8pp** |
+| 114 (both τ² domains' held-out splits) | 0.0463 | 0.0447 | **±8.8–9.1pp** |
+| 228 (both domains, two seeds) | 0.0327 | 0.0316 | ±6.2–6.4pp |
+
+R58's +7.41pp was therefore always going to be unresolved at n=57, and the registration said so before
+the run (it priced the half-width at 19.66pp under a more conservative form). A number quoted without
+this table beside it reads as a finding and is a direction.
+
+### R.2 The cheap doubling
+
+τ² ships two domains with the same shape — retail and airline, 114 tasks each — and this lane has
+always run one of them. The held-out split of the second domain is the same experiment on a different
+corpus, which buys two things at once:
+
+- **n = 114** for the same treatment, if the two arms are pooled, at **±9pp** rather than ±13pp;
+- a **replication**: a mechanism that lifts retail and not airline is a mechanism with a domain
+  condition, and the current record cannot tell that from noise.
+
+The cost is the reason it has not been done: a second domain's learn phase plus evaluation is another
+~$1.06 at off-peak rates, and both domains cannot share a dispatch today because `l4_arms` enumerates
+*memory* against *reference*, not *treatment A* against *treatment B*.
+
+### R.3 Where this puts the comparison
+
+| what can be claimed now | what it needs first |
+| --- | --- |
+| the raw store's coverage clears 12% where an abstracted store read 10.53% | R85's artefact (dispatched) |
+| a store built at zero write cost does not fall below the published 0.575 | R85, at ±13pp — a direction, not a ranking |
+| `pass^4` 0.6491 for the trace arm against 0.575 | a second domain or a second seed, to leave "direction" behind |
+| hold rate 0.881 as **stability**; 0.88 / 0.65 as **accumulation** | the in-episode arm (§17.127), not built |
+
+The honest summary of this lane's position against the field is that its *instrumentation* is ahead —
+faithfulness, accessibility, retention, funnel provenance, and a pre-registered revert rule that has
+fired — and its *sample* is behind, at one domain and one seed where the papers it compares against run
+nine settings. Doubling the sample is the cheapest SOTA-relevant work available, and it is a dispatch
+decision rather than an engineering one.

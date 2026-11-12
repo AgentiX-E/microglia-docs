@@ -8583,3 +8583,62 @@ which is why closing it is a registration and not a bug fix.
 accessibility everywhere (`asked`, `dropped`, `served`, `store.active`, pack coverage) and faithfulness
 nowhere, and no arithmetic over the delivery funnel recovers it — a store can serve every item it holds
 and still have thrown the order id away at write time.
+
+### 17.127 The in-episode arm: where a write during evaluation has to go, and the four rules that keep it honest
+
+Appendix O and `More Memory, Worse Agents` both point at the same arm and it is the one this lane has
+never run: the store is written **inside** the episode, from the trial that just failed, so trial *t+1*
+of the same task reads what trial *t* taught. Their numbers are the only persistence numbers in the
+field — `pass^1` 0.064 → 0.170, hold rate 0.88 / 0.65, and 59.9% for guidance that is *discarded* after
+use against 49.0% for guidance that is stored.
+
+The lane cannot produce a comparable number today, and the reason is architectural rather than
+statistical: `run_split.py` freezes the store before the evaluation phase starts, and the four trials
+of a task are executed by the Python side, which has no route back into the store.
+
+#### What has to exist
+
+| piece | where it lives | why there |
+| --- | --- | --- |
+| a write endpoint on the driver's recall server | `packages/eval/src/bin/tau2-driver.ts` | the server already owns the store and the host handle; a second owner would be a second view of one store |
+| a per-trial boundary in the runner | `eval/drivers/tau2/run_split.py` | the runner is the only component that knows a trial ended, and therefore the only one that can order the write |
+| a monotonic trial watermark | both, carried in the request | a write from trial *t* must be invisible to trial *t*, or the arm measures leakage rather than learning |
+| a per-task store partition decision | `tau2-scope.ts` | a record scoped to its own task is the only thing an in-episode arm can serve; the domain scope the offline arms use would serve task A's lesson to task B, which is the *other* experiment |
+
+#### The four rules
+
+**1. A trial sees strictly earlier trials, and the check is mechanical.** The runner sends
+`{taskId, trial, correction}` to the write endpoint and queries recall with `before: trial`. The store
+filter is on the evidence's own trial index, so a record written at trial *t* cannot appear in trial
+*t*'s pack — a property that has to hold against a concurrent writer, which is why the watermark lives
+in the request rather than in the driver's memory.
+
+**2. The write is the trial's own failure, not a summary of the task.** The moment a task has failed,
+its correction is by definition in hand (τ²'s `evaluation_criteria.actions`), so the unit is the same
+`correction` the offline arm uses, distilled by the same interpreter — with `unit=raw` available as the
+cheaper treatment, at zero model calls.
+
+**3. The cost is bounded at one distillation call per failed trial and stated before the run.** 228
+trials at four per task, of which the failures are the minority. The consolidation pass stays at zero
+model calls. A dispatch that cannot state this bound is a dispatch that will be read as a cost
+regression three weeks later.
+
+**4. The reading is hold rate, and it is quoted as accumulation.** With the store written inside the
+episode, `P(pass at t+1 | pass at t)` becomes the quantity `Learning on the Job` reports, and 0.88 /
+0.65 become comparable **in kind** for the first time. The caveat that travels with the number changes:
+the offline arm's "stability under a fixed store" becomes "accumulation across attempts", and the two
+must never be printed in the same column without the label.
+
+#### What it measures that no offline arm can
+
+Whether this mechanism's trouble is **retrieval** (the right lesson exists and is not served) or
+**writing** (the lesson never existed). A fixed store cannot separate them: an item that was written
+badly and an item that was written well and never served both read as "the pack was empty". The
+in-episode arm separates them by construction — trial *t+1* knows exactly one thing more than trial *t*,
+which is what trial *t* taught.
+
+#### Sequencing, and why it is not first
+
+After the store-shape comparison (R85 against R58's arm), because an in-episode arm over a store whose
+items cannot be matched lexically would accumulate lessons into a pack nothing reads — and would
+report that as "accumulation does not help".
