@@ -8535,3 +8535,51 @@ inside the driver; `store-sweep.ts` runs over the projection an artefact ships, 
 a dispatch. A test asserts they agree on group count, largest group and weakest pair at every floor,
 because a diagnostic that grouped a store differently from the pass that wrote it would let a
 readback discover a defect that is an artefact of the diagnostic.
+
+### 17.126 Retention: the second reading of one pair, and the three rules that make it a measurement
+
+`pass^k` is a mean over tasks and it answers one question: did every trial of this task pass. Four
+trials collapsed into one bit throws away the only information that says whether the memory *held* —
+whether a task that passed on trial 1 was still passing on trial 2, or whether the first pass was luck
+and the knowledge in the pack was never read.
+
+```
+HoldRate = { ordered, withoutOrder, pairs, held, rate }
+
+rate = held / pairs          pooled over consecutive pairs, not averaged per task
+rate = undefined             when pairs = 0, never 0
+```
+
+Three rules decide whether this is a measurement or a number that looks like one.
+
+**The order is carried, not recomputed.** `per_task` rows hold `successes/trials`, and two tasks with
+`2/4` are indistinguishable there — one passed trials 1 and 3, the other 1 and 2. `toPassAtK` therefore
+carries `outcomes` beside the counts, and the ledger `per_trial` (`{id, trial, reward}`) carries the
+same order for every artefact written before the field. `holdRateOfTrials()` builds the reading from
+either, so a published run can be re-read without being re-run, and `per_task` stays the row the pairing
+step joins on.
+
+**Pooling is over pairs, and the denominator is printed.** A rate over 8 pairs and a rate over 20 are
+not the same claim, and a per-task mean of per-task rates weights a task with three pairs the same as a
+task with one. Both counts are carried, and the reader prints `held of pairs` beside the rate.
+
+**A task that failed first contributes no pair.** Its later passes are evidence about *recovery*, which
+this statistic does not measure; folding them in would make the rate collapse toward `pass^1` and would
+report a memory that rescued a task as a memory that held it. Tasks that carried no ordered outcomes are
+counted in `withoutOrder` rather than dropped, so a rate over two of ten tasks cannot be read as a rate
+over ten.
+
+**Where it is read, and what it may not be quoted beside.** The pair artefact carries `retention` for
+both arms; the arm artefact carries the order the reading needs; `_retention.py` renders it and prints
+`absent` — with a reason — for a pair that predates the field. The comparison it is *not* licensed to
+make is the cross-paper one: `Learning on the Job` (arXiv:2607.22157) writes its memory **inside** the
+episode, so its four trials are the same task recurring with the previous lesson available. This lane
+writes from a separate learn split, so its trials are repeated attempts under a fixed store. Same
+formula, different quantity — and the difference is a property of the corpus, not of the estimator,
+which is why closing it is a registration and not a bug fix.
+
+**Read-side and write-side are separate instruments.** The tax this reading cannot see is the one
+`Memory Tax` names `faithfulness`: a detail destroyed when the item was written. This lane instruments
+accessibility everywhere (`asked`, `dropped`, `served`, `store.active`, pack coverage) and faithfulness
+nowhere, and no arithmetic over the delivery funnel recovers it — a store can serve every item it holds
+and still have thrown the order id away at write time.
