@@ -6526,3 +6526,20 @@ quoted as the *shape* of the measurement rather than as a value to compare.
 | P1 | R55.1 (`packMode: prefix`, `minEvidence: 3`) on the same store, gated behind R58's support-3 item | registration ready, dispatch blocked on R58 |
 | P1 | R53 and R57, both downstream of what the store contains | blocked on R58 |
 | P2 | if R58 refutes: the ceiling is the *corpus*, and the next registration is about the sample | registered as a possibility in R58's own Refutation section |
+
+### The corpus is the remaining gap, and it is one variable
+
+Appendix O put the field's one published persistence number beside ours and named the difference: the leader
+writes its memory **inside the episode**, from the trial that just failed, so trial 2 reads what trial 1
+taught. This lane writes from a separate learn split, so its four trials run against a fixed store and its
+hold rate — once R58 produces one — measures stability under a fixed memory rather than accumulation across
+attempts. Same formula, different quantity.
+
+The arm that closes it changes **when the store is written** and nothing else: trace unit, consolidation,
+the tool-name ban, model, seed, split, held-out tasks and the four trials all held as R58 fixes them; the
+reference arm still runs empty, so `pass^1` and hold rate are read against a control in the same dispatch.
+Bounded at one distillation call per failed trial and three claims each, with the consolidation pass at zero
+model calls.
+
+Sequenced after R58 on purpose: a store that does not recur in the offline shape gives an in-episode arm
+nothing to accumulate. Recurrence first, accumulation second.

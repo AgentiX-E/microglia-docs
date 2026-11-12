@@ -4629,3 +4629,71 @@ different artefact from a store of database facts, and it is the one a "data fly
 **the flywheel's product is not knowledge about the data, it is discipline about the process** — which is
 exactly the axis on which our own store has been thin (0.62 items per learning row, and a `lesson` form that
 asks `when` to name tables and columns).
+
+## Appendix O — The axis the field measures and this lane could not: what survives to the next attempt (2026-11-12)
+
+Appendix M ranks the field on whether a claim has a control and whether its sample could resolve it. This
+appendix adds the axis that separates the leader's *corpus* from ours, because it is the axis on which our
+numbers cannot yet be placed beside theirs at all.
+
+### O.1 One entry publishes a persistence number, and it is the one closest to our target
+
+`Learning on the Job` (arXiv:2607.22157) reports the measurement every other entry in M.1 omits: **hold
+rate**, `P(pass at t+1 | pass at t)`, pooled over consecutive pairs of one task's attempts.
+
+| what it reports | value |
+| --- | --- |
+| corpus | τ-bench banking, **k = 4 trials of the same task**, memory persisting across the trials of one episode |
+| `pass^1`, first trial → later trials | **0.064 → 0.170** |
+| floor tasks made solvable (84 → 22 unsolvable) | **62 recovered** |
+| hold rate, two settings | **0.88 / 0.65** |
+| cross-model transfer of the same memory | **0.064 → 0.289** |
+
+Three properties make this the sharpest comparator in the file. The memory is **written during the episode**,
+from the trial that just failed, so the lesson is available on the next attempt of the same task — which is
+what "recurrence" means in the product's own terms. The measure is a **transition probability**, so it cannot
+be inflated by a task that happened to be easy. And it is reported **per pair, pooled**, with the number of
+pairs implied by the corpus rather than left to the reader.
+
+### O.2 Our lane had the corpus half and not the measurement half
+
+| system | memory written | read on | persistence unit | publishes hold rate |
+| --- | --- | --- | --- | --- |
+| `Learning on the Job` | during the episode, after each failed trial | the next trial of the same task | within-episode | **yes — 0.88 / 0.65** |
+| ALTK-Evolve (Appendix N) | from a train split, before evaluation | every turn of every task | cross-task store | no |
+| ExpeL | across episodes | later episodes | cross-task store | no |
+| ACE | during generation, with self-assigned counters | later turns | cross-task store | no |
+| Dynamic Cheatsheet | append-only, during | later turns | cross-task store | no |
+| **microglia, this iteration** | from a learn split, before evaluation | 4 trials per held-out task | cross-task store | **instrument yes, number pending R58** |
+
+Four trials per task existed on this lane from the first τ² arm. What did not exist was the **order**: the
+per-task row stored `successes/trials` and threw the sequence away, so a task that passed trials 1 and 3 and
+one that passed 1 and 2 were the same row. `outcomes` now rides beside the counts, `holdRateOfTrials()`
+recomputes the reading from the `per_trial` ledger so already-published artefacts can be re-read without a
+re-run, and the pair artefact carries `retention` for both arms with a reader that prints it.
+
+**The remaining gap is the corpus, not the instrument.** Our four trials run against a store distilled from a
+*separate* learn split, so trial 2 never sees what trial 1 taught. Theirs does. Until an arm writes to the
+store inside the episode, our hold rate measures *stability under a fixed memory* and theirs measures
+*accumulation across attempts* — two different quantities with the same formula, and quoting 0.88 / 0.65
+beside our number would be the category error Appendix M was written to prevent.
+
+### O.3 The arm this calls for, and why it is one variable
+
+The registration that closes it changes **when the store is written** and nothing else: the trace unit, the
+consolidation pass, the ban, the model, the seed, the split, the held-out tasks and the four trials all stay
+as R58 fixes them. Memory is distilled from a failed trial and made available to the next trial of the same
+task; the reference arm still runs with an empty pack, so `pass^1` and hold rate are both read against a
+control in the same dispatch.
+
+Two things it buys that no prompt-side lever can:
+
+- a hold rate **comparable in kind** to 0.88 / 0.65, because the corpus shape is now the same;
+- the measurement that says whether this mechanism's trouble is *retrieval* (the right lesson exists and is
+  not served) or *writing* (the lesson never existed), which is the question the last six nulls could not
+  separate.
+
+Cost is bounded and stated in advance: at most one distillation call per failed trial (228 trials, the
+failures fewer), at most three claims each, and the consolidation pass unchanged at zero model calls. It is
+sequenced after R58 because a store that does not recur in the offline shape gives an in-episode arm nothing
+to accumulate: recurrence first, accumulation second.
