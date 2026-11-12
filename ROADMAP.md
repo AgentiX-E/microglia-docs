@@ -6659,7 +6659,11 @@ before the agent reads it". This is the position and the queue behind it.
 | ~~P1~~ | ~~pack budget as a variable~~ | **delivered as a measurement**: `maxStatementChars` (810 at 1,200 / 2,010 at 2,400), `pack.{budget,capacity,droppedForSize,emptiedBySize}`, `packBudget` as a header | $0 |
 | **P0** | ~~dispatch `R89-pack-carries-what-it-wrote`~~ **dispatched 15:40 UTC (run `43250414145`)** | the pair R88 shipped is 2,000 characters into a 1,200-character pack; capacity is 810, `41.2%` of retail is above it, and every record dropped for size read as "nothing relevant" | ~$1.10 |
 | **P0** | a pack that carries two records | R89 read `droppedForSize 1,596` and `meanIds 1`: a 1,717-character record plus the 390-character wrapper leaves 293 of 2,400, so a second never fits. Either 4,800 characters, or 700 at 2,400 — the two ways to put two records in one pack, and they are different treatments | ~$1.10 |
-| **P2** | a (700 / 2,400) cell after R89 (now R91) | R88→R89 prices the pack, R89→(700 / 2,400) would price the ceiling; without it a lift in R89 is "more text reached the model" and the two causes stay entangled | ~$1.10 |
+| **P2** | a (700 / 2,400) cell after R89 (now R92) | R88→R89 prices the pack, R89→(700 / 2,400) would price the ceiling; without it a lift in R89 is "more text reached the model" and the two causes stay entangled | ~$1.10 |
+| **P0** | 114-task L4 run | the SOTA claim needs the sample the competitor used: microglia reads 0.7018 on 57 tasks and ALTK's submitted 0.6754 covers 114. Same split, same trials, same metric, or the ranking stays cross-sample | ~$2.20, ~4h |
+| **P1** | the caution line (MemTrapBench's AdaptiveMem) | the cheapest test of "does the model trust the memory too much": one sentence in the block, one dispatch. Every framework in that study scored below no-memory, and the fix was an instruction, so the failure is conditioning rather than storage | ~$1.10 |
+| **P1** | hard/easy split in the L4 readback | free, and it is the diagnostic that found the negative effect in every study that reports one: gains on easy tasks and losses on hard ones cancel in a mean | $0 |
+| **P2** | reconstruction at render (MemHarness) | render what still applies rather than the record, with an explicit `<EMPTY>` refusal; a scoring layer over the existing pack, not a new store. 76.4% -> 70.1% (replay) -> 85.2% (reconstruct) on ALFWorld | 1 dispatch |
 | **P1** | insight→run link (WikiTrace) | the layer this store lacks: an insight pointing at its source run, mounted in the pack, so a detail the insight dropped is reachable without a new agent tool | 1 dispatch, feature-flagged |
 | **P2** | in-episode arm | the only design that makes accumulation measurable; needs the write endpoint and a serial trial loop, both of which the watermark already presupposes | 1 dispatch, serial |
 | **P2** | airline at ceiling 4000 | the per-domain census says 2000 clips 4% of airline records; a transfer arm cannot be run on a ceiling measured on retail | 1 dispatch |
@@ -6672,7 +6676,10 @@ one number — and it left the second one sharper than it found it: at 2,400 the
 record and refuses seven candidates per request, so every arm behind it is measuring a store of one.
 The guard cell (R90) runs beside it because the two are orthogonal and both are in flight; the pack
 that carries two records is next because *one record per recall* is now the binding constraint on
-everything the queue exists to compare, and it cannot be worked around by tuning. The two ways to put
+everything the queue exists to compare, and it cannot be worked around by tuning. The 114-task run is
+the third P0 and it is not an experiment: it is the sample the competitor used, and until it exists the
+0.7018 is first on this lane's split and unranked on the board — a distinction that has to be paid for
+once rather than argued every round. The two ways to put
 two records in a pack are not one treatment: 4,800 characters keeps the long record and adds a second,
 while 700 at 2,400 keeps the budget and shortens both, and a lift under one of them is not a lift under
 the other.

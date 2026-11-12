@@ -16871,3 +16871,55 @@ and 16,025 of 16,200 gzip after a raise argued beside the number.
 placeholder: if `pass^4` rises over 0.7018 with the same pack and the same dose, the identity is the
 mechanism; if it does not, the last unmeasured candidate inside the record is cleared and the question
 moves out of the record.
+
+### 173.93 Where this now stands against the field, and the bar that was measuring the wrong thing
+
+**The bar had two numbers and the lane only ever quoted the easier one.** `PUBLISHED_PASS4 = 0.575` is
+ALTK-Evolve's τ²-retail `pass^4` **before** its learned guidelines are appended. Its submitted result —
+PR #542, 114 base-split tasks, four trials, tau2-bench v1.0.1 — is **0.6754**. Every arm in this lane has
+been graded against the baseline, so "`+12.68pp` over the published bar" reads like a lead over the
+competitor and is in fact a lead over the competitor's **no-memory baseline**. Both numbers are now
+reported, with the sample difference stated:
+
+```
+sota: 0.7018 against ALTK-Evolve's baseline 0.575 (+12.68pp) and its submitted 0.6754 (+2.64pp)
+      — the submission covers 114 tasks and this run 57, so that delta is cross-sample, not a ranking
+```
+
+**The ranking, stated as the samples allow.**
+
+| system | backbone | τ²-retail `pass^4` | tasks | |
+| --- | --- | --- | --- | --- |
+| stock ReAct, no memory (ALTK baseline) | GPT-4.1 | 0.575 | 40 held-out / 114 base | the lane's historical bar |
+| RAFT-30B-A3B (fine-tuned on τ²-retail) | 30B | 0.614 | 114 | leaderboard, before ALTK |
+| **ALTK-Evolve, lossless 292 rules** | GPT-4.1 | **0.6754** | 114 | **published SOTA, PR #542** |
+| microglia R88 (pack 1,200, ids eaten) | deepseek-flash | 0.5614 | 57 | below the baseline |
+| **microglia R89 (pack 2,400)** | deepseek-flash | **0.7018** | 57 | **+2.64pp vs SOTA, cross-sample** |
+
+Two honest caveats, and they are the reason this is a table rather than a claim: the samples differ
+(57 against 114), and the backbones differ (deepseek-flash against GPT-4.1 with a GPT-5.5 customer
+simulator). **On this lane's 57-task split microglia is first; on the board it has not been submitted and
+cannot be ranked.** The 114-task run is now a queued item rather than a footnote, at ~$2.20 and ~4h.
+
+**Airline is not measured at all.** ALTK reports 0.82 with GPT-5.5 (50 tasks) and 0.44 with GPT-4.1; this
+lane has no airline L4 arm, and its airline records need a 3,600-character pack by the same census that
+priced retail at 2,400.
+
+**The literature on the negative effect, and what it says this lane already got right.**
+
+| source | finding | what microglia already does | what it does not |
+| --- | --- | --- | --- |
+| **MemTrapBench** (arXiv 2608.20202) | five memory frameworks × two model families: **every** strategy scored worse than no memory, the strongest by >10pp. Modes: *reasoning fixation* and *belief distortion*. Fix: `AdaptiveMem`, an inference-time instruction to distrust recalled context | conditions are rendered before statements, so a rule arrives with its applicability | no caution line; no measurement of fixation |
+| **MemHarness** (arXiv 2607.28272) | ALFWorld 76.4% no memory → **70.1%** with raw trajectories replayed → 85.2% with *reconstruction*; Mem0 52.0%, SimpleMem 54.5% — worse than none. "Memory is reconstructed, not replayed" | raw records, not consolidation; `when` is distilled beside the statement | no reconstruction step at render time; no `<EMPTY>` refusal |
+| **More Memory, Worse Agent** (UIUC) | consolidation loses 54% of problems the agent solved with zero memory; modes: misgrouping, interference (strips conditions), overfitting. **Episodic-only beats every consolidator** | episodic records only; one-claim-per-item | nothing consolidated, so nothing to fix — this is the design choice that now has external support |
+| **Continual Learning Moves to Memory** | the stability–plasticity dilemma relocates to *retrieval*: negative transfer hits **hard** cases and reverses within-task gains on task shift | ranking + MMR + coverage floor, measured per pair | no hard/easy split in the L4 readback |
+
+**Three mechanisms worth stealing, in cost order.** (1) The caution line: one sentence in the block, one
+dispatch, and it is the cheapest test of "does the model trust the memory too much". (2) Reconstruction:
+render *what still applies* rather than the record, with an explicit `<EMPTY>`; that is a scoring layer
+over the existing pack, not a new store. (3) The hard/easy split: free, and it is the diagnostic that
+found the effect everywhere else.
+
+**Delivered this iteration:** `COMPETITOR_PASS4`/`COMPETITOR_TASKS` and `sotaLineOf` (11 cases), the line
+written into every `poc-l4` artefact's notes and `competitor_pass4` into its metrics; R91 registered at
+budget 4,800 to put two records in one recall.
