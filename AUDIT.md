@@ -8027,3 +8027,47 @@ experiment that measured it, or the next dispatch inherits it silently.
 sentence. "700 characters" is not a fact; "700 characters, measured on a trace statement of one tool
 call" is, and so is "2000, measured on retail records at v0.2.0" — which is also a statement about
 retail and not about airline.
+
+### 34.111 The fifth absence: a record the budget refused was indistinguishable from a record that never existed
+
+R85 wrote twelve records and served one. R88 raised the ceiling so twelve would be written and admitted.
+Neither reading could say how many of them the **pack** refused, because nothing counted that.
+
+The pack is a character budget with a fixed cost. Measured by rendering one item through the real
+renderer — `maxStatementChars`, which does not re-derive the arithmetic it is checking — a record in this
+arm's shape spends **390 characters** on the wrapper, the note, the id, the kind, the confidence, the
+task-and-domain scope and the provenance payload, and the rest on the statement:
+
+| budget | capacity (chars of statement) | retail records above it | what one recall carries |
+| --- | --- | --- | --- |
+| 1,200 | **810** | 47 of 114 (**41.2%**) | one 700-character record, 114 characters of headroom |
+| 2,400 | 2,010 | 0 of 114 | two 744-character records, or one 1,532-character record whole |
+
+R88 ran the top row with a 2,000-character ceiling. Every record it wrote above 810 characters was
+retrieved, ranked, **dropped at render**, and then reported as `recall.empty` — the same field that
+reports "the store had nothing relevant". The two states have opposite repairs (a budget, a retrieval
+function) and one number.
+
+**Why the old number was safe by accident.** 700 + 390 = 1,090 fits 1,200 with 110 characters left. The
+ceiling was inherited from another unit, and it happened to be inside the pack for reasons nobody had
+written down. Raising it past the pack turned a fidelity choice into a silent loss, which is the same
+class of defect as the four absences already repaired in this lane — and the only one of the five that
+neither the store, the write, nor the reader could see.
+
+**What now exists.**
+
+- `maxStatementChars` (core) measures what a pack carries, for a stated item shape and the pack's own
+  options. The shape is a parameter: a record costs 149 characters more than a bare claim, so a capacity
+  quoted for the wrong shape passes on a pack that cannot carry the item it was quoted for.
+- `pack: {budget, capacity, requests, filled, empty, emptiedBySize, droppedForSize, summary}` is in the
+  artefact and in the run log. `emptiedBySize` is the state `recall.empty` could not separate.
+- `packBudget` is a registration header, and `prereg-pack.ts` refuses a ceiling the declared budget cannot
+  render — only when a registration states **both**, because every arm published before the header ran at
+  1,200 and keeps the reading it was published with. For those, `prereg-caps` prints the capacity on
+  stderr, so the mismatch is in the dispatch log even where it is not a refusal.
+- `R89-pack-carries-what-it-wrote` registers (2,000 / 2,400), the smallest round budget that carries the
+  longest retail record whole.
+
+**The rule, and it is the same rule as 34.110 one level up.** A writer and a reader that both bound text
+have to be checked against each other, not against their own histories. 700 was inside 1,200 because
+somebody had chosen both; 2,000 is outside it because the second number was never part of the decision.

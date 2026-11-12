@@ -16738,3 +16738,32 @@ is recorded rather than papered over with a test that asserts nothing.
 **R88 is still in `L4 arm — memory`** (dispatched 12:59 UTC, R85 took 2h46m at the same shape). Next: read
 it, then the queue in ROADMAP — the pack budget if coverage did not move with reachability, the
 insight→run link after that.
+
+### 173.90 The pack's own refusals, and the number nobody compared
+
+R88 raised the record ceiling from 700 to 2,000 characters and left the pack at 1,200. Measured with the
+real renderer, a record in this arm's shape states **810** characters at 1,200 — 390 are wrapper, note,
+id, confidence, scope and payload — and **41.2%** of the retail corpus is above 810. Every one of those
+records is retrieved, ranked, dropped at render, and reported as `recall.empty`, which is the same field
+that reports a store with nothing relevant.
+
+Delivered this iteration, all of it at zero model cost:
+
+| | state | evidence |
+| --- | --- | --- |
+| capacity | measured, per shape and per budget | `maxStatementChars`, 810 at 1,200 / 2,010 at 2,400 |
+| pack census | in the artefact and the log | `pack.{budget,capacity,requests,filled,empty,emptiedBySize,droppedForSize,summary}` |
+| budget | a registration header | `packBudget`, refused against the ceiling when both are stated |
+| dispatch log | states the pair before the first episode | `prereg-caps` prints `ceiling … fits|above budget …` |
+| next cell | registered | `R89-pack-carries-what-it-wrote` at (2,000 / 2,400) |
+
+Two dead branches were deleted rather than tested: the interpreter recomputed a call count from a ternary
+on `signal.type` that is unreachable once a statement exists, and `packLineOf` carried two `?? 0`
+fallbacks for means that are non-null whenever a request was made. `tau2-rawlog.ts`, `tau2-pack.ts` and
+`tau2-degradation.ts` are back at 100% branches by testing the states those fallbacks hid.
+
+Gate: `222` files, `4559` tests, coverage `100 / 99.99 / 100 / 100`, `pnpm check` exit 0, CI green on
+`75894b1` and `a029d0b`. Two CI failures were found and fixed on the way, both by gates that exist for
+exactly this: the lane CLI typecheck caught `pack` missing from `Tau2Raw`'s projection (a field the driver
+wrote and the arm record would have dropped), and the coupling ledger caught a committed snapshot that
+still described a 198-module tree.

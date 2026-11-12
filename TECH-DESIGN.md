@@ -8794,3 +8794,53 @@ whose first line *is* the question, a value quoted in the question survives a sl
 whole answer line — so the ratio is an upper bound on preservation for this unit, measured at 64.53%
 where the run itself reported 42.34%. It is used as one: a number below 0.95 still refutes the write,
 and a number above it does not by itself acquit the ceiling.
+
+### 17.131 The budget and the ceiling: one cost, two numbers, and the census that separates two empties
+
+The pack is a character budget with a fixed cost per item, and the record ceiling is a promise about how
+much text is written. They are the same cost seen from two sides, and until R89 no code compared them.
+
+**The arithmetic, measured rather than derived.** `maxStatementChars(budget, shape)` renders a
+single-item pack through `renderPack` at the pack's own options and binary-searches the longest statement
+that survives. At the L4 lane's 1,200 characters, a record in this arm's shape states **810**: 390
+characters are the element, the note, the id, the kind, the confidence, the `task`+`domain` scope and the
+provenance payload. The function is not a second implementation of the renderer — that would be two
+definitions of one number, and this repository has paid for that mistake in the ceilings twice.
+
+| budget | capacity | retail records above it | dose |
+| --- | --- | --- | --- |
+| 1,200 | 810 | 41.2% (47/114) | one 700-character record |
+| 1,600 | 1,210 | 7.0% (8/114) | one record of up to 1,210 |
+| 2,400 | 2,010 | 0% | two 744-character records, or one 1,532 whole |
+
+**The failure this closes.** A record above the capacity is retrieved, ranked, dropped at render, and
+counted by `recall.empty` — the field that also counts a store with nothing relevant. Two states, one
+number, opposite repairs. `pack.emptiedBySize` is the second state: a pack that had candidates and
+rendered none of them. `pack.droppedForSize` counts items refused beside a served one, because the
+largest loss is not always on the emptied pack.
+
+**Three design decisions.**
+
+1. **The capacity is measured on a shape, and the shape is a parameter.** A record's line costs 149
+   characters more than a bare claim's. A default shape would quote a capacity for an item the arm never
+   stores; `rawLogItemShape` lives beside the interpreter that writes records, and the payload keys are
+   asserted in a test so the shape cannot drift from what is written.
+2. **A nullable mean is one field, not two.** `summary: {meanIds, meanChars} | null` rather than two
+   nullable numbers, because two nullable numbers invite a reader to print a mean over no request —
+   the `0 of 0 (0.0%)` defect this lane has now repaired four times.
+3. **The registration check fires only on a pair that is stated.** `packBudget` beside `rawCeiling`:
+   when a registration names both, `prereg-pack.ts` refuses a ceiling the budget cannot render. When it
+   names only the ceiling it inherits the lane's 1,200 and keeps its published reading, and
+   `prereg-caps` prints the capacity on stderr so the mismatch is visible where it is decided. Editing
+   finished runs to satisfy a validator written afterwards is the failure mode the other road has.
+
+**Why the check is not in the reader.** `prereg.ts` is read by jobs that run before the build, so its
+import closure must not reach the core package — `prereg-imports.test.ts` walks that closure and refuses
+the edge. The capacity needs the renderer, so the check lives one file over, where the dispatch reader
+and the gate over every registration both call it.
+
+**The ablation this opens.** R88 (2,000 / 1,200) prices the write with the pack cutting it. R89
+(2,000 / 2,400) prices the pack at the same write. A third cell at (700 / 2,400) would price the ceiling
+at the same pack; without it, a lift in R89 is a lift from *more text reaching the model* and the two
+causes stay entangled — which is the class of mistake this section exists to end, one level above the one
+it repairs.

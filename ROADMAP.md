@@ -6641,6 +6641,9 @@ before the agent reads it". This is the position and the queue behind it.
 | admission for events | still a claim model | R85: `active 1 / candidate 11`, confidence 0.6165 vs a 0.6 bar |
 | scope | one constant (`tau2.act`) for every record | unchanged, recorded as the next candidate variable |
 | in-episode write | property built (watermark), seam missing | `EvidenceRef.attempt`, `RecallQuery.before`, `visibleFrom` |
+| pack capacity | **measured** — 810 chars of statement at 1,200, 390 for the wrapper | `maxStatementChars`, `rawLogItemShape` |
+| pack refusals | **counted** — `droppedForSize`, `emptiedBySize` | `tau2-pack.ts`, artefact `pack` |
+| ceiling vs budget | checked when both are registered | `prereg-pack.ts`, `packBudget` header |
 | R88 | dispatched 12:59 UTC, running | ceiling 2000 + no self-refutation, one reading per layer |
 
 **The queue, in dependency order.** Nothing below starts before the reading above it settles.
@@ -6648,8 +6651,10 @@ before the agent reads it". This is the position and the queue behind it.
 | pri | step | why it is next | cost |
 |---|---|---|---|
 | **P0** | read R88 | it separates the three layers: `clipped ≤ 1` (ceiling), `active 12/12` (admission), `coverage ≥ 25%` (reachability) | $0 |
-| **P0** | paired degradation rate | the field's headline metric (KAIST: 52% of failures are one item) and this lane reports only `pass^4` deltas; `transferSummary` already computes it and is only called on cross-domain pairs | $0 + one bin test |
-| **P1** | pack budget as a variable | if `servable = 12` and coverage does not move, the pack is the constraint, not the store — and `meanPackIds = 1` says it already is | 1 dispatch |
+| ~~P0~~ | ~~paired degradation rate~~ | **delivered** — `degradationOfPair` on every pair, `transferSummary` reused rather than re-derived | $0 |
+| ~~P1~~ | ~~pack budget as a variable~~ | **delivered as a measurement**: `maxStatementChars` (810 at 1,200 / 2,010 at 2,400), `pack.{budget,capacity,droppedForSize,emptiedBySize}`, `packBudget` as a header | $0 |
+| **P0** | dispatch `R89-pack-carries-what-it-wrote` | the pair R88 shipped is 2,000 characters into a 1,200-character pack; capacity is 810, `41.2%` of retail is above it, and every record dropped for size read as "nothing relevant" | ~$1.10 |
+| **P2** | a (700 / 2,400) cell after R89 | R88→R89 prices the pack, R89→(700 / 2,400) would price the ceiling; without it a lift in R89 is "more text reached the model" and the two causes stay entangled | ~$1.10 |
 | **P1** | insight→run link (WikiTrace) | the layer this store lacks: an insight pointing at its source run, mounted in the pack, so a detail the insight dropped is reachable without a new agent tool | 1 dispatch, feature-flagged |
 | **P2** | in-episode arm | the only design that makes accumulation measurable; needs the write endpoint and a serial trial loop, both of which the watermark already presupposes | 1 dispatch, serial |
 | **P2** | airline at ceiling 4000 | the per-domain census says 2000 clips 4% of airline records; a transfer arm cannot be run on a ceiling measured on retail | 1 dispatch |
@@ -6659,8 +6664,9 @@ before the agent reads it". This is the position and the queue behind it.
 **What the queue is ordered by.** Not by cost and not by novelty: by *which reading removes the most
 doubt from the next one*. R88 first because it is already paid for and it separates three layers in one
 artefact. The degradation rate second because it is free, it is the field's own metric, and every arm
-after it should carry it. The pack budget third because R88 will say whether it is the constraint, and
-a dispatch that assumed otherwise would be measuring the wrong thing for three hours.
+after it should carry it. The pack third, and it moved from *assumption* to *measurement* in this
+iteration: it is not a hypothesis that a 1,200-character pack stops at 810 characters of record, it is
+`maxStatementChars(1200) = 810`, and R88's ceiling of 2,000 is 1,190 characters above it.
 
 **The one thing that is not on the list.** Tuning a signal weight, a ceiling, or a threshold before the
 store serves more than one item per recall. R85's pass^4 (0.6842 ±12.07pp) landed between the board's
