@@ -16701,3 +16701,40 @@ the write.
 
 **Delivery.** 208 test files, **4,318 tests**, coverage **100 / 99.88 / 100 / 100**, `pnpm check` exit 0,
 76/76 registrations valid, verifier self-tests 11/17/12/14/12/5.
+
+### 173.89 The share the field reports, now on every pair — and the fourth absence read as a zero
+
+Two deliveries while R88 runs, both of them small and both of them removing a way this record has
+misread itself.
+
+**The field's own metric, finally published.** `Don't Just Trust Your Memory` (KAIST / DeepAuto,
+2026-11-10) defines memory-induced degradation as an agent failing a task it *would have solved with no
+memory*, with 52% of those failures tracing to one item and 20% of all failures to an item that is itself
+wrong. This lane has computed `breakRate = broke / blankRight` since the BIRD transfer lane and has never
+printed it for a within-domain pair, because `transferReadingOf` is only built when the two arms answered
+different domains. `tau2-degradation.ts` is the adapter that pairs two ledgers and hands them to
+`transferSummary` — **no second implementation of the share**, since a number two lanes publish must not
+have two definitions. `l4-pair` now writes `broke / repaired / blankRight / measured / breakRate / netPp`
+on every pair, and works from R88's own artefact.
+
+**And a defect the coverage row found.** `faithfulnessLine` ended in `?? 0`, and the branch behind it
+printed `0 of 0 entity(ies) kept (0.0%)` for a store that held items while the corpus carried no entity
+— the fourth time this record has read an absence as a zero, and the third inside that one function. The
+guard above it was `unwritten === corrections`, true when both are zero, so "the writer never ran" and
+"the corpus had nothing to keep" collapsed into one sentence. `> 0` is part of the guard now and the
+fallback is gone.
+
+**Consequence for the ceiling, one level up.** The census that replaced 700 with 2000 measured retail.
+Measured the same way, airline is p95 1899 and **max 3129**, so 2000 clips 4% of its records: the number
+is a property of the domain, and `rawCeiling` is a header precisely so it travels with the experiment
+that measured it. The airline arm therefore needs 4000, and the table is in the tool's docstring where
+the next choice will meet it.
+
+**Delivery.** 219 test files, **4,511 tests**, coverage **100 / 99.87 / 100 / 100**, `pnpm check` exit 0,
+76/76 registrations valid, verifier self-tests 11/17/12/14/12/5. The single uncovered branch is
+`bin/l4.ts`'s inline `l4-paired` gate at `state === 'HARM'`, which needs a full CLI fixture to reach; it
+is recorded rather than papered over with a test that asserts nothing.
+
+**R88 is still in `L4 arm — memory`** (dispatched 12:59 UTC, R85 took 2h46m at the same shape). Next: read
+it, then the queue in ROADMAP — the pack budget if coverage did not move with reachability, the
+insight→run link after that.

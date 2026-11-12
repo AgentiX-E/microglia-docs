@@ -7963,3 +7963,67 @@ run contain the value", and for a record whose first line is the question the an
 than the detail survived. The metric is an **upper bound** on preservation for this unit, which is
 worth knowing before it is used to acquit or convict a ceiling — and it is stated in the tool rather
 than left for the next reader to discover.
+
+### 34.109 The fourth time this record printed an absence as a zero, and the guard that let it through
+
+`faithfulnessLine` ended with `faithfulnessRate(census) ?? 0`. The branch behind `??` is reachable for
+exactly one input — a store that holds items, a population of corrections that carries **no** entity
+value — and for that input it printed:
+
+```
+faithfulness: 0 of 0 entity(ies) kept (0.0%), whole in 0 of 0 correction(s), 0 with none to keep
+```
+
+which is total destruction at the write standing in for "this corpus had no entity to preserve". That
+is the reading the module exists to refuse, and it had already been refused twice in the same function:
+`faithfulness: no measurement -- 15 entity(ies) in 1 correction(s) never reached the store` (the empty
+store) and `faithfulness: absent (no correction carried an argument value)` (the corpus). A third
+sentence, wrong in the direction of alarm, sat between them.
+
+**The guard was the defect, not the fallback.** Both branches tested `census.unwritten ===
+census.corrections`, which is true when *both* are zero — so "no write reached the store" and "nothing
+in the corpus could be kept" collapsed into one sentence, and the second one fell through to the
+`?? 0`. `> 0` is now part of the guard, the `?? 0` is gone, and the division that remains is total by
+construction: the empty store returned above, and `entities === 0` returns its own sentence.
+
+| what the census says | what the line must say |
+| --- | --- |
+| store holds nothing | `no measurement` — the writer never ran |
+| store holds items, corrections have no entities | `absent` — there was nothing to keep |
+| store holds items, entities exist | the rate |
+
+**Why this is a class and not a typo.** An absence-as-zero is this record's most repeated defect: R58's
+coverage from a store nobody built, R86's `0 of 15 kept` on an empty store, R85's `support 0.4875`
+read as weak evidence rather than as eleven refutations, and now a `0 of 0 (0.0%)` on a corpus with no
+entity. Each time the shape is the same — a default that looks like a measurement — and each time the
+guard beside it was written with `===` where `> 0 && ===` was meant.
+
+**How it was found.** Not by a run. A coverage report showed `tau2-faithfulness.ts 97.95% branch` with
+line 192 uncovered, the line turned out to be the `?? 0`, and asking "which input reaches this" produced
+the population above. That is the one thing the coverage gate is for: it is not a number to maximise, it
+is a list of paths nobody has ever executed, and a path nobody has executed in an error-handling
+function is a sentence nobody has read.
+
+### 34.110 A ceiling is a property of the domain, and the census that fixed 700 would have repeated the mistake one level up
+
+`RAWLOG_STATEMENT_CEILING = 700` was inherited from R84's 640-character **trace** statement ceiling: a
+statement that summarises one call, applied to a record that is a question plus an answer. R85 clipped
+twelve of twelve records and kept 42% of their entity values, and the census that replaced the number
+measured retail.
+
+Measured the same way at the same pinned ref, the second domain is not the same population:
+
+| domain | tasks | p50 | p95 | max | clipped at 2000 |
+| --- | --- | --- | --- | --- | --- |
+| retail | 114 | 744 | 1260 | 1532 | 0 |
+| airline | 50 | 684 | 1899 | **3129** | 2 (4%) |
+
+An itinerary with three legs renders a call list twice retail's length. So 2000 is right for R88 and
+would clip the airline arm that transfers it — which is the 700 defect with the domain substituted for
+the unit. `rawCeiling` is a registration header for this reason: the number has to travel with the
+experiment that measured it, or the next dispatch inherits it silently.
+
+**The rule.** A constant that bounds text has to name the population it was measured over, in the same
+sentence. "700 characters" is not a fact; "700 characters, measured on a trace statement of one tool
+call" is, and so is "2000, measured on retail records at v0.2.0" — which is also a statement about
+retail and not about airline.
