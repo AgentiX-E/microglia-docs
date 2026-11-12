@@ -6569,3 +6569,32 @@ points; the consolidation pass is starved rather than inert — six claims from 
 were never going to overlap; and retention, the instrument added the same night, produced its first
 number and it is 0.881 with the caveat attached. The support axis is neither open nor closed. It is
 unmeasured, twice, for two different reasons, and both reasons are now named in the readback.
+
+### The arm the literature argues for is built, and it is one variable
+
+`unit=raw` stores the episode — question, calls, arguments — with no model call at all, and
+`tau2-faithfulness.ts` measures what an abstraction destroys at write time, which is the half of
+`Memory Tax`'s accounting this lane had no instrument for. Both are registered (`R85`) and graded by a
+readback whose self-test is 15/15.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | `R86` fault census, ten tasks, trace unit | **waiting for the 10:00 UTC window** (`43187614906`, under $0.10) |
+| P0 | read `R86`'s codes and decide: ceiling, prompt, or backoff | on completion |
+| P1 | `R85` raw-record arm on the whole held-out set | built and registered; dispatch at 16:00 UTC (~$1.06) |
+| P1 | the abstraction arm re-run once `R86` names the cause, so the raw arm has a same-window comparator | blocked on `R86` |
+| P2 | in-episode arm (Appendix O): memory written after each failed trial | designed; sequenced after the store-shape comparison |
+| P2 | `R55.1` (`packMode: prefix`, `minEvidence: 3`) | still blocked: no item at support 3 exists |
+
+**The comparison this sets up.** `R85` against the published 0.575 answers "is a record store better
+than the lane's baseline". It does not answer "is a record better than a claim", because R58's
+abstraction arm was itself broken — eleven of fifteen writes faulted. That question needs both arms on
+the same corpus with both writes working, which is why `R86` comes first and why the comparator is
+sequenced behind it rather than beside it.
+
+**One process note, in the queue rather than in the incident.** The fault census had been dispatched
+under a registration with no readback, and under a number another registration already held. Both were
+fixed before the window opened, and both were mine: the number came from reading a directory listing
+sorted by name, and the missing readback came from treating a diagnostic as too small to need a
+grading rule. A diagnostic is where a grading rule is most valuable, because its outcome decides which
+of three fixes the next month spends.

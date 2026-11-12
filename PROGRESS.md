@@ -16425,3 +16425,78 @@ is three categories wearing one word, which is exactly the state R58 was read in
 11 checks / 194 modules / 24 deferrals, `pnpm check` exit 0 in 2m54s, three commits pushed
 (`132098c5`, `1c6e3a5d`). The dispatch waits for 10:00 UTC — the first off-peak minute after the
 window that closed on R58's reference arm — and costs under $0.10 by the registration's own bound.
+
+### 173.82 — The store can be the episode, and the write finally has an instrument
+
+Two papers from the last month say the object this lane stores is the defect rather than its
+implementation, and R58's own weakest number agrees with them. This iteration built the arm they argue
+for and the measurement that says whether the argument transfers to this corpus.
+
+| what | number | whose |
+| --- | --- | --- |
+| stored lessons vs raw logs, nine settings | **49.0% vs 53.5%** | `More Memory, Worse Agents`, 19 Oct 2026 |
+| per-task guidance that is discarded after use | **59.9%** | same |
+| two-round RAG over raw history against 11 memory systems | **90.0%**, first | `Memory Tax` (UIUC / Tsinghua / RUC) |
+| R58's pack, median non-zero coverage | **10.53%** against a 12% floor | our own artefact |
+
+The third row and the fourth are the same finding seen from opposite ends: a distilled claim is a
+statement *about* a class of requests, and the retriever that serves it is lexical, so a claim about
+*cancelling an order* cannot be matched by the order id the next customer quotes.
+
+**`unit=raw` is the arm.** One record per correction — the question, the calls that should have been
+made, their arguments — written by an interpreter that calls no model at all. One variable changes
+against the arm R58 ran: the object. Same corpus, split, admission, recall floor, budget, model and
+four trials.
+
+| decision | what it protects |
+| --- | --- |
+| the question is part of the record | a lexical retriever cannot match words the record does not contain |
+| the arguments are part of it | `W237` is the entity an abstraction drops first, and `Memory Tax` names that loss `faithfulness` |
+| one record per event, run id in the dedupe key | a log is not a claim with support: two identical corrections are two episodes |
+| bounded at 700 characters, clip marked and counted | a clipped record is a summary written by `slice`, and the arm must be able to say so |
+
+**`tau2-faithfulness.ts` is the other half of the tax and this lane had none of it.** Every number
+here — `asked`, `dropped`, `served`, `store.active`, coverage, the funnel — measures *accessibility*,
+and all of them read the same whether the item was written perfectly or written with the order id
+removed. Six nulls were read as six stories about retrieval; two of them may be one story about
+writing. The new reading is model-free: each correction's own argument values, and whether the text
+the store kept for that correction still contains them. Pooled over entities, `undefined` when there
+was nothing to keep, and a correction answered by an item citing a *different* run counted as lost —
+which is what an aggressively merging distiller does and what a join on the task id would have hidden.
+
+**Two defects found by writing the tests, both kept in the code as reasons.**
+
+1. `RAWLOG_TRUST` was 0.7, reasoning that a record asserts nothing and should sit below a reviewer's
+   clarification. The end-to-end case refused it: one correction, one candidate, one admitted, one
+   **stored**, **zero servable** — support 0.7 sits under the policy's `minSupport` of 0.8, so the
+   store marked it a candidate. The policy's own comment states the case the floor was set for: *"one
+   trusted edit (weight 0.9) must clear this"*. 0.9 is that weight, and 0.7 was a store of items
+   reachable by nothing — R55.0's defect in another coat.
+2. **The rule interpreter scopes every item to its own task**, so nothing it writes can be served to
+   another task. Harmless in a single-task workspace and fatal in a lane where every task is distinct
+   — which is why R41's fallback store had no effect: not empty of items, empty of *reach*. Not
+   changed here, because it is core's generic default, but recorded, and the raw unit scopes to the
+   domain for that reason.
+
+**A process defect, found while adding the readback.** The fault census registered yesterday took the
+number `R59`, which `R59-containment` had held since earlier in the month — the directory listing I
+read sorts `R8.3` after `R82`. It was renamed to `R86` before the window opened, and the rename exposed
+the larger defect: **that dispatch had no readback at all.** Every other round in this record has one,
+because the grading rule has to exist before the number arrives. `r86_readback.py` now grades the five
+predictions (a code at 60% or more, a distribution that sums to its count, a quotable specimen per code,
+the invalid-signal specimen carrying the reply's opening, the refusal to grade a store ten tasks cannot
+carry) and fires on the three refutations, including the one that would end the prompt hypothesis: a
+provider code dominating, which leaves the ceiling and the form innocent.
+
+**Delivery.** 210 test files, **4,432 tests**, coverage **100 / 99.88 / 100 / 100**, 74/74
+registrations valid, readback self-tests **15/15** (`r85`) and **12/12** (`r86`), coupling ledger
+regenerated, `pnpm check` exit 0.
+
+| # | what changed | commit | CI |
+| --- | --- | --- | --- |
+| 1 | a store made of episodes, and the instrument that says what an abstraction costs | `f9dd1ad` → `fd45acdc` | pending |
+| 2 | the store is the episode itself, because two preprints say the abstraction is the defect (R85) | `c59fc7e` → `99e9a4f6` | pending |
+| 3 | two registrations carried R59, and the one waiting for the window had no readback | `9b38b84` → `f8d9c84a` | pending |
+
+`R86` was re-dispatched at 09:00 UTC for the 10:00 window (`43187614906`, ten tasks, trace unit,
+memory arm, under $0.10) and `R85` goes out at 16:00 UTC (~$1.06, stated in advance).

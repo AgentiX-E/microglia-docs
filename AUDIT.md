@@ -7675,3 +7675,51 @@ reading got it right for the population (R54), and the recurrence reading had it
 Written as a rule: **every prediction should name the stage it assumes ran, and the readback should
 refuse to grade it when that stage's own count says it did not.** A refutation is a claim about the
 world, and a claim about the world needs an instrument that was working when it was taken.
+
+### 34.103 A store of candidates is a store in name only, and the evidence weight is a claim about the floor
+
+The raw arm's first end-to-end run wrote one item and served none:
+
+```
+[tau2] learn: 1 correction(s) from 3 task(s), 0 unreadable, 1 asked, 1 candidate(s) (0 dropped: none),
+       1 created, 0 failed, 1 item(s) in the store
+NoMeasurementError: 1 correction(s) -> 1 asked -> 1 candidate(s) -> 1 admitted -> 1 stored ->
+       0 servable (0 refused, 0 failed): the store holds items and none is reachable by the recall
+       scope this arm asks in
+```
+
+Every count in that chain is correct and the chain ends in zero. The cause is one constant: the
+record carried trust **0.7**, the policy's `minSupport` is **0.8**, so the write path marked the item
+`candidate` rather than `active` and the census counted it as unservable. The item existed, was
+counted, and could be reached by nothing.
+
+**The funnel refused the run, and that is the mechanism working.** R55.0 read a store of seven items
+and published a recurrence number about it; the funnel that now stands between the write and the
+evaluation is what turned this into a refused dispatch instead of an hour of evaluation on a pack the
+store could not fill. The defect was upstream of the guard and downstream of my own reasoning.
+
+**The reasoning is the part worth recording.** I chose 0.7 because a record asserts nothing and
+should therefore rank below a reviewer's stated clarification (0.8). That is an argument about
+*epistemic strength*, and the floor is not a scale of epistemic strength — it is the number at which
+an item is allowed to steer output, and the policy states its own case for where it sits: "one
+trusted edit (weight 0.9) must clear this; two thumbs-down (0.5 each) do not". A τ² correction *is*
+that trusted edit: the task's `evaluation_criteria.actions` is the gold answer rather than a reader's
+opinion. The right question was not "how strong is a record compared with a clarification" but "which
+weight does this evidence carry, and does it clear the floor the writer will be judged against".
+
+**The rule, stated so the next writer is written against it.** An interpreter's `trust` is a claim
+about a threshold it does not own: the policy decides what is served, and a writer whose weight sits
+under `minSupport` produces items that are indistinguishable from no items except in the census. Two
+consequences follow, and both are cheap. A new interpreter's first test should assert the resulting
+item's **status**, not the number it wrote. And a store census should keep `candidate` and `active`
+apart in the sentence it prints, which it does — `0 servable` beside `1 stored` is what made this a
+five-minute diagnosis instead of a week of "the memory did not help".
+
+**A second finding from the same test, one layer down and not repaired.** The rule interpreter scopes
+every candidate to `{ task: event.task }`. In a workspace that serves one task repeatedly that is
+correct; in this lane every task is distinct, so an item written by the fallback can never be served
+to another task — the store is not empty, it is unreachable. That is the shape of R41's result, where a
+store of fallback lessons produced no measurable effect, and it was read at the time as "the lessons
+were not useful". It may have been "the lessons were never offered". Not changed here: it is core's
+generic default and a lane-level override would be a second variable. Recorded, and the raw unit
+scopes to the domain because of it.

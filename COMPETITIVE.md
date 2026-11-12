@@ -4778,3 +4778,65 @@ they are two.
 the 114 tasks in each of English retail and telecom, and its maintainers state that 2.0 scores are not
 comparable with any 1.x score. Every τ² cell in this file is a 1.x cell; the pinned ref is in the
 workflow, and a number quoted without it is a number from an unnamed benchmark.
+
+## Appendix Q — The measurement the field reports and this lane could not: detail survival at write (2026-11-12)
+
+Appendix P.2 named the two failure modes `Memory Tax` separates and observed that this lane instruments
+one of them. As of this iteration it instruments both, and the arm that the two preprints argue for
+existed only as a paragraph in Appendix O before today.
+
+### Q.1 What is now measured, and by what
+
+| quantity | instrument | cost | reads which failure |
+| --- | --- | --- | --- |
+| the pack's text vs the question's words | `coverage.medians.medianNonzero` | free | accessibility |
+| what the pipeline carried, stage by stage | `funnel` (`asked`, `dropped`, `servable`) | free | accessibility |
+| what the store kept of each correction's own entities | **`faithfulness` (new)** | **free** | **faithfulness** |
+| what survives to the next attempt | `retention` (Appendix O) | free | both, per pair |
+| whether the store is a record or a claim | `distillUnit.unit`, `rawlog` | free | the object itself |
+
+The new one is arithmetic over strings: each correction's argument values of three characters or more,
+deduplicated within the correction, and whether the text the store kept for that correction still
+contains them. No model, no judge, no threshold. It is the number `Memory Tax` reports as "detail
+survival at write" (500 raw turns checked: `OpenViking` 39.4% intact and 38.0% not found at all,
+`SimpleMem` 65.6%, `Memory-R2` 72.6%), computed on this lane's own corpus.
+
+### Q.2 Where the comparison is honest and where it is not
+
+| system | corpus | object stored | faithfulness published | hold rate published | paired control |
+| --- | --- | --- | --- | --- | --- |
+| `More Memory, Worse Agents` raw logs | ALFWorld / WebShop / ScienceWorld × 3 models | the episode | not reported | not reported | yes — 9 settings, same seeds |
+| the same paper's stored lessons | same | a guidance statement | **by construction low** (that is the finding) | not reported | yes |
+| `Anti-Persistence` (per-task guidance, discarded) | same | nothing, after the task | n/a | not reported | yes |
+| `Memory Tax` (11 systems) | LongMemEval-s, PersonaMem-v2, MINT-Eval, τ² | varies by family | **yes, per system** | not reported | yes — RAG at matched scope |
+| `Learning on the Job` | τ-bench banking, k=4 in-episode | the trial's own failure | not reported | **0.88 / 0.65** | yes |
+| **microglia, this iteration** | τ² retail, learn/test split | **the record (`unit=raw`)** | **instrument live, value pending R85** | **0.881 measured (R58)** | against a published arm, not a same-dispatch control |
+
+Two rows are quotable and two are not, and the difference is worth stating because it is the axis this
+file keeps returning to. The faithfulness numbers in Q.1 are *ours*, taken with our instrument on our
+corpus, and they can be compared with `Memory Tax`'s in **kind** — same definition, same arithmetic —
+but not yet in **value**, because our store's value does not exist until `R85` runs. The hold rate is
+the reverse: 0.881 exists, and it measures stability under a fixed store rather than accumulation
+across attempts, so quoting it beside 0.88 / 0.65 would be the category error Appendix O was written
+to prevent.
+
+### Q.3 What the raw arm would have to show to be SOTA-competitive on this axis
+
+The field's best published numbers on "extract and summarise experience to raise task success" are, in
+the corpora they were measured on: **59.9%** for guidance that is discarded after use (nine settings,
+three models), **90.0%** for two-round RAG over raw history against eleven memory systems, and
+**0.064 → 0.170** `pass^1` for in-episode memory inside one τ-bench task with hold rate 0.88 / 0.65.
+
+None of those is a number this lane can beat on its own corpus, and claiming otherwise would be the
+error Appendix M exists to catch. What this lane can do — and what `R85` is registered to do — is put
+its own mechanism on the same *shape* of measurement:
+
+1. a store whose write preserves the episode, so its faithfulness value is comparable in kind;
+2. a coverage reading that clears the 12% floor an abstracted store failed at 10.53%;
+3. a `pass^4` that does not fall below the published 0.575, reported with its interval at n=57;
+4. a retention number with the corpus caveat attached rather than borrowed.
+
+If (2) fails with records in the store, the two preprints' finding is about their corpora and not
+about this one, and the next registration is about the retrieval function rather than the object. That
+is written into the registration's refutation section before the run, which is the only time it can be
+written honestly.
