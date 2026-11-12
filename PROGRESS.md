@@ -16597,3 +16597,37 @@ commits `d7272e78` → `27412181`.
 Both dispatches left the 10:00 UTC window and are in `L4 arm — memory`: `R86` (`43187614906`) and `R85`
 (`43189470917`). The next readings are `r86_readback.py` (12/12 self-test) and `r85_readback.py`
 (16/16 self-test) against their evidence bundles.
+
+### 173.86 The census made one call, and the arithmetic that predicted fifteen was wrong
+
+`R86` (`43187614906`) left the window at 10:00 UTC, ran its learning half in 110 seconds, and stopped:
+`NO_MEASUREMENT`. The cause is in the registration's own justification, quoted and refuted in §34.107 —
+*"every task in it contributes corrections"* is false and has been since R62, because only failing tasks
+teach. Ten evaluated tasks split into **five** learning ones, one failed, so the distiller was asked
+**once** instead of fifteen times.
+
+The readback did not grade the registered refutation and was right not to: at R58's 11/15, one quiet
+call has probability 0.27, which separates 73% from 0% by nothing at all. What the run *did* record is
+new: the single distillation returned **no claims and no fault** — the model answered, the reply parsed,
+the claim list was empty — a fourth outcome the code enumeration in `R86` does not name.
+
+The number beside it was an artefact this record has now paid for three times:
+`faithfulness: 0 of 15 entity(ies) kept (0.0%)` on an empty store. A store nobody wrote is not a writer
+that destroyed everything, so the census carries `unwritten` and `faithfulnessRate` returns `undefined`
+when it covers the population; the log line says `no measurement -- 15 entity(ies) in 1 correction(s)
+never reached the store`. `r85_readback` grades the same distinction (`17/17` self-test).
+
+**Also in this stretch, and it is a rename with a reason.** `EvidenceRef.trial` became
+`EvidenceRef.attempt`: the event and the run record have carried a 1-based `attempt` since the task
+model, the guide's own example is `task.begin({ attempt: 1 })`, and `0`-based trials are τ²'s
+convention rather than the host's. The distiller now stamps it from the event and discards whatever an
+interpreter says — the rule `domainOf` already follows — so an offline store stays unchanged (no
+attempt declared) and a host that writes between attempts gets the watermark for free.
+
+**Delivery.** 216 test files, **4,481 tests**, coverage **100 / 99.88 / 100 / 100**, `pnpm check` exit 0,
+commits `3083b85` + `36c50f9` → `4642821`.
+
+`R85` (`43189470917`) is still in `L4 arm — memory`; its store is a record per correction at zero model
+calls, so the hour is the evaluation rather than the write. Next: give the census a mode that runs the
+learning half and the distillation **without** paying for the evaluation, and register the census at
+R58's size, where the failure population actually exists.

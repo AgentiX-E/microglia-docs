@@ -7844,3 +7844,57 @@ before it runs.
 attempt, `RecallQuery.before` is the watermark, and `visibleBefore` withholds any claim carrying an
 observation from the running or a later attempt, on both of `search`'s candidate paths. What remains is
 the seam — the serial loop and the write endpoint — and this record is why it is a serial loop.
+
+### 34.107 The cheap arm counted tasks, and the number it wanted counts failures
+
+R86 was dispatched to answer one question — *which code did eleven of R58's fifteen distillation calls
+throw* — and it came back `NO_MEASUREMENT` after **one** call. The registration's cost model says why:
+
+> Ten tasks rather than fifty-seven because the question is about the *distiller*, and the distiller
+> sees the learning half — **every task in it contributes corrections** whether or not the evaluation
+> afterwards is large enough to grade.
+
+That clause is false, and it has been false since R62: `teachingOf` returns `undefined` for a task that
+passed, by design, because "a store built from every failure is the store the fold paid for". A
+correction exists for *failing* tasks. The population the census needed is therefore not the task count
+but the failure count, and the run says so itself:
+
+```
+[tau2] learn: 5 task(s), 1 trial(s)          <- ten evaluated tasks split into five to learn from
+[tau2] faithfulness: 0 of 15 entity(ies)…    <- one correction reached the distiller
+[poc-l4] no measurement: 1 correction(s) -> 1 asked -> 0 candidate(s) … 0 failed
+```
+
+**Why the registered refutation does not fire.** "No fault at ten tasks" reads as a statement about
+availability — the eleven at fifty-seven were throughput, not prompt. But the run made *one* call. At
+R58's measured rate of 11/15, the probability of seeing no fault in one call is **0.27**, so a single
+quiet call is not evidence of anything; the refutation's own premise (a ten-task load) never happened.
+The arm is not refuted, it is unmeasured, and the readback said so rather than grading a rate it did
+not have.
+
+**The rate needs faults, faults need failures, failures are a quarter of the learning half.** At
+R58's shape — 57 learnable tasks, 15 failed, 11 faulted — reproducing the code distribution needs the
+same order of failure population, i.e. ≳50 learning tasks. A ten-task dispatch could produce at most
+two or three calls, and any distribution over three calls is a list, not a census.
+
+**One new fact, small but real.** The single call that did run returned **no claims and no fault**: the
+model answered, the reply parsed, and the claim list was empty. That is a fourth outcome the enumeration
+does not name — not truncation, not prose, not a refusal — and it would read downstream as "the corpus
+had nothing to teach" rather than as "the distiller produced nothing from something teachable". Any
+census of this distiller has to count it explicitly.
+
+**And the number beside it was an artefact.** `faithfulness: 0 of 15 kept (0.0%)` was computed against
+an empty store: with no text, every entity fails a containment test. That is the third time this record
+has read an absence as a zero, so the instrument now carries `unwritten` and refuses the rate when the
+store answered none of the corrections — see `36c50f9`.
+
+**The rule.** A cheap arm's cost model has to be written in the unit its numerator counts, and the
+numerator's population has to be measurable before the dispatch rather than after. For a fault census
+that means: *calls = failing learning tasks × claims per correction*, and the failing share comes from
+the corpus (14 of 57 here), not from the task cap. A dispatch that cannot state that arithmetic is a
+dispatch that will report `NO_MEASUREMENT` in a scarce window and pay for the privilege.
+
+**What the next registration has to say.** The census runs at R58's size, and — because the quantity is
+about the distiller — it runs the learning half and the distillation without paying for the evaluation.
+That separation is the same move `poolArms` made for the sample: read the quantity you want from the
+work that produces it, rather than from the run that happens to carry it.
