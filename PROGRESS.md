@@ -16818,3 +16818,56 @@ branch is `bin/l4.ts`'s inline gate at `HARM`, recorded rather than papered over
 **R89 is in `L4 arm — memory`** (dispatched 15:40 UTC; R85 took 2h46m at this shape). Its readings price
 the pack — `droppedForSize`, `emptiedBySize`, `meanIds` — and the guard now offers a second explanation
 for whatever `pass^4` does: the pack can carry the record, and the record can still say `[phone]`.
+
+### 173.92 The pack was the constraint: +12.68pp, and 2,400 still carries one record
+
+`R89` came back **`ABANDONED`** on its readback (run `43250414145`, head `e6629b55`, 1h55m) — and it is
+the first arm in this lane whose outcome cleared its bar while the design that produced it did not.
+Graded row by row:
+
+| | registered | reading |
+| --- | --- | --- |
+| budget / capacity / sample | 2,400 / 2,010 / 228 | 2,400 / 2,010 / 228 |
+| `droppedForSize` | 0 | **1,596** |
+| `meanIds` | ≥ 2 | **1.00** |
+| coverage p50 | ≥ 25% | **25.00%** |
+| `pass^4` | ≥ 0.575 | **0.7018 ± 11.88pp** at n = 57, **+12.68pp** |
+| the write | 12 records, 2 clipped | 12 records, **1** clipped |
+
+**The one number that moved changed everything downstream.** R88: coverage 9.09%, `served 82 of 228`,
+`pass^4 0.5614`. R89: coverage **25.00%**, `served 228 of 228`, `empty 0`, `pass^4 0.7018`. The budget
+was the only variable. The pack was the constraint, and this is the first arm that proves it by moving
+it alone.
+
+**And the counter it shipped says 2,400 is still not enough.** 1,596 candidates refused for size over
+228 requests: a record here is ~1,717 characters, the wrapper charges 390, so one record fills 2,107 of
+2,400 and leaves 293 — a second never fits. The registration's `2 × 861 + 390 = 2,112` used the
+census's p50 of 744, and the census calls its own reconstruction *"a lower bound on length"* because it
+omits the `note:` line. **A quantity measured as a lower bound cannot size a budget.** That is the
+second round in a row where a number derived from it was wrong in the same direction.
+
+**Delivered this iteration:**
+
+| | state | evidence |
+| --- | --- | --- |
+| the guard stops eating references | 127 of 128 values kept, was 82 | `kernel/guard.ts` + 20 cases |
+| no privacy traded for the benchmark | the address in `user_id` stays redacted | 6 cases in `tau2-redaction.test.ts` |
+| the census asks the guard twice | bare, and in a reference slot | `guardReplaces` |
+| R89 graded on its own predictions | `r89_readback.py`, 7 self-test cases | `ABANDONED`: outcome PASS, mechanism FAILED |
+| R90 dispatched | run `43273198959`, head `0fc17952`, 17:47 UTC | `(2,000 / 2,400)` with references kept |
+| R90's inherited rows corrected | Amendment 1, written 18:05 UTC, no readback in existence | predicts one record, not two |
+
+**The rule this round adds.** A registration may only predict a quantity its own variable controls; a
+quantity it inherits is graded as *did not change*, and when the population varies between runs — the
+corrections are the tasks whose episodes failed, so 135 entity values here against 128 in R88 — it is
+graded in direction only. R89 violated this twice and R90 once, and R90's was caught before its
+readback existed.
+
+**Delivery.** 224 test files, **4,590 tests**, coverage **100 / 99.99 / 100 / 100**, `pnpm check` exit 0,
+78/78 registrations valid, coupling ledger 201 modules / 53,815 lines. Core bundle 47,375 of 47,500 raw
+and 16,025 of 16,200 gzip after a raise argued beside the number.
+
+**R90 is in `L4 arm — memory`** (dispatched 17:47 UTC; R89 took 1h55m). It is the cell that prices the
+placeholder: if `pass^4` rises over 0.7018 with the same pack and the same dose, the identity is the
+mechanism; if it does not, the last unmeasured candidate inside the record is cleared and the question
+moves out of the record.

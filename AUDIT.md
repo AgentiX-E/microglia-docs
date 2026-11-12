@@ -8142,3 +8142,65 @@ contains `[phone]` where the answer's identity was. That is not "a memory that h
 should"; it is a memory that hands the agent a placeholder in the slot the tool call requires, which is a
 candidate mechanism for the negative effect this lane keeps failing to explain — and the first one found
 that lives in the *safety* layer rather than in the memory design.
+
+### 34.113 The pack was the constraint: +12.68pp from one number, and two predictions that were never its own
+
+`R89` (`prereg/R89-pack-carries-what-it-wrote.md`, run `43250414145`, head `e6629b55`, 1h55m) returned
+**`ABANDONED`** on its readback — and it is the first arm in this lane whose *outcome* cleared its bar
+while the design that produced it did not:
+
+| | registered | reading | verdict |
+| --- | --- | --- | --- |
+| budget, capacity, sample | 2,400 / 2,010 / 228 | 2,400 / 2,010 / 228 | PASS |
+| nothing dropped for size | `droppedForSize = 0` | **1,596** | FAIL, refutation fired |
+| one recall carries two records | `meanIds ≥ 2` | **1.00** | FAIL, refutation fired |
+| coverage p50 | ≥ 25% | **25.00%** | PASS, at the boundary |
+| `pass^4` | ≥ 0.575 | **0.7018 ± 11.88pp** (n = 57) | PASS, **+12.68pp** |
+| the write, held fixed | 12 records, 2 clipped | 12 records, **1** clipped | FAIL, see below |
+
+The five readings in order, because each one constrains the next.
+
+**The pack was the constraint, and this is the first clean confirmation of it.** R88 read 9.09% coverage
+and 82 of 228 requests served; R89 reads 25.00% and **228 of 228**, with `empty = 0` and
+`emptiedBySize = 0`. The only number that moved was the budget. `pass^4` moved 0.5614 → 0.7018.
+
+**And 2,400 is still not enough, which the arm's own counter now says.** `droppedForSize = 1,596` over
+228 requests — seven candidates refused per request, every request — because a record in this arm is
+~1,717 characters and the wrapper charges 390: one record fills 2,107 of 2,400 and leaves 293, so a
+second never fits. The registration's arithmetic said *"two 744-character records fit (2 × 861 + 390 =
+2,112)"*, and 744 was the census's p50. **The census under-measured the population by more than a
+factor of two**, and it says so about itself: it rebuilds a record as `Q:` and `A:` only, so its own
+docstring calls the result "a lower bound on length". This is the second time in two rounds that a
+number derived from that lower bound was wrong in the same direction — R88's ceiling was the first, and
+R89's Amendment 1 recorded it without drawing the general conclusion. The conclusion is: **a quantity
+whose measurement is a lower bound cannot be used to size a budget; it has to be measured on the store.**
+
+**The write row failed, and the failure is mine, not the arm's.** Amendment 1 said `clipped = 2` was
+"held at what R88 measured". It was not: the store is built from the tasks whose *episodes failed*, so
+which twelve corrections exist depends on the trials. This run's twelve are not R88's twelve — 135
+entity values against 128, tasks 3 and 32 present, others absent. `records` is stable at 12 and
+`clipped` is a property of the population, so the row can only be graded in direction. Amendment 1
+should have said "unchanged in kind" and did not.
+
+**Two predictions in R89 were never R89's to make.** `droppedForSize` and `meanIds` are the *pack's*
+occupancy; R89 moved the budget, so it owned the first and not the second, and the first failed on the
+capacity's own arithmetic. The rule this round adds to the registration discipline:
+
+> A registration may only predict a quantity its own variable controls. A quantity it inherits is
+> graded as *did not change*, and when the population varies between runs it is graded in direction
+> only. An inherited row that fails is not evidence about the arm — but it is evidence that the row
+> should not have been written as a prediction.
+
+That rule immediately applies to **R90**, which was written before this readback existed and predicted
+`droppedForSize = 0` and `meanIds ≥ 2` at a pack it does not touch. Amendment 1 on R90 replaces both
+with R89's measured values — written at 18:05 UTC with the run dispatched at 17:47 and no readback of
+it in existence, which is stated in the amendment because the difference between an amendment and a
+goalpost move is whether the result existed when it was written.
+
+**What the identity exemption is now measured to do, model-free.** The guard fix keeps **127 of 128**
+values on R88's twelve statements (82 before), the one still lost being the address in `user_id`. R90 is
+in flight and prices it.
+
+**Delivery.** 224 test files, **4,590 tests**, coverage **100 / 99.99 / 100 / 100**, `pnpm check` exit 0,
+78/78 registrations valid, coupling ledger 201 modules. The core bundle ceiling moved 47,000 → 47,500 raw
+and 16,000 → 16,200 gzip — the smallest raise that gate has taken, argued beside the number.

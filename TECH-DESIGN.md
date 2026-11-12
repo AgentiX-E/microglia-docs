@@ -8877,3 +8877,42 @@ exact, `82 + 46 = 128`.
 replaced by the redaction guard, whole in 1 of 12 correction(s), 0 with none to keep`. The guard clause
 is absent when the guard took nothing, so every published line that did not measure this layer is
 unchanged.
+
+### 17.133 The reference exemption: one rule withheld, by name, on the field's evidence
+
+The guard's phone rule matches `\d{3}[ -]?\d{3}[ -]?\d{4}` and a bare ten-digit run has no property
+that distinguishes it from a telephone number. What does distinguish it is the **field it arrived
+under**: `product_id="7363354090"` is a row key and `phone="7363354090"` is a number. The exemption is
+therefore not a widening of the pattern — it is a decision that reads the key, and it withholds exactly
+one rule from exactly one shape of value.
+
+| decision | why |
+| --- | --- |
+| only the phone rule is withheld, and it is withheld **by id** | a credential or an address under `api_key_id` or `user_id` is still redacted; identifier-shaped keys are precisely where those values get stored |
+| a reference is a bare digit run, `^\d+$` | a row key carries no separators; `+1 415-555-2671` and `(415) 555-2671` are redacted even under `user_id`, because they are not a reference's shape |
+| the key must declare it: `^id$` and `_ids?$` | `identity`, `identifier` and `paid` end in the letters `id` without naming one; a looser match would excuse a value on a coincidence in English |
+| the text layer protects a **whole argument**, not a keyed value | `item_ids=["1615379700", "3613716226"]` has one key and two values; a per-key rule would keep the first and redact the second, and `["1615379700", "[phone]"]` is worse than keeping nothing |
+| a list that mixes shapes is left whole to the guard | the alternative patterns require every element to be digits, so an unrecognised element makes the argument unrecognised: the exemption fails closed |
+| the span is spliced, not masked and restored | equal-length masking needs the redaction not to change offsets, and every replacement changes length; segmenting the string at the spans has no such precondition |
+| `redactJson` carries the key to array elements | an array under a reference key is a list of references |
+| an email is redacted in every position | a ten-digit run under `*_id` is a row key by the field's declaration; an address is a person's contact detail in any field, and τ² retail's `user_id` really is one |
+
+**The residual, stated rather than discovered later.** `user_id="4155552671"` — ten digits, no
+separators, in a reference slot — is indistinguishable from a product id and survives. That is the price
+of not eating every product id in the corpus, and it is bounded: a formatted number is always redacted,
+`phone` is never a reference key, and a value the guard objects to on its own merits is redacted
+wherever it sits.
+
+**What the census asks, now that the answer depends on position.** `guardReplaces` is two questions, not
+one: does the guard object to this string at all, and would it object with the value in a reference
+slot. Every entity a census counts came from a tool argument, so the slot is known; a value that
+survives the second question is one the guard would have taken anywhere, which is the only loss a
+census may attribute to the guard.
+
+| | before | after |
+| --- | --- | --- |
+| values kept, R88's twelve statements | 82 of 128 (64.1%) | **127 of 128 (99.2%)** |
+| what the remaining loss is | 45 phone-rule hits, 1 address | the address, alone |
+
+**Cost.** 375 raw and 25 gzip bytes on the core bundle, which is the smallest raise the size gate has
+taken and the only one it has taken for a correction rather than a capability.
