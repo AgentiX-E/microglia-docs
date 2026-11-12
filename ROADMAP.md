@@ -6556,7 +6556,7 @@ Three consequences, in the order they must be addressed.
 
 | Priority | Item | Why it is here |
 | --- | --- | --- |
-| P0 | ten-task trace-unit diagnostic that returns `llmFailedReasons` | 11 faults of 15 is a prompt problem, a token-ceiling problem or a provider problem, and the fixes differ; costs cents |
+| P0 | ten-task trace-unit diagnostic that returns `llmFailedReasons` — **registered as R59 and dispatched, waiting for 10:00 UTC** | 11 faults of 15 is a prompt problem, a token-ceiling problem or a provider problem, and the fixes differ; costs under $0.10 |
 | P0 | the scheduling constraint: learn 26 min + evaluate 93 min = 119 min against a 120-min window | a paired dispatch of this size cannot fit; open at 04:00 exactly, split the arms, or state the second arm runs at double price |
 | P1 | the `rawlog` arm (Appendix P.3) — raw-history RAG at the same retrieval scope | the field's baseline is raw RAG, not no-memory, and our reference arm is the wrong control |
 | P1 | the in-episode arm (Appendix O) — memory written after each failed trial | makes hold rate comparable in kind to 0.88/0.65 and tests the anti-persistence finding |

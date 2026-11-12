@@ -16390,3 +16390,38 @@ diagnostic at the trace unit**, whose only job is to return `llmFailedReasons`, 
 of fifteen is either a prompt problem, a token-ceiling problem or a provider problem, and those three
 have three different fixes. It costs cents. Nothing downstream of it should be scheduled until it is
 read.
+
+### 173.81 — The diagnostic got a registration, and the registration knows what it may not read
+
+The ten-task dispatch first went out under `prereg=R58-trace-unit`, which was wrong in the way this
+record keeps paying for: R58's predictions are about recurrence, and a ten-task run cannot answer
+them — its store sits under the coverage floor by construction and its `pass^4` is a number about
+ten tasks. Dispatching it under R58 would have produced a graded artefact whose every reading is
+`n/a` and a report that says the unit did not run.
+
+So it was cancelled while it waited for the window and re-sent under a registration written for the
+question it actually asks: **R59 — `prereg/R59-llm-fault-census.md`, registered 2026-11-12,
+73/73 valid**.
+
+| what R59 predicts | why it is falsifiable |
+| --- | --- |
+| `sum(llmFailedReasons) == llmFailed`, and one `[tau2] distill fault CODE:` line per distinct code | the recorder can be wrong, and if it is, nothing below it is available |
+| at least one fault on ten tasks | a rate that falls to zero at a tenth of the load is a throughput effect, not a prompt effect |
+| `MG_E_INVALID_SIGNAL` at **60% or more** of the faults | the trace prompt is the longest this lane sends and the ceiling is 1,200 tokens against a 640-character statement limit, which predicts truncation |
+| every sample is quotable, and the invalid-signal sample carries the reply's opening characters | the preview is the only evidence that separates a cut-off object from a prose preamble |
+| the store is **not** graded — support, coverage and `pass^4` are `n/a` | ten tasks is below the floor, and the temptation to look is why the registration says so |
+
+Its refutation names the three outcomes that would license no prompt change at all: no fault at ten
+tasks (availability at load), faults with no codes in the artefact (the instrument never reached the
+run), and a provider or timeout code dominating (the ceiling and the prompt are both innocent, and
+R58's `{1: 6}` describes a fleet that answered a quarter of the time).
+
+**A second instrument landed before the dispatch could use it.** `faults().samples` keeps the first
+specimen per code and the driver prints `[tau2] distill fault <code>: <message> <- <reply opening>`
+beside the learn line. Without it the diagnostic would return a category — and `MG_E_INVALID_SIGNAL`
+is three categories wearing one word, which is exactly the state R58 was read in.
+
+**Delivery.** 208 test files, **4,403 tests**, coverage **100 / 99.98 / 100 / 100**, coupling ledger
+11 checks / 194 modules / 24 deferrals, `pnpm check` exit 0 in 2m54s, three commits pushed
+(`132098c5`, `1c6e3a5d`). The dispatch waits for 10:00 UTC — the first off-peak minute after the
+window that closed on R58's reference arm — and costs under $0.10 by the registration's own bound.
