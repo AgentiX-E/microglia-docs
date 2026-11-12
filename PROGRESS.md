@@ -16055,3 +16055,105 @@ would have run the standard note under the three-level arm's name.
 deferrals. **Two dispatches are queued for the 04:00 UTC window** (`not_before`, so neither pays the 01:00–04:00
 double rate): R58 on the full cell (~$1.2) and the ten-task R56 smoke (~$0.15). This iteration's own bill was
 **$0.63** for a run that produced no reading — the price of the instrument that makes the next one readable.
+
+### 173.78 — The funnel could say which stage emptied, and the reader printed a number instead
+
+Three repairs this iteration, none of them an experiment, all of them in the two hours before R58's
+window opened. The order is the order they were found in.
+
+| # | what was broken | where it lives | commit | CI |
+| --- | --- | --- | --- | --- |
+| 1 | the committed coupling snapshot described 191 modules; the tree had 192 | `eval/results/poc-coupling.json` | `3141101` → `42a6b8e5` | green |
+| 2 | the readback printed the funnel as `12 -> 0` and dropped the sentence that names the cause | `eval/verifiers/_funnel.py`, both τ² readers | `523a8c6` → `7f4d466d` | green |
+| 3 | two recall knobs were honoured below the wire and unreachable on it | `packages/node/src/recall-query.ts` | `6ff6173` → `ef395877` | green |
+
+**The red was mine and the gate was right.** `f0e0c914` added `eval/band-wait` — a module whose prose
+names the BIRD job — so the walk went from 191 modules to 192, the prose-only census from 35 to 36, and
+the committed ledger described the previous tree. Two checks fired:
+
+```
+coupling ledger failed: a comment is not a coupling: every prose-only hit names a word,
+                       the committed snapshot still describes the tree it was taken from
+```
+
+`pnpm check` has run `eval:coupling-check` — regenerate into `.cache/coupling`, then compare against the
+committed file — since the round that put the eleven assertions in a testable script. It would have caught
+this. What it did not do is run itself: I edited the tree, ran `eval:coupling` alone to inspect a number,
+and pushed. **A gate that is not run is a gate that is not there**, and the only thing worth recording is
+that the failure arrived at the comparison rather than at a reader, which is what the comparison is for.
+
+**The funnel knew the answer and the reader did not relay it.** R56's re-dispatch recorded
+`asked` and `dropped` after §173.77 — and `r56_readback` printed
+
+```
+funnel: 12 -> 0 -> 0 -> 0 -> 0 (refused 0, failed 0)
+```
+
+which is exactly the sentence the instrument was rebuilt to stop printing. Meanwhile the driver had
+written the answer into the artefact's first note: *"the interpreter answered all 12 event(s) with no
+claim of its own: nothing was thrown away after the reply, so the model is what carried nothing"*.
+
+Three changes, and the third is the one that keeps the first two honest:
+
+1. `_funnel.py` holds `funnel_chain`, `refusal_sentence` and `funnel_notes`; `r56_readback` and
+   `r58_readback` both import it. A copy in the second file would be two implementations of one claim —
+   the defect `_pair.py`'s own header describes — and each file's self-test would grade its own copy.
+2. The chain renders in `funnelReading`'s shape, units and all, so a reader holding the artefact's
+   sentence beside the report does not have to work out whether `32 -> 30` and `32 correction(s) ->
+   30 candidate(s)` are the same chain. `asked` and `dropped` print only when the artefact carries them,
+   so every run written before the field existed renders exactly as it did.
+3. **`R58`'s reader gained both, before R58 had run.** It had no funnel reading at all, and this round's
+   whole premise is moving the numbers that feed that funnel — a unit carrying more than one claim, and
+   a pass that merges them. Had it stopped at the same zero, its report would have said "no census" and
+   nothing else.
+
+The relay is keyed on a string literal, so the literal is pinned across the language boundary:
+`stopped-run-sentence.test.ts` asserts it appears **once** in `l4.ts` (as the interpolation that carries
+the reason), **once** in `_funnel.py` (as `STOPPED_PREFIX`), and **nowhere** in either reader. A reworded
+note would otherwise turn the relay into a silent `absent` — which the report prints on purpose for a run
+that carries no sentence at all. The test caught one real duplication on the way in: the two self-test
+fixtures had spelled the sentence out, so the readers did restate it.
+
+**Two knobs were honoured by the pack layer and unreachable from the wire.** `RecallQuery` documents
+`minEvidence` — the floor on independent corrections a rule needs before it may be **injected** — and
+`anchoring` — whether a scope-matched rule needs a lexical anchor. `buildPack` reads the first
+(`evidence.length >= minEvidence`) and the store's candidate selection reads the second. `/v1/recall`
+forwarded three of the five knobs it accepts and silently ignored both.
+
+That is the same defect as a field a projection drops, one layer up, and it sat under two registered
+arms: the corroboration gate is how a store decides what may enter a pack at all — SEMV's gate keeps 93%
+of the positive transfer and removes 96% of the negative — and `anchoring: 'scope'` is the only mode in
+this codebase that serves a rule **without** a lexical anchor, which is the SOTA holder's protocol (every
+admitted entry, every call, no retrieval, no budget). Neither was reachable from the surface every
+benchmark driver calls.
+
+The repair is one file rather than two more `=== undefined ? {} : ...` lines:
+
+```
+recallQueryOf(get, fixed) -> { query } | { error }        packages/node/src/recall-query.ts
+```
+
+* a knob added to `RecallQuery` is now a **compile error** there rather than a silence on the wire;
+* every value is validated, because `Number('abc')` is `NaN`, `NaN <= 5` is false, and a pack built under
+  a `NaN` limit serves nothing — which downstream is indistinguishable from "the store had no match", the
+  exact confusion `suppressed` was added to end. All problems are reported at once; the caller is reading
+  a URL they wrote;
+* absent stays absent: `minEvidence` absent means 1 and `anchoring` absent means `scope`, but those are the
+  pack layer's statements and restating them above it would make the wire a second home for the policy.
+
+Tested on the wire rather than only on the parse, because the parse that nothing spreads would pass a
+parser test: one seeded item is served by default and under `minEvidence=1`, **withheld** under
+`minEvidence=2`, and `minEvidence=0` is a 400 carrying its reason.
+
+**What is not built, stated so the next iteration does not assume it.** The wire now accepts the knobs;
+the τ² lane still cannot *ask* for them. `R55.1`'s two arms need one switch — a registration field
+(`packMode: retrieved | prefix`) resolved where the other six are resolved, rendered into the query by
+the driver and passed to `microglia_agent.py` — and that last mile is deliberately not built tonight: if
+R58 shows no item at support 3, `sup3-prefix` is an arm over an empty store and the switch has nothing to
+switch. The capability below it is now in place either way, and it is the piece that was missing rather
+than the piece that was cheap.
+
+4,387 tests over 207 files, **100/100/100/100**, 72/72 registrations valid, coupling ledger 11 checks /
+**193** modules / 7 adapter modules / 24 deferrals / core coupled=0. Both 04:00 UTC dispatches are still
+waiting in the band — R58 (`43140722331`, registration `R58-trace-unit`) and the ten-task R56 smoke
+(`43140726893`, registration `R56-register`) — and neither has spent anything yet.

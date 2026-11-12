@@ -7535,3 +7535,46 @@ composite scored **1.14pp below** the first draw over all 350. Both numbers are 
 about different populations, and the record had been quoting the first kind beside results of the
 second kind for several iterations. R71's readout now has to print the eligible population beside the
 whole one, or it will repeat this.
+
+### 34.100 A number that exists below a layer and not above it is invisible to every test above it
+
+Two instances in one night, and they are the same defect wearing different clothes: **the measurement was
+correct and the relay was missing**. Neither was a wrong number. Both were a number nobody could read.
+
+**The reader printed the chain and dropped the cause.** After §173.77 the funnel recorded `asked` and
+`dropped` — the two counts that tell an event that never arrived from a reply the parser emptied from a
+reply that arrived empty. `r56_readback` printed
+
+```
+funnel: 12 -> 0 -> 0 -> 0 -> 0 (refused 0, failed 0)
+```
+
+and the sentence that names the stage stayed in the artefact, unread. The instrument had been rebuilt to
+make that sentence possible; the reader had not been told. This is the third occurrence of one shape in
+this project — a counter taken after the parse, a projection that dropped three fields, and now a reader
+that prints the numbers around the answer. The recurrence is the finding: **every diagnostic change needs
+its reader changed in the same commit**, and the way to enforce that is to make the reader's output carry
+something only the new field can produce, with a test that fails when it does not.
+
+**Two capability flags were honoured by the pack layer and never forwarded by the route.** `minEvidence`
+and `anchoring` are documented in `RecallQuery`, consumed by `buildPack` and by the store's candidate
+selection, and `/v1/recall` forwarded three of the five knobs it accepts. Everything below the wire was
+right; nothing above it could ask.
+
+The check that would have caught it is a type-level one and it costs nothing: the route hand-built the
+query as an object literal with a per-field ternary, so a knob the route did not know about was simply
+absent from a spread. Had the query come from a function over `Omit<RecallQuery, 'namespace'>`, the
+compiler would have asked about the sixth field the day it appeared. **A route that enumerates a type's
+fields is a route that will fall behind the type**, and the repair is to hold the list once and let the
+type check it.
+
+Both are now relayed, and both relays are pinned from the side that can drift: the funnel's sentence by a
+source test that asserts the literal appears once in the writer, once in the shared module and nowhere in
+either reader; the route's fields by a test on the wire — one seeded item served under `minEvidence=1`,
+withheld under `minEvidence=2` — rather than on the parser, because a parse that nothing spreads would
+pass a parser test.
+
+**The general lesson, and it generalises past this repository.** A capability that exists below a layer
+and not above it is indistinguishable, from above, from a capability that does not exist. Every experiment
+that failed because "the arm could not ask for the thing" needs to be re-read with that in mind: the arm
+may have been well-formed and the wire deaf.

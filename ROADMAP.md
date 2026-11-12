@@ -6431,3 +6431,37 @@ $1.6272 where the identical run off-peak is ≈$0.81.
 class (`pool.ts`, `width-share.ts`, this). `noArguments` refuses an argument the reader cannot honour, eight
 readers call it, `arm-pairs` gained a real `--bird`, and a source-level test asserts the invariant so the
 next reader someone adds cannot skip it.
+
+### The two hours before the window: three relays, and the mile that is still missing
+
+R58 and the ten-task R56 smoke were dispatched for the 04:00 UTC band and none of the three items below
+is an experiment. They are the instruments the reads depend on, and each was found by reading the artefact
+the last round produced rather than by a failing test.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | the committed coupling snapshot described 191 modules against a tree of 192 | fixed, CI green (`42a6b8e5`) |
+| P0 | `_funnel.py`: the chain and the driver's sentence, one implementation for both τ² readers | done, 20 self-test cases across the two |
+| P0 | `r58_readback` reads the funnel at all — it had none, and this round exists to move those numbers | done, before R58 ran |
+| P0 | the sentence pinned across the language boundary, once in the writer and once in the module | done, 3 cases |
+| P0 | `recall-query.ts`: five knobs, validated, held once; `minEvidence` and `anchoring` reach the pack | done, 9 parse cases + 1 on the wire |
+| P1 | **`packMode: retrieved \| prefix`** — the switch that makes `sup3-prefix` askable from the lane | **not built**: conditional on R58 holding an item at support 3 |
+| P1 | R58's five predictions, and `pnpm eval:recurrence` over the store it writes | waiting on the band |
+| P1 | the smoke's three zeros, told apart by `asked` and `dropped` | waiting on the band |
+| P2 | R55.1's two arms, R53's three note levels, U6b, R57 | registered, one lane at a time |
+
+**What `minEvidence` was for, and what it is not.** It is the pack layer's corroboration floor: an item
+enters a pack only if `evidence.length` clears it. That is the same number `looCrossFitted` computes and
+the same gate SEMV measured — 46.4% positive against 5.7% negative for unverified memory, 0.2% negative
+once verification gates admission. It is **not** a substitute for R58: a floor above the population's
+maximum admits nothing, which is the arithmetic that closed R55.1 the first time. The difference is that
+the floor now also exists on the *pack* side, where it acts on a store that has already been written,
+rather than only on the write side where it decides whether the store exists at all. Two throttles, one
+number, two different populations.
+
+**What `anchoring: 'scope'` was for.** It is the only mode in this codebase that serves a rule without a
+lexical anchor, and therefore the only one that can render the SOTA holder's protocol — every admitted
+entry, every call, no retrieval, no budget. Our pack serves 1.42 items a request through a 1,200-character
+budget; theirs serves 31 bullets twice a turn, unbilled. Until this week the lane could not express the
+second at all, and Appendix N's comparison was arithmetic rather than a measurement. It is still
+arithmetic until `packMode` exists; the wire now carries the knobs that switch needs.
