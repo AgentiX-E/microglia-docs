@@ -16537,3 +16537,32 @@ commit `bc41648` → `798133ff`.
 Both dispatches now carry the corrected text: `R86` (`43187614906`, `f8d9c84a`) and `R85`
 (`43189470917`, `798133ff`, re-sent rather than left running under the pre-correction registration).
 Both wait for the 10:00 UTC window; `R86` costs under $0.10 and `R85` about $1.06.
+
+### 173.84 — The sample is the next lever, and pooling has to refuse to be worth doing
+
+The lane's lifts are differences of a few points on 57 tasks, and a per-task `pass^4` is a Bernoulli:
+the 95% half-width at n=57 is **±12.4–12.8pp**. τ² ships two domains of 114 tasks each and this lane
+has always run one of them. So the cheapest SOTA-relevant work available is not another mechanism — it
+is the second domain.
+
+`poolArms` merges two dispatches into one reading and refuses to merge two experiments:
+
+| condition | why it is a refusal rather than a warning |
+| --- | --- |
+| the arms differ in unit, form, trace ceiling, distilled population or model | a pool of two treatments is a smaller sample of two, averaged |
+| a task id appears in both arms | the same task counted twice inflates n and narrows the interval in the direction that flatters the result |
+| an arm states no tasks | a dispatch that measured nothing cannot join a pool |
+| an arm does not say what it ran | absence is not agreement: `unit`, `form`, `scope`, `model` must be stated |
+
+`l4-pool.ts` runs it and writes `poc-l4-pool` with the pooled rate, its interval, and the smallest
+difference this many tasks could resolve. Smoke-tested on real artefacts: the same file twice is
+refused by name (57 overlapping ids, summarised rather than printed), and retail + a relabelled copy
+gives `0.6491 over 114 task(s) ±8.76pp` with `detectablePp 12.39`.
+
+**Delivery.** 213 test files, **4,457 tests**, coverage **100 / 99.88 / 100 / 100**, `pnpm check` exit 0,
+commit `9bae00e` → `805df178`. `l4-pool.ts` is at 100% on all four dimensions after removing an
+unreachable empty-mean guard rather than testing it: arms with no tasks are refused before any mean is
+taken.
+
+Both dispatches remain queued for the 10:00 UTC window — `R86` (`43187614906`) and `R85`
+(`43189470917`) — and the readbacks that grade them are in the gate (`r86` 12/12, `r85` 15/15).

@@ -6613,7 +6613,8 @@ recorded as §34.104, because a threshold that no run applies is a sentence rath
 | P0 | `R85` raw-record arm (`43189470917`, `798133ff`) | waiting for 10:00 UTC, about $1.06 |
 | P0 | read both: `r86_readback.py`, `r85_readback.py` (self-tests 12/12 and 15/15) | ~12:00 UTC |
 | P1 | the abstraction arm re-run under whatever `R86` names, so `R85` has a same-window comparator | blocked on `R86` |
-| P2 | in-episode arm (Appendix O): the store written after each failed trial | designed, not built |
+| P1 | second domain (`airline`) pooled with retail: n=114 at ±8.8pp | tool built and smoke-tested (`pnpm eval:l4-pool`), dispatched after `R85` |
+| P2 | in-episode arm (Appendix O): the store written after each failed trial | designed (§17.127), not built |
 | P2 | `R55.1` (`packMode: prefix`, `minEvidence: 3`) | still blocked: no item at support 3 exists |
 
 **What each outcome buys.** If `R86` names the ceiling, the fix is one constant and the abstraction arm
