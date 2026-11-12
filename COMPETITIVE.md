@@ -4697,3 +4697,84 @@ Cost is bounded and stated in advance: at most one distillation call per failed 
 failures fewer), at most three claims each, and the consolidation pass unchanged at zero model calls. It is
 sequenced after R58 because a store that does not recur in the offline shape gives an in-episode arm nothing
 to accumulate: recurrence first, accumulation second.
+
+## Appendix P — Two papers that name our six nulls, and the baseline we do not run (2026-11-12)
+
+Six nulls on this lane were measured as properties of *our* pipeline: the procedure form lost 8.77pp,
+coverage fell under the bar, the store halved, a per-item counter had split-half reliability −0.31,
+injected rules neither helped nor hurt, and pruning a fifth of the pack moved one question. Two preprints
+from the last three weeks say those are not our pipeline's defects. They are what the *class of system*
+does, and the second one publishes the design that avoids it.
+
+### P.1 Error reproduction: stored lessons lose to raw logs
+
+`More Memory, Worse Agents: Error Reproduction and Anti-Persistence in LLM Agents` (Wang, Panaganti,
+Zhou — Indiana University / Tencent HY, 19 Oct 2026, preprint) names the loop this project measured from
+the outside. A bad rule enters the store; later tasks follow it; their logs contain the same mistake; the
+next review reads those logs and writes a fresh rule that repeats it. Deleting the original rule does not
+help, because the logs it shaped remain. Their fix, `Anti-Persistence`, stores **only raw run records and
+outcomes** and writes short guidance per task from them, then **discards** it.
+
+| memory design | held-out success, mean of 9 settings (ALFWorld / WebShop / ScienceWorld × 3 open models) |
+| --- | --- |
+| raw logs only | 53.5% |
+| stored lessons only | **49.0%** |
+| logs **and** lessons | 49.3% |
+| `Reflexion` (strongest published method) | 52.9% |
+| **`Anti-Persistence`** (per-task guidance, then discarded) | **59.9%** |
+
+Stored lessons did worse than plain logs in **seven of nine** settings, and in a direct A/B where the only
+difference was whether the generated guidance was kept or thrown away, discarding it scored higher in
+**all four** settings tried. `AutoRefine` — which prunes and refines stored lessons, the closest thing in
+the literature to this project's curation and consolidation passes — beat plain stored lessons in **one of
+six** settings.
+
+R56's −8.77pp is that table's second row, measured independently on a different benchmark, with a
+pre-registered revert rule that fired. The finding is not that our distiller was bad. It is that a store
+of *abstractions* is the failure mode, and every lever this record pulled after R56 — the trace unit, the
+consolidation pass, the register, the note level — was a lever on the abstraction, not on the choice to
+store one.
+
+### P.2 Memory tax: the baseline that beats the memory systems
+
+`Memory Tax: Dissecting the Net Value of Agent Memory` (UIUC / Tsinghua / RUC) tests 11 memory systems in
+four families (flat, hierarchical/lifecycle, graph, trained policy) against **naive two-round RAG over raw
+history** on LongMemEval-s, PersonaMem-v2, MINT-Eval and experiential suites including τ²-Bench. It
+normalises the comparison by Retrieval Scope, so token exposure is held constant, and splits the outcome
+into `benefit` (solved by memory, missed by RAG) and `tax` (solved by RAG, missed by memory).
+
+| finding | number |
+| --- | --- |
+| systems beating single-round RAG on LongMemEval-s (GPT-5.6 Luna, 100 corpora) | **2 of 11**, both by 2pp |
+| two-round RAG against all 11 | **90.0%**, above every one of them |
+| the same on Qwen3.6-27B | **81.4%**, still first |
+| detail survival at write, 500 raw turns checked | `OpenViking` 39.4% intact, **38.0% not found at all**; `SimpleMem` 65.6%; `Memory-R2` 72.6% |
+| retained but unretrievable | `MAGMA` keeps 93.6% of information, answers **68.2%** — hand it the gold evidence and it reaches **84.4%** |
+| source augmentation (retrieve raw history *beside* the store) | `SimpleMem` 73.6% → **82.8%** (+9.2pp) |
+
+The two failure modes are named `faithfulness` (the detail was destroyed when the memory was written) and
+`accessibility` (the detail survived and the retriever never served it). This lane instruments
+accessibility everywhere — `asked`, `dropped`, `served`, `store.active`, the pack's coverage — and
+instruments faithfulness **nowhere**. That asymmetry is why six nulls read as six different stories when
+they are two.
+
+### P.3 What this changes in the queue
+
+1. **The reference arm is the wrong baseline.** Ours is *no memory*; the field's is *raw-history RAG at
+   the same retrieval scope*. A lift over no-memory does not establish net value, which is exactly the
+   distinction P.2 exists to draw. A `rawlog` arm — retrieve raw past corrections and traces by the same
+   BM25, same budget, same floor — is the missing control, and it is a store-shape change rather than a
+   model change, so it can be one variable.
+2. **Faithfulness needs an instrument before the next store.** Cheap and model-free: for each correction
+   that produced an item, the share of the trial's own entities (order ids, amounts, dates, table names)
+   that appear in the distilled statement. That is a write-side number no model call pays for, and it is
+   the half of the tax this project cannot currently see.
+3. **The in-episode arm is now the literature's own recommendation.** Appendix O proposed it to make hold
+   rate comparable; P.1 gives it a second, stronger reason — per-task guidance that is discarded beat a
+   persisted store by **10.9pp** across nine settings. The two arms differ only in when the store is
+   written and whether the guidance survives the task.
+
+**A version pin that travel with every number.** τ-bench `2.0.0` (2026-10-19) changed the judges and 50 of
+the 114 tasks in each of English retail and telecom, and its maintainers state that 2.0 scores are not
+comparable with any 1.x score. Every τ² cell in this file is a 1.x cell; the pinned ref is in the
+workflow, and a number quoted without it is a number from an unnamed benchmark.
