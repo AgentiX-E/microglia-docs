@@ -6481,3 +6481,48 @@ what the sidecar is asked for.
 | P0 | `sota.yml`: the variable, the step output, both arms, and the `OWNED` guard | done, 42 source cases |
 | P0 | the lane's passthrough — the resolver's fragment, carried by `MICROGLIA_PACK_KNOBS` and appended by `recall_url` | **done** (`3dd92ddf`); a malformed pair is dropped, and both sides of the switch are in `OWNED` |
 | P1 | R55.1's registration then names `packMode: prefix` and `minEvidence: 3` on one store | after R58 |
+
+### The window opened, the run died on a rule, and the rule was wrong
+
+`R58` was dispatched at 04:01 UTC — the first minute of the off-peak band — and was refused by
+`prereg-form` before its first model call, because the header fixed `traceClaims: 3` and the repository
+variable held `6`. Both arms read the header's step output first; the variable is the no-registration
+fallback and no dispatch in this lane takes that branch. The check compared the registration against a
+value the run does not read.
+
+The refusals are now notices (`switchOverride`), the run annotates `::warning::` instead of stopping, and
+the reference arm's smoke from the same window stands as evidence that the rest of the payload is sound:
+five tasks, four trials, `pass^4 = 1`, **$0.0462**, 92% cache. The re-dispatch is `43154220251`, sent at
+04:21 UTC.
+
+Two things about this belong in the queue rather than in the incident:
+
+- **The window is the scarce resource, not the money.** Both dispatches cost nothing to be wrong; what
+  they cost was six hours of band, and R58 is the last prompt-side and write-side lever this record has.
+  A guard that fails closed on a comparison the run does not depend on is now a category the audit knows
+  by name (§34.101).
+- **The smoke's zero is the model's, and the funnel can prove it.** `1 correction(s) -> 1 asked -> 0
+  candidate(s) (0 refused, 0 failed)` is the third of three possible owners of a zero, and it is the only
+  one no code path here can repair.
+
+### Retention is the measurement this lane did not have
+
+`pass^4` collapses four trials into one number and cannot separate a memory that worked once from one
+that carried the task every time. The comparator this lane is graded against — `Learning on the Job`
+(arXiv:2607.22157) — persists a memory inside a single τ-bench episode across four trials and reports
+**hold rate 0.88 / 0.65**, P(pass at t+1 | pass at t) pooled over pairs, `undefined` when there is no
+pair. We had the counts (`successes/trials`) and had thrown the order away.
+
+`outcomes` now rides beside the counts in `per_task`, `holdRateOfTrials()` recomputes the same reading
+from `per_trial` so published artefacts can be re-read without a re-run, and `l4-pair` writes `retention`
+for both arms. The caveat is part of the field: this lane splits learn from test, so its trials are
+repeated attempts under one memory rather than the same task recurring, and the 0.88 / 0.65 pair is
+quoted as the *shape* of the measurement rather than as a value to compare.
+
+| Priority | Item | State |
+| --- | --- | --- |
+| P0 | R58 on the whole held-out set, both arms, inside the band | **running** (`43154220251`, 04:21 UTC) |
+| P0 | read R58's five graded predictions + `retention` for both arms | on completion |
+| P1 | R55.1 (`packMode: prefix`, `minEvidence: 3`) on the same store, gated behind R58's support-3 item | registration ready, dispatch blocked on R58 |
+| P1 | R53 and R57, both downstream of what the store contains | blocked on R58 |
+| P2 | if R58 refutes: the ceiling is the *corpus*, and the next registration is about the sample | registered as a possibility in R58's own Refutation section |

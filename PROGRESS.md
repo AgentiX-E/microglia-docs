@@ -16200,3 +16200,106 @@ category error as reading a silenced pack as an unmatched one.
 So R55.1 is dispatchable the moment R58 holds an item at support 3: the header names `packMode: prefix`
 and `minEvidence: 3`, `eval:prereg-form` refuses any dispatch that would run the other place, and the
 lane sends the request the registration describes.
+
+### 173.79 — The refusal that killed R58 compared a value the run would not read, and the smoke's zero had three possible owners
+
+Two dispatches went out at 04:00 UTC and came back as one death and one answer. The death was caused by
+a rule this record wrote two iterations ago; the answer closed a question that had been open since R56.
+
+| run | registration | dispatched | ended | spent |
+| --- | --- | --- | --- | --- |
+| `43140722331` | `R58-trace-unit` | 02:20, waited for the window | 04:01:31, **before the first model call** | $0.00 |
+| `43140726893` | `R56-register`, ten tasks drawn | 02:20, waited for the window | 04:10 | $0.0462 |
+
+**R58 died on my own arithmetic, not on a measurement.** The step that resolves a registration's switches
+into the arm's environment compared the header's `traceClaims: 3` against the repository variable
+`TAU_TRACE_CLAIMS`, found `6`, and refused:
+
+```
+[prereg-form] this registration fixes the trace ceiling at 3 claim(s)
+              and this dispatch would run '6'
+```
+
+The ceiling that would have run is 3. Both arms read
+`${{ steps.recall_floor.outputs.claims || vars.TAU_TRACE_CLAIMS }}`, and a step output a registration
+sets is *always* non-empty, so the variable is the branch no run takes when a registration is present.
+Four checks — unit, scope, ceiling, pack mode — were comparing a declared value against a value the run
+would not read, and refusing on the difference. The one thing the refusals guaranteed was that a
+registration could never disagree with a leftover from the previous arm; the price was that a leftover
+from the previous arm could stop an experiment that would have executed exactly what its header fixed.
+
+The refusal is gone and `switchOverride()` writes the disagreement as a sentence instead:
+
+```
+$ pnpm eval:prereg-form prereg/R58-trace-unit.md '' '' '' 6
+unit=correction
+form=lesson
+scope=edited
+claims=3
+mode=retrieved
+overrides=claims: the variable holds '6', overridden by the registration's '3'
+$ echo $?
+0
+```
+
+`prereg-form` now prints five `key=value` lines and a sixth `overrides=` line; `sota.yml` lifts it into a
+step output and emits `::warning::the registration overrides repository variables: …`, so the operator
+still sees every disagreement — in the run's annotation list, where a disagreement belongs, rather than
+in the run's death. What survives as a refusal is the one check that is an inconsistency *inside* the
+registration: a `trace` unit carrying a `lesson` form describes two objects and cannot be executed as
+one. What the old rule was really protecting — a variable holding a value no registration declares, the
+way `TAU_DISTILL_UNIT` held `trace` through R56's `procedure` arm — is now reported the same way, and the
+readback grades a run whose registration and record disagree as `NO_MEASUREMENT` rather than reading a
+number off it.
+
+**The smoke answered with a zero, and a zero has three possible owners.** R56's re-dispatch reached
+`1 correction(s) -> 1 asked -> 0 candidate(s) (0 refused, 0 failed): the interpreter answered all 1
+event(s) with no claim of its own`. The funnel prints `asked` and `dropped` only when the artefact carries
+them, so the line distinguishes the three readings that a bare `0` cannot:
+
+| what a zero can mean | what the artefact would show | whose failure it is |
+| --- | --- | --- |
+| the event never left the driver | `corrections = 0` | the driver |
+| the parser dropped what the model wrote | `asked > 0`, `candidate(s) < asked` | the interpreter |
+| the model answered with an empty array | `asked > 0`, `refused = 0`, `failed = 0` | the model, on that input |
+
+This run is the third. It is not a bug, it is not a parser dropping a well-formed answer, and no code
+path in this repository can fix it — which means **R56's −8.77pp now stands as one measurement plus one
+reproduction that failed on the model's output, not as a defect awaiting repair**. The ban stays, as R45
+requires, and the register question moves to R58's object change rather than to a third attempt at the
+`procedure` form.
+
+**What the smoke's reference arm did establish.** Five tasks in the evaluated split, four trials each,
+`pass^4 = 1`, 340 provider calls, **$0.0462**, cache hit 92%. Two gates failed the run and both were
+right: `l4-coverage 5 (>= 40 tasks)` refused five tasks dressed as a reading, and the pairing step found
+no `per_task` block to pair against. A smoke run is a plumbing test, and the plumbing it tested is now
+known-good.
+
+**The missing measurement was retention, and the fix is an order rather than a count.** `pass^4` is one
+number for four trials; it cannot tell a task the memory helped once from a task it carried four times.
+The literature this lane is graded against reports that difference — `Learning on the Job`
+(arXiv:2607.22157) persists a memory *inside* one `tau-bench` episode across four trials and reports hold
+rate 0.88 / 0.65, defined as P(pass at t+1 | pass at t), **pooled over pairs** rather than averaged per
+task, and `undefined` rather than 0 when a run produced no pair. `per_task` stored `successes/trials` and
+lost the order, so a task that passed trials 1 and 3 and one that passed 1 and 2 were both "2 of 4".
+
+`toPassAtK` now carries `outcomes` beside the counts, `holdRateOfTrials()` rebuilds the reading from
+`per_trial` — so an artefact that is already published can be recomputed without a re-run — and
+`l4-pair` writes `retention` for both arms into the pair artefact. The caveat travels with the number:
+this lane splits learn from test, so its four trials are repeated attempts under one memory and *not* the
+same task recurring; the 0.88 / 0.65 figures are quoted as the shape of the measurement, not as a
+comparison of values.
+
+**Delivery.** 208 test files, **4,400 tests**, coverage **100 / 99.98 / 100 / 100** (statements / branches
+/ functions / lines), 72/72 registrations valid, coupling ledger 11 checks / **194** modules / 7 adapter
+modules / 24 deferrals / core coupled = 0, `pnpm check` exit 0 in 2m50s.
+
+| # | what changed | commit | CI |
+| --- | --- | --- | --- |
+| 1 | an override is a notice, because the arm never read the variable it disagreed with | `be0614d` → `880ad773` | pending `43154220251` |
+| 2 | a run can say whether what it passed on trial 3 was still there on trial 4 | `195fc33` → `c704beb7` | pending `43154220251` |
+
+R58 was re-dispatched at 04:21 UTC on the corrected payload, inside the off-peak window that closes at
+06:00 (`43154220251`, registration `R58-trace-unit`, whole held-out set, both arms). Its six predictions
+are unchanged and were fixed before the run; the fifth — *the unit ran, at least 80% of corrections carry
+a trace* — is the one that decides whether the arm is a treatment or half a control.

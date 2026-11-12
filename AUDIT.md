@@ -7578,3 +7578,50 @@ pass a parser test.
 and not above it is indistinguishable, from above, from a capability that does not exist. Every experiment
 that failed because "the arm could not ask for the thing" needs to be re-read with that in mind: the arm
 may have been well-formed and the wire deaf.
+
+### 34.101 A refusal that compares against a value the run does not read is a refusal to measure
+
+`R58` died at 04:01:31 UTC, ninety seconds after the off-peak window opened and before its first model
+call, on this check:
+
+```
+[prereg-form] this registration fixes the trace ceiling at 3 claim(s)
+              and this dispatch would run '6'
+```
+
+The run would have executed 3. The variable held 6. The arms read
+`${{ steps.recall_floor.outputs.claims || vars.TAU_TRACE_CLAIMS }}`, and the step output is set whenever
+a registration is present — which is always, in every dispatch that goes through the resolver. The
+variable is the fallback for the dispatch that has no registration, and the check compared the header
+against the *fallback*. Four checks were built this way (unit, scope, ceiling, pack mode), each of them
+written the same hour as the switch it guarded, each of them copied from the one before.
+
+**The defect is not the comparison; it is the belief that a disagreement between the registration and the
+environment is an error.** Those two are allowed to disagree, and the registration is supposed to win:
+that is what resolving a registration into an environment means. The checks encoded the opposite — that a
+stale variable is a contradiction to be refused — and so the only disagreement they could ever catch was
+the harmless one, while the dangerous one (a variable holding a value *no* registration declares, so the
+registration is silent and the run inherits a stranger's setting) passed through untouched, because there
+was nothing to compare it against.
+
+**The repair keeps the report and drops the veto.** `switchOverride()` returns `undefined` when the
+declared value and the variable agree, and otherwise returns the disagreement as a sentence —
+`claims: the variable holds '6', overridden by the registration's '3'`. `prereg-form` prints them on an
+`overrides=` line, `sota.yml` turns them into `::warning::`, and the run proceeds to measure what its
+header fixed. The one check that stays a refusal is the one that is an inconsistency *inside* the
+registration — a `trace` unit carrying a `lesson` form describes two objects and cannot be executed as
+one — because there is no "which wins" for that.
+
+**What made this expensive is that it was cheap to find.** The message named both numbers, the header and
+the variable, and a single local invocation reproduced it in under a second. A check that fails closed on
+a comparison the run does not depend on will, given enough dispatches, always be the thing that stops the
+experiment rather than the thing that protects it — and the cost of that is not the money (this one spent
+nothing) but the window: the next off-peak open was six hours away, and the run it killed was the last
+prompt-side and write-side lever this record has.
+
+**The rule, stated so the next guard is written against it.** A refusal must name a state the run cannot
+proceed from. "The configuration disagrees with itself" is not that state unless the run reads both
+sides; where one side is a fallback, the disagreement is a fact about the environment, and facts about the
+environment belong in the run's annotations. The second half of the rule is the one this project keeps
+learning: **the observation still has to reach a reader** — so an override that is only a warning in a log
+nobody opens is the same defect as §34.100, one layer up.
