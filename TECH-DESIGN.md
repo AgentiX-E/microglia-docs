@@ -8736,3 +8736,61 @@ learns from 57 tasks — R58's own half, where 15 corrections and 11 faults came
 which is four episodes of bookkeeping rather than 228. The predicted cost is under $0.30 against the full
 arm's $1.06, and the expected red `V1` is stated in the registration rather than discovered as a failed
 job.
+
+### 17.130 A record is not a claim: what the admission model assumes, and why an event fails it
+
+§17.127 planned an arm whose unit is *order*. R85 ran the arm that is its precondition — a store made
+of records rather than claims — and the store admitted one of its twelve records. This is the design
+correction that came out of it, and it is a statement about the admission model rather than about the
+record unit.
+
+**The model.** `scoreKnowledge` fuses two questions:
+
+```
+evidence   is the claim supported by enough trusted observations?   logit(trust) × Σ weight per task
+empirical  when applied, did it actually help?                      smoothedRate(succeeded, applied)
+```
+
+Both presuppose a **claim**: something that several observations can independently support and whose
+application can be scored. A record is neither. It is one event, so its support is one observation by
+construction; it is not applied as advice, so `applied` stays zero and the empirical factor stays at its
+prior.
+
+**What that costs, in the one number that matters.** With one observation at trust 0.9 and no applied
+uses, a record's confidence is **0.6165** against an `activationThreshold` of 0.6 — a 1.65pp margin.
+Anything at all moves it under: a contradiction halves its support, a slightly lower source trust, one
+retirement check. A unit whose admission is decided by 1.65pp is not admitted; it is admitted by luck,
+and R85 is what luck looks like at n = 12.
+
+| what the rule needs | what a record has |
+| --- | --- |
+| several independent observations of one claim | one observation, by definitions |
+| applications that succeeded | none: record `tokens.served` was filled by this lane, not `applied` |
+| a scope that says two items answer one question | one scope for every task, so two records always "answer one question" |
+
+**The correction, built at the one place that decides it.** Two items of one kind in one scope with
+different content contradict each other. That is right for claims and wrong for events, so
+`isEventKind` exempts the kind, and the claim path is tested beside it so the exemption cannot widen by
+accident. The exemption is a **statement about semantics**, not a tolerance: two orders cancelled on two
+afternoons both happened, and a store that halved the first one's support when the second arrived was
+treating chronology as disagreement.
+
+**What was deliberately not changed.** The scope. Every task opens as `tau2.act`, so records share one
+scope and every recall — which asks with the same constant — reaches all of them. Making the scope
+per-task would restrict each record to the task that produced it, which is the opposite of what a
+retrieval arm wants, and changing it in the same dispatch as the contradiction and the ceiling would
+leave three treatments and one measurement. It is the next candidate variable, stated here so the next
+reader does not have to rediscover that the option existed.
+
+**The ceiling, and why the number is a header.** 700 characters came from R84's 640-character *trace*
+statement ceiling; a trace statement summarises one call and a record is a question plus an answer. The
+retail corpus says p50 744, p95 1260, max 1532. The number is a registration header (`rawCeiling`)
+rather than a repository variable for the same reason the floor and the scenario pair are: a ceiling in
+a variable is chosen by whichever dispatch ran last, and this one decides what the arm measures.
+
+**And the measuring instrument for faithfulness has a ceiling of its own.** `faithfulnessOf` asks
+whether the store's text for a run still contains the correction's own argument values. For a record
+whose first line *is* the question, a value quoted in the question survives a slice that removed the
+whole answer line — so the ratio is an upper bound on preservation for this unit, measured at 64.53%
+where the run itself reported 42.34%. It is used as one: a number below 0.95 still refutes the write,
+and a number above it does not by itself acquit the ceiling.

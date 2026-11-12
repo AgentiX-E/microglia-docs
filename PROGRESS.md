@@ -16657,3 +16657,47 @@ name.
 commits `a26ff6c1` → `de58d3ad`. R87 is not dispatched yet: R85 is still in `L4 arm — memory`, and two τ²
 dispatches in one window measure each other's throttling — which the registration says in its own list of
 things that would make it worthless.
+
+### 173.88 R85 is read: twelve records, one servable, three layers each destroyed it once
+
+`R85` (`43189470917`) finished at 11:59 UTC after 2h46m and its readback returned `ABANDONED` — on a
+number that turned out to be the most useful failure this lane has recorded.
+
+```
+records 12 · clipped 12/12 · faithfulness 42.34% · active 1 · candidate 11 · servable 1
+coverage p50 13.04% · pass^4 0.6842 ±12.07pp (against 0.575)
+```
+
+**One number gave the cause away.** The log printed `admission: support=0.4875`. `RAWLOG_TRUST` is 0.9,
+every record is created at `support = weight`, and nothing in the run retires or merges — an untouched
+store reads 0.9000. `0.4875 × 12 = 5.85 = 0.9 + 11 × 0.45`, and 0.45 is exactly
+`recordContradiction`'s decrement. **The store had refuted eleven of its own records**, because
+`contradictSameScope` applies to `exemplar` and the driver opens every task as `tau2.act`, so twelve
+records shared one scope and twelve different payloads.
+
+Three defects, three layers, each removing roughly an order of magnitude:
+
+| layer | defect | reading it moved |
+| --- | --- | --- |
+| scope constant | every task is `tau2.act`, so all records share one scope | none — the store still held twelve |
+| contradiction | an event was refuted by another event | `active 1 / candidate 11` |
+| ceiling | 700 characters inherited from the trace unit's 640 | `faithfulness 42.34%` |
+
+**Fixed.** `isEventKind` exempts the kind with the claim path tested beside it; `rawCeiling` is a
+registration header and the module default stays 700 so published arms keep their reading;
+`rawlog.ceiling` travels in the artefact; `eval/tools/record_length_census.py` measured the corpus at
+p50 744 / p95 1260 / max 1532, which is where 2000 comes from.
+
+**And the census caught its own instrument.** Its first version predicted 64.53% where R85 measured
+42.34%, and the gap is not the missing `note:` line: an entity quoted in the question is also the
+argument of the gold call, so it survives a slice that removed the answer. `faithfulness` is an upper
+bound on preservation for this unit — stated in the tool, because a metric used to acquit a ceiling has
+to say what it cannot see.
+
+`R88` (`prereg/R88-record-not-claim.md`, 76/76 valid) is the arm: ceiling 2000, events do not
+contradict, scope unchanged. Its readback (`r88_readback.py`, 12/12 self-test) grades the admission rows
+separately because they are readable without an evaluation episode — `active 12 of 12` is a property of
+the write.
+
+**Delivery.** 208 test files, **4,318 tests**, coverage **100 / 99.88 / 100 / 100**, `pnpm check` exit 0,
+76/76 registrations valid, verifier self-tests 11/17/12/14/12/5.

@@ -7898,3 +7898,68 @@ dispatch that will report `NO_MEASUREMENT` in a scarce window and pay for the pr
 about the distiller — it runs the learning half and the distillation without paying for the evaluation.
 That separation is the same move `poolArms` made for the sample: read the quantity you want from the
 work that produces it, rather than from the run that happens to carry it.
+
+### 34.108 Twelve records, one servable: three layers each destroyed the memory once
+
+R85 came back `ABANDONED`, and for a day it read as "the record arm does not help". It reads that way
+only if the four numbers are read as one. They are four:
+
+```
+records              12
+clipped by ceiling   12 of 12
+faithfulness         58 of 137 entity values kept (42.34%)
+admission            active 1, candidate 11 (reason: insufficient-evidence)
+servable in retail   1
+mean pack size       1
+coverage p50         13.04%
+```
+
+**The support mean was the tell.** `RAWLOG_TRUST` is 0.9, every record is created with
+`support = evidence.weight`, and nothing in the run retires or merges. A store nobody touched reads
+0.9000, and the log printed **0.4875**. That is `(0.9 + 11 × 0.45) / 12`, and 0.45 is exactly
+`recordContradiction`'s `support − weight × 0.5`. The store had refuted eleven of its own records.
+
+**Why.** `contradictSameScope` walks the pool for an item of the same kind in the same scope with
+different content and records a contradiction. The rule is right for claims: two rules of one kind in
+one scope answer one question, so different content is a disagreement. It is wrong for records, and the
+driver made it fire eleven times by opening every task as `tau2.act` — twelve records, one scope,
+twelve different payloads.
+
+| layer | what it did | what it looked like from outside |
+| --- | --- | --- |
+| scope constant | every task opens as `tau2.act`, so twelve records share one scope | nothing: the store held twelve items |
+| contradiction rule | applied to `exemplar`, halving the older record's support to 0.45 | "eleven items are candidates" — which reads as weak evidence, not as refutation |
+| ceiling | 700 characters, inherited from R84's 640-character *trace* statement | 42% faithful, reported as a write-side defect |
+| pack | one servable item, so one item per pack | coverage 13%, reported as a retrieval defect |
+
+**Why this is a class, and the worst instance of it in this record.** Every number above is true and
+every number points at a different layer. Read in sequence they say "records are worse than claims",
+which is exactly the literature's claim and exactly the wrong conclusion: the store never got to
+answer. Three separate mechanisms each removed about an order of magnitude of the treatment, and none
+of them announced itself — a contradiction is recorded as a support decrement, a cliff is recorded as a
+character count, and a scope constant is recorded nowhere at all.
+
+The failure mode is **an arm whose treatment is destroyed before the measurement, where the destruction
+is itself measured** — 42% faithful, 1 servable, 13% coverage — so the readback reports a graded
+verdict rather than `NO_MEASUREMENT`, and the verdict is about the destruction.
+
+**The rule.** Before an arm's result is read as evidence about its *treatment*, the funnel's own
+counts have to be checked against the treatment's shape. A record arm whose store is 92% candidates is
+an arm that did not run its treatment, whatever its coverage says — and the check is arithmetic on
+numbers the artefact already carries, not another dispatch. §34.107 said the same thing about a
+population count; this is the same rule applied to a population of *items* rather than of *calls*.
+
+**What was built.** `isEventKind` exempts the kind from the contradiction rule, with the claim path
+tested beside it so the guard cannot be widened by accident; `rawCeiling` is a registration header, and
+the ceiling is 2000 because `eval/tools/record_length_census.py` measured the retail record at p50 744,
+p95 1260 and max 1532 characters; `rawlog.ceiling` now travels in the artefact so a 700-run and a
+2000-run cannot be compared as one.
+
+**And one instrument that was wrong when it was written.** The census's first version expected to
+reproduce R85's 42.34% and produced 64.53%. The gap is not the missing `note:` line: an entity value
+quoted in the question (`order #W2378156`) is *also* the argument of the gold call, so it survives a
+slice that removed the whole answer line. `faithfulness` therefore asks "does the store's text for this
+run contain the value", and for a record whose first line is the question the answer is yes more often
+than the detail survived. The metric is an **upper bound** on preservation for this unit, which is
+worth knowing before it is used to acquit or convict a ceiling — and it is stated in the tool rather
+than left for the next reader to discover.
