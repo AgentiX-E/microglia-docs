@@ -8844,3 +8844,36 @@ and the gate over every registration both call it.
 at the same pack; without it, a lift in R89 is a lift from *more text reaching the model* and the two
 causes stay entangled — which is the class of mistake this section exists to end, one level above the one
 it repairs.
+
+### 17.132 Faithfulness, decomposed: the guard's share is a separate number
+
+`faithfulness` answers "did the write destroy the detail", and R88 is the round that showed the question
+had been answered over a population two mechanisms had already been through. The writer is verbatim — a
+reconstruction from the pinned corpus keeps 128 of 128 entity values at the arm's own ceiling and clips
+the same two records — so the 46 values the store did not contain were removed by `kernel/guard.ts`,
+whose phone rule is ten digits and whose population includes every τ² retail product id.
+
+**The instrument, and why it is a predicate.** `faithfulnessOf(rows, items, redacts?)` counts a missing
+entity as `redacted` when the caller's predicate says the guard would replace it. The predicate is
+`guardReplaces` (`tau2-redaction.ts`), which calls `redact` rather than re-implementing the rules: two
+definitions of what counts as personal data would drift, and the drift would be invisible in exactly the
+direction that flatters a dispatch.
+
+| decision | why |
+| --- | --- |
+| `redacted` is a required field of the census | a field an artefact may omit is a field a projection drops, and this lane has lost three fields to that once already |
+| absent predicate ⇒ `redacted: 0`, not "unknown" | an arm that did not measure this layer must not appear to have measured it as zero |
+| a missing entity the guard would leave alone stays out | otherwise the counter is an alibi for the writer |
+| `kept` is unchanged, and the rate stays over the stated entities | a redaction explains a loss; it does not shrink the denominator, or an arm that redacted everything would read as perfect |
+| `whole` still requires every entity kept | a correction cannot be complete by redaction |
+
+**What the number is for.** It separates two repairs that point in opposite directions. A low rate with a
+high `redacted` share is a *policy* question — what may a memory keep — and no amount of ceiling or pack
+work moves it. A low rate with a low share is the writer, and that is the arm's own defect. R88 read
+`82 of 128` and the readback could not tell the two apart; on its own corrections the decomposition is
+exact, `82 + 46 = 128`.
+
+**The line, so a run says it without a reader.** `faithfulness: 82 of 128 entity(ies) kept (64.1%), 46
+replaced by the redaction guard, whole in 1 of 12 correction(s), 0 with none to keep`. The guard clause
+is absent when the guard took nothing, so every published line that did not measure this layer is
+unchanged.

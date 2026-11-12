@@ -6644,16 +6644,19 @@ before the agent reads it". This is the position and the queue behind it.
 | pack capacity | **measured** — 810 chars of statement at 1,200, 390 for the wrapper | `maxStatementChars`, `rawLogItemShape` |
 | pack refusals | **counted** — `droppedForSize`, `emptiedBySize` | `tau2-pack.ts`, artefact `pack` |
 | ceiling vs budget | checked when both are registered | `prereg-pack.ts`, `packBudget` header |
-| R88 | dispatched 12:59 UTC, running | ceiling 2000 + no self-refutation, one reading per layer |
+| R88 | **read** — `ABANDONED`: admission held (12/12), ceiling half-held (2/12 clipped), reach 9.09%, `pass^4 0.5614` | `r88_readback.py`, run `43223040283` |
+| the fifth layer | **found** — the guard replaces ten-digit ids (`[phone]`), 46 of 128 entity values | `tau2-redaction.ts`, `census.redacted` |
+| R89 | dispatched 15:40 UTC, running | budget 2,400 at the same write: the pack cell |
 
 **The queue, in dependency order.** Nothing below starts before the reading above it settles.
 
 | pri | step | why it is next | cost |
 |---|---|---|---|
-| **P0** | read R88 | it separates the three layers: `clipped ≤ 1` (ceiling), `active 12/12` (admission), `coverage ≥ 25%` (reachability) | $0 |
+| ~~P0~~ | ~~read R88~~ | **delivered** — admission `12/12` (the repair held), ceiling `2 of 12` clipped (half-held), reach `9.09%`, and the writer acquitted by reconstruction: `128 of 128` kept | $0 |
+| **P0** | decide what the guard may keep, then register the arm | the store hands the model `[phone]` where the answer's identity was: 46 of R88's 128 entity values, and every τ² retail product id is ten digits. A policy question (what may a memory persist) that no ceiling or pack work can move | $0 to decide, ~$1.10 to measure |
 | ~~P0~~ | ~~paired degradation rate~~ | **delivered** — `degradationOfPair` on every pair, `transferSummary` reused rather than re-derived | $0 |
 | ~~P1~~ | ~~pack budget as a variable~~ | **delivered as a measurement**: `maxStatementChars` (810 at 1,200 / 2,010 at 2,400), `pack.{budget,capacity,droppedForSize,emptiedBySize}`, `packBudget` as a header | $0 |
-| **P0** | dispatch `R89-pack-carries-what-it-wrote` | the pair R88 shipped is 2,000 characters into a 1,200-character pack; capacity is 810, `41.2%` of retail is above it, and every record dropped for size read as "nothing relevant" | ~$1.10 |
+| **P0** | ~~dispatch `R89-pack-carries-what-it-wrote`~~ **dispatched 15:40 UTC (run `43250414145`)** | the pair R88 shipped is 2,000 characters into a 1,200-character pack; capacity is 810, `41.2%` of retail is above it, and every record dropped for size read as "nothing relevant" | ~$1.10 |
 | **P2** | a (700 / 2,400) cell after R89 | R88→R89 prices the pack, R89→(700 / 2,400) would price the ceiling; without it a lift in R89 is "more text reached the model" and the two causes stay entangled | ~$1.10 |
 | **P1** | insight→run link (WikiTrace) | the layer this store lacks: an insight pointing at its source run, mounted in the pack, so a detail the insight dropped is reachable without a new agent tool | 1 dispatch, feature-flagged |
 | **P2** | in-episode arm | the only design that makes accumulation measurable; needs the write endpoint and a serial trial loop, both of which the watermark already presupposes | 1 dispatch, serial |
@@ -6662,8 +6665,10 @@ before the agent reads it". This is the position and the queue behind it.
 | **P3** | R87 fault census at size | queued behind R88: two τ² dispatches in one window measure each other's throttling | $0.30 |
 
 **What the queue is ordered by.** Not by cost and not by novelty: by *which reading removes the most
-doubt from the next one*. R88 first because it is already paid for and it separates three layers in one
-artefact. The degradation rate second because it is free, it is the field's own metric, and every arm
+doubt from the next one*. The guard's policy question jumped to the front of the queue on R88's readback,
+because it is the first mechanism found that changes what the model *reads* rather than how much of it
+arrives, and every arm queued behind it would otherwise be measured through a placeholder. R89 is already
+paid for and prices the pack; the two are orthogonal and both are needed before any tuning. The degradation rate second because it is free, it is the field's own metric, and every arm
 after it should carry it. The pack third, and it moved from *assumption* to *measurement* in this
 iteration: it is not a hypothesis that a 1,200-character pack stops at 810 characters of record, it is
 `maxStatementChars(1200) = 810`, and R88's ceiling of 2,000 is 1,190 characters above it.

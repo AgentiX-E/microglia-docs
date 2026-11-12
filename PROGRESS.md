@@ -16767,3 +16767,54 @@ Gate: `222` files, `4559` tests, coverage `100 / 99.99 / 100 / 100`, `pnpm check
 exactly this: the lane CLI typecheck caught `pack` missing from `Tau2Raw`'s projection (a field the driver
 wrote and the arm record would have dropped), and the coupling ledger caught a committed snapshot that
 still described a 198-module tree.
+
+### 173.91 The guard ate the answer, and the writer was verbatim
+
+`R88` came back **`ABANDONED`** (run `43223040283`, head `deb56ec2`, `L4 arm — memory` exited 1 on
+`pass^4 0.5614 < published + 0.05`). Read layer by layer rather than summed: the admission repair
+**held** (`12 active, 0 candidate`, `servable 12`, funnel `12→12→12→12`, against R85's `1 of 12`), the
+ceiling repair **half-held** (`2 of 12` clipped at 2,000, against `12 of 12` at 700), and the reach did
+not move (`coverage p50 9.09%`, `served 82 of 228`, `meanPackIds 0.36`).
+
+Then the readback's third refutation refused to acquit the write: its condition is `clipped ≤ 1` and the
+arm clipped two, so `faithfulness 82 of 128` stood as evidence about the writer. It is not evidence about
+the writer.
+
+**Measured, model-free.** The twelve corrections are named by the artefact and the write calls no model,
+so the same population was rebuilt from the pinned corpus at the arm's own 2,000-character ceiling:
+
+| | entity values kept | records clipped |
+| --- | --- | --- |
+| rebuilt `Q:`/`A:`/`note:` from `tasks.json` | **128 of 128** | **2** |
+| R88 as measured | 82 of 128 | 2 |
+
+Both of the arm's own counters are reproduced exactly, and every value survives. The writer is verbatim.
+The 46 missing values are removed by `kernel/guard.ts`: its phone rule is ten digits, and τ² retail's
+`product_id`/`item_id`/`new_item_id` are ten digits. Task 15's gold
+`get_product_details(product_id="7363354090")` is stored as `product_id="[phone]"`; the email rule takes
+`daikisanchez1479@example.com` the same way, and both rules run before persistence — on the edit payload
+in `capture/normalize.ts` and again on the statement in `distill/distiller.ts`.
+
+**Delivered this iteration**, all of it at zero model cost:
+
+| | state | evidence |
+| --- | --- | --- |
+| the fifth layer, named | `census.redacted`, counted apart from `kept` | `tau2-redaction.ts` + 4 cases |
+| the guard asked, not re-implemented | `guardReplaces` calls `redact` | one definition, so it cannot drift |
+| no alibi for the writer | a value the guard would leave alone stays out of `redacted` | 5 cases in `tau2-faithfulness.test.ts` |
+| the run says it without a reader | `… 46 replaced by the redaction guard, whole in 1 of 12 …` | `faithfulnessLine` |
+| R89 dispatched | run `43250414145`, head `e6629b55`, 15:40 UTC | `(2,000 / 2,400)`, the pack cell |
+| R89's write prediction held, not guessed | `clipped = 2`, R88's measurement | Amendment 1, before dispatch |
+
+**Why this is the most important reading of the round.** The store the model reads contains `[phone]` in
+the slot where the tool call needs an identity. That is not a memory that helps less; it is a memory that
+hands the agent a placeholder — a candidate mechanism for the negative effect this lane keeps failing to
+explain, and the first one found in the safety layer rather than in the memory design.
+
+**Delivery.** 223 test files, **4,568 tests**, coverage **100 / 99.99 / 100 / 100** (the single uncovered
+branch is `bin/l4.ts`'s inline gate at `HARM`, recorded rather than papered over), `pnpm check` exit 0,
+77/77 registrations valid, coupling ledger refreshed to 201 modules / 53,815 lines.
+
+**R89 is in `L4 arm — memory`** (dispatched 15:40 UTC; R85 took 2h46m at this shape). Its readings price
+the pack — `droppedForSize`, `emptiedBySize`, `meanIds` — and the guard now offers a second explanation
+for whatever `pass^4` does: the pack can carry the record, and the record can still say `[phone]`.

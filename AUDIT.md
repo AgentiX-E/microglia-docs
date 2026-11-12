@@ -8071,3 +8071,74 @@ neither the store, the write, nor the reader could see.
 **The rule, and it is the same rule as 34.110 one level up.** A writer and a reader that both bound text
 have to be checked against each other, not against their own histories. 700 was inside 1,200 because
 somebody had chosen both; 2,000 is outside it because the second number was never part of the decision.
+
+### 34.112 The fifth layer was a safety rule, and the writer was verbatim all along
+
+`R88` (`prereg/R88-record-not-claim.md`, run `43223040283`, head `deb56ec2`) returned **`ABANDONED`** and
+two of its five refutations fired. Graded apart, as the readback grades them:
+
+| layer | prediction | reading | verdict |
+| --- | --- | --- | --- |
+| the write | records, form `record`, no tool ban | 12 records, `form record`, `toolBan false` | PASS |
+| the write costs nothing | `events = candidates`, no model call | 12 / 12, `llmFailed 0` | PASS |
+| the ceiling | `clipped ≤ 1` | **2 of 12** at 2,000 | FAIL, refutation fired |
+| the write does not abstract | `kept ≥ 95%` with `clipped ≤ 1` | 82 of 128 = **64.06%**, whole in 1 | FAIL |
+| the admission | every record active | **12 active, 0 candidate** (R85: 1 of 12) | PASS |
+| the reach | coverage p50 ≥ 25% | **9.09%** (R85 13.04%) | FAIL, refutation fired |
+| the outcome | `pass^4 ≥ 0.575` | **0.5614 ± 12.88pp** at n = 57 | FAIL, −1.36pp |
+
+Two of the three repairs this row was dispatched to test held: `isEventKind` moved the admission from
+`1 active / 11 candidate` to `12 of 12`, and the recall scope serves all twelve (`servable 12`, funnel
+`12→12→12→12`). The ceiling repair half-held: 12 → 2 clipped.
+
+**And then the reading that made the last four rounds look like one problem.** The registration's third
+refutation — *"the write abstracts somewhere the ceiling does not explain"* — was **not** cleared: its
+condition is `clipped ≤ 1`, and the arm clipped two. So the 64.06% was left standing as evidence about
+the writer, and it is not.
+
+**Measured, model-free, from the pinned corpus.** The twelve corrections are named by the artefact
+(`yieldCensus.perCorrection`), and the write calls no model, so the population can be rebuilt offline:
+
+| | entity values | clipped |
+| --- | --- | --- |
+| rebuilt from `tasks.json` at 2,000, verbatim `Q:`/`A:`/`note:` | **128 of 128 kept** | **2** |
+| R88 as measured | 82 of 128 kept | 2 |
+
+The reconstruction reproduces both of the arm's own counters — 128 entities, 2 clips — and keeps every
+value. The writer is verbatim. What removes 46 values is `kernel/guard.ts`, whose second rule is a
+North-American phone pattern —
+
+```
+{ pattern: /\b(?:\+?\d{1,3}[ -]?)?(?:\(?\d{3}\)?[ -]?)\d{3}[ -]?\d{4}\b/g, replacement: '[phone]' }
+```
+
+— and it is ten digits. Every τ² retail `product_id`, `item_id` and `new_item_id` is ten digits. Task
+15's gold call `get_product_details(product_id="7363354090")` is stored as
+`get_product_details(product_id="[phone]")`, and the email rule takes
+`daikisanchez1479@example.com` the same way. `redactJson` runs on the edit's `after` payload in
+`capture/normalize.ts`, and `redact` runs again on the statement in `distill/distiller.ts`, so the value
+is gone before the interpreter can build a record from it.
+
+**This is the fifth layer, and it is not the writer's.** The guard is right: a memory that persists a
+user's phone number because it arrived as a tool argument has shipped the defect the guard exists to
+prevent. What was wrong was that nothing in this lane could say the sentence, so six readings were made
+to carry an explanation they did not have — `recall.empty`, coverage, `served`, and finally a rate the
+registration could not acquit.
+
+**What now exists.**
+
+- `FaithfulnessCensus.redacted`, counted by a predicate the caller supplies (`guardReplaces`, from
+  `tau2-redaction.ts`), so the loss the guard caused is counted apart from the loss the writer caused.
+- The predicate asks the guard itself rather than re-implementing it: two definitions of what counts as
+  personal data would drift, and the drift would be invisible in the direction that flatters a dispatch.
+- A missing entity the guard would have left alone is **not** counted as redacted. A redaction counter
+  that absorbed every loss would be an alibi for the writer — the same defect as a `?? 0` printing an
+  absence as a zero, one measurement over.
+- On R88's own twelve corrections the decomposition is exact: **82 kept + 46 redacted = 128**, nothing
+  unexplained.
+
+**The consequence for the arm's central claim, stated before it is measured.** The store the model reads
+contains `[phone]` where the answer's identity was. That is not "a memory that helps less than it
+should"; it is a memory that hands the agent a placeholder in the slot the tool call requires, which is a
+candidate mechanism for the negative effect this lane keeps failing to explain — and the first one found
+that lives in the *safety* layer rather than in the memory design.
