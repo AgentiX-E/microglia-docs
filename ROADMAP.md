@@ -6624,3 +6624,46 @@ goes to backoff and concurrency rather than to prompts. If `R85` clears 12% cove
 the store, the two preprints' finding transfers to this corpus and the object is settled in one
 dispatch; if it does not, the constraint was never the object and the next registration is about the
 retrieval function.
+
+### Where the flywheel stands, and what is left: the store was destroying its own treatment
+
+R58 and R85 both came back with a store that could not serve what it had learned, and reading them
+together moved the diagnosis from "the abstraction is bad" to "the machinery removes the treatment
+before the agent reads it". This is the position and the queue behind it.
+
+**The position, as of 2026-11-12 13:00 UTC.**
+
+| | state | evidence |
+|---|---|---|
+| record unit (`raw`) | built, cheap, correct | R85: 12 records, **0 model calls**, all `exemplar` |
+| ceiling | measured, fixed, per domain | retail max 1532 → 2000; airline max 3129 → needs 4000 |
+| contradiction rule | **fixed** — events no longer refute each other | `isEventKind`, claim path tested beside it |
+| admission for events | still a claim model | R85: `active 1 / candidate 11`, confidence 0.6165 vs a 0.6 bar |
+| scope | one constant (`tau2.act`) for every record | unchanged, recorded as the next candidate variable |
+| in-episode write | property built (watermark), seam missing | `EvidenceRef.attempt`, `RecallQuery.before`, `visibleFrom` |
+| R88 | dispatched 12:59 UTC, running | ceiling 2000 + no self-refutation, one reading per layer |
+
+**The queue, in dependency order.** Nothing below starts before the reading above it settles.
+
+| pri | step | why it is next | cost |
+|---|---|---|---|
+| **P0** | read R88 | it separates the three layers: `clipped ≤ 1` (ceiling), `active 12/12` (admission), `coverage ≥ 25%` (reachability) | $0 |
+| **P0** | paired degradation rate | the field's headline metric (KAIST: 52% of failures are one item) and this lane reports only `pass^4` deltas; `transferSummary` already computes it and is only called on cross-domain pairs | $0 + one bin test |
+| **P1** | pack budget as a variable | if `servable = 12` and coverage does not move, the pack is the constraint, not the store — and `meanPackIds = 1` says it already is | 1 dispatch |
+| **P1** | insight→run link (WikiTrace) | the layer this store lacks: an insight pointing at its source run, mounted in the pack, so a detail the insight dropped is reachable without a new agent tool | 1 dispatch, feature-flagged |
+| **P2** | in-episode arm | the only design that makes accumulation measurable; needs the write endpoint and a serial trial loop, both of which the watermark already presupposes | 1 dispatch, serial |
+| **P2** | airline at ceiling 4000 | the per-domain census says 2000 clips 4% of airline records; a transfer arm cannot be run on a ceiling measured on retail | 1 dispatch |
+| **P3** | R55.1 (`packMode: prefix`, `minEvidence: 3`) | **blocked**: no item in any store has support 3, so the arm would measure an empty set | blocked |
+| **P3** | R87 fault census at size | queued behind R88: two τ² dispatches in one window measure each other's throttling | $0.30 |
+
+**What the queue is ordered by.** Not by cost and not by novelty: by *which reading removes the most
+doubt from the next one*. R88 first because it is already paid for and it separates three layers in one
+artefact. The degradation rate second because it is free, it is the field's own metric, and every arm
+after it should carry it. The pack budget third because R88 will say whether it is the constraint, and
+a dispatch that assumed otherwise would be measuring the wrong thing for three hours.
+
+**The one thing that is not on the list.** Tuning a signal weight, a ceiling, or a threshold before the
+store serves more than one item per recall. R85's pass^4 (0.6842 ±12.07pp) landed between the board's
+top two rows while its store was 92% candidates, which is a reminder that the outcome number can look
+right while every mechanism under it is broken — and that a tuning pass on top of that would be fitting
+the noise of the destruction.
