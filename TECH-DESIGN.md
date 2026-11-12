@@ -8698,3 +8698,41 @@ write endpoint on the driver's recall server and the per-trial boundary in the r
 records why the second one is a serial loop over `run_task` rather than a call to `run_tasks`: upstream
 executes `(task, trial)` pairs in a thread pool and assigns `simulation.trial` after the episode returns,
 so neither the order nor the index exists inside the episode.
+
+### 17.129 Two caps, because one number bound two populations
+
+The lane had one task number. `l4_tasks` became `TAU_MAX_TASKS`, which slices the evaluated list, and
+`heldOutPlan` then splits that slice in half — so the one number decided how many tasks were learned
+from *and* how many were scored. For every arm before R86 that was harmless, because the two halves were
+the same experiment: 114 tasks, 57 to learn from, 57 to answer. R86 broke it by asking a question about
+the **distiller** and capping the run at ten:
+
+```
+l4_tasks = 10  ->  drawn = 10  ->  split -> 5 to learn from, 5 to answer
+                   of the five, one failed -> one correction -> one distillation call
+```
+
+The census needed fifteen calls. It got one, and the artefact said nothing about the population having
+been decided by a number chosen for a different reason.
+
+| header | what it caps | absent means |
+| --- | --- | --- |
+| `trainTasks` | the learning half, which produces the store | the repository variable stands |
+| `testTasks` | the evaluation half, which produces `pass^4` | the repository variable stands |
+
+**Both or neither.** A registration that pins one and leaves the other to a variable has its cost decided
+by whichever dispatch ran last, which is the same defect one layer up. `eval:prereg-caps` refuses a lone
+pin and prints two lines that `sota.yml` reads into `TAU_TRAIN_TASKS` and `TAU_TEST_TASKS`; a
+registration that pins nothing prints two empty lines and nothing changes.
+
+**Why this is a header and not a dispatch input.** It is the seventh switch of a family the record has
+moved one member at a time — floor, scenario pair, note levels, form, unit, scope, ceiling — and for the
+same reason: a cap is a property of the experiment. The dispatch menu also carries a `l4_tasks` input,
+which now means what it always meant (`TAU_MAX_TASKS`, the pool before the split), so a registration
+using the caps sets it to zero and the pool is the whole corpus.
+
+**What it buys.** A store question no longer pays for an evaluation it does not report. R87's census
+learns from 57 tasks — R58's own half, where 15 corrections and 11 faults came from — and scores one,
+which is four episodes of bookkeeping rather than 228. The predicted cost is under $0.30 against the full
+arm's $1.06, and the expected red `V1` is stated in the registration rather than discovered as a failed
+job.

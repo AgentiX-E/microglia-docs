@@ -16631,3 +16631,29 @@ commits `3083b85` + `36c50f9` → `4642821`.
 calls, so the hour is the evaluation rather than the write. Next: give the census a mode that runs the
 learning half and the distillation **without** paying for the evaluation, and register the census at
 R58's size, where the failure population actually exists.
+
+### 173.87 The cap was one number for two populations, and R87 is the census at the size its numerator has
+
+R86's readout had a second consequence beyond `NO_MEASUREMENT`: the *dispatch* could not express what the
+registration meant. `l4_tasks` → `TAU_MAX_TASKS` slices the evaluated list and `heldOutPlan` splits that
+slice in half, so ten tasks bought five learning ones. The caps are headers now (`trainTasks`,
+`testTasks`), both or neither, read by `eval:prereg-caps` into the two variables the workflow already had
+(`§17.129`). A registration that pins nothing prints two empty lines.
+
+`R87` (`prereg/R87-fault-census-at-size.md`, 75/75 valid) is the census again: 57 learning tasks where
+R58's failure population lives, one evaluated task because the quantity is produced by the learning half,
+`l4_tasks = 0` so the pool is the whole corpus. Predicted population stated before the run — 57 learning
+tasks → ~15 corrections → ~15 calls → 11 faults at R58's rate, under $0.30 — and the expected red `V1`
+is in the registration rather than a surprise: one scored task against a floor of sixty is the gate doing
+its job, and the evidence upload runs on `always()`.
+
+`r87_readback.py` (14/14 self-test) adds the one grading `r86` lacked: a floor of **eight calls**, below
+which the verdict is `NO_MEASUREMENT` rather than a refutation, because a distribution over seven calls is
+a list and the fault would be the registration's. It also prints the replies that neither faulted nor
+produced a claim as a residual beside the codes — the fourth outcome R86 saw and the enumeration does not
+name.
+
+**Delivery.** 217 test files, **4,490 tests**, coverage **100 / 99.88 / 100 / 100**, `pnpm check` exit 0,
+commits `a26ff6c1` → `de58d3ad`. R87 is not dispatched yet: R85 is still in `L4 arm — memory`, and two τ²
+dispatches in one window measure each other's throttling — which the registration says in its own list of
+things that would make it worthless.
