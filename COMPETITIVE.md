@@ -4889,3 +4889,94 @@ faithfulness, accessibility, retention, funnel provenance, and a pre-registered 
 fired — and its *sample* is behind, at one domain and one seed where the papers it compares against run
 nine settings. Doubling the sample is the cheapest SOTA-relevant work available, and it is a dispatch
 decision rather than an engineering one.
+
+## Appendix S — Four papers that decompose our failure, and the number our own arm landed between (2026-11-12)
+
+R85 ran the record arm, wrote twelve records, and served one. Reading the four papers published in the
+three weeks before that reading gives the result a vocabulary and a competitor it did not have, and one
+of them supplies the exact decomposition of "memory hurts".
+
+### S.1 The decomposition: 52% of memory-induced failures are one item, and 20% of those are a wrong item
+
+`Don't Just Trust Your Memory` (KAIST / DeepAuto.ai, arXiv 2610.x, 2026-11-10) names the phenomenon
+**memory-induced degradation**: an agent fails a task *it would have solved with no memory at all*. Its
+analysis is the number this document has been missing:
+
+| share | cause |
+| --- | --- |
+| 52% | a **specific memory item** the agent followed |
+| 20% of failures | the item itself was wrong |
+| remainder | applied outside its intended scope, misused, or followed while a better item sat in the same store |
+
+The root cause they name is the one this lane found from the other end: a lesson distilled from a run
+labelled only `success` or `failure` has to **guess** which of many actions caused the outcome, and the
+agent is handed the lesson without the run it came from. Their system **WikiTrace** keeps three linked
+layers — `insight` (a short lesson, at most three per run, **never edited or deleted, may conflict**),
+`compilation` (why the run succeeded or failed), and the **raw trajectory, unchanged** — and an agent that
+may *descend* from an insight to its source run when the insight lacks a detail, came from a failed run,
+or conflicts with another. Average score 79.5 → **90.2**, with memory-induced failures cut.
+
+**What that says about R85.** Our store had no layer above the trajectory and no descent, and its
+admission model assumed the opposite of WikiTrace's rule: we **refuted** items of one kind in one scope
+for disagreeing, which is precisely the `followed while a better item existed` bucket read from the
+other side — the better item was retired by the older one's contradiction. The fix already shipped
+(`isEventKind`) is WikiTrace's "insights may conflict" applied to events; the layers above it are the
+next design question, not a tuning choice.
+
+### S.2 The measured cost of abstracting, on our own benchmark family
+
+Drew Zhang's UIUC experiments (reported 2026-11) and `MemDev-Bench` (arXiv 2610.27524) both quantify what
+this document has argued qualitatively:
+
+| setting | without abstraction | with it |
+| --- | --- | --- |
+| ARC-AGI, 19 problems GPT-5.4 solves perfectly | 100% | **54%** after repeated memory compression |
+| WebShop + AWM, 8 expert trajectories | — | 0.64 |
+| the same, **128** trajectories | — | **0.20** — back to the no-memory baseline |
+| MemDev-Bench, 555 base + 4,869 historical tasks | — | raw trajectories cut **more** steps than compressed memory, because "summaries drop the process detail agents reuse" |
+
+MemDev's own diagnosis is the same sentence as KAIST's: *"these failures mainly stem from agents reusing
+memory without reassessing its applicability"*. `Anti-Persistence` (arXiv 2610.27406) adds the design
+consequence — keep trajectories and outcomes, **reconstruct** task-specific guidance on demand, discard it
+after execution, with an adaptive selector deciding whether to synthesise at all — and reports the highest
+held-out success **and** the lowest average LLM-call cost of the memory designs it tested.
+
+**What that says about this lane's economics.** A raw-record store costs **zero model calls at write**
+(R85: `events 12 = candidates 12`, `llmFailed 0`) and the competitor that wins on cost reconstructs
+guidance per task. The two statements are the same design seen from different ends, and this project has
+already built the cheap half.
+
+### S.3 Where R85 actually landed, and why it is not a ranking claim
+
+| entry | retail pass^4 | sample | note |
+|---|---|---|---|
+| SapientAI-Agent-Opus-5 | **72.8** | full retail, custom scaffold | board entry, published trajectories |
+| IBM learned guidelines | 67.5 | 114 base split | guidelines learned from a train split the base split includes |
+| **microglia, record arm (R85)** | **68.42 ±12.07pp** | **57 held-out, 4 trials** | `ABANDONED` on the write: 42% faithful, 1 servable |
+| RAFT-30B-A3B | 61.4 | fine-tuned on synthetic retail | |
+| ALTK-Evolve baseline | 57.5 | the bar this lane registered against | |
+
+The record arm's point estimate sits between the top two rows and **is not a ranking claim**: 57 held-out
+tasks with a ±12.07pp interval overlapping both, a different split from either submission, and a verdict
+of `ABANDONED` on its own write-side prediction. What the row is good for is the opposite of a claim —
+it says the *treatment* was never delivered, so a number in the right range came from a store that was
+92% candidates and 58% clipped. If anything it understates what the unit can do.
+
+### S.4 The one axis this table cannot rank, and it is ours
+
+Every row is a pass^k and a cost. None of them reports **what fraction of a correction's own detail
+survived the write**, and none reports **how many stored items the admission path made reachable**. R85
+is the first arm in this project to report both, and it is the first to show them failing in the same
+run:
+
+```
+faithfulness        42.34%   (137 entity values, 58 kept)
+admission           1 of 12  (11 refuted by each other)
+rawlog.clipped      12 of 12 (ceiling inherited from another unit)
+model calls written 0
+```
+
+That is the flywheel's actual failure mode, measured: not bad rules, but a store whose own machinery
+removed the treatment before any agent read it. The competitor set ranks the *outcome*; this lane is the
+only entry that can say **which layer** produced the outcome, and R88 is the dispatch that moves the three
+layers at once with a separate reading for each.
