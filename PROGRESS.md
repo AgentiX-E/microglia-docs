@@ -17667,3 +17667,77 @@ on a number that costs nothing extra to collect. It is the cheapest question R10
 > Bill a memory arm by its *uncached* tokens, not its prompt tokens. A prompt block that varies per
 > episode is not a fixed cost per conversation — it re-prices every token behind it, and the ratio between
 > two arms' bills is a cache question before it is a context-length question.
+
+### 180 — The block was wrapped twice, and the probe that decides R102 is built
+
+§179 ended with a bill attributed to the cent and one free way to finish the attribution: R101's
+empty-pack leg, whose cost would say whether the premium was the block's presence or the wrapper's call
+pattern. Both halves of that plan needed a second look, and looking cost nothing.
+
+**The block never reached a model in the form the renderer wrote it.** `renderPack` emits the element
+including its `version`, `note` and `items` attributes; the τ² agent then wrapped the result in a second
+`<microglia-knowledge>` pair. Every memory turn of every arm from R92 to R101 was delivered as an element
+inside an element, the outer one naming no version and carrying no note. Found by writing the assertion
+first — the self-check printed `expected 1, got 2` for the opening tag, the closing tag and the byte-for-byte
+comparison, and printed the two nested elements in the failure message. Repaired as a defect, not as a
+treatment: no registration varied it, and R102 moves the block, so a control that kept it would have made
+the R102→R99 comparison differ in two places while the registration names one.
+
+**An empty pack injects nothing, so R101 prices nothing.** The agent's injection is guarded by `if pack:`,
+which means the scaffold leg sends the reference arm's prompt **byte for byte**. Its bill will land near
+$0.38 whatever is true, and reading that as "the block's presence is the cost" would be reading the arm's
+own definition back as evidence. R101 is unchanged as an instrument — it still separates the wrapper from
+the pack on behaviour — but it is not a cost decomposition. §179's free discriminator is withdrawn in
+AUDIT 34.126 rather than quietly reinterpreted.
+
+**So the decomposition is measured instead of inferred.** `cache-placement.ts` sends the same episode under
+four prompt shapes and reads the provider's own `prompt_cache_hit_tokens` per call:
+
+| shape | prompt | what it isolates |
+|---|---|---|
+| `control` | `[system native] …history…` | the cache behaviour of the prefix without a block |
+| `system-second` | `[system native][system block] …history…` | what the lane sends today |
+| `system-merged` | `[system native + block] …history…` | the message boundary as the only difference |
+| `first-turn` | `[system native][user task + block] …history…` | ExpeL's placement: the block rides the task, not the policy |
+
+Nine growing turns per shape, 36 calls, a 3k-token policy and a 1.2k-token block: about **$0.03**. The
+verdict has four states and two of them refuse R102:
+
+| state | reading | consequence |
+|---|---|---|
+| `placement-is-the-boundary` | second message pays, merged does not | R102 confirmed before dispatch, with a measured prediction |
+| `block-never-cached` | every block-bearing shape pays | R102 refused: placement is not the lever |
+| `placement-is-free` | the second message is cached like the control | R102's premise refuted on the cheapest evidence available |
+| `inconclusive` | a shape missing, or the block measured nothing, or the provider reported no cache field | nothing is a fact about placement |
+
+**Predictions, registered here before the dispatch.** (1) `system-second` costs ≥512 uncached tokens a call
+above the control, which is the mechanism §179's arithmetic implies at ~1.1k. (2) `system-merged` costs
+<128 above it, because the block moves inside the prefix. (3) `first-turn` costs <128 above it, because the
+block moves to the tail. Refutations: if `system-second` lands under 128 the premium is not a boundary and
+R102 is refused; if `system-merged` lands over 512 then merging does not repair it and R102 is refused in the
+form it was written. A provider that reports no `prompt_cache_hit_tokens` on any call is recorded as
+`reported: 0` and the run prices nothing — absent is not zero, and a zero would have read as "the cache
+never hits", which is the one conclusion the probe must not invent.
+
+**What is built, and what it cost to check.**
+
+| | |
+|---|---|
+| new module | `packages/eval/src/cache-placement.ts` — 22 tests, **100/100/100/100** on all four dimensions |
+| new entrypoint | `pnpm eval:cache-probe` — four shapes, per-call readings, the verdict, one JSON artefact |
+| new job | `sota.yml` → `probe-cache`, gated on `probe: cache`, 20-minute ceiling |
+| defect repair | `injected_message` wraps once; two self-check cases, 14 cases / 29 assertions total |
+| ledger | coupling walk **206 modules**, `pnpm check` green |
+
+**Where the lane is.** R101 (`43478128683`, head `9e91b50`) is in its memory(scaffold) leg, 65 minutes in.
+Its read is behavioural: `declaredEmptyStore: true`, `learning.rows: 0`, `meanPackIds: 0`, five funnel
+stages at zero, `V0` and `V1` inverted to pass on emptiness. The criterion is unchanged — `B ∈ [0.675,
+0.775]` means the wrapper is nearly free and the pack's −2.50pp is the pack's; `B < 0.650` would make the
+wrapper itself the finding. The probe is dispatched next, and R102 is registered from its state rather than
+from a guess: **$0.03 to decide an $0.83 question.**
+
+**The rule this adds, for the standing requirement that every iteration be predictable.**
+
+> Write the assertion before reading the delivery path. A wrapper that adds a tag costs ten tokens a call
+> and is invisible in every number the lane publishes; it is only visible in a test that says what the
+> prompt is supposed to contain.

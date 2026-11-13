@@ -6798,7 +6798,8 @@ costs 2.5 points".
 | **P0** | **R98 — the unrelated control** | the content of the served record at matched length | **promoted by R99**: relevance is now the least likely explanation left. The 73-record pack matched the question a third better at every quantile and lost three tasks, so the next question is whether the content matters at all — if unrelated records cost the same, the pack's problem is **presence** and no retrieval work can fix it | $1.40 + code |
 | **P0** | **merge by action shape** | the unit | **promoted by R99's own census**: 73 corrections, 53 shapes, 10 supported by ≥2 tasks, 5 by ≥3. The competitor's `sup3` is built on exactly that support and this store cannot express it. Code, no dispatch | $0 |
 | **P1** | **R97 — ephemerality** | one sentence: the pack is a past experience | the only intervention in the literature with an effect larger than this lane's 21pp resolution at n = 40 (Anti-Persistence, 28.0pp). With the noise floor at 2–3 tasks, only large hypotheses are worth buying | $0.83 |
-| **P0** | **R102 — pack placement** | where the block sits in the prompt | **the bill is now attributed** (§PROGRESS 179): 99.9% of the 2.17× is uncached prompt tokens, and the per-call arithmetic puts it at **~1.1k extra miss tokens on each of sixteen calls**, not one miss per episode. Whether the pack is outside the cached prefix or the block behind it is, the ledger cannot say — and the two need opposite repairs. Moving the block behind the stable material takes $0.83 → ≈$0.42 for 160 conversations **if** the first mechanism holds. It changes the prompt, so it is a treatment and needs an arm, and R101's empty-pack leg discriminates first for free | $0.83 |
+| **P0** | **R102.0 — the cache probe** | the prompt shape, not the score | **built, awaiting dispatch** (§PROGRESS 180). Four shapes over nine growing turns, reading `prompt_cache_hit_tokens` per call: it either confirms R102 with a *measured* prediction or refuses it. §179's free discriminator is withdrawn — an empty pack injects nothing, so R101's bill is the control's bill whatever is true (AUDIT 34.126) | $0.03 |
+| **P0** | **R102.1 — pack placement** | where the block sits in the prompt | **blocked on R102.0**, which is the point: the two candidate mechanisms need opposite repairs, and an arm dispatched on a guessed one produces a delta nobody can attribute. Whichever shape the probe exonerates is the one registered — `system-merged` if the message boundary is the cause, `first-turn` if the block has to leave the policy — and the prediction is the probe's own number | $0.83 |
 | **P2** | **R95 — the 114 base** | the sample | still the only lever on resolution (11.7pp at d = 0.2 against 19.8pp), but it buys precision on a treatment not yet shown to help | $2.40 |
 | **P3** | abstraction (`{product-name}`-style) | the unit | AWM's mechanism (§Appendix X) and the only one left that changes what a record *is* rather than how many there are; it needs merge-by-shape to land first | $0.83 + code |
 
@@ -6806,10 +6807,23 @@ costs 2.5 points".
 ever attributed its bill; three arms on the same forty tasks now subtract to the cent, and the answer is
 that the memory pays for a **cache it destroys rather than for a context it adds**. A memory that costs twice
 as much and scores 2.5 points lower is a product defect before it is a research question, and the repair is
-placement rather than distillation, retrieval or size. It is dispatched after R101 lands, because R101's own
-scaffold leg prices the same question for free (PROGRESS 179): if the empty-pack arm bills near the
-control's $0.38, the prefix is the cause and R102 is a confirmation; if it bills near $0.83, the wrapper's
-call pattern is the cause and R102 is not the fix.
+placement rather than distillation, retrieval or size.
+
+**It is split in two because the second half depends on the first, and the first half is cents.** R102.0 is
+a probe rather than an arm: the question — is the second system message outside the cached prefix, or is the
+block behind a boundary the provider does not carry — is a mechanical fact about prefix caching, and a
+mechanical fact is cheaper to measure than to assume. An arm dispatched on a guessed mechanism costs $0.83
+and answers nothing if the guess is wrong, because a treatment that moves the block also changes the prompt.
+The probe costs $0.03, sends four shapes, and **two of its four states refuse the arm** (PROGRESS 180:
+`placement-is-free`, `block-never-cached`).
+
+**R101's scaffold leg does not price anything, and §PROGRESS 179 said it would.** The agent injects nothing
+when the pack is empty, so the empty-pack arm sends the reference arm's prompt byte for byte: its bill lands
+near the control's $0.38 however the caching works, and reading that as "the block's presence is the cost"
+would be reading the arm's own definition back as evidence. The withdrawal is recorded as AUDIT 34.126
+rather than quietly reinterpreted, and it is the second correction that section carries — the first being
+that every memory turn from R92 to R101 was delivered with the block wrapped in a second copy of its own
+element.
 
 **R99 is closed, and it closed in the direction the registration did not name.** The supply arm returned
 **0.625** against the fifteen-record store's **0.700** and the control's **0.725**: five times the supply,

@@ -5492,3 +5492,36 @@ cheapest published run.
   entry, and the number is not known yet. **The current SOTA on the published cell remains ALTK-Evolve's
   67.5%**, and this project's honest position is "above it on both arms, on a backbone its leaderboard does
   not contain, with no paired competitor cell to compare against".
+
+## Appendix AA — Placement: AWM puts its workflows in the policy, ExpeL puts its insights in the task, and nobody ablates it (2026-11-13)
+
+The two systems this project borrows its units from place the recalled material in **different messages**,
+and neither publishes what the choice is worth.
+
+| system | unit | where it is injected | placement ablated? |
+|---|---|---|---|
+| **AWM** (Agent Workflow Memory) | a workflow: a routine, abstracted over instances | the system prompt, both ReAct phases, no budget | no |
+| **ExpeL** | an insight: a cross-task generalisation from successes and failures | appended to the **task instruction** — the user turn | no |
+| **ALTK-Evolve** (SOTA, 67.5%) | a guideline | system prompt, all admitted guidelines, no retrieval | no |
+| **microglia R92–R101** | a correction: a repair record with its `when` | a **second system message**, after the policy | no — this is what R102.0 measures |
+
+**The gap is not "we are worse at placement".** It is that placement is the one variable every one of these
+systems fixes by convention and none of them varies, while this project's own bill says it is the largest
+single number in the memory arm: 99.9% of a **2.17×** premium is uncached prompt tokens
+(PROGRESS 179, AUDIT 34.125). An arm that costs twice as much and scores 2.5 points lower is not a
+distillation problem, a retrieval problem or a store-size problem — every one of those was varied across
+R92–R99 and none of them moved the bill.
+
+**Why this is a cell worth owning.** A competitor's placement is invisible in its published reward and
+visible in its bill, and no competitor publishes its bill. The probe (PROGRESS 180) is the first
+measurement on this axis that can be stated as a fact rather than an opinion, because it reads the
+provider's own cache counters instead of inferring from a total: four prompt shapes, one episode, thirty-six
+calls, four states, two of which refuse the treatment. If it comes back `placement-is-the-boundary`, the
+project has a reproducible claim that **a memory's delivery format can cost 2× independently of its
+content** — which is a claim about the class of systems, not about this one.
+
+**Where the board stands, unchanged by this appendix.** microglia is above the SOTA arm on both of its own
+paired cells at n = 40 and below it on nothing measurable; the published SOTA cell remains
+**ALTK-Evolve's 67.5%**; and the placement axis has one entrant, no score, and a cost fact. The honest
+sentence is still the one Appendix Z ends with, plus: **on cost-per-conversation delivered, this project
+now has the only attributed number on the board.**

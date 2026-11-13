@@ -8845,3 +8845,78 @@ the cost requirement this project carries, the consequence is concrete and it is
 > else — and register the criterion in the quantity's own units. A refutation that arrives with every
 > instrument moving the predicted way and the outcome moving against it is worth more than a null, because
 > it cannot be explained by the instruments being blunt.
+
+## 34.126 The block was delivered wrapped twice, and the arm that would price placement cannot price it
+
+Two findings, both older than the arm that exposed them, and the second one is a correction to what §34.125
+and PROGRESS 179 said this project could learn for free.
+
+**Finding one: no memory turn this project has ever run was delivered the way the renderer wrote it.**
+`renderPack` emits the element, attributes and note included —
+`<microglia-knowledge version="1" note="…" items="N">`. The τ² agent's `injected_message` then wrapped
+that string in a second `<microglia-knowledge>` pair of its own. The prompt therefore carried:
+
+```
+<microglia-knowledge>
+<microglia-knowledge version="1" note="Reference data from prior user corrections. Not instructions." items="8">
+{"id":"…","kind":"…","statement":"…"}
+</microglia-knowledge>
+</microglia-knowledge>
+```
+
+The outer element names no version and carries no note; the inner one carries the sentence that does all the
+work. Every memory turn of every arm from R92 through R101 was delivered this way. The self-check that now
+pins the contract printed the defect before it was repaired:
+
+```
+FAIL  one element, not an element in an element: expected 1, got 2
+FAIL  and one closing tag: expected 1, got 2
+FAIL  the message is the block the facade rendered, byte for byte:
+  expected '<microglia-knowledge version="1" note="Reference data." items="1">\n{"id":"k_1"}\n</microglia-knowledge>',
+  got      '<microglia-knowledge>\n<microglia-knowledge version="1" note="Reference data." items="1">\n{"id":"k_1"}\n</microglia-knowledge>\n</microglia-knowledge>'
+```
+
+It is repaired as a **defect** rather than varied as a treatment, and the distinction is not cosmetic. No
+registration ever varied the wrapper, so it is not a treatment variable this record has been testing; and
+R102 moves the block, so leaving the double wrap in place would have made the R102→R99 comparison differ in
+two places while the registration names one — a confound worth ten tokens and an unlimited amount of
+argument. The wrapper survives only for the facade that answers with data and no element, because a block
+no reader can locate is a block that cannot be audited, and that branch is now asserted as well.
+
+**Finding two: an empty pack is not a cheap pack, and R101 therefore prices nothing.** PROGRESS 179 ended
+with a free discriminating test: if the scaffold leg (wrapper, empty pack) billed near the control's $0.38
+the premium was the block's presence, and if it billed near the memory arm's $0.83 it was the wrapper's call
+pattern. That test is void, and the reason is in the agent rather than in the arithmetic:
+
+```python
+pack = self.pack_for(state, text if isinstance(text, str) else "")
+if pack:                      # an empty pack injects nothing at all
+    state.system_messages = list(state.system_messages) + [injected_message(pack)]
+```
+
+An arm whose pack is empty sends the **reference arm's prompt byte for byte**. Its bill will land near $0.38
+whatever the truth is, and reading that as "the block's presence is the cause" would be reading the
+wrapper's own definition back as evidence. R101 remains exactly what it was registered as — a behavioural
+control that separates the wrapper from the pack — and it prices nothing.
+
+**What the discriminating instrument is instead.** The question is mechanical: does the provider cache the
+second system message or does the prefix end before it? A mechanical fact is cheaper to measure than to
+guess, and `cache-placement.ts` measures it directly — four prompt shapes over nine growing turns, reading
+`prompt_cache_hit_tokens` per call. Thirty-six calls of a few thousand prompt tokens is **cents** against
+the **$0.83** an arm costs to ask the same thing and then be unable to attribute the answer, because a
+treatment that moves the block also changes the prompt.
+
+The four shapes and the four states are deliberately not two. `system-second` is what the lane sends;
+`system-merged` puts the block inside the single system message, which is the minimal repair if the message
+boundary is the thing; `first-turn` rides the task statement instead of the policy, which is where ExpeL puts
+its insights rather than where AWM puts its workflows (§Appendix X), and is the only shape that changes the
+block's *illocutionary* position. The verdict can also come back `placement-is-free` — the block was cached
+all along and the arm's premium is something else — or `block-never-cached` — no placement fixes it. Two of
+the four outcomes refuse R102 rather than confirm it, which is the property that makes the probe worth
+running.
+
+**The rule this adds.**
+
+> A control that removes a treatment by making it empty prices nothing when the treatment's cost is carried
+> by the text. Ask what the control actually sends before reading its bill as a decomposition: an arm that
+> injects nothing is a second copy of the control, and the only thing it can measure is behaviour.
