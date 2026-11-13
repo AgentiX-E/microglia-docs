@@ -16992,3 +16992,45 @@ advisories that had started failing `pnpm audit --prod`; nothing else in the dep
 **R91 is dispatchable now**: `storePin: eval/pins/r90-retail.json`, 228 episodes, under $1.05, no learn
 half. Its four refutations are all about determinism — a store that does not reproduce field for field
 means a correction is not a function of the corpus, and that would be the more important finding.
+
+### 173.95 The held-out half was never the benchmark's, and the fix is a file the corpus already ships
+
+**What was wrong.** τ² publishes `data/tau2/domains/retail/split_tasks.json` — **74 train, 40 test**. This
+lane has never read it. `TRAIN_SHARE = 0.5` cut the same 114 tasks itself and took the lexicographically
+first 57 for learning. So every held-out number in the record — `0.5752`, `0.5614`, `0.7018`, `0.6316` —
+was measured on a set the benchmark does not define, and the constant `PUBLISHED_PASS4 = 0.575`, which *is*
+the 40-task held-out baseline, was being compared against a different 57.
+
+This is the same defect as `§34.114` in a different layer: a difference between two populations read as a
+difference between two treatments. The store was the first population; the split was the second.
+
+**What it costs the claim.** ALTK-Evolve's published held-out figure is **67.5% on the benchmark's 40
+test tasks** (baseline 57.5%). Its submission figure is **67.54% on the 114 base tasks**, 74 of which
+taught its store, disclosed as `training-task overlap` and expected `Unverified`. microglia's 0.7018 is
+neither: it is a real held-out number on a third set. **No microglia number has ever been measured on a
+task set the competitor reported**, and quoting 0.7018 as first is the ranking error this lane audits in
+its own registrations.
+
+**What was built.**
+
+| piece | what it refuses |
+| --- | --- |
+| `splitFromOfficial` | an empty half, an id that is not a string, a repeated id, and an intersection — a split that loses a task is a denominator nobody stated |
+| `heldOutPlan({official})` | a published split naming a task this corpus does not hold (refused rather than absorbed), a share applied on top of it, and an official split on a transfer arm, where no document states a foreign domain's halves |
+| header `taskSplit` | every value but `official`, because a number here would move the boundary the comparison rests on |
+| `eval:prereg-caps` | prints a sixth line, so the dispatch log says whose halves it ran |
+
+**The variable that would have silently undone it.** `TAU_TRAIN_TASKS` is **57** in the repository
+variables, left there by the arms that ran the lane's own cut. A registration naming `taskSplit: official`
+and nothing else would have had its 74 learned tasks capped at 57 with no error anywhere. R92 states
+`trainTasks: 74` and `testTasks: 40` explicitly, and a disagreement between the file and the caps now
+shows up as 57 in the artefact.
+
+**Delivery.** 4,633 tests, coverage **100 / 99.99 / 100 / 100**, `pnpm check` exit 0, 81 registrations.
+`hono` 4.13.13 → **4.13.18** closes three advisories published after the previous audit run
+(GHSA-4m76, GHSA-h7mg, GHSA-3gg2) — and the previous commit is why they were readable: the audit failure
+used to say only "published dependencies have advisories", and now it prints the table's tail.
+
+**R92 is registered and dispatchable**: the benchmark's 74/40, the store rebuilt from the wider half (R90's
+pin names tasks from the lane's 57, only part of which is inside the 74), 234 episodes, **~$1.00**. It is
+the first arm in this record whose delta against 0.575 is not cross-split as well as cross-model.
