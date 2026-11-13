@@ -17477,9 +17477,34 @@ census landed after R93 (§34.121), so its fifteen-record store has a mean and n
 fact about this project's instruments rather than about the arm, and it is why the R99 column is the first
 one that can answer "how much of the store was ever used".
 
-Five times the supply bought **−7.5pp** against R93's fifteen records and **−10.0pp** against the control.
-The line closes, and it closes in the direction the registration did not consider: not "supply was not the
-constraint" but **"supply is an anti-constraint"**.
+The store grew fivefold and the score fell **−7.5pp** against R93's fifteen records and **−10.0pp**
+against the control. The line closes, and it closes in the direction the registration did not consider: not
+"supply was not the constraint" but **"supply is an anti-constraint"** — and, as the provenance block below
+shows, the supply that was added is not more repairs but fifty-eight rules distilled from passes.
+
+**What the five times actually bought, which the header's ratio hides.** `distillScope: all` does not
+distil more failures — the learn half's failures are the same fifteen a pin replays — it also asks every
+task that **passed** for the rule its successful trajectory followed. The `provenance` block says it
+exactly:
+
+| | R93 (15 records) | R99 (73 records) |
+| --- | --- | --- |
+| records from a repair (`itemsEditedOnly`) | 15 | **15** |
+| records from a pass (`itemsPassedOnly`) | 0 | **58** |
+
+So R99 is not "five times the memory". It is **the same fifteen repair records plus fifty-eight rules
+written from trajectories that already worked**, and the −7.5pp is a statement about *that* treatment
+rather than about supply in general. This matters because the two readings point at different repairs: a
+supply reading says the store needs more of what it already has, and a provenance reading says 79% of the
+store is now guidance distilled from successes — records whose text describes *one* sale, *one* order, *one*
+user — retrieved into tasks that did not have those specifics.
+
+It also explains the direction without needing a new mechanism. R93's fifteen records are corrections: they
+carry an instruction ("when X, do Y instead of Z"), which is what a rule is. The fifty-eight are
+descriptions of what a successful attempt did, with that attempt's own arguments in them. Serving one of
+those is serving somebody else's `order_id` at the moment the agent is choosing its own. The lane has
+measured that failure before, from the other side: R90's guard was built because a claim was "eating
+references", and this is the same defect with the sign flipped.
 
 **The delivery got better by every instrument this project has, and the score got worse.** This is the
 part that is not noise and cannot be explained away by the store's size:

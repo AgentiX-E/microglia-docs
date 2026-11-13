@@ -8802,6 +8802,21 @@ The "the record only mentions a fifth of the question" reading was the sharpest 
 said about its own defect, and R99 tuned exactly that number by a third and lost three tasks. A theory that
 is tested in its own currency and comes back inverted is not a null result; it is the theory being wrong.
 
+**What the widening actually was, and why the word "supply" is a half-truth.** The `provenance` block
+separates the store by the trajectory each record came from: R93 held **15 items edited, 0 passed**; R99 held
+**15 edited, 58 passed**. `distillScope: all` does not find more failures in the same learn half — the
+failures are fixed by the pin — it asks the seventy-four tasks that ran for a rule either way, and the
+fifty-nine that passed answer too. So R99 is *the same fifteen repair records plus fifty-eight rules
+described from successful attempts*, and its −7.5pp is a statement about success-derived guidance.
+
+This is the difference between a measurement and a label. "Five times the store" invites the repair "make
+it smaller"; "seventy-nine per cent of the store is now descriptions of what one successful attempt did,
+carrying that attempt's own arguments" invites the repair "that is not a rule". The second is supported by
+this project's own history — R90 built a guard because a claim was eating the references the agent needed,
+and a record written from a pass carries `order_abc123` where the next task needs `order_def456` — and it is
+the reading the next two arms are built on: R98 removes relevance (unrelated records at matched length) and
+merge-by-shape removes the per-instance text (53 routines instead of 73 instances).
+
 **What the two new censuses added, which the mean could not.** Both were built in the round before this
 one and both earned their place in the first run that used them:
 
