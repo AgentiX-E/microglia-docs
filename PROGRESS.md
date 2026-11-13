@@ -17034,3 +17034,69 @@ used to say only "published dependencies have advisories", and now it prints the
 **R92 is registered and dispatchable**: the benchmark's 74/40, the store rebuilt from the wider half (R90's
 pin names tasks from the lane's 57, only part of which is inside the 74), 234 episodes, **~$1.00**. It is
 the first arm in this record whose delta against 0.575 is not cross-split as well as cross-model.
+
+### 173.96 The store was pinned and the pack still moved: the question was the second draw
+
+**What R91's readback found.** The store replayed exactly — fifteen statements byte for byte, `entities
+172 / kept 171 / redacted 1`, `pass^4 0.6316` to the digit — and the pack did not:
+
+```
+                       store          meanChars   coverage p50
+R89                    12 records     1,717.21    0.2857
+R90                    15 records     1,825.31    0.2800
+R91   (pinned to R90)  15 records     1,812.07    0.2857
+```
+
+R90 and R91 hold the same fifteen records, character for character. The pack differs by thirteen characters
+a request and the coverage by six thousandths.
+
+**The mechanism.** `buildPack` ranks candidates on BM25 over the **query**. In this lane the query is the
+user simulator's first turn — `microglia_agent.py` calls `/v1/recall` with `message.content` — and τ²
+generates that message from `user_scenario.instructions` with a language model. So a pack is a function of
+**(store, query, pack options)**. R91 pinned the first, held the third, and never recorded the second. The
+thirteen characters are a different rule reaching the top of the ranking on a differently-phrased question.
+
+**Why the registration could not have known.** It predicted `meanChars 1,825.3` and `coverage p50 0.28` as
+equalities, in a header whose whole subject is that an input nobody pinned is an input nobody controls. The
+`0.28` had been quoted in this record since R89 as a property of the pack. It is a property of a draw. Both
+rows are therefore graded as written and both fail — the registration is the contract — and the two
+refutations keep firing, with the mechanism written into them instead of the guess.
+
+**What was built.**
+
+| piece | what it refuses |
+| --- | --- |
+| `tau2-queries.ts` `queryCensusOf` | a mean over no request (reported as `null`), and a digest that depends on arrival order — the hash is over the (position, text) mapping, sorted |
+| `parseQueryPin` | a document that is not an object, no `queries` list, an empty list, an entry that is not a string, and `[[...]]` — the shape a hand edit that keeps its brackets leaves behind |
+| `pinnedQueryText` | an episode past the end of the pin, rather than falling back to the sampled text |
+| `assertQueryPinCovers` | a pin shorter than the phase, checked **before the first episode is paid for** — a miss at recall time becomes a 500 the agent survives by serving no pack |
+| header `queryPin` | any path outside `eval/pins/`, and `eval:prereg-caps` prints a seventh line so the dispatch log says which |
+| `queries.pin` / `queries.replaced` | an arm that claims a pin and replaced nothing |
+
+**The key it does not use.** Episodes cannot be keyed by task id: the agent sends `task=tau2.act` (the memory
+scope) on all 228 requests, `generate_next_message` receives no task, and the driver's `TASK` is one
+constant. Inferring the task from the plan order would be an assumption dressed as data — a trial-major loop
+in τ² would relabel every question in the artefact. So an entry is the episode's **position in the phase**,
+which is exactly as stable as the iteration order the lane's per-task counts already rest on, and
+self-checking: a pin replaying into a differently-ordered phase produces a different digest.
+
+**Why R92 still runs unpinned.** A query that varies is what deployment looks like; a pinned phrasing is a
+stimulus no user typed, and R92's product is an absolute number to rank against the competitor's 67.5% on
+the same 40 tasks. R92 records the census (so its packs are explainable and a later pin can be derived from
+them, exactly as R90's `storeItems` enabled the store pin). The pin exists for the arms whose subject *is*
+the pack — R93's grid, where two floors must be read against one question.
+
+**What the record now says about every earlier pack number.** `meanChars` and `coverage` in the artefacts
+from R85 to R91 are readings of (query draw, pack). Where two arms differed in the store or the pack options,
+those readings are still directional evidence; none of them is a paired reading, and none is quotable to
+four figures. The pair R88→R89 is unaffected for the same reason it always was: both stores are twelve
+records and the treatment is the pack.
+
+**Delivery.** 4,660 tests, coverage **100 / 99.99 / 100 / 100** (`l4.ts`'s HARM inline gate remains the
+one branch), `pnpm check` exit 0, 81/81 registrations valid, 12 of 12 readback self-tests, coupling ledger
+203 modules / 54,653 lines. Client-side patches are unchanged from §173.95.
+
+**Next, in order.** (1) Dispatch R92 — the benchmark's 74/40, ~$1.00, the first number measured on the task
+set the competitor reported; its `queries` block is the pin R93 will need. (2) Read it back with the R92
+readback, whose determinism rows now price the query draw instead of assuming it away. (3) R93: one store,
+two floors, one pinned question — the first paired pack comparison this lane can make.

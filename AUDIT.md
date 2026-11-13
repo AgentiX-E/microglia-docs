@@ -8308,3 +8308,72 @@ because the working tree held the fix the commit did not.
    the unstated working-tree change. The correction is in this section rather than as a follow-up commit
    because an empty commit cannot be pushed through the Git Data API — a tree with no changes has no tree
    to create — and the record belongs where it will be read.
+
+## 34.116 The instrument asked a question and never recorded it: the draws, enumerated
+
+**The defect.** R91 was built to remove one draw and did. The store replayed character for character. And
+the pack it produced did not replay: `meanChars` 1,812.07 against R90's 1,825.31, coverage p50 0.2857
+against 0.2800. The registration had listed both as equalities, so its readback fired two refutations that
+named a renderer, an admission decision or a clock. The mechanism was none of them: `buildPack` ranks on
+BM25 over the **query**, and the query is the user simulator's first turn, which τ² samples from
+`user_scenario.instructions`. **No arm in this lane has ever recorded a query.** R89 1,717.21, R90 1,825.31,
+R91 1,812.07 — three draws, one of them now behind a pinned store.
+
+**Why the same class of error keeps arriving.** §34.114 established the rule "pin the population or you are
+measuring two draws". It was applied to the one draw the readback could *see* — the store, because
+`storeItems` happened to be in the artefact. The rule was never applied as an enumeration. Written out, the
+inputs to a τ² arm are:
+
+| input | a draw? | fixed by |
+| --- | --- | --- |
+| the task corpus | no | the pinned τ² checkout |
+| which learn tasks failed → the store's population | **yes** | `storePin` (R91) |
+| the corrections' content | no | corpus fields (`evaluation_criteria.actions`) |
+| the recall query text | **yes** | `queryPin` (R92), recorded unconditionally |
+| the pack options (budget, floor, diversity, note) | no | the registration |
+| the evaluation trials | **yes** | nothing — 57 × 4, `±12.52pp` |
+| the model's sampling | **yes** | nothing |
+
+Two of the five draws were invisible in every artefact this lane produced, and both were the two that decide
+what the memory *says*. The lesson is not "pin more"; it is that a rule phrased as a principle gets applied
+to whatever the last failure was, so this one is now phrased as a table: **every input a run rebuilds has to
+be recorded, and every recorded input has to be pinnable.** Recording is the part that cannot regress — R90's
+store pin existed only because `storeItems` carried the statements, and R92's query pin can exist only
+because this arm carries the queries.
+
+**The rule this adds.**
+
+> An instrument that cannot report what it asked cannot explain what it got. Record every input the run
+> generates, whether or not the current arm pins it: the pin is a decision, the record is the evidence.
+
+**What the cohort of readings means for the record.** `meanChars` and `coverage` from R85 to R91 are readings
+of (query draw, pack), not of the pack. Directionally they still separate a 1,200-character pack from a
+2,400-character one — the gap is 100 characters of text against a 13-character draw — but none of them is a
+paired reading, none is quotable to four figures, and R90's `coverage p50 0.28` should have been written
+`0.28 (one draw)`. The one pair that survives untouched is R88→R89: both stores hold twelve records and the
+treatment is the pack alone.
+
+**The fix.** `tau2-queries.ts`: a census (`requests`, `distinct`, `meanChars`, `p50Chars`, `digest`,
+`askedDigest`, `replaced`, `pin`, and the texts) and a pin (`parseQueryPin` / `pinnedQueryText` /
+`assertQueryPinCovers`). Two properties are load-bearing:
+
+- the digest is over the (position, text) mapping **sorted**, not over arrival order, because two arms that
+  asked the same questions in a different order asked the same questions;
+- the pin is validated against `tasks × trials` **before the first episode**, because a miss at recall time
+  is a 500 that `microglia_agent` survives by continuing without memory — an episode served no pack, and the
+  artefact would still call itself pinned.
+
+**What it deliberately is not.** The episodes cannot be keyed by task id: the agent sends `task=tau2.act` on
+every request and `generate_next_message` never sees a task. Position in the phase is the honest key, and it
+is self-checking — a pin replayed into a differently-ordered phase changes the digest, and the readback
+compares digests.
+
+**And a correction to the previous audit's own prose.** §34.114's fix note said a pinned list gives "the same
+15 records, same 172 values, same 1,825-character mean pack". The first two held; the third did not, and
+`tau2-pin.ts` carried the same wrong sentence in its header until this round. A module's docstring is part of
+its evidence.
+
+**Delivery.** 4,660 tests, coverage **100 / 99.99 / 100 / 100**, `pnpm check` exit 0, 81/81 registrations valid,
+coupling ledger 203 modules / 54,653 lines, `r91_readback.py` 12/12 self-tests and its real readback re-run against R91 with the mechanism in the
+refutations. `tau2-instrument`'s `PROJECTION` table forces a decision for `queries`, so the field cannot be
+added to the driver and dropped by the projection the way `dropped` and `pin` were.

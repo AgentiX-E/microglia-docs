@@ -8972,3 +8972,68 @@ first episode, because the driver refuses it too and a refusal that costs a disp
 
 **Cost.** A pinned run does not pay for the half it replaces: 57 episodes fewer than R90 for the same
 evaluation, and nothing added to any prompt — the store's text is byte-identical by construction.
+
+### 17.135 The query is the second draw: a census, a pin, and why the key is a position
+
+**The problem the design answers.** A pack is a function of three things — the store, the query, and the pack
+options — and until R92 the lane could name only two of them. R91 held the store fixed (fifteen records
+replayed byte for byte, `entities 172 / kept 171 / redacted 1`) and the pack came back different:
+`meanChars` 1,812.07 against 1,825.31, coverage p50 0.2857 against 0.2800. The query is the user
+simulator's first turn — `microglia_agent.py` recalls on `message.content`, which τ² generates from
+`user_scenario.instructions` — so every arm has been reading a pack built on a sampled question.
+
+**The module.** `packages/eval/src/tau2-queries.ts`, two responsibilities that are deliberately one unit:
+
+```
+RecallInput   { index, asked, used }          one request: what the agent sent, what retrieval was given
+QueryCensus   { requests, distinct, meanChars, p50Chars, digest, askedDigest, replaced, pin, texts }
+QueryPin      { source, texts[] }             one text per episode, in the order the phase ran them
+queryCensusOf(inputs, {pin?}) -> QueryCensus
+parseQueryPin(document)       -> QueryPin     four refusals
+pinnedQueryText(pin, index)   -> string       two refusals
+assertQueryPinCovers(pin, episodes)           checked before the first episode is paid for
+```
+
+**Decision 1 — the census is unconditional, the pin is not.** The census is recorded on every arm, because
+the record is what makes a later pin possible: R90's store pin existed only because `storeItems` carried the
+statements, and R92's query pin can exist only because an arm carries its queries. The *pin* is a decision
+about what the arm is measuring. An arm quoting an absolute benchmark number leaves it empty, because a
+fixed phrasing is a retrieval stimulus no user typed and the number is meant to be comparable to a
+competitor's on the same 40 tasks. An arm whose subject is the pack sets it, because two floors priced
+against two different questions are two cells, not two levels.
+
+**Decision 2 — the key is the episode's position, not its task.** Nothing upstream names the episode: the
+agent sends `task=tau2.act` (the memory scope) on every request, `generate_next_message(message, state)`
+receives no task id, and the driver's `TASK` is one constant shared by all 228 requests. Deriving the task
+from the plan order would be an assumption dressed as data — a trial-major loop inside τ² would relabel every
+question in the artefact and nothing would fail. Position is exactly as stable as the iteration order the
+lane's per-task counts already depend on, and it is self-checking: a pin replayed into a differently-ordered
+phase changes `digest`, and a readback compares digests rather than trusting the pin.
+
+**Decision 3 — the digest is a property of the mapping, not of arrival order.** `digestOf` sorts by index
+before hashing, so two arms that asked the same 228 questions in a different order compare equal. `askedDigest`
+is the same hash over what the agent sent, and `replaced` counts the requests where the two differ: that
+pairing is how an arm *shows* its pin took effect. R91's artefact could not show whether its store had been
+replayed, and its readback had to infer it from the store's own text.
+
+**Decision 4 — the four refusals, and the one that matters commercially.** `parseQueryPin` refuses a
+non-object, a missing `queries` list, an empty list, and any entry that is not a non-empty string — including
+`[[...]]`, which is what a hand edit that keeps its brackets leaves behind and which `for..of` would have
+pinned as one list. `assertQueryPinCovers` runs at split time, not at recall time, because a miss inside an
+episode becomes a 500 and `microglia_agent` treats a failed recall by continuing without memory: the episode
+serves no pack, and the artefact still reports itself pinned. A pin *longer* than the run is accepted; it was
+drawn from a phase with more episodes and every episode asked still has a text.
+
+**Where the driver touches it.**
+
+| site | what it does |
+| --- | --- |
+| `QUERY_PIN_FILE` (`TAU_QUERY_PIN`) | a repository-relative path; resolved against `REPO`, recorded unresolved, so an artefact's provenance does not carry the runner's prefix |
+| `readQueryPin(file, episodes)` | refuses a file that is not in the checkout and a pin shorter than `tasks × trials`, and prints `queries pinned: N text(s) from <source>` |
+| the facade callback | `used = pin ? pinnedQueryText(pin, index) : text`; both texts are recorded; `useObservations.query` is `used`, because coverage is a reading of the text the pack was ranked on |
+| `tau2.queries` | the census, carried; `PROJECTION` forces a decision for the field, so it cannot be added to the driver and dropped by the projection the way `dropped` and `pin` were |
+
+**What this changes in the artefact.** An arm from R92 onward says what it asked. An arm before it does not,
+and every `meanChars`/`coverage` in the record is now read as a reading of (query draw, pack) rather than of
+the pack — which is what R89 1,717.21, R90 1,825.31 and R91 1,812.07 were, three times over, on stores of 12,
+15 and 15.
