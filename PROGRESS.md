@@ -16886,6 +16886,14 @@ sota: 0.7018 against ALTK-Evolve's baseline 0.575 (+12.68pp) and its submitted 0
       — the submission covers 114 tasks and this run 57, so that delta is cross-sample, not a ranking
 ```
 
+**Correction, 2026-11-13: the competitor reports two numbers on two task sets.** ALTK's own results page
+puts the held-out figure at **67.5% on τ²'s 40 retail test tasks** and the submission at **67.54% on the 114
+base tasks (74 train + 40 test)**. This lane's `TRAIN_SHARE = 0.5` cuts the same 114 into 57/57, so **no
+microglia number has ever been measured on a task set the competitor reported**. The constant `0.575` was
+right — it is the 40-task held-out baseline — and the sample it was compared against was not. The
+like-for-like run is `l4_train_share = 0.6491` at a 40-task floor: 160 episodes, ~$0.75, and the first
+number in this lane that can sit beside 67.5% without a footnote. See `COMPETITIVE` Appendix T.
+
 **The ranking, stated as the samples allow.**
 
 | system | backbone | τ²-retail `pass^4` | tasks | |

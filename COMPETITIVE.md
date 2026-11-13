@@ -4980,3 +4980,62 @@ That is the flywheel's actual failure mode, measured: not bad rules, but a store
 removed the treatment before any agent read it. The competitor set ranks the *outcome*; this lane is the
 only entry that can say **which layer** produced the outcome, and R88 is the dispatch that moves the three
 layers at once with a separate reading for each.
+
+## Appendix T — The competitor reports two numbers on two task sets, and this lane has been comparing against neither (2026-11-13)
+
+R89's readback reported `0.7018` against "the published 0.575" and, after §173.93, against "the submitted
+0.6754". Reading ALTK-Evolve's own results page rather than the summaries shows that both numbers are real
+and that they are measured on **different task sets**, which changes what this lane has to run.
+
+### T.1 What the competitor actually published
+
+| what | task set | baseline | ALTK lossless | source |
+| --- | --- | --- | --- | --- |
+| **held-out test** | **40 retail test tasks** | 57.5% | **67.5%** | ALTK results, "Held-out test results" |
+| leaderboard submission | **114 base tasks (74 train + 40 test)** | — | **67.54%** | PR #542, disclosed `training-task overlap` |
+| airline held-out | 20 test tasks | 35.0% (GPT-4.1) / 55.0% (GPT-5.5) | 45.0% / 70.0% | same page |
+| airline submission | 50 base tasks | — | 82.00% | PR #551 |
+
+Three facts matter more than the numbers:
+
+1. **τ²'s own retail split is 74 train / 40 test.** This lane's `TRAIN_SHARE = 0.5` cuts the same 114
+   tasks into 57 / 57, so its 57 held-out tasks are **not** the benchmark's 40 and not the competitor's
+   either. Every comparison made so far is cross-split as well as cross-model.
+2. **`0.6754` and `0.675` are different measurements that happen to be close.** The submission covers 114
+   tasks including the 74 it learned from, and IBM discloses `modified_prompts: true`, "training-task
+   overlap" and an expected `Unverified` status. The held-out 67.5% is the honest one.
+3. **The baseline 57.5% this lane has used as `PUBLISHED_PASS4` is the 40-task held-out baseline** — so the
+   constant was right and the sample it was compared against was not.
+
+### T.2 What that means for the SOTA claim
+
+| comparison | microglia | ALTK | readable? |
+| --- | --- | --- | --- |
+| held-out, this lane's 57-task cut | 0.7018 | — | no ALTK number exists on this cut |
+| held-out, τ²'s 40-task test split | **not run** | 0.675 | **the only like-for-like held-out comparison** |
+| base 114, submission rules | **not run** | 0.6754 | same rules, both disclose overlap |
+| airline held-out, 20 tasks | **not run** | 0.35 / 0.55 → 0.45 / 0.70 | airline has no arm in this lane at all |
+
+So the position is: **microglia has never been measured on a task set the competitor reported.** The
+0.7018 is a real held-out number on a different cut of the same corpus, and quoting it as "first" is the
+same error this lane has been auditing in its own registrations — a difference between two populations
+read as a difference between two treatments.
+
+### T.3 The two dispatches that fix it, in cost order
+
+1. **The benchmark's own split: 74 train / 40 test.** Set `l4_train_share = 0.6491` and lower the split
+   floor to 40 for this arm. 40 × 4 = 160 episodes, **~$0.75**, and it produces the first number in this
+   lane that can sit beside ALTK's 67.5% without a footnote. The store learned from 74 tasks instead of
+   57, so the arm is also a *stronger* treatment than any this lane has run.
+2. **The submission set: 114 tasks, 74 learned.** 114 × 4 = 456 episodes plus the learn half, **~$2.4,
+   ~4h**, comparable to PR #542 on its own terms — including the disclosure that the store saw 74 of the
+   evaluated tasks. Below it in priority because it measures the same treatment on a set that is 65%
+   in-sample, and because a held-out number is the one a reader can act on.
+
+### T.4 One thing the competitor does that this lane does not, and it is free
+
+ALTK reports **cost per conversation** on the same runs: retail $0.084 → $0.139 (+65%) with the full
+guideline set, and it notes the input-side cost is largely reclaimable with prompt caching because the
+guideline block is identical across every call. This lane prints a usage line per dispatch but has never
+put the number beside the score. Two lines of arithmetic, and it makes "cheaper than the competitor at the
+same score" a claim rather than a hope.
