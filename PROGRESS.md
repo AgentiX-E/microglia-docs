@@ -17585,13 +17585,36 @@ output (it writes less: 291k against 298k), and **not** the store's size (five t
 bill by 2.2%). It is **three and a half times the uncached prompt tokens for the same 160 conversations**:
 18,597 extra tokens billed at the miss rate *per episode*.
 
-**The mechanism, which is the part that is a product defect.** Within an episode the cache works in both
-arms — the memory arm still caches 76% of its prompt. What it loses is the **cross-episode** cache: the
-control's prefix (tools + system + policy) is byte-identical in all 160 episodes, so even each episode's
-first call hits a prefix the provider has already seen from another episode, and only 6,952 tokens per
-conversation are ever billed at the miss rate. Insert a pack that differs per episode at the head of the
-system prompt and every episode's first call is a full miss of an ~18.6k-token prefix. **The pack does not
-cost 500 tokens; it costs the prefix it invalidates.**
+**What the per-call arithmetic says, and what it refuses to say.** The premium is not one big miss per
+episode; it is a smaller miss on **every** call:
+
+| | uncached per call | uncached per episode | calls per episode |
+| --- | --- | --- | --- |
+| R93 reference | **408** | 6,952 | 17.0 |
+| R93 memory | **1,533** | 25,549 | 16.7 |
+| R99 memory | **1,600** | 26,471 | 16.5 |
+
+So the memory arm re-bills about **1.1k extra tokens on each of its sixteen calls**, not 18.6k once when the
+episode opens. That number is measured; the mechanism behind it is not, and there are two candidates that
+this evidence cannot separate:
+
+- **the pack is not inside the cached prefix**, so each call pays for it again — which would mean the
+  per-episode fix that stopped it changing per *turn* did not put it where the cache can hold it;
+- **the pack is cached and the block behind it is not**, so each call re-bills the tools and the domain
+  policy that the control shares across every episode.
+
+Both produce the same ledger and they need opposite repairs — placement in the first case, a smaller
+stable prefix in the second — so this is a place to stop reading and start measuring. The module's own
+docstring claims the per-episode pack restored prefix caching within an episode, and the ledger is the
+first evidence that can check that claim rather than restate it.
+
+**What the repair would be worth, conditional on the first mechanism.** If the pack's ~1.1k tokens per call
+came out of the miss column — by placing it behind the material that does not change, or by making it part
+of a prefix the provider can hold — the miss rate would fall close to the control's: about $0.20 of misses
+instead of $0.61, a total near **$0.42 per 160 conversations against $0.83**, or **$0.0026 per conversation
+against $0.0052**. If instead the stable prefix is the thing being re-billed, the lever is the size of the
+tool and policy block, which is a different (and much less attractive) repair. The arithmetic is exact; the
+premise is the open question, and R101 and R102 are the two arms that close it.
 
 **What that makes available, and it is half the bill.** If the stable prefix were cached across episodes the
 way the control's is — i.e. if the pack were carried *after* the material that does not change, rather than
@@ -17606,10 +17629,10 @@ the same wrapper over an empty pack, so its system prompt is *nearly* constant a
 rules block still differs from no block, but not from itself). Two readings are possible and they mean
 different things:
 
-- scaffold cost near the control's **$0.38–0.50** → the premium is the per-episode prefix, the pack's
-  content is what breaks the cross-episode cache, and the fix is placement rather than size;
-- scaffold cost near the memory arm's **$0.83** → the premium is the wrapper's call pattern, the pack is
-  not the cause, and the fix is in the wrapper.
+- scaffold cost near the control's **$0.38–0.50** → the premium is the pack's presence in the prompt, and
+  it is the pack's *tokens* (not its content) that are being re-billed: the repair is placement;
+- scaffold cost near the memory arm's **$0.83** → the premium is the wrapper's call pattern rather than the
+  block, and the repair is in the wrapper's message handling rather than in the prompt.
 
 At ~16.5 calls and ~26k uncached tokens per conversation, the two predictions differ by a factor of three
 on a number that costs nothing extra to collect. It is the cheapest question R101 answers.
