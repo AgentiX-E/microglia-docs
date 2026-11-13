@@ -9037,3 +9037,66 @@ drawn from a phase with more episodes and every episode asked still has a text.
 and every `meanChars`/`coverage` in the record is now read as a reading of (query draw, pack) rather than of
 the pack — which is what R89 1,717.21, R90 1,825.31 and R91 1,812.07 were, three times over, on stores of 12,
 15 and 15.
+
+### 17.136 The runner boundary: two surfaces, one probe, and the three values a run must not infer
+
+**The problem this solves is not "support two versions".** It is that `pass^4` is a number *about a release*,
+and this lane had one release in its environment variable, another in its artefact (none), and a third in the
+figure it ranks itself against. Supporting both versions is the mechanism; the design goal is that the
+version stops being an ambient fact.
+
+**The surface, side by side.** Nothing here is discoverable by inspection at runtime, so the table is the
+contract the adapter is written against:
+
+| piece | v0.2.0 | v1.0.1 |
+| --- | --- | --- |
+| tasks | `tau2.run.get_tasks(domain, task_ids)` | `tau2.runner.helpers.get_tasks(domain, task_ids=…, num_tasks=…)` |
+| episodes | `tau2.run.run_tasks(**kwargs)` — twelve keywords, `save_to` among them | `tau2.runner.batch.run_tasks(config, tasks, *, save_path, results_format, console_display)` |
+| configuration | keywords | pydantic `TextRunConfig` (`domain`, `agent`, `llm_agent`, `llm_args_agent`, `user`, `llm_user`, `num_trials`, `max_steps`, `max_concurrency`, `seed`) |
+| registry | `register_agent(class, name)` | `register_agent_factory(factory, name)`, factory called with `tools`, `domain_policy`, `llm`, `llm_args`, `task`, `audio_native_config` |
+| agent input type | `tau2.agent.base.ValidAgentInputMessage` | `tau2.agent.base_agent.ValidAgentInputMessage` |
+| reward | `reward_info.reward` | `reward_info.reward` + `reward_info.reward_basis` |
+| the halves | **absent** | `data/tau2/domains/<domain>/split_tasks.json` — retail 74/40 |
+
+**The probe is an import.** `try: from tau2.runner.batch import run_tasks as _run_tasks_v1 except ImportError:
+…` and `TAU_RUNNER` is the answer. A version string would be cheaper and wrong: a release that back-ported
+one half of the move (helpers but not the batch signature) passes a string comparison and raises at the first
+call, inside the paid phase. The probe asks the same question the phase will ask.
+
+**The translation is one function per shape, not one call site per shape.** `run_tasks(*, domain, tasks,
+agent, model, llm_args, trials, max_steps, out, save_to, seed, concurrency)` takes the lane's own vocabulary
+and builds either a `TextRunConfig` or a twelve-keyword call. Two call sites would have drifted the first
+time a field was added; one function is checkable against both signatures in a single reading.
+
+**`--phase selftest` is the contract, executed.** Its four checks are properties of the installed package,
+not of the repository: `get_tasks` has a `domain` parameter; `run_tasks` is `(config, tasks)` with
+`save_path` and `results_format`; `TextRunConfig` has the seven fields the adapter populates; the registry
+has `get_agents` and one of the two registration entry points. It prints one line — `selftest: runner v1,
+get_tasks(domain), registry ok` — because a silent probe is indistinguishable in a log from a probe that
+never ran. The driver calls it **before the listing**, and the test asserts that order rather than the
+outcome: a probe that runs after the first paid episode is a probe that has already lost.
+
+**Three values the artefact may not infer.**
+
+1. **which release.** `benchmark {version, commit}`: the tag from `vars.TAU_VERSION`, the commit from
+   `git -C .tau2-bench rev-parse HEAD`, and `"unknown"` rather than an omission when the checkout is not a
+   repository — a tag can be moved, a commit cannot, and an arm that quotes a tag and no commit is quoting a
+   belief.
+2. **which halves.** `taskSplit: official` in the header, read through `splitFromOfficial`, with
+   `learnIds`/`evalIds` replaced rather than intersected: a share applied on top of the benchmark's boundary
+   would move the boundary the comparison rests on. Absent means the lane's own cut, which is what every
+   pre-R92 arm ran.
+3. **which reward.** Not a field of this lane's artefact — it is `tasks.json`'s, and the lane records it by
+   *counting the corpus* at the pinned ref (`eval:label-census`, printed into the run's step summary beside
+   the number). Retail: 0 of 114 declare a basis at v0.2.0, 114 declare one at v1.0.1, 112 of them
+   `DB+NL_ASSERTION`. Airline: 0 at v0.2.0, 50 at v1.0.1, all `COMMUNICATE+DB` — the same grade, stated.
+
+**The refusals are functions with arguments.** `splitPathIn(checkout, domain, release)` and
+`benchmarkIdentityOf(checkout, version)` exist because the first versions read `REPO` and `process.env` from
+their own bodies, which made the one branch that a dispatch had ever executed the one branch no test could
+reach. The driver still passes its own checkout; the difference is that a test can pass another.
+
+**What this does not solve.** The reward basis is recorded, not pinned: a dispatch that changed `TAU_VERSION`
+between two arms would produce two numbers under one registration. The registration is the guard (it states
+the split, and `benchmark` is carried in every artefact), which is the same guard the rest of this lane uses —
+a value a reader can grade, rather than a mechanism that prevents the choice.

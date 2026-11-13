@@ -17100,3 +17100,85 @@ one branch), `pnpm check` exit 0, 81/81 registrations valid, 12 of 12 readback s
 set the competitor reported; its `queries` block is the pin R93 will need. (2) Read it back with the R92
 readback, whose determinism rows now price the query draw instead of assuming it away. (3) R93: one store,
 two floors, one pinned question — the first paired pack comparison this lane can make.
+
+### 173.97 The port was not a preference: v0.2.0 has no halves, and the reward moved with the release
+
+**What R92's first dispatch died on.** Step 14, `ENOENT … .tau2-bench/data/tau2/domains/retail/split_tasks.json`.
+Not a wiring fault: the lane had pinned τ² **v0.2.0**, the file ships from **v1.0.0**, and the release the
+figure this lane ranks itself against was produced on is **v1.0.1**. Two measurements decided the response
+rather than a preference between them:
+
+| what was compared | v0.2.0 | v1.0.1 | result |
+| --- | --- | --- | --- |
+| `data/tau2/domains/retail/split_tasks.json` | absent | `train` 74 / `test` 40 / `base` 114 | the halves exist only here |
+| the 114 retail task ids | 114 | 114 | the same ids |
+| task bodies, sha256 over canonical JSON | — | — | **0 of 114 identical** |
+| `evaluation_criteria.reward_basis` | declared by **0** tasks | declared by **114** | the grade changed |
+| `nl_assertions` text | 8 tasks carry one | 40 tasks carry one | 35 of them differ |
+
+So the port is the *cheap* branch: the alternative was a number measured on a corpus 0% of which is the one
+the competitor reported on.
+
+**What the port had to be.** The two releases do not share a runner surface, and the adapter is written so a
+future one cannot fail silently:
+
+- **the probe is an import, not a version string.** `run_split.py` asks whether `tau2.runner.batch.run_tasks`,
+  `tau2.runner.helpers.get_tasks` and `TextRunConfig` exist. A release that back-ported half of the move would
+  pass a string comparison and fail at the first call.
+- **one translation layer per shape.** v1 wants `run_tasks(config, tasks, *, save_path, …)` with a pydantic
+  `TextRunConfig`; v0 wants twelve keywords and reads `save_to` from them. The translation is one function a
+  reader can hold against both signatures, not two call sites that drift the first time one changes.
+- **`--phase selftest` runs first and prints what it found.** It checks the signatures, the `TextRunConfig`
+  fields and the registry's capability, so a mismatch costs **two seconds** rather than an installed
+  environment, a built store, a generated corpus and a phase that dies on its first task. The driver calls it
+  before the listing, and a test asserts the **order** — a probe after the money is worth nothing.
+- **the registry changed too.** v1 has `register_agent_factory(factory, name)` and calls the factory with
+  `tools`, `domain_policy`, `llm`, `llm_args`, `task`, `audio_native_config`. The adapter takes what it needs
+  by keyword and absorbs the rest, which is what stops a later upstream keyword from becoming a `TypeError`
+  inside a paid episode. `ValidAgentInputMessage` also moved, from `tau2.agent.base` to `tau2.agent.base_agent`.
+
+**The thing the port turned up, which is larger than the port.** The corpus kept its shape and changed what
+it grades. `label-census.ts` already measured this and its docstring stated the v0.2.0 reading as a property
+of the benchmark:
+
+| corpus | tasks | calls | rubric | basis declared | rubric graded |
+| --- | --- | --- | --- | --- | --- |
+| retail v0.2.0 | 114 | 112 (98.2%) | 8 (7.0%) | 0 | **0** |
+| retail v1.0.1 | 114 | 112 (98.2%) | 40 (35.1%) | **114** | **112** |
+
+At v0.2.0 no retail task declares `reward_basis`, so the default `[DB, COMMUNICATE]` applies and the prose
+rubric is graded nowhere — which is what every note in this record from R41 onward assumed. At v1.0.1 all 114
+declare it (112 × `DB+NL_ASSERTION`, 2 × `DB`) and 112 tasks are graded on the prose rubric, which v1.0.1's
+own field comment calls *experimental / WIP*. Same task ids, same call counts to the digit, **different
+reward**. Every pass^4 before R92 was therefore cross-release as well as cross-split: the four axes are model,
+prompt, split and release, and this lane had been counting three.
+
+**What the artefact carries now.** `benchmark {version, commit}` — the tag from the workflow's pin and the
+commit from `git -C .tau2-bench rev-parse HEAD`, because a tag can be moved and a commit cannot. `PROJECTION`
+forces a decision for it, so it cannot be produced by the driver and dropped by the projection the way
+`dropped` and `pin` once were. `splitPathOf` refuses a checkout that lacks the halves **by naming the release
+that has them** rather than the file that does not, and both refusals added this round (`splitPathIn`,
+`benchmarkIdentityOf`) are parameterised functions: a refusal nobody can call is a refusal nobody has tested,
+and the one that cost a dispatch is exactly the one that had never been called.
+
+**The gate had a hole in the shape of the next mistake.** The first push of this round added
+`TAU_VERSION: ${{ vars.TAU_VERSION }}` to both arms' `env` blocks, and both blocks already had it. PyYAML
+keeps the last duplicate without a word, so the file parsed here; GitHub refuses to parse it, so the push
+produced a run named after the file with **no jobs**, and the dispatch was answered
+`422 (Line: 1491, Col: 11): 'TAU_VERSION' is already defined`. `scripts/check-workflows.py` has checked
+duplicate keys since R61 — but only over `workflow_dispatch.inputs`, because the incident that created the
+file was a twenty-sixth input. The rule is now general: every key, by the path its ancestors give it, with
+sequence entries indexed so the same variable in two steps' `env` blocks stays clean (it has to: the two arms
+must differ in the store and in nothing else). 15 self-test cases, two of them the firing and the silence.
+
+**Delivery.** 4,668 tests, coverage **100 / 99.99 / 100 / 100** (`l4.ts`'s HARM inline gate remains the one
+branch), `pnpm check` exit 0, 81/81 registrations valid, `check-workflows.py` 15/15, coupling ledger
+203 modules. Pushed `1b05c9f` → `28b70bb6` and `66671d7` → `649797b9`; R92 re-dispatched on `649797b9` as
+run 43362972719.
+
+**Next, in order.** (1) Read R92's `selftest` and `benchmark` lines — the run's first evidence is that it
+found runner v1 before it spent anything. (2) Read the number back with `r92_readback.py`, whose fourth
+refutation is now the interesting one: a store built from 74 tasks, every record intact, at the sample the
+competitor used, below the published baseline on the split the benchmark defines. (3) R93: one store, two
+floors, one pinned question — the first paired pack comparison. (4) R94: the same store at ceiling 700 and
+2,400.

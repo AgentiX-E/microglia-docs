@@ -5039,3 +5039,67 @@ guideline set, and it notes the input-side cost is largely reclaimable with prom
 guideline block is identical across every call. This lane prints a usage line per dispatch but has never
 put the number beside the score. Two lines of arithmetic, and it makes "cheaper than the competitor at the
 same score" a claim rather than a hope.
+
+## Appendix U — The fourth axis is the release, and it moves the reward rather than the sample (2026-11-13)
+
+Appendix T established that the competitor's two numbers sit on two task sets and that this lane's 57/57 cut
+is neither. A dispatch was registered against T.3's first option — the benchmark's own 74/40 — and died on its
+first read: `data/tau2/domains/retail/split_tasks.json` **does not exist in the release the lane had pinned**.
+Re-reading the competitor's material for the third time gave the answer it had been giving: the 67.5% is
+tau2-bench **v1.0.1**. So the comparison this lane has been reaching for needs four axes held, not three.
+
+### U.1 What the two releases actually differ in
+
+Measured out of the files at both refs, not read from a changelog:
+
+| axis | v0.2.0 | v1.0.1 | consequence |
+| --- | --- | --- | --- |
+| the halves | absent | retail `train` 74 / `test` 40 / `base` 114 | the competitor's split exists only here |
+| retail task bodies | 114 ids | the same 114 ids | **0 of 114 identical** by sha256 over canonical JSON |
+| `reward_basis` declared | 0 of 114 | 114 of 114: 112 × `DB+NL_ASSERTION`, 2 × `DB` | retail's grade changed component |
+| prose rubric (`nl_assertions`) | 8 tasks | 40 tasks | 35 of them were rewritten |
+| prose rubric **graded** | 0 tasks | **112 tasks** | the label the lane learned from is now scored |
+| airline `reward_basis` | 0 of 50 | 50 of 50, all `COMMUNICATE+DB` | **airline's grade did not change** |
+
+Two rows of that table decide how the correction has to be worded. The first is that the corpus kept its
+shape — same ids, calls on 112 of 114 tasks at 98.2% in both releases — and changed *what it grades*. The
+second is that it changed retail and not airline: `COMMUNICATE+DB` is what the v0.2.0 default already applied,
+so airline's declaration at v1.0.1 made the grade explicit rather than different.
+
+### U.2 What that does to every comparison this record has made
+
+| comparison | model | prompt | split | release | reward | readable? |
+| --- | --- | --- | --- | --- | --- | --- |
+| this lane, R85–R91 | deepseek-flash | own | 57/57 | v0.2.0 | retail `DB+COMMUNICATE` | — |
+| this lane, R92 onward | deepseek-flash | own | **74/40** | **v1.0.1** | retail `DB+NL_ASSERTION` | — |
+| ALTK-Evolve held-out | gpt-4.1 | modified | 40 test | v1.0.1 | retail `DB+NL_ASSERTION` | split, release, reward held; **model and prompt differ** |
+| ALTK-Evolve submission | gpt-4.1 | modified | 114 base (74 in-sample) | v1.0.1 | same | disclosed overlap, `Unverified` |
+| IBM `gpt-5.5` airline | gpt-5.5 | modified | 50 base | v1.0.1 | airline `DB+COMMUNICATE` | airline: release-held, reward-held, sample not held |
+
+So R92 is the first arm in this lane whose comparison to the 67.5% fails on **two** axes (model, prompt)
+rather than five. That is the strongest statement the artefact supports, and it is not a ranking claim: a
+cross-model comparison with the sample, release and reward held is a hypothesis about the scaffold, not a
+measurement of it.
+
+### U.3 The one thing this changes about the competitor's own ablation
+
+ALTK reports retail 57.5 baseline → 60.0 (`sup3`, 31 rules) → 67.5 (lossless, 292 rules). Both treatment cells
+are on v1.0.1, where 112 retail tasks are graded on their prose rubric — and the competitor's method distils
+**short behavioural rules from the agent's own trajectories**, which is exactly the kind of artifact that
+speaks to a prose rubric. This lane's distiller reads tool-call corrections: the end state, the call that
+fixed it. On v0.2.0 that was the only graded component and the prose rubric was commentary; on v1.0.1 the
+commentary is scored on 112 of 114 tasks.
+
+That is not an excuse and it is not a prediction — it is the reason the two methods are no longer being
+measured against the same target, stated before the number exists so it cannot be offered afterwards. R92's
+registration predicts nothing about it; the readback's fourth refutation is the falsifiable half (a store built
+from 74 tasks, at the competitor's sample, below the published baseline on the benchmark's own split).
+
+### U.4 What the lane now records, so the next boundary is not discovered by a failed dispatch
+
+`benchmark {version, commit}` in every artefact; the tag from the workflow's pin and the commit from the
+checkout; `taskSplit` in the registration header, printed by `eval:prereg-caps`; and the corpus's own label
+census printed beside the run's number in the step summary. The rule this round adds to the earlier two
+("every input a run reconstructs must be recorded" and "every recorded input must be pinnable") is the third:
+**a number quoted against a published figure must name that figure's release in the same sentence**, because
+a release is not a version of the software — it is part of the definition of the measurement.

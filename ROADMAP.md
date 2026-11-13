@@ -6680,10 +6680,18 @@ one number — and it left the second one sharper than it found it: at 2,400 the
 record and refuses seven candidates per request, so every arm behind it is measuring a store of one.
 The guard cell (R90) runs beside it because the two are orthogonal and both are in flight; the pack
 that carries two records is next because *one record per recall* is now the binding constraint on
-everything the queue exists to compare, and it cannot be worked around by tuning. The 114-task run is
-the third P0 and it is not an experiment: it is the sample the competitor used, and until it exists the
-0.7018 is first on this lane's split and unranked on the board — a distinction that has to be paid for
-once rather than argued every round. The two ways to put
+everything the queue exists to compare, and it cannot be worked around by tuning. The benchmark's own
+sample is the third P0 and it is not an experiment: it is the sample the competitor used, and until it
+exists the 0.7018 is first on this lane's split and unranked on the board — a distinction that has to be
+paid for once rather than argued every round. That P0 used to read "the 114-task run" and it is now two
+arms, because Appendix T found the competitor publishes two numbers on two sets: **R92** runs τ²'s own
+74/40 on **v1.0.1** (~$1.00, 160 held-out episodes) and is the only like-for-like held-out comparison
+available; **R95** runs the 114 base (~$2.4) and is comparable to the submission, in which 74 of the 114
+taught the model. The release is the axis R92 added to the list rather than a detail of the port: at
+v0.2.0 the file naming those halves does not exist, every retail task body is different from v1.0.1's,
+and retail's reward moves from `DB+COMMUNICATE` to `DB+NL_ASSERTION` — so a pass^4 from before this round
+is historical rather than comparable, and the artefact now carries `benchmark {version, commit}` so the
+next reader is not asked to infer it. The two ways to put
 two records in a pack are not one treatment: 4,800 characters keeps the long record and adds a second,
 while 700 at 2,400 keeps the budget and shortens both, and a lift under one of them is not a lift under
 the other.

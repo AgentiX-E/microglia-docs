@@ -8377,3 +8377,79 @@ its evidence.
 coupling ledger 203 modules / 54,653 lines, `r91_readback.py` 12/12 self-tests and its real readback re-run against R91 with the mechanism in the
 refutations. `tau2-instrument`'s `PROJECTION` table forces a decision for `queries`, so the field cannot be
 added to the driver and dropped by the projection the way `dropped` and `pin` were.
+
+### 34.114 A claim about the benchmark that was a claim about a pinned release, and a gate the shape of its own incident
+
+R92's first dispatch died on `split_tasks.json`, which is a file the release the lane had pinned does not
+ship. Fixing that was mechanical. What the fix exposed is the third instance of one defect in this record and
+the second instance of another, and both are worth naming separately from the round that paid for them.
+
+**The first: a sentence stated about the benchmark that is true only of the release.** `label-census.ts` said,
+in a module docstring, that the prose rubric "is read by nothing in the default configuration … no task in
+either shipped scenario declares it". It then measured the corpus it was pointed at and printed the answer
+that contradicted itself: at v1.0.1, **112 of 114 retail tasks are graded on that rubric**. The census was
+right and the prose was a pinned reading wearing a general claim — the fifth time this record has had to
+correct a sentence that a module already knew better than its own header (§34.109, §34.111, §34.112 passim).
+
+The measurement, taken out of the files at both refs and printed by `eval:label-census`:
+
+| corpus | tasks | calls | rubric | basis declared | rubric graded |
+| --- | --- | --- | --- | --- | --- |
+| retail v0.2.0 | 114 | 112 (98.2%) | 8 (7.0%) | 0 | **0** |
+| retail v1.0.1 | 114 | 112 (98.2%) | 40 (35.1%) | **114** | **112** |
+| airline v0.2.0 | 50 | 43 (86%) | 50 (100%) | 0 | **0** |
+| airline v1.0.1 | 50 | 43 (86%) | 50 (100%) | **50** | 0 |
+
+Two rows of that table are the part this repository would have got wrong by generalising: **airline did not
+move.** All 50 airline tasks at v1.0.1 declare `[COMMUNICATE, DB]`, which is what the v0.2.0 default already
+applied — the declaration became explicit and the grade did not change. Retail moved from `DB+COMMUNICATE` to
+`DB+NL_ASSERTION` (112) and `DB` (2). So "the benchmark changed its reward" is false and "retail changed its
+reward" is true, and only the second is a sentence this record may write. Both task sets rewrote every body
+(0 of 114 and 0 of 50 identical), so neither is reproducible across the boundary on the corpus axis either;
+only the reward axis divides them.
+
+**Where the same claim was duplicated, and what each copy now says.** The sentence existed in three places,
+and a correction that fixes one of them is how a repository ends up with a docstring that disagrees with a
+workflow comment that disagrees with an appendix:
+
+- `packages/eval/src/label-census.ts` — the header; now carries both rows and says which release each belongs to;
+- `.github/workflows/sota.yml`, the label-census step — now names the two bases and the 112/114 count;
+- `COMPETITIVE.md` A.6's "which reward components were active in the run" row — still correct as written,
+  because it is dated to v0.2.0, and Appendix U states the boundary explicitly.
+
+**The second: a gate scoped to the incident that created it.** `check-workflows.py` exists because a
+twenty-sixth `workflow_dispatch` input made GitHub refuse to parse the file, and a file it refuses to parse
+produces a run with no jobs and no dispatchable workflow — total, silent failure. The check it grew was a
+count over `inputs`. This round hit the *same mechanism* one level over: `TAU_VERSION` declared twice inside
+one `env:` block, which PyYAML resolves by keeping the last and GitHub rejects outright. The local parse said
+the file was fine; the push produced the jobless run; the dispatch answered
+`422 (Line: 1491, Col: 11): 'TAU_VERSION' is already defined`.
+
+The general rule is now in the checker — every key, by the path its ancestors give it — and the two
+properties that keep it from being a rule that refuses the repository's own design are both tested: sequence
+entries are indexed, so two steps may each declare `TAU_VERSION` (they must: the arms differ in the store and
+in nothing else), and a block scalar's body is skipped, because a `run:` body is a shell script rather than
+YAML. Fifteen self-test cases, two of them this pair.
+
+What made the incident expensive was not the defect, it was that **the diagnosis came from an API body.** A
+checker that fails where the author is looking is worth more than one that fails where the platform is
+looking, and the platform's error message is the only one of the two that had a line number.
+
+**The third: a refusal nobody could call is a refusal nobody has tested.** `splitPathOf` and
+`benchmarkIdentity` read `process.env` and `REPO` inside their own bodies, so no test could hand them a
+checkout; the branch that refuses a release without the halves was the one branch this round's dispatch
+executed for real, at the cost of an environment and an aborted phase. Both are now `splitPathIn(checkout,
+domain, release)` and `benchmarkIdentityOf(checkout, version)`, with the driver passing its own checkout and
+the workflow's pin. That is not test scaffolding: a function whose subject is "read this checkout" and which
+cannot be given a checkout is a function with a hidden argument.
+
+**What the audit's own prior sentences have to give up.** §34.113 and §173.96 priced the query draw and
+concluded that `meanChars`/`coverage` readings are readings of (query, pack). Correct, and now incomplete:
+every pack number in this record was also read on a corpus 0% of whose retail tasks survive to the release the
+competitor's number came from, under a reward that graded a different component. The query correction made
+those numbers directional; the release correction makes them **historical**. The pair that survives is still
+R88→R89, and for a second reason: same release, same split, same reward, twelve records on both sides.
+
+**Delivery.** 4,668 tests, coverage **100 / 99.99 / 100 / 100**, `pnpm check` exit 0, 81/81 registrations
+valid, `check-workflows.py` 15/15 self-tests, `r91_readback.py` 12/12 and `r92_readback.py` 15/15, coupling
+ledger 203 modules / 54,653 lines. Two commits, `1b05c9f` and `66671d7`; R92 re-dispatched on the second.
