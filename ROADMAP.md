@@ -6794,13 +6794,20 @@ costs 2.5 points".
 
 | pri | step | the single variable | why it is next | cost |
 |---|---|---|---|---|
-| **P0** | **R101 — the scaffold control** | `microglia_agent` against a facade that serves an **empty pack** | the middle leg of the three-cell decomposition. Without it no retrieval experiment after this one can attribute its delta to the pack (§34.123). 160 episodes and no learn half. **Registered 2026-11-13** as `prereg/R101-the-scaffold-arm.md`; the cost is **$1.21** for the pair, not the $0.38 this table first said — the scaffold leg runs the wrapper, and the wrapper is the 2.17× being measured, so it cannot cost what the wrapper-free leg costs | $1.21 |
-| **P0** | **R99 (in flight)** | the population, `distillScope: all` | 15 records against ~73 at the same dose; the only registered arm whose treatment is the store's *size* rather than its policy | $0.83 |
-| **P1** | **R98 — the unrelated control** | the content of the served record at matched length | still the only falsification of the competition reading, and now the sharper one: if unrelated content costs the same 2.5pp, the pack's problem is presence, not relevance | $1.40 + code |
-| **P1** | **R95 — the 114 base** | the sample | the lane resolves **21.02pp at n = 40** and cannot certify a 2.5pp recovery on any mechanism. 114 tasks resolve 11.7pp at d = 0.2 — still not 2.5, but the only lever on resolution that exists | $2.40 |
-| **P2** | **R97 — ephemerality** | one sentence: the pack is a past experience | Anti-Persistence's 28.0pp, the largest published effect in this domain, and the only one large enough to be visible at n = 40 | $0.83 |
-| **P2** | **the bill** | where the 2.17× goes | 36% more prompt tokens and a cache hit 14.8pp lower. A memory that costs twice as much and scores lower is a product defect before it is a research question, and no arm has ever attributed the bill | $0 |
-| **P3** | merge by action shape / abstraction | the unit | still the two mechanisms the store cannot express (§34.122, Appendix X), but both are refinements of a treatment that has not yet been shown to help | $0.83 + code |
+| **P0** | **R101 (in flight, run `43478128683`)** | `microglia_agent` against a facade that serves an **empty pack** | the middle leg of the three-cell decomposition. Without it no retrieval experiment after this one can attribute its delta to the pack (§34.123). 160 episodes and no learn half. **Registered** as `prereg/R101-the-scaffold-arm.md` at **$1.21** for the pair — not the $0.38 this table first said, because the scaffold leg runs the wrapper and the wrapper is the 2.17× being measured | $1.21 |
+| **P0** | **R98 — the unrelated control** | the content of the served record at matched length | **promoted by R99**: relevance is now the least likely explanation left. The 73-record pack matched the question a third better at every quantile and lost three tasks, so the next question is whether the content matters at all — if unrelated records cost the same, the pack's problem is **presence** and no retrieval work can fix it | $1.40 + code |
+| **P0** | **merge by action shape** | the unit | **promoted by R99's own census**: 73 corrections, 53 shapes, 10 supported by ≥2 tasks, 5 by ≥3. The competitor's `sup3` is built on exactly that support and this store cannot express it. Code, no dispatch | $0 |
+| **P1** | **R97 — ephemerality** | one sentence: the pack is a past experience | the only intervention in the literature with an effect larger than this lane's 21pp resolution at n = 40 (Anti-Persistence, 28.0pp). With the noise floor at 2–3 tasks, only large hypotheses are worth buying | $0.83 |
+| **P1** | **the bill** | cacheability rather than size | **narrowed by R99**: five times the store moved the bill by 2.2% and the call count by −0.8%, so the 2.17× is the block's presence, not its length. Shrinking the store saves nothing; making the block a reusable prefix is the only lever | $0 |
+| **P2** | **R95 — the 114 base** | the sample | still the only lever on resolution (11.7pp at d = 0.2 against 19.8pp), but it buys precision on a treatment not yet shown to help | $2.40 |
+| **P3** | abstraction (`{product-name}`-style) | the unit | AWM's mechanism (§Appendix X) and the only one left that changes what a record *is* rather than how many there are; it needs merge-by-shape to land first | $0.83 + code |
+
+**R99 is closed, and it closed in the direction the registration did not name.** The supply arm returned
+**0.625** against the fifteen-record store's **0.700** and the control's **0.725**: five times the supply,
+three fewer tasks, with every delivery instrument (coverage p10/p50/p90, items per pack, requests served)
+moving the way the "too little memory" theory wanted. The criterion said `< 0.700` closes the line, and it
+is closed — not as "supply did not matter" but as **"supply is an anti-constraint"**. Any remaining
+store-side arm has to be justified by a mechanism, not by a count (§34.125).
 
 **R100 is refused, not deferred.** The registered floor procedure computes **0.01** on both the R47
 fixture and R92's own curve, so no admissible rung changes the delivered population and the arm cannot be

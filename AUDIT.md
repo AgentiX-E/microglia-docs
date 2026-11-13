@@ -8773,3 +8773,60 @@ paired tasks the lane resolves **19.8pp** at d = 0.20 and **17.1pp** at d = 0.30
 certify a 2.5pp wrapper cost, and no trial count changes that, because `pass^4` is one binary per task. The
 distinction is still the one that decides whether the next four rounds are about retrieval or about the
 agent, and it is the cheapest question in the queue.
+
+## 34.125 Supply was not the constraint, and the instrument that says so was built the day before
+
+**The hypothesis R99 was registered to test.** R92's store held fifteen records, R91's readback showed
+R89 and R90 producing twelve and fifteen from the same fifty-seven tasks, and every round since R85 had
+read the memory's nulls as a supply problem: too few rules, too narrow a pack, too little of the question
+covered. R99 changed one variable — `distillScope: edited` to `all`, which turns the fifteen corrections a
+pinned learn half produces into the seventy-three that every task produces — and stated its criterion
+before the dispatch: **`< 0.700` closes the supply line**.
+
+The arm returned **0.625** against R93's **0.700** and the control's **0.725**. The line closes.
+
+**Why this is a stronger result than its three-task size, and where the strength comes from.** A three-task
+move at n = 40 is barely above this lane's own noise floor (R92 0.650 against R93 0.700 at essentially one
+store). What makes it a refutation rather than a draw is that **every instrument built to explain the
+old failure moved in the direction the theory predicted, and the score moved the other way**:
+
+| reading | R93 (15 records) | R99 (73 records) | direction the theory wanted |
+| --- | --- | --- | --- |
+| requests served | 161 of 162 | 161 of 161 | unchanged, both perfect |
+| mean items per pack | 1.081 | 1.292 | up |
+| coverage p10 / p50 / p90 | 0.129 / 0.227 / 0.368 | 0.176 / 0.333 / 0.529 | **up, at every quantile** |
+| zero-coverage pairs | 0 of 174 | 0 of 208 | unchanged, never the failure |
+| `pass^4` | **0.700** | **0.625** | down |
+
+The "the record only mentions a fifth of the question" reading was the sharpest thing this project had
+said about its own defect, and R99 tuned exactly that number by a third and lost three tasks. A theory that
+is tested in its own currency and comes back inverted is not a null result; it is the theory being wrong.
+
+**What the two new censuses added, which the mean could not.** Both were built in the round before this
+one and both earned their place in the first run that used them:
+
+- `servedCensus`: of **73** records, **40** were served at least once across 161 requests and no request
+  ever carried more than two. So the arm did not test "73 records delivered" — it tested "40 records with a
+  heavier tail", a much smaller treatment than the header's 5× ratio implies. Without this field the
+  result would have been read as a statement about 73 records, which it is not.
+- `mergeCensusOf`: the same 73 corrections collapse to **53 action shapes**, **30 mergeable**, **10
+  supported by ≥2 tasks** and **5 by ≥3**. The supply the pack could not use is therefore not 73
+  independent facts; it is 53 routines, five of them taught by three separate tasks. That is precisely the
+  support level the competitor's `sup3` cell is built on (§34.122), and this store cannot express it
+  because one correction is one record. Merge-by-shape moves from "a refinement of a treatment that has
+  not been shown to help" to **the only store-side mechanism left with a counted target**.
+
+**The bill, which supply also failed to move.** R99 paid **$0.8456** against R93's **$0.8276** — 2.2% more
+for five times the store and seventy-three distillation calls against fifteen — with **2,646 provider calls
+against 2,667** and a cache-hit rate of **76.1% against 76.4%**. The memory arm's 2.17× over the control is
+therefore neither the store's size nor the distillation: it is the pack's **presence**, a per-episode block
+that differs every episode, is re-sent on every turn of its episode, and cannot be a reusable prefix. For
+the cost requirement this project carries, the consequence is concrete and it is not "distil less":
+**shrinking the store saves nothing; making the block cacheable saves the ratio.**
+
+**The rule this adds.**
+
+> When a lane's theory of its own failure names a quantity, tune that quantity before tuning anything
+> else — and register the criterion in the quantity's own units. A refutation that arrives with every
+> instrument moving the predicted way and the outcome moving against it is worth more than a null, because
+> it cannot be explained by the instruments being blunt.

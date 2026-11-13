@@ -17447,8 +17447,115 @@ resolves **19.8pp** at d = 0.20 and **17.1pp** at d = 0.30, so B separates "the 
 twenty points" from "the wrapper costs less than this sample can see". It cannot certify a 2.5pp wrapper
 cost, and the registration says so before the first episode rather than after the readback.
 
-**Where the lane is.** R99 (run `43463317323`, `distillScope: all`) is in its memory leg at the time of
-writing; R101 is registered, implemented and waiting for the lane to free rather than dispatched beside it,
-because one τ² dispatch at a time is a cost rule this project has already paid to learn. The order after
-that is unchanged and ranked: R98 (unrelated control, $1.40 + code), R95 (114-task base, $2.40), R97
-(ephemerality, $0.83), the bill attribution ($0, no dispatch), then merge-by-shape and abstraction.
+**Where the lane is.** R99 completed at 17:38 UTC (§178: 0.625, the supply line closed), and R101 was
+dispatched into the freed lane at 17:59 UTC as run `43478128683` on `9e91b50` — one dispatch at a time is a
+cost rule this project has already paid to learn, and the scaffold leg was running by 18:03. When it lands,
+the decomposition is complete: `B − A` is the wrapper, `C − B` is the pack, and both are measured in this
+lane rather than assumed from a paper.
+
+### 178 — R99: five times the store, three fewer tasks — the supply line closes on its own criterion
+
+**The registered prediction, and what happened to it.** R99 was registered to test one variable: the
+store's **population**, from the fifteen records R92's failures produced to the ~73 that `distillScope:
+all` produces from the same pinned learn half, at the same dose, the same pack budget, the same forty
+held-out tasks. The criterion was written before the dispatch:
+
+> `pass^4 ≥ 0.775` — supply was the constraint, and the line continues. `0.700–0.775` — a replication.
+> `< 0.700` — **the supply line closes.**
+
+The arm returned **0.625**.
+
+| arm | store | records served | mean pack | coverage p50 | `pass^4` | tasks | trials | cost |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| R93 memory | 15 | not measured | 1.081 | 0.227 | **0.700** | 28/40 | 141/160 | $0.8276 |
+| **R99 memory** | **73** | **40 of 73** | **1.292** | **0.333** | **0.625** | **25/40** | **137/160** | $0.8456 |
+| R92 memory (rebuilt) | 15 | — | — | — | 0.650 | 26/40 | — | — |
+| R93 reference | 0 | 0 | 0 | — | **0.725** | 29/40 | 138/160 | $0.3807 |
+
+The `records served` cell for R93 is empty because the instrument did not exist when it ran: the served
+census landed after R93 (§34.121), so its fifteen-record store has a mean and no distribution. That is a
+fact about this project's instruments rather than about the arm, and it is why the R99 column is the first
+one that can answer "how much of the store was ever used".
+
+Five times the supply bought **−7.5pp** against R93's fifteen records and **−10.0pp** against the control.
+The line closes, and it closes in the direction the registration did not consider: not "supply was not the
+constraint" but **"supply is an anti-constraint"**.
+
+**The delivery got better by every instrument this project has, and the score got worse.** This is the
+part that is not noise and cannot be explained away by the store's size:
+
+- **Every request was served**: 161 of 161, against R93's 162-of-162 — the pack never came back empty.
+- **The records matched the question better, at every quantile**: p10 **0.176** against 0.129, median
+  **0.333** against 0.227, p90 **0.529** against 0.368. The whole distribution moved up by about a third.
+  Zero-coverage pairs — R93's named failure mode — are **0 of 208** in R99 and 0 of 174 in R93: neither arm
+  ever served a pack in which no record overlapped the request at all.
+- **The pack was fuller**: 1.29 items per request against 1.09, still under the 2,010-character capacity
+  of the budget, with 1,080 candidates dropped for size — the same order as R93's 1,119.
+
+So the lane's own theory of the defect — *the store was too small and the retrieved record only mentioned
+a fifth of the question* — was tested in the direction it predicted, and the score fell. Whatever the pack
+is doing, it is not doing it through relevance.
+
+**What the tasks did, which is not what a uniform drag would look like.** The successes per task, in the
+four-trial grid, separate a pack that degrades everything from a pack that breaks particular tasks:
+
+| successes of 4 | 0 | 1 | 2 | 3 | 4 |
+| --- | --- | --- | --- | --- | --- |
+| R93 memory (15 records) | 2 | 0 | 1 | 9 | **28** |
+| R99 memory (73 records) | 1 | 1 | 3 | 10 | **25** |
+| R93 reference (no memory) | 1 | 1 | 6 | 3 | **29** |
+
+Two facts come out of it. First, **most failures are one lost trial**: nine and ten tasks respectively sit
+at 3 of 4, which is the shape of a perturbation that lands on one rollout rather than on the task. Second,
+**the packs break different tasks**. Seven tasks fail in both R93 arms — the hard core the control also
+cannot do — R99 shares six of those, fails **seven tasks that neither R93 arm failed** (`5, 18, 36, 45, 55,
+79, 101`), and **repairs six that the fifteen-record pack failed** (`9, 32, 56, 90, 97, 108`). The delta is
+therefore a reshuffle with a heavier bad side, which is the same shape the BIRD lane measured out of sample
+("0.79 repairs per break… a reshuffle with a heavier bad side rather than a drag") and the opposite of a
+uniform penalty. At `pass^4` a reshuffle is expensive in a way it is not at trial level: R99 scored
+**137 of 160 trials** against the control's **138** — one trial apart — and **four tasks** apart, because a
+task passes only when all four of its trials do. Damage that lands on distinct tasks costs a whole task
+each; the same damage spread inside one task would cost nothing.
+
+**Forty-five percent of the store never appeared.** The census instrument built for §34.121 answered the
+question the mean could not: of 73 records, **40 were served at least once** across 161 requests, and no
+request ever carried more than two. The store's marginal supply is therefore mostly invisible — R99 did
+not test "73 records delivered", it tested "40 records delivered with a heavier tail", which is a much
+smaller treatment than the header's ratio suggests. That is a fact about this store's retrieval, and it is
+the first time the lane has been able to state it.
+
+**The merge census says where the recurrence is, and it is not where the store puts it.** The second
+instrument built for §34.122 counted what a shape-merge would produce from these 73 corrections: **53
+distinct action shapes, 30 of them mergeable, 10 supported by ≥2 tasks and 5 by ≥3**. So the supply this
+arm could not use is not 73 independent facts — it is 53 routines, five of which three separate tasks
+taught. The competitor's winning cell (`sup3`) is built on exactly that support level (§34.122), and this
+store cannot express it because one correction is one record. **That makes merge-by-shape the only
+store-side mechanism left with a measurable target**, and it is code rather than a dispatch.
+
+**The bill did not move, which is the other half of the supply question.** R99 paid **$0.8456** against
+R93's **$0.8276** (+2.2%) for **2,646 calls against 2,667** (−0.8%) and a cache hit rate of **76.1%
+against 76.4%**. Five times the store, five times the distillation calls, and the per-conversation price is
+unchanged. So the 2.17× the memory arm pays over the control is **not the store's size and not the
+distillation** — it is the pack's presence: a per-episode block that differs every episode, re-sent on
+every turn, and a prefix that cannot be reused across episodes. For the cost requirement this project
+carries, that is the actionable sentence: shrinking the store saves nothing; making the block cacheable
+saves the ratio.
+
+**What the queue becomes, given a 21pp resolution and a 2–3 task noise floor.** R99 moved the score by
+three tasks, one more than the floor R92-versus-R93 measured at essentially the same store. A lane that
+can only see 21pp at n = 40 and whose own noise is 2–3 tasks should stop buying 2.5pp questions. The
+re-ranked queue:
+
+| pri | step | why now |
+| --- | --- | --- |
+| **P0** | **R101 (in flight, run `43478128683`)** | the wrapper with no rules: if the scaffold alone costs ten points, every pack reading above is a reading about the wrapper |
+| **P0** | **R98 — the unrelated control** | the sharpest falsification left: if unrelated content costs what relevant content costs, the pack's problem is **presence**, and no retrieval work can fix it |
+| **P0** | **merge-by-shape** | free of dispatch cost, and the only store mechanism with a support ≥3 target this census actually counted |
+| **P1** | **R97 — ephemerality** | the only intervention in the literature with an effect larger than this lane's resolution (Anti-Persistence's 28.0pp) |
+| **P1** | **the bill** | $0, no dispatch: cacheability rather than size, now that R99 has shown size does not move it |
+| **P2** | R95 — the 114-task base | resolution is still the binding instrument limit, but it buys precision on a treatment that has not yet been shown to help |
+
+**Delivery.** 40/40 tasks scored, 0 unscored, `k = 4`, release v1.0.1, judge `deepseek/deepseek-flash`,
+`l4-pass4` **PASS** against the published bar (0.625 ≥ 0.575 + 0.05), `l4-coverage` PASS, `l4-fully-scored`
+PASS — the arm is a valid measurement of a treatment that did not work, which is what a refutation is
+supposed to look like. Evidence: `l4-evidence-none` on run `43463317323`.

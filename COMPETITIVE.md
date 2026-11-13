@@ -5381,6 +5381,7 @@ held-out tasks, the same judge, the same release, the same pinned store, memory 
 | **microglia R93 — memory** | deepseek-flash | retail test, 40 | **70.0%** | **yes, same dispatch** | **$0.0052** |
 | **microglia R93 — no memory** | deepseek-flash | retail test, 40 | **72.5%** | ← the control | **$0.0024** |
 | microglia R92 — memory, rebuilt store | deepseek-flash | retail test, 40 | 65.0% | no | $0.0053 |
+| **microglia R99 — memory, 73 records** | deepseek-flash | retail test, 40 | **62.5%** | no (R93's control, 4 h earlier) | **$0.0053** |
 
 ### Y.1 The three sentences this table licenses, and the one it does not
 
@@ -5415,6 +5416,39 @@ decomposition — `microglia_agent` with an empty pack — because until it exis
 points" cannot be separated from "the wrapper costs 2.5 points", and every retrieval experiment after
 that would be built on an attribution the artefact cannot support.
 
+### Y.3 The dose-response, and why it is the most useful row on this board
+
+R99 gave this project the one thing no competitor's table has: **the same treatment at two doses, on the
+same forty tasks, in the same lane.**
+
+| store | records delivered | coverage p50 | `pass^4` | against no memory |
+| --- | --- | --- | --- | --- |
+| none | 0 | — | **72.5%** | — |
+| 15 (R93) | 1.08 per request | 0.227 | 70.0% | −2.5pp |
+| 73 (R99) | 1.29 per request | **0.333** | **62.5%** | **−10.0pp** |
+
+Every published memory system in this domain reports a *gain* against its own baseline, and none reports
+how that gain moves when the memory grows. ALTK-Evolve publishes `sup3` (31 rules, 60.0%) and `lossless`
+(292 rules, **67.5%**) — a **+7.5pp slope** from roughly ten times the rules, on GPT-4.1, against its own
+57.5% baseline. This lane's slope over a comparable multiplication of its store is **−7.5pp**, on DeepSeek,
+against a 72.5% baseline that already clears ALTK's best cell.
+
+Both numbers can be true at once, and the pair of them is the most informative thing on this board:
+
+- ALTK's store is **curated game-play guidance**: 292 rules distilled from successes across a family of
+  related tasks, injected wholesale.
+- This lane's store is **per-task failure corrections**: one record per failed task, retrieved by lexical
+  similarity to the *current request*. On a task whose failure was a specific argument, the nearest record
+  is usually a different task's argument — and at 73 records the nearest neighbour is closer, which is why
+  coverage rose while the score fell. Retrieval improved and the answer got worse, because the record is
+  now a *confident* near-miss instead of an obvious stranger.
+
+That is the mechanism §34.125 could not name from the counters alone, and it is the one the next two arms
+are built to test: R98 removes the relevance (unrelated records at matched length) and merge-by-shape
+removes the per-task specificity (53 routines instead of 73 instances, 5 of them supported by ≥3 tasks).
+If the slope turns positive under either, the defect is the store's *unit* and not its size — which is
+exactly what this project has been wrong about since R85.
+
 ## Appendix Z — The cell no competitor publishes: the scaffold with no rules (2026-11-13)
 
 **The question every memory paper answers without stating it.** A published memory cell is a delta between
@@ -5446,10 +5480,12 @@ cheapest published run.
 
 **Where microglia sits, stated the way the board requires.**
 
-- **On the published metric** (`pass^4`, retail test, 40 tasks, `pass^4` at k = 4): the **control 72.5%** and
-  the **memory arm 70.0%** both sit above ALTK-Evolve's best cell (67.5%) and its `sup3` (60.0%), on a
-  different backbone, a different scaffold and a different judge. That is a reading of public numbers, not a
-  claim of superiority, and this appendix does not upgrade it.
+- **On the published metric** (`pass^4`, retail test, 40 tasks, `pass^4` at k = 4): the **control 72.5%**
+  sits above ALTK-Evolve's best cell (67.5%) and its `sup3` (60.0%), and this lane's best *memory* cell —
+  R93's fifteen-record store at **70.0%** — does too. **R99's seventy-three-record store at 62.5% does
+  not**: it is the first memory cell this project has produced that ranks below the competitor, and the
+  first on this board that shows what more memory costs. All four numbers are cross-backbone, cross-scaffold
+  and cross-judge, so they are readings of public numbers and not a claim of superiority.
 - **On the axis no one else publishes** — paired memory/no-memory on one dispatch, one store, one judge:
   microglia is the only entry, at **−2.50pp [−17.50, +12.50]**, unresolvable at n = 40.
 - **On the axis this appendix adds** — pipeline cost with the content removed: microglia will be the only
