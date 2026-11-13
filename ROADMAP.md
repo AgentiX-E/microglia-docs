@@ -6701,3 +6701,41 @@ store serves more than one item per recall. R85's `pass^4` (0.6842) and R89's (0
 progress, and R85's store was 92% candidates while R89's pack carries one record and drops 1,596 over
 228 requests: an outcome number can rise while the mechanism under it is still refusing most of what the
 store holds, and a tuning pass on top of that fits the noise of the refusal.
+
+### The queue after R92's readback: three mechanisms, one falsification, and a paired arm (2026-11-13)
+
+**Where the instrument stands.** R92 ran the benchmark's own 74/40 halves on v1.0.1 and read
+`pass^4 0.7586` over **29 of 40** tasks. The eleven that left are exactly the eleven carrying an
+`nl_assertion`, and the judge that grades those is a `gpt-4.1-2025-04-14` constant this organisation has no
+key for (§34.118). The fix is in and the redispatch is in flight. Nothing below starts before that number
+is in hand, because every item after it is a delta and a delta needs a baseline measured on the same judge.
+
+**What the redispatch changes about the queue, whichever way it lands.**
+
+| outcome | what it means | what moves |
+| --- | --- | --- |
+| 40 scored, `pass^4` ≈ 0.70–0.76 | the judge fix read the eleven, and the lane's first quotable row is above the published baseline | R93 (paired) becomes the P0 |
+| 40 scored, `pass^4` ≈ 0.55–0.65 | the eleven were the *easy* ones for the model, and the 29-task mean was inflated as the audit predicted | same, and the inflation is itself a finding worth an appendix |
+| fewer than 40 scored | the judge answered fewer assertions than asked, or the redirect did not reach the evaluator | the failures block names it; no memory experiment until the denominator is whole |
+
+**The queue, in the order it will be attempted.**
+
+| pri | step | why it is next | cost |
+|---|---|---|---|
+| **P0** | **R93 — the paired arm on the benchmark's halves** | The only number in this domain that can be a SOTA claim: same corpus, same store, same judge, same 40 tasks, memory vs no memory, with an interval. ALTK's own 67.5 is a baseline row and not an arm, so a paired lift here is evidence no competitor has | ~$2.70 (both arms) |
+| **P0** | **R98 — the unrelated control** | The only one of the three literature mechanisms that can *falsify* the competition reading. R22's shuffled control already scored **1.43pp above** the real pack, which is this prediction in miniature; if unrelated items cost the same as relevant ones, the pack's problem is attention, not applicability, and no prompt sentence repairs it | ~$1.40 |
+| **P1** | **R97 — ephemerality** | Anti-Persistence's 28.0pp discard-vs-keep contrast is the largest single effect in the four 2026 papers, and no arm in this record has ever told the model the pack is a past experience rather than a fact. One sentence, one variable | ~$1.40 |
+| **P1** | **R96 — the applicability sentence** | MemTrapBench's +14.9pp from one instruction. This lane's prior is *negative*: R17 found the permissive clause substitutes for the note rather than adding to it (interaction −2.57pp), and `hardened` already carries a calibration sentence | ~$1.40 |
+| **P1** | **R94 — the ceiling at a pinned store** | 700 / 2,400 on one store, read against one pinned question: the pack experiment R91 made possible and R92's rebuild deferred | ~$1.40 |
+| **P2** | **R95 — the 114 base split** | Comparable to the competitor's *submission* (67.54 on 114), of which 74 taught the model. A 65%-in-sample number, useful for ranking and not for a claim | ~$2.40 |
+| **P2** | **airline at ceiling 4,000** | A transfer arm cannot run on a ceiling measured on retail; the per-domain census says 2,000 clips 4% of airline records | ~$1.40 |
+
+**What is deliberately absent.** No tuning of a signal weight, a ceiling or a threshold until R93 has
+priced the paired lift at the store R92 actually builds. R85's `0.6842` and R89's `0.7018` both looked like
+progress while the mechanism under them refused most of what the store held; a tuning pass on top of an
+unpriced mechanism fits the noise of the refusal.
+
+**The one thing this queue buys that no previous queue could.** Every item above runs on the benchmark's
+own halves with a replayed store and a recorded judge. That is the first time a cell in this record can be
+compared to a published one without an asterisk about the sample — the asterisk about the backbone stays,
+and §34.119 is why it is printed rather than corrected.
