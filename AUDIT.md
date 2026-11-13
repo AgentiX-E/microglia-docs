@@ -8273,3 +8273,38 @@ halves both moved. That is the finding. R91 exists to make it stop: same store, 
 **Delivery.** 225 test files, **4,619 tests**, coverage **100 / 99.99 / 100 / 100**, `pnpm check` exit 0,
 80/80 registrations valid, coupling ledger 202 modules / 54,197 lines, `pnpm audit --prod` clean after
 `@hono/node-server` 2.1.5 → 2.1.8.
+
+## 34.115 A gate failed twice and could not say why, and the reason was in the diff
+
+**The failure.** Two consecutive CI runs on `15e252e0` failed `Repository audit` with one line:
+
+```
+dependencies: published dependencies have advisories: Error: Command failed: pnpm audit --prod
+```
+
+The same command was clean locally, twice, including after a `--frozen-lockfile` install. `scripts/audit.mjs`
+sliced the process text at 200 characters, so *a real advisory* and *a registry that would not answer*
+produced the same sentence. That is a checker an operator learns to ignore — the class this repository
+keeps writing audits about (`§34.85`).
+
+**The cause was not the registry.** The pin commit's message claimed `@hono/node-server` 2.1.5 → 2.1.8; the
+diff did not carry `packages/node/package.json` or `pnpm-lock.yaml`, because the two files were edited in
+the working tree and left out of the index. CI checked a lockfile that still resolved **2.1.5**, the two
+moderate advisories were real, and the gate was right to fail twice. The local "clean" reading was clean
+because the working tree held the fix the commit did not.
+
+**Three things are recorded rather than one.**
+
+1. **The gate's message.** An advisory and an unreachable registry now read differently, the tail of the
+   command's own output is kept, and a failure that carries no verdict is retried three times with a
+   widening pause. A findings table is **never** retried: retrying a decision turns it into a race, and a
+   retry around a real vulnerability is the failure mode this paragraph exists to name.
+2. **The claim.** A commit that names a dependency change has to *be* the dependency change. The two files
+   landed as their own commit (`6664950`) with the reason in the message, because the alternative — a
+   message that says a fix exists beside a diff that does not contain it — is how a green local gate and a
+   red CI gate diverge with nobody lying.
+3. **The first attempt at an explanation was wrong.** The commit that improved the message attributed the
+   failure to the registry, and the sentence "the same command was clean locally" was true only because of
+   the unstated working-tree change. The correction is in this section rather than as a follow-up commit
+   because an empty commit cannot be pushed through the Git Data API — a tree with no changes has no tree
+   to create — and the record belongs where it will be read.
