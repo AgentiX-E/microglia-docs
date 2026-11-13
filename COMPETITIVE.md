@@ -5525,3 +5525,12 @@ paired cells at n = 40 and below it on nothing measurable; the published SOTA ce
 **ALTK-Evolve's 67.5%**; and the placement axis has one entrant, no score, and a cost fact. The honest
 sentence is still the one Appendix Z ends with, plus: **on cost-per-conversation delivered, this project
 now has the only attributed number on the board.**
+
+**Update, same day — the placement axis is closed with a number, and the number is zero.** The probe
+dispatched three times (PROGRESS 181): the block costs **1,497 prompt tokens a call and 31 uncached ones**, in
+all three placements. So the cell this appendix opened is *occupied and empty at once* — microglia is the only
+entrant, and the effect is nil. That is worth stating plainly rather than dropping: **the memory's delivery
+format is not what costs 2.17×, and no competitor's placement choice is a hidden advantage either.** The
+remaining gap on this axis is not placement but **volume** — AWM and ALTK-Evolve both inject *all* admitted
+guidelines on *every* turn with no budget, which cannot be cached per episode the way a 1.2k pack can, and
+this project's pack is the only one on the board that gets smaller when the store gets larger.

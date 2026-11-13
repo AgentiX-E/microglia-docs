@@ -17741,3 +17741,68 @@ from a guess: **$0.03 to decide an $0.83 question.**
 > Write the assertion before reading the delivery path. A wrapper that adds a tag costs ten tokens a call
 > and is invisible in every number the lane publishes; it is only visible in a test that says what the
 > prompt is supposed to contain.
+
+### 181 — R102 refused: the block is cached where it sits, and the probe that says so was wrong twice first
+
+The probe registered at §180 was dispatched three times. The first two answers were opposite, and both were
+about the instrument.
+
+| run | verdict | what the numbers were about |
+|---|---|---|
+| `43489549678` | `placement-is-free` | one shared policy, so the control warmed the prefix the next shape's first call read |
+| `43491046858` | `block-never-cached` | five seconds between calls is shorter than the provider's cache-write latency; only the control's policy was warm from the previous run |
+| `43492274964` | **`placement-is-free`** | a warmup call at the longest history and fifteen seconds a call: an instrument that had been made to fail twice |
+
+The third run, with each shape on its own policy, one warmup call and a measured wait:
+
+| shape | prompt/call | first uncached | steady uncached | delta |
+|---|---|---|---|---|
+| `control` | 5,027 | 211 | **180.5** | — |
+| `system-second` | 6,524 | 172 | **211.5** | **+31** |
+| `system-merged` | 6,524 | 172 | **211.5** | **+31** |
+| `first-turn` | 6,524 | 172 | **211.5** | **+31** |
+
+**The block costs 1,497 prompt tokens a call and 31 uncached ones — 2% of itself, which is the partial final
+cache block.** It is cached as a second system message, it is cached merged into the policy, and it is cached at
+the tail of the task statement. Placement is not a lever, `block-never-cached` did not survive its own second
+reading, and **R102.1 is not dispatched** — `placement-is-free` is one of the two states the probe was built to
+refuse the arm with. Three dispatches cost **$0.09**; the arm would have cost **$0.83** and produced a delta
+that could not have been attributed, because a treatment that moves the block also changes the prompt.
+
+**Predictions, scored.** Registered at §180 before the dispatch:
+
+| # | prediction | outcome |
+|---|---|---|
+| 1 | `system-second` ≥ 512 uncached tokens a call above the control | **refuted**, 31 — off by a factor of 16 |
+| 2 | `system-merged` < 128 above it | confirmed, 31 |
+| 3 | `first-turn` < 128 above it | confirmed, 31 |
+| R1 | if `system-second` < 128 the premium is not a boundary and R102 is refused | **fired** |
+| R2 | if `system-merged` > 512 then merging does not repair it | did not fire |
+
+A verdict that confirms two predictions and refutes the one the treatment rested on is the probe doing its
+job. §179's permission to spend $0.83 was withdrawn for $0.09.
+
+**What is left of the bill, and it is not placement.** The prompt total is now fully explained — 28.7k extra
+tokens per episode against 25.4k for a 1,497-token block present in seventeen calls, which is a *cached* block
+and is what a correct bill looks like. The **uncached** premium is not: 18.6k per episode against a
+first-call-only 1.5k, twelve times what the block can account for while being cached. Two candidates survive,
+both behavioural rather than positional — the memory arm fetches larger tool results, or its turn cadence
+re-reads prefixes the probe's fifteen seconds do not. Neither is a placement question, and neither can be read
+off a job total.
+
+**And a scope error in the attribution, found on the way.** R93's own artefact records `calls: 1803` for the
+memory arm; §179's division used 2,667. One of the two populations is not the one the sentence beside it
+describes, which is the same class of defect as §34.126's empty pack — a number true of something, quoted
+about something else. Re-deriving both arms' bills from their phase-level usage lines is now a precondition
+for any further cost claim, and it costs nothing but reading.
+
+**Where the lane is.** R101 (`43478128683`, head `9e91b50`) has completed its memory(scaffold) leg and is in the
+reference leg; the pair and the readbacks follow. R102.1 is not queued. The queue is now **R98** (the
+irrelevant-record control, $1.40 + code), **merge by action shape** ($0, and its census target is counted),
+**R97** (ephemerality, $0.83), **R95** (the 114 base, $2.40), and the new **R103** — re-derive both arms' bills
+from the phase logs and the two arms' turn structure, **$0**, which now precedes every other cost claim.
+
+**The rule this adds, for the standing requirement that every iteration be predictable.**
+
+> Budget a probe at a tenth of the arm it guards and treat two disagreeing runs as a defect in the probe before
+> an effect in the world. This one cost 9% of R102.1 and would have cost 100% of it to be wrong.

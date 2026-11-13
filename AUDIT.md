@@ -8920,3 +8920,78 @@ running.
 > A control that removes a treatment by making it empty prices nothing when the treatment's cost is carried
 > by the text. Ask what the control actually sends before reading its bill as a decomposition: an arm that
 > injects nothing is a second copy of the control, and the only thing it can measure is behaviour.
+
+## 34.127 The block is cached where it sits: R102 is refused by the probe it was registered on, and the probe was wrong twice first
+
+R102 was registered as a cost treatment — move the block, and the 2.17× goes away — on the strength of
+PROGRESS 179's decomposition: 99.9% of the premium is uncached prompt tokens, ~1.1k extra on each call. Before
+spending $0.83 on a treatment whose mechanism was a guess, `cache-placement.ts` priced the mechanism: four
+prompt shapes, nine growing turns, the provider's own `prompt_cache_hit_tokens` per call. Three dispatches
+were needed, and the first two are the interesting part.
+
+**Run 1 (`43489549678`) — `placement-is-free`, and not for a good reason.** All four shapes shared one
+synthetic policy, so the control's calls warmed a prefix the next shape's *first* call then read:
+
+```
+control        prompt/call   5027  uncached/call first  4051  steady 606.5
+system-second  prompt/call   6524  uncached/call first  1964  steady 617.5
+```
+
+A 6,524-token prompt billed 1,964 uncached while a 5,027-token prompt billed 4,051 is not a fact about either
+shape: it is the control's cache being spent by the second shape. The steady state was unaffected — each shape's
+prefix is internally consistent — so the verdict was right by accident.
+
+**Run 2 (`43491046858`) — `block-never-cached`, and also not for a good reason.** Each shape now had its own
+policy, which removed the sharing and exposed the other uncontrolled variable: five seconds between calls is
+not long enough for a written cache entry to be readable. Only the control had a prefix written by the previous
+run, and it alone read low:
+
+```
+control        prompt/call   5027  uncached/call first   211  steady 180.5
+system-second  prompt/call   6524  uncached/call first  5548  steady 617.5
+system-merged  prompt/call   6524  uncached/call first  5548  steady 617.5
+first-turn     prompt/call   6524  uncached/call first  5548  steady 617.5
+```
+
+Delta 437 a call, over the tolerance, verdict `block-never-cached` — a conclusion about the provider's
+bookkeeping, drawn from the one shape whose policy happened to be warm from an earlier dispatch.
+
+**Run 3 (`43492274964`) — `placement-is-free`, on an instrument that has been made to fail.** A warmup call at
+the longest history warms every shorter prefix at once, because a cache is a prefix; the wait is fifteen
+seconds, which is what run 2's own numbers say an entry needs.
+
+| shape | prompt/call | first uncached | steady uncached | delta |
+|---|---|---|---|---|
+| `control` | 5,027 | 211 | **180.5** | — |
+| `system-second` | 6,524 | 172 | **211.5** | +31 |
+| `system-merged` | 6,524 | 172 | **211.5** | +31 |
+| `first-turn` | 6,524 | 172 | **211.5** | +31 |
+
+**The block adds 1,497 prompt tokens per call and 31 uncached ones — 2% of itself.** It is cached in all three
+placements, the second system message is not a boundary the provider refuses to carry, and moving it buys
+nothing. R102.1 is not dispatched: `placement-is-free` is one of the two states the probe was built to refuse
+it with, and the refusal cost **$0.09** across three dispatches instead of **$0.83** for an arm whose delta
+nobody could have attributed.
+
+**What this costs the record.** §34.125 and PROGRESS 179 said the memory "pays for a cache it destroys"; the
+premium is real and the mechanism was wrong. Three things follow, and the third is the one that matters:
+
+1. **The prompt total is now fully explained.** The memory arm's prompt was 4.6M tokens larger over 160
+   episodes — 28.7k per episode, against 1,497 × 17 = 25.4k for a block present in every call. That is the
+   block being **cached**, and it is what a correct bill looks like.
+2. **The uncached premium is not.** 18.6k extra uncached tokens per episode against a first-call-only cost of
+   1.5k. The block cannot produce twelve times its own size in misses while being cached, so something else
+   does — and the two candidates are behavioural rather than positional: the memory arm's episodes fetch larger
+   tool results, or its prefixes are re-read less often than the probe's cadence allows.
+3. **The attribution was arithmetic over a population nobody checked.** PROGRESS 179 divided a job-level total
+   by a call count and got a per-call premium. R93's own artefact records `calls: 1803` for the memory arm
+   against the 2,667 that division used, so at least one of the two numbers is a different population than the
+   sentence it appears in. That is the same class of defect as §34.126's empty pack: a number that is true of
+   something, quoted about something else.
+
+**The rule this adds.**
+
+> A probe is an instrument and it fails like one — silently, in the direction of a confident answer. Warm the
+> cache, isolate the shapes, and wait longer than the provider's write latency, or the verdict will be a
+> measurement of your own dispatch order. Two of this probe's three runs produced a state that would have been
+> written into a document as a finding.
