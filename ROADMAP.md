@@ -6647,7 +6647,9 @@ before the agent reads it". This is the position and the queue behind it.
 | R88 | **read** — `ABANDONED`: admission held (12/12), ceiling half-held (2/12 clipped), reach 9.09%, `pass^4 0.5614` | `r88_readback.py`, run `43223040283` |
 | the fifth layer | **found** — the guard replaces ten-digit ids (`[phone]`), 46 of 128 entity values | `tau2-redaction.ts`, `census.redacted` |
 | R89 | **read** — `ABANDONED` on the mechanism, PASS on the outcome: `pass^4 0.7018` (+12.68pp), coverage 25.00%, and `droppedForSize 1,596` at `meanIds 1` | `r89_readback.py`, run `43250414145` |
-| R90 | dispatched 17:47 UTC, running | the guard cell: references kept, same pack and dose as R89 |
+| R90 | **read** — `ABANDONED` on the design, PASS on the signature and the outcome: `kept 171 of 172` (99.42%), one redacted, `pass^4 0.6316` (+5.66pp over 0.575, −7.02pp against R89 with overlapping intervals) | `r90_readback.py`, run `43273198959` |
+| the store itself | **found** — it is a draw. R89 wrote 12 corrections, R90 wrote 15 from the same 57 tasks at the same one trial: 8 ids shared, 7 only in R90, 4 only in R89. Every comparison but R88→R89 was two variables | `tau2-pin.ts`, `eval/pins/r90-retail.json` |
+| R91 | registered — same store, same pack, no learn half | the instrument: four refutations, all about determinism rather than about memory |
 
 **The queue, in dependency order.** Nothing below starts before the reading above it settles.
 
@@ -6658,8 +6660,9 @@ before the agent reads it". This is the position and the queue behind it.
 | ~~P0~~ | ~~paired degradation rate~~ | **delivered** — `degradationOfPair` on every pair, `transferSummary` reused rather than re-derived | $0 |
 | ~~P1~~ | ~~pack budget as a variable~~ | **delivered as a measurement**: `maxStatementChars` (810 at 1,200 / 2,010 at 2,400), `pack.{budget,capacity,droppedForSize,emptiedBySize}`, `packBudget` as a header | $0 |
 | **P0** | ~~dispatch `R89-pack-carries-what-it-wrote`~~ **dispatched 15:40 UTC (run `43250414145`)** | the pair R88 shipped is 2,000 characters into a 1,200-character pack; capacity is 810, `41.2%` of retail is above it, and every record dropped for size read as "nothing relevant" | ~$1.10 |
-| **P0** | a pack that carries two records | R89 read `droppedForSize 1,596` and `meanIds 1`: a 1,717-character record plus the 390-character wrapper leaves 293 of 2,400, so a second never fits. Either 4,800 characters, or 700 at 2,400 — the two ways to put two records in one pack, and they are different treatments | ~$1.10 |
-| **P2** | a (700 / 2,400) cell after R89 (now R92) | R88→R89 prices the pack, R89→(700 / 2,400) would price the ceiling; without it a lift in R89 is "more text reached the model" and the two causes stay entangled | ~$1.10 |
+| **P0** | ~~a pack that carries two records~~ **reordered to R92** | the cell is unchanged — 4,800 characters, or 700 at 2,400 — but it cannot be priced yet: R90 showed the *store* moves between runs (12 corrections then 15, 8 ids shared), so a pack cell measured against a fresh draw is two variables again | ~$1.10 |
+| **P0** | **R91 — freeze the store, then measure nothing but the draw** | the instrument, and the only P0 that is not an experiment about memory. `eval/pins/r90-retail.json` holds R90's fifteen failures; `tau2-pin.ts` prices them against the pinned corpus and `pinnedLearn` returns the same shape as the run branch. Same store, same pack, no learn half: its `pass^4` becomes the lane's first estimate of the evaluation draw's own spread, and every later delta is read against it | ~$1.05, 57 episodes fewer |
+| **P1** | a (700 / 2,400) cell at the pinned store (now R93) | R91→R92 prices the pack, R91→R93 prices the ceiling; both need the store held fixed, which is why neither could be registered before R91 | ~$1.05 |
 | **P0** | 114-task L4 run | the SOTA claim needs the sample the competitor used: microglia reads 0.7018 on 57 tasks and ALTK's submitted 0.6754 covers 114. Same split, same trials, same metric, or the ranking stays cross-sample | ~$2.20, ~4h |
 | **P1** | the caution line (MemTrapBench's AdaptiveMem) | the cheapest test of "does the model trust the memory too much": one sentence in the block, one dispatch. Every framework in that study scored below no-memory, and the fix was an instruction, so the failure is conditioning rather than storage | ~$1.10 |
 | **P1** | hard/easy split in the L4 readback | free, and it is the diagnostic that found the negative effect in every study that reports one: gains on easy tasks and losses on hard ones cancel in a mean | $0 |

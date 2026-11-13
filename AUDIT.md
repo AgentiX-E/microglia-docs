@@ -8204,3 +8204,72 @@ in flight and prices it.
 **Delivery.** 224 test files, **4,590 tests**, coverage **100 / 99.99 / 100 / 100**, `pnpm check` exit 0,
 78/78 registrations valid, coupling ledger 201 modules. The core bundle ceiling moved 47,000 → 47,500 raw
 and 16,000 → 16,200 gzip — the smallest raise that gate has taken, argued beside the number.
+
+## 34.114 The store was a draw, and four rounds of comparisons were read as if it were a constant
+
+**The defect.** R90 was graded `ABANDONED` on a row its own registration did not contain, and the row is
+worth more than the arm:
+
+```
+R89 store: 12 corrections, tasks 3, 15, 18, 20, 32, 33, 34, 38, 41, 100, 107, 110
+R90 store: 15 corrections, tasks 0, 15, 18, 20, 27, 31, 32, 33, 34, 38, 103, 104, 107, 109, 111
+shared:    8        only R89: 4        only R90: 7
+```
+
+Same domain, same 57-task learn half, same one trial, same model, same seed variable. The store differs by
+seven records. The mechanism is not a bug in any file: `learnableCorrections` selects the tasks whose
+reward fell below 1, the learn half runs **one** trial per task, and one trial of a sampled model is a
+draw. A store built from a draw is a draw.
+
+**What that invalidated.** R90's header states "One variable. R90 against R89 is the guard and nothing
+else." Two variables moved. R88→R89 is unaffected — both stores are twelve records and the treatment is
+the pack alone — but the lane's other comparisons are not:
+
+| pair | treatment | store | readable as |
+| --- | --- | --- | --- |
+| R85 → R88 | ceiling 700 → 2,000 | 12 → 12 (different twelve) | direction only |
+| R88 → R89 | pack 1,200 → 2,400 | 12 → 12 (different twelve) | **the pack**, because both are 12 |
+| R89 → R90 | guard | **12 → 15** | **nothing** |
+| R90 → (R91 as originally planned) | pack 2,400 → 4,800 | 15 → a new draw | **nothing** |
+
+The class of error is the same one §34.113 named — a registration predicting a quantity its own variable
+does not control — but it is worse, because the quantity is not a row in the registration at all. It is
+the *population*, and the registration discipline had no rule about populations.
+
+**The rule this adds.**
+
+> A treatment is only the treatment if the population it acts on is fixed. A registration whose
+> population is rebuilt by the run must pin it, or it is measuring a difference between two draws and
+> attributing it to a switch.
+
+**The fix, and why it is structural rather than statistical.** Statistics cannot recover a confounded
+comparison: `−7.02pp` with a `±12.5pp` half-width is inside the noise and confounded besides, so no
+interval helps. What helps is that the population is *derivable* — `taskCorrection` reads
+`evaluation_criteria.actions` and `user_scenario.instructions`, both corpus fields, and `distillScope:
+edited` decides only *which* tasks contribute. So the store is a function of (corpus, failure list), and
+the failure list is fifteen ids. `eval/pins/r90-retail.json` is that list; `tau2-pin.ts` prices it against
+the pinned corpus; a misspelled id is an `L4ParseError` rather than a smaller store, because a store that
+silently shrinks still reports every counter as measured.
+
+**What the readback grades apart, and why the verdict is `ABANDONED` rather than `GRADED`.** Three things
+moved in R90 and only one is a failure:
+
+- the **signature** held: 171 of 172 values kept (99.42%), one redacted, against R88's 82 of 128 (64.06%)
+  — the exemption is on the path the driver takes, which is the only reading that distinguishes a guard
+  that was taught from one that was edited and never called;
+- the **outcome** held above the published bar: `0.6316` vs `0.575` (+5.66pp), `gates_passed 3`;
+- the **design** did not: fifteen records against a registered `12 ± 2`.
+
+The readback therefore reports all three and abandons on the third, and the sentence it exists to keep
+separable is: *the 99.42% is real, the +5.66pp is real, and neither is evidence about what the placeholder
+cost.* Its fourth refutation — whole records with real identities still scoring below the baseline — is
+the one that would have been evidence *for* a negative effect, and it did not fire.
+
+**Why this audit is not a scolding of one arm.** The same draw has been quietly present since R85, and
+every "the pack moved it" reading between R85 and R90 that is not R88→R89 was quoting a number whose two
+halves both moved. That is the finding. R91 exists to make it stop: same store, same pack, no learn half,
+228 episodes, under $1.05.
+
+**Delivery.** 225 test files, **4,619 tests**, coverage **100 / 99.99 / 100 / 100**, `pnpm check` exit 0,
+80/80 registrations valid, coupling ledger 202 modules / 54,197 lines, `pnpm audit --prod` clean after
+`@hono/node-server` 2.1.5 → 2.1.8.

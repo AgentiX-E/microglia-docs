@@ -16895,6 +16895,7 @@ sota: 0.7018 against ALTK-Evolve's baseline 0.575 (+12.68pp) and its submitted 0
 | **ALTK-Evolve, lossless 292 rules** | GPT-4.1 | **0.6754** | 114 | **published SOTA, PR #542** |
 | microglia R88 (pack 1,200, ids eaten) | deepseek-flash | 0.5614 | 57 | below the baseline |
 | **microglia R89 (pack 2,400)** | deepseek-flash | **0.7018** | 57 | **+2.64pp vs SOTA, cross-sample** |
+| microglia R90 (references kept) | deepseek-flash | 0.6316 | 57 | +5.66pp over the baseline, −7.02pp vs R89 with overlapping intervals; confounded by a store that moved |
 
 Two honest caveats, and they are the reason this is a table rather than a claim: the samples differ
 (57 against 114), and the backbones differ (deepseek-flash against GPT-4.1 with a GPT-5.5 customer
@@ -16923,3 +16924,63 @@ found the effect everywhere else.
 **Delivered this iteration:** `COMPETITOR_PASS4`/`COMPETITOR_TASKS` and `sotaLineOf` (11 cases), the line
 written into every `poc-l4` artefact's notes and `competitor_pass4` into its metrics; R91 registered at
 budget 4,800 to put two records in one recall.
+
+### 173.94 R90 priced the identity and found something larger: the store was never the same store
+
+**What R90 measured.** `pass^4 0.6316 ±12.52pp` at n = 57, `+5.66pp` over the published baseline 0.575
+and `−7.02pp` under R89's 0.7018. The guard fix is on the write path and the counter says so:
+`faithfulness` reads **171 of 172** entity values kept (**99.42%**) with exactly **one** replaced —
+`daikisanchez1479@example.com`, which τ² retail uses as a `user_id` and which stays redacted on purpose.
+Against R88's 82 of 128 (64.06%) that is the largest single repair this lane has made to a record.
+`pack` is exactly R89's (2,400 / 2,010, `meanIds 1`, `droppedForSize 1,596`), `recall` served 228 of 228,
+`coverage` rose 25.00% → **28.00%**, and `gates_passed 3`.
+
+**The verdict is `ABANDONED`, and it is not the outcome that abandoned.** Four prediction rows hold and
+one fails:
+
+| row | registered | measured | |
+| --- | --- | --- | --- |
+| the exemption is on the write path | `kept ≥ 95%`, `redacted = 1` | 99.42%, 1 | PASS |
+| the write is unchanged | `12 ± 2` records | **15** | **FAIL** |
+| the pack is unchanged (Amendment 1) | `meanIds 1`, `droppedForSize > 0` | 1, 1,596 | PASS |
+| coverage clears 25%, direction reported | ≥ 0.25 | 0.28 (+3.00pp) | PASS |
+| `pass^4` at or above the published bar | ≥ 0.575 | 0.6316 | PASS |
+
+**The failing row is the finding.** R89 built its store from **12** failed learn tasks; R90 built it from
+**15**, on the same 57 tasks at the same one trial with the same model. Eight task ids are shared, seven
+exist only in R90 (`0, 27, 31, 103, 104, 109, 111`), four only in R89 (`3, 41, 100, 110`). So R90's
+header sentence — "One variable. R90 against R89 is the guard and nothing else" — was false when it was
+written, and nothing in the lane could have caught it, because the mechanism is structural:
+
+> the store is built from **whichever learn tasks failed**, and the learn half is **one trial per task**.
+> One trial of a sampled model is a draw.
+
+Every arm this lane has run therefore changed its treatment **and** its store. R88 against R89 survives
+that criticism because both wrote 12 records and the only move was the pack. Every other comparison —
+R85 0.5752, R88 0.5614, R89 0.7018, R90 0.6316 — is two variables read as one for four rounds, and the
+intervals (±11.9pp at n = 57) are wide enough to have hidden it twice over. The `−7.02pp` against R89 is
+inside the noise (intervals 0.5064–0.7568 and 0.5830–0.8206 overlap) and is confounded besides, so the
+readback records it as direction only: **R90 neither confirms nor refutes the identity hypothesis.**
+
+**What fixes it, and why it is cheap.** A correction's *content* is a function of the corpus, not of the
+episode: `taskCorrection` reads `evaluation_criteria.actions` and `user_scenario.instructions`, both
+fields of the pinned τ² checkout. The only thing the learn half decides is **which tasks teach**, and that
+is a list. `eval/pins/r90-retail.json` holds R90's fifteen ids; `tau2-pin.ts` prices them against the
+corpus and refuses an id the corpus does not hold; `pinnedLearn` returns the same shape as the run branch,
+so nothing downstream can tell a rebuilt store from a replayed one. A pinned run also **skips the episodes
+it replaces**: 57 fewer than R90 for the same evaluation.
+
+**The queue was rewritten by that finding.** R91 was registered at pack 4,800 to put two records in one
+recall; that cell is now **R92**, because a pack that carries two cannot be priced through a store whose
+record count moves between runs. R91 is the instrument instead — same store, same pack, same ceiling, no
+learn half — and its `pass^4` becomes this lane's **first estimate of the evaluation draw's own spread at
+a fixed store**. The ceiling cell (700 / 2,400) moves to R93 for the same reason.
+
+**Delivery.** 225 test files, **4,619 tests**, coverage **100 / 99.99 / 100 / 100** (the single branch
+exception is `l4.ts`'s HARM inline gate, recorded), `pnpm check` exit 0, 80/80 registrations valid,
+coupling ledger 202 modules / 54,197 lines. `@hono/node-server` 2.1.5 → 2.1.8 closes the two moderate
+advisories that had started failing `pnpm audit --prod`; nothing else in the dependency graph moved.
+
+**R91 is dispatchable now**: `storePin: eval/pins/r90-retail.json`, 228 episodes, under $1.05, no learn
+half. Its four refutations are all about determinism — a store that does not reproduce field for field
+means a correction is not a function of the corpus, and that would be the more important finding.

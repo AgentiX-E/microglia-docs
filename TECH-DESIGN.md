@@ -8916,3 +8916,59 @@ census may attribute to the guard.
 
 **Cost.** 375 raw and 25 gzip bytes on the core bundle, which is the smallest raise the size gate has
 taken and the only one it has taken for a correction rather than a capability.
+
+### 17.134 The store is a draw, so it is pinned: what a correction is a function of, and the four refusals
+
+**The problem the design solves.** The store is built from the learn tasks whose episodes failed. The
+learn half runs one trial per task. One trial of a sampled model is a draw. Two runs at the same
+configuration therefore build different stores — R89 twelve corrections, R90 fifteen, eight task ids in
+common — and a treatment compared across them is confounded with the population it acts on. This is not
+a statistical problem and no interval fixes it: `−7.02pp` with a `±12.5pp` half-width is both inside the
+noise and confounded, so the comparison is unreadable in either direction.
+
+**The premise that makes a pin possible, stated so it can fail.** A correction's content does not depend
+on the episode:
+
+| what a record contains | where it comes from | decided by |
+| --- | --- | --- |
+| the question | `user_scenario.instructions` | the corpus |
+| the expected calls | `evaluation_criteria.actions` | the corpus |
+| the rubric, when there are no calls | `evaluation_criteria.nl_assertions` | the corpus |
+| **whether this task teaches at all** | reward below 1 | **the trial** |
+
+Only the last row is a draw, and it is a boolean per task. So the store is a function of (corpus, list),
+and a list of fifteen ids is small enough to read in a diff. If the premise is false the arm says so in a
+field rather than in prose: `faithfulness.entities` would differ from 172, or `pack.summary.meanChars`
+from 1,825.3, and R91 grades both as equalities.
+
+**`tau2-pin.ts`, in three functions.**
+
+- `parseStorePin` reads `{source, failures}` and refuses four shapes: a document that is not an object
+  (`unreadable-json`), one with no `failures` array (`missing-tasks`), an empty list (`bad-entry` — an
+  empty store is not a pin), and a duplicate id (`bad-entry` — the count is read against the list, so a
+  hand-edit that repeats one id would report a store larger than it is). `source` defaults to the
+  sentence "an arm this pin does not name" rather than to empty: an artefact that says its store was
+  pinned and not *what* to cannot be audited.
+- `pinRewards` prices the list against the corpus and refuses an id the corpus does not hold, naming the
+  first three. A silent miss is the failure mode this exists to prevent: the store would be smaller than
+  the registration says while `records`, `stored` and every rate still read as measured.
+- `pinnedLearn` applies the split *after* pricing, so an entry for a task this run does not learn from is
+  simply not part of the learn half, while a misspelled id is still an error. It returns `{tasks,
+  rewards, traces, pin, failures}` — the same shape the run branch returns, which is what lets the driver
+  carry one code path for both.
+
+**The four refusals a pinned arm is graded on**, all of them about determinism rather than about memory:
+the pin is on the path (`learning.pin.failures = 15`), the write reproduces (`entities = 172`,
+`kept = 171`, `redacted = 1`), the pack and the coverage reproduce (`meanChars = 1,825.3`,
+`coverage.p50 = 0.28`), and the store is whole (`stored = 15`). R91's `pass^4` is reported with its
+interval and **no direction**: at a fixed store the evaluation half is still a draw, so that number is
+the first estimate of the draw's own spread, and it is what every later delta will be read against.
+
+**The registration surface.** A fifth line from `eval:prereg-caps` — `pin=eval/pins/r90-retail.json` — and
+a header key restricted by regex to `^eval/pins/[A-Za-z0-9._-]+\.json$`. The restriction is the check: a
+header read by a paid dispatch must not name a path outside the checkout, and pins living in one
+directory are pins a reviewer can diff. The workflow refuses a path that is not in the checkout before the
+first episode, because the driver refuses it too and a refusal that costs a dispatch is a worse refusal.
+
+**Cost.** A pinned run does not pay for the half it replaces: 57 episodes fewer than R90 for the same
+evaluation, and nothing added to any prompt — the store's text is byte-identical by construction.
