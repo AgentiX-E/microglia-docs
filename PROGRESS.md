@@ -17182,3 +17182,93 @@ refutation is now the interesting one: a store built from 74 tasks, every record
 competitor used, below the published baseline on the split the benchmark defines. (3) R93: one store, two
 floors, one pinned question — the first paired pack comparison. (4) R94: the same store at ceiling 700 and
 2,400.
+
+## 174 — The judge was the denominator, and the missing quarter was worth 10.86 points
+
+**What the redispatch read.** `run 43414049093`, τ²-bench retail **v1.0.1 at `fc0055dc`**, the benchmark's
+own 74/40 halves, the judge redirected to `deepseek/deepseek-flash`:
+
+```
+[poc-l4] pass4=0.65 published_pass4=0.575 competitor_pass4=0.6754 arm=1
+         published_bar_applies=1 delta=0.075 tasks=40 unscored_tasks=0
+         unscored_reported=1 min_tasks=40 k=4 gates_passed=3
+  PASS l4-pass4        0.65 (>= published + 0.05)
+  PASS l4-coverage     40 (>= 40 tasks)
+  PASS l4-fully-scored 0 (= 0 unscored tasks)
+```
+
+**The run it replaces, side by side.** Same corpus, same 40 tasks, same four trials, same store shape,
+one variable moved — whether τ² could reach a model to grade the prose assertions.
+
+| | R92 first dispatch | R92 redispatch | what moved |
+| --- | --- | --- | --- |
+| tasks scored | **29 of 40** | **40 of 40** | 11 tasks returned from `INFRASTRUCTURE_ERROR` |
+| `pass^4` | *0.7586* | **0.65** | **−10.86pp** |
+| `unscored_tasks` | 0 (reported) / 11 (real) | **0** | the count crossed the boundary (§34.117) |
+| learn tasks read | 9 corrections, **29 unreadable** | **15 corrections, 0 unreadable** | +6 records from the same corpus |
+| store | 9 items (0.12 per learn task) | **15 items (0.20 per learn task)** | the same fix, on the other half |
+| pack | served 292, mean 1.2 items, 1,940 chars | served 162, mean 1.1 items, 1,741 chars | 40×4 = 160 episodes + 2 retried requests |
+| dropped for size | 1,996 | 1,119 | fewer requests, same refusal rate per request |
+| cost | $1.357 ($0.0085/conv) | **$0.844 ($0.0053/conv)** | fewer episodes paid for, and 26× below the competitor's $0.139 |
+| `published_bar_applies` | 1 | 1 | unchanged, and now knowable (§34.119) |
+
+**The number that was wrong, and the direction it was wrong in.** The audit written before this run
+predicted that the eleven tasks which left the denominator were not a random sample of the forty, because
+they are exactly the tasks carrying an `nl_assertion` — on retail, the tasks with the longest prose
+criteria and the most actions to get right (§34.118). The prediction was that the 29-task mean was
+**inflated**, not deflated. It was: **0.7586 → 0.65** is −10.86pp, and the eleven tasks score below the
+mean of the twenty-nine they were removed from. A quarter of the sample was worth more than the whole
+margin over the published baseline.
+
+That is the entire case for §34.117 and §34.118 in one line: a measurement that reports a subset as a
+whole does not merely lose precision, it moves in a direction — toward whatever the subset was selected
+for — and the selection here was "tasks the instrument could not grade", which on this corpus means
+"tasks with a written criterion".
+
+**What the fix bought on the other half, which was not the point.** The learn phase reads the same
+evaluator, so 29 of its 74 tasks were unreadable for the same reason. With the judge reachable:
+`15 correction(s) from 74 task(s), 0 unreadable, 15 asked, 15 candidate(s), 15 created, 15 item(s) in the
+store (15 active, 15 servable)`. The store grew from 9 to 15 — a **67% increase in supply at zero
+marginal model cost**, from a corpus the lane had already paid for. Supply is the column where this
+project has been behind by an order of magnitude (Appendix M), and the defect suppressing it was not a
+property of the corpus; it was a module constant three layers below the store.
+
+**The honest position against the published rows.** Stated so that no reader has to reconstruct it:
+
+| | microglia R92 | ALTK-Evolve `lossless` | comparison |
+| --- | --- | --- | --- |
+| `pass^4` | **0.65** (40 test tasks) | **0.675** (40 test tasks) | **2.54pp below** |
+| lift over the 0.575 baseline | **+7.5pp** | +10.04pp | 2.54pp below |
+| backbone | deepseek-flash (agent) | gpt-4.1 (agent), gpt-5.5 (simulator) | **different** |
+| judge for prose assertions | deepseek-flash (substituted) | gpt-4.1 | **different** |
+| cost per conversation | **$0.0053** | $0.139 | **26× cheaper** |
+| paired control in the same dispatch | **no** (this arm is memory-only) | no | neither |
+
+**So this is not a SOTA row, and the record says which row it is.** It is the first number in this
+project measured on the benchmark's own held-out half with a complete denominator, a named judge, a named
+release and a named commit — and it lands **between the published baseline and the published winner**,
+which is exactly where a 15-record store should land against a 292-rule playbook. The 26× cost advantage
+is real and is not yet worth anything on this axis: cheap conversations that solve fewer tasks are a
+budget story, not a capability one.
+
+**What the three gates passing means, precisely.** `l4-pass4` compares 0.65 against `0.575 + 0.05`, and
+that baseline is a **GPT-4.1** number (§34.119) — so the gate asserts "this DeepSeek arm cleared a
+GPT-4.1 baseline by five points", which is a weaker claim than it looks and is now printed as
+`bar_backbone_matches: 0` on every artefact written after this commit. `l4-coverage` and
+`l4-fully-scored` are the two that decide whether the number describes the run: both fire on the thing
+that was wrong this morning.
+
+**The next decision, now that it is priced.** The single variable that separates 0.65 from a claim is the
+**paired** one: the same 40 tasks, the same store, the same judge, memory off. That is R93 ($2.70, both
+arms), and it is the only cell in this record whose delta is comparable to a competitor's published
+baseline row rather than to its submission.
+
+**Delivery.** 4,688 tests, coverage **100 / 99.99 / 100 / 100**, `pnpm check` exit 0, CI green on
+`ff6aa43`, artefacts committed at `eval/results/arms/memory/poc-l4.json` in the run's upload. Pushed
+`1e62ab5` → `423a5f9` → `310aba3` → `a173566` → `ff6aa43` on microglia; `36f187d` → `7ffb05a` →
+`af47ab5` on microglia-docs.
+
+**Next, in order.** (1) R93 — the paired arm on the benchmark's halves, both arms in one dispatch, the
+store replayed rather than rebuilt. (2) R98 — the unrelated control, which is the only one of Appendix W's
+three mechanisms that can falsify the competition reading rather than repair it. (3) R97 — ephemerality,
+Anti-Persistence's 28.0pp contrast at one sentence. (4) R94 — the ceiling at a pinned store.

@@ -5123,20 +5123,23 @@ columns each entry sits in.
 | ALTK-Evolve baseline | gpt-4.1 | retail test, 40 | 4 | 57.5% | 78.1% | $0.084 | same |
 | RAFT-30B-A3B (fine-tuned) | 30B | retail | 4 | 61.4% | — | — | leaderboard row, 2026-10-12 snapshot |
 | ALTK-Evolve submission | gpt-4.1 | retail **base, 114** | 4 | **67.54%** | — | $0.1084 | PR #542; 74 of the 114 taught it |
-| **microglia R92 (29 of 40)** | deepseek-flash | retail test, 40 | 4 | *0.7586* | — | **$0.0085** | **not a row**: denominator 29, judge substituted (§34.118) |
-| microglia R92 redispatch | deepseek-flash | retail test, 40 | 4 | *in flight* | — | ~$0.0085 | will be the first row this lane can quote |
+| **microglia R92 redispatch** | deepseek-flash (judge: deepseek-flash) | retail **test, 40** | 4 | **65.0%** | — | **$0.0053** | **quotable**: 40/40 scored, judge and release named, three gates green (§174) |
+| microglia R92 first dispatch | deepseek-flash | retail test, 40 | 4 | *75.86%* | — | $0.0085 | **retracted**: denominator 29, 11 tasks ungradable (§34.117, §34.118) |
 
 **Three readings of this table, in increasing order of honesty.**
 
-1. *By the number*, 0.7586 is 8.3 points above the published 67.54 and 18.4 above the baseline. That
-   reading is wrong twice: the denominator is 29 rather than 40, and the backbone is DeepSeek rather than
-   GPT-4.1.
-2. *By the like-for-like cell*, the only row that will be comparable is the redispatch's — same 40 tasks,
-   same four trials, same release, still a different backbone. Even then the delta is "a DeepSeek arm
-   against a GPT-4.1 arm", which is exactly the confound §34.119 found in the artefact's own bar.
+1. *By the number*, the redispatch's **65.0%** sits **2.54pp below** the published 67.5 and **+7.5pp
+   above** the published baseline. The first dispatch's 75.86% is retracted: it was a mean over the 29
+   tasks the instrument could grade, and the eleven it could not were worth −10.86pp between them
+   (§174). The direction of that error is the point — a subset selected for "gradeable" is not random.
+2. *By the like-for-like cell*, the redispatch is the first row in this record on the same 40 tasks, the
+   same four trials and the same release as the competitor's, with a complete denominator and a named
+   judge. It is still a **different backbone** — DeepSeek against GPT-4.1, and a DeepSeek judge against
+   GPT-4.1 for the prose assertions — which is exactly the confound §34.119 found inside the artefact's
+   own bar. A reader who wants the backbone removed needs a GPT-4.1 key, not another dispatch of this arm.
 3. *By the axis this project exists for* — the paired lift a fixed model obtains from experience it
-   extracted itself, with an interval, a resolution and a store-side census — **the board is empty for
-   every entry, including the leader**, and this is where the ranking is decided.
+   extracted itself, with an interval, a resolution and a store-side census — **the board is still empty
+   for every entry, including the leader**, and this is where the ranking is decided.
 
 ### V.2 The axis that is empty for everyone
 
@@ -5163,11 +5166,11 @@ column.
 
 The two rows where this project is behind are both **supply**, and R92 changed one of them.
 
-| | before R92 | after the judge fix |
+| | before the judge fix | after it |
 | --- | --- | --- |
-| learn tasks read | 74 attempted, **9 corrections, 29 unreadable** | 74 attempted, *pending* |
-| store size | 9 items (0.12 per learn task) | *pending* |
-| items per request | 1.2 (mean 1,940 chars of a 2,400 budget) | *pending* |
+| learn tasks read | 74 attempted, **9 corrections, 29 unreadable** | 74 attempted, **15 corrections, 0 unreadable** |
+| store size | 9 items (0.12 per learn task) | **15 items (0.20 per learn task)** |
+| items per request | 1.2 (mean 1,940 chars of a 2,400 budget) | 1.1 (mean 1,741 chars), 1,119 dropped for size of 162 requests |
 
 The 29 unreadable were the learn half's share of the same defect: a task whose reward cannot be computed
 is a task whose correction cannot be learned. If the fix reads them, the store roughly triples from the
@@ -5185,10 +5188,11 @@ microglia's position, stated without rounding up:
 
 - it is **first (and only) on four of the eight evidence columns**, all of them instrument columns;
 - it is **behind on two supply columns** by roughly an order of magnitude, and this round found the
-  defect that was suppressing supply rather than a property of the corpus;
-- its first quotable `pass^4` is **one dispatch away** and will be measured on the benchmark's own halves
-  with a substituted judge — a row it can defend, not a row it can win on absolute score against a
-  GPT-4.1 arm;
+  defect that was suppressing supply rather than a property of the corpus — the same fix that completed
+  the denominator raised the store from 9 to 15 records at zero marginal cost;
+- its first quotable `pass^4` is **65.0% on the benchmark's own 40 held-out tasks**, 2.54pp below the
+  published 67.5 and 7.5pp above the published baseline, with a substituted judge and 26× lower cost per
+  conversation — a row it can defend, not a row it wins on absolute score against a GPT-4.1 arm;
 - the row that would be a SOTA claim — *paired lift, same backbone, above the lane's resolution* — is
   **still the next registration**, and the literature (§Appendix W) has just supplied three candidate
   mechanisms for why the pack has been inert or harmful on every arm so far.
