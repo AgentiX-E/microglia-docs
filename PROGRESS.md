@@ -17233,6 +17233,20 @@ marginal model cost**, from a corpus the lane had already paid for. Supply is th
 project has been behind by an order of magnitude (Appendix M), and the defect suppressing it was not a
 property of the corpus; it was a module constant three layers below the store.
 
+**What the completed denominator exposes about the store, which the count had been hiding.** Three
+numbers in the artefact, none of which any previous arm could read on a whole sample:
+
+| field | value | what it says |
+| --- | --- | --- |
+| `store.conditioned` / `unconditioned` | **0 / 15** | not one of the fifteen records carries a `when` condition. A pack of fifteen statements with no applicability clause is MemDev-Bench's defect (Appendix W) measured in this lane's own artefact: the agent is given a rule and no way to tell whether the rule is about this request |
+| `pack.meanIds` vs `pack.droppedForSize` | **1.09 items** served, **1,119** dropped, over **162** requests | the store holds fifteen items and each request can display about one. Six to seven candidates are refused for size per request, so the binding constraint is still capacity, not relevance — and R89's reading said the same thing at a 1,200-character budget |
+| `store.admission.confidence{Min,Max,Mean}` | **0.6165 / 0.6165 / 0.6165** | all fifteen records share one confidence, because `trust` and `support` are both 0.9 for every one of them. An admission rule that assigns the same number to every item cannot select among them, which is the arithmetic behind Appendix M's "0 of 7 admitted by recurrence" |
+
+The third row is the one that connects to the competitor's winning cell. ALTK's `sup3` keeps only rules
+extracted from ≥3 distinct training tasks, and it is the configuration that flips sign between retail and
+airline. This lane computes `supportTasks` and then admits everything at a constant, so the axis exists in
+the record and does not exist in the decision.
+
 **The honest position against the published rows.** Stated so that no reader has to reconstruct it:
 
 | | microglia R92 | ALTK-Evolve `lossless` | comparison |
