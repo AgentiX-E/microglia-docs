@@ -8598,3 +8598,72 @@ run; only the comparison disappears.
 
 > When two files score the same run, the statistic is a property of the run, not of either file. A
 > constant in one and a variable in the other is a disagreement waiting for a dispatch to expose it.
+
+## 34.121 The pack's ids were in the process and the artefact kept their count
+
+**The defect.** R92 served **1.09 items per request** over **162 requests** from a store of **fifteen**
+records, and refused **1,119 candidates for size**. Its artefact carries `pack.budget`, `capacity`,
+`requests`, `filled`, `empty`, `droppedForSize`, `meanIds` and `meanChars` — every one of them a count.
+Not one of them names a record. The facade has returned `pack.ids` since R45 and the driver pushed them
+into `packReadings`, an array that lives and dies inside the episode loop.
+
+So the sentence "the store serves one record per request" has been quoted for four rounds without anyone
+being able to say **which** record, and two very different stores produce it: one where a single record
+carries every request and fourteen are never rendered, and one where the fifteen rotate. The first is a
+store with one rule in it; the second is a store of fifteen. The mean is identical.
+
+**Why it mattered at R93 and not before.** Every earlier arm changed the store and read the score.
+R93 changes the *serving*, and a serving experiment whose outcome depends on *which* records reached
+which tasks cannot be explained by an aggregate. Concretely, the three questions the readback will ask —
+was the record served to a failed task ever the one about that task; did the record that carried the
+most requests also carry the most passes; how many of the fifteen ever reached a prompt — have no
+answer in any artefact this lane has ever written.
+
+**The fix.** `UseObservation` gains an optional `ids`, the driver records `pack.ids` at both push sites,
+and `servedCensus` reduces the run to `requests`, `identified`, `distinct`, `meanPerRequest`,
+`maxPerRequest` and a per-id count sorted by id. A request that recorded no ids stays `unidentified`
+rather than being read as an empty pack, because a run that did not instrument is not a run that served
+nothing. The planted-arm site records the store's ids only: a planted rule is not a store item and an
+invented id would join to nothing in `storeItems`.
+
+**The rule this adds.**
+
+> When a treatment is a *selection*, the artefact has to record the selection and not its size. A mean
+> over what was served cannot distinguish a store that is used from a store that is not.
+
+## 34.122 `supportTasks` is one by construction, and the competitor's winning cell needs three
+
+**The defect.** ALTK-Evolve's strongest configuration keeps only rules taught by **≥3 distinct training
+tasks** (`sup3`), and it is the configuration that flips sign between retail and airline. This store
+computes `supportTasks` (`countDistinctTasks(item.evidence)`), carries it into the artefact, and
+admission reads a `support` scalar. R92's fifteen items read:
+
+| field | value | what it can be |
+| --- | --- | --- |
+| `supportTasks` | **1**, fifteen times | the dedupe key is the **normalized statement** (`dedupeKeyOf`), and one correction produces one statement |
+| `evidence` | 1, fifteen times | one task, one correction, one item |
+| `trust` | 0.9, fifteen times | a constant, so `confidence` is **0.6165** for all fifteen |
+| `kind` | `exemplar`, fifteen times | the raw unit |
+
+Two failures of the same *shape* — the same tool sequence with different order ids — produce two
+statements that differ in every token that matters to the dedupe key and are therefore two items with
+support 1 each. The recurrence axis exists in the record, is computed at write time, is carried into
+every artefact, and **cannot be populated** by any correction this lane produces. R55.1's
+`packMode: prefix` with `minEvidence: 3` was blocked on exactly this ("no item in any store has support
+3"), and Appendix M's "0 of 7 admitted by recurrence" is the same fact counted from the other end.
+
+**Why the constant confidence follows.** `trust` and `support` are both 0.9 for every item because both
+are functions of (one observation, one trusted source). An admission rule that assigns the same number
+to every item cannot select among them, which is why every item in R92's store is `confidence-cleared`
+and none is ranked.
+
+**What the literature does instead, and it is not a threshold.** Agent Workflow Memory induces a
+workflow from **several** trajectories and abstracts the task-specific values out of it; ExpeL merges
+repeated insights with `UPVOTE`/`DOWNVOTE` operators over a pool; ALTK keeps the rules three tasks
+agreed on. All three *aggregate before storing*. This lane stores first and never aggregates, so the
+number its admission reads is a constant by construction rather than by measurement.
+
+**What this does not license.** Lowering `minEvidence` to 1, which would admit everything and turn the
+knob into decoration. The repair is a merge step over the corrections — two corrections whose action
+sequences agree are one rule with support 2 — and it is registered as an arm rather than applied as a
+default, because it changes what a published number measured.

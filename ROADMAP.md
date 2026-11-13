@@ -6739,3 +6739,47 @@ unpriced mechanism fits the noise of the refusal.
 own halves with a replayed store and a recorded judge. That is the first time a cell in this record can be
 compared to a published one without an asterisk about the sample — the asterisk about the backbone stays,
 and §34.119 is why it is printed rather than corrected.
+
+### The queue after R93's registration: supply first, and why the order was wrong (2026-11-13)
+
+**What changed since the list above was written.** Three things, and only one of them is a new
+experiment.
+
+1. **R93 is in flight**, with the store pinned to R92's fifteen learn failures so that the two legs
+   differ in the memory and in nothing else (`eval/pins/r92-retail.json`, `prereg/R93-the-paired-arm.md`).
+2. **The artefact can now name the record it served** (R93's instrument half). `servedCensus` carries
+   `requests`, `identified`, `distinct`, `meanPerRequest`, `maxPerRequest` and a per-id count, so a
+   readback can say which of fifteen records reached a prompt and which never did (§34.121).
+3. **`supportTasks` was shown to be one by construction** (§34.122): the dedupe key is the normalized
+   statement and one correction produces one statement, so the recurrence axis ALTK's `sup3` rests on
+   cannot be populated by any arm this lane can build today. R55.1 was blocked on it and Appendix M
+   counted it from the other end.
+
+**The order that changes.** R98 was P0 because it is the only falsification of the competition reading.
+It is now P1, and supply is P0, for a reason that is not about novelty: **R22 already ran R98's
+mechanism in miniature and the answer was 1.43pp *in favour of the shuffled pack*.** A control arm that
+re-measures a known null buys less than an arm that changes the population the store is built from, and
+the population is the one column where this project is behind by an order of magnitude — 15 records
+against a 292-rule playbook, 20% of the learn half covered.
+
+| pri | step | the single variable | why it is here | cost |
+|---|---|---|---|---|
+| **P0** | **R93** (in flight) | memory off, same store, same 40 tasks | the only cell on the board nobody has run, and the number every later arm is a delta against | $1.70 |
+| **P0** | **R99 — supply** | the population: `distillScope: all`, 15 → ~73 records | ExpeL's own ablation says an insights pool built from a narrow population scores no better than no memory (36.0 vs ReAct 28.0 on a wide one). This is the first arm that can move the score rather than explain it, and it is the cheapest in the queue | $0.70 |
+| **P1** | **R98 — the unrelated control** | the content of the served record, at matched length | still the only falsification available; demoted because R22 already ran it in miniature and ExpeL prices the penalty at 16.5pp where this lane measured −1.43pp | $1.40 |
+| **P1** | **the floor** | whether a record is served at all (`recallFloor: 0.15`/`0.20`) | R92's retention curve is already committed: 0.20 empties **32.7%** of packs, 0.30 empties **79.6%**. The cheapest applicability test in the lane, and it needs no prompt sentence | $0.70 |
+| **P1** | **R97 — ephemerality** | one sentence: the pack is a past experience | Anti-Persistence's 28.0pp, the largest single effect in the four 2026 papers | $1.40 |
+| **P2** | **merge by action shape** | `supportTasks`, and the store's size | ALTK `sup3` and ExpeL's `UPVOTE` are the only mechanisms in the literature that make recurrence real; this lane computes the count and cannot raise it | $0.70 + code |
+| **P2** | **R94 — the ceiling** | 700 / 2,400 at a pinned store | the pack experiment R91 made possible, now meaningful only after the store stops being the constraint | $1.40 |
+| **P2** | **abstraction** | values replaced by typed slots at write | AWM's `{product-name}`; this lane keeps **154 of 156** values verbatim, so the mechanism has never been applied | $0.70 + code |
+| **P3** | R95 — the 114 base | the sample | comparable to the competitor's *submission*, 65% in-sample | $2.40 |
+
+**Why supply is not a dose experiment, which is the objection it will meet.** R16 moved items per
+question at a fixed store and found the curve flat-or-negative from the first item. R99 moves the store
+at a fixed dose: one item per request, 2,400-character budget, unchanged. If supply were the constraint,
+the *ranked* item changes; if the unit is the constraint, nothing moves and the line closes the way R15
+closed extraction.
+
+**What is still deliberately absent.** Tuning a weight, a ceiling or a threshold. The floor arm is not
+tuning: it changes whether a record is served at all, which is a different treatment from how strongly
+one is ranked, and its retention curve was committed before the arm existed.

@@ -5151,8 +5151,8 @@ columns each entry sits in.
 | minimum detectable effect beside every estimate | not published | 19.41pp at n=50; 1.99–5.13pp on BIRD | **us** |
 | items per learning task | **~5.1** (292 from 57 train tasks) | 0.50–0.62 (R54/R55.0/R56 stores) | **them, 8–10×** |
 | items admitted by recurrence | 31 of 292 at support ≥ 3 | 0 of 7 on τ², 0 of 1,296 on BIRD | **them** |
-| cost per conversation | $0.084 → $0.139 (**+65%**) | **$0.0085** at R92's 160 conversations | **us, 16×** |
-| published `pass^4` on the benchmark's held-out half | 67.5% (gpt-4.1) | *pending redispatch* | **them, for now** |
+| cost per conversation | $0.084 → $0.139 (**+65%**) | **$0.0053** at R92's 160 conversations | **us, 26×** |
+| published `pass^4` on the benchmark's held-out half | 67.5% (gpt-4.1) | **65.0%** (deepseek-flash), complete denominator | **them, by 2.54pp** |
 
 **The cost row is the one nobody else reports and it is not a rounding difference.** ALTK's own write-up
 says the guidelines raise the bill 65% and buys it back in 0.3–0.4 fewer assistant turns; prompt caching
@@ -5272,3 +5272,98 @@ lift, and it is resolvable because 28pp is enormous, not because its instrument 
 problem has never been the instrument — it is that its effects have been under 5pp on a sample that
 resolves 20. Nothing in Appendix W fixes that; what it does is name three mechanisms whose effects, if
 real here, would be **large enough to resolve on 40 tasks**. That is the whole reason to run them.
+
+## Appendix X — The two mechanisms the record has never had: aggregation and abstraction (2026-11-13)
+
+**The question this appendix answers.** Appendix W named three lifecycle mechanisms from four 2026
+papers. R92's own artefact adds a fact those papers do not explain: this store holds **fifteen records,
+each with `supportTasks: 1`, each `confidence-cleared` at the same **0.6165**, none carrying a `when`**
+(§34.122). Two older, canonical systems solve exactly that problem, and neither of them is a prompt
+sentence.
+
+### X.1 What ExpeL measured, and the one number this lane can use directly
+
+ExpeL (Zhao et al., AAAI 2024, arXiv 2308.10144) gathers trajectories, extracts natural-language
+*insights*, and merges repeated insights with `ADD`/`EDIT`/`UPVOTE`/`DOWNVOTE` operators over a pool.
+Its ablations are the part that transfers:
+
+| cell | HotpotQA (SR %) | ALFWorld (SR %) |
+| --- | --- | --- |
+| ReAct baseline | 28.0 ± 1.4 | 40.0 ± 0.3 |
+| retrieval only (no insights) | 31.0 | 55.0 |
+| insights only (no retrieval) | 36.0 | 50.0 |
+| both (ExpeL) | **39.0 ± 1.7** | **59.0 ± 0.3** |
+| hand-crafted insights instead of learned | 32.0 ± 1.1 | — |
+| insights + reflections added | 29.0 ± 0.4 | — |
+
+| cell (ALFWorld, same paper) | SR % |
+| --- | --- |
+| retrieval by **task similarity** | **59.0 ± 0.3** |
+| retrieval by reasoning similarity | 48.5 ± 2.1 |
+| retrieval by **random sampling** | **42.5 ± 0.8** |
+
+**The number this lane can use.** Random retrieval costs **16.5 points** against task-similarity
+retrieval, in a system whose insights are held fixed. That is the cleanest published estimate of the
+*penalty for serving the wrong memory*, and it is the size R98 is trying to measure on τ². It also
+calibrates this lane's prior: R22's shuffled control came out **1.43pp above** the real pack, which is
+not a 16.5-point penalty and is therefore evidence that this store's problem is not the *ranking* — the
+ranking already returns something about as good as anything else in the store.
+
+**The second number.** Insights and retrieval each carry about half the effect (36.0 and 31.0 against
+39.0 for both), so neither component is decorative. This lane's retrieval has never been ablated
+against a no-retrieval arm; it has only been ablated against *no store*. Those are different arms.
+
+### X.2 What Agent Workflow Memory measured, and the abstraction this store provably lacks
+
+AWM (Wang et al., ICML 2025, arXiv 2409.07429) induces *sub-task* routines from trajectories, with the
+example-specific values abstracted out — "buy **dry cat food**" becomes "search for a **{product}**" —
+and serves them as reusable workflows.
+
+| cell | baseline | AWM | delta |
+| --- | --- | --- | --- |
+| WebArena success (gpt-4) | 23.5 | **35.5** | +12.0 abs, +51.1% rel |
+| Mind2Web cross-task step SR | 36.2 | **45.1** | +8.9 abs, +24.6% rel |
+| online AWM, widening train-test gap | — | — | +8.9 → **+14.0** abs |
+
+**Against this lane's store, measured on its own artefact.** `faithfulness` for R92: **156 entities,
+154 kept, 2 redacted**. Every order id, product id and gift-card id in a learned task is stored and
+served *verbatim*, and the served record is a whole task ("Q: You want to modify your laptop order to
+your NYC address … A: modify_pending_order_address(order_id='#W237', …)"), not a routine with a slot in
+it. So the one transformation AWM's ablation structure depends on has **never been applied here** — and
+the two things this lane has varied instead, raw versus distilled (R22, −0.86pp) and sentence versus
+pair (R15, +0.02pp on transfer), are both *form*, not abstraction.
+
+| mechanism | ExpeL | AWM | this lane at R92 |
+| --- | --- | --- | --- |
+| aggregate before storing | `UPVOTE`/`DOWNVOTE` merges into a pool | workflow induced from several trajectories | **no**: one correction, one item, `supportTasks: 1` fifteen times |
+| abstract the instance | insights are rules, not traces | `{product-name}` slots | **no**: 154 of 156 values kept |
+| select at serve time | task-similarity retrieval (59.0 vs 42.5 random) | workflow matched to the task | BM25, no floor, `minCoverage: 0` |
+| prune what fails | `DOWNVOTE` retires an insight | — | **no**: `retired: 0`, every item `confidence-cleared` |
+
+**The counter-argument, stated because it is in the literature.** PRAXIS argues the opposite of AWM:
+state-indexed *local procedures* beat abstracted workflows precisely because abstraction loses the
+click-by-click specifics web environments demand. τ² retail is closer to PRAXIS's world than to
+AWM's — order ids are the task — so abstraction here is a hypothesis with a specific failure mode
+(a model that cannot resolve a placeholder to the right id), not a settled improvement.
+
+### X.3 What this changes about the queue, in cost order
+
+| pri | arm | the single variable | the literature's anchor | cost |
+| --- | --- | --- | --- | --- |
+| **P0** | **R93 (in flight)** | memory off, same store, same 40 tasks | — (no competitor publishes this cell) | $1.70 |
+| **P0** | **supply** — `distillScope: all`, 15 → 74 records | the population the store is built from | ExpeL's insight pool is built from every task, not from failures alone | ~$0.70 |
+| **P1** | **R98** — unrelated control | the *content* of the served record at matched length | ExpeL: random retrieval −16.5pp | ~$1.40 |
+| **P1** | **floor** — `recallFloor: 0.15` or `0.20` | whether a record is served at all | MemTrapBench's applicability, in retrieval rather than in prose | ~$0.70 |
+| **P2** | **abstraction** — values replaced by typed slots at write | the unit of the memory | AWM's `{product-name}` | ~$0.70 + code |
+| **P2** | **merge** — two corrections of one action shape are one rule | `supportTasks` | ALTK `sup3`, ExpeL `UPVOTE` | ~$0.70 + code |
+
+**Why supply is priced above R98 and the floor.** R92's store is fifteen records serving 162 requests at
+1.09 items each, with a median question coverage of **0.214** — the served statement mentions about a
+fifth of the request. A store of fifteen rules cannot cover a 40-task held-out half in which 14 tasks
+fail at least one trial; the competitor's 292 rules and the +10pp they buy are the same mechanism at a
+different supply. That hypothesis costs $0.70 to test and it is the only one on the list that can move
+the *score* rather than explain it.
+
+**What none of these six rows is.** A tuning pass. Every one changes the population, the unit, or the
+selection rule — none moves a threshold on a store that serves one record per request, which the
+roadmap has refused since R89 and refuses still.

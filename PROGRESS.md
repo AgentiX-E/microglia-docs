@@ -17286,3 +17286,51 @@ baseline row rather than to its submission.
 store replayed rather than rebuilt. (2) R98 — the unrelated control, which is the only one of Appendix W's
 three mechanisms that can falsify the competition reading rather than repair it. (3) R97 — ephemerality,
 Anti-Persistence's 28.0pp contrast at one sentence. (4) R94 — the ceiling at a pinned store.
+
+### 175 — The pair is registered, the store is pinned, and the artefact can name what it served
+
+**Where this started.** R92 left one number: `pass^4 0.65` on the benchmark's own 40 held-out tasks with
+a complete denominator, a named judge, a named release and a named commit. Every row it can be compared
+with — the competitor's 67.5, the published baseline 0.575 — is either a submission or a baseline, and
+neither is an **arm**. No entry in this domain, ours or theirs, has measured the same forty tasks with and
+without the store in one dispatch.
+
+**What was registered.** `prereg/R93-the-paired-arm.md`, with `storePin: eval/pins/r92-retail.json`. The
+pin is the fifteen learn tasks R92 failed on, read from its own `yieldCensus` rows. It does two things and
+changes no treatment: the two legs differ in the memory and in nothing else, and the memory leg becomes a
+second draw at a fixed store — which is the trial-level noise this lane has been quoting as signal for
+four rounds, priced at zero extra treatment cost. It also removes 74 learn episodes, more than half the
+arm's bill.
+
+The registration states what n = 40 cannot certify **before** the run: at d = 0.2 the lane's own
+`detectableDelta` gives **19.8pp**, at d = 0.3 **17.1pp**. This arm can certify a harm and a large gain
+and it cannot certify a five-point lift; a reader who wants five-point resolution needs R95's 114 tasks,
+where 65% of them taught the store.
+
+**What was built beside it, because the pair cannot be explained without it.**
+
+| change | why | test |
+| --- | --- | --- |
+| `UseObservation.ids` + `servedCensus` | R92 served 1.09 items per request from fifteen records over 162 requests and the artefact could name none of them (§34.121). A record rendered on every request and a record never rendered are different findings about one store | 6 cases: unidentified vs empty, duplicate renders, sorted by id, mean over identified only |
+| `actionShapeOf` + `mergeCensusOf` | `supportTasks` is 1 by construction, so the recurrence axis ALTK's `sup3` rests on cannot be populated (§34.122). The census prices the merge — how many routines the learn half holds, and the support distribution — before the arm is bought | 7 cases: routine vs instance, rubric-only keyed by task, ties sorted both ways, bounded with `omitted` |
+
+Both are censuses rather than treatments: neither changes what a store holds, so neither needs a
+registration to be quoted.
+
+**What the census already says about the store R92 built.** Fifteen items, `supportTasks` **1** fifteen
+times, `evidence` 1, `trust` 0.9, `confidence` 0.6165 for all fifteen, `conditioned` **0**, `kind:
+exemplar` fifteen times, and `faithfulness` **154 of 156** entity values kept verbatim. That is a store of
+fifteen task stories with no condition, no support and a constant admission score — and the three
+competitor mechanisms that would change it (ALTK's `sup3`, AWM's abstracted routine, ExpeL's
+`UPVOTE`-merged insight pool) all require aggregating or abstracting *before* the store, which this lane
+has never done (Appendix X).
+
+**What was registered next.** `prereg/R99-the-supply-arm.md`: `distillScope: all`, the same pin, the same
+pack, the same dose — 15 records against ~73, with the 59 extra taught by the tasks the agent *passed*.
+It is the cheapest arm in the queue ($0.70) and the only one on the list that can move the score rather
+than explain it. The order changed: R98 was P0 and is now P1, because R22 already ran its mechanism in
+miniature and the answer was 1.43pp *in favour of the shuffled pack*.
+
+**Delivery.** 4,701 tests, `pnpm check` exit 0, coverage **100 / 100 / 100 / 100** on both new modules;
+microglia `7d21237` (R93's registration and pin) → `460fbdb` (served census) → `ea5148f` (merge census,
+R99's registration), each with a green `ci`.
