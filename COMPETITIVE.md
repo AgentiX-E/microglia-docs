@@ -5103,3 +5103,168 @@ census printed beside the run's number in the step summary. The rule this round 
 ("every input a run reconstructs must be recorded" and "every recorded input must be pinnable") is the third:
 **a number quoted against a published figure must name that figure's release in the same sentence**, because
 a release is not a version of the software — it is part of the definition of the measurement.
+
+## Appendix V — The board, as of 2026-11-13, and the axis this project can actually win (2026-11-13)
+
+**What changed.** R92 ran τ²-bench retail on **v1.0.1**, on the benchmark's own **74 learn / 40 held-out**
+halves, and produced the first `pass^4` in this record measured on the same task set the competitor
+reported. It read **0.7586** — and it read it over **29 of 40** tasks, because the eleven that carry an
+`nl_assertion` could not be graded (§34.118). That number is therefore **not a leaderboard row**, and the
+redispatch that follows the fix is what will produce one. This appendix is written at that moment: the
+mechanism is measured, the number is one dispatch away, and the ranking has to say which of the two
+columns each entry sits in.
+
+### V.1 The board, on the benchmark's own metric
+
+| entry | backbone | task set | trials | `pass^4` | mean acc | cost / conversation | verifiable? |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **ALTK-Evolve `lossless`** (292 rules) | gpt-4.1 | retail **test, 40** | 4 | **67.5%** | 82.5% (**+4.4**) | **$0.139** (from $0.084) | published table; one split; no paired control |
+| ALTK-Evolve `sup3` (31 rules) | gpt-4.1 | retail **test, 40** | 4 | 60.0% | 78.8% (+0.7) | — | same |
+| ALTK-Evolve baseline | gpt-4.1 | retail test, 40 | 4 | 57.5% | 78.1% | $0.084 | same |
+| RAFT-30B-A3B (fine-tuned) | 30B | retail | 4 | 61.4% | — | — | leaderboard row, 2026-10-12 snapshot |
+| ALTK-Evolve submission | gpt-4.1 | retail **base, 114** | 4 | **67.54%** | — | $0.1084 | PR #542; 74 of the 114 taught it |
+| **microglia R92 (29 of 40)** | deepseek-flash | retail test, 40 | 4 | *0.7586* | — | **$0.0085** | **not a row**: denominator 29, judge substituted (§34.118) |
+| microglia R92 redispatch | deepseek-flash | retail test, 40 | 4 | *in flight* | — | ~$0.0085 | will be the first row this lane can quote |
+
+**Three readings of this table, in increasing order of honesty.**
+
+1. *By the number*, 0.7586 is 8.3 points above the published 67.54 and 18.4 above the baseline. That
+   reading is wrong twice: the denominator is 29 rather than 40, and the backbone is DeepSeek rather than
+   GPT-4.1.
+2. *By the like-for-like cell*, the only row that will be comparable is the redispatch's — same 40 tasks,
+   same four trials, same release, still a different backbone. Even then the delta is "a DeepSeek arm
+   against a GPT-4.1 arm", which is exactly the confound §34.119 found in the artefact's own bar.
+3. *By the axis this project exists for* — the paired lift a fixed model obtains from experience it
+   extracted itself, with an interval, a resolution and a store-side census — **the board is empty for
+   every entry, including the leader**, and this is where the ranking is decided.
+
+### V.2 The axis that is empty for everyone
+
+| column | ALTK-Evolve | microglia | who leads |
+| --- | --- | --- | --- |
+| same-model, same-prompt paired control | **none**: baseline is a row, not an arm | `none` and `full` arms from the same folds; paired per-episode ledger | **us** |
+| pre-registration with refutation before dispatch | none | 82 registrations, 5 voids taken on arithmetic | **us** |
+| delivery instrumented (store / recall / pack / drops) | no row reports any | `store`, `recall`, `pack.{droppedForSize,emptiedBySize}`, `storeItems` | **us** |
+| minimum detectable effect beside every estimate | not published | 19.41pp at n=50; 1.99–5.13pp on BIRD | **us** |
+| items per learning task | **~5.1** (292 from 57 train tasks) | 0.50–0.62 (R54/R55.0/R56 stores) | **them, 8–10×** |
+| items admitted by recurrence | 31 of 292 at support ≥ 3 | 0 of 7 on τ², 0 of 1,296 on BIRD | **them** |
+| cost per conversation | $0.084 → $0.139 (**+65%**) | **$0.0085** at R92's 160 conversations | **us, 16×** |
+| published `pass^4` on the benchmark's held-out half | 67.5% (gpt-4.1) | *pending redispatch* | **them, for now** |
+
+**The cost row is the one nobody else reports and it is not a rounding difference.** ALTK's own write-up
+says the guidelines raise the bill 65% and buys it back in 0.3–0.4 fewer assistant turns; prompt caching
+"reclaims most of the added cost" is stated as a hope, not a measurement. R92's arm paid **$0.0085 per
+conversation** on 160 conversations with a 78.3% cache-hit rate, and the number is in the artefact
+(`tau2.cost`) rather than in a blog. A flywheel whose memory costs 16× less per conversation can afford
+16× more experience for the same budget — which is the only sense in which the cost column is a mechanism
+column.
+
+### V.3 The supply gap, stated with this round's numbers
+
+The two rows where this project is behind are both **supply**, and R92 changed one of them.
+
+| | before R92 | after the judge fix |
+| --- | --- | --- |
+| learn tasks read | 74 attempted, **9 corrections, 29 unreadable** | 74 attempted, *pending* |
+| store size | 9 items (0.12 per learn task) | *pending* |
+| items per request | 1.2 (mean 1,940 chars of a 2,400 budget) | *pending* |
+
+The 29 unreadable were the learn half's share of the same defect: a task whose reward cannot be computed
+is a task whose correction cannot be learned. If the fix reads them, the store roughly triples from the
+same corpus at no extra model cost — which is the cheapest supply this lane has ever had access to, and it
+was invisible because the count was reported as a property of the run rather than of the judge.
+
+### V.4 Where this leaves the SOTA claim
+
+**The holder of the published `pass^4` row is ALTK-Evolve at 67.54%** (base split) / **67.5%** (test
+split), on GPT-4.1, with 292 guidelines and no paired control. **The holder of the flywheel axis is
+nobody**: no entry in this table publishes a paired lift with an interval, a resolution and a delivery
+census on a workload that recurs.
+
+microglia's position, stated without rounding up:
+
+- it is **first (and only) on four of the eight evidence columns**, all of them instrument columns;
+- it is **behind on two supply columns** by roughly an order of magnitude, and this round found the
+  defect that was suppressing supply rather than a property of the corpus;
+- its first quotable `pass^4` is **one dispatch away** and will be measured on the benchmark's own halves
+  with a substituted judge — a row it can defend, not a row it can win on absolute score against a
+  GPT-4.1 arm;
+- the row that would be a SOTA claim — *paired lift, same backbone, above the lane's resolution* — is
+  **still the next registration**, and the literature (§Appendix W) has just supplied three candidate
+  mechanisms for why the pack has been inert or harmful on every arm so far.
+
+## Appendix W — Why the memory hurts: four 2026 results, read against this lane's own nulls (2026-11-13)
+
+**The question this appendix answers.** This project has measured the negative effect more carefully than
+it has explained it. R16 found a dose curve with no point above `none`; R22 found the raw event no better
+than the distilled note; R23 found the pack **−4.86pp** with a hint present and **+1.14pp** without one,
+with an interaction of **−6.00pp**. Those are measurements of *that* it hurts and *where* the damage sits
+(the competition with the hint), not of *why*. Four papers posted in the last four weeks propose three
+mechanisms, and one of them comes with a 28.0-point controlled contrast that this lane can reproduce with
+a single variable.
+
+### W.1 What the literature actually measured
+
+| source | the mechanism it names | the number | the control it has |
+| --- | --- | --- | --- |
+| **More Memory, Worse Agents** (Wang, Panaganti, Zhou; arXiv 2610.27406, 2026-10-19) | **error reproduction**: a wrong rule shapes a trajectory, the trajectory becomes the material for the next rule, and the error is re-derived. Deleting the rule does not undo the trajectories it made | 9 settings averaged: **Anti-Persistence 59.9%** vs raw logs 53.5%, stored lessons **49.0%**, logs+lessons 49.3%, Reflexion 52.9%. Direct discard-vs-keep contrast in one setting: **54.7% vs 26.7% = 28.0pp** | yes — the only difference between the two cells is whether the guidance is stored or thrown away |
+| **MemDev-Bench** (arXiv 2610.27524) | **applicability is not re-assessed**: an agent reuses a memory without asking whether it still applies, and *unrelated* history makes those failures more frequent | 555 base + 4,869 historical tasks from the same repositories; memory helps localisation and also breaks tasks the agent could solve; raw trajectories cut more steps than compressed memory because summaries drop the process detail | partial: relatedness of history is the manipulated variable |
+| **MemTrapBench** (arXiv, 2026-08-20) | **memory-induced cognitive traps**: reasoning fixation and belief distortion. A *correct* memory anchors the model to a frame that no longer fits | Gemini-3-Flash **85.16% → 71.17%** with EverMemOS; Qwen3 **81.83% → 70.13%** with LightMem; **every** framework below no-memory. One instruction ("check whether this memory is a trap for the current task") recovers **+14.9pp** of LightMem's loss | yes — no-memory is a row, and a length-matched filler control separates semantics from context length |
+| **MemSyco-Bench** (arXiv 2607) | the failure is **after retrieval**, not before it | **61–62%** of errors happen after the relevant memory was already retrieved (Mem0, A-Mem, LightMem) | instrumented retrieval trace |
+
+**The one-sentence summary of all four.** Retrieval quality is not the binding constraint; whether the
+retrieved thing is *still true here*, and whether it is allowed to *persist* after it has been used, are.
+
+### W.2 This lane's own nulls, re-read through those mechanisms
+
+| this record's finding | the mechanism it is consistent with | what was never varied |
+| --- | --- | --- |
+| R16: dose curve flat-or-negative from the first item (+0.00 at 0.29 items, −3.14 at 1.00, −4.00 at 2.97) | MemDev's unrelated history / MemTrap's fixation: one irrelevant rule is enough | the *relevance* of the item, not only its count |
+| R22: the raw event is **not** better than the distilled note (−0.86pp, p = 0.76), and sits 1.43pp **below its own shuffled control** | error reproduction operates through trajectories, so removing the abstraction does not remove the influence — Anti-Persistence's own admitted residual | whether the guidance is **discarded after use** |
+| R23/R24: the pack is −4.86pp with the hint, +1.14pp without it, interaction −6.00pp | competition for the same decision, not memory quality | whether the pack is **admitted per question** rather than per store |
+| R12/R13: 12.2% of corrections reproduce with their own rules; 50% of questions that need no help are broken by it | MemDev's "reused without re-assessing applicability", measured on this corpus | a **runtime applicability check**, which no arm here has ever carried |
+| R17/R20: the permissive sentence and the note are substitutes (interaction −2.57pp) | MemTrap's finding that the fix is conditioning rather than storage | — this one *is* measured, and it is why `hardened` exists |
+
+**The uncomfortable reading.** Four mechanisms from four papers, and this lane's own record already
+contains a measurement consistent with each of them — but every one of those measurements varied
+*content*, and none varied *lifecycle*. R22 changed the object (raw vs note), R16 changed the dose, R23
+changed the competition. **No arm in this record has ever told the model that the pack is a past
+experience rather than a fact, or that it expires when the episode ends.**
+
+### W.3 The three experiments the literature makes cheap
+
+Each is one variable on the existing lane, one dispatch, and one hypothesis with a number attached.
+
+| id | the single variable | the literature's prediction | this lane's prior | cost |
+| --- | --- | --- | --- | --- |
+| **R96 — applicability** | the pack's opening sentence, to the `hardened` calibration **plus** an explicit "if this does not fit the request in front of you, say so and ignore it" | MemTrapBench's +14.9pp from one sentence; MemDev's diagnosis is exactly this omission | R17 found the permissive clause is a *substitute* for the note, not an addition; the interaction was −2.57pp, so the prediction here is **neutral-to-negative** | ~$1.40 |
+| **R97 — ephemerality** | the same pack, with the block declared as a **hint for this episode** and its items marked as not to be relied on beyond it | Anti-Persistence's 28.0pp discard-vs-keep contrast, which is the largest single effect in the four papers | R85's raw unit already stores trajectories; nothing in the prompt says the pack is not a fact | ~$1.40 |
+| **R98 — unrelated control** | the pack filled with items from **unrelated** learn tasks at the same length and count | MemDev: unrelated history increases the break rate; MemTrap's filler control says the damage is semantic | R22's shuffled control was **better** than the real pack by 1.43pp, which is this prediction in miniature | ~$1.40 |
+
+**Why R98 before R96.** R22's shuffled control already points at R98's answer, and a placebo arm is the
+only one of the three that can *falsify* the competition mechanism: if unrelated items cost the same as
+relevant ones, the pack's problem is that the model spends attention on it at all, and no applicability
+sentence can repair that. R96 and R97 are both repairs; R98 is the test of whether a repair is the right
+shape.
+
+### W.4 What would count as a SOTA claim on this axis, and why none of the four papers has one
+
+A claim in this domain would read: *on a workload that recurs, a fixed model, from experience it extracted
+itself, gains X points of task success, with a paired control, an interval, a pre-registered refutation,
+and a delivery census that says the treatment arrived.*
+
+| requirement | ALTK-Evolve | Anti-Persistence | MemTrapBench | microglia |
+| --- | --- | --- | --- | --- |
+| fixed model, self-extracted | yes | yes | n/a (benchmark) | yes |
+| paired control | **no** | yes (discard vs keep) | yes (no-memory row) | yes |
+| interval on the lift | no | ±sd over 3 seeds | per-cell rates | yes (exact McNemar / bootstrap) |
+| pre-registered refutation | no | no | no | **yes, 82 registrations** |
+| delivery census | no | no | no | **yes** |
+| recurring workload | τ² (4 trials) | ALFWorld/WebShop/ScienceWorld (10 rounds) | synthetic dialogs | τ² (4 trials) |
+| lift above its own resolution | **no** (their 40-task cell resolves ~12pp against a 3.33pp effect) | **yes** (28pp against 3 seeds) | yes (10pp+) | **not yet**: 20.27pp resolution at n=57 |
+
+**The two rows that matter.** Anti-Persistence is the only system in the field with a *resolvable* paired
+lift, and it is resolvable because 28pp is enormous, not because its instrument is better. This lane's
+problem has never been the instrument — it is that its effects have been under 5pp on a sample that
+resolves 20. Nothing in Appendix W fixes that; what it does is name three mechanisms whose effects, if
+real here, would be **large enough to resolve on 40 tasks**. That is the whole reason to run them.

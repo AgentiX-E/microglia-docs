@@ -8453,3 +8453,148 @@ R88→R89, and for a second reason: same release, same split, same reward, twelv
 **Delivery.** 4,668 tests, coverage **100 / 99.99 / 100 / 100**, `pnpm check` exit 0, 81/81 registrations
 valid, `check-workflows.py` 15/15 self-tests, `r91_readback.py` 12/12 and `r92_readback.py` 15/15, coupling
 ledger 203 modules / 54,653 lines. Two commits, `1b05c9f` and `66671d7`; R92 re-dispatched on the second.
+
+## 34.117 A gate certified a denominator it had not been told, and the quarter was in the same file
+
+**The defect.** R92 published `pass^4 0.7586`, `tasks: 29`, `unscored_tasks: 0`, and a green
+`l4-fully-scored`. Its own `tau2` block, three keys away, said `unscored: 11`. Both numbers were in the
+artefact; the gate read the one that had never been computed from the run.
+
+`l4-fully-scored` asks whether every task the arm claims to have scored was scored, and it reads
+`measured.unscored.length`. On the results-file path that list comes from `toPassAtK`, which drops a task
+whose trial carries no verdict and returns its id. On the **driver** path — the path every real dispatch
+takes — `measureFromDriver` returned a literal:
+
+```ts
+return { tasks, unscored: [], ... };
+```
+
+The driver had the count the whole time: `scoredArm()` returns `unscored: scored.unscored.length`, and
+`armRecordFromDriver` carried it into `tau2.unscored`, where it was printed in the readback line and read
+by nobody. So the artefact simultaneously asserted "11 tasks left the grid" and "no task left the grid",
+and the gate that exists to refuse exactly that certified the second claim.
+
+**Why the count was never wired.** The driver's export contract grew one function at a time —
+`run()`, then `instrument()`, then `trials()`, then `pairedFacades()`, then `notedFacades()` — and each
+addition was made because a *reader* needed it. Nothing needed the per-task list until a gate did, and the
+gate was written against the results-file shape, where the list exists for free. The driver path was
+tested with fixtures that had no unscored tasks, so the branch that returned `[]` was exercised only by
+the case where `[]` is the right answer.
+
+**The measurement it corrupted.** `0.7586` is a mean over 29 tasks. The eleven that left are not a random
+sample of the forty: they are exactly the tasks whose `reward_basis` names `NL_ASSERTION` (§34.118), which
+on retail are the tasks with the longest prose criteria and the most actions to get right. A mean over the
+twenty-nine easiest-verdict tasks, compared against a published number measured over forty, is the defect
+this lane has spent nine rounds auditing — with the quarter sitting in its own output file.
+
+**The fix, and why it has three channels.** `unscoredOf()` reads `unscoredTasks()` (ids, authoritative),
+then `instrument().unscored` (count, turned into `unidentified/N` placeholders that cannot be mistaken for
+a task), then reports `unreported`. The third value exists because `0` and "never asked" are different
+facts and the artefact now names which one it holds in `unscored_reported`. A driver written before the
+export has no ids; a driver that answers nothing is not a clean run.
+
+**The rule this adds.**
+
+> A gate may only read a quantity that was computed for the gate's own question. A default that stands in
+> for a missing measurement is a green square with a footnote nobody reads.
+
+**What this costs and what it buys.** The first dispatch after the fix will be red: `l4-fully-scored` now
+fires on the same run that used to pass it. That is the honest reading, and it is why the fix ships before
+the re-dispatch rather than after it.
+
+## 34.118 The judge could not be called, and the failure was recorded as eleven task failures
+
+**The defect.** Eleven of forty held-out retail tasks produced no verdict, four trials each, forty-four
+`INFRASTRUCTURE_ERROR` episodes in one run. The artefact recorded the count and nothing else, so the
+question "why those eleven" had no answer inside the run.
+
+The corpus did. Every failed task carries **one or two `nl_assertions`**; the twenty-nine that scored
+carry **zero**. The correspondence is exact — retail at v1.0.1 has forty tasks with an assertion and this
+split holds eleven of them.
+
+`nl_assertions` are graded by a model, and the model is a module constant:
+
+```python
+# src/tau2/config.py at v1.0.1
+DEFAULT_LLM_NL_ASSERTIONS = "gpt-4.1-2025-04-14"
+```
+
+This organisation holds a DeepSeek key and no OpenAI key. The evaluator raised, `run_with_retry`
+(`tau2/runner/progress.py`, `max_retries = 3`) retried three times, and the fourth attempt returned a
+placeholder `SimulationRun` with `termination_reason = INFRASTRUCTURE_ERROR`, `messages = []` and no
+`reward_info`. `toPassAtK` then did the correct thing — a task with no verdict leaves the denominator —
+and the correctness of that step is what hid the cause: the run reported a smaller sample rather than a
+broken instrument.
+
+**The second defect underneath it.** τ² computes the assertion reward as
+`all(check.met for check in checks)`, and `all([])` is `True`. A judge that returns `{"results": []}` —
+a plausible reply from a model asked for JSON in a shape nobody validated — scores **1.0** for a task
+whose prose conditions were never examined. Redirecting the judge to a different provider makes that
+outcome *more* likely, not less. A repair that trades eleven missing tasks for eleven free points would
+be the same defect with a better headline, so the redirection ships with a wrapper that compares the
+answer to the question: a count mismatch, a reworded assertion or a non-boolean verdict raises, and the
+task leaves the denominator loudly.
+
+**What the redirection is, stated as what it is not.** `deepseek-flash` grading an assertion is not
+`gpt-4.1-2025-04-14` grading it. The two instruments can disagree on borderline prose, and a reader
+ranking this arm against a published row is entitled to know which one produced the number. The name is
+therefore printed, carried into `benchmark.judge` beside the release, and overridable by
+`TAU_JUDGE_MODEL` for a dispatch that holds the other key — that is the path that makes the cell fully
+comparable rather than repairable. It is not taken here because no such key exists.
+
+**What it cost to find.** One dispatch ($1.36) that measured 29 of 40 tasks, one `ENOENT` on a file from
+a release the lane had not pinned (§173.97), and a corpus comparison that took four minutes and needed no
+model calls at all. The corpus comparison is the part to remember: the answer was in `tasks.json` before
+the run was paid for, and nothing in the artefact was asking the corpus.
+
+**The rule this adds.**
+
+> An external dependency that is unreachable is a different failure from a model that cannot do the task,
+> and the artefact has to be able to tell them apart. When it cannot, the first thing to build is the
+> channel that carries the reason, not the retry.
+
+## 34.119 The bar had a backbone, and every delta in the record was across two of them
+
+**The defect.** The lane's only published reference is ALTK-Evolve's `pass^4 = 0.575` on τ²-retail. It is
+a **GPT-4.1** ReAct agent, with `gpt-5.5` as the customer simulator. This lane runs
+`deepseek/deepseek-flash`, with the same model as the simulator. Every L4 number in the record —
+`0.5752`, `0.5614`, `0.7018`, `0.6316`, and R92's `0.7586` — was therefore read against a number a
+different model produced, and the artefact's `published_pass4` field named the number without naming the
+model.
+
+The lane had already learned this lesson one axis over. R92 added `benchmark {version, commit}` because
+the *release* turned out to move the reward while the task ids stood still (§173.97), and Appendix T
+found the competitor publishes two numbers on two task sets. The axes a delta can hide are model, prompt,
+split, release — and backbone was the fifth, sitting in plain sight in the competitor's own write-up.
+
+**Why the bar is kept rather than withdrawn.** "Above 57.5 + 5pp" is still a fact about a run, and a gate
+that disappears whenever the backbone differs would be unfalsifiable on the lane's only published
+reference. What changes is that the comparison names both models: `scenarioBarOf(scenario, model)`
+returns `sameBackbone`, `backboneMatches` matches `gpt-4.1` and its dated spelling while refusing
+`gpt-4.1-mini`, and the artefact carries `bar_backbone_matches` beside `published_bar_applies`.
+
+**The sentence this makes available, which no previous artefact could print.** *This arm scored X on
+deepseek-flash; the published row scored 57.5 on gpt-4.1; the comparable quantity is the paired
+control.* One clause, and it retires the whole class of "we beat the leader" readings that the record has
+been careful never to make and never able to refuse.
+
+## 34.120 `k` was a constant in one file and a variable in the other
+
+**The defect.** `l4.ts` scored at `const K = 4`; `tau2-driver.ts` scored at `TRIALS`, read from
+`TAU_TRIALS`. A dispatch at one trial — the cheap diagnostic shape — would have produced a `pass^1` grid
+that the artefact labelled `k: 4`, published beside `published_pass4: 0.575`, and graded with
+`l4-pass4 >= published + 0.05`. Three numbers, one statistic, and no gate able to notice.
+
+Nothing had exploited it: every published arm ran four trials. That is the reason to fix it now rather
+than after a diagnostic run has quoted the label — the branch was one environment variable from being
+taken, and the failure mode is a number that reads like a leaderboard row.
+
+**The fix.** `K` is derived from the same variable the driver reads, and at any `k` other than 4 the
+published and competitor numbers are **withheld** rather than annotated: `57.5% pass^4` is not a bar for
+`pass^1`, and a delta a reader can compute is a delta that gets quoted. The sample gates still grade the
+run; only the comparison disappears.
+
+**The rule this adds.**
+
+> When two files score the same run, the statistic is a property of the run, not of either file. A
+> constant in one and a variable in the other is a disagreement waiting for a dispatch to expose it.
