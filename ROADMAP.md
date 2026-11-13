@@ -6798,9 +6798,18 @@ costs 2.5 points".
 | **P0** | **R98 — the unrelated control** | the content of the served record at matched length | **promoted by R99**: relevance is now the least likely explanation left. The 73-record pack matched the question a third better at every quantile and lost three tasks, so the next question is whether the content matters at all — if unrelated records cost the same, the pack's problem is **presence** and no retrieval work can fix it | $1.40 + code |
 | **P0** | **merge by action shape** | the unit | **promoted by R99's own census**: 73 corrections, 53 shapes, 10 supported by ≥2 tasks, 5 by ≥3. The competitor's `sup3` is built on exactly that support and this store cannot express it. Code, no dispatch | $0 |
 | **P1** | **R97 — ephemerality** | one sentence: the pack is a past experience | the only intervention in the literature with an effect larger than this lane's 21pp resolution at n = 40 (Anti-Persistence, 28.0pp). With the noise floor at 2–3 tasks, only large hypotheses are worth buying | $0.83 |
-| **P1** | **the bill** | cacheability rather than size | **narrowed by R99**: five times the store moved the bill by 2.2% and the call count by −0.8%, so the 2.17× is the block's presence, not its length. Shrinking the store saves nothing; making the block a reusable prefix is the only lever | $0 |
+| **P0** | **R102 — pack placement** | where the block sits in the prompt | **the bill is now attributed** (§PROGRESS 179): 99.9% of the 2.17× is uncached prompt tokens, 18,597 of them per episode, because a per-episode-varying block at the head of the system prompt invalidates an ~18.6k-token prefix that the control caches *across* episodes. Moving the block behind the stable material should take $0.83 → ≈$0.42 for 160 conversations — 51% of the memory bill, the largest lever found. It changes the prompt, so it is a treatment and needs an arm | $0.83 |
 | **P2** | **R95 — the 114 base** | the sample | still the only lever on resolution (11.7pp at d = 0.2 against 19.8pp), but it buys precision on a treatment not yet shown to help | $2.40 |
 | **P3** | abstraction (`{product-name}`-style) | the unit | AWM's mechanism (§Appendix X) and the only one left that changes what a record *is* rather than how many there are; it needs merge-by-shape to land first | $0.83 + code |
+
+**R102 is a cost arm and it is ranked P0 on a different axis from the science.** No arm in this record has
+ever attributed its bill; three arms on the same forty tasks now subtract to the cent, and the answer is
+that the memory pays for a **cache it destroys rather than for a context it adds**. A memory that costs twice
+as much and scores 2.5 points lower is a product defect before it is a research question, and the repair is
+placement rather than distillation, retrieval or size. It is dispatched after R101 lands, because R101's own
+scaffold leg prices the same question for free (PROGRESS 179): if the empty-pack arm bills near the
+control's $0.38, the prefix is the cause and R102 is a confirmation; if it bills near $0.83, the wrapper's
+call pattern is the cause and R102 is not the fix.
 
 **R99 is closed, and it closed in the direction the registration did not name.** The supply arm returned
 **0.625** against the fifteen-record store's **0.700** and the control's **0.725**: five times the supply,

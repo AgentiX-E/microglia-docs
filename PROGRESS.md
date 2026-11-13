@@ -17559,3 +17559,63 @@ re-ranked queue:
 `l4-pass4` **PASS** against the published bar (0.625 ≥ 0.575 + 0.05), `l4-coverage` PASS, `l4-fully-scored`
 PASS — the arm is a valid measurement of a treatment that did not work, which is what a refutation is
 supposed to look like. Evidence: `l4-evidence-none` on run `43463317323`.
+
+### 179 — The bill, attributed: 99.9% of the memory premium is cache misses, and the store's size is 0%
+
+**What three arms' usage blocks say, to the cent.** Every τ² arm writes its own token ledger, and the three
+arms that ran on the same forty tasks in the same lane had never been subtracted from one another:
+
+| | calls | prompt | cached | cache hit | uncached | output | cost |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| R93 reference (no memory) | 2,726 | 12,710,187 | 11,597,920 | **91.25%** | 1,112,267 | 298,468 | **$0.3807** |
+| R93 memory (15 records) | 2,667 | 17,313,848 | 13,226,076 | **76.39%** | 4,087,772 | 291,237 | **$0.8276** |
+| R99 memory (73 records) | 2,646 | 17,715,381 | 13,480,032 | **76.09%** | 4,235,349 | 283,054 | **$0.8456** |
+
+At the lane's off-peak rates (miss $0.15/M, hit $0.003/M, output $0.6/M) the premium decomposes exactly:
+
+| component | R93 − reference | share | R99 − R93 |
+| --- | --- | --- | --- |
+| uncached prompt (miss) | **+$0.4463** | **99.9%** | +$0.0221 |
+| cached prompt (hit) | +$0.0049 | 1.1% | +$0.0008 |
+| output | −$0.0043 | −1.0% | −$0.0049 |
+| **total** | **+$0.4469** | 100% | +$0.0180 |
+
+So the memory arm's **2.17×** is **not** more calls (it makes fewer: 2,667 against 2,726), **not** more
+output (it writes less: 291k against 298k), and **not** the store's size (five times the records moved the
+bill by 2.2%). It is **three and a half times the uncached prompt tokens for the same 160 conversations**:
+18,597 extra tokens billed at the miss rate *per episode*.
+
+**The mechanism, which is the part that is a product defect.** Within an episode the cache works in both
+arms — the memory arm still caches 76% of its prompt. What it loses is the **cross-episode** cache: the
+control's prefix (tools + system + policy) is byte-identical in all 160 episodes, so even each episode's
+first call hits a prefix the provider has already seen from another episode, and only 6,952 tokens per
+conversation are ever billed at the miss rate. Insert a pack that differs per episode at the head of the
+system prompt and every episode's first call is a full miss of an ~18.6k-token prefix. **The pack does not
+cost 500 tokens; it costs the prefix it invalidates.**
+
+**What that makes available, and it is half the bill.** If the stable prefix were cached across episodes the
+way the control's is — i.e. if the pack were carried *after* the material that does not change, rather than
+at position zero — the miss rate would fall to the control's plus the pack's own tokens: about $0.20 of
+misses instead of $0.61, a total near **$0.42 per 160 conversations against $0.83**, or about **$0.0026 per
+conversation against $0.0052**. This is arithmetic on measured ledgers rather than a measurement, and it
+changes the prompt, so it is a treatment and needs an arm — but it is the largest cost lever this project
+has found, and it is worth ~51% of the memory bill.
+
+**R101 will price it for free, and this prediction is written before its readback.** The scaffold arm runs
+the same wrapper over an empty pack, so its system prompt is *nearly* constant across episodes (an empty
+rules block still differs from no block, but not from itself). Two readings are possible and they mean
+different things:
+
+- scaffold cost near the control's **$0.38–0.50** → the premium is the per-episode prefix, the pack's
+  content is what breaks the cross-episode cache, and the fix is placement rather than size;
+- scaffold cost near the memory arm's **$0.83** → the premium is the wrapper's call pattern, the pack is
+  not the cause, and the fix is in the wrapper.
+
+At ~16.5 calls and ~26k uncached tokens per conversation, the two predictions differ by a factor of three
+on a number that costs nothing extra to collect. It is the cheapest question R101 answers.
+
+**The cost rule this adds, for the standing requirement that every iteration be predictable.**
+
+> Bill a memory arm by its *uncached* tokens, not its prompt tokens. A prompt block that varies per
+> episode is not a fixed cost per conversation — it re-prices every token behind it, and the ratio between
+> two arms' bills is a cache question before it is a context-length question.
