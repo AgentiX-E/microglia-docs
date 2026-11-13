@@ -6794,7 +6794,7 @@ costs 2.5 points".
 
 | pri | step | the single variable | why it is next | cost |
 |---|---|---|---|---|
-| **P0** | **R101 — the scaffold control** | `microglia_agent` against a facade that serves an **empty pack** | the middle leg of the three-cell decomposition. Without it no retrieval experiment after this one can attribute its delta to the pack (§34.123). 160 episodes, the cheapest arm in the record | $0.38 |
+| **P0** | **R101 — the scaffold control** | `microglia_agent` against a facade that serves an **empty pack** | the middle leg of the three-cell decomposition. Without it no retrieval experiment after this one can attribute its delta to the pack (§34.123). 160 episodes and no learn half. **Registered 2026-11-13** as `prereg/R101-the-scaffold-arm.md`; the cost is **$1.21** for the pair, not the $0.38 this table first said — the scaffold leg runs the wrapper, and the wrapper is the 2.17× being measured, so it cannot cost what the wrapper-free leg costs | $1.21 |
 | **P0** | **R99 (in flight)** | the population, `distillScope: all` | 15 records against ~73 at the same dose; the only registered arm whose treatment is the store's *size* rather than its policy | $0.83 |
 | **P1** | **R98 — the unrelated control** | the content of the served record at matched length | still the only falsification of the competition reading, and now the sharper one: if unrelated content costs the same 2.5pp, the pack's problem is presence, not relevance | $1.40 + code |
 | **P1** | **R95 — the 114 base** | the sample | the lane resolves **21.02pp at n = 40** and cannot certify a 2.5pp recovery on any mechanism. 114 tasks resolve 11.7pp at d = 0.2 — still not 2.5, but the only lever on resolution that exists | $2.40 |

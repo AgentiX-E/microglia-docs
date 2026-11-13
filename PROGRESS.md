@@ -17396,3 +17396,59 @@ points lower is a product defect before it is a research result.
 PASS, reference arm `l4-control-arm` PASS with `published_bar_applies: 0` (correctly — it claims nothing);
 `V16-transfer-resolvable` FAIL on 22 informative trials, which is the same statement as (1) in the
 protocol's own words. Evidence: `l4-evidence-none` on run `43436606915`.
+
+### 177 — The scaffold arm exists, and the control's emptiness is now an assertion rather than a hope
+
+**What was built.** R93's −2.50pp is a delta between *(wrapper + pack)* and *(stock agent)*, and §34.123
+recorded that as an experimental defect rather than a detail. The arm that separates them is now code
+rather than a paragraph:
+
+| element | what it does | file |
+|---|---|---|
+| `resolveArmKind` | three arms — `memory` / `reference` / `scaffold` — resolved once, read by both the driver and the artefact writer, contradictions refused rather than ranked | `packages/eval/src/tau2-arm-kind.ts` |
+| `TAU_SCAFFOLD=empty-pack` | the memory step with **no learn half, no distillation, no records**; the facade, the recall call, the rules block and the tool guard all still run | `tau2-driver.ts` |
+| `declaredEmptyVerdict` | `V0`'s predicate for an arm that declared its emptiness: all five stages must be zero, and the first that is not refuses the run | `packages/protocol/src/gates.ts` |
+| `declaredEmptyStore` | the declaration, present only on the arm that made it and absent everywhere before it | raw → arm record → `V0`/`V1` |
+| `l4_arms: scaffold` | one dispatch: scaffold leg, then reference leg, then the pair — the pairing step is where `V0`/`V1` are graded | `.github/workflows/sota.yml` |
+
+**The design decision, which is the only part worth arguing about.** Both gates that make this arm
+possible exist to catch an empty store, and a scaffold arm *is* an empty store on purpose. Waiving them
+would have repeated the vacuous-pass defect — `V6` and `V7` fire on an empty control list and certify
+nothing, and all seventeen published BIRD artefacts carry `V6` that way. Omitting them would have said
+"this run's pipeline is not graded", which is the one run whose pipeline matters most. Both are therefore
+**inverted**: `V0` requires zero at every stage and `V1` requires a mean pack of exactly zero, so a
+scaffold arm that quietly distils one item fails the gates that would have passed a memory arm. An
+exemption that only ever passes is not a gate, and this record has found too many of them to write one on
+purpose (§34.124).
+
+**Verification, as the numbers stand.** 4,715 tests, **100 / 100 / 100 / 100** across statements, branches,
+functions and lines, `pnpm check` exit 0, the coupling ledger walked to **205 modules** with `core
+coupled=0`. microglia `9e91b50`. The one coverage row that moved under this change — `l4.ts:398`, the
+conditional spread that decides whether a per-task row carries its trial order — was closed by a test
+that asserts the *absent* key rather than the undefined one, because `toEqual` cannot tell them apart and a
+reader that checks presence would report a measured empty order for a run that kept none.
+
+**What R101 costs, corrected.** The roadmap carried **$0.38** for this arm — the reference leg's price.
+The scaffold leg runs the wrapper, and R93 billed the wrapper at **$0.8276** against the reference's
+**$0.3807**: the 2.17× ratio *is* the quantity being priced. The registration states **~$1.21** for the
+pair and keeps the superseded number beside it, because an estimate that assumes the overhead away is an
+estimate of the wrapper being free.
+
+**What R101 will and will not say.** Three cells, one dispatch:
+
+| cell | agent | pack | what it is |
+|---|---|---|---|
+| A | `llm_agent` | none | R93's control, **0.725** |
+| B | `microglia_agent` | empty by construction | **R101** |
+| C | `microglia_agent` | 15 records | R93's memory arm, **0.700** |
+
+`B − A` is the wrapper, `C − B` is the pack, and `C − A = −2.50pp` is already known. At n = 40 the lane
+resolves **19.8pp** at d = 0.20 and **17.1pp** at d = 0.30, so B separates "the wrapper costs about
+twenty points" from "the wrapper costs less than this sample can see". It cannot certify a 2.5pp wrapper
+cost, and the registration says so before the first episode rather than after the readback.
+
+**Where the lane is.** R99 (run `43463317323`, `distillScope: all`) is in its memory leg at the time of
+writing; R101 is registered, implemented and waiting for the lane to free rather than dispatched beside it,
+because one τ² dispatch at a time is a cost rule this project has already paid to learn. The order after
+that is unchanged and ranked: R98 (unrelated control, $1.40 + code), R95 (114-task base, $2.40), R97
+(ephemerality, $0.83), the bill attribution ($0, no dispatch), then merge-by-shape and abstraction.

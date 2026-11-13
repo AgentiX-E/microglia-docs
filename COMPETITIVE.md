@@ -5414,3 +5414,45 @@ while a large playbook on a weak model gains against its own baseline.
 decomposition — `microglia_agent` with an empty pack — because until it exists, "the memory costs 2.5
 points" cannot be separated from "the wrapper costs 2.5 points", and every retrieval experiment after
 that would be built on an attribution the artefact cannot support.
+
+## Appendix Z — The cell no competitor publishes: the scaffold with no rules (2026-11-13)
+
+**The question every memory paper answers without stating it.** A published memory cell is a delta between
+a system *with* a memory pipeline and a baseline *without* one, and the pipeline is never just the content:
+it is a facade, a retrieval call per turn, a block prepended to the system prompt, a budget, and — in this
+lane's case — a tool-name guard. Every one of those is a treatment, and none of the papers in Appendix V
+report the cell that would price them: **the same pipeline, receiving nothing**.
+
+The three systems this project is measured against all have the structure and none of the cell:
+
+| system | delivery mechanism | reports the mechanism with an empty memory? |
+| --- | --- | --- |
+| ALTK-Evolve (`sup3`, 31 rules / `lossless`, 292) | guidelines injected into the system prompt of both ReAct phases | no — only `no-guidelines` (57.5%), which drops the pipeline and the content together |
+| ExpeL (AAAI 2024) | insights retrieved into the prompt; random retrieval 42.5 vs task-similarity 59.0 | no — the 16.5pp retrieval penalty is *content* against *worse content*, with the pipeline held constant in both |
+| AWM (ICML 2025) | abstracted workflow bulletins in the system prompt | no — the ablation removes bulletins, not the scaffolding that carries them |
+| **microglia (R101, registered)** | facade + recall call + rules block + tool guard | **yes — `TAU_SCAFFOLD=empty-pack`, 40 tasks × 4 trials, paired against the stock agent** |
+
+ExpeL's random-retrieval arm is the closest thing in the literature and it is a different question: it
+holds the pipeline constant and varies the *content*, which is what R98 is for. The cell that no one
+publishes is the one where the pipeline runs and the content is **nothing**, and its absence is why every
+paper's headline number bundles two treatments and reports one.
+
+**Why this is a ranking question and not a methodological footnote.** If the scaffold costs five points,
+then ALTK's `+10.0pp over its own baseline` is `+15.0pp of playbook` against `−5pp of pipeline`, and this
+lane's `−2.5pp` is a 15-record playbook worth `+0pp` on a scaffold worth `−2.5`. The two systems would then
+be closer than the board shows, in the opposite direction from the one the board suggests. If the scaffold
+costs nothing, the board stands as printed. One arm decides it, at 1/7th the price of the competitor's
+cheapest published run.
+
+**Where microglia sits, stated the way the board requires.**
+
+- **On the published metric** (`pass^4`, retail test, 40 tasks, `pass^4` at k = 4): the **control 72.5%** and
+  the **memory arm 70.0%** both sit above ALTK-Evolve's best cell (67.5%) and its `sup3` (60.0%), on a
+  different backbone, a different scaffold and a different judge. That is a reading of public numbers, not a
+  claim of superiority, and this appendix does not upgrade it.
+- **On the axis no one else publishes** — paired memory/no-memory on one dispatch, one store, one judge:
+  microglia is the only entry, at **−2.50pp [−17.50, +12.50]**, unresolvable at n = 40.
+- **On the axis this appendix adds** — pipeline cost with the content removed: microglia will be the only
+  entry, and the number is not known yet. **The current SOTA on the published cell remains ALTK-Evolve's
+  67.5%**, and this project's honest position is "above it on both arms, on a backbone its leaderboard does
+  not contain, with no paired competitor cell to compare against".

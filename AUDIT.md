@@ -8718,3 +8718,58 @@ only became visible when the pair came back resolvable enough to ask *which* of 
 > When a treatment is delivered through a component, the control has to run that component empty. A pair
 > that differs in the delivery mechanism and in the content attributes both to the content, and the
 > attribution cannot be recovered from the artefact afterwards.
+
+## 34.124 The control's emptiness is declared rather than observed, and the arm costs 2.17× what §34.123 said
+
+**What was built.** `TAU_SCAFFOLD=empty-pack` resolves to a third arm kind — `memory` / `reference` /
+`scaffold` — through one function (`tau2-arm-kind.ts`) that both the driver and the artefact writer read,
+so the process that runs the episodes and the file that describes them cannot disagree about which arm
+was bought. Contradictory settings are refused rather than ranked: `TAU_MEMORY=false` beside
+`TAU_SCAFFOLD=empty-pack` names the stock agent *and* the wrapper, the losing variable leaves no trace in
+the artefact, and a silent precedence would produce a record nobody can audit afterwards.
+
+The scaffold leg skips the learn half entirely rather than pinning it. A pin replays a store; this arm has
+no store to replay, and paying for 74 learn episodes to produce records nobody reads would cost the arm
+its own reason for existing — it is the decomposition leg, and the decomposition is one held-out half wide.
+
+**The problem the implementation exposed, which the registration had not.** Two blocking gates exist to
+catch exactly the state this arm is defined by. `V0-instrument-ready` refuses a pipeline whose every stage
+carried nothing, because on a memory arm an empty pipeline is a broken chain. `V1-pack-not-empty` refuses
+a mean of zero rules per question, because on a memory arm that is either a store with nothing servable or
+a facade dropping what it was offered. A scaffold arm is a broken memory arm to both.
+
+Three dispositions were available and only one is admissible:
+
+| disposition | what it makes the arm | why not |
+| --- | --- | --- |
+| waive both gates for the arm | unmeasurable | a gate that stands down for one arm is the vacuous pass this record keeps finding: `V6` and `V7` fire on an empty control list and certify nothing, and all seventeen published BIRD artefacts carry `V6` that way |
+| omit the gates from the arm | silent | omitting a gate is a statement, and here the statement would be "this run's pipeline is not graded", which is exactly the run whose pipeline matters most |
+| **invert both gates** | **falsifiable** | **chosen** |
+
+`declaredEmptyVerdict` requires all five stages to be zero and refuses the arm the moment one carries
+anything: "the arm declared an empty store and its servable stage carried 3: this is no longer the control
+it was registered as". `V1` requires the mean pack to be exactly zero, so a scaffold arm that injects one
+rule fails the gate that would have passed a memory arm. The exemption is inverted rather than granted,
+which is the only form that keeps the declaration from being unfalsifiable.
+
+**Why a declaration and not an inference.** `funnel.stored === 0` is true of a scaffold arm and of a
+memory arm whose distillation died, and the two need opposite readings — one is the arm doing what it was
+registered for, the other is a run with no result. The flag travels as `declaredEmptyStore`, present only
+on the arm that made it and absent everywhere before it: absence reads as "not declared" rather than as
+`false`, because a boolean written into every record would be a measurement about arms that were never
+asked.
+
+**The cost estimate in §34.123 was wrong by 3.2×, and the error is the reasoning the arm exists to
+correct.** §34.123 said "one leg, 160 episodes, ~$0.38" — the reference leg's price. The scaffold leg
+cannot cost that, because it runs the wrapper: R93 billed the memory leg at **$0.8276** against the
+reference leg's **$0.3807**, a **2.17×** ratio driven by 36.2% more prompt tokens and a cache hit rate
+14.8pp lower. The ratio *is* the quantity this arm prices, so an estimate that assumed it away would have
+been an estimate of the wrapper being free. The registration states **~$1.21** for the pair and records
+the superseded number beside it.
+
+**What the arm still cannot certify, restated because it is the reason to run it anyway.** At n = 40
+paired tasks the lane resolves **19.8pp** at d = 0.20 and **17.1pp** at d = 0.30. R101 therefore separates
+"the wrapper costs about twenty points" from "the wrapper costs less than this sample can see"; it cannot
+certify a 2.5pp wrapper cost, and no trial count changes that, because `pass^4` is one binary per task. The
+distinction is still the one that decides whether the next four rounds are about retrieval or about the
+agent, and it is the cheapest question in the queue.
