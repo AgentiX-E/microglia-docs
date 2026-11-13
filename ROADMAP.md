@@ -6783,3 +6783,34 @@ closed extraction.
 **What is still deliberately absent.** Tuning a weight, a ceiling or a threshold. The floor arm is not
 tuning: it changes whether a record is served at all, which is a different treatment from how strongly
 one is ranked, and its retention curve was committed before the arm existed.
+
+### The queue after R93: the wrapper, then resolution, then the store (2026-11-13)
+
+**What R93 settled and what it opened.** Settled: the memory's effect on the benchmark's own 40 tasks is
+**−2.50pp [−17.50, +12.50]**, with 13 trials repaired and 10 broken, and the memory-free arm scores
+**0.725** — above the competitor's published 0.675. Opened: the pair differed in the **agent class** as
+well as in the pack (§34.123), so "the memory costs 2.5 points" is currently "the memory *or the wrapper*
+costs 2.5 points".
+
+| pri | step | the single variable | why it is next | cost |
+|---|---|---|---|---|
+| **P0** | **R101 — the scaffold control** | `microglia_agent` against a facade that serves an **empty pack** | the middle leg of the three-cell decomposition. Without it no retrieval experiment after this one can attribute its delta to the pack (§34.123). 160 episodes, the cheapest arm in the record | $0.38 |
+| **P0** | **R99 (in flight)** | the population, `distillScope: all` | 15 records against ~73 at the same dose; the only registered arm whose treatment is the store's *size* rather than its policy | $0.83 |
+| **P1** | **R98 — the unrelated control** | the content of the served record at matched length | still the only falsification of the competition reading, and now the sharper one: if unrelated content costs the same 2.5pp, the pack's problem is presence, not relevance | $1.40 + code |
+| **P1** | **R95 — the 114 base** | the sample | the lane resolves **21.02pp at n = 40** and cannot certify a 2.5pp recovery on any mechanism. 114 tasks resolve 11.7pp at d = 0.2 — still not 2.5, but the only lever on resolution that exists | $2.40 |
+| **P2** | **R97 — ephemerality** | one sentence: the pack is a past experience | Anti-Persistence's 28.0pp, the largest published effect in this domain, and the only one large enough to be visible at n = 40 | $0.83 |
+| **P2** | **the bill** | where the 2.17× goes | 36% more prompt tokens and a cache hit 14.8pp lower. A memory that costs twice as much and scores lower is a product defect before it is a research question, and no arm has ever attributed the bill | $0 |
+| **P3** | merge by action shape / abstraction | the unit | still the two mechanisms the store cannot express (§34.122, Appendix X), but both are refinements of a treatment that has not yet been shown to help | $0.83 + code |
+
+**R100 is refused, not deferred.** The registered floor procedure computes **0.01** on both the R47
+fixture and R92's own curve, so no admissible rung changes the delivered population and the arm cannot be
+dispatched as written. Changing the procedure is a registration of its own; changing the cost weights
+after seeing the number is not available. The refusal is the instrument working, and the hypothesis it
+would have tested — a third of the packs are below 0.20 coverage and the memory breaks ten trials — is
+untouched.
+
+**What is now out of bounds, and it was not before.** Any arm whose treatment is a store-side change of
+one or two tasks. R92's rebuilt store scored 0.650 and R93's pinned store 0.700 — four failures re-distilled
+into four statements, five points apart. That is the noise floor at n = 40, and it exceeds every store
+effect this record has reported since R85. A store experiment on 40 tasks has to be registered with a
+prediction of **three tasks or more** or it cannot be read.

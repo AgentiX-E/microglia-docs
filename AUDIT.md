@@ -8667,3 +8667,54 @@ number its admission reads is a constant by construction rather than by measurem
 knob into decoration. The repair is a merge step over the corrections — two corrections whose action
 sequences agree are one rule with support 2 — and it is registered as an arm rather than applied as a
 default, because it changes what a published number measured.
+
+## 34.123 The pair differed in an agent class, and the wrapper has never been run against an empty pack
+
+**What the artefacts say.** R93 ran both legs of one dispatch and its two eval phases name different
+agents:
+
+```
+memory leg     "agent": "microglia_agent", "memory_url": "http://127.0.0.1:33249"
+reference leg  "agent": "llm_agent",       "memory_url": ""
+```
+
+`tau2-driver.ts` chooses between them on `MEMORY`: with the store, the agent is `microglia_agent` and it
+is pointed at the recall facade; without it, the agent is τ²'s own `llm_agent` and no facade is started.
+So the paired delta of **−2.50pp** is a delta between *(wrapper + pack)* and *(stock agent)*, not between
+*(pack)* and *(no pack)*.
+
+**Why this is a defect and not a detail.** `microglia_agent` is documented as additive — it subclasses
+`LLMAgent`, wraps `generate_next_message`, and prepends one system message on a copy of the state
+(`microglia_agent.py`, "The memory is not a tool and not a policy change"). If that documentation is
+complete, the wrapper is inert and the delta belongs to the pack. **Nothing in this record demonstrates
+that it is complete**, because no arm has ever run `microglia_agent` against a facade that returns an
+empty pack. Two consequences follow:
+
+- the finding "the memory costs 2.5 points" is really "the memory *or the wrapper* costs 2.5 points";
+- the 2.17× bill is attributed to the pack, when part of it could belong to the wrapper's call pattern
+  (the memory leg made 2,667 calls against the control's 2,726, so the wrapper is not making *more* calls
+  — but the three-way split of the bill has never been measured).
+
+**The arm this needs, and it is cheap.** A third leg: `microglia_agent` pointed at a facade that answers
+every request with an empty pack. Same class, same message shape, no content. Three cells then decompose
+what two could not:
+
+| cell | agent | pack | what it isolates |
+| --- | --- | --- | --- |
+| reference (R93) | `llm_agent` | none | the stock baseline |
+| **scaffold (new)** | `microglia_agent` | **empty** | **the wrapper, alone** |
+| memory (R93) | `microglia_agent` | 15 records | the pack, given the wrapper |
+
+One leg, 160 episodes, **~$0.38** — the cheapest arm in this project's history, and it decides whether the
+next four rounds are about retrieval or about the agent.
+
+**Why it was not run in R93.** The reference leg is defined as "the same driver with `TAU_MEMORY=false`",
+and that flag selects the stock agent because a facade with nothing to serve is a component that can
+fail. That is a defensible engineering choice and an indefensible experimental one, and the difference
+only became visible when the pair came back resolvable enough to ask *which* of the two legs moved.
+
+**The rule this adds.**
+
+> When a treatment is delivered through a component, the control has to run that component empty. A pair
+> that differs in the delivery mechanism and in the content attributes both to the content, and the
+> attribution cannot be recovered from the artefact afterwards.

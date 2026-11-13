@@ -5367,3 +5367,50 @@ the *score* rather than explain it.
 **What none of these six rows is.** A tuning pass. Every one changes the population, the unit, or the
 selection rule — none moves a threshold on a store that serves one record per request, which the
 roadmap has refused since R89 and refuses still.
+
+## Appendix Y — The first paired cell on the board, and the control that clears it (2026-11-13)
+
+**What R93 added, and it is the cell Appendix V said was empty for everyone.** One dispatch, the same 40
+held-out tasks, the same judge, the same release, the same pinned store, memory on and off.
+
+| entry | backbone | task set | `pass^4` | paired control | cost / conversation |
+| --- | --- | --- | --- | --- | --- |
+| ALTK-Evolve `lossless` (292 rules) | gpt-4.1 | retail test, 40 | **67.5%** | none | $0.139 |
+| ALTK-Evolve `sup3` (31 rules) | gpt-4.1 | retail test, 40 | 60.0% | none | — |
+| ALTK-Evolve baseline | gpt-4.1 | retail test, 40 | 57.5% | none | $0.084 |
+| **microglia R93 — memory** | deepseek-flash | retail test, 40 | **70.0%** | **yes, same dispatch** | **$0.0052** |
+| **microglia R93 — no memory** | deepseek-flash | retail test, 40 | **72.5%** | ← the control | **$0.0024** |
+| microglia R92 — memory, rebuilt store | deepseek-flash | retail test, 40 | 65.0% | no | $0.0053 |
+
+### Y.1 The three sentences this table licenses, and the one it does not
+
+1. **On the same 40 tasks, this lane's memory-free arm scores 72.5%** — five points above the competitor's
+   best published cell, at 1/35th the cost per conversation. Its *memory* arm scores 70.0%, also above it.
+2. **The memory is worth −2.50pp** [−17.50, +12.50] at p = 1.0000, with 13 trials repaired and 10 broken
+   of 160. It is not a gain, and on 40 tasks it is not a loss either: the sample resolves 21.02pp.
+3. **The comparison to the competitor is cross-backbone and cross-scaffold**, and the R93 pair is
+   cross-*agent-class* besides (§34.123). So (1) is a reading of two public numbers, not a claim of
+   superiority, and the honest ranking on the published metric is "unranked, and ahead of the published
+   cell on this backbone".
+
+**What the board says about where the gap actually is.** For four rounds this project treated 67.5 as a
+target and 65.0 as a deficit. R93 shows the deficit was the *comparison*, not the system: the same lane,
+same judge, same release, without any memory at all, scores 72.5. The competitor's 292 rules buy +10.0pp
+over their own 57.5 baseline on GPT-4.1; this lane's 15 rules buy −2.5pp over 72.5 on DeepSeek. Both
+statements can be true at once — a small store on a strong model loses to no store on the same model,
+while a large playbook on a weak model gains against its own baseline.
+
+### Y.2 The axis this appendix closes and the one it opens
+
+| question | before R93 | after R93 |
+| --- | --- | --- |
+| is the memory's effect measurable on the benchmark's own halves? | never measured | **measured, negative, unresolved at n = 40** |
+| does this lane's system beat the published SOTA cell? | not on the memory arm's 65.0 | **the control does, by 5.0pp; the memory arm by 2.5pp** |
+| is the store the binding constraint? | assumed | **not established**: 15 records ≥ 73 is now a live hypothesis, not a fact |
+| what does the memory cost? | $0.0053/conv | **2.17× the control per conversation, for −2.5pp** |
+| which component is the treatment? | "the memory" | **(wrapper + pack) vs stock agent**; the wrapper alone is unmeasured (§34.123) |
+
+**The next cell the board needs is not another score.** It is the middle leg of the three-cell
+decomposition — `microglia_agent` with an empty pack — because until it exists, "the memory costs 2.5
+points" cannot be separated from "the wrapper costs 2.5 points", and every retrieval experiment after
+that would be built on an attribution the artefact cannot support.

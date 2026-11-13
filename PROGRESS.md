@@ -17334,3 +17334,65 @@ miniature and the answer was 1.43pp *in favour of the shuffled pack*.
 **Delivery.** 4,701 tests, `pnpm check` exit 0, coverage **100 / 100 / 100 / 100** on both new modules;
 microglia `7d21237` (R93's registration and pin) → `460fbdb` (served census) → `ea5148f` (merge census,
 R99's registration), each with a green `ci`.
+
+### 176 — R93: the memory costs 2.5 points, and the no-memory arm already beats the published SOTA cell
+
+Run `43436606915`, commit `7d21237`, one dispatch, both legs, the store pinned to R92's fifteen failures.
+
+| | memory | no memory | delta |
+| --- | --- | --- | --- |
+| `pass^4`, 40 held-out tasks | **0.700** (28/40) | **0.725** (29/40) | **−2.50pp** [−17.50, +12.50], p = 1.0000 |
+| discordant tasks | 4 memory-only, 5 reference-only | 24 both, 7 neither | 9 of 40, d = 0.225 |
+| trials | **13 repaired, 10 broken** of 160 | — | net **+1.88pp** per trial, 22 informative |
+| calls / turns | 2,667 / 1,803 | 2,726 / 1,833 | −2.2% / −1.6% |
+| prompt tokens | 17,313,848 | 12,710,187 | **+36.2%** |
+| cache hit | 76.4% | 91.2% | **−14.8pp** |
+| cost, 160 conversations | **$0.8276** ($0.0052) | **$0.3807** ($0.0024) | **2.17×** |
+| agent class | `microglia_agent` | `llm_agent` | §34.123 |
+| store | 15 records from the 15 pinned failures | none | — |
+| pack | 161 of 161 requests served, 1.1 items, 1,745 chars, **1,114 dropped for size** | — | — |
+
+**Three readings, and the third is the one that matters.**
+
+1. **The memory is not resolvable on this sample, and its sign is negative.** `−2.50pp` with a 21.02pp
+   minimum detectable difference at n = 40. The lane's own gates say so rather than a reader:
+   `V5-resolution` PASS with "the run claims no direction", `l4-effect-resolved` FAIL, `l4-paired` PASS
+   ("the treatment did not cost accuracy at p < 0.05"). A memory that cannot be shown to help on the
+   benchmark's held-out half is not a flywheel, whatever else it is.
+2. **The store does act, and it acts imprecisely.** Thirteen trials the control failed were repaired by
+   the pack and ten the control passed were broken by it. That is a trial-level net of +1.88pp, and it is
+   the first positive reading this project has of its own memory on a real benchmark — but `pass^4` needs
+   all four trials, so ten breaks across 160 trials land on tasks that were otherwise clean, and the
+   task-level number is five tasks lost against four gained.
+3. **The yardstick moved, and nobody was looking at it.** The memory-free arm scored **0.725** on the
+   same 40 tasks, four hours after R92's memory arm scored 0.650 with a rebuilt store. Both are the same
+   lane, the same agent family, the same judge and the same release. The competitor's published best cell
+   is **0.675**. So this project's *control* clears the published SOTA by five points, and its memory
+   arm clears it by 2.5 — on a different backbone and a different scaffold, which is exactly why this is
+   evidence and not a claim (§Appendix V).
+
+**What that does to the story this project has been telling.** For four rounds the gap to 67.5 was read
+as a memory gap: the store was too small, the pack too short, the admission too permissive. R93 says the
+gap was never there in the first place — at least not on this backbone — and the memory has been
+subtracting from a base that was already ahead. The 2.54pp "deficit" in Appendix V was a comparison
+between a memory arm on DeepSeek and a memory arm on GPT-4.1; the comparison that was available all
+along, memory against no memory on one model, had never been run.
+
+**A free variance estimate, which the registration predicted.** R92's store was rebuilt from the same
+fifteen failures and re-distilled; R93 replayed the pinned list and re-distilled. The two arms scored
+**0.650** and **0.700** — two tasks apart at a store that differs only in the wording the distiller chose.
+That is the noise floor for a forty-task `pass^4`, and it is larger than every store-side effect this
+record has reported since R85 (0.5752 → 0.5614 → 0.6316 → 0.7018, a spread of 14pp across four stores
+that were never held fixed). An arm that moves `pass^4` by two tasks has demonstrated nothing.
+
+**The bill, which is a product fact rather than a footnote.** The memory arm paid **2.17×** the control's
+cost for the same 160 conversations: 36% more prompt tokens and a cache-hit rate 14.8pp lower. The pack
+is a fixed per-episode system message (R57's fix), so the divergence is not per-turn — but a 1,745-
+character block that differs every episode is a prefix that cannot be reused across episodes, and it is
+re-sent on every turn of the episode it belongs to. A memory that costs twice as much and scores 2.5
+points lower is a product defect before it is a research result.
+
+**Delivery.** 40/40 tasks scored on both legs, 0 unscored, `l4-same-split` 0/0; memory arm 3/3 gates
+PASS, reference arm `l4-control-arm` PASS with `published_bar_applies: 0` (correctly — it claims nothing);
+`V16-transfer-resolvable` FAIL on 22 informative trials, which is the same statement as (1) in the
+protocol's own words. Evidence: `l4-evidence-none` on run `43436606915`.
