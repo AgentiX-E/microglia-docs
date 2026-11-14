@@ -368,7 +368,7 @@ it feeds. Same ratio as the cache probe: a tenth of the arm it guards.
 | `packages/eval/src/review/server.ts` | five routes, the card payload, the rendered preview — **100 / 95.6 / 100 / 100** on 20 tests |
 | `packages/eval/src/review/page.ts` | the console — **100/100/100/100** |
 | `packages/eval/src/retrospect-store.ts` | the store reader: side classification, the refusal that names its cause, the check against the run-level census, container discovery — **100/100/100/100** on 23 tests |
-| `pnpm eval:retrospect` | store dump → batch, refusals included, census printed and stored |
+| `pnpm eval:retrospect` | store dump → batch, refusals included, census printed and stored. `pnpm eval:retrospect-fixture` runs it on `eval/fixtures/retrospect-store.json` inside `pnpm check`, so the program — not only its reader — is exercised on every push |
 | `pnpm review:serve` | the console, loopback by default, decisions appended as JSON Lines |
 
 **Not built, deliberately:** a model-written proposer (the deterministic one is the baseline the

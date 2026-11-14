@@ -18280,7 +18280,17 @@ recover what the store did not record — so the fix lands on the **next** run, 
 `tau2.storeItems` will carry `polarity`, and its batch can then be built from its own store dump rather
 than from the correction log, which is the difference between measuring consolidation and simulating it.
 
-**Quality.** `pnpm check` exit 0 — **5,013 unit tests over 244 files** (was 4,973 over 241), coverage
+**The gate now runs the pipeline, because coverage cannot.** `bin/` is excluded from coverage, so a
+reader tested at 100/100/100/100 could still be wired to the wrong flag and no push would notice. A
+labelled fixture — four corrections and two successes over one retail scope, one orphan — is committed
+at `eval/fixtures/retrospect-store.json` and `pnpm eval:retrospect-fixture` runs the real program on it
+inside `pnpm check`; four tests assert the numbers it was written to produce, so editing a statement, a
+side or the census fails a test instead of quietly changing what the gate exercises. The reconciliation
+became **enforcing** in the same move: a store whose own sides disagree with the artefact's census is
+refused *before* a batch is written, since two independent reads that disagree mean one of them is wrong
+and a wrong side is a wrong corpus — the thing the reviewer would then be shown.
+
+**Quality.** `pnpm check` exit 0 — **5,017 unit tests over 245 files** (was 4,973 over 241), coverage
 **lines 99.98 / statements 99.98 / branches 99.93 / functions 100**, `retrospect-store.ts` at
 **100/100/100/100** over 23 tests and `kernel/{types,provenance,knowledge}` still **100/100/100/100**,
 coupling ledger **219 modules** (was 218), core bundle **50,886/51,000 B raw and 17,291/17,400 gzip** —
