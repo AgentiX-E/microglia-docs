@@ -17983,16 +17983,17 @@ Three readings fall out, and each one closes a candidate:
    2,726; 1,803 turns against 1,833) and wrote *less* output (291k against 298k tokens). A premium
    that is 3.75× per call on identical episode counts is not a volume effect.
 2. **Not the wrapper.** R101's scaffold arm is the same agent class with an empty pack: **413.7**
-   uncached tokens a call against the reference's 408.0, −4.4 per call. The wrapper this lane blamed
-   for two rounds costs nothing at all. §179's own withdrawal is thereby confirmed on a second arm.
+   uncached tokens a call against the reference's 408.0 — **+5.7**, which is 1.4% of the memory premium and
+   indistinguishable from free on 2,660 calls. The wrapper this lane blamed for two rounds is not the
+   cost. §179's own withdrawal is thereby confirmed on a second arm.
 3. **Not the pack's size, and only partly the pack's presence.** R99 served 14% more characters than
    R93 and paid **+67.9** uncached tokens a call: a slope of **0.2819 tokens per served character**,
    which is one token per 3.55 characters — the price of re-billing the block, to two significant
    figures.
 
 **What that arithmetic refuses.** The block is 1,745 characters, so at 3.5–4.0 characters a token it is
-**436–499 tokens**: between **39% and 45%** of the 1,115.7-token premium, *even if every single call
-paid for it in full*. The remaining **623.8 tokens a call** are not in the pack. They are the arm's own
+**436–499 tokens**: between **38.8% and 44.3%** of the 1,124.7-token premium, *even if every single call
+paid for it in full*. The remaining **626.1–688.4 tokens a call** are not in the pack. They are the arm's own
 turn material — the assistant message and the observation that follow each call — and they appear the
 moment a rule is served and barely move when the rule gets bigger.
 
@@ -18012,9 +18013,9 @@ from the phase's **first call**, the only one the provider had never cached — 
 | | |
 |---|---|
 | `eval/drivers/tau2/run_split.py` | `_census_of`, `cache_census`, `reset_usage`; sums over every call, first call kept apart; **24 self-check cases, 77 assertions** |
-| `packages/eval/src/cache-census.ts` | `cacheCensusVerdict` — `prefix-honoured` (≥0.85) / `prefix-partial` (≥0.35) / `prefix-broken` / `unmeasured`, with the repair each one points at — **100/100/100/100**, 13 tests |
+| `packages/eval/src/cache-census.ts` | `cacheCensusVerdict` — `prefix-honoured` (≥0.85) / `prefix-partial` (≥0.35) / `prefix-broken` / `unmeasured`, with the repair each one points at — and `premiumSplitOf`, the decomposition above as arithmetic — **100/100/100/100**, 18 tests |
 | `packages/eval/src/bin/tau2-driver.ts` | carries `usage` into the artefact and prints `[tau2] cache: <state> — <sentence>` |
-| `packages/eval/src/bin/l4-pair.ts` | prints both arms' verdicts, because a pair that reports a delta and a bill and not this has not said what the money bought |
+| `packages/eval/src/bin/l4-pair.ts` | prints both arms' verdicts **and the premium split**, because a pair that reports a delta and a bill and not this has not said what the money bought — and printing it per pair keeps R103's sentence a measurement rather than a paragraph |
 
 The thresholds are the probe's own reading, not a preference: `cache-placement` measured the provider
 crediting 1,466 of a 1,497-token prefix, a coverage of 0.98.
@@ -18032,5 +18033,5 @@ moves — which the census will show as `prefix-partial`, and which is a defect 
 assembly rather than in the memory.
 
 **Cost of the round: $0.** Four artefacts already on disk, read from their phase records; one census;
-no model call and no dispatch. `pnpm check` exit 0 — 4,883 unit tests over 237 files, `cache-census` 100/100/100/100,
+no model call and no dispatch. `pnpm check` exit 0 — 4,888 unit tests over 237 files, `cache-census` 100/100/100/100,
 coupling ledger 214 modules, core bundle unchanged at 47,402/47,500 B.

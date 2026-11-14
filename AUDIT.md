@@ -9247,14 +9247,14 @@ R93 memory           1,532.7 uncached   (2,667 calls, 1,803 turns, 1.1 items / 1
 R99 memory           1,600.7 uncached   (2,646 calls, 1,788 turns, 1.3 items / 1,986 chars)
 ```
 
-The wrapper costs **−4.4** tokens a call against the reference and made 66 fewer calls: the agent class
+The wrapper costs **+5.7** tokens a call against the reference — 1.4% of the premium — and made 66 fewer calls: the agent class
 this record blamed for two rounds costs nothing. The premium is therefore entirely the pack's
 presence — and it splits in two: **+0.2819 tokens per served character** (one token per 3.55 characters,
-i.e. exactly the price of re-billing the block) and a **flat 623.8 tokens a call** that does not move
+i.e. exactly the price of re-billing the block) and a **flat 626.1–688.4 tokens a call** that does not move
 with the pack's size at all.
 
 **What that rules out.** The block is 436–499 tokens at 3.5–4.0 characters a token, so it is at most
-**45%** of the 1,115.7-token premium even if every call paid for it in full. The majority is the arm's
+**44%** of the 1,124.7-token premium even if every call paid for it in full. The majority is the arm's
 own turn material, which means the mechanism is behavioural: a rule in the context changes the action
 mix, and the action mix returns larger observations, which are uncached because they are new.
 

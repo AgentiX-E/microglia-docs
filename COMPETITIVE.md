@@ -5617,13 +5617,13 @@ product from one that buys them for free, and only one of those is shippable.
 | **ACE** | token counts on the context, not per run | — | no | no | no |
 | **AutoGuide** | no | — | — | — | — |
 | **ExpeL / AWM** | no | — | — | — | no |
-| **microglia (as of R103)** | **yes**, to the cent, per arm | yes | **yes** — miss / hit / output, exact | **yes** — the premium splits into a size-dependent 0.2819 tokens per served character and a flat 623.8 a call | **yes** — `prefix_coverage` per arm, verdict on the artefact |
+| **microglia (as of R103)** | **yes**, to the cent, per arm | yes | **yes** — miss / hit / output, exact | **yes** — the premium splits into a size-dependent 0.2819 tokens per served character and a flat 626–688 a call | **yes** — `prefix_coverage` per arm, verdict on the artefact |
 
 **What R103 adds to the board is a negative result with a mechanism.** Three rounds of this record
 assumed the memory's bill was the memory's text: R102.1 was registered to move the block behind the
 cached prefix, and its probe refused it (31 uncached tokens a call in all three placements); §179
-assumed the block was re-billed every call; R103 measures the block at **at most 45%** of the premium
-even under that assumption, with **623.8 uncached tokens a call** belonging to the arm's own turn
+assumed the block was re-billed every call; R103 measures the block at **at most 44%** of the premium
+even under that assumption, with **626–688 uncached tokens a call** belonging to the arm's own turn
 material. No competitor publishes the equivalent measurement, so there is nothing to rank against —
 which is itself the finding: **the field compares scores and not spend, and a memory whose cost is
 behavioural rather than textual is invisible to every comparison that exists.**
