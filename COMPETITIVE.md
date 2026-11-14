@@ -5834,3 +5834,70 @@ once, and the pre-flight makes that comparison cheap enough to run on a fixture 
 **What is not claimed.** That `deepseek-flash` is the cause. The run had three defects and only one of them
 was fixed by changing a header (`distillScope: all`, §34.137). Whether the writer is the fourth is a question
 for the next dispatch, and the fixture pre-flight answers it for one call.
+
+## Appendix AI — Why memory hurts: four 2026 results, one field microglia had and could not read (2026-11-14)
+
+The record has spent eleven iterations on the dose-response — R93's fifteen corrections at **0.700**,
+R99's seventy-three at **0.625**, R101's empty pack five points below the same prompt — and has explained
+it twice: provenance (79% of the larger store was pass-derived, R110) and delivery unit (R104, in flight).
+Neither is a mechanism. Four results published in 2026 are, and they agree on where to look.
+
+### AI.1 The evidence
+
+| finding | source | what it implies here |
+| --- | --- | --- |
+| benign sessions produce notes that govern high-stakes ones in **35–81%** of episodes, from near-zero baselines; two routes, **write-time overgeneralization** and **act-time broadening**; no adversary, so no filter to catch it | *The Memory Trap*, Liang, Fisac, Griffiths, Lampinen (arXiv 2611.07554, 2026-11) | a note that broadens what the user said is a **stored rule wider than its evidence**, which is what `scope` is supposed to bound and what `scopeMatches` permits when a dimension is absent |
+| repeated consolidation degrades a store even when every input trajectory is one the agent already solved; abstraction **strips the applicability condition**; an **episodic-only control** is competitive with every lesson-style consolidator tested | *Useful Memories Become Faulty When Continuously Updated by LLMs* (arXiv 2605.12978) | the deterministic fold (R109) is a consolidation, and the arm that would show its cost is the one that ships raw corrections instead — which R104's control already is |
+| a wrong rule shapes the next run, which is summarised into a rule, which returns wrong: **error reproduction**; the repair that wins is **Anti-Persistence** — keep raw trajectories, rebuild guidance per task, discard it after execution — highest held-out success **and** lowest call cost | *More Memory, Worse Agents*, Wang, Panaganti, Zhou (arXiv 2610.27406) | this is the strongest published argument against the store this project is built on, and it is a *cost* argument as well: the rebuilt-per-task design is also the cheapest |
+| 555 base tasks against 4,869 executable historical tasks: memory helped agents find and edit code **and** broke tasks they could otherwise solve; the named cause is "reusing memory without reassessing its applicability"; raw trajectories cut more steps than compressed memory | *MemDev-Bench* (arXiv 2610.27524) | "reassess applicability at use" is an operation microglia does not have: retrieval ranks by BM25 and filters by scope, and nothing reads the rule against the task |
+
+### AI.2 What microglia already has, and what it does with it
+
+| capability | in the code | what it does today | gap |
+| --- | --- | --- | --- |
+| record where a rule applies | `KnowledgeScope` (task, domain, schemaDigest, intent, field, reasonCode) | written by the distiller from the candidate | **an absent dimension matches every request on it** — silence read as universality |
+| record which side a lesson came from | `KnowledgePolarity` (R110) | `polarityFor(signal)`, carried on the item and the artefact | absent means **unclassified**, never `pass` — the two fields disagree on what silence means |
+| state the condition a rule was learned under | `when` on every item | rendered into the pack beside the statement | independent of `scope`, and nothing requires a rule with no scope to have one |
+| refuse an inapplicable rule at use | nothing | recall filters by scope and ranks by BM25 | no applicability check, which is the named failure in 2610.27524 |
+| ship the raw correction instead of a lesson | possible, not registered | every committed artefact ships distilled items | the episodic control 2605.12978 reports as competitive has never been run here |
+
+The one asymmetry worth naming: `polarity` was given the honest treatment in R110 — absent is counted, not
+filled in — and `scope` never was. That is not a research gap, it is an inconsistency between two fields
+written by the same distiller in the same call.
+
+### AI.3 Who leads on the axis this appendix is about
+
+| column | ACE | Reflexion | ExpeL | ALTK-Evolve | microglia | who leads |
+| --- | --- | --- | --- | --- | --- | --- |
+| memory records the scope it was formed in | partial (playbook entries carry a section) | no | no | no | **six dimensions, per item** | **us, on the schema** |
+| an absent scope dimension is treated as unknown | not reported | — | — | — | **no: it matches everything** | **nobody** |
+| applicability is reassessed when a rule is used | no (curator, not per request) | no | no | no | no | **nobody** |
+| consolidated guidance is discarded after the task | no | no | no | no | no | **nobody** |
+| the raw trajectory is available as a fallback arm | no | no | partial (trajectory pool) | no | **possible, never run** | **ExpeL** |
+| the harm is measured, not asserted | no | no | no | no | **this appendix is the measurement plan; the number does not exist yet** | **nobody** |
+
+Two rows read "nobody", and that is the finding: the 2026 literature names *scope preservation at use* as
+the open problem, and no system on this board — including this one — implements it. A project that has the
+six-dimension schema and no reader for it is not behind on the schema; it is behind on the one operation the
+schema exists for.
+
+### AI.4 What this changes on the board
+
+**R104 stays P0 and this appendix does not pre-empt it.** The unit arm answers whether a store delivered as
+routines beats the same store delivered as failures; if it does, the store is not the problem and scope is a
+second-order question. If it reports `NO_TREATMENT`, the population numbers in its own artefact decide
+whether the store was too small or the fold removed nothing, and only then does a scope arm have a
+population to act on.
+
+**What is registered off the back of this appendix is a census, not an arm.** Three numbers can be read from
+any artefact that carries `storeItems` and R62's provenance census, at **$0**: the share of records that
+declare no scope dimension, the share that state no `when`, and the intersection — a record with neither is a
+**universal rule**, and the intersection is the population every result above is about. R113 is registered as
+that census first. An arm that changes how such a record is delivered is registered only if the intersection
+is large enough to have a treatment at all, and that threshold is written down before the number is read.
+
+**What is not claimed.** That scope is the mechanism behind R99's 62.5%. R93's fifteen records and R99's
+seventy-three differ in more than width, and R92 established that a store experiment on forty tasks has to
+predict **three tasks or more** to be readable at all. This appendix claims a *structural* inconsistency —
+one field treats silence as unknown and another treats it as universal — and a population that can be
+counted for the price of reading a file.
