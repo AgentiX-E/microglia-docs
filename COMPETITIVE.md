@@ -5603,3 +5603,33 @@ number rather than an admission — `fragmentation` on the batch — and it is t
 justify an embedding edge or a model splitter. Until it is measured on a real store, the honest
 ranking is: **ALTK-Evolve 67.5% retail Pass^4 is the published SOTA cell; this project has a design
 and a $0 census, and R104 ($1.21, bar +5.0pp) is the arm that would place it.**
+
+## Appendix AD — Cost attribution on a memory arm: nobody publishes the division (2026-11-14)
+
+The SOTA conversation on this axis is scoring, and the second question — *what did the memory cost, and
+what part of that cost was the memory* — is published by almost nobody. This appendix records where each
+system stands, because a memory that buys two points for three times the inference spend is a different
+product from one that buys them for free, and only one of those is shippable.
+
+| system | reports a bill | per-arm | decomposes it | attributes the uncached column | audits the prefix per call |
+|---|---|---|---|---|---|
+| **ALTK-Evolve** | no | — | — | — | — |
+| **ACE** | token counts on the context, not per run | — | no | no | no |
+| **AutoGuide** | no | — | — | — | — |
+| **ExpeL / AWM** | no | — | — | — | no |
+| **microglia (as of R103)** | **yes**, to the cent, per arm | yes | **yes** — miss / hit / output, exact | **yes** — the premium splits into a size-dependent 0.2819 tokens per served character and a flat 623.8 a call | **yes** — `prefix_coverage` per arm, verdict on the artefact |
+
+**What R103 adds to the board is a negative result with a mechanism.** Three rounds of this record
+assumed the memory's bill was the memory's text: R102.1 was registered to move the block behind the
+cached prefix, and its probe refused it (31 uncached tokens a call in all three placements); §179
+assumed the block was re-billed every call; R103 measures the block at **at most 45%** of the premium
+even under that assumption, with **623.8 uncached tokens a call** belonging to the arm's own turn
+material. No competitor publishes the equivalent measurement, so there is nothing to rank against —
+which is itself the finding: **the field compares scores and not spend, and a memory whose cost is
+behavioural rather than textual is invisible to every comparison that exists.**
+
+**Where microglia sits.** Alone on the last three columns, and behind on the first: the three systems
+with a published score report no bill at all. The ranking that matters here is unchanged —
+`ALTK-Evolve 67.5% retail Pass^4` is the published cell, this project has 0.700 (R93, 15 corrections) and
+0.625 (R99, 73) on its own backbone — but the **cost** axis now has a measurement no competitor has
+taken, and it says the remaining lever is the agent's action mix rather than the store.

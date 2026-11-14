@@ -9211,3 +9211,72 @@ the unit was never the problem and the next arm is about abstention.
 > Before adding a model to a compression stage, measure whether the stage's failure is *recall* or
 > *fidelity*. A model fixes the first and damages the second, and the second is the one this pipeline
 > was built to protect.
+
+## 34.132 A field whose name contradicted its own comment, and the division that crossed populations
+
+§179 attributed 99.9% of the memory arm's premium to the uncached column, and §181 found an error on the
+way out: "R93's own artefact records `calls: 1803` for the memory arm; §179's division used 2,667." Both
+numbers are real. They count different things:
+
+| number | what it is | where it came from |
+|---|---|---|
+| **1,803** | the agent's **turns** | `diagnostics.agent_turns`, forwarded by the driver |
+| **2,667** | **model calls** | the provider's own phase record, in the workflow log |
+| **2,726** | the reference arm's model calls | same |
+
+The field was `tau2.calls.calls`, and its docstring said, in the same file, "the episodes' calls belong
+to the agent process, which reports a turn count rather than a call count". The name outranked the
+sentence. A reader doing arithmetic on an artefact has no way to learn that the key is a label for the
+wrong quantity — the artefact is the authority, and it was wrong about itself.
+
+**Three repairs, none of which changes a published byte.** No committed report carries a τ² block, so
+this was free: the key is `turns`, the provider's record is carried whole as `usage` (until now it
+existed only in the workflow log, which is why a bill had to be divided by hand), and
+`V8-call-reliability` states its population — `32/32 turns` on an episode tally, `32/32 calls` on a
+distillation tally, because that client really does make model calls. The population travels as
+`callPopulation` and defaults to `calls`, so every existing report re-renders identically.
+
+**And the premium's decomposition, which the corrected population makes possible.** Five arms on one
+table, per call, all at 160 conversations on the same 40 tasks:
+
+```
+R93 reference          408.0 uncached   (2,726 calls, 1,833 turns, no pack)
+R101 reference         420.8 uncached   (2,716 calls, 1,806 turns, no pack)
+R101 scaffold          413.7 uncached   (2,660 calls, 1,788 turns, empty pack, same agent class)
+R93 memory           1,532.7 uncached   (2,667 calls, 1,803 turns, 1.1 items / 1,745 chars)
+R99 memory           1,600.7 uncached   (2,646 calls, 1,788 turns, 1.3 items / 1,986 chars)
+```
+
+The wrapper costs **−4.4** tokens a call against the reference and made 66 fewer calls: the agent class
+this record blamed for two rounds costs nothing. The premium is therefore entirely the pack's
+presence — and it splits in two: **+0.2819 tokens per served character** (one token per 3.55 characters,
+i.e. exactly the price of re-billing the block) and a **flat 623.8 tokens a call** that does not move
+with the pack's size at all.
+
+**What that rules out.** The block is 436–499 tokens at 3.5–4.0 characters a token, so it is at most
+**45%** of the 1,115.7-token premium even if every call paid for it in full. The majority is the arm's
+own turn material, which means the mechanism is behavioural: a rule in the context changes the action
+mix, and the action mix returns larger observations, which are uncached because they are new.
+
+This is the third disposition of the same question, and the third to be decided against the obvious
+repair:
+
+| round | theory | disposition |
+|---|---|---|
+| R102.1 | the block sits outside the cached prefix | **refused by its own probe** — 31 uncached tokens a call in all three placements |
+| §179 | the block is re-billed every call | **refuted here** — the size-dependent part is only 44% of the premium |
+| §181 | something behavioural | **survives**, and is now instrumented rather than argued |
+
+**The instrument, and why the lane did not have it.** `_record_usage` has held every call's `messages`
+and the provider's `prompt_cache_hit_tokens` since the counter existed, and it summed both into totals
+that cannot be divided by one another. It now aggregates a prompt census: characters of the material the
+provider provably saw before this call (everything before the final two messages, since a tool loop
+appends the assistant's call and the tool's result together), characters of the newest message, and a
+characters-per-token ratio measured on the phase's **first call** — the only one the provider had never
+cached, and therefore the only honest divisor. `prefix_coverage` is credited over provably-seen.
+
+**The rule this adds.**
+
+> A number and the population it was counted over are one fact, and a name that outlives its population
+> is a number that will be divided wrongly. If a lane cannot see the population it is quoting, it must
+> quote the one it can see — under that one's name.

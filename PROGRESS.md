@@ -17944,3 +17944,93 @@ nothing.
 **Cost of the round: $0.** Two gates' worth of harness, one census, no model call. `pnpm check` exit
 0 — 4,870 unit tests, 213 modules in the coupling ledger (protocol 2 → 3), core bundle 47,402/47,500 B
 unchanged.
+
+### 185 — R103: the premium is mostly not the pack, and the field that hid it was misnamed
+
+The bill was the last unexplained number in the lane. §179 decomposed it to the cent and stopped at a
+mechanism; §181 refused the placement theory with a probe; what was left was "1,100 extra miss tokens on
+each of sixteen calls" with two candidates and no way to separate them. This round separates as much of
+it as five arms' phase records can, and installs the instrument that separates the rest.
+
+**First, the population error, and it was a field name.** R93's artefact records
+`tau2.calls = { calls: 1803, scope: 'run' }`. The provider's own phase record for that same arm says
+`calls: 2667`. Both numbers are true and they count different things: 1,803 is the agent's **turns**
+(`diagnostics.agent_turns`), and the provider counts 2,667 model calls. The field's own docstring had
+already said so — "the episodes' calls belong to the agent process, which reports a turn count rather
+than a call count" — and the key was named `calls` anyway, which is how §179 came to divide one arm's
+bill by 2,667 and read it beside an artefact that said 1,803.
+
+Repaired as three changes, none of which alters a published byte (no committed report carries a τ²
+block): the artefact key is `turns`, the provider's account is carried whole as `usage` (it was only
+ever in the workflow log), and `V8-call-reliability` names the population it counts — `32/32 turns` on
+an episode tally, `32/32 calls` on a distillation tally, because the distillation client really does
+make calls.
+
+**Second, the five arms, on one table.** Every figure below is from that phase's own JSON, all at
+160 conversations and the same 40 held-out tasks:
+
+| arm | pack | turns | calls | prompt/call | cached/call | **uncached/call** | out/call | hit | bill |
+|---|---|---|---|---|---|---|---|---|---|
+| R93 reference | — | 1,833 | 2,726 | 4,662.6 | 4,254.6 | **408.0** | 109.5 | 91.25% | $0.3807 |
+| R101 reference | — | 1,806 | 2,716 | 4,670.1 | 4,249.3 | **420.8** | 112.4 | 90.99% | $0.3892 |
+| R101 scaffold | 0 items | 1,788 | 2,660 | 4,674.3 | 4,260.6 | **413.7** | 108.7 | 91.15% | $0.3725 |
+| R93 memory | 1.1 items / 1,745 chars | 1,803 | 2,667 | 6,491.9 | 4,959.2 | **1,532.7** | 109.2 | 76.39% | $0.8276 |
+| R99 memory | 1.3 items / 1,986 chars | 1,788 | 2,646 | 6,695.2 | 5,094.5 | **1,600.7** | 107.0 | 76.09% | $0.8456 |
+
+Three readings fall out, and each one closes a candidate:
+
+1. **Not the calls, and not the turns.** The memory arm made *fewer* of both (2,667 calls against
+   2,726; 1,803 turns against 1,833) and wrote *less* output (291k against 298k tokens). A premium
+   that is 3.75× per call on identical episode counts is not a volume effect.
+2. **Not the wrapper.** R101's scaffold arm is the same agent class with an empty pack: **413.7**
+   uncached tokens a call against the reference's 408.0, −4.4 per call. The wrapper this lane blamed
+   for two rounds costs nothing at all. §179's own withdrawal is thereby confirmed on a second arm.
+3. **Not the pack's size, and only partly the pack's presence.** R99 served 14% more characters than
+   R93 and paid **+67.9** uncached tokens a call: a slope of **0.2819 tokens per served character**,
+   which is one token per 3.55 characters — the price of re-billing the block, to two significant
+   figures.
+
+**What that arithmetic refuses.** The block is 1,745 characters, so at 3.5–4.0 characters a token it is
+**436–499 tokens**: between **39% and 45%** of the 1,115.7-token premium, *even if every single call
+paid for it in full*. The remaining **623.8 tokens a call** are not in the pack. They are the arm's own
+turn material — the assistant message and the observation that follow each call — and they appear the
+moment a rule is served and barely move when the rule gets bigger.
+
+So the honest sentence is: **the memory's bill is mostly behavioural, not textual.** A rule in the
+context changes the action mix, the action mix returns larger observations, and those observations are
+billed uncached because they are new by definition. That is a different repair from placement (R102,
+refused), from distillation (R104), and from size (R99, closed) — and it is why the probe's
+`placement-is-free` was never going to change the bill.
+
+**Third, the instrument, because the next arm has to answer the rest.** `_record_usage` already saw
+every call's messages and read the provider's `prompt_cache_hit_tokens`; it kept neither. It now
+aggregates a **prompt census** per phase — total characters, characters of the material the provider
+provably saw before this call, characters of the newest message, and a characters-per-token ratio taken
+from the phase's **first call**, the only one the provider had never cached — and reports
+`prefix_coverage`: the share of that provably-seen material the provider actually credited.
+
+| | |
+|---|---|
+| `eval/drivers/tau2/run_split.py` | `_census_of`, `cache_census`, `reset_usage`; sums over every call, first call kept apart; **24 self-check cases, 77 assertions** |
+| `packages/eval/src/cache-census.ts` | `cacheCensusVerdict` — `prefix-honoured` (≥0.85) / `prefix-partial` (≥0.35) / `prefix-broken` / `unmeasured`, with the repair each one points at — **100/100/100/100**, 13 tests |
+| `packages/eval/src/bin/tau2-driver.ts` | carries `usage` into the artefact and prints `[tau2] cache: <state> — <sentence>` |
+| `packages/eval/src/bin/l4-pair.ts` | prints both arms' verdicts, because a pair that reports a delta and a bill and not this has not said what the money bought |
+
+The thresholds are the probe's own reading, not a preference: `cache-placement` measured the provider
+crediting 1,466 of a 1,497-token prefix, a coverage of 0.98.
+
+**Registered before the next dispatch, so the number is scored rather than explained.**
+
+| # | prediction | the arm that reads it |
+|---|---|---|
+| 1 | R104's memory arm reports `prefix-honoured` with coverage ≥ 0.9 | R104 |
+| 2 | its `last_tokens` is within 20% of its `uncached_tokens_per_call` | R104 |
+| 3 | the gap between `uncached` and `last` (the 624-token flat component) is the tool observation, not the block | R104's census, then R108 if it is neither |
+
+If prediction 2 fails, the prefix is being re-billed on some calls and the mechanism is a boundary that
+moves — which the census will show as `prefix-partial`, and which is a defect in the agent's message
+assembly rather than in the memory.
+
+**Cost of the round: $0.** Four artefacts already on disk, read from their phase records; one census;
+no model call and no dispatch. `pnpm check` exit 0 — 4,883 unit tests over 237 files, `cache-census` 100/100/100/100,
+coupling ledger 214 modules, core bundle unchanged at 47,402/47,500 B.
