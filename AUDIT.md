@@ -9610,3 +9610,42 @@ folding them into the intersection.
 > A field whose absence is load-bearing must say what its absence means, and two fields written by one
 > writer in one call must either agree about silence or state why they differ. The failure is not that
 > `scope` is permissive; it is that nothing anywhere said so, and the artefact could not be asked.
+
+## 34.140 A zero that belonged to the unit, read as a failure of the distiller
+
+**What was written, and when it was wrong.** §PROGRESS 190 first reported R99's store as
+
+> `store.conditioned 0, unconditioned 73` — **every record states no condition**, and eleven iterations
+> read that count as a retrieval statistic rather than as a statement about what a rule *is*.
+
+and drew from it that the distiller never writes a condition. Six hours later the same artefact was read
+for a different field:
+
+```
+distillUnit  { unit: 'raw', traces: 0, traced: 0, claims: 73 }
+distillForm  { form: 'record', refused: 0, maxTokens: 1200 }
+rawlog       { records: 73, clipped: 9, toolBan: false, ceiling: 2000 }
+```
+
+The store was written by the **raw** unit, whose record is `Q: … / A: …` copied from the episode.
+`rawLogInterpreter` has no `when` to write, so `conditioned: 0` is the unit's definition and not a
+distiller that declined to state a condition. The llm forms require one (`TRACE_RULES`: *"it must be
+checkable on a different request and must not hold for every request"*), and R111's evidence is that on
+this model they return nothing at all — which is why the lane runs `raw` in the first place.
+
+**The shape of the error is the one this record has already paid for twice.** R110 deleted a fallback
+that read a `kind` for a side; that was inferring a **semantic** from a field's default. This is its
+mirror: inferring a **failure** from a counter's zero, in an artefact that carried the field explaining
+the zero two keys away. Both are readings of a silence, and in both cases the document said what the
+silence was to anyone who read the whole of it.
+
+**What survived the correction.** The population is still real — 73 records, none conditional, 0.625
+against R93's fifteen at 0.700 — but the *cause* moved from "the writer will not write a condition" to
+"the lane selected a unit that has none", and the arm that follows is a paired comparison of the two
+units holding the population fixed (**R113a**), not a prompt repair.
+
+**The rule this adds.**
+
+> A counter reports a property of the unit it was taken in. Before a zero is read as a defect, the same
+> document must be asked which unit produced it — and when the document answers, the answer belongs in
+> the sentence that quotes the zero.

@@ -5918,18 +5918,25 @@ SCOPE                EMPTY — the projection never carried a task
 exactly what the floor encoded: every record declares a domain, so the population the four papers above
 describe — a rule with no bound at all — does not exist in this store.
 
-**What the same artefact says in its other column is the finding.** `conditioned 0, unconditioned 73`:
-**every record states no condition**. That count has been in every artefact since R51 and eleven
-iterations read it as a *retrieval* statistic — does the pack's rule match this question — rather than as
-a statement about what the rule is. Beside 2605.12978's mechanism (abstraction strips the applicability
-condition) a store of seventy-three unconditional statements is the mechanism in its purest form, and it
-explains the dose-response without appeal to scope: a larger store is more statements that are each true
-of one episode and of nothing in particular.
+**What the same artefact says in its other column is the finding, once its unit is read with it.**
+`conditioned 0, unconditioned 73` — every record states no condition — and the artefact also says why:
+`distillUnit {unit: 'raw'}`, `distillForm {form: 'record'}`, `rawlog {records: 73, clipped: 9}`. This
+store was written by the **raw** unit, whose record is `Q: … / A: …` copied from the episode; it has no
+`when` **by construction**. The zero is a unit's definition, not a writer's failure — this appendix first
+read it as the latter, and AUDIT 34.140 records the correction.
+
+That makes the comparison sharper rather than weaker. The lane's two ends are both artefacts: seventy-three
+raw records at **0.625** and fifteen claims from the `correction` form at **0.700**, where the prompt
+requires a `when`. Beside 2605.12978's mechanism (abstraction strips the applicability condition) the
+record's own dose-response has a candidate explanation that is a *selection* rather than a bug: a lane whose
+reflector returns nothing falls back to the unit that asks the model nothing, and a store of raw records is
+a store of statements each true of one episode and of nothing in particular — which is also why clipping
+(`clipped: 9`) and count both grow with the store.
 
 | question | answer at $0 | what it costs to act on |
 | --- | --- | --- |
 | do the rules declare a scope? | the store declares a domain on all 73; the projection could not show the other four until this iteration | fixed (`scopeDims`), reading bounded to what was carried |
-| do the rules state a condition? | **no — 0 of 73** | R113a: a distillation form that must write the condition, and a witness that refuses a record without one |
+| do the rules state a condition? | **no — 0 of 73**, and `distillUnit: raw` says that is the unit, not the writer | R113a: one failure population written once as raw records and once as correction claims |
 | is that systematic or one distiller? | unknown; R104's store is the first written after `polarity` existed | R104's `conditioned` count, already in its artefact |
 
 This is the first hypothesis on this line that the record killed with its own instrument rather than by

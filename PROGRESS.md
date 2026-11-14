@@ -18467,17 +18467,36 @@ number existed, so **the scope arm is not registered and the scope line is close
 reason is the one the threshold encoded: every record declares a domain, so there is no population of
 scope-less rules to treat.
 
-**The reading that matters is the other column, and it is not new.** `store.conditioned **0**,
-unconditioned **73**` — **every record in the store states no condition at all**. The artefact has
-carried that number since R51 and nothing in eleven iterations joined it to the dose-response, because
-`conditioned` was read as a *retrieval* statistic (does the pack's rule match the question) and not as a
-statement about what the rule *is*. Read beside arXiv 2605.12978 — abstraction strips the applicability
-condition — a store with zero conditions and seventy-three records is the mechanism in its purest form,
-and it explains why a bigger store is worse: more unconditional statements, each of them true of its own
-episode and of nothing in particular.
+**The reading that matters is the other column, and it needed one more field to explain it.**
+`store.conditioned **0**, unconditioned **73**` — every record states no condition — and the same
+artefact also records *why*:
 
-So the next arm is not a scope arm. It is the question R51 asked and this record never answered:
-**why does the distiller write a statement and never a condition**, and what does a store look like when
-each record carries the condition of the event that produced it. That is registered as **R113a** in the
-roadmap, after R104 lands, because R104's store is the first one written after `polarity` existed and its
-`conditioned` count is a second data point rather than a repetition.
+```
+distillUnit  { unit: 'raw', traces: 0, traced: 0, claims: 73 }
+distillForm  { form: 'record', refused: 0, maxTokens: 1200 }
+rawlog       { records: 73, clipped: 9, toolBan: false, ceiling: 2000 }
+```
+
+This store was written by the **raw** unit, whose record is `Q: … / A: … / note: …` copied from the
+episode. It carries no `when` **by construction**: `rawLogInterpreter` has no condition to write, and
+the `conditioned` count is therefore reporting a unit's definition rather than a distiller's failure.
+Reading it as the latter was this iteration's own error, corrected six hours later in **AUDIT 34.140**
+before it reached a registration.
+
+**The correction moves the question rather than closing it.** The lane's two ends are now both
+artefacts rather than assumptions:
+
+| store | unit | records | conditional? | pass^4 |
+| --- | --- | --- | --- | --- |
+| R99 (run `43463317323`) | `raw` — `Q/A/note`, no `when` | 73 | **no, by construction** | 0.625 |
+| R93 | fifteen claims (unit not verified in this iteration) | 15 | the `correction` form requires a `when`; whether R93 ran it is the one cell this iteration did not read | 0.700 |
+
+Two stores, seven and a half points apart, differing in **form and size at once** — which is exactly
+the confound R104 was built to break for the *unit* and does not break for the *condition*. Why the
+lane runs `raw` at all is the other half of the answer and it is already measured: R111 found the
+`correction` interpreter returning fifteen empty replies from fifteen corrections on this model, so a
+lane that needs a store falls back to the unit that asks the model nothing.
+
+So the next arm is neither a scope arm nor a prompt fix. It is **R113a**: one dispatch, one population,
+the same failure events written once as raw records and once as correction claims, so the seven and a
+half points can be attributed to the condition rather than to the count.
