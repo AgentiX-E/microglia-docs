@@ -5576,3 +5576,30 @@ that is wider than its evidence fires where it does not apply, and only one syst
 computes how much wider it got — the `collateral` count, which is a set intersection away given a
 condition field and impossible without one. That is the one number here a competitor could not
 produce without changing its data model.
+
+## Appendix AC — Where the model sits in a consolidation, four systems and one axis nobody publishes (2026-11-14)
+
+Appendix AB compared what the systems consolidate. This one compares **who does the consolidating**,
+because "the competitors use a model to merge" is the objection the design keeps meeting, and the
+premise is two operations wearing one word.
+
+| system | grouping | writing | merges existing memory | audit chain a second reviewer can replay |
+|---|---|---|---|---|
+| **ALTK-Evolve** | cosine over `task_description` / `guideline_text` | a model, one guideline per cluster | yes, `support` conserved | no — a rerun regroups |
+| **ACE** | embedding dedupe + id | Generator → Reflector → **Curator** (a model) | yes, and it measured the cost | no |
+| **AutoGuide** | none — retrieved by context key | a model, from a contrastive trajectory pair | **no** — extraction, not compression | not applicable |
+| **ExpeL / AWM** | none | a model | no | no |
+| **microglia (designed)** | lexical key over the **condition**, deterministic | copies the medoid's sentence; a model is a **registered arm** | yes, with a witness and `census` | **yes** — the decision log replays onto an immutable batch |
+
+**The measurement that decides it.** ACE is the only system that has priced a model rewriting an
+existing memory: repeated rewrites shrank a context **18,282 → 122 tokens** with a **−9.6 point**
+drop, and its authors answered by never rewriting. No system on this board publishes a consolidation
+that is auditable after the fact, and the reason is structural: a merge decided by a model is decided
+by the model, so the thing a reviewer approved at 3am cannot be shown to a second reviewer at 9am.
+
+**Where microglia sits.** Alone on the last column, and behind on the first: a lexical grouping key
+pays for its reproducibility with a synonym problem that a cosine does not have. That price is now a
+number rather than an admission — `fragmentation` on the batch — and it is the quantity that would
+justify an embedding edge or a model splitter. Until it is measured on a real store, the honest
+ranking is: **ALTK-Evolve 67.5% retail Pass^4 is the published SOTA cell; this project has a design
+and a $0 census, and R104 ($1.21, bar +5.0pp) is the arm that would place it.**

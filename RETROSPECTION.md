@@ -112,6 +112,62 @@ version of itself. That is ACE's measured failure mode, and it is also the opera
 launder an instance id into a confident-sounding generality — R99's exact defect, made worse,
 because a guideline *sounds* more authoritative than the anecdote it came from.
 
+### 4.1 Why the absent operator is `summarise`, and not the model
+
+The fair objection to §4 is that the two systems this design borrows from both put a model in the
+merge. The objection is half right, and the half that is wrong is the part that decides the design.
+
+| system | who groups | who writes | is there a merge of *existing* memory at all |
+|---|---|---|---|
+| **ALTK-Evolve** | **cosine clustering** — vectors, not a model | a model writes one guideline per cluster | yes: `support` conserved, `lossless` / `sup3` are deterministic dials |
+| **AutoGuide** | none — guidelines are retrieved by context key | a model writes `when → do` from a **contrastive trajectory pair** | **no**: it is a first-order extraction, not a second-order compression, and its pool never grows to need one |
+| **ACE** | embedding dedupe + id | Generator → Reflector → **Curator** | yes, and it measured what LLM rewriting costs |
+
+So "the competitors merge with a model" is two different operations wearing one word: **a model
+writes** (ALTK, AutoGuide) versus **a model rewrites what is already written** (ACE). Only the
+second is the operation this pipeline was asked to perform — its input is a store of finished
+records, not raw trajectories — and the only controlled measurement of it is negative: repeated
+rewriting of one context shrank it **18,282 → 122 tokens** with a **−9.6 point** drop, which its
+authors named `brevity bias` and `context collapse` and answered by never rewriting.
+
+Four reasons make that negative result decisive *here* rather than merely relevant:
+
+1. **Attribution.** R104 asks whether the **unit** is right. A model in the merge changes the
+   grouping boundary and the prose at once, so a positive delta could not be assigned to either.
+   R101 has just measured a −5.00pp difference between two arms that sent the same prompt; at n = 40
+   this lane cannot afford two variables in one arm.
+2. **The ledger assumes stable text.** `applyDecision` refuses a decision whose `textBefore` no
+   longer matches the card. Two model passes over one corpus produce two different cards, so a
+   session that ended at 3am could not be replayed at 9am by anyone holding the same two files — and
+   the audit trail *is* the state. A model can be put behind that boundary only by snapshotting its
+   output into the batch, which is not a prohibition, it is a sequencing requirement.
+3. **The witness needs a baseline that cannot fail its own check.** `seedTriggerOf` takes the
+   intersection of the members' condition words, so the seed proposal is entailed by every member
+   *by construction*; the gate then grades the proposer rather than the fallback. A generated trigger
+   is a guess that must clear the same gate — which is exactly why it belongs on the treatment side
+   of the comparison.
+4. **Laundering.** R99's store was 79% pass-derived records each carrying one run's `order_id`. The
+   symptom is an anecdote narrated as a generality, and a model is the instrument best suited to
+   narrating it. ACE's brevity bias is the same failure measured in tokens.
+
+**The model is not excluded; it is registered.** Two paths already exist in the repository as arms
+rather than as defaults — the `LlmInterpreter` in `packages/core/src/distill/llm.ts` writes
+corrections with a model today, and the retrospection pipeline keeps `deterministicProposal` as the
+baseline a model-written proposal must beat:
+
+| where a model can enter | what it does | determinism kept | price | status |
+|---|---|---|---|---|
+| **proposer** | writes one guideline per cluster | no, but the output faces the witness | ≈ $0.01 per candidate (12k prompt tokens over 15 sources) | **R104b**, registered, not dispatched |
+| **splitter** | proposes a split where single-link chaining pulled a loose cluster together | yes — the split is the reviewer's, and each part is re-witnessed | same | not registered; the better of the two, because it moves *grouping* and leaves the prose alone |
+| **embedding edge** | recalls synonym pairs into the union-find; the threshold stays deterministic | yes, given a pinned model and cached vectors | ≈ $0 | not built |
+
+And the trigger for building either of the last two is a number rather than an opinion, which is
+what §8's `fragmentation` now measures: **if the share of repairs no cluster claims is high while
+`witnessRate` is also high, the bottleneck is grouping and the model belongs in the splitter; if
+fragmentation is low and R104 still does not move, no amount of better prose will help and the next
+arm is about abstention rather than about units.**
+
+
 ---
 
 ## 5. The witness: coverage as a direction, not a similarity
@@ -242,6 +298,16 @@ Four levels, cheapest first. Nothing here needs a benchmark run until level 3.
 | `witnessRate` | entailed / claimed | a proposer that overstates coverage is caught here, not at the benchmark |
 | `triggerWidth` | collateral / corpus | how much of the corpus a single rule now governs |
 | `transferRatio` | distinctTasks / covered | 1.0 means every source is its own task, i.e. no generalisation at all |
+| **`fragmentation`** | repairs no cluster claims / repairs | the price of a lexical key. A high reading with a high `witnessRate` says the bottleneck is **grouping**, which is the case for an embedding edge or a model splitter (see §4.1); a low one says neither would buy anything |
+| **`chained`** | clusters whose mean cohesion is under 0.5 | single-link clustering was chosen because one clear pair is enough to argue a merge; its cost is a run of near-neighbours that drags two distant corrections together, and this is that cost counted |
+| **`meanCohesion`** | mean cluster cohesion | one number for how tight the corpus's groups are |
+
+Both new metrics are computed by `clusterCensusOf` from the same objects the batch is built from,
+and the batch carries them as `census` — so a reviewer opening a card can read the state of the
+corpus that produced it rather than inferring it. Measured on the authored demo fixture:
+**fragmentation 0.364 (4 of 11 repairs no cluster claims), chained 0 of 3, mean cohesion 0.662**.
+That is a fixture, not a measurement of a run, and it is quoted here only to show the instrument
+reads.
 
 ### M2 — retrieval replay, cents
 
@@ -297,19 +363,19 @@ it feeds. Same ratio as the cache probe: a tenth of the arm it guards.
 | | |
 |---|---|
 | `packages/core/src/retrospect/witness.ts` | content words, entailment, collateral, polarity, admissibility — **100/100/100/100** on 23 tests |
-| `packages/core/src/retrospect/cluster.ts` | source classification, union-find clustering, seed trigger, medoid, deterministic proposal — **100/100/100/100** on 24 tests |
-| `packages/core/src/retrospect/ledger.ts` | six actions, six refusals, replay, summary, admission — **100/100/100/100** on 37 tests |
+| `packages/core/src/retrospect/cluster.ts` | source classification, union-find clustering, seed trigger, medoid, deterministic proposal, **cluster census** — **100/100/100/100** on 29 tests |
+| `packages/core/src/retrospect/ledger.ts` | six actions, six refusals, replay, summary, admission, the batch's `census` — **100/100/100/100** on 39 tests |
 | `packages/eval/src/review/server.ts` | five routes, the card payload, the rendered preview — **100 / 95.6 / 100 / 100** on 20 tests |
 | `packages/eval/src/review/page.ts` | the console — **100/100/100/100** |
-| `pnpm eval:retrospect` | store dump → batch, refusals included |
+| `pnpm eval:retrospect` | store dump → batch, refusals included, census printed and stored |
 | `pnpm review:serve` | the console, loopback by default, decisions appended as JSON Lines |
 
 **Not built, deliberately:** a model-written proposer (the deterministic one is the baseline the
 treatment must beat, and building the treatment before the baseline is measurable is how a
-project ends up unable to say which half helped); automatic supersession of the sources (a
-status change on the write path, cheap, but only worth wiring once R104 says the unit is right);
-and the M2 replay harness (embeddings only, but it needs a store that carries per-item polarity
-— see below).
+project ends up unable to say which half helped — it is registered as **R104b** at ≈ $0.01 per
+candidate); automatic supersession of the sources (a status change on the write path, cheap, but only
+worth wiring once R104 says the unit is right); and the M2 replay harness (embeddings only, but it
+needs a store that carries per-item polarity — see below).
 
 **Blocking issue, found by running the pipeline on a real artefact.** Neither τ² store dump
 carries a **per-item polarity**. Every record in R93's and R99's dumps is `kind: 'exemplar'` —

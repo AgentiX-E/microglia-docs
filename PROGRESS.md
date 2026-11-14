@@ -17892,3 +17892,55 @@ artefact cannot answer (§179 was the first), and the fix is one field.
 **Cost of the whole round: $0.** No model call was made — the clustering, the trigger, the witness
 and the admission are all deterministic, and the console is a page. R104 is where the money goes,
 and it has a bar to clear.
+
+### 184 — R106: the arm's declaration now derives the gate set, and the batch prices its own grouping
+
+R101's run was red on three gates its registration had not enumerated (AUDIT 34.128). This round
+removes the enumeration rather than extending it.
+
+**The set is derived, not listed.** Every gate declares what it reads where it is built —
+`storeReading` (11 gates), `packGate` (5), `trialReading` (8 transfer ids) — and the arm's
+declaration decides the disposition of the whole set: inverted when the gate measures a quantity the
+arm declared to be zero, omitted **only** when the arm has no subject for it at all (`V16` requires a
+hundred informative trials, and an arm that served no rule has nothing to transfer). A gate that
+reads a store and states no empty form is refused at grading time, so the next gate somebody adds
+announces itself instead of becoming R101's fourth failure.
+
+| | |
+|---|---|
+| `packages/protocol/src/declaration.ts` | `GateSubject`, `EmptyForm`, the three dispositions, `scopeGates` — **100/100/100/100**, 12 tests |
+| `packages/protocol/src/gates.ts` | 20 gates marked at their construction sites, `buildProtocolGatesWithScope` — **100/100/100/100** |
+| `packages/eval/src/tau2-gates.ts` | the audit carries `omitted`, and a declared-away gate is not reported as an absent one — **100/98.9/100/100** |
+| `packages/eval/src/pair-gates.ts` | `registeredBand` replaces the resolution question for a control pair — **100/100/100/100**, 14 tests |
+| `.github/workflows/sota.yml` | `TAU_BAND` from `vars`, because a 26th dispatch input makes every dispatch unparseable |
+
+**The three readings, as a decision table, because a table of gate ids is the defect being removed.**
+
+| declaration | store | verdict | why |
+|---|---|---|---|
+| declared empty | zero | **green** | the zero is the arm agreeing with its declaration |
+| declared empty | non-zero | **red** | the declaration and the run disagree |
+| not declared | zero | **red** | an empty store nobody declared is what `V0` exists for |
+
+The middle row is what makes the other two mean anything: a module that passed all three would pass
+anything.
+
+**The marker is a non-enumerable symbol.** An artefact is compared byte for byte by `eval:protocol`,
+so a bookkeeping field that serialised would have rewritten thirty-one committed reports to say
+something their runs never knew. `JSON.stringify` cannot see it, `toEqual` cannot see it, and R106
+changed no published byte — `eval:protocol` re-rendered all 31 and every one reproduced.
+
+**And the batch now prices its own grouping.** `clusterCensusOf` computes `fragmentation` (the share
+of repairs no cluster claims), `chained` (clusters whose mean cohesion is under 0.5) and
+`meanCohesion`, all from the objects the batch is built from, and the batch carries them as `census`.
+On the authored demo fixture: **fragmentation 0.364 (4 of 11 repairs unclaimed), chained 0 of 3, mean
+cohesion 0.662** — a fixture, quoted to show the instrument reads, not as a measurement of a run.
+
+That number is the one that decides the LLM question this round was asked about (AUDIT 34.131): high
+fragmentation with a high `witnessRate` means the bottleneck is **grouping**, which is the case for an
+embedding edge or a model splitter; low fragmentation with an unmoved R104 means better prose buys
+nothing.
+
+**Cost of the round: $0.** Two gates' worth of harness, one census, no model call. `pnpm check` exit
+0 — 4,863 unit tests, 213 modules in the coupling ledger (protocol 2 → 3), core bundle 47,402/47,500 B
+unchanged.

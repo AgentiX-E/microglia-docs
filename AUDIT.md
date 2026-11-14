@@ -9084,3 +9084,111 @@ item, written at distill time — and it costs nothing to add to the next run.
 
 > Look at the artefact with a reader that is not a model. Three of this project's last five defects
 > were in text a human never saw, and every one of them was one `print` away.
+
+## 34.130 The third hand-written inversion is the pattern, not the incident
+
+R101 bought a control arm and paid for a lesson about the harness. Its registration named two gates
+to invert for a declared-empty store — `V0-instrument-ready` and `V1-pack-not-empty` — and the run
+(`43478128683`) failed **three others**:
+
+```
+FAIL V44-domain-accounted     the store holds no item, so there is no ledger to account for
+FAIL V16-transfer-resolvable  18 informative trial(s), 11 repair(s)
+FAIL l4-effect-resolved       UNRESOLVED: |-5.00pp| against 24.27pp minimum detectable difference
+```
+
+§34.124 had already inverted two gates by hand and called it a design. This is the third appearance
+of one shape, and the shape is not "somebody forgot a gate": it is **a registration file enumerating
+the gates that depend on its arm**, which is a second copy of the gate catalogue maintained by
+whoever writes the registration. The copy drifts the first time a gate is added, and it drifts
+silently, because a list of ids that is too short looks exactly like a list that is complete.
+
+**Three dispositions were available, and only one survives.**
+
+| disposition | what it makes the arm | why |
+|---|---|---|
+| waive the gate | unmeasurable | a gate that stands down for one arm is the vacuous pass this record keeps finding: `V6` and `V7` fire on an empty control list and certify nothing |
+| omit the gate | silent | "this run is not graded" is the one statement a run whose pipeline matters most cannot make |
+| **invert the gate** | **falsifiable** | the arm declared zero, so the quantity the gate requires to be non-zero is required to be zero instead |
+
+Omission survives in exactly one case, and it is not a convenience: a gate whose **subject does not
+exist** on the arm. `V16-transfer-resolvable` requires a hundred informative trials, and an arm that
+served no rule has nothing to transfer — the eighteen trials it carried belong to the reference half
+of the pair. There the honest sentence is "not graded, and here is why", and the omission travels in
+`ScopedGates.omitted` so it is a row in the report rather than a silence.
+
+**How the set is derived.** Each gate declares what it reads where it is built —
+`storeReading`, `packGate`, `trialReading` — and the disposition of the whole set follows from the
+arm's declaration. Twenty gates are marked: eleven read the store, five read the pack it fills, and
+eight transfer gates exist only because a rule was served. A gate that reads a store and states no
+empty form is **refused at grading time**, which is how the next gate somebody adds announces itself
+instead of quietly becoming R101's fourth failure.
+
+The declaration travels on the gate as a **non-enumerable symbol**, and that is the one subtle
+decision here: an artefact is compared byte for byte by `eval:protocol`, so a marker that serialised
+would have rewritten thirty-one committed reports to say something their runs never knew.
+`JSON.stringify` cannot see it, `toEqual` cannot see it, and the published shape of a gate is exactly
+what it was.
+
+**Control pairs register a band, not a significance.** `l4-effect-resolved` asked R101's pair whether
+it could resolve its own delta, and answered `24.27pp` — correct, and about a question the arm never
+posed. A control pair withholds an interval before it runs: R101 registered `[−7.5, +2.5]pp` and read
+−5.00pp, which is the arm agreeing with its own registration. When a band is present it **replaces**
+the resolution question rather than sitting beside it; two conditions on one gate is how a gate stops
+saying one thing. The band arrives as `TAU_BAND` from a repository variable, because `sota.yml`
+already declares the twenty-five `workflow_dispatch` inputs GitHub will parse and a twenty-sixth makes
+every dispatch in the repository unstartable — a limit `check-workflows.py` caught on the first push
+of this change.
+
+**The rule this adds.**
+
+> An exception a registration has to remember is a gate that will be forgotten. If a condition
+> depends on what the arm is, the arm must be able to derive it — and a condition that cannot be
+> derived must be refused, not skipped.
+
+## 34.131 A model in the merge would have made R104 unreadable, and that is a measurement decision
+
+The obvious objection to the retrospection design is that both systems it borrows from use a model to
+merge. The premise is half true and the half that is false decides the design.
+
+| system | who groups | who writes | merges *existing* memory |
+|---|---|---|---|
+| ALTK-Evolve | **cosine clustering** | a model, one guideline per cluster | yes — `support` conservation and `lossless`/`sup3` are deterministic dials |
+| AutoGuide | none (context key retrieval) | a model, from a **contrastive trajectory pair** | **no** — first-order extraction, not second-order compression |
+| ACE | embedding dedupe + id | Generator → Reflector → **Curator** | yes, and it measured the cost: **18,282 → 122 tokens, −9.6 points** |
+
+So "they merge with a model" is two operations wearing one word — **a model writes** versus **a model
+rewrites what is written**. Only the second is what this pipeline does, because its input is a store of
+finished records rather than raw trajectories, and the only controlled measurement of it is ACE's
+negative one.
+
+Three arguments decide it here rather than merely favour it:
+
+1. **Attribution.** R104 tests the *unit*. A model in the merge changes the grouping boundary and the
+   prose together, so a positive delta could not be assigned to either — at n = 40, against a measured
+   null of 5.00pp, one variable per arm is the budget.
+2. **The ledger assumes stable text.** `applyDecision` refuses a decision whose `textBefore` no longer
+   matches the card. Two model passes over one corpus produce two different cards, so a 3am session
+   could not be replayed at 9am by anyone holding the same two files — and the audit trail *is* the
+   state. A model can cross that boundary only by having its output snapshotted into the batch.
+3. **The witness needs a baseline that cannot fail its own check.** The seed trigger is the
+   intersection of its members' condition words, so it is entailed by construction and the gate grades
+   the proposer rather than the fallback. A generated trigger is a guess that must clear the same gate,
+   which is precisely what makes it a treatment.
+
+**The model is registered rather than excluded.** `LlmInterpreter` already writes corrections with one,
+and the deterministic proposal is the baseline a model-written one must beat — registered as **R104b**
+at ≈ $0.01 per candidate against $1.21 for the arm it feeds. The better of the two remaining
+entry points is the **splitter**, not the proposer: it moves the grouping and leaves the prose alone,
+so ACE's failure mode does not apply to it.
+
+**And the trigger for building it is a number.** `fragmentation` — the share of repairs no cluster
+claims — is now computed by `clusterCensusOf` and carried on the batch as `census`. High fragmentation
+with a high `witnessRate` means the bottleneck is grouping; low fragmentation with an unmoved R104 means
+the unit was never the problem and the next arm is about abstention.
+
+**The rule this adds.**
+
+> Before adding a model to a compression stage, measure whether the stage's failure is *recall* or
+> *fidelity*. A model fixes the first and damages the second, and the second is the one this pipeline
+> was built to protect.
