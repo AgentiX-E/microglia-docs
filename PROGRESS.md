@@ -18995,3 +18995,55 @@ than discovering them after the fact.
 **100/100/100/100** over 33 tests. `prereg.ts` reached 100% branch by **deleting** an unreachable
 `distinct[0] ?? ''` fallback and naming the whole arm list instead, which is the third time this
 record has removed a branch rather than exempted it.
+
+### 197 — Three rulers a factor of three apart, and a readback that printed none of them
+
+**What was wrong with every readback this project has ever written.** `shapeArmSummary` printed
+`per-failure pass4 55.00% | collapse pass4 72.50%` and nothing else. A reader compared 55.00% with a
+published bar 2.50pp away, on a measurement whose half-width at 40 tasks is **15.42pp**. The point
+estimate was the only thing on the line, and a point estimate beside a bar is the reading that
+manufactures a result.
+
+**Three quantities, and this record has been reading one while concluding with another.**
+
+| what is claimed | the ruler | at 40 tasks | at 68 tasks |
+|---|---|---|---|
+| a **paired delta** between two arms of one dispatch | `detectableDelta(tasks, d)` | 44.30pp (`d=1`) / 27.91pp (`d=0.397`) | 33.98pp / 21.41pp |
+| an **absolute score** against a fixed bar | `1.96·sqrt(p(1−p)/n)` | **±15.42pp** | ±11.86pp |
+| a **cross-sample difference** — a leaderboard row | `1.96·sqrt(p₁(1−p₁)/n₁ + p₂(1−p₂)/n₂)` | 17.65pp vs ALTK's 114 | 14.65pp |
+
+The first is both the widest and the most sensitive, because it conditions on how many pairs changed
+hands: with few changes it is the sharpest instrument this record has, and at complete discordance it
+is the bluntest. That asymmetry is why reading a leaderboard with it — Appendix AL's first draft —
+produced a correct conclusion from wrong arithmetic.
+
+**What shipped.**
+
+- `scoreHalfWidthPp(score, tasks)` — the binomial half-width, refusing a score that is not a share.
+  An empty sample returns `Infinity` (the answer `detectableDelta` and `pairedWidths` also give) and a
+  negative count throws, because "no sample" and "not a sample" are two statements.
+- `shapeArmSummary` and `noteFacadeSummary` print `pass4 55.00% ±15.42pp`, and `(no tasks scored)`
+  where there is no sample rather than `±0.00pp` — a zero width is the most confident thing the line
+  could say about an arm that scored nothing.
+- `prereg.ts`'s `effectClaimPp` refuses a claimed effect its own sample could not resolve; the
+  registration's ruler is now stated in the file rather than inferred after the fact.
+
+**The arithmetic a reader needs, written where they will hit it.**
+
+> To claim a score is above a 0.575 bar at 40 tasks, the interval's lower bound must clear it:
+> `p − 15.42pp > 0.575` needs **p ≥ 0.75**. At 0.70 the bound is 0.558 and at 0.65 it is 0.502.
+
+R119 is registered against exactly that sentence. It is a descriptive arm — one arm at R104's own `n`,
+because R104's single arm took 177 wall-clock minutes and the L4 ceiling is 340, so the two-arm design
+at 68 tasks does not fit in the window. A registration that names a control it cannot finish buys
+nothing.
+
+**Docs.** `GLOSSARY` gains **Three rulers**, **Score interval** and **Effect claim**; `USER-GUIDE`
+13.21 is the one page a reader needs before quoting any number this project prints, with the three
+rules and the two commands that check them.
+
+**Quality.** `pnpm check` exit 0 — **5,206 unit tests over 253 files** (was 5,196 over 253), coverage
+**100 / 99.95 / 100 / 100**, `power.ts` at **100/100/100/100** over 45 tests, `note-facade.ts` and
+`shape-pair.ts` both at **100/100/100/100**. `note-facade.ts`'s summary had never been asserted by any
+test — the branch that prints `(no tasks scored)` was uncovered the moment it was written, which is
+how the gap was found rather than by reading the file.
