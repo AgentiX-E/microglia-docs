@@ -17910,7 +17910,7 @@ announces itself instead of becoming R101's fourth failure.
 |---|---|
 | `packages/protocol/src/declaration.ts` | `GateSubject`, `EmptyForm`, the three dispositions, `scopeGates` — **100/100/100/100**, 12 tests |
 | `packages/protocol/src/gates.ts` | 20 gates marked at their construction sites, `buildProtocolGatesWithScope` — **100/100/100/100** |
-| `packages/eval/src/tau2-gates.ts` | the audit carries `omitted`, and a declared-away gate is not reported as an absent one — **100/98.9/100/100** |
+| `packages/eval/src/tau2-gates.ts` | the audit carries `omitted`, and a declared-away gate is not reported as an absent one — **100/100/100/100** |
 | `packages/eval/src/pair-gates.ts` | `registeredBand` replaces the resolution question for a control pair — **100/100/100/100**, 14 tests |
 | `.github/workflows/sota.yml` | `TAU_BAND` from `vars`, because a 26th dispatch input makes every dispatch unparseable |
 
@@ -17942,5 +17942,5 @@ embedding edge or a model splitter; low fragmentation with an unmoved R104 means
 nothing.
 
 **Cost of the round: $0.** Two gates' worth of harness, one census, no model call. `pnpm check` exit
-0 — 4,863 unit tests, 213 modules in the coupling ledger (protocol 2 → 3), core bundle 47,402/47,500 B
+0 — 4,870 unit tests, 213 modules in the coupling ledger (protocol 2 → 3), core bundle 47,402/47,500 B
 unchanged.
