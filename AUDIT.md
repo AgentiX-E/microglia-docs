@@ -9374,3 +9374,68 @@ layer disagreeing with the rule it displays.
 **Cost of finding them:** $0. All three were caught by unit tests over pure functions before any dispatch
 was queued, which is the ordering this record keeps asking for and rarely gets: R70's coverage gate refused
 a paid run, and these three would have been paid runs too.
+
+## 34.135 The side was guessed from a field that carries no side, and the guess had a sign
+
+**What was measured.** `pnpm eval:retrospect` is the runner that turns a store into a review batch: it
+classifies each record as a `repair` (usable for writing a guideline) or a `pass` (usable only to
+contradict one), then clusters the repairs. It could not run on a single artefact this lane has produced.
+The reason was recorded as an instrumentation gap in §34.129 — the dumps carry no per-item side — and the
+gap was real. What was not recorded is that the fallback standing in for it was **worse than the gap**.
+
+```ts
+function outcomeOf(item: StoreItem): 'repair' | 'pass' {
+  if (item.polarity === 'repair' || item.polarity === 'pass') return item.polarity;
+  return item.kind === 'exemplar' || item.kind === 'procedure' ? 'pass' : 'repair';
+}
+```
+
+`kind` is what the distiller's model chose to write, not which half of a run the record came from. The τ²
+distiller writes `exemplar` for a correction and for a success alike — all 15 of R93's records and 64 of
+R99's are exemplars, the fifteen from corrections included — so the fallback read **every real record as a
+success**. A random fallback would have produced a mixed corpus and a batch whose proposal quality could
+be argued about; this one produced a refusal, and that is what made it look like a missing instrument
+rather than a wrong one.
+
+**The failure mode it was one edit away from.** The refusal sentence said two causes and could not tell
+them apart:
+
+> `the store holds 15 record(s) and none of them is a repair (kinds: exemplar); nothing to consolidate.
+> Either the run distilled only successes, or the dump carries no per-item polarity and every record reads
+> as one`
+
+The obvious repair — "then let the fallback decide" — would have consolidated fifteen corrections into
+guidelines *labelled as successes*, under the name of a lane whose entire premise is that a success may not
+teach a guideline. That is the laundering R99 already paid 6.5 points for, arriving through a default.
+
+**Why no test caught it.** `vitest.config.ts` excludes `**/bin/**`, on the argument that a CLI is a shell
+over logic that lives in the package. The only function in the repository that decides whether a real
+artefact can be read was inside that shell, so it had no test at all — not an untested branch, an
+untested decision. The exclusion is right and its precondition was not met: `bin/` may hold a shell, and
+this one held the reader. The logic is now `packages/eval/src/retrospect-store.ts` (23 tests,
+100/100/100/100) and the shell is a shell.
+
+**And the fallback was deleted rather than repaired**, because the two candidates differ in kind. A
+`repair`/`pass` default is a *semantic* decision about one record's provenance, which no enum can carry;
+what the reader does instead is count the records it cannot classify and refuse when that leaves the
+corpus empty, naming which of the two causes fired. A silence that is counted is an instrument; a silence
+that is filled in is a guess.
+
+**A second, quieter instance of the same shape is in the replacement.** The new field is checked against
+the run-level census that already existed (`provenance.itemsEditedOnly` / `itemsPassedOnly` /
+`itemsMixed`, joined through `EvidenceRef.runId`), and for a fully labelled store the two agree **by
+construction** — the field's two populations and the census's three both partition the item count. Written
+as `agree when the numbers match`, the check would have certified nothing while looking like evidence.
+What it actually tests is the inequality (the store may not record fewer repairs than the join knows
+about, which is what a wrong `polarityFor` mapping produces) and the count (a truncated sample or a
+mismatched artefact). The module says so at the top, and the state is `unavailable` — not `agree` — when
+the comparison cannot run.
+
+**The rule this adds.**
+
+> A default that maps an enum onto a semantic decision must be checked against the population that
+> exists, not against the enum's other members. Here the population was one value wide and the default
+> covered it entirely.
+
+**Cost of finding it:** $0, and it was found by running the pipeline on a real artefact and reading the
+sentence it printed — the same reader that found §34.129.

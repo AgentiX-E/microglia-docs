@@ -18197,3 +18197,92 @@ registration that claimed five points would be claiming something the design can
 99.98 / branches 99.93 / functions 100**, `shape-pair.ts` at **100/100/100/100** over 32 tests, coupling
 ledger **218 modules** (was 217), core bundle unchanged at **50,478/50,600 B raw and 17,203/17,400 gzip**
 (the pair lives in `eval`, so nothing new ships to a host).
+
+### 188 — R110: the store records which side a record came from, and the guess it replaced had a sign
+
+R109a closed with a queue, and the first item on it was not an arm. The retrospection lane can read a
+store and turn corrections into guidelines; the runner that does it (`pnpm eval:retrospect`) had never
+been able to read *any* real artefact, because a store could not say which records came from a
+correction. Every dump this lane has produced — R93's 15 records, R99's 73 — is `kind: 'exemplar'`, and
+the fifteen distilled from corrections are exemplars too. The run-level provenance knew the split
+(`itemsEditedOnly: 15`, `itemsPassedOnly: 58`) and could not attribute it to an id.
+
+**What shipped is one field, in the shape the record already had for `tier`.** `KnowledgePolarity` is
+`repair` or `pass`; `polarityFor(signal)` reads it from the **signal** rather than the kind, because one
+kind carries both sides — a `rating` with `value: 'up'` and one with `value: 'down'` are one kind and two
+sides, and so are a successful and a failed `outcome`. A `DistillCandidate` may carry one; the distiller
+stamps it after the spread, the way it stamps the attempt number, so an interpreter's claim about which
+side an observation is on is discarded: an interpreter is host code reading someone else's evidence.
+`createKnowledgeItem` carries it, `mergeEvidence` adopts one when the item has none and then **holds** it
+— a success that repeats a lesson learned from a failure is support for the lesson, not evidence about
+where the lesson came from — and `wouldChange` gained the adoption so the write is not a silent one.
+`toDistillCandidate` records `repair` for a guideline, because a batch with no correction cannot be built
+at all. Nothing else changed: polarity does not enter the score, the support, or the status, and a test
+asserts that.
+
+**The defect the field replaced is not a missing feature; it is a guess with a systematic sign.** The old
+`outcomeOf` fell back to the kind — `exemplar` and `procedure` were read as successes — so on the only
+store this lane has ever produced it read **every record as a pass**. A random guess would have produced
+a mixed corpus and a batch worth arguing about; this one produced a refusal, which is why it looked like
+a missing instrument rather than a wrong one. Had anyone "fixed" the refusal by trusting the guess, the
+lane would have consolidated successes into guidelines under the name of corrections, which is the
+laundering R99 already paid for. The fallback is deleted rather than repaired: a record with no side is
+counted as unclassified and belongs to neither corpus.
+
+**The classification was inside a `bin/`, which is where coverage stops.** `vitest.config.ts` excludes
+`**/bin/**` on the argument that a CLI is a shell over logic that lives in the package; this one held the
+only function that decides whether a real artefact can be read. It is now
+`packages/eval/src/retrospect-store.ts` — `readStoreDump`, `refusalOf`, `reconcileSides`,
+`storeDumpItems` — with **23 tests and 100/100/100/100**, and the bin is the shell the exclusion assumes.
+
+**The refusal now names which of the two causes it is**, because they call for opposite fixes: an
+all-success store is a run that taught nothing (change the population) and an unlabelled store is a dump
+that cannot answer the question (change the dump). One silence for both is how a store of pure repairs
+reads as a store of pure successes and a lane is closed for the wrong reason.
+
+| artefact | before | after |
+|---|---|---|
+| R93 / R99 dumps (unlabelled) | `none of them is a repair (kinds: exemplar); either the run distilled only successes, or the dump carries no per-item polarity` | `15 record(s) and none of them is a repair: 0 repair, 0 pass, 15 with no side recorded; the dump does not record which side each record came from` |
+| a labelled dump | not constructible | `3 repair(s), 1 pass(es), 0 with no side` → 3 repairs clustered, the pass excluded from the corpus, batch written |
+
+**Two readings of one fact are compared rather than trusted.** The artefact already carries R62's
+`provenance` census, which attributes items to teaching records by joining `EvidenceRef.runId` — an
+independent route to the same fact. `reconcileSides` compares them, and the honest part is what the
+comparison is worth: for a fully labelled store the arithmetic holds **by construction** (both partitions
+sum to the item count), so the check's teeth are the **inequality** — the store may not record fewer
+repairs than the join knows about, which is what a wrong `polarityFor` mapping would produce — and the
+**count**, which is what a truncated sample or a mismatched artefact produces. It reports
+`unavailable` rather than `agree` when it cannot run: no census, a sample capped by `storeItems.limit`, or
+records the field cannot classify. A check that is an identity and is reported as if it were evidence is
+the class this record has paid for twice already; saying so in the module is cheaper than finding it again.
+
+**It was read the way a human reads it, not the way a test does.** Both fixtures were printed:
+
+```
+$ pnpm eval:retrospect --from legacy.json --out batch.json
+retrospect: legacy.json holds 15 record(s) and none of them is a repair: 0 repair, 0 pass, 15 with no
+side recorded; the dump does not record which side each record came from, so an unlabelled store and an
+all-success store are the same reading. Nothing to consolidate.
+
+$ pnpm eval:retrospect --from labelled.json --out batch.json
+store      4 record(s): 3 repair(s), 1 pass(es), 0 with no side
+sides      AGREE — 3 repair(s) and 1 pass(es) against the census's 3 edited-only, 1 passed-only and 0 mixed
+clusters   1 at threshold 0.6
+census     fragmentation 0.000 (0/3 repair(s) no cluster claims), chained 0/1 under 0.5, mean cohesion 1.000
+batch      batch.json (1 candidate(s))
+  cl_85c8638dcfbf  reviewable   3 member(s), cohesion 1  "question how many items order holds"
+```
+
+**What it unblocks, and what it does not.** R104b (guidelines written by a model) and the M2 replay
+harness both need a store whose sides are readable, and neither could run on a real artefact before this.
+The committed dumps stay unreadable — they were written before the field existed and no reader can
+recover what the store did not record — so the fix lands on the **next** run, which is R104's. That run's
+`tau2.storeItems` will carry `polarity`, and its batch can then be built from its own store dump rather
+than from the correction log, which is the difference between measuring consolidation and simulating it.
+
+**Quality.** `pnpm check` exit 0 — **5,013 unit tests over 244 files** (was 4,973 over 241), coverage
+**lines 99.98 / statements 99.98 / branches 99.93 / functions 100**, `retrospect-store.ts` at
+**100/100/100/100** over 23 tests and `kernel/{types,provenance,knowledge}` still **100/100/100/100**,
+coupling ledger **219 modules** (was 218), core bundle **50,886/51,000 B raw and 17,291/17,400 gzip** —
+the raw ceiling raised 400 bytes for 388 of shipped field, with the reason in `scripts/bundle-size.mjs`.
+Cost **$0**.

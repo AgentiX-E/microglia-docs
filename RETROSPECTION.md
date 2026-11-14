@@ -367,6 +367,7 @@ it feeds. Same ratio as the cache probe: a tenth of the arm it guards.
 | `packages/core/src/retrospect/ledger.ts` | six actions, six refusals, replay, summary, admission, the batch's `census` — **100/100/100/100** on 39 tests |
 | `packages/eval/src/review/server.ts` | five routes, the card payload, the rendered preview — **100 / 95.6 / 100 / 100** on 20 tests |
 | `packages/eval/src/review/page.ts` | the console — **100/100/100/100** |
+| `packages/eval/src/retrospect-store.ts` | the store reader: side classification, the refusal that names its cause, the check against the run-level census, container discovery — **100/100/100/100** on 23 tests |
 | `pnpm eval:retrospect` | store dump → batch, refusals included, census printed and stored |
 | `pnpm review:serve` | the console, loopback by default, decisions appended as JSON Lines |
 
@@ -374,16 +375,20 @@ it feeds. Same ratio as the cache probe: a tenth of the arm it guards.
 treatment must beat, and building the treatment before the baseline is measurable is how a
 project ends up unable to say which half helped — it is registered as **R104b** at ≈ $0.01 per
 candidate); automatic supersession of the sources (a status change on the write path, cheap, but only
-worth wiring once R104 says the unit is right); and the M2 replay harness (embeddings only, but it
-needs a store that carries per-item polarity — see below).
+worth wiring once R104 says the unit is right); and the M2 replay harness (embeddings only, and it now
+has the store it needs — see below).
 
-**Blocking issue, found by running the pipeline on a real artefact.** Neither τ² store dump
-carries a **per-item polarity**. Every record in R93's and R99's dumps is `kind: 'exemplar'` —
-including the fifteen distilled from corrections — and the run-level provenance
-(`itemsEditedOnly: 15`, `itemsPassedOnly: 58`) is not attributable to an id. So a consolidator
-reading a real artefact cannot tell a repair from a success, and the honest outcome is a refusal
-rather than an all-pass corpus. The fix is one field in the dump; until it exists, R104's batch
-has to be built from the run's own correction log rather than from its store dump.
+**The blocking issue is closed, and it was one field plus one deleted fallback (R110).** Neither τ²
+store dump carries a per-item side: every record in R93's and R99's dumps is `kind: 'exemplar'` —
+including the fifteen distilled from corrections. The reader used to fall back to that kind, and
+because the τ² distiller writes `exemplar` for a correction and a success alike, the fallback read
+**every real record as a success**. `KnowledgePolarity` is now recorded by the distiller from the
+event's own signal, carried on the item, and sampled into the artefact; the fallback is deleted and a
+record with no side is counted rather than filled in. The committed dumps stay unreadable — no reader
+can recover what a store did not record — so the field lands on **R104's** store, whose batch can then
+be built from its own dump instead of from the correction log. The reader is
+`packages/eval/src/retrospect-store.ts`, out of `bin/` where coverage stops, and it checks the store's
+own sides against the run-level provenance census rather than trusting either.
 
 ---
 
