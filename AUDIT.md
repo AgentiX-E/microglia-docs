@@ -9327,3 +9327,50 @@ the census applied a group's union support to every member of the group, which r
 on a per-failure pack of two single-task records: the exact quantity the arm is measured on, inflated by
 the arithmetic. Caught by the test that asserts the control arm reads `max: 1` — which exists because the
 control's reading had to be a reading rather than an absence.
+
+## 34.134 The readback refuses what the sentence beside it still prints
+
+Three defects in one round, and they are the same defect in three layers. Each was found by writing the
+test that asserts the *sentence* rather than the *value*, and none of them would have been caught by any
+gate in the repository.
+
+**1. A delta between two arms that delivered nothing.** `shapeArmReading` computed its contrasts and then
+computed its state. The state is what decides whether a run reports a contribution, and the state is
+computed from the arms — not from the contrasts — so the order was free to be wrong, and it was: a
+`NO_DELIVERY` run has two arms with identical task rows, so `compareArms` returned a perfectly well-formed
+`0.00pp [0.00, 0.00] p=1.0000` over four paired tasks. The artefact that carried it also carried
+`state: "NO_DELIVERY"`, which says in the same document that nothing was delivered. Every reader downstream
+— the readback, the summary line, the appendix someone writes six weeks later — would have taken the delta
+and ignored the state, which is exactly the failure mode `readNotedFacadeArtifact` was built to prevent one
+document over. The fix is ordering, and the comment beside it says why the order is not cosmetic.
+
+**2. The note arm had already shipped it.** `readNotedFacadeArtifact` has refused a contrast in
+`IDENTITY_BROKEN` and `NO_DELIVERY` since the day it was written — `contrasts: []` in both states, with a
+comment about a defaulted readback being how a run that never measured becomes a result. The **summary
+line** did not: `noteFacadeSummary` mapped `reading.contrasts` without asking the state, so the one line the
+workflow prints into the job summary carried `standard vs none 0.00pp [0.00, 0.00] p=1.0000` under the
+words `IDENTITY_BROKEN:`. A refusal that lives in the typed reader and not in the prose beside it is half a
+refusal, and the half that survives is the half a human reads. Fixed, and the test asserts the absence of
+the clause rather than the presence of the state.
+
+**3. The control compared the wrong arm to itself.** The containment assertion is
+`control.ids.length − treatment.folded === treatment.ids.length`. The first version read
+`control.ids.length − control.folded`, and the control never folds: the equation collapsed to `n === n`,
+which is true for every pack the fold shortened and for several it did not. It is worth stating plainly
+because the test that caught it looks trivial — a three-item control against a two-item treatment whose
+fold reports nothing — and the assertion it protects is the one that makes the whole arm a comparison
+rather than two experiments. A control whose arithmetic is an identity is not a control; it is a comment
+with a return type.
+
+**What the three have in common, and the rule this adds.** In each case the *typed* path was right and the
+*adjacent* path was not: the readback refused and the summary printed; the state was computed and the
+contrast was not gated on it; the equation had the right shape and the wrong operand. This repository's
+gates read artefacts and diff protocols, and none of them reads a sentence. So the rule is: **when a
+refusal exists in a reader, the line derived from that reader must be asserted too**, and the assertion has
+to be about the absence — `not.toContain('vs standard')` — because a presence assertion passes on the
+wrong state. That is cheap, it is testable offline, and it is the only mechanism that catches a display
+layer disagreeing with the rule it displays.
+
+**Cost of finding them:** $0. All three were caught by unit tests over pure functions before any dispatch
+was queued, which is the ordering this record keeps asking for and rarely gets: R70's coverage gate refused
+a paid run, and these three would have been paid runs too.

@@ -18118,3 +18118,82 @@ dispatches and therefore two stores.
 modules at 100/100/100/100, coupling ledger **217 modules** (was 214), core bundle **50,478/50,600 B raw
 and 17,203/17,400 gzip** — the first raise in this gate that is a mechanism rather than a correction, and
 argued beside the number.
+
+### 187 — R109a: the unit became an arm, and the control it needed is not the one the lane had
+
+R109 shipped the fold and a switch. A switch is not an arm. `TAU_PACK_SHAPE=collapse` renders one
+dispatch's packs in one unit, and the question the fold exists to answer — *does the unit change the
+score?* — needs both units over the **same** store, because a dispatch's corrections are produced by the
+model at run time and two dispatches distil two stores (R54 distilled from ten corrections, R56 from
+eight, on the same 32-row learn fold). No pairing statistic repairs that; defect 29 is the name this
+record gave it.
+
+So the machinery is R53's, generalised from the sentence to the unit: `packages/eval/src/shape-pair.ts`,
+one dispatch, one learning phase, one store, one scope attestation, two recall facades that differ in one
+`RecallQuery.shape`.
+
+**The one thing that could not be copied is the control.** R53's is *identity*: under `note-excluded` the
+note cannot displace a rule, so every arm must serve the same statements and any difference means the
+arms differed in something the registration did not name. A fold cannot have that control — changing the
+pack is what it does. What it can have is **containment**, and the containment is readable off the
+pipeline rather than argued:
+
+| step in `buildPack` | consequence for the control |
+|---|---|
+| MMR selects, then the fold runs, then the budget renders | with the same store, query, floor, limit and diversity, both arms select the *same items* |
+| the fold only removes, keeping a member's own sentence | the treatment's ids are a **subset** of the control's |
+| `fold.folded` counts exactly what it removed | the two sizes differ by **exactly** that count |
+
+Three ways to fail it, and each is a defect this arm could otherwise publish as a result: a treatment id
+the control never served (the fold invented an item, or read a different store); a size difference that
+is not the fold's own count; and **a control arm reporting a fold**, which is the switch being read by
+the wrong facade — the failure R109 found in the prefix knobs, one layer down. Requests the budget cut are
+**excluded and counted**, not skipped: on those the assertion is not true by construction, because a
+shorter unit can leave room for an item the control dropped, and an excluded population nobody printed is
+how a control becomes decoration.
+
+**Four states, and the fourth is the reason the arm is worth its bytes.** `MEASURED`,
+`CONTAINMENT_BROKEN` (blocking: no delta is quoted), `NO_DELIVERY` — and **`NO_TREATMENT`**: both facades
+ran, both served packs, and the fold removed nothing. That is a finding about the **store's recurrence**,
+not about the unit, and a run reporting `MEASURED` there would have published a null result about a
+treatment it never applied. R99's census says this store does recur (53 shapes, 10 at support ≥2), so the
+state should not fire; the point is that the artefact can say so when it does.
+
+**Three defects, all found by writing the tests rather than by reading the code.**
+
+1. **Contrasts were computed before the state.** The first `shapeArmReading` built its contrasts and then
+   its state, so a run whose arms served no pack carried `0.00pp [0.00, 0.00] p=1.0000` — a delta between
+   two arms that delivered nothing — inside an artefact whose own `state` said it was not a result. The
+   fix is ordering: state first, contrasts only when it is `MEASURED`.
+2. **The same defect was already shipped in the note arm's sentence.** `readNotedFacadeArtifact` refused a
+   contrast in `IDENTITY_BROKEN` and `NO_DELIVERY` from the day it was written; `noteFacadeSummary` printed
+   one anyway, because it mapped `reading.contrasts` without asking the state. The readback was right and
+   the line a human reads was not. Fixed, with the test that asserts a `NO_DELIVERY` summary carries no
+   `vs standard` clause.
+3. **The containment arithmetic compared the wrong arm to itself.** The first version asserted
+   `control.ids.length − control.folded === treatment.ids.length`; the control never folds, so the test was
+   `n === n − removed`, which passes any pack the fold shortened. The quantity that has to appear on the
+   left is the **treatment's** count, and the test that caught it is the one asserting a three-item control
+   against a two-item treatment with no reported fold is a mismatch.
+
+**It is dispatchable now, and that is a registration rather than a menu item.** A header
+`facadeShapes: two-unit` is read by `eval:prereg-shapes` into `TAU_FACADE_SHAPES`; the resolver refuses
+it beside a floor pair, beside the three note levels, and beside a declared `TAU_PACK_SHAPE` — one
+dispatch varies one thing, and a run holding two answers to one question publishes an arm under a name the
+other half contradicts. The workflow refuses the same combination before the arm is built, because the
+driver's refusal is the second line of defence and a running job has already paid for its learning phase.
+The artefact is `poc-l4-facade-shapes`, and `pnpm eval:shape-arm-readback` turns it into one line and one
+decision in the job summary.
+
+**R109a is not a dispatch, and the round costs $0.** Its claims are about the mechanism (containment,
+characters, the four states), and the offline census already measures the last two on the committed
+corpus. The dispatch is **R104**, now registered at `prereg/R104-the-unit-arm.md`: the same pair, with
+five predictions and five refutations, **~$1.21** for 320 evaluation episodes and no learn half — and its
+primary claim is **non-inferiority at the lane's own revert bar (−5.00pp)**, not a gain, because R93's
+design on this benchmark has a minimum detectable effect of **21.02pp** over fifty paired tasks and a
+registration that claimed five points would be claiming something the design cannot see.
+
+**Quality.** `pnpm check` exit 0 — **4,973 unit tests over 241 files**, coverage **lines 99.98 / statements
+99.98 / branches 99.93 / functions 100**, `shape-pair.ts` at **100/100/100/100** over 32 tests, coupling
+ledger **218 modules** (was 217), core bundle unchanged at **50,478/50,600 B raw and 17,203/17,400 gzip**
+(the pair lives in `eval`, so nothing new ships to a host).

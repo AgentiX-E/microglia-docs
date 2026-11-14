@@ -5672,3 +5672,47 @@ a published score, microglia second and alone in joining a published score to a 
 else can vary, ExpeL and AWM third on support-by-vote without a memory unit that carries it.** On cost,
 unchanged: no competitor publishes a bill and this lane's is $0.3807–$0.8456 a run, of which at most 44%
 is the block (§Appendix AD).
+
+## Appendix AF — The support axis stopped being a claim about this lane's store and became an arm (2026-11-14)
+
+Appendix AE put the support axis on the board and ended on a caveat: microglia could *hold* a corroborated
+unit, but the two units had never been graded against each other in one run, so "the fold makes the store
+comparable to ALTK's `sup3`" was a statement about an artefact rather than about a score. R109a removes the
+caveat's second half.
+
+**What changed, and why it is not plumbing.** Every system on this board that merges does so at *write*
+time: ALTK clusters on embeddings and lets a model write the guideline, ACE lets a model rewrite the
+playbook, AutoGuide generates each rule from the task's own feedback. A write-time merge changes the store,
+so the merged and unmerged memory cannot both be served from one run — which is why every published
+merge/unmerge comparison on this board is a pair of dispatches, and why none of them can rule out the
+store drifting between the two halves. Microglia's fold is a function of the **pack** the recall already
+produced, so one process serves both units from one attested store, and the difference between them is one
+request field.
+
+| property | write-time merge (ALTK, ACE, AutoGuide) | delivery-time fold (R109a) |
+|---|---|---|
+| can both units be served from one store in one run | no — the store differs by construction | **yes**, and the store is fingerprinted once for both |
+| what the comparison can rule out | the treatment, holding "two stores happened to be similar" as an assumption | **the assumption as well**: the store is one object |
+| cost of the merged store | not published by any of them | **printed**: `charsPerRequest` per arm, on the same run as the score |
+| can the merge be reversed per request | only by re-distilling | **yes** — `per-failure` is the default and the control |
+
+**The control is the part a competitor could not copy without changing its architecture.** An identity
+control — "both arms served the same items" — is available to a note experiment and impossible for a
+merge. What survives is **containment**: the folded pack must be the unfurled pack minus exactly the items
+the fold reports removing, checked per request, with cut requests counted rather than skipped. A write-time
+merge has nothing to contain: after it runs, the pre-merge items are gone, so an artefact from ALTK or ACE
+can report what the merged memory said and not what it replaced. That is the auditability gap Appendix AC
+already listed for the replay column, arriving on a second axis.
+
+**Where the board stands, and it is unchanged at the top.** On published score, **ALTK-Evolve 67.5%** retail
+Pass^4 remains the cell to beat, and this lane's own legs clear it on their own forty tasks (0.700 at 15
+records, 0.625 at 73) while not being the same forty questions (§Appendix X's resolution note). On the
+support axis, ALTK is still first with a published score and a published support cell (14 guidelines at
+45.0 against 101 at 40.0); microglia is now **second and alone** in being able to move the support cell
+*inside one dispatch* and to print what the movement cost. On cost, still nobody else publishes a bill.
+
+**What would move this lane on the axis, stated before the arm runs.** R104's registered claim is
+non-inferiority at **−5.00pp**, not a gain, because the design's MDE is **21.02pp** over fifty paired tasks.
+A lane that wanted to claim the support axis outright would need the 114-task base (R95) and a store whose
+recurrence is wider than 53 shapes over 73 corrections. Neither is a fold problem; both are corpus
+problems, and saying so before the dispatch is cheaper than saying it after.
