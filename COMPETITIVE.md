@@ -6145,9 +6145,13 @@ follow, and each is a registration rather than an opinion:
 1. **R117 (`$1.78`)** — the ban on and off over one population, reading the store's shape and the paired
    score. If the ban costs more than it buys, the abstraction instruction is what has to change, and it
    is one boolean at the host boundary.
-2. **R112 (`$0.01`)** — the writer grid, which is the only instrument that can produce a claim naming no
-   tool *and* stating an operation. If some `(model, form)` pair produces one, AK.2's mechanism is not
-   the whole story.
+2. ~~**R112 (`$0.01`)** — the writer grid~~ — **run and it refused the axis it was built for**
+   (`43621097332`, `$0.002`): 8 of 8 `(model, form)` pairs answer on the fixture, `reasoningTokens 0`
+   under the stated regime, and `lesson` writes two conditioned claims where `repair`, `procedure` and
+   `lexicon` each write one. Form and model are excluded as explanations for the 63 blanks, and
+   `procedure` — never run before this — is not the better form the registration hoped for. What the
+   grid cannot do is say anything about the arm's own corrections: its fixture prompt is 533–731 tokens
+   and a population prompt also carries `attempt` and `expected`.
 3. **R118 (`$0.19`)** — the same arm under the regime now stated, read on the four-state census rather
    than on a score, because 63 blank replies against a 1,200-token ceiling has two causes and only one
    of them is the model.

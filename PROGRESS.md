@@ -18746,3 +18746,62 @@ that has to work in both directions — and one defect was found by the suite it
 wrote a reply and a claim list that disagreed (`{"candidates":[]}` beside one claim), which no real
 call can produce, and the failing test was asserting a verdict the code correctly refused to draw.
 The fixture was fixed; the verdict was not.
+
+### 193 — R112 answered nothing about the population and refused the axis it was built for
+
+**The dispatch.** Run `43621097332`, workflow `writer-probe`, 8 calls, **6,187 tokens**, `thinking: off`,
+`max_tokens: 1200`, context `fixture:retail`:
+
+```
+writer                              state     claims when  chars  prompt  compl reason  total     ms
+deepseek/deepseek-flash/lesson      answered       2    2   1027     655    226      0    881   2486
+deepseek/deepseek-flash/repair      answered       1    1    665     731    134      0    865   1694
+deepseek/deepseek-flash/procedure   answered       1    1    387     533     74      0    607   1393
+deepseek/deepseek-flash/lexicon     answered       1    1    400     656     91      0    747   1167
+deepseek-chat/lesson                answered       2    2    972     655    215      0    870   2110
+deepseek-chat/repair                answered       1    1    702     731    137      0    868   1918
+deepseek-chat/procedure             answered       1    1    362     533     66      0    599   1664
+deepseek-chat/lexicon               answered       1    1    421     656     94      0    750   1265
+```
+
+`viable`: **8 of 8**. `errors`: 0. `reasoningTokens`: **0** on every call. Cost **$0.002**.
+
+**What it refused.** The registration's question was "which `(model, form)` pair writes a claim
+carrying a `when`", with `procedure` named as never having been run. All four forms and both models
+write one, on the first call, under the declared regime. So **the writer is not the variable**: form
+and model are both refuted as explanations for R104's 63 blank replies, and the arm it was going to
+permit is not the arm that needs dispatching.
+
+**What it found instead, and it was not the question asked.**
+
+1. **`lesson` writes two conditioned claims where every other form writes one.** Both models, same
+   order: `lesson` 2/2, `repair` 1/1, `procedure` 1/1, `lexicon` 1/1. The form the lane already runs is
+   the best of the four. The registration's hint that `procedure` might be better is refuted by the
+   first number anyone took of it.
+2. **`reasoningTokens: 0` with `thinking: 'off'` stated.** R104 ran 73 calls with no `thinking`
+   parameter, so the endpoint's default was in force — and the default for this model is to think,
+   billed at the output rate and taken from the same 1,200-token ceiling the reply needs. A reply that
+   spends its ceiling reasoning is a reply with no content, which is exactly the shape of a `blank`.
+   This dispatch does not prove that, because it asked a different correction; it establishes that the
+   regime is now the variable that is stated and recorded.
+3. **The prompt is smaller than the population's.** 533–731 prompt tokens for the fixture, against a
+   population prompt that also carries `attempt` and `expected`. So the fixture is the easier question,
+   and R111's limit stands: this grid cannot speak about the arm's own corrections.
+
+**The defect this iteration found in itself.** §192 wrote the registration as *"asks the question at
+the population: one correction from the arm's own learn half"* and priced it at `$0.01`. The `$0.01`
+was right and the sentence was wrong: a learn half costs `$0.19`, and the grid asks a fixture. The
+corrected row says so. The lesson is the one this record keeps re-learning — **a price and a claim that
+disagree are a claim that was not costed** — and it is the second time in two iterations that a
+ROADMAP sentence overreached past what the code it described would do.
+
+**What is left, and it is one arm.** With form, model and `when` all excluded, the 63 blank replies
+have two possible causes: the corrections themselves, or the regime R104 ran under. A single dispatch
+separates them — the same arm, `thinking: 'off'` now stated, read on the four-state census rather than
+on `pass^4`. R118, `$0.19` if it stops after the learn half and `$1.21` if it evaluates too, which is
+the difference between reading a census and re-running a benchmark that cannot resolve a delta anyway.
+
+**Quality.** `pnpm check` was green on the commit this ran from (`43620849864`); no code changed in this
+iteration beyond what §192 shipped. The workflow's own log path — `pnpm eval:writer-probe` → artefact →
+`cat` into the step summary — executed end to end on its first dispatch, which is what §R111's `node -e`
+step never did.
