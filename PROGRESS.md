@@ -18848,3 +18848,150 @@ that could turn this stop off would let a dispatch pay for the half the registra
 ledger **226 modules** (was 225), `blocking-gates=PASS`, bundle unchanged. The header field is the
 first boolean in `prereg.ts`, and its three tests are the first that would have caught a value like
 `yes` reading as neither truthy nor refused.
+
+### 195 — The regime was all of it: 73 of 73 answered, 86 stored, and a store that grew fourteen times into a pack that can still only carry five
+
+**The dispatch.** Run `43623858218`, `prereg/R118-the-regime.md`, one arm (`memory`), `learnOnly: true`,
+`thinking: 'off'` stated by `distillClient`, `max_tokens: 1200`, 33 minutes, **$0.19**.
+
+```
+funnel      corrections 73  asked 73  candidates 143  admitted 86  stored 86  servable 86
+            refused 57  failed 0
+distill     replies { calls 73, answered 73, empty 0, blank 0, unparsed 0, chars 67,859 }
+            client  { calls 73, failures 0 }
+            faults  { events 0, reasons {}, samples {} }
+            report  { created 86, merged 0, superseded 0, contradicted 0, quarantined 0 }
+merge       corrections 73  shapes 53  mergeable 30  wouldStore 53
+            support { max 5, atLeastTwo 10, atLeastThree 5 }
+learn       tasks 74  corrections 73  unanswered 0
+silence     { state: answered-everywhere, blankShare: 0, emptyShare: 0 }
+```
+
+**Against R104, one number moved and every other number followed it.**
+
+| quantity | R104 `43589735959` | R118 `43623858218` | ratio |
+|---|---|---|---|
+| `replies.calls` | 73 | 73 | 1.0 — the population did not change |
+| `replies.answered` | 10 | **73** | 7.3× |
+| `replies.blank` | **63** | **0** | — |
+| `replies.chars` | 6,824 | **67,859** | 9.94× |
+| `funnel.candidates` | 16 | **143** | 8.9× |
+| `funnel.stored` | 6 | **86** | 14.3× |
+| `funnel.refused` | 10 | 57 | 5.7× |
+| refused share of candidates | 62.5% | 39.9% | — |
+
+**The 63 blanks were the thinking budget.** Nothing else changed: same 73 corrections, same
+`distillForm: lesson`, same `distillUnit: correction`, same `distillScope: all`, same model, same
+1,200-token ceiling. The one thing that differed is that R104's client sent no `thinking` parameter
+and this one states `thinking: 'off'`. R112 had already excluded the writer — 8 of 8 `(model, form)`
+pairs answer on a fixture, `lesson` best — so the regime was the last explanation standing, and it is
+the whole of it.
+
+> **A parameter nobody sent cost 86% of the answers.** Not a prompt, not a model, not a parser: a
+> field the client left to the endpoint's default, whose default is to think out of the same budget
+> the reply needs. This is the single largest defect the record has found, and it was found by
+> asking the provider's own documentation what happens when you say nothing.
+
+**What the store became, and what it did not.** 86 claims instead of 6. But `merge.wouldStore: 53`
+says the 73 corrections reduce to 53 distinct shapes, `report.merged: 0` says nothing was merged, and
+`support.max: 5` says one shape was taught by five tasks. So the 86 are largely repetitions of 53
+ideas, each stored separately.
+
+That matters because the pack did not grow with the store. R104 served `mean 5.0 items, 2102 chars`
+per request out of a 2,400-character budget and reported `droppedForSize: 164` — **every one of the
+164 requests dropped an item for size**. A store fourteen times larger, read through the same
+five-item budget, still injects five items. **Store size is not coverage**, and nothing in this
+dispatch measures coverage, because a learn-only arm serves nothing.
+
+**What this dispatch did not carry, and it is a defect in the instrument.** The artefact holds a
+complete census and **not one word of what the 86 claims say**. `storeItems` is written on the path
+that goes on to evaluate — line 2264 of the driver — and the learn-only stop is 600 lines earlier, so
+the artefact from a dispatch whose entire purpose was to inspect a store could not inspect it. The
+next question after "how many" is always "which ones", and answering it here would have cost another
+$0.19.
+
+> Fixed in the same iteration: `distillDiagnostics()` now carries `store` (the census), `storeItems`
+> (the sample, with its own `omitted` count) and `yield` (per-correction claim counts). §192's rule —
+> *reading an artefact is not reading its summary block* — applies to writing one too: a stop that
+> fires before the artefact is complete is a stop that produced a cheaper artefact, not a cheaper run.
+
+**Quality.** `pnpm check` exit 0 — **5,152 unit tests over 252 files**, coverage
+**100 / 99.95 / 100 / 100**, `blocking-gates=PASS`. The dispatch ran from `1270f99f`, whose CI
+`43623197914` is green, and its workflow's own path executed end to end: step 14 ran the
+learn half, step 20 *Say so when nothing was measured* produced the note, and the artefact uploaded as
+`l4-evidence-none` — the name saying, correctly, that no plant was scored.
+
+### 196 — The audit did not audit the one lane it is about: 21 deltas, one resolvable, and the coarsest design missing from the table
+
+**What the audit was.** `poc-power-audit.json` puts every published paired delta beside the
+difference its own sample could have resolved. It scanned `eval/results` for artefacts carrying
+`per_case` and it found 21 rows, all BIRD, of which **exactly one** beat its own 80%-power bar
+(`4.8%`).
+
+**What it was not.** The τ² lane — the lane that carries this project's SOTA statement — writes
+`comparison {paired, lost, gained, deltaPp}` because the τ² agent owns its questions and reports
+totals. The scan's selector required `per_case` and skipped everything else, so `poc-l4-pair.json`
+was on disk, committed, quoted in §191 and in Appendix AK, and **absent from the audit**.
+
+> The audit that exists to find underpowered claims was itself under-scoped, and it hid the worst
+> row. Read from the file, the τ² pairing is `paired 68, lost 13, gained 14`, delta **+1.47pp**,
+> half-width **14.98pp**, floor at that discordance **21.41pp**. The loosest BIRD row is 4.87pp. The
+> lane the project is judged on is **four and a half times coarser** than the loosest thing the
+> audit was reporting.
+
+**What shipped.**
+
+| piece | what it does |
+|---|---|
+| `powerFromCounts` | one row from `helped`/`harmed`/`n`, refusing an empty sample, negative counts, and counts that exceed their own sample |
+| `powerFromComparison` | one row from a `comparison` block, refusing a block missing a count and **refusing a file whose own `deltaPp` disagrees with `gained − lost`** — a file that recorded its two sides the other way round would otherwise produce a row with the opposite sign and nothing downstream would notice |
+| `pairRowOf` | the selector: `per_case` wins when both shapes are present, `null` for a file that is not a pair, an error for one that claims to be and is not |
+| `readPower().coarsest` | the design that could resolve the least, reported beside `sharpest` |
+
+The selector and the direction check live in the package, not in the command, and that is a direct
+lesson from this iteration: the first version put them in `power-audit.ts`, and the second edit to
+that file deleted the guard that skips unpaired files **without any test noticing**. §R111's finding —
+logic in a command is logic that never runs on the failure it exists for — applies to edits and not
+only to first drafts.
+
+**The audit now reads 22 rows, 1 resolvable (4.5%), 6 within their 95% half-width, and:**
+
+```
+sharpest design  poc-sota-bird-train.json at 0.82pp
+largest claim    poc-sota-bird-evidence.json at -4.86pp
+coarsest design  poc-l4-pair.json at 21.41pp — no delta smaller than that is a
+                 finding on this record, whoever publishes it
+```
+
+**The claim gate that follows.** A header field `effectClaimPp` now refuses a registration whose
+claimed effect its own sample could not have resolved, and refuses one that claims an effect while
+naming a single arm. `claimAgainstResolution` reports both problems at once rather than one round trip
+at a time. R104 could not have been registered under it: `arms: memory` is one arm, so it has no delta
+of its own.
+
+**The unit error this iteration found in itself, twice.**
+
+1. The first draft computed the floor from `sample`. But `sample` is **episodes** on this record and a
+   pairing is one per **task**: `poc-l4-pair.json` reads `paired: 68` for a dispatch whose
+   registration says `sample: 272`. Over 272 the floor is 16.99pp; over 68 it is 33.98pp. The
+   arithmetic was right and the denominator was four times too generous, which is the direction a
+   gate must never err in. `claimAgainstResolution` now reads `testTasks` when a header states one,
+   and `sample` otherwise — a BIRD question and a task are the same thing, which is why BIRD headers
+   have no such field.
+2. The first draft imported `detectableDelta` from `protocol.ts`, which imports the core package, and
+   `prereg.ts` runs **before anything is built** — a constraint its own test enforces by walking the
+   import closure. The formula moved to `detectable.ts`, which imports nothing, and is re-exported
+   from `protocol.ts` so no caller changed. Two copies of the arithmetic would have been worse than
+   the dependency: two formulas for one quantity, disagreeing at the gate.
+
+**What it means for the lane.** The τ² floor is not a tuning parameter. At 68 tasks and complete
+discordance it is 33.98pp; at the discordance the last pairing actually showed it is 21.41pp; even
+the whole 115-task retail split reaches only 26.13pp at complete discordance. **No design available on
+this lane can resolve a 5pp effect.** That is why R119 states its bounds in the registration rather
+than discovering them after the fact.
+
+**Quality.** `pnpm check` exit 0 — **5,196 unit tests over 253 files** (was 5,152 over 252), coverage
+**100 / 99.95 / 100 / 100**, `detectable.ts` and `prereg.ts` both at **100/100/100/100**, `power.ts` at
+**100/100/100/100** over 33 tests. `prereg.ts` reached 100% branch by **deleting** an unreachable
+`distinct[0] ?? ''` fallback and naming the whole arm list instead, which is the third time this
+record has removed a branch rather than exempted it.

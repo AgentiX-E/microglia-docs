@@ -9929,3 +9929,91 @@ which operation applies. So the ban removed the operational half and left the sc
 **The falsifier.** If a `(model, form)` pair produces a claim that names no tool **and** states an
 operational condition, the residue is not a property of the ban and this reading is wrong. `eval:writer-probe`
 is the instrument that can produce one, and its `no-writer` verdict is a result rather than a failure.
+
+## 34.148 An audit that hid its own subject, a denominator four times too generous, and a parameter nobody sent
+
+Three defects, and the third is the one that cost a whole benchmark.
+
+### The 86% that a missing parameter cost
+
+R104 asked a distiller about 73 corrections and recorded 10 answers. Three iterations were spent
+excluding explanations — the parser (`distill-replies.ts`, four states), the writer (R112, 8 of 8
+candidate pairs answer), the `when` field (`store.conditioned: 5`, quoted in §191 and read past).
+R118 then ran the same 73 corrections with **one change**: `thinking: 'off'` stated by the client
+instead of left to the endpoint's default.
+
+```
+              calls  answered  blank  candidates  stored   chars
+R104             73        10     63          16       6    6,824
+R118             73        73      0         143      86   67,859
+```
+
+**The default for this model is to think, thinking is billed at the output rate, and it is taken out
+of the same 1,200-token ceiling the reply needs.** A reply that spends its ceiling reasoning is a
+reply with no content, and that is indistinguishable from a model that declines — which is why it
+took four iterations of instrumenting the reply to find a cause that was in the request.
+
+> **An omitted parameter is not a neutral default.** Every client in this project now states its
+> regime. `distillClient` is one factory so the pre-flight and the arm cannot ask under two
+> regimes, and the artefact carries `reasoningTokens` so the next dispatch can tell a budget from a
+> refusal in one jump.
+
+### The audit whose selector excluded the lane it audits
+
+`poc-power-audit.json` exists to put every published delta beside the difference its sample could
+have resolved. Its scan required a `per_case` array. The τ² lane writes
+`comparison {paired, lost, gained, deltaPp}`, because the τ² agent owns its own questions and
+reports totals rather than per-question outcomes.
+
+So `poc-l4-pair.json` was committed, cited in §191 and in Appendix AK, and **not in the audit**. Its
+row reads delta +1.47pp against a **21.41pp** floor — four and a half times coarser than the loosest
+BIRD row the audit was reporting, and the only row that governs whether this project's SOTA statement
+can be ordered against anything.
+
+> **A filter that selects by shape inherits the blindness of the shape it guessed.** The audit now
+> reads both shapes, prefers `per_case` when a file has both because a summary must not become the
+> evidence, and distinguishes "not a pair" (`null`) from "claims to be a pair and is not" (an error).
+
+Two further pieces of that fix exist because the first version was wrong:
+
+- **The direction check.** `gained` means the treatment won. A file that recorded its two sides the
+  other way round still yields a row, with the opposite sign, and nothing downstream would notice.
+  The reader refuses a file whose own `deltaPp` disagrees with `gained − lost` by more than 0.01pp.
+- **Where the check lives.** It was written in `power-audit.ts` first. The next edit to that file
+  deleted the guard that skips unpaired files and **no test noticed**, because the command has no
+  test. Selector and reader moved into `power.ts`; the command now holds no decisions at all.
+
+### The denominator that was four times too generous
+
+`effectClaimPp` refuses a registration whose claimed effect its own sample could not have resolved.
+The first draft computed the floor from `sample`. On this record `sample` is **episodes**, and a
+pairing is one per **task**: `poc-l4-pair.json` reads `paired: 68` for a dispatch whose registration
+says `sample: 272`.
+
+| read as | floor at 68 tasks | floor over 272 episodes |
+|---|---|---|
+| complete discordance | **33.98pp** | 16.99pp |
+| the discordance the last pairing showed | 21.41pp | 10.70pp |
+
+The arithmetic was right both times and the denominator was wrong once, in the direction that makes
+a gate **pass** claims its own design cannot see. It now reads `testTasks` when a header states one
+and `sample` otherwise, which is correct for both lanes: a BIRD question and a BIRD task are the same
+thing, which is why no BIRD header has the field.
+
+The same field's first draft also imported `detectableDelta` from `protocol.ts`, which imports the
+core package — and `prereg.ts` runs **before anything is built**, a constraint its own test enforces
+by walking the import closure. The formula moved to `detectable.ts`, which imports nothing, and is
+re-exported from `protocol.ts` so no caller changed. Two copies of one formula would have been worse
+than the dependency.
+
+**The rule this adds.**
+
+> A gate's denominator has to be the unit the measurement is in, and the unit is not always the
+> field that looks like a sample size. Three quantities on this record are called `n` and two of them
+> count different things: a task, an episode, a question.
+
+**What the lane can now say it cannot do.** At 68 tasks and complete discordance the floor is
+33.98pp; at the last pairing's discordance, 21.41pp; and the whole 115-task retail split reaches only
+26.13pp. **No design on this lane resolves a 5pp effect.** R119 states those bounds in its
+registration instead of discovering them after the dispatch, which is the difference between a
+result and a number.

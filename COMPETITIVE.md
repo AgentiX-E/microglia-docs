@@ -6162,3 +6162,105 @@ no competitor publishes: **how much of its own memory is operational, how much o
 restatement, and what the filter that produced it removed.** A board that ranks 0.550 against 0.575
 cannot say any of that, and after R104 neither can this record pretend the difference is about
 retrieval.
+## Appendix AL — The board cannot be ordered, and this appendix is the arithmetic (2026-11-15)
+
+Appendix AK said no two numbers on this board can be ordered until a dispatch carries its own
+control. This one puts the arithmetic behind that sentence, because R116 found the metre stick and
+it had been sitting on disk, committed, cited, and outside the audit.
+
+### AL.1 Three rulers, and the first draft of this appendix used the wrong one
+
+There are three different quantities on this record and they differ by nearly a factor of three. The
+first draft of this appendix measured all three with the first ruler, which is the kind of error that
+produces a correct conclusion from wrong arithmetic — so the table is stated before the conclusion.
+
+| what is being claimed | the ruler | at n = 40 | at n = 68 | at n = 114 |
+|---|---|---|---|---|
+| a **paired delta** between two arms of one dispatch | `detectableDelta(tasks, d)` | 44.30pp (`d=1`) / 27.91pp (`d=0.397`) | 33.98pp / 21.41pp | 26.24pp / 16.54pp |
+| an **absolute score** against a fixed bar | `1.96·sqrt(p(1−p)/n)` | **±15.42pp** | ±11.86pp | ±8.60pp |
+| **two runs from different samples** | `1.96·sqrt(p₁(1−p₁)/n₁ + p₂(1−p₂)/n₂)` | 17.65pp against 0.6754/114 | 14.65pp | — |
+
+A leaderboard row is the third row. It compares one paper's sample with another's, so it carries the
+variance of two runs and none of the pairing. The first row applies only *inside* one dispatch, and
+it is far wider than the third because it conditions on the discordance: at 40 tasks and complete
+discordance, a paired design cannot resolve anything smaller than 44.30pp even though its two arms
+shared every question.
+
+**The correct statement about the board, using the third ruler.** ALTK-Evolve's 0.6754 on 114 tasks
+against this project's 0.5500 on 40 differ by **12.54pp** with a 95% half-width on that difference of
+**17.65pp**. Against the 68-task pairing the gap is 14.60pp with a half-width of 14.65pp — the one
+comparison in this table that sits on the boundary.
+
+> This is not a claim that the numbers are equal. It is the narrower and harder statement that
+> **the instruments that produced them cannot separate 12.54pp from 0**, and that the same is true of
+> every adjacent pair on a leaderboard built from runs of 40 to 120 tasks of a stochastic agent
+> benchmark. That is a statement about the leaderboard, not about this project's position on it.
+
+**What the first ruler is actually for, and it is not the board.** It governs a claim of the form
+"memory beat its own control by X" — R104's `+1.47pp` and its `[−13.24, +16.18]`. On that claim, 68
+tasks cannot resolve anything under 21.41pp, and 40 cannot resolve anything under 44.30pp. A project
+that wanted to prove its memory helped would need a design that resolves 5pp, and no τ² design on this
+runner does: the whole 115-task retail split floors at 26.13pp at complete discordance.
+
+**And the second ruler is the one that matters for the bar.** To claim a score is *above* 0.575 at
+n = 40, the interval's lower bound must clear it: `p − 15.42pp > 0.575` needs **p ≥ 0.75**. At 0.70 the
+bound is 0.558 and at 0.65 it is 0.502 — both below the bar, both of which have been reported on this
+record as if a point estimate were a result.
+
+### AL.2 The record's own deltas, audited
+
+`poc-power-audit.json` now reads **22 published paired deltas**: **1 resolvable (4.5%)**, **6** inside
+their own 95% half-width, and **15** that are neither. The single resolvable row is
+`poc-sota-bird-transfer.json` at −4.57pp against a 4.53pp floor — a *harm*, on 350 BIRD questions,
+and it is the one thing on this board that survives its own arithmetic.
+
+| | rows | resolvable | share |
+|---|---|---|---|
+| BIRD (350–7,000 questions) | 21 | 1 | 4.8% |
+| τ² (68 paired tasks) | 1 | 0 | 0% |
+| **whole record** | **22** | **1** | **4.5%** |
+
+`readPower().coarsest` names `poc-l4-pair.json` at **21.41pp**: the loosest design in the record, in
+the lane that carries its SOTA statement, absent from the audit until this iteration.
+
+### AL.3 Where microglia actually sits
+
+| | pass^4 | n (tasks) | its own floor | what can be said |
+|---|---|---|---|---|
+| ALTK-Evolve, submitted | 0.6754 | 114 | 26.24pp | their number, their backbone, cross-sample |
+| ALTK-Evolve, published bar | 0.5750 | — | — | the line this lane gates against |
+| **microglia, R104 `memory`** | **0.5500** | 40 | 44.30pp | measured here, `deepseek-flash`, one arm |
+| microglia, the `-67` pairing | 0.5294 / 0.5147 | 68 | 33.98pp | memory vs its own control, **+1.47pp [−13.24, +16.18]** |
+| microglia, R104's second facade | 0.7250 | 40 | 44.30pp | `NO_TREATMENT`, same store, 7 excluded for a cut pack |
+| **microglia, R119 (running)** | — | 68 | 33.98pp | the first two-arm dispatch on a store built under a stated regime |
+
+**The honest position, three ways.**
+
+1. Against the published bar: 0.5500 is 2.50pp short, and the ruler for an absolute score at n = 40
+   is ±15.42pp. Saying "short of the bar" and saying "level with the bar" are the same statement at
+   this resolution — and so is saying "above the bar" for any score under 0.75.
+2. Against ALTK-Evolve: 12.54pp apart with a 17.65pp half-width on the difference. Neither "behind"
+   nor "level" is supportable, and the same arithmetic applies to every adjacent pair on that board.
+3. Against its own control: **+1.47pp with an interval of [−13.24, +16.18]** on 68 paired tasks.
+   Measured with the first ruler, which is the only one that applies: 21.41pp is the floor, and
+   1.47pp is a tenth of it.
+
+**What would put microglia on top.** Not a tuning pass. A design that resolves what it claims: 460
+episodes (the whole retail split) still floors at 26.13pp, so the lane as constituted cannot host a
+5pp claim at all. The two ways out are a larger benchmark or a claim about a different quantity —
+which is why the eight readings this project publishes that no competitor does (`entity survival`,
+`coverage` of an injected pair, the refused share at the tool-name ban, the four-state silence census,
+the null contrast, the writer grid, the noise floor in tasks, the power of every delta) are worth
+more than a rank it cannot defend.
+
+### AL.4 What R118 changed about the comparison, and what it did not
+
+R118 turned 10 answers out of 73 into 73 out of 73 and a store of 6 claims into a store of 86, by
+stating one parameter. **It changed no published number on this page**, because a learn-only arm
+scores nothing. What it changed is the premise of every future one: the memory null this project has
+been reasoning about since its first iteration was, on this lane, a store built from 14% of the
+answers it was supposed to have.
+
+That is the sentence AL.3's third row has to be read against. The +1.47pp paired delta was measured
+over a store of *six format claims* — §AK.2 — serving five items a request at 4.76% median coverage.
+It is not evidence about memory. It is evidence about that store, and the store is gone.
