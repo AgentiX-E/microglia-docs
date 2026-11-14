@@ -5534,3 +5534,45 @@ format is not what costs 2.17×, and no competitor's placement choice is a hidde
 remaining gap on this axis is not placement but **volume** — AWM and ALTK-Evolve both inject *all* admitted
 guidelines on *every* turn with no budget, which cannot be cached per episode the way a 1.2k pack can, and
 this project's pack is the only one on the board that gets smaller when the store gets larger.
+
+## Appendix AB — Retrospection: three systems consolidate, none of them checks the merge, and the board has no cell for it (2026-11-14)
+
+Every learned-memory system on this board ends up with more units than it started with, and the
+published numbers disagree about whether that is good. This appendix is about the operation none of
+them reports: **how the units are consolidated**, and what a consolidation costs when it is wrong.
+
+| system | unit | consolidation | support recorded | coverage checked | human in the loop |
+|---|---|---|---|---|---|
+| **ALTK-Evolve** | guideline | cosine clustering + LLM merge, `lossless` / `sup3` | **yes** — `support` = distinct sources, **conserved** across a merge | no — similarity, not entailment | none, stated |
+| **ACE** | bullet | deterministic delta merge (embedding dedupe + id), helpful/harmful counters | counters, not support | no | none |
+| **AutoGuide** | context→guideline | LLM de-duplicates contexts | no | no | none |
+| **ExpeL** | insight | none — every extracted insight is admitted | no | no | none |
+| **AWM** | workflow | none — induction then injection | no | no | none |
+| **microglia (designed)** | correction → **guideline** | deterministic clustering + intersection trigger, `support` conserved, **witness** per source | yes, in ALTK's unit **and** as distinct tasks | **yes — lexical entailment, model-free** | **yes, measured** |
+
+**The disagreement worth reporting.** ALTK's own airline arm is the only published ablation of
+consolidation strength, and it points the opposite way from its retail arm: **14 guidelines at
+support ≥ 3 score 45.0 Pass^4 where 101 lossless ones score 40.0**, while retail prefers the full
+292. IBM's conclusion is that the support threshold is a per-domain knob. This project's own
+dose-response agrees with the airline direction and for a stated reason: 15 repair records scored
+0.700 and 73 records scored 0.625, and 79% of the 73 were pass-derived instances carrying an
+`order_id`. **Compression helps when what it removes is the instance.**
+
+**The failure mode nobody measures.** ACE is the only system that names it — `brevity bias` and
+`context collapse`, measured as 18,282 → 122 tokens over repeated rewrites with a 9.6-point drop.
+Its answer is to never rewrite. This project's answer is the same plus a check: the merged object's
+coverage is *verified* against its sources, so a merge that shrank the rule into something narrower
+is refused rather than shipped.
+
+**Where microglia sits.** Above the SOTA arm on both of its own paired cells at n = 40 and below it
+on nothing measurable, with the caveat the rest of this document carries (different backbone, so no
+ranking). The published SOTA cell remains **ALTK-Evolve's 67.5% retail Pass^4**. On this axis the
+project has a design and no number: R104 is registered at **$1.21** with a **+5.0pp** bar taken from
+R101's measured null, and until it runs, "consolidation helps here" is a hypothesis with three
+supporting citations and no local evidence.
+
+**The cell this appendix opens.** Cost of a *wrong* merge: never published by anyone. A guideline
+that is wider than its evidence fires where it does not apply, and only one system on this board
+computes how much wider it got — the `collateral` count, which is a set intersection away given a
+condition field and impossible without one. That is the one number here a competitor could not
+produce without changing its data model.

@@ -17806,3 +17806,89 @@ from the phase logs and the two arms' turn structure, **$0**, which now precedes
 
 > Budget a probe at a tenth of the arm it guards and treat two disagreeing runs as a defect in the probe before
 > an effect in the world. This one cost 9% of R102.1 and would have cost 100% of it to be wrong.
+
+### 182 — R101 read: two arms that sent the same prompt differ by five points
+
+R101 ran (`43478128683`, head `9e91b50`) and its pair step **failed three gates**. The measurement
+itself completed on both legs, and what it says is more useful than the arm was built to say.
+
+| arm | Pass^4 | tasks | pack |
+|---|---|---|---|
+| memory (scaffold, `TAU_SCAFFOLD=empty-pack`) | **0.700** | 28/40 | 162 requests, **0 filled** |
+| reference (τ² stock) | **0.750** | 30/40 | — |
+| paired | **−5.00pp** [−22.50, +12.50], p = 0.7744 | 7 lost, 5 gained | 21/160 trials flipped |
+
+**The registered criterion is met and it is not the interesting part.** `B = 0.700` sits inside the
+pre-registered band `[0.675, 0.775]`, so the wrapper's behavioural cost is under ten points — five,
+in fact — and the pack's own −2.50pp is not the wrapper's.
+
+**The interesting part is that the two arms sent the same prompt.** `pack.filled` is 0 of 162 and
+`recall.served` is 0: the agent's `if pack:` guard means an empty store injects nothing, so the
+scaffold leg delivered the reference leg's prompt byte for byte. The −5.00pp and the 21 flipped
+trials are therefore **what a null difference looks like at n = 40 in this lane** — not an estimate
+from a power calculation, a measured point estimate from a rerun of the same treatment.
+
+That number is now the bar for every claim this project makes:
+
+> A delta smaller than **5.0pp** at n = 40 is inside what two identical arms produce. R99's −2.50pp
+> and R93's +2.46pp were always below it; they are directions, not measurements, and the documents
+> that reported them said so for a different reason (the MDE) than the one that is now demonstrated.
+
+**Where the run is red, and why it is a harness defect rather than a measurement one.** Three
+gates failed, all of them presuming a non-empty store: `V44-domain-accounted` ("the store holds no
+item, so there is no ledger to account for"), `V16-transfer-resolvable` (18 informative trials,
+which a pack that injected nothing cannot produce), and `l4-effect-resolved` (a control pair graded
+against significance when its registration named a band). R101's registration inverted `V0` and
+`V1` and stopped there; the run found three more of the same kind. That is the third instance of
+one pattern — §34.124 inverted two gates by hand — and the fix is not a fourth hand-written list
+but **R106**: the arm declaration must compute the store-dependent gate set, and a control pair
+must be graded against its registered band.
+
+**What R101 cost.** $1.50 for both legs. It produced: the null's point estimate, a confirmation
+that the wrapper is cheap, and the discovery that a declared-empty arm has more dependents than
+its author enumerated.
+
+### 183 — Retrospection: the unit, the witness, the ledger, the console
+
+The question this round answers is the one the dose-response has been pointing at since R93:
+**corrections are the wrong unit.** R93's 15 repair records scored 0.700; R99's 73 scored 0.625;
+and 79% of the larger store was pass-derived, each record carrying the `order_id` of the run that
+produced it. A guideline is the object that drops the instance and keeps the rule.
+
+The design is in **`RETROSPECTION.md`**; this is what was built and what it cost.
+
+| | |
+|---|---|
+| `packages/core/src/retrospect/witness.ts` | content words, entailment, collateral, polarity, admissibility — **100/100/100/100**, 23 tests |
+| `packages/core/src/retrospect/cluster.ts` | source classification, union-find clustering, seed trigger, medoid — **100/100/100/100**, 25 tests |
+| `packages/core/src/retrospect/ledger.ts` | six actions, six refusals, replay, summary, admission — **100/100/100/100**, 37 tests |
+| `packages/eval/src/review/server.ts` | five routes, card payload, rendered preview — **100 / 95.6 / 100 / 100**, 24 tests |
+| `packages/eval/src/review/page.ts` | the console — **100/100/100/100** |
+| `pnpm eval:retrospect` / `pnpm review:serve` | store dump → batch; loopback console, JSON Lines ledger |
+
+**Three refusals are the design.** A guideline over one correction is a *restatement*, not a merge.
+A trigger is not editable, because it is the witness's output rather than a sentence — the two
+honest moves for a reviewer who disagrees are `split` and `reject`. And an accept on a card the
+gate refused is refused: `override` exists, requires a reason, and is recorded on the item as
+`reviewAction: 'override'`, because refusing the option would not remove the disagreement, only the
+record of it.
+
+**The console found a defect on its first render.** It prints the block the model would read, and
+that block was malformed: the note attribute contains the sentence `carries a "when" condition`, and
+a raw double quote inside a double-quoted attribute ends it. Every conditioned pack since iteration
+62 delivered a truncated note followed by stray text to any host that parsed the tag. Fixed in
+`render.ts` by escaping as `&quot;`; the test that had *encoded the defect as intended*
+(`expect(note.split('"').length - 1).toBe(2)`) now asserts zero and a round-trip through an
+attribute-shaped regex. **AUDIT 34.129.**
+
+**And a second one, from running the pipeline on a real artefact.** Neither τ² store dump carries a
+**per-item polarity**: all 15 records in R93's dump and all 64 in R99's are `kind: 'exemplar'`,
+including the ones distilled from corrections, and the run-level provenance (`itemsEditedOnly: 15`,
+`itemsPassedOnly: 58`) is not attributable to an id. So a consolidator reading a real artefact
+cannot tell a repair from a success, and `pnpm eval:retrospect` refuses rather than building an
+all-pass corpus. That is the second time this project has found a document asking a question the
+artefact cannot answer (§179 was the first), and the fix is one field.
+
+**Cost of the whole round: $0.** No model call was made — the clustering, the trigger, the witness
+and the admission are all deterministic, and the console is a page. R104 is where the money goes,
+and it has a bar to clear.
