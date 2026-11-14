@@ -18624,3 +18624,125 @@ always starts with the whole reply), the `?? 0` behind a guard in the null-contr
 noise estimate between two arms that share a treatment; the second is inside its interval. What is
 established is narrower and firmer: **the arm's store covered 10 of 73 corrections, contained six
 claims, and was served whole to every request** — and the lane had no field that could say so.
+
+### 192 — The same artefact, read a second time: six claims that are all format, and zero of 667 entities surviving
+
+**What this iteration started as.** R111's pre-flight answered R104's fixture with two claims and 671
+characters, and R104's population answered 10 of 73 events. The question written into R112 was "which
+writer can write", on the reading that `when` was the bottleneck — `parseWhen` drops a condition that
+merely restates the statement, and the artefact's `store` block does not say how many items carried
+one.
+
+**That reading was wrong, and the artefact had said so in a field §191 did not quote.** `store` carries
+`conditioned: 5, unconditioned: 1`. Five of six stored claims carry a condition. `when` is not what
+failed.
+
+So the same 100 KB file was read again, and three blocks in it had never been opened:
+
+```
+storeItems   { items: [ … six objects, each with kind, when, statement, scope, trust, supportTasks ] }
+faithfulness { corrections: 71, withoutEntities: 2, entities: 667, kept: 0, whole: 0, unwritten: 0, redacted: 9 }
+coverage     { measuredPairs: 820, medians: { zeroPairs: 195, medianAllPairs: 0.0476, medianNonzero: 0.0606 } }
+served       { requests: 164, distinct: 6, meanPerRequest: 5, byItem: [152, 130, 48, 164, 164, 162] }
+pack         { droppedForSize: 164, summary: { meanIds: 5, meanChars: 2101.9 } }
+```
+
+**The six claims R104 stored, verbatim.**
+
+| # | kind | `when` | statement |
+|---|---|---|---|
+| 1 | constraint | the output is an action list for a retail order-management request | Action list entries are objects with a name field and an arguments object containing concrete argument values |
+| 2 | constraint | the request asks to replace an item in a pending order | A pending-order item change records the current item identifier in `item_ids` and the replacement in `new_item_ids` |
+| 3 | procedure | the request combines an address update with a replacement of an item in one order | The address update action is ordered before the item modification action when both affect the same pending order |
+| 4 | constraint | *(none)* | Retail action plans represent each action as an object with `name` and `arguments` keys rather than as a bare function name |
+| 5 | constraint | the requested action set includes a return of delivered items or a cancellation of a pending order | Return actions for delivered items include the order id, item ids, and a payment method id, while cancellation actions include the order id and a reason |
+| 6 | procedure | the requested action set includes a return or cancellation for a specific order | An order's details are retrieved before a return or cancellation is invoked for that order |
+
+**Every one of the six is a fact about the wire format or the call order.** Three describe the JSON
+shape of an action (`name`+`arguments`, `item_ids`/`new_item_ids`, `payment_method_id` vs `reason`).
+Two describe ordering (`get_order_details` first, address before item change). One describes a
+representation choice. Not one of them says **what a request of a certain shape requires** — which is
+the only kind of claim that could change an answer the model would otherwise give.
+
+**And the ban explains why, arithmetically.** `distillForm` carries `refused: 10` beside
+`distillUnit {claims: 16}`. The tool-name ban refuses any candidate that names one of the fourteen
+tools this split learned from. Six of sixteen survived, and the six that survived are exactly the
+ones that name no tool: they say "the address update action" and "item modification action" instead
+of `modify_pending_order_address` and `modify_pending_order_items`. The ten that were refused are the
+ones that said which operation applies — the operational half.
+
+> **The ban is a treatment that removes the knowledge the treatment exists to make transferable.**
+> It was installed to force a claim past the tool names so it could generalise, and what survives the
+> filter is the residue a schema validator already knows. This is a mechanism for the memory null,
+> and it is measurable on an artefact that has been committed for a day.
+
+**The entities are gone, and the count says so.** `faithfulness` reads
+`corrections: 71, entities: 667, kept: 0, whole: 0, unwritten: 0, redacted: 9`. Across 71 corrections
+carrying 667 concrete entity values (order ids, item ids, payment ids, emails), **zero** survived into
+a stored claim — not whole, not partial. That is by construction of the ban and of the prompt's
+abstraction instruction, and it is the right choice for a *transferable* claim. It is also why the
+pack cannot answer "this order, this item": nothing in it is about any order.
+
+**Coverage, priced per injected pair.** `coverage` measures, for each of the 820 (request, item) pairs
+the pack served, what share of the request the item's condition actually covers:
+
+```
+median over all 820 pairs   4.76%
+median over the 625 non-zero 6.06%
+pairs with zero coverage     195  (23.8%)
+```
+
+So the median injected item mentions terms that match 4.8% of its request, and one injected pair in
+four matches nothing at all — while `pack.droppedForSize: 164` says **every one of the 164 requests
+dropped at least one item for size**. The pack was full, the items were the wrong ones, and the
+budget was spent on schema descriptions.
+
+**The arithmetic that confirms the silence.** R111's pre-flight returned `candidates: 2, chars: 671`
+in one call. R104's population returned `calls: 73, chars: 6824`, and `16 candidates` came from 10
+answered calls. `6824 / 10 = 682`, which is the pre-flight's 671 to within a token or two of JSON
+framing. So the other 63 calls returned **no visible character at all** — not prose, not `[]`. The
+arithmetic was always available; §191 asserted it from the four-state census instead, and the census
+had not run on this artefact.
+
+**What shipped.**
+
+| Piece | What it does |
+|---|---|
+| `writer-probe.ts` | a candidate grid: every `(model, form)` pair asked the same correction, one call each, read for a claim carrying a `when`; three verdicts, two of which refuse |
+| `trialOf` / `readWriterProbe` | one call → one trial (four reply states plus `error`), and the grid → `viable` / `no-writer` / `unanswered`; `no-writer` is a *result*, `unanswered` is an *outage*, and they are never merged |
+| `writerProbeMarkdown` | the step summary rendered in the package rather than in a `run:` block, because §R111's `node -e` died on a quote inside a comment |
+| `eval:writer-probe` | `--models` × `--forms` (default: the lane's model and the endpoint's other served id × `lesson`, `repair`, `procedure`, `lexicon`), `--max-calls`, `--max-tokens` 1200, `--out`, `--summary` |
+| `writer-probe.yml` | its own workflow, for `cache-probe.yml`'s reason: `vars.TAU_ENV_READY` alone starts the two-arm lane, and a probe must not share a file with it |
+| `DISTILL_THINKING` | the regime is now one exported constant; the driver and the grid read it, because R104's `thinking` was inherited from an endpoint default rather than stated |
+
+`procedure`, `repair` and `lexicon` have never been run on this lane. The grid is the first thing that
+asks them anything, and it costs cents: two models × four forms is eight calls of ~1.5k prompt tokens.
+
+**What the grid can and cannot say.** It asks about a fixture that states a rule, so a `viable` verdict
+permits a dispatch and does not certify one — R104's own pre-flight passed and its population was 86%
+silent. What the grid adds is the axis the lane never moved: form and model. If every pair answers on
+the fixture, the silence is in the corrections or the regime, and R104b (the same arm under
+`thinking: off`) is the next dollar. If one pair is silent, the form is the cause and the grid found it
+for a cent.
+
+**The pair, re-checked rather than inferred.** §191 reported the 17.5pp contrast from the paired
+artefact; the number behind it is `poc-l4-facade-shapes.json` for this dispatch, `state: NO_TREATMENT`,
+`per-failure pass4 55.00% | collapse pass4 72.50%`, `folded 0`, `containment on 0 request(s),
+0 mismatch, **7 excluded for a cut pack**`. So the contrast is two facades of one dispatch over one
+store, and the seven excluded requests are a caveat on it rather than a correction: the arms did not
+score identical samples, which is why the floor is quoted as an estimate.
+
+**The falsifier for the abstraction-tax reading.** If some `(model, form)` pair produces a claim that
+names no tool **and** states an operational condition — "a request to exchange a delivered item
+requires the item ids before the exchange is invoked" — then the residue is not a property of the ban
+and this reading is wrong. The grid is the instrument that can produce or refute it.
+
+**Quality.** `pnpm check` exit 0 — **5,140 unit tests over 251 files** (was 5,105 over 250), coverage
+**100 / 99.95 / 100 / 100**, `writer-probe.ts` at **100 / 100 / 100 / 100** over 35 tests, coupling
+ledger **225 modules** (was 224), `blocking-gates=PASS`, bundle unchanged and the halved-budget probe
+still rejected. The branch count went to 100 because three were *covered* rather than exempted — a
+tie that reaches the sort's third key, an error trial with no code (the type permits one), and a sort
+that has to work in both directions — and one defect was found by the suite itself: the first fixture
+wrote a reply and a claim list that disagreed (`{"candidates":[]}` beside one claim), which no real
+call can produce, and the failing test was asserting a verdict the code correctly refused to draw.
+The fixture was fixed; the verdict was not.

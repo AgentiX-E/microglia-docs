@@ -9877,3 +9877,55 @@ The corollary is about artefacts: a run cannot be re-read for a quantity it neve
 distillation client's tokens were absent from every artefact this lane wrote, so "the replies were
 blank" was a fact and "the model thought instead of answering" was a hypothesis no committed document
 could settle.
+
+## 34.147 The answer was in the file, and the read-back stopped at the funnel: six claims of pure format and 0 of 667 entities
+
+**What was concluded.** §34.145 §191 both read R104's artefact as far as the funnel — `73 asked, 16
+candidates, 6 stored, 63 faults` — and drew the two findings that line supports: the model answered 10
+of 73 events, and the store covered 14% of its population. Both are true. §191 then wrote R112's premise
+on top of them: *which writer can write*, on the reading that a claim without a `when` is not an answer.
+
+**What the file also contained, unopened.** Four blocks in the same 100 KB artefact:
+
+- `storeItems.items` — the **full text of all six stored claims**, with their `when`, `kind`, `scope`
+  and `supportTasks`.
+- `faithfulness` — `corrections 71, entities 667, kept 0, whole 0, redacted 9`.
+- `coverage` — per-pair coverage over the 820 injected (request, item) pairs: median 4.76%, 195 pairs
+  at zero.
+- `served.byItem` — how many of the 164 requests each of the six items reached: 152, 130, 48, 164, 164,
+  162.
+- `pack.droppedForSize: 164` — an item dropped for size on **every** request.
+
+**And the premise was refuted by a fifth field that *was* quoted.** `store` reads
+`conditioned: 5, unconditioned: 1`. Five of six claims carry a condition. `when` is not the bottleneck;
+it never was. §191 quoted the field and read past it, because the sentence it was writing ("the
+artefact could not say whether a claim carried a condition") was about the funnel's census rather than
+about the store's.
+
+**What the six claims say.** Every one is a fact about the wire format or the call order: the JSON shape
+of an action (`name`+`arguments`), the names of two arguments (`item_ids`, `new_item_ids`), which
+argument a return carries that a cancellation does not (`payment_method_id` vs `reason`), the
+representation choice, and twice an ordering rule. None states **what a request of a given shape
+requires** — the only kind of claim that could change an answer.
+
+**Why, arithmetically.** `distillForm` carries `refused: 10` beside `16 claims`. The tool-name ban
+refuses any candidate that names one of the fourteen tools this split learned from. The six survivors
+name no tool — they say "the address update action" — and the ten refusals are the candidates that said
+which operation applies. So the ban removed the operational half and left the schema half.
+
+> **A treatment that removes the knowledge it exists to make transferable.** The ban is right in
+> principle: a claim that names `modify_pending_order_address` cannot transfer to an unseen scenario.
+> The defect is that nothing measured what survives it, and what survives is the residue a schema
+> validator already knows — 4.8% median coverage, 0% entity survival, 23.8% of injected pairs matching
+> nothing.
+
+**The rule this adds.**
+
+> Reading an artefact is not the same as reading its summary block. Every iteration that ends at the
+> funnel's last line has to say which blocks it did **not** open, because a hundred kilobytes of
+> committed evidence is cheap to re-read and the alternative is paying for the next arm to learn a
+> number that was already on disk.
+
+**The falsifier.** If a `(model, form)` pair produces a claim that names no tool **and** states an
+operational condition, the residue is not a property of the ban and this reading is wrong. `eval:writer-probe`
+is the instrument that can produce one, and its `no-writer` verdict is a result rather than a failure.

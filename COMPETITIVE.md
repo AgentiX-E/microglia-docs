@@ -6065,3 +6065,96 @@ delivery-time fold with a containment control, a per-item polarity, a store samp
 which dimensions it carried, a writer census — are all still true of the code and none of them is
 disproved by a score that cannot be read. What changed today is that the record stopped quoting its
 own best number as a ranking.
+## Appendix AK — The memory was format, and the board can now say how much of it (2026-11-14)
+
+R104's artefact had the answer in it and §AJ read only the funnel. This appendix reads the rest: the
+six claims the store actually holds, whether any concrete value survived into them, and how much of a
+request an injected claim covers. It is a comparison about **content**, which is the dimension on which
+this project has been least able to say anything and its competitors most.
+
+### AK.1 What six claims about retail look like
+
+```
+1  constraint  Action list entries are objects with a name field and an arguments object
+2  constraint  A pending-order item change records the id in item_ids and the replacement in new_item_ids
+3  procedure   The address update is ordered before the item modification on the same pending order
+4  constraint  Action plans represent each action as an object with name/arguments, not a bare function name
+5  constraint  A return carries the order id, item ids and a payment method id; a cancellation carries a reason
+6  procedure   An order's details are retrieved before a return or cancellation for that order
+```
+
+Five of six carry a `when` (`store.conditioned: 5`). Every one is about the wire format or the call
+order. None says what a request of a given shape requires — the distinction that decides whether a pack
+can change an answer.
+
+| what the claim is about | count | could a schema validator have derived it? |
+|---|---|---|
+| the JSON shape of an action | 3 | yes |
+| the order two calls go in | 2 | partly — from one trace, which is what the store is for |
+| which argument a return needs that a cancellation does not | 1 | yes |
+| what a request's wording implies about the right operation | **0** | no — and this is the only row that would change an answer |
+
+### AK.2 Why: the ban is arithmetically responsible
+
+`distillForm: {refused: 10}` beside `distillUnit: {claims: 16}`. The ban refuses any candidate naming one
+of the fourteen tools this split learned from, and the ten refusals are exactly the candidates that said
+which operation applies. What survives says "the address update action" instead of
+`modify_pending_order_address` — transferable, and empty of operation.
+
+| quantity | R104 | where it comes from |
+|---|---|---|
+| candidates the ban refused | 10 of 16 (62.5%) | `distillForm.refused` |
+| claims stored | 6 | `store.stored` |
+| concrete entities across 71 corrections | 667 | `faithfulness.entities` |
+| entities surviving into a stored claim | **0** | `faithfulness.kept` + `whole` |
+| median coverage of an injected pair | **4.76%** | `coverage.medians.medianAllPairs` |
+| injected pairs covering nothing | 195 of 820 (23.8%) | `coverage.medians.zeroPairs` |
+| requests that dropped an item for size | 164 of 164 | `pack.droppedForSize` |
+
+A store that is 100% format, 0% entity and 4.8% coverage is not a store a retrieval can be blamed for.
+It is also not what any competitor's guidelines look like: ALTK-Evolve reports 14 guidelines at 45.0
+against 101 at 40.0, and its guidelines are written per *failure mode*, which is why they can name the
+operation. This project's ban exists to prevent exactly that — and no arm has ever priced it.
+
+### AK.3 Where microglia sits, stated with the intervals
+
+| | pass^4 | n | interval on the difference | what it is |
+|---|---|---|---|---|
+| ALTK-Evolve, submitted | 0.6754 | 114 tasks | cross-sample, not a ranking | their number, their backbone |
+| ALTK-Evolve, published bar | 0.5750 | — | — | the bar this lane gates against |
+| **microglia, R104 memory arm** | **0.5500** | 40 tasks × 4 | ±10pp at 95% | measured here, `deepseek-flash` |
+| microglia, the same dispatch's second facade | **0.7250** | 40 × 4 | **17.5pp apart from its own twin** | the same store, `NO_TREATMENT` |
+
+The fourth row is the one that governs the other three, and it is quoted rather than inferred:
+`poc-l4-facade-shapes.json` for dispatch `43589735959` reads `state: NO_TREATMENT`, with
+`per-failure pass4 55.00%` and `collapse pass4 72.50%`, `folded 0`, `containment on 0 request(s),
+0 mismatch, 7 excluded for a cut pack`. Two facades of one dispatch, one store, one split, one seed,
+five items a request, and the fold removed nothing — so the 17.5pp is the lane disagreeing with
+itself. The seven excluded requests are the one caveat: the two arms did not score identical samples,
+which makes the floor an estimate with a caveat rather than a clean paired zero. No two numbers on
+this board can be ordered until a dispatch carries its own control (R115), and the floor belongs at
+7 tasks rather than R92's 2–3 (R116).
+
+### AK.4 What this changes about the comparison
+
+The project's claim has been that a memory of *claims* beats a memory of *records*. R104 does not test
+that claim, because its store was neither: it was a memory of *formats*, produced by a filter that
+removes the operational content, served whole to every request at 4.76% median coverage. Three things
+follow, and each is a registration rather than an opinion:
+
+1. **R117 (`$1.78`)** — the ban on and off over one population, reading the store's shape and the paired
+   score. If the ban costs more than it buys, the abstraction instruction is what has to change, and it
+   is one boolean at the host boundary.
+2. **R112 (`$0.01`)** — the writer grid, which is the only instrument that can produce a claim naming no
+   tool *and* stating an operation. If some `(model, form)` pair produces one, AK.2's mechanism is not
+   the whole story.
+3. **R118 (`$0.19`)** — the same arm under the regime now stated, read on the four-state census rather
+   than on a score, because 63 blank replies against a 1,200-token ceiling has two causes and only one
+   of them is the model.
+
+**The honest position.** microglia is not on the board's top row and this appendix does not put it
+there. What it can state, with a committed artefact behind every number, is narrower and is the thing
+no competitor publishes: **how much of its own memory is operational, how much of it is a schema
+restatement, and what the filter that produced it removed.** A board that ranks 0.550 against 0.575
+cannot say any of that, and after R104 neither can this record pretend the difference is about
+retrieval.
