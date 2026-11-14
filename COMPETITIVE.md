@@ -5901,3 +5901,37 @@ seventy-three differ in more than width, and R92 established that a store experi
 predict **three tasks or more** to be readable at all. This appendix claims a *structural* inconsistency —
 one field treats silence as unknown and another treats it as universal — and a population that can be
 counted for the price of reading a file.
+
+### AI.5 The census came back, and it closed the hypothesis it was built to test
+
+The thresholds above were written before the number existed, and the number was read for **$0** on R99's
+artefact (run `43463317323`, 73 records, a 64-record sample):
+
+```
+store.conditioned    0
+store.unconditioned  73
+UNIVERSAL            0 of 64 record(s) state no condition and declare no scope dimension (0.0000)
+SCOPE                EMPTY — the projection never carried a task
+```
+
+`universalShare = 0.0000`, below the `0.05` floor, so **no scope arm is registered**. The reason is
+exactly what the floor encoded: every record declares a domain, so the population the four papers above
+describe — a rule with no bound at all — does not exist in this store.
+
+**What the same artefact says in its other column is the finding.** `conditioned 0, unconditioned 73`:
+**every record states no condition**. That count has been in every artefact since R51 and eleven
+iterations read it as a *retrieval* statistic — does the pack's rule match this question — rather than as
+a statement about what the rule is. Beside 2605.12978's mechanism (abstraction strips the applicability
+condition) a store of seventy-three unconditional statements is the mechanism in its purest form, and it
+explains the dose-response without appeal to scope: a larger store is more statements that are each true
+of one episode and of nothing in particular.
+
+| question | answer at $0 | what it costs to act on |
+| --- | --- | --- |
+| do the rules declare a scope? | the store declares a domain on all 73; the projection could not show the other four until this iteration | fixed (`scopeDims`), reading bounded to what was carried |
+| do the rules state a condition? | **no — 0 of 73** | R113a: a distillation form that must write the condition, and a witness that refuses a record without one |
+| is that systematic or one distiller? | unknown; R104's store is the first written after `polarity` existed | R104's `conditioned` count, already in its artefact |
+
+This is the first hypothesis on this line that the record killed with its own instrument rather than by
+argument, and it killed it for the price of reading a file — which is the property the census was
+registered for.

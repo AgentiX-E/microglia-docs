@@ -18449,3 +18449,35 @@ seventy-three differ in more than width, and R92's floor says a store arm on for
 tasks or more to be readable. What this iteration establishes is that the population can be **counted**,
 that one field treated silence as a universal and the other as an unknown, and that the reader needed the
 six dimensions the schema already had.
+
+**The census was read, at $0, on R99's artefact — and it closed its own line.** The artefact is
+`arms/memory/poc-l4.json` from run `43463317323`: `store.stored` **73**, `storeItems` a 64-record
+sample, `scopeDims` absent (it predates the field), and every record's projection `{domain: "retail"}`.
+
+```
+items 64 omitted 9
+store.conditioned 0 unconditioned 73 stored 73
+SCOPE     EMPTY  — none of them carries a readable scope    (task was never projected)
+UNIVERSAL READ   — 0 of 64 record(s) state no condition and declare no scope dimension (0.0000)
+                   — 64 state no condition, 0 declare no dimension
+```
+
+`universalShare = 0.0000`, which is below the `0.05` floor written into the registration before this
+number existed, so **the scope arm is not registered and the scope line is closed for this store**. The
+reason is the one the threshold encoded: every record declares a domain, so there is no population of
+scope-less rules to treat.
+
+**The reading that matters is the other column, and it is not new.** `store.conditioned **0**,
+unconditioned **73**` — **every record in the store states no condition at all**. The artefact has
+carried that number since R51 and nothing in eleven iterations joined it to the dose-response, because
+`conditioned` was read as a *retrieval* statistic (does the pack's rule match the question) and not as a
+statement about what the rule *is*. Read beside arXiv 2605.12978 — abstraction strips the applicability
+condition — a store with zero conditions and seventy-three records is the mechanism in its purest form,
+and it explains why a bigger store is worse: more unconditional statements, each of them true of its own
+episode and of nothing in particular.
+
+So the next arm is not a scope arm. It is the question R51 asked and this record never answered:
+**why does the distiller write a statement and never a condition**, and what does a store look like when
+each record carries the condition of the event that produced it. That is registered as **R113a** in the
+roadmap, after R104 lands, because R104's store is the first one written after `polarity` existed and its
+`conditioned` count is a second data point rather than a repetition.
