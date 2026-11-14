@@ -5716,3 +5716,63 @@ non-inferiority at **−5.00pp**, not a gain, because the design's MDE is **21.0
 A lane that wanted to claim the support axis outright would need the 114-task base (R95) and a store whose
 recurrence is wider than 53 shapes over 73 corrections. Neither is a fold problem; both are corpus
 problems, and saying so before the dispatch is cheaper than saying it after.
+
+## Appendix AG — Two kinds of side: what a lesson was learned *from*, and whether it *worked* (2026-11-14)
+
+**The distinction this appendix exists to make.** "Which side" means two different things in this
+literature, and conflating them is why the negative effect has been measurable but not explainable:
+
+| | question | where it lives |
+| --- | --- | --- |
+| **provenance side** | was this lesson learned from a failure or from a success? | the observation that produced it, fixed at write time |
+| **utility side** | when this lesson was served, did the task get better or worse? | the applications that cited it, accumulated at read time |
+
+Both are sides, both are per-item, and only the second one is published by anybody. microglia now carries
+**both on the same item** — `polarity` (R110) for the first, `utility: { injected, flippedUp, flippedDown }`
+for the second — and the pair is what turns "the memory was used wrongly" from an argument into a
+contingency table.
+
+### AG.1 What five systems record, and what they do not
+
+| system | provenance side | utility side | what is published |
+| --- | --- | --- | --- |
+| **Reflexion** (Shinn et al., 2023) | **failure only**: a reflection is written after a failed attempt and consumed by the retry | none — the reflection is used once and discarded | the retry curve, not the store |
+| **ExpeL** (Zhao et al., 2024) | **both**, separated at the *pool* level: insights are gathered from successful and failed trajectories, and the ablations hold the two pools apart | none | pool-level ablations; per-item side not reported |
+| **ACE** (Zhang et al., 2025) | not reported | **yes**: every bullet carries helpful/harmful counters, updated by the curator | the counters as the persistent representation |
+| **AWM** (Wang et al., 2025) | not reported: a workflow is induced from past trajectories and selected by recurrence of an action sequence | none | the induced workflow set |
+| **AutoGuide** (2025) | **structural**: a guideline is derived from a contrastive (wrong, right) pair, so its two sides are the pair rather than a label | not reported | the context→guideline table |
+| **ALTK-Evolve** (2026-10) | not reported: `support` is the number of sources merged, and a source's side is not carried | not reported | `sup2`/`sup3` cells |
+| **microglia (R110)** | **yes, per item**: `polarity: repair \| pass`, derived from the event's *signal* rather than its kind, adopted once and held | **yes, per item**: `utility` with its Laplace-smoothed density | both, plus the census that reconciles them |
+
+*Where a system does not state a per-item side this table says "not reported" rather than "none": an
+absence from a paper is not an absence from a system, and the difference decides whether a claim about
+the axis is a claim about the field or about its writing.*
+
+### AG.2 Why the pair is the measurable object
+
+A store can be wrong in two ways that look identical from the outside and need opposite repairs:
+
+| the finding | what it means | the repair |
+| --- | --- | --- |
+| items learned from failures, low utility | the **lesson** is bad — a wrong rule, re-derived (Anti-Persistence's error reproduction, Appendix W) | distillation |
+| items learned from successes, low utility | the lesson is true about **one instance** and the store generalised it — R99's 58 pass records carrying their own `order_id` | the unit (R104/R109) |
+| items from both sides, low utility | the item is being served outside the conditions either side taught it under | the trigger, not the store |
+
+ACE's counters can distinguish the second and third rows from the first only after the item has been
+applied often enough to move a counter, which on this lane's 40-task evaluation is never; the provenance
+side is known **at write time, for free**, and needs no application to be readable. That is why R110 is a
+write-path field rather than a read-path statistic: the population a lesson came from is a fact about the
+observation, and waiting for utility is waiting for a sample the benchmark cannot supply.
+
+### AG.3 What this does to the board
+
+| column | ALTK-Evolve | ACE | microglia | who leads |
+| --- | --- | --- | --- | --- |
+| provenance side recorded per item | not reported | not reported | **`polarity`, with a reconciliation between the item's own sides and the run-level census** | **us** |
+| utility side recorded per item | not reported | helpful/harmful counters | `utility` + density, and the retirement rule reads it | **tie**, different denominators |
+| both, on one item, with the census between them | no | no | **yes** | **us** |
+| a consolidation that may only read one side | no | no: the curator rewrites from the whole playbook | **yes**: a pass may contradict a guideline and may never write one | **us** |
+
+The row is a column, not a benchmark cell, and that is the honest status: it makes the *mechanism* of a
+negative effect attributable, and it does not by itself lift `pass^4` by a point. It is the instrument R104b
+and the M2 replay harness both need, which is why it was built before them rather than after.
