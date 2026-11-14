@@ -9140,6 +9140,25 @@ already declares the twenty-five `workflow_dispatch` inputs GitHub will parse an
 every dispatch in the repository unstartable — a limit `check-workflows.py` caught on the first push
 of this change.
 
+**Replayed against the run that found it.** The acceptance test is not the unit suite: R101's
+artefact was downloaded from `43478128683` (`l4-evidence-none`, 20.6 MB) and the pair re-graded with the
+new harness — `L4_FIRST=arms/reference/poc-l4.json`, `L4_SECOND=arms/memory/poc-l4.json`,
+`TAU_BAND="-7.5,2.5"`. Before: `FAIL V44`, `FAIL V16`, `FAIL l4-effect-resolved`. After:
+
+```
+PASS V1-pack-not-empty     the pack carried 0.00 rule(s) per question; declared empty, so this must be 0 and is 0
+PASS V32-fold-learning-intact  the fold read 0 learning row(s); declared empty, so this must be 0 and is 0
+PASS V44-domain-accounted  the store holds 0 item(s); declared empty, so this must be 0 and is 0
+PASS l4-effect-resolved    -5.00pp against the registered band [-7.50, 2.50]pp
+```
+
+Twelve gates pass, and the artefact carries five omissions with their reasons — `V6` ("an arm that
+serves no pack has no pack-based control to hold to a rule") and the four transfer ids ("a transfer
+trial presupposes a rule the arm served, and this arm declared it served none"). The line
+`[l4-pair] verdict UNRESOLVED` still prints, and it should: that is `paired-verdict`'s statistical
+sentence about the sample, not a gate about the arm. The distinction is the whole of §34.130 — the
+pair could not resolve five points at n = 40, and that was never a defect in the arm.
+
 **The rule this adds.**
 
 > An exception a registration has to remember is a gate that will be forgotten. If a condition
