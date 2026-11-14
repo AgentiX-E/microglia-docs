@@ -18296,3 +18296,80 @@ and a wrong side is a wrong corpus — the thing the reviewer would then be show
 coupling ledger **219 modules** (was 218), core bundle **50,886/51,000 B raw and 17,291/17,400 gzip** —
 the raw ceiling raised 400 bytes for 388 of shipped field, with the reason in `scripts/bundle-size.mjs`.
 Cost **$0**.
+
+### 189 — R111: the arm that measured nothing, and the three places its evidence went
+
+**R104 ran and produced no measurement.** Run `43578774040`, 2026-11-14T09:04Z → 09:38Z, off-peak
+(1.0×), 74 learn tasks in one trial, 1,233 agent calls, 5.77M prompt tokens at a 90.2% cache hit,
+**$0.1875**. It produced fifteen corrections from fifteen failing tasks, asked the distiller about all
+fifteen, and got back **fifteen empty replies**: `15 correction(s) -> 15 asked -> 0 candidate(s) -> 0
+admitted -> 0 stored -> 0 servable (0 refused, 0 failed)`. The driver stopped before the evaluation
+half, which is the behaviour R41 bought. No `pass^4`, no delta, no claim.
+
+That is the arm's result: none. What follows is what the run could and could not say about it.
+
+**Defect 1 — the artefact that records a stop kept one sentence and no evidence.** `l4.ts`'s
+no-measurement path wrote a three-line stub: a title, `status_no_measurement: 1`, and the funnel
+sentence. Everything the driver had established before stopping — the funnel itself, the reply
+census, the store's shape supply (`merge`), the population switch (`distillScope`), the unit, the
+form, the distilled population — lived in that process and died with it, and the 20 MB evidence
+upload carried 95 files, none of which was this run's diagnostics. The class that needs diagnostics
+most had the least: a *successful* arm's artefact carries all of it. So the next question ("could
+this arm have measured anything even with a distiller that worked?") could not be answered from the
+artefact, only by paying for the learn half again.
+
+**Defect 2 — the workflow named a cause no part of the run had observed.** `sota.yml`'s "Say so when
+nothing was measured" step printed, for **any** `status_no_measurement`:
+
+> L4 stopped before measuring: the provider failed its pre-flight probe
+
+The probe was off (`TAU_PROVIDER_PROBE: false`), the endpoint had answered 1,233 calls, and the
+failure was in the distiller. The one artefact whose whole content is a diagnosis was annotated with
+a sentence the run had contradicted. It now prints the driver's own first note verbatim, and appends
+the funnel, the reply census and the shape supply to the step summary when they are present.
+
+**Defect 3 — the registration quoted a store it did not pin.** R104's premise is R99's census: *73
+corrections, 53 action shapes, 10 taught by two tasks, 5 by three*. That census came from a store
+distilled from **every** trajectory. R104's header declared no `distillScope`, so the dispatch read
+an empty repository variable and the driver defaulted to `edited` — **fifteen records from fifteen
+failures**. Fifteen records cannot hold ten corroborated routines: at R99's own ratio (73 records →
+53 shapes → ten at support ≥2) the expected count at fifteen is about one. So the dispatched arm
+could not have measured the claim it registered **whatever the distiller had done**, and nothing in
+the header said which store the claim lived in.
+
+**What shipped.**
+
+| Piece | What it does |
+|---|---|
+| `NoMeasurementMarker.diagnostics` | a refusal may carry the census it was drawn from; `l4.ts` writes it into the artefact and omits the field when there is none |
+| `distill-replies.ts` | `replyCensus()`: calls, empty replies, characters returned, and the **first empty reply verbatim** — the one counter that can see a model choosing silence |
+| `distill-preflight.ts` | one fixture correction asked of the interpreter **before** the learn half; `answered` / `empty` / `error`, each with a sentence; refuses the arm before the episodes are bought |
+| `TAU_DISTILL_PREFLIGHT` | on in the τ² lane's workflow; recorded in the artefact, so a checked arm is distinguishable from an unchecked one |
+| `prereg.ts` | a `two-unit` arm must declare `distillScope`: a fold's supply is the store's, and the store is the population |
+| `prereg/R104-the-unit-arm.md` | `distillScope: all`, with an amendment note that says it was amended **before any measurement existed** and why |
+
+The pre-flight is the piece with a price on it: R104's stop cost **$0.1875** to learn that its
+distiller was silent. The same fact now costs one call — the fixture is a retail correction whose
+wrong attempt cancels a pending order for a delivered purchase, so a distiller that returns nothing
+about *it* has returned nothing about a correction, whatever the population turns out to be. Off by
+default, because an added call is an added call in a sequence a published arm's number was produced
+under.
+
+**The prompt property is tested, not asserted.** A pre-flight written as its own prompt could pass on
+a model that cannot answer the prompt the arm sends, and nothing else in the suite would notice. A
+test captures the prompt for the fixture and for a second event, and asserts the instruction block
+before `<event>` is **byte-identical** to the one `buildDistillPrompt` produces for the arm's form.
+
+**And the population rule is enforced rather than documented.** `prereg.ts` already refused a
+`two-unit` arm that took its floor, its pair, its note levels, its units, its form or its pack mode
+from a variable. The population is the eighth switch of that family and the one the fold's supply
+comes from, so it is refused the same way — at read time, before a dispatch is queued and paid for.
+
+**Quality.** `pnpm check` exit 0 — **5,044 unit tests over 247 files** (was 5,017 over 245), coverage
+**lines 99.98 / statements 99.98 / branches 99.93 / functions 100**, `distill-preflight.ts` and
+`distill-replies.ts` at **100/100/100/100** over 13 and 10 tests, coupling ledger **221 modules** (was
+219), core bundle unchanged (the new code is in `eval`). Cost **$0** for the fixes;
+
+**and $0.1875 already spent** on the run that found them. R104 is re-queued: the registration now pins its
+population, the pre-flight answers "does the writer write" for one call, and if the answer is still nothing
+the artefact will say what the replies were rather than what the driver concluded from them.

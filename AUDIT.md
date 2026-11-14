@@ -9439,3 +9439,140 @@ the comparison cannot run.
 
 **Cost of finding it:** $0, and it was found by running the pipeline on a real artefact and reading the
 sentence it printed — the same reader that found §34.129.
+
+## 34.136 A failed run deleted its own evidence, and the summary named a cause nobody had observed
+
+**What happened.** R104's first dispatch (`43578774040`) produced no measurement: 74 learn episodes,
+fifteen corrections, fifteen empty replies from the distiller, zero candidates, zero stored. The
+driver stopped before the evaluation half, which is the correct behaviour. The artefacts it left were
+a three-line stub and a job log, and between them they could not answer a single follow-up question.
+
+The stub:
+
+```json
+{ "id": "poc-l4", "title": "… (no measurement: the run stopped before any task was scored)",
+  "model": "deepseek/deepseek-flash", "n": 0, "calls": 0,
+  "metrics": { "status_no_measurement": 1, … },
+  "notes": ["The run stopped before any task was scored: 15 correction(s) -> 15 asked -> 0 candidate(s)
+             -> 0 admitted -> 0 stored -> 0 servable (0 refused, 0 failed): the interpreter answered all
+             15 event(s) with no claim of its own: nothing was thrown away after the reply, so the
+             model is what carried nothing", …] }
+```
+
+**Why that is the wrong shape for this class.** A no-measurement record is the one file in the lane
+with no result in it, so its whole value is diagnostic — and it was the only artefact class that
+carried no diagnostics. A successful arm's file carries the funnel, the reply census, the store
+census, the shape supply, the population switch, the unit, the form and the distilled population. The
+stopped arm's carried the sentence that summarised all of them. So "could this arm have measured
+anything even with a distiller that worked?" — a question the shape supply answers at $0 — could only
+be answered by buying the learn half again.
+
+**The second defect is the same class one layer out.** The workflow step that exists to announce a
+stop printed, for **any** `status_no_measurement`:
+
+> L4 stopped before measuring: the provider failed its pre-flight probe
+
+The probe was off. The endpoint had answered 1,233 calls with a 90.2% cache hit. The failure was in
+the distiller, and the annotation named a subsystem the run had not exercised. An artefact whose
+content is a diagnosis was annotated with a sentence its own driver had contradicted — and the
+annotation is what a human reads first, in the run list, without opening anything.
+
+**Why no test caught it.** Both are write-path shape, not logic: `noMeasurement()` had no field to
+put diagnostics in, so the driver had nowhere to hand them over even though it had computed them
+(§34.132's pattern, third instance). The fix is a field on the marker plus one spread in `l4.ts`, and
+the test is at the process boundary the field crosses — a stand-in driver that raises a refusal
+carrying a census, and an assertion that the census is in the file. The warning is fixed by not
+guessing: it prints the driver's first note verbatim and appends the funnel, the reply census and the
+shape supply to the step summary when they are present.
+
+**The rule this adds.**
+
+> An artefact that records a failure must carry what the failure was observed through. A sentence
+> summarising five counts is a claim about evidence; the evidence itself costs bytes and cannot be
+> recovered after the process exits.
+
+**Cost of finding it:** $0.1875 of learn episodes, of which the informative part was the fifteen
+replies — and those were discarded.
+
+## 34.137 The arm quoted a store census and did not pin the switch that produces it
+
+**What was registered.** R104's premise, quoted from R99:
+
+> 73 corrections distilled into **53 action shapes**, of which **10 are taught by two tasks and 5 by
+> three**.
+
+**What was dispatched.** `distillScope` was not in R104's header. The dispatch read
+`vars.TAU_DISTILL_SCOPE`, which was empty, and `resolveDistillScope` treats empty as its default:
+`edited`. The learn half produced **fifteen** corrections, from the fifteen tasks that failed out of
+seventy-four. The funnel's own first number says so: `15 correction(s)`.
+
+**Why that is not a detail.** A fold needs two tasks behind one routine, and the count of routines
+that have them is a property of the population: R99's 73 records collapsed to 53 shapes with ten at
+support ≥2. Fifteen records cannot contain ten corroborated routines; at R99's own ratio the expected
+count is about one. The arm's treatment is the fold, so **the dispatched arm could not have measured
+the claim it registered whatever the distiller had done** — and the fifteen empty replies, which are
+the reason the run is being discussed at all, are a second, independent reason it produced nothing.
+
+**Why the header had no rule against it.** Eight switches are already refused when a registration
+leaves them to a variable: the floor, the pair, the note levels, the pack units, the form, the unit,
+the pack mode and the pack shape. Each was added after an arm published one treatment under another's
+name. The population was the eighth and the omission was structural rather than accidental: the switch
+arrived in R62 for a different question ("should a store learn from successes too?"), and no round
+before this one had a treatment whose *supply* was the population.
+
+**What changed, and what did not.** The header pins `distillScope: all`, and `prereg.ts` now refuses a
+`two-unit` arm that does not. The amendment is recorded inside the registration with the reason and
+the run id, and it is legitimate *because there is no measurement to amend*: the first dispatch
+produced no `pass^4`, no delta and no store, so the predictions and refutations are the ones that were
+registered, unchanged. A registration amended after a reading would be a different act entirely, and
+the note says which one this was.
+
+**The rule this adds.**
+
+> A registration that quotes a measurement must pin the switch that produced it. A census in a premise
+> is a claim about a population, and a population inherited from a variable is a premise nobody
+> declared.
+
+**Cost of finding it:** $0 to reason about, $0.1875 to have had the chance — and it would have cost a
+second learn half to notice without the first fix in §34.136.
+
+## 34.138 The reflector was the actor, and nothing said so
+
+**The coupling.** The driver builds its distiller with:
+
+```ts
+model:
+  process.env["TAU_DISTILL_MODEL"]?.trim() ||
+  process.env["TAU_MODEL"] ||
+  "deepseek-chat",
+```
+
+`TAU_DISTILL_MODEL` is empty in every dispatch this lane has ever run, so the model that **writes the
+memory** is whichever model **acts**, silently and always. That was invisible for as long as the two were
+deliberately the same: R93's and R99's stores were written by `deepseek-flash` because the agent was
+`deepseek-flash`. When R101 changed the agent's model for a decomposition leg, it changed the reflector too,
+and no registration declared it, no artefact recorded it, and no gate could see it — the same shape as
+§34.133's switch connected to nothing, one layer further out.
+
+**Why it matters beyond bookkeeping.** The two roles are not the same job. ACE's own architecture separates
+them (a Reflector that distils, a Curator that merges) and its ablations credit the Reflector with a
+substantial share of the gain; the label-free self-improvement literature finds that a reflector below a
+capability threshold does not produce a worse lesson but **none**, and the small-model self-restatement work
+puts that threshold at a size where "restate what this correction teaches" is a task a model can fail
+completely. So the lane's one observed total failure — fifteen corrections, fifteen empty replies — is a
+*predicted* failure of a small reflector, arriving through a default nobody had reason to look at.
+
+**What was fixed, and what was not.** The artefact now names the writer (`distillModel`, on every arm), and
+a pre-flight asks one fixture correction before the learn half is bought, so "the writer produced nothing"
+costs one call instead of 74 episodes. The *choice* of writer is left where it belongs: it is a treatment,
+it changes the store, and a registration has to declare it rather than inherit it. That decision needs the
+pre-flight's answer first, which is the next dispatch's job, not this iteration's.
+
+**The rule this adds.**
+
+> A default that binds two roles to one value must be visible in the record it produces. Here the roles were
+> a writer and an actor; the default was invisible for eight rounds because for eight rounds the two were
+> deliberately identical, and it became a variable the moment one of them moved.
+
+**Cost of finding it:** $0 — the code was three lines and the artefact already carried the wrong model's
+name in a field nobody read.

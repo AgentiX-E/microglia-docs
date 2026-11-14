@@ -5776,3 +5776,61 @@ observation, and waiting for utility is waiting for a sample the benchmark canno
 The row is a column, not a benchmark cell, and that is the honest status: it makes the *mechanism* of a
 negative effect attributable, and it does not by itself lift `pass^4` by a point. It is the instrument R104b
 and the M2 replay harness both need, which is why it was built before them rather than after.
+
+## Appendix AH — Who writes the memory, and why the writer is not the actor (2026-11-14)
+
+**The axis this appendix adds.** Every column on the board so far has been about *what* is stored, *how* it
+is ranked and *what unit* it is served in. R104's first dispatch put a fourth question on the table, and it
+is not a tuning question: **which model writes the lesson?** The run answered fifteen corrections with
+fifteen empty replies. The endpoint was healthy (1,233 calls, 90.2% cache hit), the prompt was the one R93
+and R99 used, and the model was `deepseek-flash` — which is also the model that *acted*, because the lane's
+distiller inherits `TAU_MODEL` when `TAU_DISTILL_MODEL` is unset.
+
+### AH.1 The split every competitor makes, and microglia made implicitly
+
+| system | who acts | who writes the lesson | refined? |
+| --- | --- | --- | --- |
+| **Reflexion** | the agent model | the same model, one reflection per failed trial | no: one pass, consumed by the retry |
+| **ACE** (arXiv 2510.04618) | Generator | a separate **Reflector**, then a separate **Curator** that merges deltas | **yes — up to five refinement iterations** per reflection |
+| **ExpeL** | the agent model | the same model, insights gathered across a pool of successes and failures | no |
+| **AWM** | the agent model | the same model, workflows induced from action sequences | no |
+| **microglia** | `TAU_MODEL` | `TAU_DISTILL_MODEL` **or, silently, `TAU_MODEL`** | no: one call per correction |
+
+Two facts in that table are worth separating. ACE's designers state the reason for the split explicitly:
+systems that "collapse generation, evaluation, and rewriting into a single model call" get "insufficient
+reflection", and their ablations credit the Reflector and the multi-epoch refinement with substantial
+shares of the gain. microglia's lane has the *architectural* separation — the interpreter is a distinct
+component with its own prompt, its own form and its own recorded identity — but the lane's default binds the
+two roles to one weight, and until R111 no artefact said which weight wrote a store.
+
+### AH.2 The literature says an empty lesson is the predicted failure of a small reflector
+
+| finding | source | what it implies here |
+| --- | --- | --- |
+| label-free self-improvement **depends on the base model's prior reasoning**; weak models fail to generate sufficiently long or diverse chains for effective self-reflection, and land below their own baseline | *You Need Reasoning to Learn Reasoning: The Limitations of Label-Free RL in Weak Base Models* | a reflector below a capability threshold does not produce a worse lesson, it produces **none** |
+| self-restatement by 0.5–3B models is only ~60% accurate and drops the chain of thought 8.2% of the time | Shenfeld et al.'s SDFT evaluated on small models (2026) | "restate what this correction teaches" is a generation task that a small model can fail at completely |
+| self-correction without an external verifier is re-sampling: `H(Y | x, y¹) ≥ H(Y | x, external)` | the reflection-as-regeneration argument (2026) | the lane's external signal is the correction itself, which is why the *fixture* pre-flight is a fair test of the writer |
+
+None of these is a measurement of `deepseek-flash` on this lane, and this appendix does not claim one. What
+they establish is that "the reflector wrote nothing" is a **predicted** failure mode of a small reflector,
+not an anomaly, and that the lane had no way to see it — no reply census, no writer identity, no pre-flight.
+
+### AH.3 What this changes on the board
+
+| column | ACE | Reflexion | ExpeL | microglia (R111) | who leads |
+| --- | --- | --- | --- | --- | --- |
+| reflector is a separate role | **yes** (Reflector + Curator) | no | no | yes (interpreter is a component with its own prompt/form) | **tie** |
+| reflector refined over iterations | **yes, ≤5** | no | no | **no** | **ACE** |
+| the writer's identity recorded per run | not reported | not reported | not reported | **`distillModel`, on every artefact** | **us** |
+| a run is refused before the episodes when the writer is silent | no | no | no | **yes: one fixture correction, `TAU_DISTILL_PREFLIGHT`** | **us** |
+| empty lessons counted separately from dropped ones | no | no | no | **yes: reply census** | **us** |
+
+The two rows microglia leads are **instrument** rows, and that is the honest description: they make the
+failure attributable, they do not make the flywheel turn. The row ACE leads is a mechanism difference with a
+published ablation behind it, and it is the next thing this record should test rather than assume — a
+reflector that is allowed to refine its own lesson twice is a different treatment from one that is asked
+once, and the pre-flight makes that comparison cheap enough to run on a fixture before it is run on a store.
+
+**What is not claimed.** That `deepseek-flash` is the cause. The run had three defects and only one of them
+was fixed by changing a header (`distillScope: all`, §34.137). Whether the writer is the fourth is a question
+for the next dispatch, and the fixture pre-flight answers it for one call.
