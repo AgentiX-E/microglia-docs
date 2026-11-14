@@ -18483,20 +18483,35 @@ the `conditioned` count is therefore reporting a unit's definition rather than a
 Reading it as the latter was this iteration's own error, corrected six hours later in **AUDIT 34.140**
 before it reached a registration.
 
-**The correction moves the question rather than closing it.** The lane's two ends are now both
-artefacts rather than assumptions:
+**The correction moves the question rather than closing it — and reading the second artefact moved it
+again.** Both ends of this lane are artefacts rather than assumptions:
 
-| store | unit | records | conditional? | pass^4 |
-| --- | --- | --- | --- | --- |
-| R99 (run `43463317323`) | `raw` — `Q/A/note`, no `when` | 73 | **no, by construction** | 0.625 |
-| R93 | fifteen claims (unit not verified in this iteration) | 15 | the `correction` form requires a `when`; whether R93 ran it is the one cell this iteration did not read | 0.700 |
+| store | run | unit | `distillScope` | records | conditional? | clipped | pass^4 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| R93 | `43436606915` | `raw` | `edited` | 15 | **no** — `conditioned 0` | 3 | **0.700** |
+| R99 | `43463317323` | `raw` | `all` | 73 | **no** — `conditioned 0` | 9 | **0.625** |
 
-Two stores, seven and a half points apart, differing in **form and size at once** — which is exactly
-the confound R104 was built to break for the *unit* and does not break for the *condition*. Why the
-lane runs `raw` at all is the other half of the answer and it is already measured: R111 found the
-`correction` interpreter returning fifteen empty replies from fifteen corrections on this model, so a
-lane that needs a store falls back to the unit that asks the model nothing.
+**Both stores are the same unit, and the only variable between them is the population.** Fifteen raw
+records from the failures against seventy-three raw records from every trajectory: the seven and a half
+points R99 closed its supply line with are the price of **fifty-eight more raw records**, paid on a form
+that carries no condition at all. This iteration first wrote that the two differed in "form and size at
+once"; reading R93's artefact an hour later showed the form is identical, and **AUDIT 34.141** records the
+second correction.
 
-So the next arm is neither a scope arm nor a prompt fix. It is **R113a**: one dispatch, one population,
-the same failure events written once as raw records and once as correction claims, so the seven and a
-half points can be attributed to the condition rather than to the count.
+**That is the causal chain, and it is the answer to "we are storing the wrong thing".** `correction` is the
+default unit and it asks the model to state a rule with a `when` the prompt makes mandatory. R111 measured
+what that unit produces on this backend: **fifteen corrections, fifteen empty replies**. A lane that needs a
+store therefore falls back to the unit that asks the model nothing — and a copy carries no condition
+*because it is a copy*. A store of copies then gets worse as it grows, which is the dose-response this
+record has been chasing since R85: R93's fifteen at 0.700, R99's seventy-three at 0.625, R101's empty pack
+five points below the same prompt.
+
+Read that way the negative effect is not a property of memory at all. It is a property of **memory written
+by a writer too weak to abstract**: the store's shape is a consequence of the writer's capability, and every
+store-side arm on this board has been tuning the consequence.
+
+**So the next arm is upstream of every store arm on the board.** Not a scope arm (closed by its own
+threshold), not a prompt repair (the prompt already requires a `when`, and R111's pre-flight confirms the
+prompt is what the arm sends), but **R112 promoted to P0**: choose a writer that can produce a claim, then
+compare fifteen conditional claims against fifteen raw records over one population. **R113a is rewritten to
+be that comparison, and it is now blocked on R112 rather than on R104.**

@@ -9649,3 +9649,40 @@ units holding the population fixed (**R113a**), not a prompt repair.
 > A counter reports a property of the unit it was taken in. Before a zero is read as a defect, the same
 > document must be asked which unit produced it — and when the document answers, the answer belongs in
 > the sentence that quotes the zero.
+
+## 34.141 The two ends of the axis were the same unit, and the axis was the population
+
+**What was written, and what the second artefact said.** §PROGRESS 190 corrected a zero (34.140) and
+reported the lane's two stores as differing "in form *and* size at once" — R99's seventy-three records
+against R93's fifteen. Both artefacts were then read for the unit that wrote them:
+
+```
+R93  run 43436606915  distillUnit {unit:'raw', claims:15}   distillScope 'edited'  conditioned 0  clipped 3  pass^4 0.700
+R99  run 43463317323  distillUnit {unit:'raw', claims:73}   distillScope 'all'     conditioned 0  clipped 9  pass^4 0.625
+```
+
+`unit: 'raw'` both times. The form is identical, so the seven and a half points are the price of
+**fifty-eight more raw records** and not of a different kind of record. The corrected sentence is
+narrower and it points somewhere else.
+
+**Why the error was easy and why it mattered.** `R93` and `R99` are described in this record by what they
+tested — a paired arm, a supply arm — and neither description names the unit, because when both arms ran
+the unit was a constant nobody had a reason to read. A constant is invisible in the same way a default is
+invisible (34.138): it becomes a variable only when something changes, and nothing had changed since the
+lane fell back to `raw`.
+
+**What the pair now explains.** `correction` is the default unit, and its prompt makes `when` mandatory:
+
+> `when` is the condition under which the account generalises to a different question … It must be
+> checkable against the schema and the question, and it must not hold for every question.
+
+R111 measured what that unit returns on this backend: fifteen corrections, fifteen empty replies. So the
+lane's store shape is downstream of its writer's capability — a writer that cannot abstract leaves only
+the unit that copies, a copy has no condition because it is a copy, and copies get worse as they multiply.
+Every store-side arm since R85 has been tuning that consequence.
+
+**The rule this adds.**
+
+> When two arms differ in a metric and share an unread constant, the metric belongs to the constant until
+> the constant is read. Here the constant was the distillation unit, and reading it turned a comparison of
+> forms into a comparison of sizes — which is the comparison R99 had already made and closed.

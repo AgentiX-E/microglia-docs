@@ -5925,19 +5925,29 @@ store was written by the **raw** unit, whose record is `Q: … / A: …` copied 
 `when` **by construction**. The zero is a unit's definition, not a writer's failure — this appendix first
 read it as the latter, and AUDIT 34.140 records the correction.
 
-That makes the comparison sharper rather than weaker. The lane's two ends are both artefacts: seventy-three
-raw records at **0.625** and fifteen claims from the `correction` form at **0.700**, where the prompt
-requires a `when`. Beside 2605.12978's mechanism (abstraction strips the applicability condition) the
-record's own dose-response has a candidate explanation that is a *selection* rather than a bug: a lane whose
-reflector returns nothing falls back to the unit that asks the model nothing, and a store of raw records is
-a store of statements each true of one episode and of nothing in particular — which is also why clipping
-(`clipped: 9`) and count both grow with the store.
+That makes the comparison sharper rather than weaker — and narrower. Both of the lane's stores are the
+**same unit**, and the only variable between them is the population:
+
+| store | run | unit | `distillScope` | records | `conditioned` | pass^4 |
+| --- | --- | --- | --- | --- | --- | --- |
+| R93 | `43436606915` | `raw` | `edited` | 15 | 0 | **0.700** |
+| R99 | `43463317323` | `raw` | `all` | 73 | 0 | **0.625** |
+
+So the seven and a half points price **fifty-eight more copies**, not a different kind of record — which is
+R99's own supply finding, read on the form rather than on the count. And it locates the mechanism upstream:
+`correction` is the default unit and its prompt makes `when` mandatory, so a store with no condition is
+evidence about the **writer**, not about the schema. R111 measured that writer at fifteen corrections and
+fifteen empty replies, which is why the lane falls back to copies at all.
+
+Beside 2605.12978 (abstraction strips the applicability condition) the chain is: a writer that cannot
+abstract leaves only the unit that copies → the copy has no condition because it is a copy → copies get
+worse as they multiply. Every store-side arm this record has run tunes the third step.
 
 | question | answer at $0 | what it costs to act on |
 | --- | --- | --- |
 | do the rules declare a scope? | the store declares a domain on all 73; the projection could not show the other four until this iteration | fixed (`scopeDims`), reading bounded to what was carried |
-| do the rules state a condition? | **no — 0 of 73**, and `distillUnit: raw` says that is the unit, not the writer | R113a: one failure population written once as raw records and once as correction claims |
-| is that systematic or one distiller? | unknown; R104's store is the first written after `polarity` existed | R104's `conditioned` count, already in its artefact |
+| do the rules state a condition? | **no — 0 of 73 and 0 of 15**, and `distillUnit: raw` says that is the unit, not the writer | R113a, blocked on R112: fifteen claims against fifteen records over one population |
+| can the writer produce a conditional claim at all? | **no on this backend** — R111: fifteen corrections, fifteen empty replies | R112 promoted to P0: one fixture correction per candidate writer, at $0.01 |
 
 This is the first hypothesis on this line that the record killed with its own instrument rather than by
 argument, and it killed it for the price of reading a file — which is the property the census was
