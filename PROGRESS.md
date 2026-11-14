@@ -18805,3 +18805,46 @@ the difference between reading a census and re-running a benchmark that cannot r
 iteration beyond what §192 shipped. The workflow's own log path — `pnpm eval:writer-probe` → artefact →
 `cat` into the step summary — executed end to end on its first dispatch, which is what §R111's `node -e`
 step never did.
+
+### 194 — The stop is the registration's: an arm whose claim is a census, and the twenty-sixth input that would have taken every gate with it
+
+**What R112 left.** Form is excluded (four forms, both models, all answer; `lesson` best with two
+conditioned claims where the others write one), `when` was never the bottleneck (`conditioned: 5`), and
+the model is excluded (both answer). The only axis left for R104's 63 blank replies is the **regime** it
+ran under: no `thinking` parameter sent, the endpoint's default in force, and that default is to think
+— out of the same 1,200-token ceiling the reply needs.
+
+**Why that arm must not evaluate.** R104's own pair settles it: `per-failure 55.00%` against
+`collapse 72.50%` on one dispatch, one store, one split, one seed, `folded 0`. A 17.5pp disagreement
+inside a single treatment against a 40-task design that resolves ±10pp. A `pass^4` from the regime arm
+would be a number this record could not order against anything, and the census it is asking for is
+complete before the first episode is bought.
+
+**What shipped.**
+
+| Piece | What it does |
+|---|---|
+| `learn-only.ts` | the four-state census read into five named states — `unasked`, `answered-everywhere`, `mostly-blank`, `mostly-empty`, `mixed` — and the one sentence a stopping arm carries |
+| `TAU_LEARN_ONLY` | stops the driver after the distiller, with `distillDiagnostics()` unchanged so a learn-only artefact and a refused one describe one run in the same keys, plus a `silence` block naming the state |
+| `distillDiagnostics()` | the 60-line diagnostics object moved into a factory, because two paths that assemble the same record separately are two records waiting to differ |
+| `learnOnly` header field | `prereg.ts` parses it, refuses any spelling but `true`/`false`, and `eval:prereg-form` emits it beside the seven switches it already reconciles |
+| `prereg/R118-the-regime.md` | the arm registered at **$0.19** — the learning half, and not the $1.02 evaluation R104 bought |
+
+**The four orders of the reader are the definition.** `unasked` first, because a batch that never
+reached the distiller is not a finding about replies. `answered-everywhere` after the negatives, so one
+blank reply in seventy-three is not called a majority by rounding. A share of exactly one half is
+`mostly-blank`, because the boundary is the claim. And `mixed` is a named state rather than a fallback:
+R104's own population has four kinds in it.
+
+**The twenty-sixth input.** `sota.yml` declares exactly **25** `workflow_dispatch` inputs, which is
+GitHub's documented cap — the file that once exceeded it produced a run named after the file and
+nothing else, and took every gate with it. So the switch is a registration header, not an input, and
+that is the better placement anyway: R104's `distillScope` is the case where a switch belonging to one
+experiment lived in a repository variable and was dispatched under another experiment's value. A global
+that could turn this stop off would let a dispatch pay for the half the registration exists to not buy.
+
+**Quality.** `pnpm check` exit 0 — **5,152 unit tests over 252 files** (was 5,140 over 251), coverage
+**100 / 99.95 / 100 / 100**, `learn-only.ts` and `prereg.ts` both at **100/100/100/100**, coupling
+ledger **226 modules** (was 225), `blocking-gates=PASS`, bundle unchanged. The header field is the
+first boolean in `prereg.ts`, and its three tests are the first that would have caught a value like
+`yes` reading as neither truthy nor refused.
