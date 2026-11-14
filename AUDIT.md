@@ -9576,3 +9576,37 @@ pre-flight's answer first, which is the next dispatch's job, not this iteration'
 
 **Cost of finding it:** $0 — the code was three lines and the artefact already carried the wrong model's
 name in a field nobody read.
+
+## 34.139 Two fields, one writer, and two meanings for silence
+
+**The coupling.** `distill` writes both `scope` and `polarity` from one candidate in one call, and the
+two fields answer the same kind of question — *what does it mean that this value is not here?* — in
+opposite ways:
+
+| field | absent means | where it is decided |
+| --- | --- | --- |
+| `polarity` | **unclassified**: counted, never filled in, and a store of unlabelled records is refused rather than read as successes | `readStoreDump`, written in R110 after a fallback read every τ² record as a pass |
+| a `scope` dimension | **wildcard**: the rule matches every request on that dimension | `scopeMatches`, which is permissive on purpose |
+
+Both are defensible alone. `scopeMatches` has to be permissive or a store written from a handful of
+examples serves nothing, and `polarity` has to be strict or a consolidator reads guesses as evidence.
+Together they are a trap for the one reader who arrives without knowing which field he is holding,
+and the glossary's `Scope` entry — six paragraphs of dimensions and no sentence about absence — sent
+him to the wrong answer with a clear conscience.
+
+**The second defect was arithmetic.** The artefact's sample projected an item's scope to `domain` and
+dropped the other four dimensions, so the population this record has spent eleven iterations arguing
+about was never in any artefact to be counted. The schema had six dimensions; the record carried one;
+no reader could tell a store where nobody declared a field from a projection that discarded it.
+
+**What was fixed.** The projection carries what it reads, states which dimensions it carried
+(`scopeDims`), and the census refuses when the statement is missing. `universalityCensus` counts the
+record that has neither bound — no `when`, no optional dimension — which is the object the 2026
+memory-harm results measure, and it counts records the dump cannot place separately rather than
+folding them into the intersection.
+
+**The rule this adds.**
+
+> A field whose absence is load-bearing must say what its absence means, and two fields written by one
+> writer in one call must either agree about silence or state why they differ. The failure is not that
+> `scope` is permissive; it is that nothing anywhere said so, and the artefact could not be asked.

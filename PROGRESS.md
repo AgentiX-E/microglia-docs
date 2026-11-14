@@ -18373,3 +18373,79 @@ comes from, so it is refused the same way — at read time, before a dispatch is
 **and $0.1875 already spent** on the run that found them. R104 is re-queued: the registration now pins its
 population, the pre-flight answers "does the writer write" for one call, and if the answer is still nothing
 the artefact will say what the replies were rather than what the driver concluded from them.
+
+### 190 — A rule says where it applies; the artefact said one dimension of it, and the population that hurts became countable
+
+**Where this started.** R104 has been in flight for ninety minutes and this iteration does not report its
+number. What it reports is the answer to a question the record could not ask: *how many of this store's
+rules say where they apply?*
+
+Four results published in 2026 all turn on that question, and none of them is about size:
+
+| finding | source |
+| --- | --- |
+| benign sessions produce notes that govern high-stakes ones in **35–81%** of episodes, from near-zero baselines; two routes, **write-time overgeneralization** and **act-time broadening** | *The Memory Trap*, arXiv 2611.07554 (2026-11) |
+| repeated consolidation degrades a store even when every input was a solved trajectory; abstraction **strips the applicability condition**; an **episodic-only control** matches every consolidator tested | *Useful Memories Become Faulty*, arXiv 2605.12978 |
+| a wrong rule shapes the next run, which is summarised into a rule, which returns wrong — **error reproduction**; the winning repair (**Anti-Persistence**) rebuilds guidance per task and discards it | *More Memory, Worse Agents*, arXiv 2610.27406 |
+| 555 base tasks against 4,869 historical ones: memory helped **and** broke tasks; the named cause is *reusing memory without reassessing its applicability* | *MemDev-Bench*, arXiv 2610.27524 |
+
+**The defect was one line.** `storeItemSample` projected an item's scope to
+
+```ts
+scope: item.scope.domain === undefined ? {} : { domain: item.scope.domain },
+```
+
+— one dimension of five — so every artefact this lane has ever written carries `{domain}` or `{}` and
+nothing else. A reader asking "how many records leave `field` open" could not tell a store in which nobody
+declared a field from a projection that dropped it, which is exactly the confusion R110 had to undo for
+`polarity` (AUDIT 34.135). The census did not exist; the projection made sure it could not.
+
+**The asymmetry is the finding, and it is not a research question.** Two fields are written by the same
+distiller in the same call and they disagree about what silence means:
+
+| field | absent means | consequence |
+| --- | --- | --- |
+| `polarity` | **unclassified** — never `pass` | a reader counts the silence and refuses to fill it in |
+| `scope` dimension | **wildcard** — matches every request on it | a rule that declares nothing is a rule that applies everywhere |
+
+`scopeMatches` is right to be permissive — a store written from few examples is unusable otherwise — but
+nothing anywhere says so, and the glossary's `Scope` entry described six dimensions without saying what
+happens when one is missing. That is now written down in `docs/GLOSSARY.md`, beside the two terms that were
+missing: **Universal rule** (no condition, no dimension) and **Applicability** (the judgement scope does not
+make).
+
+**What is built.** Three pieces, none of them a treatment:
+
+- `scopeDims` on the sample, declared by the writer that knows: a projection states which dimensions it
+  carried, so a reader never infers a schema from a JSON shape. Absent on every older dump, and the census
+  refuses rather than assumes when it is absent.
+- `scopeCensus`, three states: `read`, `empty` (nothing readable) and `unavailable` (the dump did not say).
+  Per-dimension declared/open counts, a specificity histogram, and the share that declares nothing beyond
+  its task.
+- `universalityCensus` — the population every paper above is about: records that state no `when` **and**
+  declare no optional dimension. It reads a dump whose projection carried one dimension and no task, which
+  is the shape of every artefact written before this commit, and says so in the sentence: *read within the
+  1 optional dimension(s) the dump carried*. A record the dump cannot place is counted as `unplaceable` and
+  never folded into the intersection.
+
+`pnpm eval:retrospect` prints both censuses beside the side reconciliation, and `--carried domain` exists
+for dumps written before the field — a claim about the commit that wrote them, not an inference from their
+JSON.
+
+**R113 is registered as a census with its thresholds written before the number exists** (ROADMAP): at
+`universalShare ≥ 0.20` an arm is registered that makes a universal record carry the condition of the event
+that produced it, at the delivery boundary where R109's fold already lives; `0.05 ≤ share < 0.20` records the
+number and registers nothing, because a treatment touching one record in twenty cannot move forty tasks past
+the three-task floor R92 established; below `0.05` the scope line closes for this store.
+
+**Quality.** `pnpm check` exit 0 — **5,071 unit tests over 248 files** (was 5,044 over 247), coverage
+**lines 99.98 / statements 99.98 / branches 99.93 / functions 100**, `scope-census.ts` at
+**100/100/100/100** over 22 tests, coupling ledger **222 modules** (was 221). One branch was deleted rather
+than exempted: `share()` guarded a division by zero that every call site had already ruled out, and an
+unreachable branch is removed here, not covered by a comment.
+
+**Not claimed.** That scope is the mechanism behind R99's 62.5%. R93's fifteen records and R99's
+seventy-three differ in more than width, and R92's floor says a store arm on forty tasks must predict three
+tasks or more to be readable. What this iteration establishes is that the population can be **counted**,
+that one field treated silence as a universal and the other as an unknown, and that the reader needed the
+six dimensions the schema already had.
