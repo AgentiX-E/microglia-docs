@@ -9801,3 +9801,79 @@ measured nothing still knows who wrote its store.
 
 > Logic in a workflow file is logic no coverage instrument reaches and no test can call. If a step
 > has to decide something, the decision belongs in the package — the step's job is to call it.
+
+## 34.145 The counts were in the artefact, under a key this audit had not opened
+
+**What §PROGRESS 191 first said.**
+
+> | D4 | the artefact carried no fault counts at all | 63 fallbacks existed only in the log |
+
+**What the artefact says.**
+
+```json
+"learning": {
+  "rows": 74, "unanswered": 0, "edited": 15, "distilled": 6, "distillFailed": 0,
+  "candidates": 16, "events": 73, "llmFailed": 63,
+  "llmFailedReasons": { "MG_E_INVALID_SIGNAL": 63 },
+  "llmFailedSamples": { "MG_E_INVALID_SIGNAL": "MG_E_INVALID_SIGNAL: LLM response is not JSON <- " },
+  "dropped": {}
+}
+```
+
+Every count was there, including the fault histogram and one sample — and the sample is the dangling
+arrow, in the document, not only in the log. The claim was false and it was written before the block
+was opened, because the earlier read had looked at `tau2.distillReplies` and `tau2.funnel` and
+concluded that a field which was not in those two was not in the file.
+
+**What is actually missing, and it is narrower.** `llmFailed` counts events the model threw on. It
+does not say how many of those the fallback answered, how many claims the fallback produced, or which
+side the stored claims came from — and on this run the answer to all three is the same and is the one
+that matters: 63 invocations, 63 answers, **0 claims**, so the store is the model's. `distillFaults`
+and `distillWriter` add those; they do not add counts that were already published.
+
+**The rule this adds.**
+
+> An absence claim is a claim about a document, and it has to be checked against the whole document.
+> "The field is not where I looked" and "the field is not there" are different findings, and the
+> first one is not a finding at all.
+
+This is the fifth reading of a silence in two iterations — the `kind` fallback (34.135), the scope
+dimension (34.139), the `conditioned` zero (34.140), the unread constant (34.141), and now a block
+that was read as missing. The first four were wrong about **code**; this one was wrong about **a
+file**, which is worse, because a file is the thing the next reader trusts.
+
+## 34.146 A regime is a property of a run, not of the provider's default
+
+**What the code did.** The τ² driver built its distillation client without a `thinking` parameter, and
+the comment beside the token ceiling said:
+
+> The coupling to a thinking regime is not wired here because this lane's distiller never thinks —
+> `TAU_THINKING` reaches the Python half, and this process's own client sends no reasoning parameter.
+
+The second clause is a fact about the code. The first clause is a claim about the run, and it does not
+follow: a client that sends no parameter receives the endpoint's **default**, which this lane never
+chose and never recorded. The BIRD lane has passed `thinking` through `LlmClient` since R84, where the
+same family of failure cost **572 of 1,400 replies** and a validity gate caught it; the τ² lane is the
+only client in the package that left the decision to somebody else.
+
+**What it cost.** R104: 73 distillation calls, **63 replies with no visible character**, 16 candidates
+from ten answers, six records stored, five of them served to every request. The artefact could not say
+whether the model had spent its budget thinking, because the distillation client's token census was
+not recorded anywhere — the `usage` block belongs to τ²'s Python half.
+
+**What changed.** One `distillClient()` factory, used by the pre-flight and the arm, sending
+`thinking: 'off'`; and `distillClient` on the artefact carrying calls, prompts, failures, retries,
+tokens and `reasoningTokens`. The ceiling did not change, because with the regime stated 1,200 tokens
+is four times the reply the schema keeps — `distillBudget` remains the function for the lane that does
+think.
+
+**The rule this adds.**
+
+> A parameter a client does not send is a parameter the provider chooses. Any comment that asserts the
+> resulting behaviour has to name the mechanism that enforces it, and where the mechanism is absent
+> the sentence is a hope rather than a description.
+
+The corollary is about artefacts: a run cannot be re-read for a quantity it never recorded. The
+distillation client's tokens were absent from every artefact this lane wrote, so "the replies were
+blank" was a fact and "the model thought instead of answering" was a hypothesis no committed document
+could settle.

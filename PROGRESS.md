@@ -18584,7 +18584,7 @@ size can resolve.** R92's three-task floor and `paired-rate.ts`'s "this bench re
 points" said this about the *design*; R104 is the first dispatch whose own artefact contains two
 numbers that demonstrate it.
 
-**Six defects, all of them instruments.** The arm is not the deliverable of this iteration; the
+**Seven defects, all of them instruments.** The arm is not the deliverable of this iteration; the
 fixes are. Each was found by reading the run against the field that was supposed to describe it:
 
 | # | defect | what it printed | fix |
@@ -18592,9 +18592,20 @@ fixes are. Each was found by reading the run against the field that was supposed
 | D1 | the reply census counted a blank reply as healthy | `73 call(s), 0 empty` beside 63 faults | four states — `answered / empty / blank / unparsed` — and a partition that sums to `calls` |
 | D2 | the fault sample ended in an arrow and nothing | `MG_E_INVALID_SIGNAL: LLM response is not JSON <- ` | `replyPreview` **describes** a silent reply (`no visible character (N whitespace character(s))`) instead of quoting its trim |
 | D3 | the workflow step that explains a red run was cut in half | `SyntaxError: Unexpected end of input` at line 9 | the logic moved to `no-measurement-note.ts`, tested; the workflow calls `pnpm eval:say-what-happened` |
-| D4 | the artefact carried no fault counts | 63 fallbacks existed only in the log | `distillFaults` and `distillWriter` are on every arm |
+| D4 | the artefact carried the counts and not what the fallback produced, and its one sample was the arrow | `learning.llmFailed: 63` beside `llmFailedSamples: "… <- "` | `distillFaults` (answered, claims per side) and `distillWriter` are on every arm |
 | D5 | `NO_TREATMENT` printed two scores and refused the pair | see above | `nullContrasts`, with the sentence that says what the delta is |
 | D6 | "answered by the rule fallback" counted invocations | `63 answered` for 63 empty answers | `answered`, `primaryClaims`, `fallbackClaims` are counted separately |
+| D7 | the distiller's thinking regime was the provider's default, while a comment asserted the distiller "never thinks" | 63 of 73 replies with no visible character and no token census to say why | `thinking: 'off'` on one shared `distillClient()`, and `distillClient` records `reasoningTokens` on every arm |
+
+**D7 is the one that explains the arm, and it was hiding in a comment.** The distillation client was
+built without a `thinking` parameter, and the sentence beside the token ceiling read *"this lane's
+distiller never thinks — this process's own client sends no reasoning parameter"*. The second clause
+is a fact about the code; the first is a claim about the run, and it does not follow: no parameter
+means the endpoint's default. The BIRD lane has passed `thinking` explicitly since R84, where the same
+family of failure cost **572 of 1,400 replies**. So the τ² lane was the only client in the package
+leaving the decision to somebody else, and the 63 blank replies are what that looks like from outside.
+The regime is now sent, and the client's token census is recorded — which is the difference between a
+hypothesis and a measurement for the next dispatch.
 
 **D3 is the one that shows why instruments matter.** The step had never run on a run that measured
 nothing, because every previous dispatch either measured or stopped before reaching it. Its first

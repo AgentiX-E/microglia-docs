@@ -6043,6 +6043,23 @@ capability problem, and it is fixable in one dispatch: run both arms in every di
 (ROADMAP R115), which the workflow's `L4 arm — reference` job was already written for and R104's
 registration skipped.
 
+### AJ.5 The next dispatch, and why it is one call wide
+
+The 63 blank replies have a named suspect and it is cheap to settle. The distillation client was
+constructed without a `thinking` parameter while a comment asserted the lane's distiller "never
+thinks"; the BIRD lane has passed `thinking` explicitly since R84, where the same family of failure
+cost 572 of 1,400 replies. With the regime stated (`thinking: 'off'`) and the client's
+`reasoningTokens` recorded on every arm, the next dispatch answers it in one line:
+
+| outcome | what it means | next |
+| --- | --- | --- |
+| `reasoningTokens > 0` on the *previous* regime and replies now parse | the model spent a 1,200-token budget thinking and answered with nothing | the arm reruns at a population-covering store, ~$1.21 |
+| `reasoningTokens = 0` and replies still blank | the model declines these corrections, not the budget | R112: a different writer or the `procedure` form, $0.01 to probe |
+
+Either way the number that matters is the same one this appendix opened with: **coverage**. A store
+that covers 10 of 73 corrections cannot be beaten into a ranking by tuning anything downstream of it,
+and every competitor on this board whose store is its population is playing a different game.
+
 **What this does not change.** The mechanisms this project has built and no competitor has — a
 delivery-time fold with a containment control, a per-item polarity, a store sample that declares
 which dimensions it carried, a writer census — are all still true of the code and none of them is
