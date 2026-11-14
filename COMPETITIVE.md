@@ -5952,3 +5952,99 @@ worse as they multiply. Every store-side arm this record has run tunes the third
 This is the first hypothesis on this line that the record killed with its own instrument rather than by
 argument, and it killed it for the price of reading a file — which is the property the census was
 registered for.
+
+## Appendix AJ — The dispatch that measured, and the number that says the board cannot be ranked yet (2026-11-14)
+
+R104 ran and this appendix is about what it printed, including the part that is bad for this project's
+own published position.
+
+### AJ.1 What the arm scored, and why it is red
+
+| field | value |
+| --- | --- |
+| dispatch | `43589735959`, 40 held-out tasks × 4 trials, `deepseek/deepseek-flash` |
+| `pass^4` | **0.550** |
+| published bar (ALTK-Evolve, gpt-4.1) | 0.575 |
+| submitted bar (ALTK-Evolve, 114 tasks) | 0.6754 |
+| gate | `l4-pass4` asks for **bar + 5pp** = 0.625 → red by 7.5pp |
+| cost | $0.8938 for the eval half, $0.0056 a conversation, 75.0% cache hit |
+
+The gate is right and the arm is a miss. What the artefact says about **the store** is the finding.
+
+### AJ.2 The store covered an eighth of its population
+
+```
+learn: 73 correction(s) … 73 asked, 16 candidate(s), 6 created, 6 item(s) in the store,
+       63 answered by the rule fallback, reasons MG_E_INVALID_SIGNAL=63
+distillReplies {calls: 73, empty: 0, chars: 6824}      store {stored: 6, conditioned: 5}
+pack: served 164 of 164 (mean 5.0 items, 2102 chars)
+```
+
+**Sixty-three of seventy-three replies were blank** — no visible character — and the census printed
+`0 empty` beside them. The model answered ten corrections; the rule fallback was invoked on the other
+sixty-three and produced **no candidate at all**, because `distillUnit: correction` leaves it no trace
+to copy. So the store is six claims from ten answers, and the pack limit is five: **every request was
+served five of six items, 83% of the store, on all 164 requests.** There is no selection left for a
+retrieval to get wrong, which makes R104's 0.550 a measurement of a constant prompt prefix and not of
+a retrieval.
+
+That reframes the dose-response the record has chased since R85. It is not (only) that a larger store
+is worse; it is that **no arm on this board has ever had a store covering its population**:
+
+| arm | unit | records | corrections | coverage | pack |
+| --- | --- | --- | --- | --- | --- |
+| R93 | `raw` | 15 | 15 | 100% of a *raw copy* | 5 of 15 |
+| R99 | `raw` | 73 | 73 | 100% of a *raw copy* | 5 of 73 |
+| R104 | `correction` | 6 | 73 | **8.2%** | **5 of 6** |
+
+Two of the three arms never asked a model to write anything; the one that did got an answer for one
+correction in seven. A competitor whose store is its population is not beating this lane at retrieval
+— it is playing a different game.
+
+### AJ.3 The pair the dispatch almost threw away, and what it costs the board
+
+The two-unit arm ran both pack shapes over that one store. The fold removed nothing, so the dispatch
+reported `NO_TREATMENT` and reported **no contrast** — while printing both scores:
+
+```
+NO_TREATMENT: per-failure pass4 55.00% | collapse pass4 72.50% | containment on 0 request(s), 0 mismatch
+```
+
+Same store (`store:44e0a245`), same split, same seed 300, five items and ~2,100 characters a request
+in both arms, **17.5 points apart**. That is the lane's run-to-run spread at n=40, and it is larger
+than every effect the board has reported:
+
+| comparison | delta | 95% interval (unpaired, the weakest estimate) | separated? |
+| --- | --- | --- | --- |
+| R104 collapse vs per-failure — **no treatment** | +17.50pp | [−3.2, +38.2] | n/a — this *is* the floor |
+| R99 0.625 vs R93's no-memory control 0.725 | −10.00pp | [−30.4, +10.4] | no |
+| R93 0.700 vs the same control | −2.50pp | [−22.3, +17.3] | no |
+| R104 0.550 vs the published bar 0.575 | −2.50pp | [−22.5, +17.5] | no |
+
+**This appendix therefore withdraws a claim Appendix AE made.** AE read "both of this lane's legs
+clear ALTK's 67.5%" — 0.700 at 15 records and 0.625 at 73. Both are inside the interval a 40-task
+sample resolves, and R99's own leg is *below* its contemporaneous no-memory control. The correct
+statement is narrower: this lane has **printed** a number above the published bar; it has not
+**separated** one from its control.
+
+### AJ.4 The board, stated as it is
+
+| system | published τ²-retail `pass^4` | what it separates from | comparable to this lane? |
+| --- | --- | --- | --- |
+| **ALTK-Evolve** | **0.6754 (114 tasks)** | its own no-memory arm, on its own backbone | no: different tasks, different backbone |
+| microglia, highest reading | 0.700 (40 tasks, R93) | **nothing** — inside its interval | — |
+| microglia, last measured | 0.550 (40 tasks, R104) | nothing | — |
+| published baseline | 0.575 | — | no |
+
+**Who leads, honestly:** ALTK-Evolve leads on the published cell, and microglia cannot currently be
+*ranked* against it — not because its number is lower, but because its design cannot resolve a
+difference the size of the one it would need to show. That is a measurement problem before it is a
+capability problem, and it is fixable in one dispatch: run both arms in every dispatch and pair them
+(ROADMAP R115), which the workflow's `L4 arm — reference` job was already written for and R104's
+registration skipped.
+
+**What this does not change.** The mechanisms this project has built and no competitor has — a
+delivery-time fold with a containment control, a per-item polarity, a store sample that declares
+which dimensions it carried, a writer census — are all still true of the code and none of them is
+disproved by a score that cannot be read. What changed today is that the record stopped quoting its
+own best number as a ranking.

@@ -9686,3 +9686,118 @@ Every store-side arm since R85 has been tuning that consequence.
 > When two arms differ in a metric and share an unread constant, the metric belongs to the constant until
 > the constant is read. Here the constant was the distillation unit, and reading it turned a comparison of
 > forms into a comparison of sizes — which is the comparison R99 had already made and closed.
+
+## 34.142 A census that counted one silence and rejected the other, on the argument that someone else had it
+
+**What the module said.** R111's `replyCensus` classified a reply as `empty` when it parsed to a
+candidate list of length zero, and left every other failure to the interpreter:
+
+> A reply that is not JSON is **not** counted as empty: it is the interpreter's error to count, it
+> carries its own sample, and folding it into "the model said nothing" is the conflation this census
+> exists to end.
+
+**What the run printed.**
+
+```
+[tau2] distill replies: 73 call(s), 0 empty, 6824 character(s) returned
+[tau2] learn: … 63 answered by the rule fallback, reasons MG_E_INVALID_SIGNAL=63
+[tau2] distill fault MG_E_INVALID_SIGNAL: LLM response is not JSON <- 
+```
+
+`0 empty` is a healthy line. Sixty-three of seventy-three replies produced no claim. The proof the
+delegation rested on — "it carries its own sample" — was the arrow at the end of the third line,
+pointing at nothing.
+
+**Why it pointed at nothing.** `parseCandidates` set `preview: text.slice(0, 160)` on `text =
+raw.trim()`. A reply of whitespace trims to `''`, so the preview was `''`, and `sampleOf` rendered
+`<- ${''}`. The parser was not wrong about the category; it was asked to quote a reply that had no
+characters to quote, and the census had already decided that this category was somebody else's.
+
+**Three properties the fix holds.**
+
+1. `blank` is classified **before** the parse, because the parser's verdict on an empty string
+   (`not JSON`) describes a text that was never there. A silent model and a model that answered in
+   prose have different fixes and now have different states.
+2. The four states are a **partition**: `answered + empty + blank + unparsed === calls`, asserted.
+   A count that does not add up is how the first version hid a 63-event population behind `0`.
+3. An error's `preview` is **never** empty: `replyPreview` returns `the reply held no visible
+   character (N whitespace character(s))` for whitespace and `the reply was empty (0 characters)`
+   for `''`. The N matters: a model that spent a completion budget returning four newlines is a
+   different fault from one that returned nothing.
+
+**The generalisation.** The delegation was sound in principle — an interpreter's error is the right
+place to sample a parse failure — and it failed because the delegate's field was empty in exactly
+the case the delegator declined to count. A census may delegate a *sample*; it may not delegate the
+*count*, because the delegate is the thing under test.
+
+## 34.143 The one state that can measure the noise was the one state that refused to compute
+
+**What the module did.** R109a's shape arm computes a paired contrast between the two pack units, and
+returns before computing it in every state that is not `MEASURED`:
+
+> The contrasts are computed **after** the state, because two of the four states report no
+> contribution: a dispatch whose facades served no pack has two arms with identical task rows, so a
+> contrast computed before the state would carry `0.00pp [0.00, 0.00]`.
+
+That reasoning is correct for `NO_DELIVERY` and `CONTAINMENT_BROKEN`, and it was applied to
+`NO_TREATMENT` by association. R104 ran it:
+
+```
+NO_TREATMENT: per-failure pass4 55.00% served 164/164 items/req 5.000 chars/req 2102 folded 0
+            | collapse pass4 72.50% served 162/162 items/req 5.000 chars/req 2100 folded 0
+```
+
+**The state is not the same kind of state.** `NO_TREATMENT` means the fold removed nothing, so both
+facades rendered the *same* pack from the *same* store over the *same* split. The two arms are two
+evaluations of one configuration, and their difference is not a contribution — it is the lane's
+run-to-run spread, which is the floor every other contrast on the board has to clear. Refusing to
+compute it left a reader with two numbers side by side under a label that forbids subtracting them.
+
+**The fix keeps the refusal and adds the arithmetic.** `nullContrasts` is computed only in
+`NO_TREATMENT`, is never merged into `contrasts`, and the summary prints it with the sentence that
+says what it is:
+
+> the fold removed nothing, so the two arms are one treatment: this delta is the lane's run-to-run
+> noise at n=40, and no arm here may claim an effect smaller than it
+
+`NO_DELIVERY` and `CONTAINMENT_BROKEN` still report nothing, for the reason the original comment
+gave — those pairs are degenerate, and a delta between two arms that never delivered is a number
+about the arithmetic rather than about the run.
+
+**The rule this adds.**
+
+> A state that invalidates a comparison must say which part it invalidates. "No treatment" removes
+> the *attribution* and leaves the *measurement*; folding the two together discards the only free
+> estimate of the resolution every other result is judged against.
+
+## 34.144 A workflow step is logic that no test can reach, and this one had never run
+
+**What happened.** R111 put the "say so when nothing was measured" decision inline, as a
+`node -e "…"` string in `sota.yml`. R104 executed it for the first time on a run that measured
+nothing — the case it exists for — and it failed:
+
+```
+[eval]:9
+    // The sentence here used to read the
+SyntaxError: Unexpected end of input
+```
+
+Line 9 is a comment quoting the old warning: `// The sentence here used to read "the provider failed
+its pre-flight probe" for every`. The double quotes inside it closed the shell's own `"` string, so
+the script ended at the comment and bash concatenated the rest as unquoted text.
+
+**Why it had never run.** Every dispatch before R104 either measured (the step printed nothing) or
+stopped before the step was reached. A branch that only executes on failure is exercised only by
+failures, and the first failure is the wrong time to discover that it does not parse.
+
+**The shape of the fix is the point, not the escaping.** The decision is `noMeasurementNote`, a pure
+function over the artefact, with tests for a missing artefact, a missing reason, a **blank** reason,
+a missing metrics block, and the two not-run causes. The workflow calls
+`pnpm eval:say-what-happened`. Two properties come with it: the reason can never print as an empty
+string after a colon, and the section carries the writer before the funnel, because a dispatch that
+measured nothing still knows who wrote its store.
+
+**The rule this adds.**
+
+> Logic in a workflow file is logic no coverage instrument reaches and no test can call. If a step
+> has to decide something, the decision belongs in the package — the step's job is to call it.

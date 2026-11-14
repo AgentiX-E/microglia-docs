@@ -18515,3 +18515,101 @@ threshold), not a prompt repair (the prompt already requires a `when`, and R111'
 prompt is what the arm sends), but **R112 promoted to P0**: choose a writer that can produce a claim, then
 compare fifteen conditional claims against fifteen raw records over one population. **R113a is rewritten to
 be that comparison, and it is now blocked on R112 rather than on R104.**
+
+### 191 — R104 measured, and what it measured was not the unit: 63 blank replies, a 6-record store, and a pair that differs by 17.5pp with no treatment
+
+**The number.** Run `43589735959`, 40 held-out tasks, 4 trials, `deepseek/deepseek-flash`:
+
+```
+[poc-l4] pass4=0.55 published_pass4=0.575 competitor_pass4=0.6754 delta=-0.0250
+         tasks=40 unscored_tasks=0 k=4 gates_passed=2
+  FAIL l4-pass4 0.55 (>= published + 0.05)
+  PASS l4-coverage 40   PASS l4-fully-scored 0
+```
+
+The job is red because the gate asks for the published bar **plus five points**, and the arm is
+2.5 points below the bar itself. That is the gate doing its job, not a broken run: the dispatch
+measured, and the measurement is a miss.
+
+**What the same artefact says about the store, which is the part that matters.**
+
+```
+learn: 73 correction(s) from 74 task(s), 73 asked, 16 candidate(s), 6 created, 6 item(s) in the store,
+       63 answered by the rule fallback, reasons MG_E_INVALID_SIGNAL=63
+distillUnit  {unit: 'correction', traces: 0, traced: 0, claims: 16}
+distillForm  {form: 'lesson', refused: 10}
+distillReplies {calls: 73, empty: 0, chars: 6824}
+store {stored: 6, servable: 6, conditioned: 5, unconditioned: 1}
+pack: budget 2400, served 164 of 164 (mean 5.0 items, 2102 chars)
+```
+
+Three facts, none of which any field on the artefact stated before this iteration:
+
+1. **The model answered 10 of 73 corrections.** Sixty-three of its replies were **blank** — no
+   visible character at all — and the census printed `0 empty` beside them, because `empty` was
+   defined as "parsed to a candidate list of length zero" and a blank reply parses to an exception.
+2. **The rule fallback was invoked 63 times and produced nothing.** `distillUnit: correction` gives
+   the rule interpreter no trace to copy from, so the six stored items are the model's claims. The
+   log line said `63 answered by the rule fallback`, which counts an invocation as an answer.
+3. **The pack is the store.** Six servable items against a five-item limit means every one of the
+   164 requests was served five of six items — 83% of the store, on every request. There is no
+   selection left for a retrieval to get wrong, so R104's number is a *prompt-prefix* measurement
+   and not a *retrieval* one.
+
+**The pair inside the dispatch, which the record almost threw away.** The two-unit arm ran both
+facades over that one store; the fold removed nothing (`folded 0`, `containment on 0 request(s)`),
+so the dispatch reported `NO_TREATMENT` and — by the rule R109a wrote — reported **no contrast**:
+
+```
+NO_TREATMENT: per-failure pass4 55.00% | collapse pass4 72.50% | containment on 0 request(s), 0 mismatch
+```
+
+Two evaluations of one store, one split, one seed, five items and ~2,100 characters per request
+each, **17.5 points apart**. That is not a contribution — and it is the most useful number in the
+dispatch, because it is this lane's run-to-run spread at n=40. R109a's rule was right to refuse the
+delta as a treatment and wrong to refuse the arithmetic: the one state in which the treatment
+cannot have caused the difference is the one state that can measure the noise.
+
+Read against it, using an unpaired two-proportion interval as the weakest defensible estimate:
+
+| comparison | delta | 95% interval | verdict |
+| --- | --- | --- | --- |
+| R104 collapse vs per-failure (same store, no treatment) | +17.50pp | **[−3.2, +38.2]** | the noise floor itself |
+| R99 (73 records) vs R93's no-memory control (0.725) | −10.00pp | [−30.4, +10.4] | not separated |
+| R93 (15 repairs, 0.700) vs the same control | −2.50pp | [−22.3, +17.3] | not separated |
+| R104 (6 records, 0.550) vs the published bar (0.575) | −2.50pp | [−22.5, +17.5] | not separated |
+
+**Every score this lane has published, in either direction, is inside the interval its own sample
+size can resolve.** R92's three-task floor and `paired-rate.ts`'s "this bench resolves about eight
+points" said this about the *design*; R104 is the first dispatch whose own artefact contains two
+numbers that demonstrate it.
+
+**Six defects, all of them instruments.** The arm is not the deliverable of this iteration; the
+fixes are. Each was found by reading the run against the field that was supposed to describe it:
+
+| # | defect | what it printed | fix |
+| --- | --- | --- | --- |
+| D1 | the reply census counted a blank reply as healthy | `73 call(s), 0 empty` beside 63 faults | four states — `answered / empty / blank / unparsed` — and a partition that sums to `calls` |
+| D2 | the fault sample ended in an arrow and nothing | `MG_E_INVALID_SIGNAL: LLM response is not JSON <- ` | `replyPreview` **describes** a silent reply (`no visible character (N whitespace character(s))`) instead of quoting its trim |
+| D3 | the workflow step that explains a red run was cut in half | `SyntaxError: Unexpected end of input` at line 9 | the logic moved to `no-measurement-note.ts`, tested; the workflow calls `pnpm eval:say-what-happened` |
+| D4 | the artefact carried no fault counts | 63 fallbacks existed only in the log | `distillFaults` and `distillWriter` are on every arm |
+| D5 | `NO_TREATMENT` printed two scores and refused the pair | see above | `nullContrasts`, with the sentence that says what the delta is |
+| D6 | "answered by the rule fallback" counted invocations | `63 answered` for 63 empty answers | `answered`, `primaryClaims`, `fallbackClaims` are counted separately |
+
+**D3 is the one that shows why instruments matter.** The step had never run on a run that measured
+nothing, because every previous dispatch either measured or stopped before reaching it. Its first
+execution was on the red run it existed for, and it crashed — on a **comment** that quoted a
+sentence containing a double quote, which closed the shell's own string. The one thing a diagnostic
+may not be is untested.
+
+**Quality.** `pnpm check` exit 0 — **5,105 unit tests over 250 files**, coverage **100 / 99.95 / 100
+/ 100**, `distill-writer.ts`, `no-measurement-note.ts` and `distill-replies.ts` at **100 across all
+four dimensions**, coupling ledger **224 modules** (was 222). Three branches were deleted rather
+than exempted: the unreachable `lastError === ''` fallback in `parseCandidates` (its slice list
+always starts with the whole reply), the `?? 0` behind a guard in the null-contrast sentence, and
+`share()`'s division-by-zero guard, which every call site had already ruled out.
+
+**What is not claimed.** That the unit costs 17.5pp, or that memory costs 10pp. The first is a
+noise estimate between two arms that share a treatment; the second is inside its interval. What is
+established is narrower and firmer: **the arm's store covered 10 of 73 corrections, contained six
+claims, and was served whole to every request** — and the lane had no field that could say so.
