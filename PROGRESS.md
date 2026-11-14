@@ -18035,3 +18035,86 @@ assembly rather than in the memory.
 **Cost of the round: $0.** Four artefacts already on disk, read from their phase records; one census;
 no model call and no dispatch. `pnpm check` exit 0 — 4,888 unit tests over 237 files, `cache-census` 100/100/100/100,
 coupling ledger 214 modules, core bundle unchanged at 47,402/47,500 B.
+
+### 186 — R109: the fold lands at delivery, and the switch it needs was not reaching the pack
+
+R99's own census said what its store was: **73 corrections, 53 action shapes, 10 taught by two tasks, 5 by
+three**. The supply was therefore not 73 facts; it was 53 routines, five of them taught three times, and
+no item in this record could say so — one correction makes one record and the dedupe key is the normalized
+statement, so two failures of one shape are two items with one task behind each. That is exactly the cell
+ALTK's `sup3` is built on.
+
+**Where the merge went, and where it did not.** Three places could express support, and the decision
+table is in ROADMAP: the write path (supersede an item, union its evidence) changes the store's
+*contents*, so a comparison against today's store would differ in two places; distillation (one call per
+shape) writes the statement from one representative and discards the others, which is the laundering R99
+already paid for. **Delivery** changes only the unit the model sees, is reversible per request, and is
+therefore the one place that lets a single dispatch carry both arms over one store. It also keeps the
+2014 finding that made this lane suspicious of merges at arm's length: ACE measured a model rewriting a
+consolidated memory as **brevity bias, −9.6 points**, and the fold that shipped here never rewrites
+anything — the survivor's sentence is the member's own.
+
+**The mechanism.** `packages/core/src/apply/shape-fold.ts`, a pure function over the pack the recall
+already produced. Four decisions, each of which a cheaper version gets wrong:
+
+| decision | what the cheaper version costs |
+|---|---|
+| the key is `kind` + the tool-name sequence | a `negative` and an `exemplar` over one routine fold together, silently inverting one into the other's support |
+| a group folds at **≥2 distinct tasks**, counted in tasks and not members | folding two records of one task reports a task taught twice and buys no support |
+| the survivor is the group's **medoid** by `claimContainment`, ties to the earliest rank | the longest or most confident member wins, which is a selection the ranking never made |
+| the group's evidence is **reported, not written back** | a survivor carrying an invented trail joins to nothing in the ledger |
+
+The host declares the vocabulary (`MicrogliaOptions.shapeOf`) and the request declares the unit
+(`RecallQuery.shape`), because the shape of a record is the lane's format and the unit is the
+experiment's. `KnowledgePack.fold` carries what the fold did and what the kept units carry, in both modes
+— `per-failure` reports `atLeastTwo: 0` on a store of single-task records, which is R92's finding
+reproduced inside the arm instead of argued from the store's size.
+
+**What it does to a real corpus, for nothing.** `pnpm eval:pack-shape` reads the committed 32-task retail
+fixture (sha256 pinned), writes one record per task through the library's own constructor, and folds:
+
+| | per-failure | collapse |
+|---|---|---|
+| units | 32 | **26** (6 folded, 18.75%) |
+| whole store, characters | 18,749 | **15,533** (0.8285) |
+| support ≥2 / ≥3 / max | 0 / 0 / 1 | **5 / 1 / 3** |
+| units served at a 2,400-char budget | 5 | 5 |
+
+The last row is the one to hold onto. **The fold does not buy more rules at this budget; it makes the same
+five slots carry corroboration**, and 17% of the store's characters. An arm registered on "more guidelines
+fit" would have been registered on a number this census already refutes.
+
+**Second, the defect the switch exposed, and it is the larger finding.** Adding `shape` to the wire meant
+asking whether it would arrive. It would not. The driver's own `/v1/recall` facade — the process the τ²
+agent calls — read `task` and `text` and **discarded every other query pair**, and the driver never read
+`TAU_PACK_MODE` at all. So `MICROGLIA_PACK_KNOBS`, the fragment `eval:pack-knobs` renders from a
+registration's pack mode, reached the one place that had to honour it and died there. A prefix arm
+dispatched on this driver would have served the **retrieved** pack under the prefix arm's name: four
+knobs, one arm, and no way to tell it from its own control.
+
+No committed artefact carries a pack mode, so nothing published is wrong — the arm was registered and
+never dispatched. What the record gains is the reason it would have been wrong, and the shape is one this
+section has already paid for once: PROGRESS 16117 found `/v1/recall` in the HTTP package forwarding three
+of the five knobs it accepted, and the fix then was to hold the field list in one place. The driver's
+facade was a **second place**, written before that fix and never reconciled with it. The repair is the
+same repair one layer down: `recall-query.ts` moved from the HTTP package into `kernel/`, so the driver,
+the node route and any future facade parse the query with one list, refuse a value they cannot honour with
+a 400 rather than a 500, and a seventh knob arrives as a compile error in every one of them.
+
+The facade is now `packages/eval/src/tau2-facade.ts`, covered by eight tests that run a real server on
+port 0 and assert what the callback was handed — because the defect was a boundary defect and only a
+request that crosses the boundary can catch it.
+
+**What is not built, stated so the next round does not assume it.** The two arms cannot yet run in one
+dispatch: the note arms have a three-level facade (`TAU_FACADE_NOTES`) and the shapes have no equivalent,
+so `TAU_PACK_SHAPE=collapse` is a real single-arm switch and a pair over one store needs **R109a** — the
+same machinery generalised to a second axis, with the identity control replaced by a containment one (the
+collapse pack's ids must be a subset of the per-failure pack's, which is what "same store, one unit
+different" means when the packs cannot be equal). Until that lands, R104's two legs would be two
+dispatches and therefore two stores.
+
+**Cost of the round: $0.** No model call and no dispatch. `pnpm check` exit 0 — **4,936 unit tests over
+240 files**, coverage **lines 99.96 / statements 99.96 / branches 99.93 / functions 100**, the three new
+modules at 100/100/100/100, coupling ledger **217 modules** (was 214), core bundle **50,478/50,600 B raw
+and 17,203/17,400 gzip** — the first raise in this gate that is a mechanism rather than a correction, and
+argued beside the number.

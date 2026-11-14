@@ -9280,3 +9280,50 @@ cached, and therefore the only honest divisor. `prefix_coverage` is credited ove
 > A number and the population it was counted over are one fact, and a name that outlives its population
 > is a number that will be divided wrongly. If a lane cannot see the population it is quoting, it must
 > quote the one it can see — under that one's name.
+
+## 34.133 The arm's switch was connected to nothing, and the same defect had already been fixed one layer up
+
+R109 needed a knob on the wire. Asking whether the knob would arrive is the only reason this was found.
+
+**Two disconnections, one arm.** The driver's `/v1/recall` facade — an in-process server the τ² agent
+calls, not the HTTP package — read `task` and `text` from the query string and **discarded every other
+pair**. Its callback was typed `(input: { task: string; text: string })`, so nothing downstream could
+even see that a request had asked for something else. And the driver never read `TAU_PACK_MODE` in any
+form, though the workflow sets it on both arms.
+
+The consequence is not a missing feature. It is that **`MICROGLIA_PACK_KNOBS` could not change a pack**:
+`eval:pack-knobs` renders a registration's mode into `anchoring=scope&minCoverage=0&limit=999&budget=200000`,
+the Python agent appends it to the URL (PROGRESS 16195 verified the request carries seven query pairs),
+and the process at the other end dropped all four. A `prefix` arm dispatched on this driver would have
+served the **retrieved** pack — same selection, same budget, same items — and reported the prefix
+protocol. The arm would have been its own control, with a registration, an artefact and a readback
+attesting to a treatment that never ran.
+
+**Why this is a repeat and not a novelty.** PROGRESS 16117 records the first instance: `/v1/recall` in
+`packages/node` forwarded three of the five knobs it accepted, `minEvidence` and `anchoring` were
+"described in the kernel's own type comments, honoured by `buildPack` and by the store, and unreachable
+from the one surface every benchmark driver actually calls". The repair then was to hold the field list
+once, in `recall-query.ts`, with the comment *"a sixth knob added to `RecallQuery` arrives as a compile
+error in this file rather than as a silence on the wire."* That comment was true and insufficient: the
+driver's facade was written beside it, not through it, and had its own field list — two names long.
+
+**The rule this adds, which is a rule about comments.** *A file that says "this list is held once" is not
+holding it once.* The claim has to be mechanically true, and the mechanism is that every caller parses
+through the same function: `recall-query.ts` now lives in `kernel/`, the package both surfaces depend on,
+and the driver's facade is a module with tests that start a real server on port 0 and assert what the
+callback received. The test is the artifact that would have caught this; the comment was not.
+
+**What it cost, and what it did not.** No committed artefact carries a pack mode, so no published number
+is wrong — the prefix arm was registered and never dispatched. What the record loses is the belief that
+its own switchboard was wired: an arm declared in a registration, a knob rendered by a resolver, a
+fragment carried across three language boundaries and verified twice, and a handler that threw the last
+one away. The verification stopped at the boundary that was being checked and the defect lived at the
+boundary that was not.
+
+**Second finding, smaller and the same shape.** `KnowledgePack.fold` is computed in both modes, so a
+control arm's own support distribution is a number the artefact carries rather than a claim about a store
+nobody looked at — and it is absent, not zero, on a host that cannot name a shape. The first version of
+the census applied a group's union support to every member of the group, which reported `atLeastTwo: 2`
+on a per-failure pack of two single-task records: the exact quantity the arm is measured on, inflated by
+the arithmetic. Caught by the test that asserts the control arm reads `max: 1` — which exists because the
+control's reading had to be a reading rather than an absence.

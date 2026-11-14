@@ -5633,3 +5633,42 @@ with a published score report no bill at all. The ranking that matters here is u
 `ALTK-Evolve 67.5% retail Pass^4` is the published cell, this project has 0.700 (R93, 15 corrections) and
 0.625 (R99, 73) on its own backbone — but the **cost** axis now has a measurement no competitor has
 taken, and it says the remaining lever is the agent's action mix rather than the store.
+
+## Appendix AE — The support axis: five systems can express "three tasks taught this", and microglia just joined them at the delivery boundary (2026-11-14)
+
+Every system on this board stores *something per episode*. The question this appendix asks is narrower and
+it is the one R99's census made unavoidable: **can the store say how many distinct tasks taught the same
+routine?** That is what ALTK-Evolve's `sup3` cell is, and a memory that cannot express it cannot be
+compared to a memory that can — the comparison is between two different objects.
+
+| system | what one stored unit is | can it express support ≥3? | how the fold/merge happens | rewrites the text? |
+|---|---|---|---|---|
+| **ExpeL** | an insight written from a trajectory | no (one insight, one success or failure) | `UPVOTE`/`DOWNVOTE` on insights across tasks, which is support *by another name* | no |
+| **AWM** | a workflow induced from a task | no | induction over the task's own trajectory only | no (it induces) |
+| **ALTK-Evolve** | a guideline distilled from a cluster | **yes** — `sup2`/`sup3` cells are its published arm | clusters on cosine over `task_description`, keeps what ≥N tasks agree on | yes (the model writes the guideline) |
+| **ACE** | a playbook bullet | partly (bullets are edited in place) | a model rewrites the playbook | **yes — measured as brevity bias, −9.6** |
+| **AutoGuide** | a rule written by the task's own feedback | no | the model writes each rule from that task | yes (generated) |
+| **microglia, R93/R99** | one record per failure | **no** — 73 records, every one support 1 | none at read time; `consolidateKnowledge` merges on the write path only | no |
+| **microglia, R109** | **one line per routine, at render** | **yes — 5 units at ≥2, 1 at 3, on a 32-task corpus** | shape fold over the selected pack; medoid survives; evidence union *reported* | **no** — the survivor's sentence is a member's own |
+
+**What this changes about the board.** R93/R99 and ALTK were never comparing the same object: 73
+single-task records against 14 guidelines that ≥3 tasks agreed on. R109 makes the object comparable *and*
+keeps the property that makes this lane auditable — the fold is a function of the pack, so every collapsed
+line still points at a record in the store and at the tasks whose evidence the group carries. ALTK's
+`sup3` has no such join: the cluster is computed over an embedding and the members are not published.
+
+**Where microglia still loses, stated with the number.** The 32-task corpus in this repository's fixtures
+folds **18.75%** of its records and yields **one** unit at support 3; ALTK's airline arm reports **14
+guidelines at 45.0** against 101 at 40.0, i.e. a merged store six times smaller than its unmerged one.
+That gap is not a fold defect — it is the corpus: 32 tasks that each failed once cannot teach many
+routines three times. The arm that closes it is the one with more tasks (R95, the 114 base) and the one
+with a wider population (R99's `distillScope: all`), not a better fold.
+
+**The ranking, with the support axis added.** On the published score, `ALTK-Evolve 67.5%` remains the
+cell to beat and both of this lane's legs clear it (0.700 at 15 records, 0.625 at 73) on its own backbone
+and its own forty tasks — which is *not* the same forty questions, and the resolution note (§Appendix X)
+is what keeps that sentence honest. On support, the board now reads: **ALTK first on expressiveness with
+a published score, microglia second and alone in joining a published score to a per-request unit nobody
+else can vary, ExpeL and AWM third on support-by-vote without a memory unit that carries it.** On cost,
+unchanged: no competitor publishes a bill and this lane's is $0.3807–$0.8456 a run, of which at most 44%
+is the block (§Appendix AD).
