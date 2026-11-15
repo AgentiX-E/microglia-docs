@@ -20696,3 +20696,71 @@ coverage **99.98 / 99.85 / 100 / 99.98**, `cache-census.ts`, `item-ledger.ts` an
 **R135 is registered**, no treatment change and ~$0.32: R134's arm plus the three instruments, because the
 next dollar has to know whether the premium is the memory's text, the agent's behaviour, or the request's
 framing — and whether a rung could ever have separated the four harmed requests from the two repaired ones.
+
+### 220 — R135: the premium is half the pack's carriage and half a worse cache, and my own residual was theatre
+
+R135 (`44019972203`, 114 + 1 episodes, 73.5 minutes, **$0.3207**) changed no treatment. It bought three
+instruments on R134's arm, and one of them disqualified the arm's own join before the numbers were read.
+
+| criterion (registered) | measured | |
+| --- | --- | --- |
+| `perRequest.length == ledger.length == per_task.length == 40` | **41 / 41 / 40** | ❌ |
+| the split present in both arms | 1612.7/987.6 and 1053.4/960.9 | ✅ |
+| the residual reported for both | 1409.7 and 179.5 | ✅ |
+
+**The outcome is a dead heat.** Memory **34 of 40 (0.85)** against the reference's **34 of 40 (0.85)**:
+**0.00pp [−15.00, +12.50]**, p=1.0000, **4 repaired and 4 broken**, degradation 4 of 34 (11.76%). With
+R134's −5.00pp, the same arm now brackets zero across two draws — and both draws are unresolved, so the
+honest statement is that this store's held-out effect is indistinguishable from nothing at a 40-task
+resolution.
+
+**The premium, decomposed for the first time.** Every number below is a mean per call over the arm's own
+677 (memory) and 665 (reference) calls:
+
+| column | memory | reference | Δ |
+| --- | --- | --- | --- |
+| prompt | 5,376.3 | 4,700.6 | **+675.7** |
+| — system | 1,612.7 | 1,053.4 | **+559.3** |
+| — conversation | 987.6 | 960.9 | +26.7 |
+| — tool schemas | 1,569.0 | 1,563.5 | +5.5 |
+| — framing | 84.2 | 83.7 | +0.5 |
+| cached | 3,733.9 | 4,292.2 | **−558.3** |
+| **uncached** | **1,642.4** | **408.4** | **+1,234.0** |
+
+So the 2.23× bill is **two things of nearly equal size**: a prompt that is 676 tokens longer, of which
+**559 is the system block the pack lives in**, and a cache that credits **558 fewer tokens a call** on a
+prompt that is *longer*. The conversation grew by 27 tokens — 2% — which kills the "the agent behaves
+differently and that is what costs" hypothesis as cleanly as R134 killed "the pack replaces the prefix".
+
+**And the carriage is 3.75× the knowledge.** The served text is **725 characters** a request, which at this
+corpus's measured 4.878 characters a token is ~149 tokens. The system column grew by 559. The remaining
+**~410 tokens a call** are system material the pack's own text does not contain, and no field in the
+artefact isolates it: `system_chars` counts every system message, and the injected message's own length is
+never recorded. That gap is 33% of the premium and it is the next instrument's subject.
+
+**The instrument defect this round paid for.** `residual_tokens_per_call` was defined as
+`uncached − last − tail2`, and read as "material no message carries". On these two arms it reported
+**1409.7 against 179.5** — 99.7% of a premium whose actual composition is 45% prompt and 45% cache loss. A
+residual of the *uncached* column inherits the whole premium by construction whenever two arms cache
+differently, so the field could not attribute anything and the decision rule built on it could not fire.
+It is measured against the **prompt** column now (messages + tools subtracted), the verdict prints the four
+columns instead of drawing a conclusion from one, and `prompt_tokens_per_call` gives the sum a denominator
+(AUDIT 34.172).
+
+**41 boundaries for 40 episodes.** The facade opened **41** episodes, served **41** packs, and the scorer
+holds **40** task rows; `serve split` refused to read it (*40 boundaries against 40 trial rows* is the pass
+condition, and it printed *boundary-disagrees — 41 boundaries against 40 trial rows*), which is why no
+per-item net exists for this arm. The cause is in the arm rather than in the join: `queries.distinct` is
+**41** with 41 different texts, so one task was simulated twice — τ²'s retry path constructs a fresh agent,
+the agent recalls on its first turn, and the ledger gains a row that no `per_task` row names (AUDIT 34.173).
+
+**Tests.** The verdict's composition is asserted on R135's own numbers (1,613 + 988 + 1,569 + 1,206 =
+5,376, an identity rather than a sentence), the split is omitted when any column is missing rather than
+summed from three, and the Python self-check asserts `prompt_tokens_per_call` 201.7 with a framing residual
+of **0.0** on a fixture whose every token is a message — which is the assertion that would have caught the
+old definition. **27 cases, 97 assertions.**
+
+**R136 is next, and it is three cheap things**: record the task each boundary belongs to so the ledger joins
+by identity rather than by position, record the injected message's own length so the ~410-token carriage
+stops being a remainder, and re-read. No new treatment: the conditioning row cannot be entered until the
+join works, and the renderer row now has a measured target (559 tokens of which ≤149 is knowledge).

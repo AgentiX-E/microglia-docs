@@ -11144,3 +11144,60 @@ upper bound on a deletion arm, not a prediction of one". Both halves are produce
 R133's two `repaired` counts under one word (34.168), the verdict's 226.4% (34.170), and now a caveat that
 describes an arm nobody ran. In each case the arithmetic was right and the sentence around it was not, and
 in each case the sentence is what a reader takes away.
+
+## 34.172 A residual of a residual is not an attribution
+
+`residual_tokens_per_call` shipped in R135 defined as `uncached − last − tail2`, documented as "material no
+message carries — the tools block and the chat template's framing". On R135's own two arms it reported
+**1409.7** for the memory arm against **179.5** for the reference — 99.7% of a premium of 1,234 tokens a
+call.
+
+The premium is not that. Measured against the prompt column, the same arms give: prompt **+675.7**
+(system **+559.3**, conversation **+26.7**, tools **+5.5**, framing **+0.5**) and cached **−558.3**. The
+"residual" was not isolating a quantity at all: `uncached` is `prompt − cached`, so subtracting two message
+sizes from it leaves *both* the prompt growth *and* the cache loss in one number, and one number cannot say
+which. Whenever two arms cache differently — which is the case the field existed for — the residual
+inherits the entire premium by construction.
+
+**Why it survived the design.** The field was written in the same hour as the guard above it (34.170), and
+its name carried the argument: a "residual" sounds like what is left when reasoning is finished. It was
+what is left when *arithmetic* is finished, which is a different thing. The verdict then printed a
+conclusion from it on the arms that read below 1.02, and the composition — four columns that add to the
+prompt — was available the whole time.
+
+**The fix, and the rule it restates.** The residual is measured against the **prompt** (messages and tool
+schemas subtracted), so it is the chat template's framing and nothing else: 84.2 tokens a call on the
+memory arm against 83.7 on the reference, a difference of half a token. `prompt_tokens_per_call` gives the
+four columns a denominator. The verdict now prints the composition and draws no conclusion from it, because
+the arithmetic of a premium is a subtraction and a sentence that performs it in prose has to get the same
+answer as the numbers — R135's sentence did not.
+
+**The self-check assertion that would have caught it.** A fixture whose prompt is exactly its messages has
+a framing residual of **0.0**; under the old definition the same fixture reported 116.7 of "material no
+message carries". The test asserts the zero.
+
+## 34.173 Forty episodes, forty-one boundaries, and the row that no task names
+
+R135's memory arm opened **41** episodes and served **41** packs; the scorer holds **40** task rows, and
+`per_task` has 40. The arm's own `queries.distinct` is **41** with 41 distinct texts, and
+`memory.recallRepeats` is **0** — so this is not a turn that failed to grow, it is a **task simulated
+twice**: τ²'s retry path constructs a fresh agent, the agent recalls on its first turn, and unless the
+first attempt's episode is removed the pack ledger keeps a row the scorer never names.
+
+Nothing silently mis-joined: `l4-pair` printed `serve split: not measured (boundary-disagrees) — 41
+boundar(ies) against 40 trial row(s)`, and `itemLedgerOf` refuses a ledger whose row count disagrees with
+the task list. That refusal is the record working as designed — it is the reason R135 has no per-item net
+instead of a wrong one. What is missing is the *diagnosis*: the guard says the two arrays disagree, and no
+reading says which task was run twice, so the run cannot be repaired without reading the log.
+
+**Why this is a defect and not a nuisance.** Every positional join downstream — `pack.ledger[i]` against
+`per_task[i]`, `perRequest[i]` against both, `turnCensus.rows[i].task` against `per_task[i].id` — assumes
+one row per episode. A retry breaks all three at once and breaks them *after* the retried episode, so the
+counts still look right (41 vs 40 is one row) while every row past the retry names a different case. R132's
+readback was one such join, and it was right only because that arm had no retry.
+
+**The fix.** The boundary records the task it opened for, from the query text the agent already holds, so
+the ledger can be joined by identity and a retried task's second boundary is visible as a second boundary
+of a known task. Until then, the guard is the reading: a mismatched pair is refused rather than paired, and
+a refused pair is a dispatch that bought an instrument rather than a measurement — which is what R135 was,
+and it said so before its numbers were read.

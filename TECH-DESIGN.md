@@ -9249,3 +9249,36 @@ counter's existence.
 **What it costs.** Nothing: the callback already receives the messages and the tools, and the three fields
 are divisions of counts it already holds. What it buys is the difference between "memory costs 2.25×" and
 "the pack, the agent, or the framing costs 2.25×" — three answers with three different repairs.
+
+### 17.141 The prompt's four columns, and why the verdict stopped drawing conclusions
+
+**The problem with one number.** The provider's `prompt_tokens` is a sum over messages, tool schemas and
+whatever the provider adds. The census counted messages only, so `Σchars / ratio` could never reach
+`prompt_tokens` and the difference was charged to whoever the sentence blamed. R135 measured that
+difference on two arms: **84.2** tokens a call for memory against **83.7** for the reference, so the framing
+is not where a premium lives — but nobody could say that until the columns existed.
+
+**The four columns.**
+
+| field | source | what a premium in it means |
+| --- | --- | --- |
+| `system_tokens_per_call` | system messages | the memory's own block, including its carriage |
+| `conversation_tokens_per_call` | non-system messages | the agent's behaviour |
+| `tools_tokens_per_call` | `len(json.dumps(kwargs["tools"]))` | the tool schemas, billed and carried by no message |
+| `residual_tokens_per_call` | `prompt − the other three` | the chat template's framing |
+| `cached_tokens_per_call` | the provider | how much of the prompt it credited, which is a *fifth* axis |
+
+The five sum to nothing: the first four add to `prompt_tokens_per_call`, and `cached` is a part of that
+prompt, not a column beside it. A premium is `Δprompt + Δmiss`, and `Δmiss = −Δcached`. R135's premium is
+676 + 558 = 1,234, and both terms were invisible while one number stood for the pair.
+
+**Why the verdict is now descriptive.** It prints the four columns and the cache credit, and it draws one
+conclusion only — that a share above 1.02 means the denominator is at fault (17.140). Everything else is a
+subtraction the reader performs, because a sentence that performs it in prose has to reproduce the
+arithmetic exactly and R135's did not (AUDIT 34.172). The `composition` clause is printed only when all
+four columns are present: a sum of three and a remainder is not a composition.
+
+**What the next instrument has to add.** The injected message's own length, recorded at the point of
+injection, because the system column grew 559 tokens on an arm whose served text is 725 characters
+(~149 tokens). The missing ~410 are carriage the renderer adds, they are 33% of the premium, and they are
+invisible to a census that counts every system message together.
