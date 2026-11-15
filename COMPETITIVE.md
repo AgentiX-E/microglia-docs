@@ -6881,3 +6881,74 @@ that, with the arithmetic beside it.
 2. The episode rate at ±4.0pp — the only interval narrow enough for a 5pp claim, and free on every arm.
 3. The inventorial readings (serve split vs arm rate, the ladder, items with net < 0) — censuses of what a run did.
 4. Nothing else. `pass^k` at 40 tasks belongs on a chart with its error bar or not at all.
+
+## Appendix AV — The field has two names for what this record has been calling one thing (2026-11-16)
+
+Six 2025–2026 papers now separate the failure this lane has been measuring as a single "harm share", and the
+separation matters because the two halves have published fixes with published effect sizes — neither of which is
+the gate this record spent two rounds on.
+
+### AV.1 The two named failures, and the property underneath them
+
+Xiong et al., *How Memory Management Impacts LLM Agents* (arXiv **2505.16067**), name the mechanism under all of
+it: the **experience-following property** — `corr(input similarity, output similarity)` between **0.52 and 0.95**
+across four agents. An agent does not consult a memory, it *imitates* it. Two failures follow:
+
+| failure | definition | what it looks like in this lane |
+| --- | --- | --- |
+| **error propagation** | a stored output is wrong; retrieval replicates and amplifies it; if the result is written back, the error compounds | items whose net is negative over many episodes — R131's attribution table found six, the worst **−4 over 18** and **−4 over 19** |
+| **misaligned experience replay** | the stored output is *correct for its own case* and still harms, because the case it is retrieved for only looks similar | the explanation R132/R133 exist to test: 5 repaired / 9 inert on the store's own cases |
+
+**This record has never been able to tell them apart, and said so in different words each round** — R123's "wrong
+items vs misapplied items", R132's need for the four cells, R133's control. The literature's vocabulary makes the
+diagnosis sharper: *error propagation* is a write-side filter problem, *misaligned replay* is a retrieval/render
+problem, and a harm share is a mixture of both.
+
+### AV.2 Six mechanisms, their published effects, and what each costs here
+
+| mechanism | source | published effect | built here? | cost to test here |
+| --- | --- | --- | --- | --- |
+| **selective addition** (evaluator gates the write) | 2505.16067 | add-all **13.05%** vs strict-selective **38.5%** on EHRAgent — *worse than no memory at all* | partially: admission exists (`write-admission`, `admission: measured 70 trust 0.90`) but is a trust score, not an outcome check | one arm, no new phase |
+| **history-based deletion** (utility = what happened after the item was served) | 2505.16067 | **+10pp absolute** average over naive growth; beats an *error-free* baseline on AgentDriver | **no** — this is R129, registered and never run | one arm + a settlement pass |
+| **verification-gated admission** | SEMV, arXiv **2609.27175** | negative transfer **5.7% → 0.2%** while positive transfer holds 46.4% → 43.0% | **no** | one rehearsal phase |
+| **abstraction level** (procedural beats episodic) | 2604.27003, *When Continual Learning Moves to Memory* | abstract procedural memories transfer more reliably than detailed trajectories; negative transfer hits **hard cases hardest** | partially: `consolidate` + `consolidateKey: routine` (R124) | header-only |
+| **contrast edges** (typed edges between direction-opposite confusables) | STRATA, arXiv **2610.19386** | ScienceWorld **78.7 → 96.7** within one system; "single-level concrete memories suffer catastrophic negative transfer" | **no** | one arm + an edge builder |
+| **reconstruction at use time** (critique the retrieved item against the current state before acting) | MemHarness, arXiv **2607.28272** | beats static memory and pure RL on ALFWorld/WebShop, with OOD robustness | **no** — this lane renders items verbatim | one render ablation, no training |
+
+### AV.3 Where this record actually stands, read against that table
+
+**Our store is the configuration all three abstraction papers predict will fail.** `distillUnit: correction` writes
+**one item per failed case**, from a concrete episode, rendered verbatim — 2604.27003 measures that representation
+as the weakest for transfer, STRATA calls it the one that "suffers catastrophic negative transfer", and MemHarness
+names the render path as the cause. R124's `consolidateKey: routine` was the first step toward abstraction and it is
+the only configuration in this record whose harm share ever fell to 29.6% (now understood to be one dispatch of a
+60%-heterogeneous quantity, §34.165).
+
+**Two of the six mechanisms are free and one of them is already half-built.** Abstraction level is a header — the
+lane has run both levels. Selective addition exists as a trust score with no outcome feedback: R131's attribution
+table already computes per-item `net` from served episodes, so the settlement pass that would turn it into an
+admission gate reads data the lane *already writes*. That is the cheapest experiment on this board, and it is the
+only one whose published effect (+10pp) is larger than this record's measurement noise (±4pp on the episode rate).
+
+**And the gate this record spent two rounds on is not on the list.** Contrast edges (R123) price *ambiguity*; the
+literature's levers price *outcome*. That is now a coherent explanation of why R123 moved the harm share and the
+score in the wrong direction: it was answering a question nobody in the field asks.
+
+### AV.4 The board, with this appendix's additions
+
+| entry | mechanism | metric | published | ours | comparable? |
+| --- | --- | --- | --- | --- | --- |
+| Xiong et al. | add-all vs strict | accuracy, EHRAgent | 13.05% vs 38.5% | — | no (different task) |
+| Xiong et al. | history-based deletion | accuracy gain | +10pp | **not run** (R129) | design-level |
+| SEMV | verified admission | negative transfer | 5.7% → 0.2% | **not run** | design-level |
+| STRATA | contrast edges | ScienceWorld | 78.7 → 96.7 | **not run** | design-level |
+| MemHarness | reconstruct at use | ALFWorld/WebShop | beats static memory | **not run** | design-level |
+| 2604.27003 | abstraction level | forward transfer | procedural > episodic | **partially run** (R124) | direction-only |
+| **microglia** | — | episode rate | — | 84.73% [80.77, 88.69], I²=0 | **the only ±4pp interval in this record** |
+
+**Position.** On the mechanism axis this record is *behind*: four of the six published levers are unbuilt and it
+spent its budget on one that is not on the list. On the measurement axis it is *ahead*: no paper above reports a
+between-dispatch I² or an explicit resolution for its own claim, and this record's own episode-rate interval (±4pp)
+is narrower than the effects those papers report. The competitive move is therefore not to invent a seventh
+mechanism but to **run the two cheapest published ones on a metric that can see a 5pp effect** — which is the first
+time this record has had both halves at once.
