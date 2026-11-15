@@ -10830,3 +10830,11 @@ about a phase that made no request is that its store had nothing to offer.
 against a 240-minute job, so the header is refused at read time with the sum in the message rather than
 discovered as a cancelled run whose learning half was already paid for. The ceiling is measured (0.75 minutes an
 episode plus about 40 for the store) and stays a constant of the reader, not of the dispatch.
+
+**Postscript, same day.** The first dispatch of R132 died before its first episode on
+`TAU_REHEARSAL ... received 'true'`: the header bridge prints a boolean as `true`/`false`, and the resolver had
+been written and tested against `1`/`0`. Two spellings, two bridges, and a test that asserted the behaviour of the
+spelling its author had in mind. It is the same defect as 34.159 one layer up — not a field with no writer, but a
+**switch with two writers and a reader that only knew one of them** — and the guard is now that the test feeds the
+producer's output (`String(true)`) through the consumer instead of a literal. A reviewer cannot check that
+assignment by reading either side alone, which is why it belongs in a test rather than in a convention.

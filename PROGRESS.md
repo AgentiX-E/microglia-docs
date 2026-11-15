@@ -20307,3 +20307,23 @@ moment the table gained its entry. `pnpm check` locally: **5,402 tests in 264 fi
 **Next.** Read R131 first (§AUDIT 34.161's four fields are the round's own instrument check), then dispatch R132
 on a green tree. If R132's `repairRate` is high the store is right and misapplied and the next dollar is
 conditioning; if it is low the store is inert on the cases that wrote it and the next dollar is the write side.
+
+**The first dispatch died in thirty seconds, on a switch whose two ends were never joined.** `43846651443`
+failed at the memory arm before its first episode:
+
+```
+RangeError: TAU_REHEARSAL must be unset, '0' or '1'; received 'true'
+```
+
+The registration's header is a boolean and `prereg-form` prints it the way the header wrote it — `true`/`false`,
+the same wire `TAU_CONSOLIDATE` rides — while the resolver I wrote accepted only the numeric spelling that
+`TAU_SPEAK_CENSUS` uses. Two bridges, two spellings, one function that had only ever been tested against the
+spelling the test chose. This is AUDIT 34.159's defect class exactly: **a switch with a reader and a writer and no
+evidence the two were joined**, and it cost thirty seconds and no tokens only because the refusal is at module
+load rather than after the learning half.
+
+The fix reads both spellings — four spellings, two facts, all unambiguous — and the test now pushes
+`String(true)`, `String(false)` and the empty output of a registration with no header through the resolver, which
+is the bridge's own contract rather than a spelling chosen by the test author. Re-dispatched as `43848545387` on
+`79ec4ec` at 10:24Z. The general lesson is in AUDIT 34.162: a switch is not wired until a test exercises the
+producer's output, and "the unit test passes" has never been the same claim.
