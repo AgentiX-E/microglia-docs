@@ -19925,3 +19925,55 @@ per request; `served.byItem` carries the requests each item was in; `use` carrie
 read. A record that broke a trial can be joined to the claim it was served from — and until this round the
 join was impossible from outside the process, because the decision that names the ranking was the one field
 the wire dropped.
+
+### 210 — The guide named three commands that do not exist, and the census that counts a store is not the census that counts a trial
+
+**R123a's re-dispatch** (`43773201592`, dispatched 23:09Z) is in its evaluation half with the repaired wire.
+Nothing in this round touches it.
+
+**The defect this round found was in the documentation, and it was found by reading rather than by running.**
+
+`USER-GUIDE.md` told a reader to run `pnpm eval:tau2` in three places. There is no such script. The page was
+committed, all 5,347 tests were green, and the failure would have surfaced in a user's terminal — which is the
+same shape as the `TAU_*` variable the source read and no workflow could set (§PROGRESS 190): a surface the
+build does not check. The fix is the same fix: read the surface and compare it.
+
+```ts
+// every `pnpm <name>` in docs/*.md must exist in package.json
+const missing = mentionedCommands().filter((entry) => !scripts.has(entry.name));
+expect(missing.map((e) => `${e.page}: pnpm ${e.name}`)).toEqual([]);
+```
+
+with a second assertion that the walk found more than fifty invocations across more than one page, because a
+glob that matches nothing passes every assertion above it. **Verified by mutation**: inserting
+`pnpm eval:nonexistent-probe` into the glossary fails the test with the page and the name printed, and removing
+it restores green. The three lines are rewritten as the registration header they always were — `speakMargin`
+and `speakCensus` are dispatch inputs, not local commands — and the sample output beneath them is now labelled
+as one store's numbers rather than presented as a run.
+
+**The join moved out of the binary and into a tested function.**
+
+`pairAttribution` composes `pairedEpisodes` and `itemTransfer` and returns **`undefined`** for any missing
+field. The distinction it preserves is the one this record has now paid for four times: an empty table reads as
+*no claim was served into a measured trial*, and the truth of an artefact written before the boundary field is
+*this run could not say*. The case that decided the shape is a memory arm whose control has no row for a trial —
+the request is counted **unattributed**, because with no control row there is no outcome to pair, and calling
+it a loss would attribute a missing measurement to the store.
+
+**Two censuses, one dispatch, and they are not the same quantity.** `pack.ledger` says what was served;
+`episodeStarts` says when. R123a's numbers make the difference concrete:
+
+| quantity | value | what it can answer |
+| --- | --- | --- |
+| requests | 164 | how often the store was asked |
+| episodes | 160 | how many trials were measured |
+| items per request | 4.05 | how much each request carried |
+| requests per episode | 1.025 | why a positional join is wrong |
+
+**Nothing in this round claims an effect.** The instrument and the gate are ready; the reading needs a run that
+carries both, and the next dispatch (R125) does.
+
+**Gate.** `pnpm check` exit 0: **5,352 tests** in 262 files, coverage **100 / 99.94 / 100 / 100**, 232 modules,
+`blocking-gates=PASS`, bundle core 52,422 / 52,500. One defect fixed on the way: the committed coupling snapshot
+still described the tree before two new modules existed, which is a gate that fails a push rather than a review —
+exactly what it is for.
