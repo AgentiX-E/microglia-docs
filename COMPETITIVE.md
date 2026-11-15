@@ -6473,3 +6473,37 @@ time — with a within-run contrast that is positive and unresolved.** The proje
 the two absent mechanisms rather than by the score: R124 repairs the merge key (a store-side defect with a
 measured cause), and R123 makes the decision to speak (the read-side mechanism the τ² competitor reports the
 largest gain from).
+
+## Appendix AP — The four 2026 memory results, and the two mechanisms this record was missing
+
+Four papers this record tracks describe the same failure from four sides, and the comparison is not about
+scores: it is about *where in the pipeline each one intervenes*, because that is what a reader can adopt.
+
+| result | what it found | where it intervenes | microglia's position |
+|---|---|---|---|
+| **Memory Trap** (arXiv 2611.07554) | memory injected into a request it does not answer produces **35–81%** unsafe actions against ≈0 without it | **read**: refuse to serve | `speakMargin` + `no-leader` — built R123, rung unplaced |
+| **Anti-Persistence** (2610.27406) | a store that keeps restating one claim is indistinguishable from a store that knows it | **write**: supersede and union evidence | `consolidateKnowledge` keyed on the routine (R124) |
+| **MemHarness** (2607.28272) | the harness, not the model, decides whether memory helps; same store, two scaffolds, opposite signs | **harness**: measure the pair | `facadePair: off/on`, the paired arm this lane runs by default |
+| **Memory Agent** (2607.08716) | an agent that rewrites its own memory beats one that appends to it | **read**: reconstruct at read time | **absent.** The one mechanism this record has no code for |
+
+Two of the four are read-side, and until R123 this record had none of them. Its five gates —
+`minCoverage`, `minEvidence`, `absenceFloor`, the pack budget, the fold — all operate on *what* to serve
+after the decision to serve has already been made. The decision itself was never a decision: `served 162 of
+162` for twelve rounds.
+
+The interesting part of the comparison is that the two read-side mechanisms are not the same claim.
+Memory Trap says *do not speak when the store does not prefer an answer*; Memory Agent says *do not serve
+what was written, serve what the question implies*. The first is a gate, the second is a rewrite, and
+R123 is deliberately the gate: it needs no model call, it is auditable in the pack's own bytes, and it can
+be priced from a store before it is bought — which is what R123a does.
+
+**Where this record is behind, stated plainly.** Reconstruction at read time is unpublished here and would
+be the fifth mechanism. It is also the one with the weakest evidence for *this* lane: the published
+read-time damage expresses itself as abstention, and a rewrite that manufactures a plausible claim is the
+opposite intervention. The order this record chose — gate first, then reconstruct — follows the evidence
+rather than the citation count.
+
+**Ranking, unchanged and not upgraded by this round.** τ²-retail `pass^4`: ALTK-Evolve **0.6754** on 114
+tasks against microglia **0.7500** on 40 tasks, with `sup2` served at **0** here and non-zero there. The two
+samples cannot resolve a 2.5pp rate difference, so no rank is claimed in either direction; what this round
+adds to the table is a mechanism column, not a score column.

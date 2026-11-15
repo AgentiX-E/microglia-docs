@@ -19634,3 +19634,96 @@ time, and it ends the merge line rather than advancing it.
 **Machinery cost $0** and the gate is green on it: `pnpm check` exit 0, **5,280 tests**, coverage
 **100 / 99.94 / 100 / 100**, `blocking-gates=PASS`, 229 modules. CI green on both commits
 (`43703964105`, `43705098189`).
+
+### 205 — the gate on whether to speak, built while the merge arm is still running
+
+**Two dispatches cannot share a provider.** The hard constraint is not scheduling taste: `sota.yml`'s own
+comment records DeepSeek answering `your current concurrency is 6, which exceeds your concurrency limit of 5`,
+so one run already sits at the request ceiling. A second concurrent run would push both into 429 retries,
+double the price of the pair, and leave both rates untrustworthy and incomparable. `43705196364` (R124, ~$1.10,
+step 14 of 25, historical duration 166–170 minutes) therefore owns the lane for the next two hours, and every
+paid arm queues behind it.
+
+What does **not** queue is the code. R123's mechanism, its census and its wiring are complete and green at
+**$0 spent**:
+
+**`apply/speak.ts`** — `decideSpeak` reduces the population the store returned to the five states a silence
+can be in (`nothing-matched`, `nothing-covered`, `nothing-corroborated`, `nothing-selected`, `no-leader`),
+with the margin between the top two candidates that cleared every floor. The margin is measured over the
+**candidates**, not over the pack, because `limit` is the host's room and a budget small enough to carry one
+line must not be able to manufacture a leader. A single candidate has no rival, so `margin` is null and the
+pack speaks: the gate is about contested rankings only. `suppressionOf` separates the silences the memory
+chose from the ones it merely observed, so `KnowledgePack.suppressed` gains exactly one new value.
+
+**The census is an observer**, pinned by test: rendered bytes, ids and fingerprint are identical with
+`decision` on and off. An arm can be read back without being a different arm.
+
+**`diagnostics.memory`** carries `recalls`, `recall_failures`, `recall_empty` and `silent_because`, written
+only for a phase whose agent is the microglia one — a phase that ran no sidecar reports nothing rather than
+a zero that reads as a memory never asked. `speakLineOf` prints the partition `recalls = served + withheld +
+failed` beside the served census, and states `margin 0 (the default: every non-empty pack is served)` so a
+zero can never be read as a settled floor.
+
+**The defect this round found for free.** `memory_stats()` existed, was self-tested, and **had no caller**:
+`recalls` and `recall_failures` had never reached a single artefact, so every dispatch's "the sidecar was
+consulted" claim rested on a counter nobody read. That is the seventh instance of the family this record keeps
+writing about — a parameter, a field or an instrument that nobody sends — and it is written up as AUDIT 34.154.
+
+**Why the margin itself is not chosen this round.** The number is a property of a *store*, and the store this
+lane will serve is the one R124 is deciding right now: if the routine key merges, 79 items with `supportTasks:
+1` become fewer items with support ≥ 2, and the distance between the top two candidates of such a store has
+almost nothing to do with the distance in today's store. Pricing a threshold on the store that is about to be
+replaced would be the same error as choosing R121's merge floor for a store this lane no longer has. The
+mechanism ships now; the rung is measured against whichever store R124 returns.
+
+**Gate**: `pnpm check` exit 0, **5,323 tests** (43 new), coverage **100 / 99.95 / 100 / 100**, 231 modules,
+`blocking-gates=PASS`, `bundle:size` core 52,380 of 52,500 raw — a deliberate raise argued in `bundle-size.mjs`
+rather than adjusted silently — and the Python self-check at **18 cases / 51 assertions**. Pushed as
+`acfb1fa` and `9f85a3c`.
+
+### 206 — the rung is a property of the store, so the store is measured first
+
+R123's mechanism is built, wired and green, and **no rung is named**. That is not caution; it is
+arithmetic. The same 650 pairs produced this retention curve for a *relevance* floor:
+
+| floor | requests served | requests emptied |
+|---|---|---|
+| 0.05 | 162 | 0 |
+| 0.10 | 154 | 8 |
+| **0.15** | **75** | **87** |
+| 0.20 | 36 | 126 |
+
+A threshold chosen by intuition between those rungs does not get a measurement. It gets one of two
+outcomes — it withholds nearly everything or nearly nothing — and both are read as a result about memory
+when they are a result about the number. A margin threshold is the same kind of quantity: a quantile of a
+distribution the store produces. **This record has never observed that distribution**, because
+`buildPack` computes the margin between its top two candidates on every request and every artefact
+written before this round threw it away.
+
+So R123a is registered (`prereg/R123a-the-margin-census.md`) and it treats nothing. One arm at
+`speakMargin: 0` records, per request that had a rival, the margin — and from those numbers an **exact**
+ladder over seven rungs, `0.01 0.02 0.05 0.10 0.15 0.20 0.30`, each priced in withheld requests rather
+than in a fitted curve. The rung R123 will be dispatched at is chosen from that ladder by a rule fixed in
+the registration before the data exists:
+
+1. the smallest rung withholding **at least 15% and at most 40%** of the rivaled population;
+2. failing that, the largest rung, with the ladder as its own evidence that the margins are compressed;
+3. and if the **smallest** rung already withholds more than 40%, **R123 is not run on this store** — a
+   margin gate there is an off switch wearing a threshold's clothes, and that is a result rather than a
+   reason to move the rung.
+
+`rivaled` is the second denominator this record has had to name in a fortnight. `recalls` counts requests
+that reached the facade; `recall_empty` is the subset that came back with nothing; `rivaled` is the subset
+of *those that had something* which also had a **rival**. A request with one candidate cannot be contested
+at any rung, and putting it in the divisor would make every rung look cheaper than it is.
+
+**What the census cost: nothing.** The margin is already computed; `speakCensus` only asks for it to be
+reported. The observer rule is pinned at the layer that renders — rendered bytes, ids and fingerprint are
+identical with the census on and off — so the arm that measures the store is the same arm that served it.
+
+**One more field that had no caller, found on the way.** `pack.suppressed` has existed since the
+corroboration floor, and the Node route mapped `ids`, `rendered`, `tokens`, `hash`, `truncated` and
+`suppressed` — but not `decision`. The τ² lane reaches the memory over HTTP, so a census the core
+computed was invisible to the only client that reads it. That is AUDIT 34.154's shape one layer out: not a
+counter nobody called, but a field nobody forwarded. Both are the same question — *does the value reach an
+artefact* — and the answer is now asserted at the route rather than assumed at the type.

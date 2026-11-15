@@ -10326,3 +10326,102 @@ registration should have asked for the second and cited the first.
 merged=1 crossTask=1` and eight rows of zeros above it, and the store's `scopeKey` distribution is a
 `Counter` over a field the artefact carries. Neither was read, because the run printed nine `sweep:` rows and
 no operating-point row — the instrument that would have surfaced both was the printer added this round.
+
+## 34.154 The counter that was written, self-tested, and never called
+
+`microglia_agent.py` has exposed `memory_stats()` since **2026-10-24** (`ff6ad8f`, "give the lane something
+that can actually run a tau2 split"), 22 days and roughly sixty rounds ago. Its docstring states its purpose
+— *"What the run should record about the sidecar, so a zero is explainable"* — and it returns three fields
+the lane has quoted ever since:
+
+```python
+return {"recall_url": _memory_url(), "recall_failures": _failures, "recalls": _recalls}
+```
+
+**No caller existed.** `grep -rn "memory_stats" eval/` returned exactly one non-selfcheck hit: its own
+definition. `run_split.py` builds `diagnostics` from `diagnostics_of(simulations)` and `usage_stats()`, and
+`usage_stats()` counts the *provider's* tokens and calls. The sidecar's own counters were never added. So
+every artefact this lane has written was silent about the one number that decides whether a memory arm
+measured a memory at all: how many requests reached the facade, and how many of them the facade answered.
+
+**Why it survived ten audits.** The self-check kept it green. `memory_stats_exposes_the_recall_count` calls
+the function, asserts its keys, and passes — which is precisely the failure mode `scripts/check-coupling-ledger.mjs`
+was carved out of `ci.yml` to escape: *"An inline script cannot be tested … a predicate that always returned
+true would have looked exactly like a passing build."* Here the predicate was a **caller-side** test on a
+function nobody called. A green test that exercises a dead entry point certifies the entry point, not the
+pipeline, and this record has now paid for that shape four times: R56 (a knob nobody sent), R118 (an
+instrument with no input), R121 (`merge.support.atLeastTwo` counting the wrong population), R124 (a key
+nobody moved). The fifth form is more embarrassing than the others because the instrumentation was *already
+written*, and the missing part was one dictionary key.
+
+**What was added instead, and why the shape matters.** `diagnostics.memory` now carries `recall_url`,
+`recalls`, `recall_failures`, `recall_empty` and `silent_because`, written **only for a phase whose agent is
+the microglia one**. A phase that ran no sidecar omits the block rather than reporting `recalls: 0`, because
+a zero there is the defect this whole audit section is about: it reads as "the memory was never asked"
+rather than "no memory was wired". `speakLineOf` then prints the partition
+
+```
+recalls = served + withheld (by reason) + failed
+```
+
+as arithmetic rather than as prose, so a reader can check it against the artefact's own fields, and it prints
+`margin 0 (the default: every non-empty pack is served)` at the default rather than the bare `0` that a
+previous round read as a coverage figure.
+
+**The generalisation, in the form this record can act on.** A census field earns its place only when
+(a) something writes it, (b) something prints it, and (c) the printed line makes its own denominator visible.
+`memory_stats` satisfied none of the three and every local gate was green. The check that would have caught
+it is not a test of the function but a test of the **artefact**: for each field the lane claims to record,
+assert that a real run's JSON contains it. That check does not exist yet, and it is the cheapest thing on
+this roster to add.
+
+## 34.155 A threshold is a quantile, and this record kept naming them without the distribution
+
+`buildPack` has withheld packs on three different grounds across thirteen rounds, and every floor it was
+dispatched with was chosen the same way: by intuition, from a handful of remembered numbers.
+
+| floor | what it gates | how the value was chosen |
+|---|---|---|
+| `minCoverage` | does the rule mention the question | "0.15 sounded strict" |
+| `minEvidence` | was the rule observed twice | 2, because two is corroboration — the one floor with an argument |
+| `speakMargin` | does the store prefer one answer | **not chosen, and that is the finding** |
+
+The third column is the audit. For the first two, the record has since paid for the intuition: the
+retention curve over the 650 committed pairs shows the coverage floor is **not** a curve at all —
+
+```
+floor  served  emptied
+0.05     162        0
+0.10     154        8
+0.15      75       87
+0.20      36      126
+```
+
+— a cliff between two adjacent rungs, so a registration naming 0.10 and one naming 0.15 are not two doses
+of one treatment, they are "memory speaks" and "memory is silent" with a number in between pretending to
+be a knob. `minEvidence: 2` has the same shape for a different reason: on BIRD, **all 1,296** distilled
+rules came from a single correction, so the floor that "requires corroboration" injects nothing and its
+measured effect (−2 to −4pp) is arithmetically zero in one corpus and 96.43% retention in the other. One
+number, two worlds, and the number is a property of the corpus rather than of the policy.
+
+**The generalisation this record can act on.** A threshold over a scored population is a **quantile of
+that population**, and a quantile cannot be chosen before the distribution is observed. Every floor in
+this codebase gates on a score whose distribution is a property of the *store* — of the embedder, the
+corpus, the pack budget, the distiller's phrasing — and the store is different in every dispatch. Naming
+a rung from memory is therefore not "choosing a strict threshold"; it is choosing an unknown dose and
+reporting the outcome under the dose's name.
+
+**What R123 did about it.** The mechanism was built and left **unrung**. The margin between the top two
+candidates is already computed on every request, so a registered arm at `speakMargin: 0` records the
+ladder — seven rungs, each priced in withheld requests exactly — for the price of a control run. R123's
+rung is then chosen by a rule fixed in `prereg/R123a-the-margin-census.md` **before** the data exists:
+the smallest rung withholding 15-40% of the rivaled population; else the largest, with the ladder as its
+evidence; and if the smallest rung already withholds more than 40%, **the arm is not run on that store**,
+because a gate that removes two requests in five has replaced the store rather than filtered it.
+
+**The cost of not doing this, measured in this record.** R121 and R122 each cost about a dollar and each
+returned a rate whose interval could not separate it from the control — 141 of 160 against 133 of 160,
+p = 0.2668 — while the population that would have explained *why* went unrecorded. Two dollars bought two
+inconclusive rates and no distribution. One dollar spent on a census first would have priced every
+subsequent rung and told the reader, in advance, that the traffic was not separable at the rung they were
+about to buy.
