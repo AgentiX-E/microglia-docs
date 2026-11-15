@@ -19374,3 +19374,58 @@ computes both and `pnpm eval:pack-repeat` prints them beside the flip table and 
 runs is read the same way every time. The three numbers that would have changed this record's history
 are now printed together: **rate, rate⁴, headline**, and a headline above `rate⁴` says the misses moved
 rather than the memory getting better.
+
+### 201 — R121 dispatched: the recurrence pass reaches the published unit for the first time since R58
+
+**Dispatch** `43688056849`, `prereg/R121-the-merge.md`, ~$1.10 (one learn half and one 160-episode
+evaluation), L4 ceiling 300 minutes.
+
+**Three mechanisms in this record were installed and never reached the lane that publishes numbers.**
+R120 closed the first (the fold's key). The second is the store's own recurrence pass:
+
+```ts
+const consolidation =
+  DISTILL_UNIT === "trace" ? consolidateKnowledge(written, consolidationOptions) : undefined;
+```
+
+`consolidateKnowledge` has existed since R58, with a measured floor, four refusal counters, complete
+linkage and a support census. Every arm since R104 runs `distillUnit: correction`, so it has never run
+on the unit this project publishes — and the store it never ran on is the store whose own censuses say
+**34.4% restatement and 10 routines taught by two tasks or more** (`merge.support.atLeastTwo`).
+
+**The switch is a header, not a variable, and the reason is the record's own history.** `R56` closed the
+distiller's form this way after a global variable published one experiment under another's name; `R118`
+closed the learn-only stop the same way. `consolidate: true` is the fourth header of the family. Absent
+means the pass runs exactly where it always ran — trace gets it, correction does not — so **no committed
+artefact is reinterpreted by the key's existence**. `resolveConsolidation` refuses `yes`, `on` and `1`
+before the first model call, and the header refuses the pair `consolidate: true` + `distillUnit: raw`:
+the pass merges claims and the raw unit stores episodes, and a dispatch that ran both would score a
+store its registration does not describe.
+
+**The predictions are censuses, and the reason is now measured rather than argued.** R120 established
+that a `pass^4` at forty tasks has a 15.18pp half-width and that two runs of one lane four days apart
+differed by 15.00pp on **one episode**. So R121 predicts:
+
+| reading | prediction | why it is a claim |
+|---|---|---|
+| `consolidation.merged` | **> 0**, `retained` ≤ 55 of 73 | a census over the store; no sampling error |
+| `consolidation.crossTaskGroups` | **> 0** | the first item in this record whose evidence names two tasks — ALTK's `sup2` cell |
+| `storeItems` redundancy | ≤ 15% against R120's 34.4% | the same clipped sample, so the bound moves the same way |
+| episode rate | reported, with its interval, and the headline beside `rate⁴` | ±5pp at 160 episodes against ±15.18pp at 40 tasks |
+
+**Two refutations that would close a line rather than open one.** `merged: 0` with `considered: 73`
+means the pass cannot reach this store and the next dollar goes to the floor, with the four refusal
+counters naming which refusal did it. `merged > 0` with `crossTaskGroups: 0` means the store shrinks
+without getting corroborated — the laundering R99 already paid for — and that would close the merge line
+rather than advance it.
+
+**Why a merge is worth a dollar after the fold's −12.50pp.** R120's delivery fold measured −12.50pp
+(`[-30.00, +5.00]`, p = 0.2668) and the mechanism is understood: `makePack` refills behind the fold, so
+that arm **substituted** items rather than delivering fewer, and its containment control could be
+computed on zero requests. The write-path merge changes a different object: what the store *holds*, with
+support unioned into the survivor's evidence, and it is not reversible per request — which is why it
+needs its own dispatch and its own census.
+
+**What the machinery cost: $0.** Nine files, 5 new tests and 14 new assertions, and the full gate suite green
+(`5256` tests, coverage `100 / 99.94 / 100 / 100`, `blocking-gates=PASS`, coupling ledger 229 modules).
+The arm itself is the first dollar this round spends.
