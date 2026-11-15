@@ -20764,3 +20764,71 @@ old definition. **27 cases, 97 assertions.**
 by identity rather than by position, record the injected message's own length so the ~410-token carriage
 stops being a remainder, and re-read. No new treatment: the conditioning row cannot be entered until the
 join works, and the renderer row now has a measured target (559 tokens of which ≤149 is knowledge).
+
+### 221 — R136: the join gets a name and the column gets a subtraction
+
+**Both instruments are built, tested, and pushed. The dispatch is next and the readback is not in this
+entry.** The registration is `prereg/R136-the-boundary-and-the-carriage.md`; no treatment changed, so this
+is an instrument arm whose own rate is a negative control.
+
+**1. The boundary names its task.** `memory.boundaryTexts` records the query each boundary opened for,
+appended on the same branch as `episodeStarts` — a new agent instance, which is the only episode signal the
+agent side of the socket has. The agent cannot record a task *id* (τ² never tells an agent which task it is
+in), so `run_split.py` resolves the text against the first user message of every simulation it just ran and
+emits `memory.boundaryTasks`: one id per boundary, `null` where nothing matched, `boundaryTasksUnmatched`
+counting them.
+
+That resolution is a prefix match on the same string the recall sent, which is why it is exact rather than
+fuzzy: the agent records `text[:MAX_QUERY_CHARS]` of the content τ² handed it, so the boundary text is a
+prefix of the simulation's first user message. A boundary that matches messages from two *different* tasks
+is left unresolved — picking one would be a positional join wearing an identity's name.
+
+**The join itself changed shape.** It is not "one boundary per trial" any more: a boundary's *requests* are
+delimited by position (`episodeStarts` is a partition of the request stream, and no name changes that) while
+a boundary's *trial* comes from the task it names. A task simulated twice is therefore **one episode with
+two ranges**, and R135's 41-versus-40 becomes a measured pair with the extra boundary named:
+
+```text
+[tau2] boundary: 41 boundar(ies) for 40 task(s); repeated retail/5 2
+```
+
+R135's `serve split` printed `boundary-disagrees` and `itemLedgerOf` refused; both now have a path that
+reports a table, and both still refuse — with `tasks-unresolved` — when a named boundary resolves to
+nothing, because half an identity is not an identity.
+
+**2. The injected message is measured where it is injected.** Three lengths now travel, in the unit the
+comparison is made in:
+
+| field | what it is | R135's value |
+| --- | --- | --- |
+| `memory.packChars` | the rendered pack | 725 characters |
+| `memory.injectedChars` | the message the agent built from it | — |
+| `usage.cache.system_chars_per_call` | the column the provider billed | — |
+
+and the census splits the column by **structure**: a call that carries a pack carries it as a second system
+message, so `packed_calls` counts the calls it rode on, `system_chars_per_packed_call` is the column on
+those calls and `carriage_chars_per_packed_call` is that minus the injected message. The split exists
+because the callback sees the user simulator's calls too, and a mean over both is a mixture whose
+composition moves with how many turns each side took — which is one of the two explanations for the ~410
+unexplained tokens, and R136 is the first arm that can rule it in or out.
+
+**What the tests already assert, before any dollar is spent.** 5,471 tests over 266 files; the three
+modules this round touched are at 100/100/100/100 (`tau2-attribution.ts`, `cache-census.ts`,
+`item-ledger.ts`). The Python self-checks are **27 cases / 87 assertions** on the agent and **36 cases /
+123 assertions** on the census and the boundary resolution, and the census case that matters is the
+arithmetic on a known population: two packed calls of 400 + 100 characters of system with 100 injected, one
+unpacked call of 400, which must report `system_chars_per_packed_call` 500,
+`injected_chars_per_packed_call` 100 and `carriage_chars_per_packed_call` 400 at four characters a token.
+
+**Two branches were deleted rather than exempted**, per the policy this record has been enforcing since
+R133: `row === undefined` on a trial index that came from the very array it indexes, and `end <= start` on
+a range from a list `boundaryDefect` has already accepted as strictly increasing. A ledger whose rows are
+not id lists is now refused at the boundary (`no-ledger`) and thrown by `itemTransfer`, because reading a
+hole as an empty pack keeps the request in the denominator while contributing no observation.
+
+**The registered criteria, unchanged from the registration.** `pack.requests == per_task.length` first,
+because a mismatched pair is a refused pair; then the carriage as a share of the system delta. The decision
+rule is fixed: carriage ≈ 150 tokens with 409 unexplained buys a per-system-message census; carriage ≈
+2,700 characters buys a renderer that strips its wrapper; a named retry buys the retry path, where a
+re-simulated task must not buy a second pack. Cost forecast **~$0.32**, from R135's own bills on the same
+114 episodes.

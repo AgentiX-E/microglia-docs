@@ -9282,3 +9282,49 @@ four columns are present: a sum of three and a remainder is not a composition.
 injection, because the system column grew 559 tokens on an arm whose served text is 725 characters
 (~149 tokens). The missing ~410 are carriage the renderer adds, they are 33% of the premium, and they are
 invisible to a census that counts every system message together.
+
+### 17.142 The identity join, and the three lengths a memory's cost is made of
+
+**The join.** R135 produced 41 boundaries for 40 trials and every positional join in this lane refused,
+correctly. The repair is not a better guess about order; it is the identity the boundary already carries.
+Two decisions shape it, and both are about *which* question position answers:
+
+| question | answered by | why |
+| --- | --- | --- |
+| which requests belong to boundary *k* | position, `[starts[k], starts[k+1])` | `episodeStarts` is a partition of the request stream; a name cannot improve a partition |
+| which trial boundary *k* scored | identity, `boundaryTasks[k]` | a task simulated twice opens two boundaries, and only the name says they are the same trial |
+
+So a repeated task is **one episode with two ranges**, and every consumer takes a list of ranges rather than
+one start: `EpisodeOutcome.spans`, `serveSplit`'s per-group `some` over its spans, `itemTransfer`'s union
+over them. Delimiting a group by "its first boundary to the next group's first boundary" would be wrong
+whenever the retry is not adjacent — which a concurrent runner does not guarantee, and R135's arm is not
+evidence that it is.
+
+**The refusal that was kept.** When `boundaryTasks` is present, the identity path decides and does not fall
+back to position. A boundary that resolves to nothing yields `tasks-unresolved` with the count, because the
+fallback would place its requests inside another trial's outcome — the exact misattribution the field
+exists to end. When the field is absent (every artefact before R136) the positional path runs unchanged,
+including its refusal, and `boundaryJoin` reports `no-tasks` so a reader can tell which of the two paths
+produced a refusal.
+
+**Three lengths, one unit.** An attribution has to be a subtraction in one unit, so all three lengths are
+characters and the token conversion happens once, at the end:
+
+```text
+packChars                     the rendered pack                          (memory)
+injectedChars                 the message the agent injected             (memory)
+system_chars_per_call         the column the provider billed             (census)
+  └── system_chars_per_packed_call    the column on the calls that carried a pack
+        └── carriage_chars_per_packed_call = column − injectedCharsPerPackedCall
+```
+
+Two structural choices. **The split is by role count, not by tag**: a call carrying a pack carries a
+*second* system message, which is visible from `roles` alone, so a release that renames the pack's element
+cannot move the split. **The denominator is the packed calls, not all calls**: the callback sees the user
+simulator's calls, whose system prompt is neither the agent's policy nor the pack, and dividing an injected
+length by a mixture is how a 750-character message becomes a 300-character one.
+
+**A pair is not a number.** The carriage clause is printed only when the injection, the column and the call
+count all travelled — `carriagePair` returns `null` if any of the four (including a zero-width column) is
+missing, and the verdict then says nothing rather than zero. That is the same rule as `toolErrors: null`:
+an arm that did not record the instrument is not an arm that measured zero.
