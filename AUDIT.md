@@ -11201,3 +11201,28 @@ the ledger can be joined by identity and a retried task's second boundary is vis
 of a known task. Until then, the guard is the reading: a mismatched pair is refused rather than paired, and
 a refused pair is a dispatch that bought an instrument rather than a measurement — which is what R135 was,
 and it said so before its numbers were read.
+
+## 34.174 A dispatch into the peak window, and a guard that cost nothing to obey
+
+**What happened.** R136 was dispatched at **08:02 UTC** into the 06:00–10:00 band, where the same tokens
+bill at exactly twice the off-peak rate. Both arms exited in under two seconds with
+`tau2-peak-window: dispatched at Tue 08:02 UTC, where the same tokens cost exactly twice the off-peak rate;
+the window closes at Tue 10:00 UTC`, and the pairing and every readback step after them failed on missing
+artefacts.
+
+**Why it is a defect and not an accident.** The guard is `--require-off-peak` in `run_split.py`, and the
+workflow carries a `not_before` input that makes a dispatch wait for the band instead of being re-sent —
+written precisely because "dispatch inside the window" is a rule an operator has to remember at the hour
+they are least likely to (R78 paid 1.90× what R79 paid for 96% of the same calls, nine minutes of clock
+apart). The dispatch that failed here used neither: the input was left empty, so the job started at once
+and the driver refused.
+
+**What it cost.** Nothing, and that is the point of the guard existing at the driver rather than at the
+dispatch: a refusal before the first model call is a red job and a printed sentence, not a half-priced run
+that then has to be discounted. The bill for `44043271824` is **$0.00**; the re-dispatch names
+`not_before: 10:00` and waits 114 minutes instead.
+
+**The rule this adds to the record.** A dispatch is read off its own log before its numbers are trusted —
+the same discipline as a gate: a job that failed in two seconds did not measure anything, and treating its
+absence as "the arm did not move" would be the tenth occasion this lane read a missing measurement as a
+result.
