@@ -6704,3 +6704,26 @@ counters and support, and ours has begun to.
 with the widest gap and a computable denominator is **`sup2` and the `broke` column of the item table** — which
 is SEMV's verification mechanism, ACE's helpfulness counter, and R128's instrument, all pointing at the same
 field: *has this item ever been checked against a trial it changed?*
+
+### A correction to Appendix AR's denominator
+
+AR wrote the ratio as `broke / informative`. The two counts come from **disjoint populations** in
+`density.ts`: `informative` counts the trials the *control failed* (there was something to repair) and
+`breakable` counts the trials it *passed* (there was something to break), with `repaired` and `broke` read off
+one each. So `broke / informative` divides losses by the repairable population, which is not the population the
+losses came from.
+
+The quantity AR meant, and the one this appendix tabulates, is **of the trials the memory changed, the share it
+changed for the worse**: `broke / (repaired + broke)`.
+
+| run | repaired | broke | AR's ratio (`broke/informative`) | corrected harm share |
+| --- | --- | --- | --- | --- |
+| R123 | 8 | 12 | 12/21 = 57.1% | **12/20 = 60.0%** |
+| R124 | 22 | 10 | 10/31 = 32.3% | **10/32 = 31.3%** |
+| R123a | 19 | 8 | 8/26 = 30.8% | **8/27 = 29.6%** |
+
+The correction moves the two well-performing runs by under 2pp and the worst run by 3pp, so **AR's conclusion
+survives its own arithmetic** — which is luck, not design: the two denominators coincide exactly when the
+memory repairs everything the control failed, and this lane's repair rate is 19/26, 22/31 and 8/21. A store
+that repaired half of what it could would have made AR's ratio 2× its own truth. The formula is corrected here
+and the numbers above supersede AR's in every later appendix.

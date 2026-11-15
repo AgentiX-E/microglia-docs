@@ -20080,8 +20080,11 @@ which is what a median must do.
 | R124 | routine key | 32 | 22 | 10 | +7.50pp | **31.25%** |
 | **R123a** | routine key | 27 | 19 | 8 | **+6.88pp** | **29.63%** |
 
-`harm share` is `broke / (kept + broke)` — of the trials the memory *changed*, the share it changed for the
-worse. It is the only quantity on this lane that is comparable across backbones, which is why Appendix AR went
+`harm share` is `broke / (repaired + broke)` — of the trials the memory *changed*, the share it changed for the
+worse. Appendix AR wrote the same idea over `informative`, which is the population the *control failed* rather
+than the population the losses came from; the two coincide when a store repairs everything it could, which is
+why AR's numbers survived its own arithmetic. The formula is corrected in Appendix AS and the three figures
+above are computed the corrected way. It is the only quantity on this lane that is comparable across backbones, which is why Appendix AR went
 to the trouble of refusing to rank on `pass^4` and ranking on this instead.
 
 **The two runs that share a store configuration agree to 1.6pp; the run that differs disagrees by 30pp.** R124
