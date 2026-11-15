@@ -20224,3 +20224,32 @@ is the same defect class as a missing field with a different symptom. The pair a
 dropped a field: an incomplete artefact still looks complete, which is why this cost a round.
 
 **Gate.** `pnpm check` exit 0: 5,4xx tests, coverage ≥95% per dimension, `blocking-gates=PASS`.
+
+**Built while R131 waits for the off-peak window.** The next dollar is already decided and it is not another
+gate: `packages/eval/src/tau2-rehearsal.ts` is the arithmetic that asks *does an item repair the case it was
+written from*, over the 74 learn-half tasks the store was distilled from. It pairs the learn half's own rewards
+against a replay, counts four cells — repaired, broke, kept, inert — and reports two rates whose denominators are
+named: `repairRate = repaired / (repaired + inert)` and `harmShare = broke / (repaired + changed)`. Three
+decisions in it are the defect class this record keeps paying for:
+
+- **A task only one side ran is dropped, not counted as a failure.** The rehearsal runs the learn half's task
+  list, so a mismatch means the two phases disagree about the split — a finding about the plan, not the store.
+- **Nothing paired returns `undefined`**, and the sentence says which absence it is, because a zero would read
+  as "the store repaired nothing".
+- **A rate with an empty denominator is omitted, not printed as `0.00%`** — a store that changed no outcome has
+  no harm share, and `0` would read as "every change was for the better".
+
+The phase that feeds it is not wired yet, and the reason is worth writing down rather than discovering: the
+rehearsal must serve from the store built in the learn half, which means a facade, and the eval phase's facade
+callback is also its collector — every request a second phase made through it would enter `pack.ledger`,
+`servedPackSizes` and `useObservations`. A rehearsal that polluted the eval's census would make R131's own
+readings unreadable, so the wiring needs the recall callback extracted and started twice, once per phase with
+its own collectors. That is a refactor of a hundred-line closure and it is not being done the same hour as a
+dispatch.
+
+**The gate.** `pnpm check` exit 0 in CI on every pushed commit (`43831459129`, `43832946331`, and `43834302651`
+for the tree that carries the rehearsal module): **5,398 tests** in 264 files, coverage **99.98 / 99.88 / 100 /
+99.98**, 234 modules, coupled share 16.78%. One environment note for whoever runs this locally: this sandbox
+reports `[vitest-worker]: Timeout calling "onTaskUpdate"` intermittently when the suite runs alone, with every
+test passing — a worker heartbeat against a machine that is also running the gate's own benchmarks. It does not
+reproduce on the two-core runners, and it is stated here rather than silenced with a flag.
