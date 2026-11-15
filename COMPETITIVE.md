@@ -6316,7 +6316,31 @@ faithfulness row is a deliberate trade that has now been priced — a lesson tha
 `payment_method_id` would not transfer to the next user, so 0 of 667 is the abstraction working; what
 it costs is that the store cannot tell the agent anything the tool schema does not already say.
 
-### AM.3 What the competitor does that this record did not, in one sentence each
+### AM.3 The repetition this store serves, measured
+
+`storeRedundancy` over R119's sample, with the consolidator's own key:
+
+```
+redundancy: 64 statement(s), 39 distinct claim(s) (39.1% restated), largest 11, 45 of 2016 pair(s) at or above 0.60
+```
+
+Two in five statements restate another statement, and one claim was written eleven times. That is the
+quantity the competitors' merge machinery exists to remove, and it is the first number on this record
+that says how much there is to remove. Extra-polating the sample to the store gives ~49 claims against
+the merge census's **53** by an independent key (tool sequence vs lexical containment) — two keys, one
+answer.
+
+No competitor publishes a redundancy figure, so this row is not a comparison; it is the input to one.
+What can be compared is what each system does with the object:
+
+| system | groups by | keeps as the unit | does this record do it |
+|---|---|---|---|
+| AWM | tool sequence (a "workflow") | the workflow | `actionShapeOf` computes it; nothing consumes it |
+| ExpeL | voting across trajectories (`UPVOTE`) | the voted insight | no — `supportTasks: 1` on every item |
+| ALTK-Evolve | distinct tasks per guideline (`sup2`/`sup3`) | the corroborated guideline | no — 10 shapes priced at ≥2, 0 served |
+| microglia | lexical containment (`consolidateKnowledge`) or the routine (`foldByShape`) | **the single correction** | the first is gated to `distillUnit: trace`; the second had no key until R120 |
+
+### AM.4 What the competitor does that this record did not, in one sentence each
 
 **AWM** calls a routine a *workflow* and keys on the tool sequence — the same key `actionShapeOf`
 computes. **ExpeL** merges by `UPVOTE`: an insight is kept when several trajectories vote for it, which

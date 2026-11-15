@@ -19167,3 +19167,68 @@ tasks is not.
 **100 / 99.95 / 100 / 100**; `power.ts` at **100/100/100/100**, `tau2-shape.ts` at
 **100/100/100/100** over 9 new tests in `tau2-shape-key.test.ts`, one of which reproduces the defect
 (`tau2ShapeOf` on a distilled store folds nothing) before the rest assert the repair.
+
+### 199 — How much of the store is repetition, measured: 64 statements, 39 claims, one claim written 11 times
+
+**The question no instrument asked.** The store is one item per correction with `supportTasks: 1` on
+every one of them, so "the memory is repetitive" has been an impression on this record for a dozen
+rounds. The question a memory system's user actually asks is the other one: *how many distinct things
+does this store know?* Nothing measured it, and `funnel.stored: 80` was the only size anybody had.
+
+`storeRedundancy` reads it off the statements, with `claimTokens` and `claimContainment` **imported from
+the consolidator** rather than re-derived — a second definition of "two claims are one claim" would
+drift from the pass that acts on it, and the census and the pass would then disagree about one store,
+which is the defect the fold spent a round paying for.
+
+**R119's artefact, read at no cost and with no model call:**
+
+```
+redundancy: 64 statement(s), 39 distinct claim(s) (39.1% restated), largest 11, 45 of 2016 pair(s) at or above 0.60
+redundancy: sample 64 of 80 item(s)
+```
+
+**Two in five of the store's statements restate another statement, and the largest single claim was
+written eleven times.** Extrapolated over the 80 items that is about 49 distinct claims — and the merge
+census, computed from an entirely different key (the tools each correction called), priced the same
+store at **53**. Two independent keys, one answer, and the first time those two numbers have agreed.
+
+**The band is stated in both directions, because a number like this is easy to over-claim.**
+
+| direction | why | consequence |
+|---|---|---|
+| the sample was **clipped** at 240 characters | two claims cut at one prefix share that prefix, so containment rises | 39.1% is an **upper** bound |
+| the key is **lexical** | R119's address-change pair — one instruction, two spellings — sits at **0.571**, under R58's 0.60 floor | 39.1% is a **lower** bound on what a reader would call repetition |
+
+Both are asserted in the tests rather than footnoted, and `redundancyLine` prints the clipping sentence
+only when it applies, so an unclipped census cannot be read as a clipped one.
+
+**And the pass that would remove the repetition does not run on this unit.** `consolidateKnowledge` —
+the store's own recurrence pass, with R58's measured floor — is invoked by the driver under
+
+```
+DISTILL_UNIT === "trace" ? consolidateKnowledge(written, …) : undefined
+```
+
+and every arm since R104 runs `distillUnit: correction`. So the store keeps 80 single-task items while
+its own census says 53 would carry support up to 5. That is the third mechanism in three rounds whose
+reachability was never measured:
+
+| mechanism | exists since | fires on this lane | why not |
+|---|---|---|---|
+| delivery fold by routine | R109 | **no, until R120** | the key read an `A:` line a distiller never writes |
+| **write-path recurrence pass** | R58 | **no** | gated to `distillUnit: trace`; this lane is `correction` |
+| merge census | R92 | yes, prints and is discarded | it "prices the merge" and something else was supposed to spend it |
+
+**What this re-points, and it is the sharpest statement of the negative effect so far.** A pack serves
+3.9 items per request out of a store where two in five items restate another one, every item is taught
+by exactly one task, and none of them names a value. So the marginal item in a pack is, roughly, a
+second or third spelling of something the agent already has. The memory is not harmful. It is
+**uninformative at the margin**, and the arithmetic now says by how much.
+
+**What shipped.** `store-redundancy.ts` (module, 9 tests), `bin/store-redundancy.ts` (runs on any
+artefact with `tau2.storeItems`, prints sample size against store size), `Tau2Raw.redundancy` with a
+`PROJECTION` decision — the exhaustive-typed table that stops a field going missing in silence, which
+is how this record lost `storeItems`, `distillForm` and `injectionNote` once already.
+
+**Quality.** `pnpm check` exit 0 — **5,238 unit tests over 255 files** (was 5,229 over 254), coverage
+**100 / 99.95 / 100 / 100**, `blocking-gates=PASS`, coupling ledger recomputed (227 modules).
