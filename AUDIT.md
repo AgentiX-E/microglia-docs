@@ -10917,3 +10917,39 @@ against the learn half's rewards, which a learn-only arm runs. Nobody would have
 refusal; it was caught by wiring the control and asking what the pairing actually reads. **A wrong reason in a
 validation is worse than a missing validation**, because it prices a fix that does not exist and survives every
 review that only checks the refusal fires.
+
+## 34.165 Two spreads, one arbiter: I² says which of this record's numbers was ever an estimate
+
+For four rounds this record has had two quantities that moved between dispatches and no way to say whether the
+movement was the world or the sample. The pool (§PROGRESS 216) answers it with I² — the share of a spread that
+lives *between* dispatches rather than inside them — and the answer sorted the two quantities into opposite
+categories:
+
+| quantity | I² | what the movement was | still usable? |
+| --- | --- | --- | --- |
+| `pass^4` at 40 tasks | **16%** | sampling error the interval already described | **as an estimate with ±19pp**, never as a point |
+| harm share at ~29 changed trials | **60%** | the dispatches genuinely disagree | **no** — not until the moderator is found |
+| episode rate at 160 | **0%** | nothing: the arms agree within their own error | **yes**, ±4.0pp |
+
+**The uncomfortable half is the middle row.** For two rounds §212/§213 promoted the harm share to the record's one
+cross-backbone comparator on the strength of two dispatches agreeing to 1.6pp. A third dispatch 25pp away could be
+dismissed as noise if I² were near zero; it is 60%, which means the three numbers are drawn from distributions
+with genuinely different means. The record does not know what varies between them — candidates are the store's
+composition (83 items, but which ones), the retry control's own sampling, and drift in the model's behaviour — and
+until it does, *any* statement of the form "our harm share is X, the literature's is 52%" is a statement about one
+dispatch. Appendix AU removes that column for this reason.
+
+**The comfortable half is worth more than it looks.** The episode rate over two arms of one dispatch comes back
+with I² = 0 and ±3.96pp. That is the first interval in this record narrow enough for a 5pp claim, and it is not a
+new instrument — it is the by-product every arm already prints. A board that ranks on episodes rather than on
+`pass^k` is therefore both cheaper and more honest, which is a rare combination.
+
+**The practice rule that follows.** No quantity is quoted from fewer than two dispatches, and nothing is compared
+across arms until its I² is under 50%. Both halves are mechanical, and both would have caught the retracted
+ranking: AR compared 0.775 with 0.675 from one dispatch each, and §213 read a 27pp harm-share difference across two
+intervals that each spanned more than half of it.
+
+**And a line on the module's own honesty.** It prints whether the interval "can order two arms N pp apart" rather
+than leaving that to the reader, because the retracted ranking was produced by a reader doing that arithmetic
+silently and getting it wrong. A reading that states its own resolution cannot be quoted out of context — and if it
+is, the quote carries the refutation with it.

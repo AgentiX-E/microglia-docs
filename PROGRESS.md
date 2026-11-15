@@ -20433,3 +20433,62 @@ it was written from as its only result. A refusal that names the wrong reason pr
 selector, the signed net, the three control absences, the control's own bill), one new prereg test for the
 `rehearsalControl` header and its two refusals. Full suite: **5,410 tests in 264 files**, coverage **99.96 /
 99.83 / 100 / 99.96**, 234 modules, `audit:repo` and `check-workflows.py` green.
+
+### 216 — The pool splits the record's spread into two variances, and the answer is that the record was quoting the wrong quantity
+
+§215 ended on an uncomfortable fact: three dispatches of one arm read `pass^4` 0.775, 0.750 and 0.625, and three
+dispatches of one store read a harm share of 29.63%, 31.25% and 55.17%. Both spreads were 15–25pp and the record
+had been quoting one member of each. What it had never done is ask **which of the two spreads is sampling error
+and which is the dispatches genuinely disagreeing** — and that question has an arithmetic answer.
+
+`eval:dispatch-pool` is that arithmetic: a random-effects pool (DerSimonian–Laird, τ² truncated at zero) over an
+arm's per-dispatch artefacts, with I² for the share of the spread that lives between dispatches, and the t
+quantile on `dispatches − 1` when it does. Three pools:
+
+| quantity | dispatches | pooled | 95% | I² | label |
+| --- | --- | --- | --- | --- | --- |
+| `pass^4`, 40 tasks | 0.775 / 0.750 / 0.625 | **72.30%** | [53.13, 91.47] | **16.45%** | random-effects, t(2)=4.303, ±19.17pp |
+| harm share, ≈29 changed trials | 8/27 / 10/32 / 16/29 | **38.35%** | [3.85, 72.86] | **60.17%** | random-effects, ±34.51pp |
+| episode rate, 160 each | 83.75% / 85.62% | **84.73%** | [80.77, 88.69] | **0%** | fixed-effect, z, ±3.96pp |
+| `pass^4`, the October arm, 68 tasks | 52.94 / 58.82 / 52.94 | **54.94%** | [48.12, 61.76] | **0%** | fixed-effect, ±6.82pp |
+
+**The three readings say three different things, and only one of them is about the record's methods.**
+
+1. **`pass^4` at forty tasks moves because forty tasks is forty tasks.** I² is 16%: the 15pp spread is almost
+   entirely the sampling error the interval already described (±19pp). The arm's estimate is **0.723 [0.531,
+   0.915]**, which contains ALTK-Evolve's 0.675 comfortably and the October arm's 0.549 too. Nothing was unstable;
+   the record was reading inside its own interval, and Appendix AR's "0.775 beats 0.675" is what that looks like
+   from the inside. §COMPETITIVE AU's board is rebuilt on this number.
+2. **The harm share is genuinely heterogeneous.** I² = 60%: at ~29 changed trials the sampling error alone would
+   not put 29.6% and 55.2% that far apart, so the three dispatches disagree about something the record has not
+   identified. This is a *worse* finding than noise, and it retires the quantity §212 promoted to "the only
+   cross-backbone comparable" — a number with 60% between-dispatch heterogeneity is not a comparator, it is three
+   populations wearing one name.
+3. **The episode rate is the one quantity that behaves like an estimate.** Two arms, 160 episodes each, I² = 0,
+   pooled **84.73% [80.77, 88.69]** — ±3.96pp, which is small enough that a 5pp difference between two arms would
+   be a reading. This is where the record's SOTA claim has to be made, and it is the quantity every arm already
+   produces as a by-product.
+
+**What the module refuses, and why each refusal is a defect it has already paid for.** A pool of one dispatch is
+`undefined` with a sentence rather than a mean of one number. Two `k` values throw and name both: R132 published
+`pass4: 0.825` at `k: 2`, and averaging it with a `pass^4` under one name is the same defect one layer out. An
+artefact with no `metrics.k` is refused by the reader with the field named, because a `k` inferred from a field
+called `pass4` is exactly how a `pass^2` enters a pool of `pass^4`s. And nothing is dropped: a pool over the
+readable subset of a record's runs is a selection, which is AUDIT 34.164's family.
+
+**The instrument is 100% covered on all four dimensions and the quantile is the argument.** t(2) = 4.303 against
+1.96 is a factor of 2.2 on the interval, and it is the difference between "0.775 beats 0.675" and "these cannot be
+ordered". A homogeneous pair is not held to t(1) = 12.706, which would report ±36pp for two 160-episode runs that
+agree — the quantile follows the variance the estimate is made of, and the module says so where it chooses.
+
+**Tests.** 11 in `dispatch-pool.test.ts`: the three-dispatcher pool and its non-arithmetic weighting, the
+homogeneous collapse to fixed effect, the t-vs-z choice with the reason, I² on wide and tight sets, the four
+refusals, the row reader against six document shapes, and the 32-dispatch fallback past the quantile table. Two
+dead branches were **deleted** rather than covered (`quantileFor`'s `df < 1` guard, unreachable behind the
+`length < 2` return, and a `c > 0` ternary whose condition is always true). Full suite: **5,421 tests in 265
+files**, coverage **99.96 / 99.83 / 100 / 99.96**, `dispatch-pool.ts` at **100 / 100 / 100 / 100**.
+
+**Where this leaves the next dollar.** R133 is in flight (`43880380623`) and its `net` is the last measurement
+needed to choose between conditioning, reachability and the write side. Whatever it says, the arm that follows it
+must report its **episode rate and its pool**, not a single `pass^4` — the board can no longer be moved by a
+number that moves 19pp on its own.

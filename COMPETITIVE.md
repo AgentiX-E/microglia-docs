@@ -6852,3 +6852,32 @@ corroborated) and item-level harm attribution — and microglia is behind on the
 3. **A benchmark with a denominator.** The honest path to a defensible SOTA claim is a task population where
    5pp is resolvable — 461 tasks at this variance, or a paired design over episodes rather than tasks, which is
    the quantity R131's episode rates (0.8375 vs 0.8562) can already resolve to ±5.7pp.
+
+### Addendum, same day: the interval, computed rather than described
+
+The table above argues τ²-retail cannot rank from the artefact's own `resolution` and `ceiling` fields. The
+record's three dispatches of one arm now give the same answer directly, and with a sharper structure:
+
+| quantity | three dispatches | pooled | 95% | I² |
+| --- | --- | --- | --- | --- |
+| microglia `pass^4`, 40 tasks | 0.775 / 0.750 / 0.625 | **0.723** | [0.531, 0.915] | **16%** |
+| ALTK-Evolve, held out | 0.675 | — | — | one dispatch |
+| microglia harm share, ≈29 changed trials | 29.6% / 31.2% / 55.2% | 38.35% | [3.85, 72.86] | **60%** |
+| microglia episode rate, 160 episodes | 83.75% / 85.62% | **84.73%** | [80.77, 88.69] | **0%** |
+
+**The competitor's 0.675 sits inside microglia's 0.531–0.915.** So the honest entry on any board is not "we are
+first" or "we are behind": it is that at this sample the two systems are not ordered, and no dispatch of either on
+40 tasks could order them.
+
+**I² makes one further distinction the ranking argument needed.** The `pass^4` movement (16% between dispatches) is
+sampling — the arm is not unstable, the benchmark is small. The harm-share movement (60%) is **not** sampling: those
+three dispatches disagree about something, and a quantity with 60% between-dispatch heterogeneity cannot be the
+column a board is built on. Appendix AS put harm share forward as the one cross-backbone comparable; this retracts
+that, with the arithmetic beside it.
+
+**What the board can carry today**, in descending confidence:
+
+1. `sup2` corroboration, 2 of 66 — a census, reproducible, and the widest real gap in this record.
+2. The episode rate at ±4.0pp — the only interval narrow enough for a 5pp claim, and free on every arm.
+3. The inventorial readings (serve split vs arm rate, the ladder, items with net < 0) — censuses of what a run did.
+4. Nothing else. `pass^k` at 40 tasks belongs on a chart with its error bar or not at all.
