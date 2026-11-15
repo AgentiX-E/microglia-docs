@@ -10519,15 +10519,71 @@ orders two such entries has ordered two draws.
   refusal, and the number that names the actual problem: this lane's whole arm budget is below its own
   resolution.
 
-**The defect this run did surface is the one R120 declared closed.** `unnamed` is **52 of 697 units**, where
-R120 printed **0 of 650** and read that zero as proof that the statement-to-shape join was repaired. Between
-the two runs the only change on that path is the merge, and 52 is not 4 — so the loss is not the four merged
-records. The class is familiar and it is the reason this is filed rather than noted: a census that reaches
-zero and then leaves is harder to see than one that never arrived, because the field that would show it is
-the same field that says it is fine.
+**The defect this run appears to surface is a denominator, and §34.158 corrects this paragraph.** `unnamed`
+is **52 of 697 units** where R120 printed **0 of 650**, and the first reading — a merge that costs the pack
+its shape — is wrong: the artefact attributes all 52 renders to **three rubric-only items** that have never
+carried a shape, and R120's own sample was the same 62-of-64. The field counts renders where the defect is
+items, which is why a store that did not change appeared to change the moment its two weakest records entered
+a pack.
 
 The four mechanism criteria R124 registered all held (`merged 4`, `crossTaskGroups 3`, `support ≥2 0→2`,
 `max 1→3`), and the population prediction missed by 2.7–4.8× (`2,415` pairs against `500–900`). Both facts
 belong in the same paragraph: **the merge fired, and the cost of the merge pass was budgeted at a third of
 what this store actually produces.** A registration that names a population has to be graded on it, and this
 one was wrong in the direction that makes the next dispatch cheaper to size rather than dearer.
+
+## 34.158 Three items, fifty-two renders, and the paragraph this record had to take back
+
+§34.157 inferred a defect and the artefact refuted it in the same hour. The census line was:
+
+```
+[tau2] pack: ... fold 0 of 697 units (0 groups, 40 suppressed by the unit, 0 refused, 52 unnamed)
+```
+
+against R120's `fold 0 of 650 units (0 groups, 14 refused for want of a second task)` with **no `unnamed`
+suffix at all** — and the record printed `unnamed 0` only when the value is zero, so R120 read as proof that
+`callsOfStatement` had been repaired. Between the two runs the only change on this path is the merge, and 52
+is not 4. The inference wrote itself: *a merge that costs the pack its shape*.
+
+**It is wrong, and the arithmetic that refutes it is three lines long.** `pack.ledger` carries 161 packs and
+their ids; `storeItems.items` carries a 64-item sample with a `shape` on each. Joining them:
+
+| id | renders | shape | what it is |
+| --- | --- | --- | --- |
+| `k_01hf7uaq7f_5pqmn` | 8 | **none** | `procedure`, `reasonCode: user_intent_update`, `supportTasks: 1` |
+| `k_01hf7uaq7e_6w2am` | 17 | **none** | `constraint`, `reasonCode: completeness`, `supportTasks: 1` |
+| `k_01hf7uaq6t_5whbr` | 27 | not in the sample | the third of them, inside the 6 omitted items |
+
+`8 + 17 + 27 = 52`. Every unnamed render is one of **three items**, none of them merged (`supportTasks: 1`,
+`evidence: 1`), and none of them new: **R120's own artefact reports `shapeCarried: true` with `shape` on 62
+of 64 sampled items** — the same two-of-64 gap §PROGRESS 200 recorded as a success.
+
+**The mechanism is not the merge and it is older than the census that showed it.** `shapeByTaskOf` skips a
+correction whose `actions` are empty, with a stated reason: *"a correction that called nothing taught no
+routine, so it has no entry."* A rubric-only correction is exactly that — retail states no call on seven of
+its 114 tasks — and the claim the rubric wrote is a sentence with no `A:` line, so the fold's extractor has
+nothing to read and the fallback has no entry to find. The item is unnamed by construction, and it has been
+since R120. What changed is that these three records **entered a pack**: with the store consolidated from 70
+to 66, their relative rank cleared the budget, and 52 renders followed.
+
+So the field measures **renders** while the defect is **three items**. That is the eighth time in this
+record that a counter's denominator decided the reading, and the first time the denominator was right about
+the traffic and wrong about the population — `52` is a true statement about 697 units and a misleading one
+about a store. A census that says `3 item(s) / 52 render(s)` cannot be read either way, and adding the item
+count is free.
+
+**What is left, after the correction.** Two things, and only one of them is a treatment:
+
+1. **The counter.** Print both denominators. No artefact changes, no run changes, and the next reader cannot
+   make the inference this paragraph had to take back.
+2. **The three records have no key.** A `procedure` carrying `user_intent_update` and a `constraint`
+   carrying `completeness` are not noise — they are the two polarities the store is *about*, and the fold
+   cannot group either of them with its siblings because there are no siblings: a rubric-only correction
+   teaches one task, so its item has support 1 and no routine. Whether to give them a key is a real question
+   — `rubric:<reasonCode>` would fold the two `completeness` records of a store, which is a merge on the
+   host's vocabulary rather than on the corpus's — and it is registered rather than assumed.
+
+**The rule this adds.** An inference of the form "X changed and the census moved" needs the census's
+denominator joined to the population it claims to describe. §34.157 had the merge, had the number, and had
+the direction; what it did not have was the join, and the join took one artefact and forty lines of Python.
+The cost of the check is the reason it belongs in the readback and not in the dispatch.

@@ -19830,11 +19830,13 @@ this is the measurement that closes it, and it is the reason `pass^4` may not ap
   honest reading is that the arm cannot be *shown* to, not that it did not.
 - `FAIL l4-effect-resolved` / `FAIL V16-transfer-resolvable` — 10.00pp against a **26.21pp** minimum
   detectable difference, with 31 informative trials of 160. The instrument is working: it refuses a claim.
-- **`unnamed` is 52 of 697 units.** R120 closed this census at **0 of 650** and treated it as the proof
-  that `callsOfStatement` had been repaired. The only change between them on this path is the merge, so a
-  merged item appears to cost the pack its shape — and 52 is not 4, so the loss is not confined to the four
-  merged records. This is filed as the next P0 mechanism question rather than a note, because a census that
-  returned to zero and then left is the class of defect this record keeps finding.
+- **`unnamed` is 52 of 697 units, and it is not the merge.** The artefact settles it: the pack ledger's
+  57 ids account for all 697 renders, and **three** of them carry no shape — `k_01hf7uaq7f_5pqmn` (8
+  renders), `k_01hf7uaq7e_6w2am` (17), and `k_01hf7uaq6t_5whbr` (27, outside the 64-item sample). 8 + 17 +
+  27 = **52 exactly**. All three are rubric-only corrections: `shapeByTaskOf` skips a correction that called
+  nothing, deliberately, so the item the rubric wrote can never be named. **R120's sampling was the same 62
+  of 64 items carrying a shape**, so the store never changed — what changed is that these three entered a
+  pack at all. `unnamed` counts renders, and the store-side defect is three items. AUDIT 34.158.
 
 **What R124 buys and what it does not.** The store now holds witnesses: `support ≥2` is 2, `max` is 3,
 three groups span tasks, and the pack census prints `support ≥2 89, ≥3 16, max 3` over 697 renders from
