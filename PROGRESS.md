@@ -19429,3 +19429,177 @@ needs its own dispatch and its own census.
 **What the machinery cost: $0.** Nine files, 5 new tests and 14 new assertions, and the full gate suite green
 (`5256` tests, coverage `100 / 99.94 / 100 / 100`, `blocking-gates=PASS`, coupling ledger 229 modules).
 The arm itself is the first dollar this round spends.
+
+### 202 — One record serves 54% of requests, and every record in the store is one episode old
+
+**Cost: $0.** This section is R120's own artefact read at a level the record had never read it, plus four
+2026 papers that name the mechanism the numbers describe.
+
+**The concentration, which the mean was hiding.** R120's τ² store held 73 records, served **63** of them
+across 162 requests, and made **650 renders**. The pack census reported this as `mean 4.0 items`, and the
+served census reported a `distinct` count and an id list — never a distribution:
+
+| reading | value | denominator |
+|---|---|---|
+| most-served record | **88 requests** | 162 requests — **54.3%** |
+| the same record | 88 renders | 650 renders — 13.5% |
+| five most-served records | 201 renders | 650 renders — **30.9%** |
+| rendered exactly once | 8 records | 63 served |
+| never rendered at all | 10 records | 73 stored |
+| `exp(entropy)` — records doing the work | **38.5** | 63 served |
+
+**And the record in question is a negative instruction about a rare situation.** Its `when` clause is
+*"The question contains a check-only clause for an item alongside a separate item to actually return"*, and
+its statement is *"When a request asks to check whether an item can be returned but explicitly says not to
+process it, no return action is invoked for that item."* It was served to **54% of requests**, a majority of
+which are not about return-checking at all. On those requests the only thing it can do is suppress a call.
+
+**Every served record is single-episode.** Of the 56 served records that the artefact's clipped
+`storeItems` sample reaches, **56 of 56 carry `supportTasks: 1`**, and **56 of 56 are `polarity: repair`**.
+The store the pack draws from is one repair per episode, and the merge census that prices those repairs as
+recurring routines has never been wired to the write path (R121 does that).
+
+**The retention curve in the same artefact already prices a gate, and eight hundredths of a point decide
+it.** `minCoverage` against R120's 650 pairs:
+
+| floor | pairs retained | packs served | packs emptied |
+|---|---|---|---|
+| 0 (as-is) | 650 | **162 / 162** | 0 |
+| 0.05 | 630 | 162 | 0 |
+| 0.10 | 449 | 154 | 8 |
+| **0.15** | **163** | **75** | **87** |
+| 0.20 | 66 | 36 | 126 |
+
+So the delivery rate of **100%** that every arm since R45 has reported is the floor's default and not a
+decision: at 0.05 it is still 162 of 162, and the first rung that changes anything is 0.08. **A census that
+reports 100% served is reporting that the gate was not applied.**
+
+**The literature names this, and our design sits in the worst cell of it.**
+
+| source | finding | where microglia stands |
+|---|---|---|
+| **Memory Trap**, arXiv[2611.07554](https://arxiv.org/abs/2611.07554) (Princeton × Anthropic, 12 Nov 2026) | six frontier models; benign memories make agents skip safety checks, endorse wrong answers and edit passing tests; **unsafe action 35–81% with memory against ≈0 without**; two mechanisms — *write-time* generalization (a specific permission becomes a standing rule) and *read-time* generalization (a situational fact applied to another task) | our store is written from **one episode** and served to **54% of requests**: both mechanisms, structurally |
+| **More Memory, Worse Agents**, arXiv[2610.27406](https://arxiv.org/abs/2610.27406) (Wang, Panaganti, Zhou) | ALFWorld / WebShop / ScienceWorld × 3 backbones × 10 rounds: raw logs **53.5%**, stored lessons **49.0%**, both **49.3%**, rebuild-on-demand "Anti-Persistence" **59.9%**, Reflexion 52.9%; **lessons lose to logs in 7 of 9 settings** | our store is *lessons only* — the worst of their four designs — and the pack is exactly the "stored abstraction" whose errors they show regenerating |
+| **MemHarness**, arXiv[2607.28272](https://arxiv.org/abs/2607.28272) | ALFWorld 76.4% no memory → **70.1%** with verbatim replay → **85.2%** with critique-and-reconstruct | we have a `critique`-shaped step nowhere on the read path |
+| **Memory Agent**, arXiv[2607.08716](https://arxiv.org/abs/2607.08716) | an independent agent that surfaces a fact **only when it would change the current action**: +8.3pp Terminal-Bench 2.0, **+6.8pp τ²-Bench** | we serve on **162 of 162** requests, which is the "dump every round" design they measure against |
+| **(k,v) framework**, arXiv[2604.27003](https://arxiv.org/abs/2604.27003) (Hu, Long, Wang) | abstracts **transfer more reliably than trajectories**; negative transfer hits **the hard cases** disproportionately; forward transfer and forgetting trade off | our hard cases are the ones memory is measured to hurt, and 2 of 40 tasks sit at 0/4 in R120 |
+
+**The two representation papers disagree, and the disagreement is the useful part.** 2604.27003 finds
+abstract procedural memory transfers *better* than detailed trajectories; 2610.27406 finds stored
+abstractions *worse* than raw logs. They are not measuring the same thing: the first ablates **how much
+detail represents the same evidence**, the second ablates **whether an interpretation persists as an
+object**. Our store takes the risky half of both — maximally abstract *and* permanently stored *and*
+written from one episode — which is why the record's own numbers have been so stubborn: BIRD
+**−1.7pp per rule injected**, content/persistence/foreign controls **null**, τ² **−2.50pp against no
+memory** at **2.17× the cost**.
+
+**Two instruments, because the findings above were unreadable from the artefacts that contained them.**
+
+1. `ServedCensus.concentration` — `topOne`, `topFive`, `once`, `effective`, and `servedLineOf` prints them
+   beside every run. `served 162 of 162 (mean 4.0 items)` was in the log; `one record took 54% of the
+   requests` was not, and the two sentences lead to opposite decisions.
+2. `denominatorFieldsOf` — `episode_rate`, `episode_half_width_pp`, `rate_to_the_k`, `episode_trials` on
+   **every `poc-l4` line**. R120's line carried `pass4=0.75` and nothing else, while its own artefact held
+   141 of 160 episodes and a `rate⁴` of 0.6031. A headline without its denominator is the number this record
+   has twice mistaken for a result.
+
+**What this changes about the next arm.** The measurement says the pack's problem is not its *content* (four
+signals measured null on BIRD) and not its *size* (a delivery-side fold substitutes rather than reduces). It
+is **that it is served unconditionally** — and the record's own retention curve says the first rung that
+withholds anything withholds **54% of the requests**. R123 is that rung, paired, graded on the episode rate.
+
+### 203 — R121 read back: all three censuses refuted, the cause is one string, and the contrast is the best this record has
+
+**Dispatch** `43688056849`, `sota.yml` green, **one evaluation serving both legs** — the memory arm and the
+no-memory reference inside one run, on one store, one split, one model, one temperature. The memory leg cost
+**$0.95** for its 160 conversations; the control's bill is not in its artefact (`arm=0` carries no `tau2`
+block, so the 2.17× ratio R93 measured cannot be recomputed from this run — the cost census is the memory
+arm's alone).
+
+```
+[tau2] consolidation: 79 considered, 3081 pair(s) (12 kind, 2900 scope, 169 overlap removed):
+       0 groups, 0 merged, 79 retained; cross-task 0, support ≥2 0→0, max 1→1
+[tau2] sweep: threshold 0.40: groups=1 merged=1 maxSupport=2 crossTask=1 largest=2 weakest=0.43
+[tau2] sweep: threshold 0.45 … 0.80: groups=0 merged=0 maxSupport=1 crossTask=0
+[poc-l4] memory    pass4=0.75  delta=0.175
+[poc-l4] reference  pass4=0.6   published_bar_applies=0
+```
+
+(The consolidation line is printed by the instrument added in this round; the run itself emitted the nine
+`sweep:` rows and no operating-point row, which is why its refutation arrived as one row among nine.)
+
+**The registered claims, and the verdict on each.**
+
+| claim | registered | measured | verdict |
+|---|---|---|---|
+| `consolidation.merged` | **> 0** | **0** at the operating threshold 0.60 | **refuted** |
+| `consolidation.retained` | ≤ 55 of 73 | **79** of 79 | refuted |
+| `consolidation.crossTaskGroups` | **> 0** | **0** at 0.60; **1** at 0.40 | refuted at the point it ran |
+| `storeItems` redundancy | ≤ 15% | **28.1%** | refuted (34.4% → 28.1%, still two times the bar) |
+| `fold.groups` / `folded` | non-empty / > 0 | 0 / 0 | refuted as registered; 58 units withheld (`suppressed`) |
+
+**The cause is one string, and the store names it.** `consolidateKnowledge` filters a pair by
+`scopeKey(left.scope) === scopeKey(right.scope)` before it ever measures similarity. R121's store, sampled:
+
+| reading | value |
+|---|---|
+| items in the sample | 64 |
+| **distinct `scopeKey`** | **60** |
+| buckets holding two items | **4** |
+| pairs the pass could test | **4** |
+| pairs the store contains | **2,016** |
+
+`scopeKey` includes `scope.intent`, which is **free text the distiller writes**: the sample spells one routine
+`cancel pending orders`, `exchange order item`, `update addresses`, `multi-action request`, `address update`,
+`exchange items`, `return delivered items`, `multi-action order management`. **R119 had already disqualified
+that string as a key** — one routine arriving as `return_items`, `return_item` and `items to return` — and the
+pass that R121 was bought to exercise keys on it anyway. Four candidate pairs of 2,016 survived the filter,
+and at 0.60 none of the four reached the similarity threshold. The sweep shows one of them merges at 0.40,
+cross-task, which is ALTK's `sup2` cell — one rung below the registered floor and unreachable from it.
+
+**And the number that justified the purchase counts a different object.** The same artefact carries the
+offline merge census, keyed on the **routine** (the correction's tool sequence):
+
+| census | key | reading |
+|---|---|---|
+| `merge` (offline) | the routine | **44 shapes, 41 mergeable, support ≥2 on 12, max 8** |
+| `consolidation` (write path) | the model's scope spelling | **4 pairs tested, 0 groups** |
+
+Both were computed on the same store on the same day. `support.atLeastTwo: 12` has been read since R99 as
+"twelve claims corroborated by two tasks"; it is **twelve routines taught by two or more corrections**, and
+the corrections taught different things about them: `supportTasks` is **1 on 79 of 79 items**. The gap
+between 12 and 0 is the difference between those two keys, and it is the fourth instance in six rounds of a
+census reporting its own key.
+
+**The contrast, which is a better measurement than any this record has had of its own memory.**
+
+| | memory | reference | delta |
+|---|---|---|---|
+| `pass^4`, 40 held-out | 0.750 | 0.600 | **+15.00pp** |
+| episodes passed | **141 / 160** | **133 / 160** | **+5.00pp rate** |
+| `rate⁴` under independence | 0.6031 | 0.4774 | +12.57pp explained by the rate |
+| tasks at 4/4 | 30 | 24 | +6 |
+| per-task | 9 improved, 4 harmed, 27 tied | — | sign test **p = 0.2668** on 13 discordant |
+
+**Twelve and a half of the fifteen points are the rate, not the clustering** — the opposite of R119 → R120,
+where the rate explained 1.7pp of a 15pp gap. That is the first time in this record that a memory-vs-none
+contrast moves the two denominators in the same direction and by margins of the same order. It is still not
+resolved: 13 discordant tasks of 40, p = 0.27, and the half-width at n = 160 is ≈5pp.
+
+**And it disagrees with R93, which measured −2.50pp on the same benchmark.** The two differ in what a
+reasonable reader would call the treatment: R93's store was fifteen pinned failures served at 1.1 items a
+request; R121's is 79 distilled claims served at **4.06**. BIRD's dose reading says more rules cost
+**−1.7pp each**; τ² says 4.06 items beat none by +5pp and 1.1 beat none by −2.5pp. **Neither is resolved and
+the two lanes are not measuring the same quantity** — that sentence is the honest state of the record on the
+question "does the memory help", and it is the question R122 and R123 exist to answer.
+
+**What the round shipped, all of it $0.** `ConsolidationCensus.pairs` / `skippedKind` / `skippedScope` /
+`skippedOverlap` — the population a `groups: 0` could not name, and the filter that removed it; `skippedScope`
+is the field R121 needed and did not have. `consolidationLineOf`, printed at the operating point before the
+sweep, with a sentence that says which filter took the population. `ServedCensus.concentration` and
+`servedLineOf` (PROGRESS 202). `denominatorFieldsOf` on every `poc-l4` line.
+
+**Two readings this run produced for free.** `fold … (0 groups, 58 suppressed, 11 refused, 38 unnamed)` —
+`unnamed` went 0 → 38 between two stores with identical shape coverage (62 of 64), because two records the
+key cannot name were rendered **21 times**; the field R120 added did exactly what it was added for. And
+`faithfulness: 0 of 667 entity(ies) kept` — the fourth deterministic run, now zero rather than one.

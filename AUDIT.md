@@ -10225,3 +10225,104 @@ coarser than the effect being claimed is not a conservative metric; it is a coin
 n = 40 is 15.18pp, the run-to-run difference measured here is 15.00pp, and for two rounds the record
 described the second as "the noise floor" while measuring with the first. They were the same number for
 the same reason.
+
+## 34.152 A mean cannot see a monopoly, and 100% served means the gate was not applied
+
+Two hundred words into R120's artefact there is a sentence that has been read as a healthy store for eight
+rounds: `served 162 of 162 (mean 4.0 items)`. Both halves of it are wrong as readings.
+
+**The mean is over renders, and the question is over records.** R120's `served.byItem` — a field that has
+existed since R93 — says one of 63 served records took **88 of the 162 requests (54.3%)**, that the five
+most-served took **30.9% of 650 renders**, that **8 records were rendered exactly once**, that **10 of the 73
+stored records never reached a prompt at all**, and that `exp(entropy)` over the render distribution is
+**38.5** — of 63. A pack described as "four items" is not a store described as "four items"; it is a
+distribution whose first member is a monopoly. **The mean is the one summary that cannot see it**, and this
+record has published the mean as though it were a health metric.
+
+**And the record is a negative instruction about a rare situation.** The 88-request record's `when` is *"The
+question contains a check-only clause for an item alongside a separate item to actually return"*; its
+statement says no return action is invoked when the user asks to check but not to process. Most of the 88
+requests are not about return-checking. On those the rule can only suppress a call — which is the read-time
+generalization arXiv 2611.07554 measures at 35–81% unsafe action with memory against ≈0 without.
+
+**`served 162 of 162` is not coverage; it is the floor's default.** `buildPack` keeps every hit when
+`minCoverage <= 0`, `AS_IS_FLOOR` is 0, and a registration that does not name a floor emits 0. The artefact's
+own retention curve on the same 650 pairs shows the rungs: 0.05 still serves **162 of 162**, 0.10 serves 154
+and empties 8, **0.15 serves 75 and empties 87**, 0.20 serves 36. So the delivery rate has been 100% because
+nothing was withheld, and the first rung that withholds anything withholds more than half the traffic.
+
+This is the third time in five rounds that a number has been read as a property of the world when it is a
+property of the harness: `fold.groups` (zero by construction on the arm that read it), the pack's `items/req`
+(a substitution disguised as a size), and now `served` (a default disguised as a coverage). **The rule that
+generalises: before a census field is allowed into a claim, ask what would have to be true for it to be
+false. `served = requests` is falsifiable only if some request *could* be refused, and at floor 0 none can.**
+
+**What the record now prints, and why both halves are needed.** `ServedCensus.concentration` —
+`topOne`, `topFive`, `once`, `effective` — computed from the same counts `byItem` already holds, so a
+readback can recompute it and a reader does not have to. `servedLineOf` puts it on the run's log beside the
+pack line, because the pack line is what everyone reads. And `denominatorFieldsOf` puts `episode_rate`, its
+interval and `rate_to_the_k` on **every** `poc-l4` line, since the alternative is what R120 did: print
+`pass4=0.75` over 141 of 160 episodes and let a reader call the difference an improvement.
+
+**The generalization the record is allowed to draw from four null signals and one concentration.** Content
+(which rules enter the pack), persistence (whether advice is stored) and provenance (whether the advice is
+about this question) have each been measured null on BIRD; quantity costs **1.7pp per rule injected**; the
+delivery fold substitutes rather than reduces; and the pack is served on every request. Those five readings
+have one common object: **the decision that was never made is whether to speak at all**. R123 makes it.
+
+## 34.153 The pass keyed on the one string this record had already disqualified
+
+R121 was bought to spend a number the record has quoted since R99: `merge.support.atLeastTwo`, the count of
+routines taught by two or more corrections. It ran, considered 79 items, and merged **none**, with all four
+refusal counters at zero. Both halves of that sentence are defects.
+
+**First — the pass cannot report the population it did not test.** `consolidateKnowledge` walks every pair and
+`continue`s on three conditions before any counter increments:
+
+```ts
+if (leftItem.kind !== rightItem.kind) continue;
+if (scopeKey(leftItem.scope) !== scopeKey(rightItem.scope)) continue;
+const overlap = overlapOf(leftIndex, rightIndex);
+if (overlap < threshold) continue;
+```
+
+So `groups: 0, merged: 0, refusedCondition: 0, refusedPayload: 0, refusedDuplicateEvidence: 0,
+refusedLinkage: 0` is consistent with *the store had nothing to merge* and with *the key removed everything*,
+and the record read it as the first. The census now counts `pairs` (`C(n,2)`), `skippedKind`,
+`skippedScope` and `skippedOverlap`, and `consolidationLineOf` prints them with a sentence naming the
+filter that took the largest share. **A zero that cannot say which zero it is has been this record's most
+expensive defect class, and this is its fourth instance.**
+
+**Second — and the reason the answer is the second one.** The store's own sample:
+
+| reading | value |
+|---|---|
+| items | 64 |
+| distinct `scopeKey` | **60** |
+| buckets with two items | 4 |
+| pairs tested | 4 of 2,016 |
+
+`scopeKey` includes `scope.intent`, the field the distiller fills with free text. In R121's store one routine
+appears as `cancel pending orders`, `exchange order item`, `update addresses`, `multi-action request`,
+`address update`, `exchange items`, `return delivered items` and `multi-action order management`. **R119
+established exactly this and wrote it into the key's doc comment**: the intent string cannot key anything
+(`return_items` / `return_item` / `items to return` — nine of sixty-four items shared one spelling and every
+one of them still carried `supportTasks: 1`). The fold's key was moved off it. The consolidator's linkage key
+was not, and the pass ran for the first time two rounds after the string was disqualified.
+
+**Third — the number that justified the arm is a census of routines, not of claims.** The same artefact
+carries `merge: { corrections 73, shapes 44, mergeable 41, support { max 8, atLeastTwo 12, atLeastThree 5 } }`
+— keyed on `actionShapeOf`, the correction's tool sequence. It says 41 of 44 routines had two or more
+corrections. It does not say, and cannot say, that any two of those corrections wrote the **same claim**;
+`supportTasks` is 1 on **79 of 79** items. Two mergers, one store, one day, opposite readings, and the
+routine-keyed one has been read as a merge opportunity for twenty rounds.
+
+**The rule this round adds.** A census and a mechanism may only be compared when they are keyed on the same
+object. `merge.support.atLeastTwo` and `consolidation.merged` were quoted in one sentence of R121's
+registration and they count different things: routines taught twice, and claims written twice. The
+registration should have asked for the second and cited the first.
+
+**What it would have cost to know.** Zero. The sweep in the same artefact said `threshold 0.40: groups=1
+merged=1 crossTask=1` and eight rows of zeros above it, and the store's `scopeKey` distribution is a
+`Counter` over a field the artefact carries. Neither was read, because the run printed nine `sweep:` rows and
+no operating-point row — the instrument that would have surfaced both was the printer added this round.

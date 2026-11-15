@@ -6421,3 +6421,55 @@ quantity with resolution. Three consequences, in order of cost:
 store is smaller and less repetitive than R119's (34.4% restated against 39.1%) and it names **no
 values at all** — three dispatches, same result. No competitor publishes either figure, and no arm in
 this record has yet attacked the second.
+
+## Appendix AO — The memory question, answered as far as this record's resolution goes
+
+The competitive table has ranked `pass^4` for twenty rounds. This appendix states the quantity underneath it
+that the table cannot carry: **what the memory does**, measured against no memory, on the benchmark the SOTA
+row is written on — and what the 2026 literature says about why the answer is small.
+
+### AO.1 The five measured contrasts
+
+| lane | contrast | reading | discordant | resolved |
+|---|---|---|---|---|
+| BIRD-dev, 1,534 q | `full − none` | **−0.46pp** [−1.89, +0.91] | 52 gained / 45 lost | no |
+| BIRD-dev, dose | per rule injected | **−1.7pp** | — | yes, in the dose arms |
+| BIRD-dev, R81 | rebuilt − stored | −0.33pp [−1.76, +1.11] | — | no |
+| BIRD-dev, R81 | foreign − stored | +0.13pp [−1.30, +1.56] | — | no |
+| τ²-retail, R93 | memory − none | **−2.50pp** headline | 13 repaired / 10 broken trials | no (21pp MDD) |
+| τ²-retail, R121 | memory − none | **+5.00pp rate / +15.00pp headline** | 9 tasks +, 4 tasks − (p = 0.2668) | no |
+
+**The honest summary is one sentence: at n = 40 tasks / 160 episodes this record cannot establish the sign of
+its own memory's effect on τ²-retail, and it has two measurements that disagree.** The only *resolved* memory
+effect the record owns is negative and it is on BIRD: each rule injected costs about 1.7pp.
+
+### AO.2 What the 2026 literature says the sign depends on
+
+| mechanism | source | reading | does microglia have it |
+|---|---|---|---|
+| read-time generalization | arXiv[2611.07554](https://arxiv.org/abs/2611.07554) (Memory Trap) | benign memory → 35–81% unsafe action against ≈0 without | **yes, measured**: one record served to 54% of requests about a rare condition |
+| write-time generalization | same | a specific permission becomes a standing rule | **yes**: every item is written from **one** episode (`supportTasks: 1` on 79 of 79) |
+| storing interpretations | arXiv[2610.27406](https://arxiv.org/abs/2610.27406) | lessons 49.0% vs logs 53.5% vs rebuild-on-demand **59.9%** | **yes**: the store is lessons only |
+| no reconstruction | arXiv[2607.28272](https://arxiv.org/abs/2607.28272) | replay 70.1% vs none 76.4% vs **reconstruct 85.2%** | **no**: nothing on the read path critiques the recalled item |
+| no intervention gate | arXiv[2607.08716](https://arxiv.org/abs/2607.08716) | gating gains **+6.8pp on τ²-Bench** | **no**: 161 of 161 requests served |
+| abstract > detailed | arXiv[2604.27003](https://arxiv.org/abs/2604.27003) | abstracts transfer more reliably; negative transfer hits hard cases | **yes**, and our hard cases are where it hurts |
+
+**Four of the six mechanisms are present in microglia's design, and the two that are absent are both on the
+read path.** That is the specific sense in which this project's memory has been "used incorrectly" rather
+than "stored incorrectly": the store is a set of one-episode interpretations, and the runtime applies them
+unconditionally, without critique and without a decision to speak.
+
+### AO.3 Where that puts the SOTA claim
+
+| | value | n | comparable? |
+|---|---|---|---|
+| **ALTK-Evolve (published SOTA)** | `pass^4` **0.6754** | 114 tasks | reference row |
+| microglia R121 memory arm | `pass^4` 0.7500 / rate 0.88125 | 40 tasks / 160 episodes | **not rankable** — different n, different backbone |
+| microglia R121 reference arm | `pass^4` 0.6000 / rate 0.83125 | same run | the control that makes the pair legal |
+| Memory Agent (arXiv 2607.08716) | **+6.8pp `pass@1` on τ²-Bench** | its own split | a mechanism, not a score |
+
+**microglia's position: third of three on the published table, not ordered against it, and — for the first
+time — with a within-run contrast that is positive and unresolved.** The project's next two arms are chosen by
+the two absent mechanisms rather than by the score: R124 repairs the merge key (a store-side defect with a
+measured cause), and R123 makes the decision to speak (the read-side mechanism the τ² competitor reports the
+largest gain from).
