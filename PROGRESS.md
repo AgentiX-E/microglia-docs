@@ -20144,3 +20144,83 @@ the contrast form, and it is the cheapest; our store has no verification form at
 modules, `blocking-gates=PASS`, bundle core 52,422 / 52,500. Two contract tests were added for the two
 languages: the seven rungs, and the twelve fields of the census payload, both read from the Python half rather
 than restated in TypeScript.
+
+### 213 — R123 read back: the gate did not pay, and three instruments that could not have said so
+
+**R123** (`43801571591`) ran 04:01→06:51Z at the rung the ladder chose, `speakMargin: 0.05`, on R123a's store.
+The memory arm cost **$0.7716** for 160 conversations ($0.0048 each, off-peak, 2,680 calls, cache 76.8%).
+The job is **red**, and it is red for the right reason: `l4-pass4` requires beating the published 0.575 by more
+than the sample's half-width (0.725) and the arm read **0.625**.
+
+| reading | memory arm | reference arm | paired |
+| --- | --- | --- | --- |
+| `pass^4` | **0.625** | 0.650 | — |
+| episode rate | **0.8625** (138/160) | 0.8875 (142/160) | −2.50pp [−22.50, +17.50], p=1.0000 |
+| transfer | 13 repaired / 17 broken | — | net −2.50pp, **harm share 56.7%** |
+| turns | 1,800 assistant turns, 24 tool errors of 1,230 flagged, 5 repeat calls | not carried | **not paired** |
+
+**The gate's own mechanism check passed exactly, and that is the only thing that did.** The registration
+predicted `served 114 of 163, withheld 49`, and the run served **109 of 162, withheld 53**. The absolute count
+was wrong because it was R123a's number: this phase spent 162 requests, not 163, and priced its own ladder at
+`p50 0.0928` against R123a's `0.0993`. The realised ladder for this run is `0.05 → 53`, and the realised
+withheld count is **53**. So a rung is a **share** (30.06% of one sample, 32.72% of the next) and not a count,
+and the one-character comparison in `buildPack` is right.
+
+**Four predictions, one held, one refuted, two never measured.**
+
+| prediction (fixed before the data) | measured | verdict |
+| --- | --- | --- |
+| `served 114 / withheld 49` | 109 / 53 | **refuted as a count**; the mechanism check inside it held exactly (53 = 53) |
+| the withheld trials score like the reference and worse than the served | **nothing** | **not measured** — the serve split returned `undefined` and the caller printed nothing |
+| the served bucket beats R123a's arm rate | **nothing** | not measured, same cause |
+| `turnCensus.toolErrors` non-null and `repeatCalls` countable | 24 of 1,230; 5 repeats | **held** |
+
+**The arm is a mixture that did not beat its control.** With 53 of 162 requests withheld, the registration's own
+arithmetic predicts `0.673 × 90.63 + 0.327 × 83.75 = 88.38%`; the arm read **86.25%**, 2.1pp below the mixture
+and 2.5pp below the control, both inside the 5.34pp half-width. What it did do is remove a third of the packs
+for a fifth less money — as a cost knob the gate works; as a treatment it bought nothing.
+
+**And the quantity that has been moving went the wrong way.**
+
+| run | store | gate | informative | repaired / broke | **harm share** | 95% |
+| --- | --- | --- | --- | --- | --- | --- |
+| R123 (old) | correction unit, no recurrence pass | off | 20 | 8 / 12 | **60.0%** | [38.7, 78.1] |
+| R124 | routine key | off | 32 | 22 / 10 | **31.2%** | [18.0, 48.6] |
+| R123a | routine key | off | 27 | 19 / 8 | **29.6%** | [15.9, 48.5] |
+| **R123** | routine key | **0.05** | 18 | 13 / 17 | **56.7%** | [39.2, 72.6] |
+| *literature* | — | — | — | — | *52%* | — |
+
+Two ungated runs of one store agree to 1.6pp. The gated run of **that same store** is 27pp away, and its
+interval overlaps the ungated one, so this is a direction and not a separation. The direction is the opposite
+of the registered prediction, and it is what a gate keyed on **ambiguity** should do: the margin between the
+top two candidates measures how unsure the ranking is, not how harmful the winner is. A confidently served
+wrong item has a large margin and is never withheld.
+
+**Three instruments were unable to report, and each failed differently.**
+
+1. **The artefact dropped both new blocks.** `memory` and `turnCensus` reached the driver's record through a
+   spread, and TypeScript exempts spread members from the excess-property check — so `PROJECTION`'s
+   exhaustiveness ("a field added to the driver's record fails to compile until it is given a decision") held
+   while the artefact carried neither. The phase printed `speak: margin 0.05 … ladder 0.05 53` and
+   `turns: 160 of 160 … 24 tool error(s)` into the log and wrote no field. Both of R123's registered observer
+   readings — the serve split and R128's item table — had a reader and no writer.
+2. **`episodeStarts` was a position, not a boundary.** The writer appended on every recall, so this phase
+   recorded `[0..161]` over 160 episodes: 162 entries, strictly increasing, one per *request*. A join on it
+   would place every request in an episode of its own and call the result a split. The repair records a
+   boundary only when a fresh agent instance opens — τ² builds one agent per task and trial
+   (`build_orchestrator` inside `run_single_task`, once per unit) — and counts the rest as `recallRepeats`, so
+   `len(episodeStarts) + recallRepeats == recalls` is an identity a reader can check.
+3. **The control arm carried no instrument at all.** The reference path returned before `observed` was
+   assigned, so **no control artefact has ever had a `tau2` block**: no usage, no bill, no turn census. That is
+   why every pair since R49 has printed `cache first (unstated): unmeasured`, and why R125's paired turn
+   reading could not fire on any run — the half it differences against did not exist. The control arm now
+   builds a record from its phase's own summary line.
+
+**Three repairs, one new blocking gate, and one method change.** `serveSplit` now answers with a *reason*
+(`no-ledger`, `no-boundary`, `boundary-disagrees` with the numbers that disagreed) instead of `undefined`, and
+both callers print unconditionally — R123's mechanism check disappeared because a caller skipped a print, which
+is the same defect class as a missing field with a different symptom. The pair artefact records
+`serveSplitAbsent` rather than omitting the field. `l4-projection-complete` fails a pair in which either arm
+dropped a field: an incomplete artefact still looks complete, which is why this cost a round.
+
+**Gate.** `pnpm check` exit 0: 5,4xx tests, coverage ≥95% per dimension, `blocking-gates=PASS`.

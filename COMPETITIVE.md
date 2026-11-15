@@ -6727,3 +6727,75 @@ survives its own arithmetic** — which is luck, not design: the two denominator
 memory repairs everything the control failed, and this lane's repair rate is 19/26, 22/31 and 8/21. A store
 that repaired half of what it could would have made AR's ratio 2× its own truth. The formula is corrected here
 and the numbers above supersede AR's in every later appendix.
+
+## Appendix AT — The gate was the wrong lever, and the record can now say so with a number (2026-11-16)
+
+Appendix AS ended by naming the column with the widest gap: the store's content, not its gate. R123 was
+dispatched to test the gate anyway, because its registration was fixed before that reading and a registration
+is not renegotiated. It came back, and it failed the SOTA bar for the first time:
+
+| arm | τ²-retail `pass^4` | episode rate | bar | gate |
+| --- | --- | --- | --- | --- |
+| stock τ² | 0.575 | — | — | — |
+| ALTK-Evolve, held out | 0.675 | — | 40 test tasks | — |
+| **microglia, no gate (R123a)** | **0.7750** | 0.9063 | passes | — |
+| microglia, no gate (R124) | 0.7500 | 0.8812 | passes | — |
+| **microglia, `speakMargin 0.05` (R123)** | **0.625** | **0.8625** | **fails `l4-pass4`** (0.725) | red |
+
+**A margin gate is an ambiguity detector, not a harm detector.** The margin is the gap between the top two
+candidates; withholding the smallest gaps removes the requests the *ranking* is least sure about. A confidently
+served wrong item has a large margin and is never withheld. R123 measured the consequence on the one quantity
+that has moved in this record:
+
+| run | store | gate | informative | repaired / broke | harm share | 95% |
+| --- | --- | --- | --- | --- | --- | --- |
+| R124 | routine key | off | 32 | 22 / 10 | 31.2% | [18.0, 48.6] |
+| R123a | routine key | off | 27 | 19 / 8 | 29.6% | [15.9, 48.5] |
+| **R123** | routine key | **0.05** | 18 | 13 / 17 | **56.7%** | [39.2, 72.6] |
+| *Don't Just Trust Your Memory* | — | — | — | — | *52%* | — |
+
+With the gate on, this lane's harm share is **indistinguishable from the published 52%** — the interval
+contains it, which the two ungated runs' intervals did not. That is the opposite of progress, and it is the
+cleanest evidence yet that the gate is not where this project's gap lives.
+
+**What it did buy is a cost reduction**: 53 of 162 packs withheld (32.7%), eval phase **$0.7716** for 160
+conversations against R123a's $0.9653 for its whole run. As a cost knob the rung works, and it will be kept as
+one; as a treatment it removed traffic and left the harm.
+
+### Where this leaves the board
+
+| entry | metric | value | comparable? |
+| --- | --- | --- | --- |
+| ALTK-Evolve, held out | `pass^4` | 0.675 | yes, 40 tasks |
+| **microglia best (R123a, no gate)** | `pass^4` | **0.775** | yes, 40 tasks |
+| microglia R123 (gate 0.05) | `pass^4` | 0.625 | yes — **fails the bar** |
+| microglia R124 / R123a | harm share | 31.2% / 29.6% | **the only cross-backbone quantity** |
+| microglia R123 (gate) | harm share | 56.7% | yes |
+| literature | harm share | 52% | yes |
+| `sup2` | corroborated items | **2 of 66** | yes — still the widest gap |
+| ACE, itemized counters | AppWorld | +10.6% | no (different benchmark) |
+| SEMV, verified memory | negative transfer | 0.2% vs 5.7% unverified | no (different denominator) |
+
+**Position: first on the score (0.775 against ALTK's 0.675), unrankable on the score at this sample, first on
+harm share while ungated, last on corroboration — and now measurably worse when the gate is on.**
+
+### The next dollar, and why it is not another gate
+
+Three published mechanisms were named in AS. Two are now priced:
+
+| mechanism | built? | measured here | cost to test |
+| --- | --- | --- | --- |
+| contrast edges (STRATA) | **this was R123** | gate on: `pass^4` 0.625, harm 56.7% — worse on both | **paid: $0.77** |
+| helpfulness counters (ACE) | field designed, never written | `sup2` 2 of 66 | one arm + a settlement pass |
+| **verification at admission (SEMV)** | **not built** | — | **one rehearsal phase: 74 episodes, ≈$0.36** |
+
+The untested one is also the cheapest and the only one with a *published effect size*: SEMV moves negative
+transfer from 5.7% to 0.2% by checking a candidate memory against the case it was distilled from before it
+becomes reusable. The lane already has everything needed to run the check on itself — the learn half runs 74
+tasks with no memory, knows which ones failed, and distils one claim from each. Replaying those 74 tasks *with*
+the store answers a question no round has asked: **does an item repair the case it was written from?**
+
+It is also the diagnostic that separates this record's two standing explanations for a 30% harm share. If the
+rehearsal repairs most of the 73 failed tasks, the items are right and the harm is **misapplication** — a
+conditioning problem. If it repairs few, the items are **inert or wrong** — a distillation problem. The two
+have opposite fixes and every round since R108 has bought evidence that cannot distinguish them.

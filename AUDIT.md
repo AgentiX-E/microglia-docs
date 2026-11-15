@@ -10691,3 +10691,99 @@ predates the repair. The next dispatch is the first that can be read both ways, 
 exists only in a log, only in a chat, or only in a person's memory of a run is a number the record cannot audit —
 and the three prior instances of this class (§34.154, §34.155, §34.158) each cost a round, while this one would
 have cost a decision rule its evidence.
+
+## 34.161 Four readers, four ways of saying nothing: how R123's registered mechanism check vanished between a green gate and an artefact
+
+R123 registered one falsifiable core: *the withheld trials score like the reference arm, and worse than the
+served ones*. Grading it needs one number — the serve split — computed from three fields the phase already
+writes. The phase computed it, printed neither, and the artefact carried neither. Four independent failures had
+to line up for that to happen, and each one is a different way for an instrument to be silent.
+
+### 1. The projection table's exhaustiveness had a hole exactly where fields are added
+
+`PROJECTION` is typed `{ readonly [K in keyof Tau2Raw]-?: 'carried' | 'reduced' }`, and its own comment claims
+the property this round disproved:
+
+> **a field added to the driver's record fails to compile until it is given a decision.**
+
+A field added as a plain property does. A field added through a spread does not: TypeScript performs
+excess-property checking on fresh object literals only, and `...(cond ? {} : { memory })` is a spread member.
+Every conditional field in this driver is written that way, which is all of them. So the driver's record grew
+two fields, `Tau2Raw` never declared them, the table never ruled on them, and the projection dropped both
+without a diagnostic:
+
+```
+$ grep -c '"memory"' eval/results/arms/memory/poc-l4.json
+0
+$ grep -c 'speak: margin 0.05' job.log
+1
+```
+
+**The check the record trusted was structurally unable to fire.** Its repair is not another comment: the arm
+record now names every key the driver emitted that the table has no decision for (`unprojected`), the driver
+announces them on stderr, and `l4-projection-complete` fails the pair that carries one. A future spread-added
+field is now a red job rather than a silent omission.
+
+### 2. A field named `episodeStarts` recorded positions
+
+The writer appended `_recalls` on every recall, and a recall happens once per episode *and* again when an
+episode retries a turn. So the list was one entry per request:
+
+```
+R123:  episodeStarts = [0, 1, 2, ..., 161]   over 160 episodes and 162 requests
+```
+
+Strictly increasing, one per request, and carrying no boundary at all. The artefact's own comment claimed
+"`len(episodeStarts)` is the episode count", which is true only when every episode recalls exactly once — the
+assumption the field existed to remove.
+
+The repair records a boundary only when a **fresh instance** opens: τ² constructs one agent per task and trial
+(`build_orchestrator` inside `run_single_task`, once per unit — verified in `tau2/runner/batch.py`), so the
+instance *is* the episode. A recall inside an episode is counted as `recallRepeats`, and the identity
+`len(episodeStarts) + recallRepeats == recalls` is what makes the boundary checkable rather than asserted.
+
+### 3. The join accepted a length check in place of a boundary check
+
+`serveSplit` refused when `episodeStarts.length !== memoryTrials.length`. On R123's data that guard passed —
+162 boundaries against 162 trials? No: 162 against 160, so it refused, and the caller printed nothing. Two
+layers of silence, and the *passing* case would have been worse: the guard compares lengths, so a boundary that
+is one-per-request would be accepted as soon as the trial count matched.
+
+The repair validates the **values**: strictly increasing, inside the ledger, one entry per trial, and each
+absence reports which of the three it was with the numbers that disagreed. A boundary is a partition, and a
+partition is not a length.
+
+### 4. The caller discarded the sentence that said so
+
+`serveSplitLine` had always been able to say "this arm has no episode boundary". The caller wrote
+`if (split !== undefined) print(...)`, so the function's own abstention was unreachable in the one dispatch
+that needed it. Same for the turn census, whose absence printed nothing on either arm.
+
+**This is the round's general finding, and it is not about the serve split.** The record has paid nine times for
+"a missing field is not a measured zero". The tenth form is one layer out: *a missing field is not printed at
+all*, and a reader of a log cannot tell an instrument that abstained from one that was never run. Every
+abstention in this lane now names itself — in the log, and in the artefact under `serveSplitAbsent` — and the
+pair's gates read the field's presence rather than its value.
+
+### 5. The control arm had no instrument, so half of every pair was missing
+
+`run()` returns early on the reference path, before `observed` is assigned. So **no control artefact has ever
+carried a `tau2` block**: no `usage`, no `cost`, no `turnCensus`, no `scenario`. Two consequences had been
+attributed to other causes:
+
+- `cache first (unstated): unmeasured` on every pair since R49 — reported each round as a property of the
+  provider's accounting, and it is a property of a missing writer.
+- R125's paired turn census could never fire. Its registration says the reading rides on the next artefact; the
+  control half of the difference did not exist. §34.154's shape again — an instrument with a caller and no
+  data — one arm out instead of one field out.
+
+The control arm now builds its record from its phase's own summary line: turns, failures, usage, bill
+(divided by the phase's simulation count, not by the provider's per-call view) and the turn census. Its
+`train` is empty because it learned nothing, and its `learning` block is zeros because no learning phase ran —
+both recorded as absences rather than filled.
+
+**What this audit does not claim.** R123's serve split is not recoverable: the boundary it needed was never
+written, and a positional guess would be the defect this section is about. The reading is *unmeasured*, the
+registration's refutation condition ("the serve split is level within its intervals") was never tested, and the
+arm's directional result — harm share 56.7% against 29.6% ungated — is a sample comparison across two runs, not
+a within-arm one.
