@@ -4584,3 +4584,27 @@ dispatches. Two consequences follow for how this system reports:
 
 Neither of those is a reason for despair about the mechanisms; they are reasons for the arithmetic to
 include the second variance component, which is what a serious instrument does.
+
+### The second variance component, built, and what it said
+
+The arithmetic above asked for a second variance component. It exists now (`eval:dispatch-pool`: random effects,
+DerSimonian–Laird, τ² truncated at zero, with I² for the share of the spread that lives between dispatches), and
+applied to the three arms this project had already run it sorts them into opposite categories:
+
+| quantity | dispatches | pooled | 95% | I² |
+| --- | --- | --- | --- | --- |
+| `pass^4`, 40 tasks | 0.775 / 0.750 / 0.625 | 0.723 | [0.531, 0.915] | **16%** |
+| harm share, ~29 changed trials | 29.6% / 31.2% / 55.2% | 38.35% | [3.85, 72.86] | **60%** |
+| episode rate, 160 episodes | 83.75% / 85.62% | 84.73% | [80.77, 88.69] | **0%** |
+
+The first row says the fifteen-point movement that had been read as instability was the sample: at forty tasks the
+interval is ±19pp and the arm was always that uncertain. The second row says the opposite — at ~29 changed trials
+the sampling error does not explain a 25pp spread, so those dispatches disagree about something the project has not
+identified, and the quantity it had promoted to its one cross-backbone comparator had to be withdrawn. The third
+row is the useful one: the episode rate is the only reading here whose between-dispatch component is zero, at
+±4.0pp, and it is a by-product of every arm already run.
+
+Two rules follow, and they are mechanical enough to be enforced rather than remembered. **Nothing is quoted from
+one dispatch.** **Nothing is compared across arms until I² is under 50%.** Both would have caught the two errors
+this project actually made: a ranking built from one dispatch per system, and a 27pp difference read across two
+intervals that each spanned more than half of it.
