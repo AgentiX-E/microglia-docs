@@ -10017,3 +10017,78 @@ than the dependency.
 26.13pp. **No design on this lane resolves a 5pp effect.** R119 states those bounds in its
 registration instead of discovering them after the dispatch, which is the difference between a
 result and a number.
+
+## 34.149 An instrument whose input is not in the artefact cannot be re-read, and two numbers that disagreed in one file
+
+R119's artefact carries both censuses, two keys apart:
+
+```
+fold:  units 631, folded 0, groups 0, atLeastTwo 0, max 1
+merge: shapes 53, mergeable 30, support.atLeastTwo 10, atLeastThree 5, max 5
+```
+
+**They are the same question asked of one store, and they disagree by everything.** That is a
+*verification* defect before it is a mechanism defect: a reader handed this file is handed two
+answers to "how much recurrence does this store have", with nothing in the file saying which is about
+what. The audit is supposed to be the reader who notices, and it printed both for three rounds without
+noticing, because each line was read inside its own paragraph.
+
+Three separate failures, in increasing order of cost.
+
+**First — the artefact did not carry the input.** `storeItems` recorded each item's statement, its
+scope, its status and a count of its evidence, and not the routine the fold keys on. So the fold census
+was **unfalsifiable from the file that printed it**: a reader could not distinguish
+
+- a store with no two records of one routine, from
+- a key with no input.
+
+It was the second, and the only route to that answer was reading the extractor's source. An
+instrument whose input is not in the artefact is not an instrument; it is a claim with a number
+attached. The repair is one field — `storeItems[].shape`, with `shapeCarried` beside it so a projection
+that never asked is distinguishable from a store of unnamed routines, the same discipline `scopeDims`
+follows after 34.135.
+
+**Second — a sentence that was right for the wrong reason was allowed to become calibration.** R119
+printed:
+
+> "the fold removed nothing, so the two arms are one treatment: this delta is the lane's run-to-run
+> noise at n = 40"
+
+Both clauses are true. The inference is sound. And the 7.50pp it produced was about to become the
+lane's noise floor — the number every future delta on this lane would be measured against. It was
+7.50pp because **the treatment failed to apply**, not because the treatment is inert. A null contrast
+built on a mechanism that never fired is a measurement of the mechanism's absence, and calling it
+noise is a category error that happens to produce a conservative number. Conservative and wrong is
+still wrong, and here it was load-bearing for every comparison that follows.
+
+**Third — the gate asserted a different bar than the registration beside it, and its bar was the
+lenient one.** This one is the most expensive because the gate is what a reader trusts:
+
+| | stated where | value | who applied it |
+|---|---|---|---|
+| the registration's bar | prose in `R119-the-regime-paired.md` | lower bound must clear 0.575 → **p ≥ 0.75** | nobody |
+| the gate's bar | `sampleGates`, hardcoded | point ≥ 0.575 + 0.05 = **0.625** | CI |
+
+The interval between them is a 12.5pp band in which a dispatch would have been **green** under a file
+that says the claim cannot be made. R119 landed below both, so nothing was manufactured this time —
+which is exactly why it went unnoticed. A defect that only fires in the band where a run is mediocre
+enough to pass the weak gate and good enough to look like a result is the defect most likely to reach
+a SOTA table.
+
+The root cause of the third is structural rather than numeric: `sampleGates` accepted
+`published: { meets: boolean }` — **a verdict, not a number**. A function that receives a decision
+cannot state the rule it applied, so the `criterion` string it printed (`>= published + 0.05`) was a
+decoration that could disagree with the boolean. It now takes the value, the ruler and the count,
+computes its own verdict, and prints the half-width it subtracted.
+
+**And a fourth, smaller, in the audit's own tooling.** Wiring `TAU_PREREG_FILE` into the driver made
+the L4 gate read a registration — and the repo's `scripts/audit.mjs` immediately failed the build
+because the parameter had no workflow that could set it. That check came out of 34.148, one round
+earlier, and it fired on the first new parameter written afterwards. Recorded here because it is the
+first evidence that a check installed for a class of defect catches the next instance of that class
+without anyone remembering to look.
+
+**What the audit now asks of any census.** For each number a run prints: *is its input in the
+artefact?* If not, the number is a claim. For each pair of numbers that answer the same question: *do
+they agree, and if not, which one is about a different object?* R119 had two and they differed by a
+factor of everything, and the file offered no way to tell.

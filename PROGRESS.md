@@ -19047,3 +19047,114 @@ rules and the two commands that check them.
 `shape-pair.ts` both at **100/100/100/100**. `note-facade.ts`'s summary had never been asserted by any
 test — the branch that prints `(no tasks scored)` was uncovered the moment it was written, which is
 how the gap was found rather than by reading the file.
+
+### 198 — R119 read back: the coverage moved 2.5×, the score did not, and the fold had never had a key
+
+**R119 ran and the gate went red, correctly.** `43645602812`, 40 tasks × 4 trials, $0.9211 for the
+evaluation half. Its registration said the claim needs `p ≥ 0.75` at this `n`; it measured **0.600**.
+
+| reading | R104 | R119 | what moved |
+|---|---|---|---|
+| `pass^4` | 0.550 | **0.600** | +5.0pp against its own predecessor, inside the ±15.18pp the interval allows |
+| `distillReplies.answered` | 10 of 73 | **73 of 73** | R118's regime, reproduced on an arm that goes on to evaluate |
+| `funnel.stored` | 6 | **80** (79 servable) | 13× the store |
+| `coverage.medianAllPairs` | 4.76% | **11.76%** | 2.5× |
+| `coverage.zeroPairs` | 195 of 820 | **0 of 631** | the dead pairs are gone |
+| `faithfulness.kept` | 0 of 667 | **0 of 667** | unchanged, second run, deterministic |
+| `fold.atLeastTwo` / `max` | — | **0 / 1** | see below |
+| `merge.support.atLeastTwo` / `max` | — | **10 / 5** | same run, same store |
+
+**The census moved and the score did not, and that is the finding.** Coverage went up 2.5×, every
+zero-coverage pair disappeared, and the score landed inside the band its own file had named as
+unresolvable. A census has no sampling error, so "the regime raised median coverage from 4.76% to
+11.76% and eliminated all 195 zero-pairs" is exact; a score at `n = 40` is not. Two readings of one
+run, one exact and one silent. **Serving more relevant memory is not the binding constraint**, and
+that kills the hypothesis the last three rounds were organised around.
+
+**Then the two numbers about one store disagreed.** `fold` reported no folding and `merge` reported
+53 shapes with 10 taught by two tasks or more. They are the same question asked with two keys, and
+only one of the keys had an input:
+
+> `tau2ShapeOf` reads the routine from a record's `A:` line. A record written by the distiller is a
+> sentence — *"return actions carry the order_id, the item_ids being returned, and a
+> payment_method_id"* — and it has no `A:` line. `callsOfStatement` returned `[]` for all 79 servable
+> items, `shapeKeyOf` returned `undefined` for all of them, and every item was its own unit.
+
+`facadeShapes: two-unit` has been registered on every distilled arm since R109 and has **never once
+produced two units**. R119 read the inertness as a property of the store:
+
+> "the fold removed nothing, so the two arms are one treatment: this delta is the lane's run-to-run
+> noise at n = 40"
+
+The conclusion is right and the reason is not. The two arms *were* one treatment, so 7.50pp between
+them is a valid noise reading — **by accident**, because the treatment failed to apply. A measurement
+that is right for the wrong reason is the thing this record keeps finding, and this one was in the
+instrument that the previous round used to calibrate everything else.
+
+**Why the store cannot accumulate support, stated as three keys that do not exist.**
+
+| candidate key | why it is not a key |
+|---|---|
+| the normalized **statement** | one correction writes one sentence; two failures of one routine differ in every token that matters to a statement key |
+| the statement's **`A:` line** | a distiller writes none — this round's defect |
+| the scope's **`intent`** | free text the model writes: R119's sample spells one routine as `return_items` (7), `return_item` (2) and `items to return`, and all 64 sampled items carry `supportTasks: 1` |
+
+The one real key — the tools a correction called — was already computed, in the module whose docstring
+says it "does not merge anything. It **prices** the merge". The two halves were never joined.
+
+**What shipped.**
+
+- `shapeByTaskOf(corrections)` builds the routine per correction from `actionShapeOf`, **imported**
+  rather than re-derived, because the census that prices a merge and the key that folds a pack are one
+  definition or they are two numbers a reader cannot compare. It deliberately omits a correction that
+  called nothing: the census needs a bucket for every correction to size a store, the fold needs a
+  *routine*, and an item that names none is its own unit.
+- `tau2ShapeWithFallback(byTask)` joins it through the item's own evidence. The record's `A:` line
+  still wins, because a capture record states the calls it *made* and a fallback that overrode it
+  would replace a measurement with a task's intention. Evidence naming two routines names **none**,
+  because folding either way would credit one shape with the other's support — the laundering R99
+  already paid for. A task the learn half does not know contributes nothing rather than a veto.
+- `storeItems[].shape` and `shapeCarried` — the census is now re-derivable **from the artefact that
+  prints it**. R119's was not: the sample carried the statement and not the key derived from it, so no
+  reader could tell "no two records of one routine" from "the key had no input", and it took reading
+  the extractor to find out.
+
+**The second defect was in the gate, and it was the expensive kind.** R119's registration states its
+bar in prose — *"the interval's lower bound must clear 0.575, which needs p ≥ 0.75"* — while
+`sampleGates` was handed a boolean computed elsewhere by a point comparison against
+`published + 5pp` = **0.625**:
+
+> One dispatch, two bars, and the gate's was the lenient one. A run at **0.63** would have been green
+> under a file that says the claim cannot be made below **0.75**.
+
+The gate now takes the number, the ruler and the count, computes its own verdict, and prints the
+half-width it applied: `> published + the sample's half-width (15.18pp at n=40)`. `claimRuler` is the
+header that names which ruler; absent means `point`, which is what every artefact before this ran, so
+no verdict changes retrospectively. `TAU_PREREG_FILE` carries the file to the L4 job — and the repo's
+own audit caught that the parameter was, at first, one that **no workflow could set**, which is
+AUDIT 34.148's class caught by the check that audit installed.
+
+**Two dead branches deleted rather than exempted, the fifth instance of that class in the record's own
+code.** `powerFromCounts` carried `if (widths === null) throw "has no pairs"` three lines below an
+`if (n <= 0) throw "has no pairs"` — the same sentence, unreachable twice over, because
+`pairedWidths` returns `null` exactly when `n <= 0`. And `powerFromComparison` kept an
+`if (paired === undefined || …) throw` only because a loop cannot narrow its three names. Both are
+gone: three explicit guards narrow by themselves, and `widthsAt` is the total form of `pairedWidths`
+for the caller that has already refused an empty sample.
+
+**What this re-points.** If 2.5× the coverage with zero dead pairs moves no detectable score, the
+memory's problem is not its *retrieval* — it is that the store carries no values (0 of 667), no
+recurrence (one item per correction, `supportTasks: 1` on all 64 sampled) and a great deal of the tool
+schema it was learned from. The negative effect is not that memory is harmful. It is that **nothing in
+it has ever been said twice**, so nothing in it is authoritative.
+
+**R120** (`43665852454`) is dispatched against that, at ~$2.07: R119's lane, split, `n`, form and
+model, with the fold's key repaired and nothing else moved. Its claim is a **census** — `fold.groups`
+non-empty, `fold.folded` above zero, `storeItems.shapeCarried: true` — and its score is reported under
+`claimRuler: interval` and not claimed, because a mechanism assertion is a census and a score at 40
+tasks is not.
+
+**Quality.** `pnpm check` exit 0 — **5,226 unit tests over 254 files** (was 5,206 over 253), coverage
+**100 / 99.94 / 100 / 100**; `power.ts` at **100/100/100/100**, `tau2-shape.ts` at
+**100/100/100/100** over 9 new tests in `tau2-shape-key.test.ts`, one of which reproduces the defect
+(`tau2ShapeOf` on a distilled store folds nothing) before the rest assert the repair.

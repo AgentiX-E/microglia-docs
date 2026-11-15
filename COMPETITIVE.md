@@ -6264,3 +6264,68 @@ answers it was supposed to have.
 That is the sentence AL.3's third row has to be read against. The +1.47pp paired delta was measured
 over a store of *six format claims* — §AK.2 — serving five items a request at 4.76% median coverage.
 It is not evidence about memory. It is evidence about that store, and the store is gone.
+
+## Appendix AM — The cell the SOTA holder is built on, and why this store cannot reach it (2026-11-15)
+
+Appendix AL said the board cannot be ordered. This one is about a different kind of gap: not a number
+that is too noisy to compare, but an object this project's store **cannot construct**, which no sample
+size fixes.
+
+### AM.1 `sup2` and `sup3` are a property of the store, not of the run
+
+ALTK-Evolve's learned-guideline cell admits a guideline only when a stated number of **distinct tasks**
+derived it. The published cells are `sup2`/`sup3`: the store keeps what two, then three, tasks agreed
+on. That is not a filter applied at delivery — it is a shape the store either has or does not.
+
+R119's store (`43645602812`) has it in neither form:
+
+```
+storeItems: 64 sampled, supportTasks: 1 on all 64
+merge: shapes 53, mergeable 30, support.atLeastTwo 10, atLeastThree 5, max 5
+fold:  units 631, folded 0, groups 0, atLeastTwo 0, max 1
+```
+
+The middle line is the object the competitor keeps: **10 routines taught by two tasks, 5 by three, one
+by five**. It was computed from the learn half and it is in the artefact. The bottom line says the pack
+never saw it, and the top line says why — every stored item carries one task.
+
+**Three candidate keys, and only the third is real.**
+
+| key | what it would group | why it is not a key |
+|---|---|---|
+| the normalized **statement** | two corrections that wrote the same sentence | one routine's two failures differ in every token a statement key reads (order id, item ids, gift-card id) |
+| the statement's **`A:` line** | records that called the same tools in the same order | a distiller writes a sentence and no `A:` line — the key returned `undefined` for all 79 servable items |
+| the scope's **`intent`** | records the model labelled alike | free text: R119 spells one routine `return_items` (7), `return_item` (2), `items to return`; 9 of 64 items share an intent string and all 64 still carry `supportTasks: 1` |
+| **the tools a correction called** | the routine | **real**, already computed, and used only by a module whose docstring says it "does not merge anything. It **prices** the merge" |
+
+### AM.2 Where that leaves the board
+
+| cell | ALTK-Evolve (published) | microglia, measured | the gap is |
+|---|---|---|---|
+| retail `pass^4` | **67.54** (114 tasks) | 60.00 (40 tasks) | **cross-sample**, 17.65pp half-width — not orderable (AL) |
+| retail `pass^4` vs the registered bar | 57.5 | 60.00, interval **[44.8, 75.2]** | the bar needs 75.0 at this `n`; measured 60.0 |
+| guidelines in the store | — | 80 (79 servable) | — |
+| **`sup2` — taught by ≥2 tasks** | the cell the SOTA row is built on | **0 served, 10 priced** | a **construction** gap, not a sampling gap |
+| **`sup3` — taught by ≥3 tasks** | idem | **0 served, 5 priced** | same |
+| faithfulness (entity survival) | `SimpleMem` 65.6%, `Memory-R2` 72.6%, `OpenViking` 39.4% (Memory-Tax, 500 turns) | **0 of 667 (0.0%)** | the abstraction is total: the store names `payment_method_id` and keeps no value |
+| coverage of a request | — | median 11.76%, zero-pairs 0 of 631 | 2.5× R104, and it moved no score |
+
+Two rows of that table are the honest position. The **`sup2`/`sup3` row is the one that matters**: the
+SOTA row's cell is an object this store has never produced, and no increase in `n` produces it. The
+faithfulness row is a deliberate trade that has now been priced — a lesson that names the user's actual
+`payment_method_id` would not transfer to the next user, so 0 of 667 is the abstraction working; what
+it costs is that the store cannot tell the agent anything the tool schema does not already say.
+
+### AM.3 What the competitor does that this record did not, in one sentence each
+
+**AWM** calls a routine a *workflow* and keys on the tool sequence — the same key `actionShapeOf`
+computes. **ExpeL** merges by `UPVOTE`: an insight is kept when several trajectories vote for it, which
+is `sup2` reached by counting rather than by grouping. **ALTK-Evolve** keeps the grouped object as the
+unit of the store. This project computed the group (`merge`) and kept the ungrouped member (`funnel
+.stored: 80` against `wouldStore: 53`), and then could not even fold at the pack boundary because the
+key it used there was the one key with no input.
+
+**None of the three is ahead on anything this record measures except that one object.** Which is why
+the next dollar is on the object and not on a score: R120 (`43665852454`) is the mechanism check —
+does the delivery-side fold fire at all — and a write-path merge to `wouldStore: 53` is what turns
+`10 priced` into `10 served`.
