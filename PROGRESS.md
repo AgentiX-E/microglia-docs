@@ -20025,3 +20025,119 @@ than their own intervals — which, unlike the task-level test, is a test that c
 **What this costs the record.** One registration written and withdrawn before dispatch ($0), and one plan
 reordered. The alternative was $2.2 spent to learn that 40 tasks is still 40 tasks — and the record has already
 paid for that lesson twice, in R124's 26.21pp and R123a's 14.01pp minimum detectable differences.
+
+### 212 — R123a read back: the rung is 0.05, and the quantity that moved was not the score
+
+**R123a's re-dispatch** (`43773201592`) finished green at 02:02Z: 160 episodes, $0.9653 at the off-peak rate,
+2,712 calls, cache hit 72.1%. The census that R127 put on the wire arrived, and the ladder it prices arrived
+with it — **in the job log, because the artefact had dropped it**. Both halves of that sentence are findings.
+
+```
+[tau2] speak: margin 0 (the default: every non-empty pack is served); 163 request(s) reached the facade,
+       163 served, 0 withheld, 0 failed; 163 rivaled request(s) (163 request(s) carried one)
+       (the population a rung acts on), p50 0.0993, ladder 0.01 13 / 0.02 22 / 0.05 49 /
+       0.10 82 / 0.15 105 / 0.20 118 / 0.30 145
+```
+
+**The rung is chosen by the rule the registration fixed before the data, and it is 0.05.**
+
+| rung | withheld | share of 163 | rule |
+| --- | --- | --- | --- |
+| 0.01 | 13 | 7.98% | below the 15% floor |
+| 0.02 | 22 | 13.50% | below the floor |
+| **0.05** | **49** | **30.06%** | **chosen — smallest rung ≥15% and ≤40%** |
+| 0.10 | 82 | 50.31% | above the 40% ceiling |
+| 0.15 | 105 | 64.42% | above the ceiling |
+| 0.20 | 118 | 72.39% | above the ceiling |
+| 0.30 | 145 | 88.96% | above the ceiling |
+
+Rule 3 does not fire: the smallest rung withholds 7.98%, so this store's margins are not compressed into one
+point and the gate is not an off switch wearing a threshold's clothes. **R123 is registered at 0.05** with the
+serve split as its mechanism check.
+
+**Two of the four predictions were wrong, and both misses are about the store rather than about the gate.**
+
+| prediction | measured | verdict |
+| --- | --- | --- |
+| `rivaled` between 40 and 150 of ~160 requests | **163 of 163** | refuted — and the denominator too: 163 requests on 160 episodes |
+| the ladder is not a cliff at the first rung | largest adjacent jump 33 of 163 = **20.2%**, bar 50% | held |
+| `margin_p50 < 0.05` | **0.0993** | refuted, by a factor of two |
+| the rate is inside R121's 88.13% ± 5.01pp | **90.63%** | held |
+
+`rivaled: 163` is not a surprise once the pack census is read beside it: `meanPerRequest` is 4.02 and the
+maximum is 5, so every served pack carried at least two candidates and **every** request had a contested
+ranking. The prediction was made about a store that might have had single-candidate packs; this one never did.
+That is the strongest possible statement of the gate's applicability — it acts on all of the traffic rather than
+on a separable half — and it is the *opposite* of the reading R123 was designed around. The `p50` miss says the
+same thing from below: a median margin of 0.099 sits almost exactly at the rung that withholds half the traffic,
+which is what a median must do.
+
+**The paired reading moved, and it moved in the direction the consolidation predicted.**
+
+| run | store | informative trials | repaired | broke | net | **harm share** |
+| --- | --- | --- | --- | --- | --- | --- |
+| R123 | correction unit, no pass | 20 | 8 | 12 | −2.50pp | **60.00%** |
+| R124 | routine key | 32 | 22 | 10 | +7.50pp | **31.25%** |
+| **R123a** | routine key | 27 | 19 | 8 | **+6.88pp** | **29.63%** |
+
+`harm share` is `broke / (kept + broke)` — of the trials the memory *changed*, the share it changed for the
+worse. It is the only quantity on this lane that is comparable across backbones, which is why Appendix AR went
+to the trouble of refusing to rank on `pass^4` and ranking on this instead.
+
+**The two runs that share a store configuration agree to 1.6pp; the run that differs disagrees by 30pp.** R124
+and R123a are independent dispatches, different samples of episodes, different bills, and their harm shares are
+31.25% and 29.63%. R123 — same lane, same model, same split, one switch different (`consolidate: false`) —
+reports 60.00%. The headline `pass^4` over the same three runs was 0.6750, 0.7500 and 0.7750, which is noise;
+the harm share over the same three runs is not.
+
+**This is the first replicated mechanism result in the record.** §PROGRESS 208 read R124 alone and had to say
+"one run"; §209 read R123 alone and had to say the sign was negative. Two runs of one configuration now agree,
+and the earlier counter-example is explained by the switch rather than by the noise.
+
+**Two defects were found on the way, and both are of the family the record keeps paying for.**
+
+1. **The ladder was printed to a log and dropped from the artefact.** `packCensus` counted `censused` and
+   `rivaled` in process; the ladder and the three quantiles were computed in the Python half from the bytes on
+   the socket and printed by `speakLineOf`. So the number a registered decision rule *selects on* existed only
+   inside a 103 KB job log. Reading it required downloading that log and grepping it. The ladder is now counted
+   in process, beside `rivaled`, from the same decisions (`MARGIN_RUNGS`, `marginCensus`, a contract test that
+   pins the seven rungs equal to the Python half's).
+2. **The driver read `diagnostics.memory` to print one line and dropped the block.** `margin_ladder`, `census`,
+   `episodeStarts` and `recall_url` were computed, printed, and then lost: no arm artefact has ever carried a
+   `tau2.memory`. The attribution join R128 built reads `memory.episodeStarts` from exactly that block, so the
+   instrument R128 shipped in the previous round could not have fired on any run. It is now projected into the
+   artefact, absent rather than `null` on an arm without a sidecar.
+
+**R125's instrument is built, and it costs nothing to run.** `eval/drivers/tau2/turns.py` reads the phase's own
+messages — 1,813 assistant turns for 160 episodes — and counts tool results that came back in error, calls that
+repeat an earlier call with identical arguments, and the user turns that follow either. It imports nothing, so
+the self-check exercises the real reader without a harness or a network; `packages/eval/src/tau2-turn.ts` pairs
+the two arms by `(task, trial)` with a Poisson interval per arm and a paired interval on the difference.
+
+Two decisions in it are worth stating because they are the defect class this record keeps repairing:
+
+- **`toolErrors: null` when no tool result carried the flag.** `0` therefore always means *the tools answered
+  and none failed*, and `toolResultsWithFlag` is the denominator that makes the sentence readable.
+- **A call with no readable argument payload is counted, not called a repeat.** Keying a repetition on the tool
+  name alone would have reported `retail` as an agent that asks for the same order twice on every episode — a
+  large, stable number about the reader rather than about the memory.
+
+**What the literature says about exactly this failure, and what it costs us to test.** The negative effect has a
+name and three published repairs, and the repairs are cheaper than the arms this record has been buying:
+
+| work | mechanism | the number | what it implies here |
+| --- | --- | --- | --- |
+| SEMV (2026-10) | admission gate + verification before an item becomes reusable, and **conflict retention** rather than collapsing contradictory evidence | unverified updates: 46.4% positive **and 5.7% negative** transfer; verified: 43.0% positive, **0.2% negative**, 91.88% accuracy | our `writeAdmission` gates on confidence, not on outcome — nothing in the store has ever been checked against a trial it was served into |
+| STRATA (2026) | **contrast edges** flagging confusable, direction-opposite experiences, over a typed three-layer graph | ScienceWorld 78.7 → **96.7** within one system; single-level memory suffers "catastrophic negative transfer" | our `margin` *is* a confusion measure between the top two candidates, and R123a measured it on every request: a margin gate is a contrast edge built from a ranking instead of from a graph |
+| ACE (ICLR 2026) | itemized bullets with helpfulness counters, grow-and-refine deduplication, delta updates | AppWorld +10.6%, context 18,282 → 122 tokens under wholesale rewrite (66.7% → 57.1%) | our consolidation is the dedup; `sup2` moving 0 → 2 is the counter it maintains; the record has never incremented a helpfulness counter by outcome |
+| MemHarness (2026) | retrieve → **critique → reconstruct** → act, learned end-to-end | ALFWorld 85.2% vs 79.6% without reconstruction, 76.4% GRPO-only; raw replay *hurts* | our `injectionNote` is the only place a retrieved line is re-stated before use, and it is a fixed sentence rather than a state-conditioned rewrite |
+
+**Three of these four converge on one claim**: verbatim replay of a retrieved item is what hurts, and what
+repairs it is a decision made *about the item at use time* — verify it, contrast it, or restate it. Our gate is
+the contrast form, and it is the cheapest; our store has no verification form at all, which is where the
+`broke` column comes from.
+
+**Gate.** `pnpm check` exit 0: **5,380 tests** in 263 files, coverage **99.98 / 99.80 / 100 / 99.98**, 232
+modules, `blocking-gates=PASS`, bundle core 52,422 / 52,500. Two contract tests were added for the two
+languages: the seven rungs, and the twelve fields of the census payload, both read from the Python half rather
+than restated in TypeScript.

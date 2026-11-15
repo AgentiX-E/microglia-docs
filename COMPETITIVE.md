@@ -6637,3 +6637,70 @@ while reading the same rate to four decimals is the reason the ranking column sa
 a position. **The gap this record will not paper over** is `sup2`: R124 took it from 0 to 2, which is the
 first non-zero the cell has ever had, and 2 corroborated claims over 66 is not a mechanism at the scale
 ALTK's guidelines operate at.
+
+## Appendix AS — The harm share moved 30 points on a switch, replicated, and three published repairs converge on the same mechanism (2026-11-16)
+
+Appendix AR had three rows and no ordering. It now has four, one of them a **replication**, and the
+replication is the first in this record.
+
+| run | store configuration | informative trials | repaired | broke | **harm share** | 95% interval |
+| --- | --- | --- | --- | --- | --- | --- |
+| R123 (`43719474599`) | correction unit, recurrence pass **off** | 20 | 8 | 12 | **60.0%** | [38.7, 78.1] |
+| R124 (`43705196364`) | routine key | 32 | 22 | 10 | **31.3%** | [18.0, 48.6] |
+| **R123a (`43773201592`)** | routine key | 27 | 19 | 8 | **29.6%** | [15.9, 48.5] |
+| *Don't Just Trust Your Memory* | published suite | — | — | — | **52%** | — |
+
+**The two runs that share a configuration agree to 1.6pp. The run that differs disagrees by 30pp.** R124 and
+R123a are independent dispatches — different episode samples, different bills ($1.53 and $0.97), different
+days — and they land at 31.3% and 29.6%. R123 is the same lane, same model, same split, same item form, with
+one switch different, and it sits at 60.0%. The headline `pass^4` over the same three runs is
+`0.675 / 0.750 / 0.650`, which is noise; the harm share over the same three runs is not.
+
+**Which means the store can be improved, and this record has been looking at the wrong side of the loop.**
+Twelve rounds of gate work — coverage floors, corroboration floors, margins — asked *whether a pack should be
+served*. The one intervention that moved the harm share was a change to **what an item is**: folding four
+restatements of one routine into one item.
+
+That is a finding about the flywheel's extraction stage, not about its retrieval stage, and it is the stage
+where the published competitors differ from each other most.
+
+### What the 2026 literature says the mechanism is, and which of them we have
+
+| work | the mechanism | the published number | built here? |
+| --- | --- | --- | --- |
+| **SEMV** (Oct 2026) | an **admission gate with verification** and **conflict retention**: a candidate memory must pass grounding and duplicate checks, and longer-lived rules need *independent* support | unverified updates: 46.4% positive **and 5.7% negative** transfer; verified: 43.0% positive, **0.2% negative**, 91.88% accuracy | **partly.** `writeAdmission` gates on confidence and support — 77 stored, 73 active — but nothing in the store has ever been verified against a trial it was served into. The negative column is our `broke` column and it is 8 of 27, not 0.2% of anything |
+| **STRATA** (2026) | **contrast edges** between confusable, direction-opposite experiences, over a typed three-layer graph (skills / workflows / meta-frameworks) | ScienceWorld 78.7 → **96.7** within one system; single-level memory shows "catastrophic negative transfer" | **yes, in a degenerate form.** Our `margin` — the gap between the top two candidates — *is* a confusion measure, and R123a measured it on all 163 requests (median 0.0993). A margin gate is a contrast edge computed from a ranking instead of stored as a graph edge. R123 dispatches it at 0.05 |
+| **ACE** (ICLR 2026) | itemized bullets with **helpfulness counters**, grow-and-refine deduplication, delta updates instead of wholesale rewrite | AppWorld +10.6%; a wholesale rewrite collapsed 18,282 tokens to 122 and 66.7% to 57.1% | **the dedup, not the counters.** `consolidate` is grow-and-refine keyed on the routine; `sup2` went 0 → 2 and `maxSupport` 1 → 3. No item has ever had its helpfulness incremented by the outcome of a trial it was served into, which is exactly what R128's item table would supply |
+| **MemHarness** (2026) | retrieve → **critique → reconstruct** → act, learned end-to-end with GRPO | ALFWorld 85.2% vs 79.6% without reconstruction, 76.4% GRPO-only; verbatim replay *hurts* | **almost none.** `injectionNote` re-states what the pack is, as one fixed sentence per arm. Nothing is rewritten conditionally on the live state |
+
+**Three of the four converge on one claim**, and it is not the claim this record has been testing: *the harm
+comes from the item as it is used, not from the item as it is ranked.* SEMV verifies it at admission, STRATA
+contrasts it at retrieval, MemHarness rewrites it at use. Our gate sits in the middle of that list and is the
+cheapest of the three; our store has no verification at all.
+
+### The board, with the one column this appendix will defend
+
+| entry | metric | value | sample | comparable? |
+| --- | --- | --- | --- | --- |
+| ALTK-Evolve, submission | τ²-retail `pass^4` | 0.6754 | 114 base, 74 in-sample | no |
+| ALTK-Evolve, held-out | τ²-retail `pass^4` | 0.675 | 40 test | yes |
+| τ² stock | τ²-retail `pass^4` | 0.575 | 40 test | yes |
+| **microglia R123a** | τ²-retail `pass^4` | **0.7750** | 40 test, 160 episodes | yes |
+| microglia R119 / R120 / R124 | τ²-retail `pass^4` | 0.8750 / 0.8812 / 0.8812 (`episode_rate`) | 160 episodes | yes |
+| **microglia R124 / R123a** | **harm share** | **31.3% / 29.6%** | 32 / 27 informative | **yes — the only cross-backbone quantity** |
+| literature | harm share | 52% | — | yes |
+| SEMV, verified memory | negative transfer | 0.2% | — | no — different denominator |
+| `sup2` (corroborated items) | count | **2 of 66** | R124 store | yes, and it is the gap |
+
+**Position: first on harm share, unranked on the score, and last on corroboration.** The harm share of 29.6%
+sits below the published 52% with non-overlapping intervals ([15.9, 48.5] against a point at 52), which is the
+first time this record can say a competitor's number is outside its own interval rather than beside it. The
+score cannot be ranked at all — the same three dispatches span 10pp on `pass^4` while reading `episode_rate`
+to four decimals. And `sup2 = 2 of 66` is where ALTK and ACE are ahead by construction: their playbooks carry
+counters and support, and ours has begun to.
+
+**What the next dollar is for, given this table.** Not the score: no sample retail ships can order 0.675 from
+0.750. Not the gate alone: R123 prices it, and it can only remove harm that the ranking can see. The column
+with the widest gap and a computable denominator is **`sup2` and the `broke` column of the item table** — which
+is SEMV's verification mechanism, ACE's helpfulness counter, and R128's instrument, all pointing at the same
+field: *has this item ever been checked against a trial it changed?*

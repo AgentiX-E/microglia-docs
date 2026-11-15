@@ -10632,3 +10632,62 @@ careful with zeros" — it is:
 `maxSupport` all held in R124. R123a's population prediction did not fire because it was never measured. Both
 facts are recorded here rather than in a footnote, because a record that only reports the criteria it could
 check is a record that cannot tell an untested criterion from a passed one.
+
+## 34.160 The ladder a decision rule selects on existed only in a job log, and the block it lived in was dropped by the projection
+
+R123a's decision rule is arithmetic and was fixed before the data: *the rung is the smallest one whose withheld
+share is at least 15%, provided it is at most 40%*. Grading it requires one number per rung. The run produced
+them, and the artefact did not have them:
+
+```
+$ grep -c margin_ladder eval/results/arms/memory/poc-l4.json
+0
+$ grep -o 'ladder [0-9. /]*' job.log
+ladder 0.01 13 / 0.02 22 / 0.05 49 / 0.10 82 / 0.15 105 / 0.20 118 / 0.30 145
+```
+
+**A reading that survives only in a log cannot be re-examined.** The log is retained for ninety days; the
+artefact is the record. Every other census in this lane ships in the artefact, and this one shipped as a
+formatted sentence in a 103 KB text file that had to be downloaded and grepped — by hand, once, with no way for
+a later round to recompute it from the arm, and no contract test that could have failed when the field was
+renamed.
+
+**Two independent causes, and the second is the one that matters.**
+
+1. **The ladder was computed on the far side of the socket.** `margin_ladder`, `margin_p10/p50/p90` live in
+   `memory_stats()`, which runs in the agent process; the artefact is assembled in the driver's TypeScript
+   half from `packReadings`. That design was deliberate for R127 — the Python half *prices* the rung, and the
+   TypeScript half counts the same population so the two can be compared — but pricing and *recording* are
+   different jobs, and only the first was assigned.
+2. **The driver read `diagnostics.memory` and dropped it.** `speakLineOf(SPEAK_MARGIN, primary.diagnostics?.memory)`
+   is the only consumer of that block in the whole driver. `margin_ladder`, `census`, `rivaled`,
+   `recall_url` and `episodeStarts` were computed, printed into a line, and thrown away: **no arm artefact in
+   this record has ever carried a `tau2.memory`**.
+
+Cause 2 has a consequence that was not visible until it was written down: **R128's instrument could not have
+fired on any run.** `pairAttribution` reads `memory.tau2?.memory?.episodeStarts`, and the projection that would
+have written it did not exist. The registration said the readback was `$0` on the next artefact; the field it
+joins on had no writer. That is §34.154's shape — a counter with no caller — one layer out: a *reader* with no
+writer, with a green gate on both ends.
+
+**The repairs are three, and each is the same rule at a different level.**
+
+- **The ladder is counted where the decisions are.** `marginCensus` runs in `packCensus`, over the same
+  `decision.margin` values the pack already carries, so the artefact prices all seven rungs without the wire.
+  `MARGIN_RUNGS` is one constant, and a contract test pins the seven values equal to the Python half's list —
+  two lists that drift would print two ladders in one artefact rather than failing.
+- **The block is projected.** `tau2.memory` is now written from `diagnostics.memory` when the phase has one,
+  absent rather than `null` when it does not, which is also what unblocks R128.
+- **The line prints the ladder.** The pack line carried `N rivaled of M censused` and now carries
+  `p50` and the seven rungs, so a log and an artefact say the same thing and the reader of either can choose a
+  rung. The two are compared by construction in the same test that pins the rung list.
+
+**What this audit does not claim.** The rung 0.05 was chosen from the log's numbers, which are the same numbers
+`marginCensus` would now produce from the decisions — the two agree because they sort and count the same
+population. That agreement is *asserted by construction*, not by having run both on this artefact: the run
+predates the repair. The next dispatch is the first that can be read both ways, and the registration names it.
+
+**The general form.** Every reading this record ships must be recomputable from an artefact alone. A number that
+exists only in a log, only in a chat, or only in a person's memory of a run is a number the record cannot audit —
+and the three prior instances of this class (§34.154, §34.155, §34.158) each cost a round, while this one would
+have cost a decision rule its evidence.
