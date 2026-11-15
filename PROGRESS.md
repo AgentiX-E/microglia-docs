@@ -19119,6 +19119,15 @@ says it "does not merge anything. It **prices** the merge". The two halves were 
   reader could tell "no two records of one routine" from "the key had no input", and it took reading
   the extractor to find out.
 
+**And the census now carries the population it could not key.** `ShapeFold.unnamed` — the items whose
+routine the host could not name — is threaded through `foldByShape`, `foldCensus` and `packLineOf`, and
+printed only when it is non-zero so a store the fold *can* read keeps the old text byte for byte. The
+distinction it draws is the one R119 could not: `refused` counts groups that existed and fell short in
+support, `unnamed` counts the population that never entered a group. `0 groups, 0 refused` beside
+`79 unnamed` is a defect in the extractor; the same two zeros with `unnamed 0` is a finding about the
+store. A run that cannot tell those apart will be read as the wrong one, and this record read it as the
+wrong one for three rounds.
+
 **The second defect was in the gate, and it was the expensive kind.** R119's registration states its
 bar in prose — *"the interval's lower bound must clear 0.575, which needs p ≥ 0.75"* — while
 `sampleGates` was handed a boolean computed elsewhere by a point comparison against
@@ -19154,7 +19163,7 @@ non-empty, `fold.folded` above zero, `storeItems.shapeCarried: true` — and its
 `claimRuler: interval` and not claimed, because a mechanism assertion is a census and a score at 40
 tasks is not.
 
-**Quality.** `pnpm check` exit 0 — **5,226 unit tests over 254 files** (was 5,206 over 253), coverage
-**100 / 99.94 / 100 / 100**; `power.ts` at **100/100/100/100**, `tau2-shape.ts` at
+**Quality.** `pnpm check` exit 0 — **5,229 unit tests over 254 files** (was 5,206 over 253), coverage
+**100 / 99.95 / 100 / 100**; `power.ts` at **100/100/100/100**, `tau2-shape.ts` at
 **100/100/100/100** over 9 new tests in `tau2-shape-key.test.ts`, one of which reproduces the defect
 (`tau2ShapeOf` on a distilled store folds nothing) before the rest assert the repair.
