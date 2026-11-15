@@ -19232,3 +19232,145 @@ is how this record lost `storeItems`, `distillForm` and `injectionNote` once alr
 
 **Quality.** `pnpm check` exit 0 — **5,238 unit tests over 255 files** (was 5,229 over 254), coverage
 **100 / 99.95 / 100 / 100**, `blocking-gates=PASS`, coupling ledger recomputed (227 modules).
+
+### 200 — R120 read back: the key works, the counter could not say so, and the same lane measured 0.600 and 0.750 in four days
+
+**Dispatch.** `43665852454`, completed 04:48Z, `sota.yml` green. One learn half over the 74-task
+official split and **one** evaluation of 160 episodes that served **both facade units inside the same
+pass** — which is why the arm cost **$0.9256** for the evaluation half instead of the $2.07 the
+registration reserved for two of them. `gates_passed=3`, `published_bar_applies=1`,
+`bar_backbone_matches=0` (the published 0.575 was measured on gpt-4.1; this run is deepseek-flash).
+
+```
+[poc-l4] pass4=0.75 published_pass4=0.575 competitor_pass4=0.6754 arm=1 tasks=40 k=4 gates_passed=3
+[tau2] shape arms: per-failure 75.00% ±13.42pp served 162/162 folded 0 |
+       collapse 62.50% ±15.00pp served 161/161 folded 58 |
+       collapse vs per-failure -12.50pp [-30.00, 5.00] p=0.2668 n=40 |
+       containment on 0 request(s), 0 mismatch, 9 excluded for a cut pack
+[tau2] pack: fold 0 of 650 units (0 groups, 14 refused for want of a second task),
+       support ≥2 0, ≥3 0, max 1
+```
+
+**The join works, and the census says so in the only place it could.** R119's fold named **nothing**:
+`callsOfStatement` returned `[]` for all 79 servable items because a distilled statement has no `A:`
+line. This run's census prints **no `unnamed` suffix at all** — the count is zero over 650 units, where
+it was 650 — and `storeItems.shapeCarried: true` with `shape` on **62 of 64** sampled items. On the
+collapse arm the fold removed **58 items across 162 packs**, which is a fold that fired. R109's
+mechanism had never done that on this lane.
+
+**And the pre-registered claim could not have been met on the arm it named.** The claim was
+`fold.groups` non-empty. `groups` counts the groups that *folded*, and `foldByShape` only folds when
+`mode === 'collapse'`:
+
+```ts
+const meetsFloor = members.length > 1 && support >= minSupport;
+if (meetsFloor && options.mode === 'collapse') { … groups.push(…) }
+```
+
+so on `per-failure` — the unit the field is read from, and the arm every dispatch since R109 runs — the
+count is **zero by construction**, whether the store recurs or not. The registration asked a counter
+whose value is a function of the mode to answer a question about the world. It is the third instance in
+four rounds of the same family: a number that measures the harness and is printed as a measurement.
+
+**Two predictions refuted, and the refutation is the more interesting result.** The registration said
+the collapse arm's `items/req` and `chars/req` would fall below the per-failure arm's 3.92 and 2,197.
+They **rose**: 4.025 items and 2,189 characters against 4.012 and 2,187. The mechanism is structural
+and now understood: `buildPack` folds the *selection* and then `makePack` renders it under a character
+budget, so a fold that frees one line admits the next-ranked candidate. **At a budget-bounded packer a
+delivery-side fold is a substitution, not a reduction** — its size is invisible at the boundary and only
+its content changes. The containment control agrees: it could be computed on **0 requests**, because
+after the refill no treatment pack is a subset of its control.
+
+**The shape counts a retry as a step.** The store's own sampled shapes make it visible without another
+dollar:
+
+| shape as recorded | items |
+|---|---|
+| `return_delivered_order_items` | 5 |
+| `cancel_pending_order > cancel_pending_order` | 4 |
+| `modify_pending_order_address > modify_user_address > modify_pending_order_items` | 4 |
+| `find_user_id_by_name_zip > get_user_details > get_order_details > get_order_details > get_order_details > calculate > return_delivered_order_items > calculate` | 3 |
+
+**44 of the 62 sampled shapes carry a consecutive repeat**, and one routine is two shapes:
+`cancel_pending_order` appears once and `cancel_pending_order > cancel_pending_order` four times. A call
+retried because the previous one failed is the same step tried twice. Distinct shapes fall **31 → 27**
+under run-length collapse on the sample, and the census's `merge.shapes: 53` for a store of ~30 routines
+is the same inflation at full size. **The fold's reach was limited by its key's resolution, not by the
+store's recurrence.**
+
+**Then the number that changes what this record is allowed to claim.** R119 measured **0.600** on this
+lane. This run measures **0.750**. One form, one split, one seed, one model, one `n = 40`; the store
+differed because distillation is stochastic (80 items with 39.1% restatement, 73 with 34.4%). **Fifteen
+points between two draws of one configuration, against a half-width of 15.18pp.**
+
+| reading | value | what it means |
+|---|---|---|
+| R119 `pass^4` | 0.600 | clears the point bar (0.625), not the interval bar (0.750) |
+| R120 `pass^4` | 0.750 | clears both, interval [0.598, 0.902] |
+| the difference | **15.00pp** | larger than every effect this record has reported since R85 |
+
+**Neither run is a claim about the lane.** The registration said so in advance and the run honoured it.
+What the pair *does* establish is the thing the record has been estimating: the run-to-run spread of
+this lane at n = 40 is at least 15pp, which is the same as the interval half-width — so a lane measured
+once cannot distinguish a mechanism from a redraw.
+
+**The hypothesis this points at, stated so it can be falsified.** The higher-scoring store is the *less
+repetitive* one (34.4% restated against 39.1%) and the smaller one (73 items against 80), and its
+admission refused **70 of 143 candidates** where R119 stored 80. That is one pair, not a correlation,
+and it is not treated as one. The prediction it licenses is testable and cheap: **if repetition at the
+margin is the harm, then a store merged to ≤10% restatement should hold its score while serving fewer
+distinct items** — which is exactly what R121 proposes to measure, and why it moves from P1 to P0.
+
+**Faithfulness, third deterministic run.** `1 of 667 entity(ies) kept (0.1%), 9 replaced by the
+redaction guard, whole in 0 of 71 correction(s)`. Three dispatches, same number to the digit. The
+store's statements name **no values**, and the pack is therefore structurally unable to answer "what
+was the order id" — the failure class R118 named and no arm has attacked yet.
+
+**What shipped this round, all of it $0.** `actionShapeOf` collapses runs of one call (`shape-fold`'s
+key is the same function, so the fold and the merge census now agree on what a step is);
+`ShapeFold.suppressed` separates a store with nothing to fold from a control that folds nothing, and is
+printed only when non-zero so every older artefact still compares; `PackCensus.ledger` carries the ids
+each request was served, with `ledgerDiff`/`ledgerLineOf` and `pnpm eval:pack-repeat` to read two runs
+against each other — because this round's central finding was that a 15pp difference could not be
+attributed to a claim by *either* artefact.
+
+**Quality.** `pnpm check` exit 0 — **5,246 unit tests over 255 files** (was 5,238), coverage
+**100 / 99.95 / 100 / 100**, `blocking-gates=PASS`.
+
+**The 15pp is one episode, and that sentence is the round's result.** Read at the episode level, the two
+runs are the same experiment:
+
+```
+control:   140 of 160 episode(s) passed (87.50% ±5.12pp over 40 task(s) × 4)
+treatment: 141 of 160 episode(s) passed (88.13% ±5.01pp over 40 task(s) × 4)
+headline if the rate were the only thing that moved: 0.6031 against the measured 0.7500
+tasks:     40 paired, 20 passed both, 6 failed both, 10 gained, 4 lost
+```
+
+**One hundred and forty against one hundred and forty-one.** The headline `pass^4` moved 15.00pp because
+`pass^4` is one exactly when all four trials passed, so it is `p⁴` measured over **forty tasks** (SE 7.7pp)
+while the same 160 episodes give `p` to 2.6pp. The difference between the runs is a **reshuffling of
+misses between tasks**: ten successes gained, nine lost, net one.
+
+| | R119 | R120 |
+|---|---|---|
+| tasks at 4/4 | 24 | 30 |
+| tasks at 3/4 | 13 | 6 |
+| episodes passed | 140 / 160 | 141 / 160 |
+| `pass^4` | 0.600 | 0.750 |
+| `rate⁴` (independence) | 0.586 | 0.603 |
+
+Two conclusions follow and they are not the same size. **On the record's own metric, R120 is a
+redraw**: no mechanism it varied reached the scored arm, the rate did not move outside its interval,
+and the headline is the tail of a distribution the run cannot see. **And on the record's method, the
+metric was the problem**: every arm measured at n = 40 with `pass^4` has been reading the clustering of
+four trials, which is why a record with a dozen arms at this `n` has almost no resolvable results and
+why the "noise floor" it kept re-estimating kept moving.
+
+**What the record now reports, and in which order.** `rate` with its interval over episodes is the
+measurement (SE 2.6pp at n = 160); `pass^4` is the interface to the competitor's table and is quoted
+with its `n` and its half-width, never ranked against a number from a different `n`. `arm-rate.ts`
+computes both and `pnpm eval:pack-repeat` prints them beside the flip table and the ledger, so a pair of
+runs is read the same way every time. The three numbers that would have changed this record's history
+are now printed together: **rate, rate⁴, headline**, and a headline above `rate⁴` says the misses moved
+rather than the memory getting better.

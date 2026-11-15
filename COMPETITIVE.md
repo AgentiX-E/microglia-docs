@@ -6353,3 +6353,71 @@ key it used there was the one key with no input.
 the next dollar is on the object and not on a score: R120 (`43665852454`) is the mechanism check —
 does the delivery-side fold fire at all — and a write-path merge to `wouldStore: 53` is what turns
 `10 priced` into `10 served`.
+
+## Appendix AN — The SOTA table has been ranking a coin, and the fix is a second denominator
+
+**R120 (`43665852454`) scored `pass^4 = 0.7500` on 40 τ²-retail tasks.** Its own `poc-l4` line reports
+`published_pass4 = 0.575`, `competitor_pass4 = 0.6754`, `bar_backbone_matches = 0`. Read as a table row
+that is **+7.46pp over ALTK-Evolve's submitted 0.6754** — and the record is not allowed to say so,
+because the previous dispatch of the same lane, same split, same seed, same model, same `n`, measured
+**0.6000**.
+
+### AN.1 Why the two numbers cannot both be about the memory
+
+| | R119 | R120 |
+|---|---|---|
+| episodes passed | **140 / 160** | **141 / 160** |
+| rate (SE) | 0.8750 ±5.12pp | 0.8812 ±5.01pp |
+| tasks at 4/4 | 24 | 30 |
+| `pass^4` | 0.6000 | 0.7500 |
+| `rate⁴` | 0.586 | 0.603 |
+
+One episode apart over one hundred and sixty, fifteen points apart in the headline. `pass^4` is one
+exactly when four trials passed, so it is `p⁴` averaged over **40 tasks** — while `p` is estimated over
+**160 episodes**. At p ≈ 0.88 that is a standard error of 7.7pp against 2.6pp: **the headline is the
+tail of the same experiment, and the record has been ranking the tail.**
+
+### AN.2 The comparison, with every quantity's `n` attached
+
+| system | metric | value | `n` | half-width | per-episode rate |
+|---|---|---|---|---|---|
+| **ALTK-Evolve** (SOTA) | `pass^4` | **0.6754** | 114 tasks | ±8.6pp | not published; **0.9066 implied** by `p⁴` |
+| microglia R119 | `pass^4` | 0.6000 | 40 tasks | ±15.18pp | 0.8750 ±5.12pp |
+| microglia R120 | `pass^4` | **0.7500** | 40 tasks | ±15.18pp | 0.8812 ±5.01pp |
+
+**Ranking:** *not ordered.* Two quantities can be compared and only one of them can be compared honestly:
+
+- **headline** — 0.7500 against 0.6754 looks like a lead and is not a comparison: different `n`
+  (40 against 114), different backbone (deepseek-flash against gpt-4.1, which the artefact states), and
+  the same lane produced 0.6000 four days earlier with no mechanism between them.
+- **rate** — 0.8812 ±5.01pp against an **implied** 0.9066. The competitor does not publish a rate; the
+  only way to compare is to invert `pass^4` under independence, which assumes exactly what AN.1 says is
+  not true of this data. Taking it at face value the gap is **2.5pp in ALTK's favour**, inside both
+  intervals, and the honest row is **"microglia behind by a gap it cannot resolve, with one draw of a
+  metric that cannot rank"**.
+
+**The current SOTA is ALTK-Evolve at `pass^4 = 0.6754` over 114 tasks.** microglia's position is
+**third of three in the table and first of three in no cell**, with `sup2` still at 0 served.
+
+### AN.3 What this changes about chasing SOTA
+
+The next arm cannot be ranked against 0.6754 at n = 40 whatever it scores, so the target has to be a
+quantity with resolution. Three consequences, in order of cost:
+
+1. **Report rate, not headline, for every internal decision.** Free: the artefact already carries
+   `per_task[].successes`. Implemented as `arm-rate.ts` and printed by `pnpm eval:pack-repeat`.
+2. **Grow `n` where the wall clock allows it.** The lane's L4 ceiling is 340 minutes and one arm at
+   160 episodes costs about 165; the two-unit machinery serves **both** arms in one pass, which is how
+   R120 bought two units for $0.93 instead of $2.07. That is the lever that makes 114-task runs
+   affordable at one arm per dispatch.
+3. **Attack the object, not the score.** The store still keeps one item per correction with
+   `supportTasks: 1` on all 73, while its own merge census prices 53 routines with support up to 5. The
+   cell ALTK wins on is `sup2`/`sup3`, and this record cannot serve one — that is a mechanism gap, not a
+   metric gap, and it is what R121 buys.
+
+### AN.4 The one number that is not about the metric
+
+`distillForm.refused: 70` of 143 candidates (49%) and `faithfulness: 1 of 667 entity(ies) kept`. The
+store is smaller and less repetitive than R119's (34.4% restated against 39.1%) and it names **no
+values at all** — three dispatches, same result. No competitor publishes either figure, and no arm in
+this record has yet attacked the second.

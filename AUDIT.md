@@ -10092,3 +10092,136 @@ without anyone remembering to look.
 artefact?* If not, the number is a claim. For each pair of numbers that answer the same question: *do
 they agree, and if not, which one is about a different object?* R119 had two and they differed by a
 factor of everything, and the file offered no way to tell.
+
+## 34.150 The counter counted the arm, the key counted the retries, and the difference had no evidence
+
+R120 was dispatched to answer one question — does the delivery fold work at all on a distilled store —
+and it answered **yes** (58 items removed across 162 packs, `unnamed` 650 → 0). It also produced three
+defects in the instruments that were supposed to report the answer, and one finding that changes what
+this record may claim.
+
+**First — a counter whose value is a function of the mode is not a measurement of the store.** The
+pre-registered claim was `fold.groups` non-empty. `foldByShape` increments that count only when it
+folds, and it folds only in `collapse` mode:
+
+```ts
+const meetsFloor = members.length > 1 && support >= minSupport;
+if (meetsFloor && options.mode === 'collapse') { … groups.push(…) }
+else if (members.length > 1 && support < minSupport) { refused += 1; }
+```
+
+On `per-failure` the count is therefore **zero whether the store recurs or not** — and `per-failure` is
+the arm the field was read from. The registration named a field its own arm could not move. That is not
+an unlucky guess; it is a category error in how a registration picks its reading, and it fails in the
+direction that looks like rigour: the arm *cannot* succeed, so the census "refutes" the mechanism while
+the collapse arm beside it removes 58 items.
+
+The repair counts both populations and names them apart: `groups` (folded), `suppressed` (met the floor,
+the unit did not fold it), `refused` (did not meet the floor), `unnamed` (never entered a group).
+`groups + suppressed + refused` is now the population of multi-member buckets, and the printed line
+states which of them is zero and why. **The rule for any registration that follows: a claim may only
+name a field that the arm it runs on can vary.** A field that is constant by construction is not a
+conservative claim; it is a claim that cannot be graded.
+
+**Second — the packer refills, so a delivery-side fold is a substitution and the control measured
+nothing.** The registration predicted the collapse arm's `items/req` and `chars/req` would fall. They
+rose (4.012 → 4.025, 2,187 → 2,189) while 58 items were folded out. `buildPack` folds the *selection*
+and `makePack` then renders under a character budget: a line saved is a line spent on the next-ranked
+candidate. So the arm did not deliver *less*; it delivered *different*. Its own containment control
+reports `0 request(s)`, because after the refill no treatment pack is a subset of its control — the
+control was built to verify a removal and the treatment performs a replacement, so the control silently
+measured nothing for 162 requests and printed a sentence that reads like a clean check.
+
+The measurement is now possible: `PackCensus.ledger` records the ids each request was served, and
+`ledgerDiff` prices the substitution — positions repacked, records in, records out. **A fold whose
+placement is the delivery boundary, in a packer that fills to budget, is a re-ranking of what is
+delivered and not a reduction of it.** That is a design fact, and it was mis-specified in R109's own
+decision table, which described the fold as "the unit the model sees, and nothing else" without saying
+that the unit count cannot change.
+
+**Third — the key counted a retry as a step, so every census keyed on a routine has been reporting the
+episode's retry pattern.** In R120's store:
+
+| shape | items |
+|---|---|
+| `return_delivered_order_items` | 5 |
+| `cancel_pending_order > cancel_pending_order` | 4 |
+| `modify_pending_order_address > modify_user_address > modify_pending_order_items` | 4 |
+
+`44 of 62` sampled shapes carry a consecutive repeat, and one routine is two keys — `cancel_pending_order`
+once, `cancel_pending_order > cancel_pending_order` four times. A call repeated because the previous one
+failed is the same step tried twice; a key that counts it as two steps gives one routine as many keys as
+it has retry patterns. Distinct shapes on the sample fall **31 → 27** under run-length collapse.
+
+This is not a new class of defect, it is the **same** one as the fold key, one level down: the census was
+reporting a property of its key and calling it a property of the store. `merge.shapes: 53,
+mergeable: 30, support.atLeastTwo: 10` — the numbers R99's merge arm was justified by, and quoted in
+ROADMAP as the store's structure — are inflated and deflated by that arithmetic respectively. The repair
+collapses a *run* and not the sequence (`calculate > get_product_details > calculate` stays two
+calculations around a lookup), which is asserted in both directions so the fix cannot be widened by a
+reader who sees only one test.
+
+**Fourth — the artefact carried the store and the score and dropped the packs, so the round's central
+difference could not be attributed.** R119 scored 0.600 and R120 0.750 on one lane, one split, one seed,
+one model, one `n`. Fifteen points, larger than every effect this record has reported since R85, and
+**neither artefact can say which packs differed**: `pack` kept counts, `served.byItem` kept per-item
+totals, and the per-request id list was discarded. `queries` had already established the key — position
+in the phase — for the *question*; the answer was not recorded at the same granularity, so the
+reproduction was one-directional.
+
+The ledger closes it. It is the same discipline as `storeItems[].shape` one round earlier and
+`scopeDims` before that: **an instrument that cannot be re-read from its own artefact is a claim, not a
+measurement** — and the cost of not having it here was a 15pp difference that the record can describe
+and cannot explain.
+
+**What the round establishes.** Three of this record's instruments — the fold key, the fold census, the
+merge census — were each reporting their own key. The store is not 53 routines; it is fewer, and it is
+fewer than this record can currently count. The next arm's prediction is therefore about a store measured
+with the repaired key, and the first thing it must report is that census, not a score.
+
+**And a note on what a single draw can look like.** R119's registration said a 0.60 point spans
+[0.448, 0.752] at n = 40. R120 came back at **0.750** — the upper edge of that interval, from a run in
+which the mechanism under test folded nothing on the arm being scored. A reader given only the second
+number would have called it a 15pp improvement from a key repair that could not have touched the score.
+The record's refusal to claim a score at this `n` is not modesty; it is the only reading that survives
+being repeated.
+
+## 34.151 The metric was the defect: a 15pp difference produced by one episode
+
+The four defects above are instruments reporting their own key. This one is the **response variable**,
+and it is the most consequential because every result in this record is expressed in it.
+
+R119 and R120 ran one lane and scored 0.600 and 0.750. Read at the episode level:
+
+| | R119 | R120 |
+|---|---|---|
+| episodes passed | 140 / 160 | 141 / 160 |
+| rate | 0.8750 ±5.12pp | 0.8812 ±5.01pp |
+| tasks at 4/4 · 3/4 · 2/4 · 1/4 · 0/4 | 24 · 13 · 2 · 1 · 0 | 30 · 6 · 1 · 1 · 2 |
+| `pass^4` | 0.600 | 0.750 |
+
+**One episode apart over one hundred and sixty, fifteen points apart in the headline.** The reason is
+in the estimator's definition: `pass^4` on a task is one exactly when all four trials passed, so it
+estimates `p⁴` averaged over **forty tasks**, while `p` is estimated over **one hundred and sixty
+episodes**. A run at p ≈ 0.88 that misses twice in the same task loses that task entirely; a run at the
+same rate that misses once in each of two tasks keeps both. The two are indistinguishable at 160
+episodes and 15pp apart at 40 tasks.
+
+**What this invalidates, stated as narrowly as the evidence allows.** It does not invalidate the
+record's arm comparisons against each other — they are all measured the same way, and a randomized
+paired comparison is still a comparison. It invalidates **ranking a 40-task `pass^4` against the
+competitor's 114-task one**, and it explains why a dozen arms at this `n` produced almost no resolvable
+deltas: each was graded on the tail of four trials rather than on the rate.
+
+**The countermeasure is not a different benchmark, it is a second denominator.** Both are reported:
+`rate` (episodes, SE 2.6pp) is the measurement; `pass^4` (tasks, SE 7.7pp) is the interface to ALTK's
+table and is quoted with its `n`. A headline above `rate⁴` is then a **finding** — the misses clustered
+— and R120's 0.750 against a `rate⁴` of 0.6031 is the first instance. `arm-rate.ts` computes all three
+from the artefact, and `pnpm eval:pack-repeat` prints them beside the flip table so no future pair of
+runs is read at one level only.
+
+**And a rule that follows for every claim this record makes from here.** A metric whose resolution is
+coarser than the effect being claimed is not a conservative metric; it is a coin. The half-width at
+n = 40 is 15.18pp, the run-to-run difference measured here is 15.00pp, and for two rounds the record
+described the second as "the noise floor" while measuring with the first. They were the same number for
+the same reason.
