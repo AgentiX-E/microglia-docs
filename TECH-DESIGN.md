@@ -9170,3 +9170,38 @@ that quantity is retracted. Episode rate over two arms: 84.73% [80.77, 88.69], I
 record narrow enough for a 5pp claim, and a by-product of every arm already run. The design consequence is a
 practice rule rather than a feature: **nothing is quoted from one dispatch, and nothing is compared across arms
 until I² is under 50%.**
+
+### 17.139 The item ledger: a join of two arrays and a third one that checks it
+
+**The gap.** Every arm since R92 writes `pack.ledger` — the ids each request was served — and `per_task` —
+whether the episode passed. Nothing joined them, so every statement this record has made about a store was
+actually a statement about a *sum over items*: R133's "9 repaired / 7 broken" is a fact about packs of four, and
+no field could say whether the 7 and the 9 came from the same six items. R129 (history-based deletion) is the
+literature's largest published effect and it cannot be priced without that join.
+
+**The design.** `item-ledger.ts` is pure: `itemLedgerOf({ packs, tasks, rewards, baseline? })` returns one
+`ItemReading` per id — `served`, `passed`, `failed`, and a `net` that is `null` unless a store-off draw was
+supplied. Three decisions:
+
+1. **The order is checked, not assumed.** The join is positional, and three arrays carry that position:
+   `pack.ledger` (one row per request), `per_task` (one row per episode), `turnCensus.rows` (one row per
+   episode). The module refuses a row count that disagrees with the task list; `bin/item-ledger.ts` refuses when
+   the third array names a different task than the second. One dispatcher's order is a claim; two that agree is a
+   reading.
+2. **`net` is `null` rather than `0` when no baseline was supplied.** "Served on three passing requests" and
+   "never served" are different facts, and a zero merges them with "neutral". The sentence prints which of the
+   two absences it is, because a store whose items are all neutral and a store that was never read produce the
+   same silence.
+3. **The sum over negative items is an upper bound and is named one.** A pack that serves four ids counts one
+   break against four items, so items co-occur by construction; deleting the negative ones cannot recover their
+   sum of cases, only at most it. The output says "upper bound on a deletion arm, not a prediction of one" in
+   those words, so a later reader cannot quote it as an effect.
+
+**What it already settled.** On R133's artefact, with no dispatch and no calls: 43 of 64 items served over 159
+item-requests — the count matching `pack.fold.units`, which is the join's own self-check — and **21 items never
+served on any of the 40 held-out requests**. A third of the store is invisible to the half that decides the score.
+
+**The check that was missed once.** The first push of the bin failed CI on
+`rewardsOf(read(read(path)))`, a nesting that the package's own `tsconfig` never sees because bins are excluded
+from it and the workflow type-checks them in a separate pass (`pnpm typecheck:lanes`). The lanes command is now
+part of the local loop, not a post-push discovery.
