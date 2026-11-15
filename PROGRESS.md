@@ -19769,3 +19769,77 @@ This is the sixth time in this record that an instrument's denominator turned ou
 `fold.groups` counted a pattern, `served 162 of 162` counted a default, `merge.support.atLeastTwo` counted
 routines, `pass^4` and `episode_rate` counted different populations, `memory_stats()` counted nothing
 because nobody called it, and `faithfulness` counted a form that was told to strip what it was measured on.
+
+### 208 — R124 read back: the merge works, `sup2` stops being zero, and the headline moves 7.5 points with the rate unchanged
+
+**Dispatch.** `43705196364`, completed 13:22Z, **$1.53** (learn `$0.1933` + memory `$0.9507` +
+reference `$0.3848`), 162 minutes, **job red**. τ² v1.0.1 at `fc0055dc`, the benchmark's own halves —
+`[tau2] split: the benchmark's own — 74 learn / 40 held out` — 74 learn tasks, 40 × 4 evaluation.
+
+**The registration's four mechanism criteria all hold, and one of them was zero for twenty rounds.**
+
+```
+[tau2] consolidation: 70 considered, 2415 pair(s) (1276 kind, 1104 scope, 29 overlap removed):
+       3 groups, 4 merged, 66 retained; cross-task 3, support ≥2 0→2, max 1→3;
+       refused 0 condition / 1 payload / 0 evidence / 0 linkage; threshold 0.60
+```
+
+| criterion (written before the run) | measured | verdict |
+| --- | --- | --- |
+| `pairs` ≈ 500–900 | **2,415** | **missed, 2.7–4.8× high** |
+| `skippedScope` ≈ 0 | 1,104 of 2,415 pairs still removed by the scope key | as designed; the key is still a filter |
+| `merged > 0` | **4**, across **3 groups** | met |
+| `crossTaskGroups > 0` | **3** | met |
+| `support ≥2` rising from 0 | **0 → 2** | met, first time on a distilled store |
+| `maxSupport` | **1 → 3** | met |
+| refutation: `merged > 0` with `crossTaskGroups: 0` | not observed | **not refuted** |
+
+R121 measured the defect and its size: a scope keyed on the model's own spelling reduced 2,016 pairs to
+**4**. R124 keyed the pass on the routine the correction taught and the pair population came back as
+**1,276** kind pairs, of which 29 overlapped the scope pairs and 4 survived the evidence floor. **`sup2`
+is no longer zero**, which was the cell ALTK wins on and the reason Appendix AN.3 called this a mechanism
+gap rather than a metric gap. The prediction that missed is the population size, not the direction: this
+store produces routine collisions at a rate four times the registration's estimate, and any arm that
+budgets a merge pass from "500–900 pairs" is budgeting a third of the cost.
+
+**And the score cannot be read, for the third time, in the clearest instance yet.**
+
+```
+[tau2] memory  pass4=0.675 episode_rate=0.8812 episode_half_width_pp=5.01 rate_to_the_k=0.6031
+[tau2] reference pass4=0.575 episode_rate=0.8063
+[l4-pair] paired n=40 delta=10.00pp [-7.50, 27.50] p=0.4240 lost=5 gained=9
+[l4-pair] verdict UNRESOLVED: 10.00pp at p=0.4240 does not clear the 26.21pp the sample can resolve
+```
+
+| run | memory `episode_rate` | memory `pass^4` | reference `pass^4` | paired delta |
+| --- | --- | --- | --- | --- |
+| R119 | 0.8750 | 0.6000 | 0.6000 | — |
+| R120 | 0.8812 | 0.7500 | 0.6000 | — |
+| R124 | **0.8812** | **0.6750** | 0.5750 | **+10.00pp, p = 0.4240** |
+
+**R124 and R120 report the same `episode_rate` to four decimals and headlines 7.5 points apart.** The
+per-episode rate has now been 0.875 / 0.881 / 0.881 across three dispatches while the headline has been
+0.600 / 0.750 / 0.675 — a 15-point range on a quantity whose own estimator moves by 0.6 points. Appendix
+AN.1 predicted this from the algebra (`4p³(1−p)` variance on 40 tasks against `p(1−p)` on 160 episodes);
+this is the measurement that closes it, and it is the reason `pass^4` may not appear in a comparison again.
+
+**Two failures that are not defects, and one that is.**
+
+- `FAIL l4-pass4` — 0.675 against a bar of `0.575 + 14.52pp = 0.7202`. This gate asks whether the arm beat
+  the published number by more than the sample's own half-width; at `n = 40` that is a 14.5pp ask, and the
+  honest reading is that the arm cannot be *shown* to, not that it did not.
+- `FAIL l4-effect-resolved` / `FAIL V16-transfer-resolvable` — 10.00pp against a **26.21pp** minimum
+  detectable difference, with 31 informative trials of 160. The instrument is working: it refuses a claim.
+- **`unnamed` is 52 of 697 units.** R120 closed this census at **0 of 650** and treated it as the proof
+  that `callsOfStatement` had been repaired. The only change between them on this path is the merge, so a
+  merged item appears to cost the pack its shape — and 52 is not 4, so the loss is not confined to the four
+  merged records. This is filed as the next P0 mechanism question rather than a note, because a census that
+  returned to zero and then left is the class of defect this record keeps finding.
+
+**What R124 buys and what it does not.** The store now holds witnesses: `support ≥2` is 2, `max` is 3,
+three groups span tasks, and the pack census prints `support ≥2 89, ≥3 16, max 3` over 697 renders from
+57 records where R121 printed `0, 0, 1`. It does **not** buy a score: the paired contrast is unresolved at
+`p = 0.4240` and the minimum detectable difference is 26.21pp, so the next arm that measures a treatment
+has to buy resolution first. **R125** (trials 4 → 8, ~$2.9, one dispatch inside the 340-minute ceiling)
+is what writes that sentence into a dispatch, and `R123a` — dispatched at 13:31Z — is the one arm that does
+not need it, because a margin ladder is a count rather than a contrast.

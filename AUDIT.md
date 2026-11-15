@@ -10474,3 +10474,60 @@ The instrument that catches the seventh is the one 34.154 named and this round s
 test that reads the real payload across the boundary and asserts the reader sees it. It would not have
 caught *this* one — the payload was correct — which is why the check has to be a question about the
 population, asked in the registration, and not a check about the shape of the JSON.
+
+## 34.157 The metric was refuted by arithmetic three times, and the third time it printed the same rate beside two headlines
+
+R124's evaluation carries two numbers from one set of 160 episodes:
+
+```
+memory    pass4=0.675 episode_rate=0.8812
+reference pass4=0.575 episode_rate=0.8063
+```
+
+R120's evaluation carried:
+
+```
+memory    pass4=0.750 episode_rate=0.8812
+```
+
+**The same rate to four decimal places, seven and a half points apart in the headline.** R119 completes the
+set at `0.8750 / 0.6000`. Three dispatches, one lane, one split, one seed, one model, one `n`:
+
+| run | `episode_rate` | `pass^4` | what changed between them |
+| --- | --- | --- | --- |
+| R119 | 0.8750 | 0.6000 | — |
+| R120 | 0.8812 | 0.7500 | the fold's key, which moved 58 items across 162 packs |
+| R124 | 0.8812 | 0.6750 | the merge key, which moved 4 items into 3 groups |
+
+The mechanism between R120 and R124 is a **merge of four items**. The headline moved 7.5pp on it. That is
+the third independent confirmation of Appendix AN.1 and it removes the last reason to compute the quantity:
+`pass^4` is `p⁴` averaged over 40 Bernoulli draws, so its variance is `4p³(1−p)/40` against the rate's
+`p(1−p)/160` — at `p = 0.88`, a standard error of **7.7pp against 2.6pp**. A metric whose noise exceeds every
+effect this record can buy is not a metric, it is a coin with a memory of the last four throws.
+
+**What the coincidence means for the literature this lane compares against.** ALTK publishes `0.6754` and
+`0.675`. The record has spent three rounds asking whether those are two populations or two measurements; the
+answer is both, and this round adds the one nobody can supply: **on this lane, `0.675` and `0.750` are the
+same measurement.** Any published `pass^k` on a 40-task split carries an interval of ±15pp, so a table that
+orders two such entries has ordered two draws.
+
+**The instrument that produced the wrong reading was not the score, it was the census.** Two gates failed:
+
+- `l4-pass4` compares against `published + half-width` = `0.7202`. At `n = 40` the bar is a 14.5pp climb, and
+  0.675 does not make it. Correct refusal, useless information.
+- `l4-effect-resolved` compares `10.00pp` against a **26.21pp** minimum detectable difference. Correct
+  refusal, and the number that names the actual problem: this lane's whole arm budget is below its own
+  resolution.
+
+**The defect this run did surface is the one R120 declared closed.** `unnamed` is **52 of 697 units**, where
+R120 printed **0 of 650** and read that zero as proof that the statement-to-shape join was repaired. Between
+the two runs the only change on that path is the merge, and 52 is not 4 — so the loss is not the four merged
+records. The class is familiar and it is the reason this is filed rather than noted: a census that reaches
+zero and then leaves is harder to see than one that never arrived, because the field that would show it is
+the same field that says it is fine.
+
+The four mechanism criteria R124 registered all held (`merged 4`, `crossTaskGroups 3`, `support ≥2 0→2`,
+`max 1→3`), and the population prediction missed by 2.7–4.8× (`2,415` pairs against `500–900`). Both facts
+belong in the same paragraph: **the merge fired, and the cost of the merge pass was budgeted at a third of
+what this store actually produces.** A registration that names a population has to be graded on it, and this
+one was wrong in the direction that makes the next dispatch cheaper to size rather than dearer.
