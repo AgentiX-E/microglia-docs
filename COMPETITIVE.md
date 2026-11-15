@@ -6799,3 +6799,56 @@ It is also the diagnostic that separates this record's two standing explanations
 rehearsal repairs most of the 73 failed tasks, the items are right and the harm is **misapplication** — a
 conditioning problem. If it repairs few, the items are **inert or wrong** — a distillation problem. The two
 have opposite fixes and every round since R108 has bought evidence that cannot distinguish them.
+
+## Appendix AU — The board loses its score column, and the reason is arithmetic rather than modesty (2026-11-16)
+
+Appendix AT put microglia first on the score: 0.775 against ALTK-Evolve's 0.675. R131 has since read **0.625**
+on that same arm — same store shape, same split, same headers, same gate setting — and Appendix AT's own
+`pass^4` column over three dispatches now reads 0.7750, 0.7500, 0.6250. A configuration cannot be first on a
+number it has not reproduced, so the column is withdrawn rather than caveated.
+
+### Why no arm on this benchmark can be ranked
+
+These are the pair artefact's own quantities, printed by every L4 run since R101 and read for the first time as
+a statement about the *benchmark*:
+
+| quantity | value | consequence |
+| --- | --- | --- |
+| half-width of a delta at 40 tasks | **16.97pp** | a paired delta under ~17pp is not a reading |
+| tasks a 5pp claim needs at this variance | **461** | 4× the benchmark |
+| every task τ²-retail has | **114** | the ceiling |
+| half-width at the ceiling | **10.05pp** | the best τ²-retail can ever do |
+| smallest effect detectable at 80% power, all 114 tasks | **14.37pp** | — |
+
+τ²-retail **cannot resolve a 5pp difference even if every task in it is run**. Every published `pass^4` on this
+benchmark — ours, ALTK-Evolve's, anyone's on 40 or 57 tasks — is a sample whose interval is wider than the
+effects the field is arguing about. Ordering those numbers is not a strong claim; it is not a claim at all.
+
+### The board, rebuilt on what the sample can carry
+
+| entry | quantity | value | status |
+| --- | --- | --- | --- |
+| **microglia** `pass^4`, three dispatches | mean of 0.775 / 0.750 / 0.625 | **0.717**, spread **15pp** | **cannot be ranked against any competitor** |
+| ALTK-Evolve, held out (40 tasks) | `pass^4` | 0.675 | inside microglia's spread; **also unrankable** |
+| microglia, harm share, three dispatches | 29.63% / 31.25% / **55.17%** | spread **25pp** | **does not replicate; not a finding** |
+| `sup2` | corroborated items | **2 of 66** | **the one real, reproducible gap** |
+| latency / cost per episode | measured | $0.0020, 0.44 min | reproducible, not a competition |
+| R131 instruments | serve split vs arm rate | **83.75% vs 0.8375** | **reproduced to the digit** — a census, not a mean |
+| R131 inventory | items with net < 0 | 6, worst −4 over 18 episodes | reproducible — a census |
+
+**Current SOTA, stated honestly.** On τ²-retail `pass^4` the field's best published number is ALTK-Evolve's
+0.675 on another backbone and another sample; microglia's estimate straddles it from both sides across three
+dispatches. **Nobody holds a measurable lead on this benchmark, and this record's claim to have held one was an
+artefact of n=40.** The entries that do separate systems are the ones with a denominator large enough to be
+stable — `sup2` corroboration (2 of 66, where the field's strongest systems report most of their store
+corroborated) and item-level harm attribution — and microglia is behind on the first.
+
+### What the next dollar buys, on this board
+
+1. **Reachability and conditioning, measured by census** (R133's `net`, the ladder, the serve split) — readings
+   the sample can support, and the input to `sup2`, which is the one column where a lead would be real.
+2. **Not another score arm.** No arm on this benchmark can move the `pass^4` column out of its own noise; every
+   further score-only dispatch buys a number that will be re-read as "unresolved".
+3. **A benchmark with a denominator.** The honest path to a defensible SOTA claim is a task population where
+   5pp is resolvable — 461 tasks at this variance, or a paired design over episodes rather than tasks, which is
+   the quantity R131's episode rates (0.8375 vs 0.8562) can already resolve to ±5.7pp.

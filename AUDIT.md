@@ -10838,3 +10838,82 @@ spelling its author had in mind. It is the same defect as 34.159 one layer up �
 **switch with two writers and a reader that only knew one of them** — and the guard is now that the test feeds the
 producer's output (`String(true)`) through the consumer instead of a literal. A reviewer cannot check that
 assignment by reading either side alone, which is why it belongs in a test rather than in a convention.
+
+## 34.163 Three dispatches of one arm, and the end of the single-point ranking
+
+§212 promoted the harm share to "the one quantity on this lane that is comparable across backbones" on the
+strength of two runs agreeing to 1.6pp. R131 is a third run of that configuration — same store shape, same
+split, same headers, same gate setting — and it reads **55.17%**. The three points:
+
+| run | repaired / broke | harm share | 95% | `pass^4` |
+| --- | --- | --- | --- | --- |
+| R123a | 19 / 8 | 29.63% | [15.9, 48.5] | 0.7750 |
+| R124 | 22 / 10 | 31.25% | [18.0, 48.6] | 0.7500 |
+| **R131** | 13 / 16 | **55.17%** | [37.6, 71.6] | **0.6250** |
+
+**Why the third run is the important one.** Two agreeing runs can always be one configuration measured twice
+and one sample that happened to be tight; a third run of the same configuration is the only thing that
+distinguishes "stable" from "two draws that landed near each other". It landed 25pp away, in the direction of
+the *gated* arm, which means the 27pp gap §213 attributed to the gate is inside the between-dispatch spread of
+the ungated arm itself. The gate story is not refuted — its instrument (the ladder, the serve split) still
+reads — but it can no longer be supported by this quantity.
+
+**The variance is not a mystery, and it was measurable before the run.** At n ≈ 29 changed trials the harm
+share's 95% half-width is ±17pp; the three intervals above overlap pairwise. The record knew the formula — it
+printed those intervals itself in §213 — and still read a 27pp difference across two of them as a direction. The
+rule that follows is not "be more careful": it is that **a difference smaller than the printed half-width is not
+a reading**, and every table in this record that orders two arms must carry the half-width in the row.
+
+**What replaces the ranking, for `pass^4`.** The pair artefact already computes it:
+
+| quantity | value at n = 40 | meaning |
+| --- | --- | --- |
+| `resolution.halfWidthPp` | **16.97pp** | the interval around a measured delta |
+| `resolution.tasksForFivePp` | **461** | the tasks a 5pp claim needs at this variance |
+| `ceiling.tasks` | **114** | every task τ²-retail has |
+| `ceiling.halfWidthPp` | **10.05pp** | the best this benchmark can ever do |
+| `ceiling.mde80Pp` | **14.37pp** | the smallest effect it can detect at 80% power |
+
+So τ²-retail **cannot** resolve a 5pp difference even if every task in it were run. Any statement of the form
+"microglia 0.775 beats ALTK-Evolve 0.675" is therefore a statement about two samples, not about two systems —
+and this record has now watched one of those numbers move 15pp under its own feet. The competitive board is
+rewritten accordingly in Appendix AU: the column that survives is the *instrument*, not the score.
+
+**What survives, and is worth more than the ranking did.** The serve split reproduced the arm's `episode_rate`
+to the last digit (134 of 160 = 83.75% against 0.8375) on a run with no gate; the ladder priced the 0.05 rung at
+60 of 160; the attribution table named six items with a negative net over 18–19 episodes each. Those are
+readings that a sample of 40 tasks can support, because they are not estimates of a mean — they are censuses of
+what the run did.
+
+## 34.164 A denominator that is also the selector
+
+R132 replayed the 74 learnt tasks against the store and read **5 repaired / 9 inert** of the 14 that had failed
+without memory. The `inert` cell is defined as "failed without memory, then failed again with it" — and the
+without-side is the very draw that **selected** which cases the store was written from. A task that fails two
+thirds of the time produces that cell whether or not the store exists, so the cell is a tautology dressed as a
+finding.
+
+This is the fourth instance of one family in this record, and the family is worth naming because each instance
+looked reasonable on its own:
+
+| instance | the shared denominator | what it laundered |
+| --- | --- | --- |
+| R48 | two arms' readings from **different dispatches** | a treatment effect made of two samples |
+| R92 | `pass4` over **29 of 40** tasks with `unscored_tasks: 0` | a score over a population the scorer had shrunk |
+| R123 | seven counters that were all **zero** | "nothing happened" for "nothing measured" |
+| **R132** | the learn draw as the **baseline** for the replay | task difficulty as a store effect |
+| R133 (refusal) | `learnOnly` + `rehearsal` | — and here the *reason* was wrong, not the reading |
+
+**The repair is a second draw, not a smaller claim.** R133 runs the same 74 tasks with the store off and the
+same one trial, so `repaired` and `broke` become discordant pairs between two phases that differ only in the
+store. The cost is a third pass (~74 episodes, ~$0.13) and the payoff is that `net = repaired − broke` has a
+baseline that is not the selector. The control deliberately carries **no** `requests` and **no** `served`: it
+has no facade, and `0 of 0 served` would read as a store that found nothing — the misreading 34.162 forbids one
+field over.
+
+**And the fifth row is the quieter lesson.** The refusal that stopped `learnOnly` arms from buying a rehearsal
+gave a reason that was simply false — "a replay would have nothing to pair against" — when the replay pairs
+against the learn half's rewards, which a learn-only arm runs. Nobody would have caught it by reading the
+refusal; it was caught by wiring the control and asking what the pairing actually reads. **A wrong reason in a
+validation is worse than a missing validation**, because it prices a fix that does not exist and survives every
+review that only checks the refusal fires.

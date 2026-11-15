@@ -20327,3 +20327,109 @@ The fix reads both spellings — four spellings, two facts, all unambiguous — 
 is the bridge's own contract rather than a spelling chosen by the test author. Re-dispatched as `43848545387` on
 `79ec4ec` at 10:24Z. The general lesson is in AUDIT 34.162: a switch is not wired until a test exercises the
 producer's output, and "the unit test passes" has never been the same claim.
+
+### 215 — R131 and R132 read back: the instruments arrived, the numbers did not replicate, and the replay needed a denominator
+
+Two dispatches landed inside the same off-peak window: **R131** (`43844943012`, tree `bd6deed`, 10:00:59Z →
+12:42:20Z, **red**) and **R132** (`43848545387`, tree `79ec4ec`, 10:24:31Z → 12:05:18Z, green). R131 was the
+instrument arm — can this record read a run it already knows how to buy — and R132 was the first replay of a
+store against the cases that wrote it. Both answered. Neither answer was the one the record wanted.
+
+#### R131: three of the four instruments reached the artefact, and the fourth reached it one level up
+
+| registered criterion | reading | verdict |
+| --- | --- | --- |
+| all four fields present on **both** arms | memory arm: `census` 160, `rivaled` 160, `episodeStarts` `[0..159]`, `recallRepeats` 0, `margin_p10/50/90` 0.66 / 7.20 / 22.99%, ladder 19/35/60/102/120/136/156. **Reference arm: no `memory` block at all** | **refuted as written** |
+| `serveSplit.measured` reproduces the arm's own rate | `served 134 of 160 = 83.75%`; the arm's `episode_rate` is **0.8375** | **confirmed to the digit** |
+| `attribution` names ≥1 item with net < 0 over ≥2 episodes | pair artefact: 6 items with net ≤ −2, worst **−4 over 18** and **−4 over 19** episodes | **confirmed** |
+| turn census pairs with `toolErrors` non-null both sides | 160/160 paired; `toolErrors` 30 vs 30, `repeatCalls` 9 vs 10, `assistant` 1789 vs 1778 | **confirmed** |
+| harm share inside R123a's [15.9, 48.5] | **55.17%** (13 repaired / 16 broken) → [37.6, 71.6] | **refuted** |
+
+The first row's refutation is structural rather than a defect: the reference arm is `llm_agent` with no store,
+so it has no recall to census, and it never will. The registration said "both arms" because it was written from
+the reader's convenience rather than from the arm's construction; the fields that *can* cross arms —
+`turnCensus` — do cross, and the pair's join separates them (`repeatCalls` 9 vs 10).
+
+**The self-check is the strongest thing this round bought.** With no gate, the served bucket is every episode,
+so the split's rate must equal the arm's own `episode_rate` — and it does, to the last digit, on a run whose
+160 requests were spread across 160 episodes. A split that disagreed would mean no gated arm can ever be read.
+The ladder also priced the rung the lane plans to spend: at **0.05 it withholds 60 of 160** (37.5%), against
+R123's realised 53 of 162 — the same rung, on a different sample.
+
+**The pair resolved nothing, and the two readings of one arm disagree.** Memory `pass^4` **0.625** against the
+reference's **0.625**, 6 tasks lost and 6 gained, p = 1.0000, MDE 24.27pp: `UNRESOLVED`. Yet the same two
+dispatches' episode rates are 0.8375 and 0.8562 — a **−1.87pp** difference that reconciles exactly with the
+transfer ledger's −1.88pp net over 160 trials. At n=40 tasks, `pass^4` is too coarse to see a 1.9pp episode
+difference, which is why it read zero.
+
+#### The number this record has been quoting does not replicate
+
+| run | configuration | gate | repaired / broke | **harm share** | 95% |
+| --- | --- | --- | --- | --- | --- |
+| R124 | routine key | off | 22 / 10 | **31.25%** | [18.0, 48.6] |
+| R123a | routine key | off | 19 / 8 | **29.63%** | [15.9, 48.5] |
+| **R131** | routine key, same headers | off | **13 / 16** | **55.17%** | [37.6, 71.6] |
+| R123 | routine key | 0.05 | 13 / 17 | 56.67% | [39.2, 72.6] |
+| *literature* | — | — | — | *52%* | — |
+
+§212 called the harm share "the one quantity on this lane that is comparable across backbones" because two
+dispatches of one configuration agreed to 1.6pp. A **third dispatch of that same configuration** — same store
+shape (83 items), same split, same headers, same `speakMargin: 0` — reads **55.17%**, which is 25pp from R123a
+and lands where the *gated* arm landed. The `pass^4` over the same three runs is 0.7750 / 0.7500 / 0.6250: a
+**15pp** spread on one configuration, which retires the reading in Appendix AR that put microglia's 0.775 above
+ALTK-Evolve's 0.675.
+
+**What this does not say.** It does not say the gate lowers harm share, or that it raises it. It says the
+quantity moves ±17pp at n ≈ 29 changed trials, so none of the four rows above can be ordered. The mechanism
+story survives as a *hypothesis with a stated instrument* (the ladder, the serve split, the attribution table),
+and dies as a *finding*. §AUDIT 34.163 works through what that costs and what replaces it.
+
+#### R132: the replay ran, the store repaired a third of its own cases, and the cell that says so cannot be read
+
+`[tau2] rehearsal: 74 of 74 task(s) replayed, 74 of 74 request(s) served, 5 repaired / 9 inert of the 14 that
+failed without memory (35.71%); 3 broken and 57 kept of the rest; harm share 37.50%`
+
+All five registered predictions held: `paired == 74`, `served == 74` (≥ 60), `repaired 5 > broke 3`,
+`repairRate 35.71% ≥ 25%`, `harmShare 37.50% < 56.70%`. The block carries its own bill, the refusal is absent,
+and the four cells were produced by a facade that could not contaminate the graded arm: the graded pack census
+read 160 requests while the replay's read 74.
+
+**And then the fourth cell turned out to be a tautology.** `inert` means "failed without memory, then failed
+again with it". A task that fails two thirds of the time produces that cell whether or not the store did
+anything — and R131's own repeats (15pp on `pass^4`, 25pp on harm share) are the proof that a single draw
+cannot be treated as a baseline. The 9 inert cells are therefore consistent with three stories the record
+cannot separate: the items did nothing; the items hurt in a way that did not show up as `broke`; the tasks are
+hard. §AUDIT 34.164 takes the general form.
+
+The arm's held-out half also carried a labelling hazard worth one line: at `trials: 2` the artefact publishes
+`pass4: 0.825` with `k: 2` beside it. Nothing downstream compares it — `published_bar_applies` is 0 and the bar
+requires `K === PUBLISHED_K` — but a field named `pass4` that is a `pass^2` is the same class of lie as a block
+that is present and empty.
+
+#### R133: the denominator the replay never had
+
+Registered, implemented, pushed and dispatched within the same hour (`R133-the-rehearsal-control`): a **third
+pass** over the same 74 tasks with the store **off** — `llm_agent`, no facade, one trial, the same reduction.
+`repaired` and `broke` against that control are discordant pairs between two phases that differ only in whether
+the store was on, so `net = repaired − broke` is the store's own-case effect with the draw held fixed.
+
+| decision | what it prevents |
+| --- | --- |
+| the control carries no `requests` / `served` | `0 of 0 served` would read as a store that found nothing; the control has no facade to count (AUDIT 34.162's rule) |
+| its own switch, read from the phase's own wire | two variables that can disagree about what the dispatch bought — R132's thirty-second failure, one layer along |
+| refused at read time without a rehearsal | a comparison whose other side was never bought, which is a phase whose only product is a bill |
+| the sizing counts three passes | 74 + 40 + 74 + 74 = **262 episodes**; at R132's two trials it would be 302, one over the reader's ceiling — so this arm buys `trials: 1` on the held-out half and claims no `pass^4` |
+
+The decision rule is written into the registration before the number: `net ≥ +2` buys conditioning (trigger,
+margin, floor); `−2 < net < +2` buys reachability (pack, scope, render before distiller); `net ≤ −2` buys the
+write side (R129, admission, a verifier). The bands are ±2 because the discordant count is about eight.
+
+**One refusal was corrected while wiring it.** The `learnOnly` + `rehearsal` refusal said the arm "would have
+nothing to pair against" — false, since the replay pairs against the **learn** half's rewards and a learn-only
+arm runs that half. It now says what is actually wrong: such an arm would publish a store graded on the cases
+it was written from as its only result. A refusal that names the wrong reason prices a fix nobody needs.
+
+**Tests.** 15 in `tau2-rehearsal.test.ts` (four new: the control pairing against the treatment rather than the
+selector, the signed net, the three control absences, the control's own bill), one new prereg test for the
+`rehearsalControl` header and its two refusals. Full suite: **5,410 tests in 264 files**, coverage **99.96 /
+99.83 / 100 / 99.96**, 234 modules, `audit:repo` and `check-workflows.py` green.
