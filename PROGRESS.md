@@ -20253,3 +20253,57 @@ for the tree that carries the rehearsal module): **5,398 tests** in 264 files, c
 reports `[vitest-worker]: Timeout calling "onTaskUpdate"` intermittently when the suite runs alone, with every
 test passing — a worker heartbeat against a machine that is also running the gate's own benchmarks. It does not
 reproduce on the two-core runners, and it is stated here rather than silenced with a flag.
+
+### 214 — R131 is running on the tree it was written against, and the replay is no longer blocked
+
+**R131** (`43844943012`) dispatched at **10:00:48Z** on **`bd6deed`** — the commit the registration was written
+against, which is why the push below waited for the dispatch to fire rather than landing before it. An arm whose
+subject is *can this record read a run* is not one to hand a tree that changed under it. It runs 160 episodes at
+`speakMargin: 0` with no gate, and its four fields are the round's finding either way: present, or a writer that
+still does not run.
+
+**R132 is now wired, registered and pushed** (`f790e8b`, `R132-the-rehearsal`). The previous round recorded it as
+blocked on "a second facade, because the eval phase's callback is also its collector". That diagnosis was one
+layer off (AUDIT 34.162): `evaluateFacade` builds its arrays per call, so a second call has its own; the two
+things that would actually have contaminated the reading were `scoredArm`'s **module-level** `observedTrials` and
+`observedUnscored`, and `host.close()` sitting in the `finally` immediately after the evals — a second phase had
+to happen inside that `try` or the store was already shut. Both were fixed by not calling `scoredArm` (the replay
+reads its rewards through `bestRewards`, which is pure) and by placing the phase before the close.
+
+**Four decisions in the phase, each one a way the reading could have been about something else.**
+
+| decision | what it prevents |
+| --- | --- |
+| its own facade, no collector behind it | the replay's packs entering the graded arm's `recall.requests`, query census and `useObservations` — R48's defect, one layer down |
+| the graded facade's floor, note and unit, carried on `FacadeEvaluation` | a rehearsal of a memory the run does not ship, and a copy of the three values at the call site that drifts the first time an arm is refined |
+| one trial, both sides reduced with `bestRewards` | a task counted twice, or four episodes compared against one case |
+| no query pin | the pin holds the *evaluated* phrasings fixed; the learn half's questions are another population |
+
+**The block carries the replay's own counts beside the four cells**, and this is the part that is new since the
+arithmetic was built: `tasks`, `requests`, `served`. An empty pack and an inert item produce **identical** four
+cells, and only `served` says which one happened — a replay of 74 tasks over 0 served requests is a retrieval
+finding wearing a distillation finding's clothes. That is the same distinction the serve split makes one layer
+out, and it cost nothing to carry.
+
+**A rehearsal is a second paid phase, so it is sized before it is bought.** 74 learned + 80 evaluated + 74
+replayed = **228 episodes**, which is why this arm registers `trials: 2` rather than R123a's four: at four it
+would be 308 episodes and 271 minutes against a 240-minute job. `readPrereg` now refuses that arithmetic before
+the first model call (`trials x testTasks + 2 x trainTasks`), refuses `rehearsal: true` on a `learnOnly` arm
+(which stops before the evaluation whose rewards the replay pairs against), and the driver refuses a rehearsal on
+an arm with no store. The refusal messages name the sum, so the fix is on the page rather than in a readback.
+
+**One refusal is a reading and not a crash.** The off-peak window can close between the graded facade and the
+replay. `run_split.py` refuses before its first call, and by then the store and the held-out half are paid for —
+so that one refusal is recorded as `rehearsal.refused: peak-window` with `requests: 0`, and the block's presence
+still says the phase was bought. Every other failure throws: a phase that crashed mid-way did spend money, and
+its loss is not a scheduling fact.
+
+**Tests.** 9 in `tau2-rehearsal.test.ts` (the four cells, the dropped unpaired task, the undefined reading, the
+two empty-denominator cases, the served tally, the refusal, the switch's eight spellings), one on the prereg
+header including the `learnOnly` refusal, and the projection test that caught the missing `rehearsal` fixture the
+moment the table gained its entry. `pnpm check` locally: **5,402 tests in 264 files**, coverage **99.96 / 99.85 /
+100 / 99.96**, 234 modules, 11 coupling checks, every `eval:*` gate green.
+
+**Next.** Read R131 first (§AUDIT 34.161's four fields are the round's own instrument check), then dispatch R132
+on a green tree. If R132's `repairRate` is high the store is right and misapplied and the next dollar is
+conditioning; if it is low the store is inert on the cases that wrote it and the next dollar is the write side.

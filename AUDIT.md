@@ -10787,3 +10787,46 @@ written, and a positional guess would be the defect this section is about. The r
 registration's refutation condition ("the serve split is level within its intervals") was never tested, and the
 arm's directional result — harm share 56.7% against 29.6% ungated — is a sample comparison across two runs, not
 a within-arm one.
+
+## 34.162 A phase that can refuse must not take a paid measurement with it
+
+R132 was recorded as blocked on a hundred-line closure, and that was wrong by one layer. The claim was: *the eval
+phase's facade callback is also its collector, so a second phase's requests would enter `pack.ledger`,
+`servedPackSizes` and `useObservations`*. Two of those three are **per call** — `evaluateFacade` declares its
+arrays inside its own body, so a second invocation has its own — and the third does not exist. What would
+actually have gone wrong is elsewhere, and the difference matters because it decides whether the next reader
+believes a blocker:
+
+| the written blocker | the actual hazard it was standing in front of |
+| --- | --- |
+| "the callback is also its collector" | `scoredArm` writes **module-level** `observedTrials` and `observedUnscored`, so reading the replay's document through it would have overwritten the graded arm's rows |
+| "a second facade" | `host.close()` sits in the `finally` immediately after the evals, so a phase added *after* the `try` would have recalled from a closed store |
+| "`pack.ledger`" | no such collector: the pack census is a reduction of the per-call readings |
+
+So the repair was two lines of placement, not a refactor. The replay reads its rewards through `bestRewards`,
+which takes a document and returns a map, and the phase runs inside the same `try` the evals run in, after the
+graded facade so the treatment is known and before the close so the store can still be asked.
+
+**Why write this down.** A blocker recorded at the wrong layer is worse than one recorded vaguely: it sounds
+precise, it prices a refactor that is not needed, and it survives the round because nobody re-derives it. The
+check that would have caught it is the one this record already applies to artefacts — *name the object* — and it
+was not applied to a plan.
+
+**The three absences this round adds.** A rehearsal phase has one more absence than most instruments, because it
+is bought rather than carried:
+
+| state | what the artefact carries | what a reader may conclude |
+| --- | --- | --- |
+| not bought | no `rehearsal` block | the registration never asked; every arm before R132 |
+| bought, ran, nothing paired | the block, `reading` absent, `served` measured | the phase answered and the two reward sets share no task |
+| bought, refused at the window | the block, `refused: peak-window`, `requests: 0` | no call was made; the store was not asked |
+
+The middle and the last would collapse into one field if `refused` were folded into `requests: 0`, which is why
+they are separate: `0 of 0 served` would say the store served nothing, and the one thing a record must not say
+about a phase that made no request is that its store had nothing to offer.
+
+**And the sizing refusal is the same principle applied before the spend.** A rehearsal arm carries
+`trials x testTasks + 2 x trainTasks` episodes; at R123a's configuration that is 308 episodes and 271 minutes
+against a 240-minute job, so the header is refused at read time with the sum in the message rather than
+discovered as a cancelled run whose learning half was already paid for. The ceiling is measured (0.75 minutes an
+episode plus about 40 for the store) and stays a constant of the reader, not of the dispatch.
