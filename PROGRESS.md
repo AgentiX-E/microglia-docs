@@ -19603,3 +19603,34 @@ sweep, with a sentence that says which filter took the population. `ServedCensus
 `unnamed` went 0 → 38 between two stores with identical shape coverage (62 of 64), because two records the
 key cannot name were rendered **21 times**; the field R120 added did exactly what it was added for. And
 `faithfulness: 0 of 667 entity(ies) kept` — the fourth deterministic run, now zero rather than one.
+
+### 204 — R124 dispatched: the pass is keyed on the routine, and the readback is a population
+
+**Dispatch** `43705196364`, `prereg/R124-the-routine-key.md`, ~$1.10. One variable against R121:
+`consolidateKey: routine`.
+
+`ConsolidationOptions.keyOf` lets the host supply the key two items are compared by; the default is still
+`scopeKey`, so R121's reading stays reproducible from its own artefact, and the census grows a `linkage`
+field (`scope` | `host`) so a dispatch cannot publish one arm's store under another's name. The τ² driver
+passes `shapeOf` — the same function the fold's key and the merge census share — which makes the fold's
+census, the merge census and the pass **one function of one object** for the first time since any of the
+three existed.
+
+**The registration refuses the pair that would have made it meaningless**: `consolidateKey: routine`
+without `consolidate: true` is an error, because a key without the pass measures the control; and
+`resolveConsolidationKey` refuses an unknown value before the first model call, for `TAU_CONSOLIDATE`'s
+reason. Both are asserted, in both directions.
+
+**What the census has to say for this arm to count.** `pairs` rising from **4** to the hundreds (79 items
+in ~44 routine buckets), `merged > 0`, `crossTaskGroups > 0`, `supportBefore[1] > supportAfter[1]`,
+`redundancy` below R121's **28.1%**, and the episode rate inside ±5pp of R121's 88.13% — with the headline
+reported beside its `rate⁴` and not ranked.
+
+**And what closes the line.** `merged: 0` with `skippedScope` near zero would mean the pass saw every pair
+the routine key admits and found no two claims saying the same thing. That is a fact about the store's
+content rather than about a key, it retires `merge.support.atLeastTwo` as a merge opportunity at the same
+time, and it ends the merge line rather than advancing it.
+
+**Machinery cost $0** and the gate is green on it: `pnpm check` exit 0, **5,280 tests**, coverage
+**100 / 99.94 / 100 / 100**, `blocking-gates=PASS`, 229 modules. CI green on both commits
+(`43703964105`, `43705098189`).
