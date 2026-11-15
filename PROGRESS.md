@@ -19676,10 +19676,10 @@ almost nothing to do with the distance in today's store. Pricing a threshold on 
 replaced would be the same error as choosing R121's merge floor for a store this lane no longer has. The
 mechanism ships now; the rung is measured against whichever store R124 returns.
 
-**Gate**: `pnpm check` exit 0, **5,323 tests** (43 new), coverage **100 / 99.95 / 100 / 100**, 231 modules,
+**Gate**: `pnpm check` exit 0, **5,327 tests** (47 new), coverage **100 / 99.95 / 100 / 100**, 231 modules,
 `blocking-gates=PASS`, `bundle:size` core 52,380 of 52,500 raw — a deliberate raise argued in `bundle-size.mjs`
 rather than adjusted silently — and the Python self-check at **18 cases / 51 assertions**. Pushed as
-`acfb1fa` and `9f85a3c`.
+`acfb1fa` (`43713909332`), `9f85a3c` (`43714851192`) and `4f91604` (`43716052531`), all green.
 
 ### 206 — the rung is a property of the store, so the store is measured first
 
@@ -19727,3 +19727,45 @@ corroboration floor, and the Node route mapped `ids`, `rendered`, `tokens`, `has
 computed was invisible to the only client that reads it. That is AUDIT 34.154's shape one layer out: not a
 counter nobody called, but a field nobody forwarded. Both are the same question — *does the value reach an
 artefact* — and the answer is now asserted at the route rather than assumed at the type.
+
+### 207 — the writer was never unfaithful; the form was told to abstract
+
+Four dispatches have printed `faithfulness: 0 of 667 entity(ies) kept (0.0%)`, and three write-ups —
+including this record's own `AUDIT` — read it as a writer that destroys the detail it is given. It does not.
+The prompt for the form those arms ran says, in as many words:
+
+> A statement is a rule, not a report of the case that taught it. "Questions that name a race join results
+> to races on raceId" is a rule; "the query answering <one question> selects forename, surname and driverRef"
+> restates one answer and **must not be returned**.
+
+`lexicon` goes further — "must not contain the values of this case" — and `procedure` further still, forbidding
+any table, column or literal. **A `lesson` store cannot be faithful by construction.** The census that has
+reported `0 of 667` four times was measuring the question, and its own docstring ("what was destroyed at write
+time") supplied the wrong answer for it.
+
+The rate is unchanged and the sentence beside it is new:
+
+```text
+faithfulness: 0 of 667 entity(ies) kept (0.0%), whole in 0 of 71 correction(s), 2 with none to keep
+  [the lesson form instructs the distiller not to restate the case, so this rate measures the form]
+```
+
+`faithfulnessOf` takes the form as an optional fifth argument, optional for the reason the redaction
+predicate is optional: an arm that never named a form did not measure this, and the census says
+`formForbidsTheCase: false` rather than guessing. The set of forms that forbid the case is written out
+rather than parsed from the prompt text — a predicate that read the prompt would silently change meaning the
+day the prompt was reworded, which is the failure `check-coupling-ledger.mjs` was carved out of `ci.yml` to
+escape.
+
+**R122 changes shape, and it gets cheaper to think about.** The question is no longer "why does the writer
+strip values" — it does not. It is "what does a value-bearing form cost", and the record already holds one
+measurement pointing the other way: on BIRD, packs that name an entity are **followed** (77–82% of them name
+an entity the answer uses) and cost **2.6pp**, while packs that name nothing are ignored and cost nothing.
+So a store cannot be made faithful without first deciding it should be, and that decision is a treatment
+with a price rather than a bug with a fix. R122 is re-registered around `repair` — the one form that names
+the failed query — with `faithfulness.kept` as its mechanism check and the episode rate as its cost.
+
+This is the sixth time in this record that an instrument's denominator turned out to be the actual finding:
+`fold.groups` counted a pattern, `served 162 of 162` counted a default, `merge.support.atLeastTwo` counted
+routines, `pass^4` and `episode_rate` counted different populations, `memory_stats()` counted nothing
+because nobody called it, and `faithfulness` counted a form that was told to strip what it was measured on.

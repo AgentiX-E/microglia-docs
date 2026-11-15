@@ -10425,3 +10425,52 @@ p = 0.2668 — while the population that would have explained *why* went unrecor
 inconclusive rates and no distribution. One dollar spent on a census first would have priced every
 subsequent rung and told the reader, in advance, that the traffic was not separable at the rung they were
 about to buy.
+
+## 34.156 The census measured a form that was instructed to fail it
+
+`faithfulness` has printed `0 of 667 entity(ies) kept (0.0%)` on four consecutive dispatches. Three
+write-ups treated it as the writer's failure — including 34.150, which used it as the example of a number
+"reported every round and never attacked". It was attacked this round by reading the prompt:
+
+```text
+- A statement is a rule, not a report of the case that taught it. "Questions that name a race join
+  results to races on raceId" is a rule; "the query answering <one question> selects forename, surname
+  and driverRef" restates one answer and must not be returned.
+```
+
+That is the `lesson` form — the form every τ² arm on this lane has run. `lexicon` forbids "the values of
+this case" outright; `procedure` forbids any table, column, alias or literal. **A store written by any of
+the three cannot contain the corrections' argument values**, and the census counted exactly that absence
+as a loss on the writer's ledger.
+
+**Why the module could not see it.** `faithfulnessOf` was given rows of entities, items, and an optional
+predicate — everything a *property of the write* needs, and nothing about what the write was **asked** to
+do. The docstring's framing ("what was destroyed at write time") carried the assumption that any absent
+entity is a destroyed entity, and a docstring is not a check. The same shape as 34.152: a mean that could
+not see a monopoly, a rate that could not see a form.
+
+**The fix is a label, not a number.** The rate is unchanged; `faithfulnessOf` takes the form and reports
+`formForbidsTheCase`, and the line prints
+
+```text
+faithfulness: 0 of 667 entity(ies) kept (0.0%), ... [the lesson form instructs the distiller not to
+restate the case, so this rate measures the form]
+```
+
+The set is written out rather than parsed from the prompt: a predicate that read the prompt would silently
+change meaning the day the prompt was reworded — the reason `scripts/check-coupling-ledger.mjs` exists as a
+file rather than as an inline heredoc in `ci.yml`.
+
+**The generalisation, in a form that can be checked.** A census has three parts, and this record has now
+mis-specified each of them at least once: a **population** (34.152's mean over a monopoly), a **denominator**
+(34.151's two episode counts), and a **counterfactual** — what the number would have been if the mechanism
+had not been there. `faithfulness 0 of 667` had a correct population and a correct denominator and a wrong
+counterfactual: the right comparison is not "did the store keep the value" but "would a form that permits
+the value have kept it", and the second is only answerable by running one. R122 is that run.
+
+**What it costs to keep finding these.** Six censuses in this record have had a defect of this family, and
+five were found by writing the line that prints them rather than by reading the code that computes them.
+The instrument that catches the seventh is the one 34.154 named and this round shipped for its own field: a
+test that reads the real payload across the boundary and asserts the reader sees it. It would not have
+caught *this* one — the payload was correct — which is why the check has to be a question about the
+population, asked in the registration, and not a check about the shape of the JSON.
