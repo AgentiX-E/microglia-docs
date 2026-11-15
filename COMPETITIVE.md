@@ -6952,3 +6952,36 @@ between-dispatch I² or an explicit resolution for its own claim, and this recor
 is narrower than the effects those papers report. The competitive move is therefore not to invent a seventh
 mechanism but to **run the two cheapest published ones on a metric that can see a 5pp effect** — which is the first
 time this record has had both halves at once.
+
+## Appendix AW — The cost column nobody publishes, and what this record can now put in it (2026-11-16)
+
+Every board in this file compares rates. None of them compares what the rate cost, and the reason is not reticence:
+a rate is comparable across backbones and a price is not, so a table of dollars would rank providers rather than
+methods. R133 (`43880380623`) nevertheless priced one method against itself, which is the one comparison that does
+not need a shared backbone — the same model, the same 74 tasks, the same hour, the store on and off:
+
+| phase | episodes | cost | per episode | uncached prompt tokens | cache hit |
+| --- | --- | --- | --- | --- | --- |
+| replay, store **on** | 74 | $0.4847 | **$0.00655** | 2,508,270 | 0.7069 |
+| control, store **off** | 74 | $0.1996 | **$0.00270** | 594,961 | 0.9020 |
+
+**2.43× per episode for +2.70pp of own-case success** (net +2 of 74, 95% [−7.88, +13.28]). That pair is the
+frontier statement this record can actually make, and it is not flattering: at the point estimate, one net repaired
+case costs **$0.1425** ($0.2851 of extra spend over 2 net cases), and on held-out cases the effect is negative.
+
+None of the six competitors publish a per-episode bill, so there is no cell to fill on their side of the table. What
+can be said in the ranking is narrower and therefore defensible:
+
+- **Rate:** unrankable. `pass^4` **0.723 [0.531, 0.915]** contains ALTK-Evolve's 0.675 submission and its 0.575
+  baseline, and the record's own resolution at 40 tasks is ±19pp (§Appendix AU).
+- **Episode rate:** **84.73% [80.77, 88.69]**, I²=0, ±3.96pp — the only quantity here narrow enough to order two
+  arms, and no competitor reports it.
+- **Cost of the mechanism itself:** **2.43× per episode**, measured against its own control on identical work.
+  ALTK-Evolve's submission reports no such number, so this record is not ahead on cost — it is the only one that
+  knows its own, which is a different claim and the honest one.
+
+**What this changes about the plan.** A mechanism that buys +2.7pp at 2.43× is not a candidate for the board even
+if the interval later clears zero. R134 is therefore designed to be cheaper *and* to test the same mechanism:
+`packLimit: 1` should remove most of the cache eviction (the four-item pack is different text on every call), so the
+arm predicts ≥30% off the per-episode bill as one of its registered criteria. A memory method that cannot be run at
+or below its control's price is not a product, whatever it does to the rate.

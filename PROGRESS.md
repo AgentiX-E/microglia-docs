@@ -20492,3 +20492,110 @@ files**, coverage **99.96 / 99.83 / 100 / 99.96**, `dispatch-pool.ts` at **100 /
 needed to choose between conditioning, reachability and the write side. Whatever it says, the arm that follows it
 must report its **episode rate and its pool**, not a single `pass^4` — the board can no longer be moved by a
 number that moves 19pp on its own.
+
+### 217 — R133 gave the replay its denominator, and the denominator says the store is level and expensive
+
+§215 ended with the question R132 could not answer: its four cells divide by the population that *selected*
+the store, so `inert` — "failed without memory, then failed again" — is also what a task that fails two
+thirds of the time produces. R133 (`43880380623`, 262 episodes, 127.6 minutes, **$0.9304**) bought the missing
+half: the same 74 tasks, one trial, no store at all.
+
+**Registered criteria, checked one by one.**
+
+| criterion | registered | measured | |
+| --- | --- | --- | --- |
+| both replays pair the same list | `paired == 74` | 74 and 74 | ✅ |
+| the control is not degenerate | `repaired + broke ≥ 6` | 9 + 7 = **16** | ✅ |
+| the store is neutral-to-positive on its own cases | `net ≥ 0` | **+2** (2.70%) | ✅ |
+| the control's bill is in the artefact | `control.usage.usd` present, `refused` absent | **$0.1996**, no `refused` | ✅ |
+| the held-out half claims nothing | `published_bar_applies == 0`, no `pass^4` | 0, `k: 1`, 0.775 | ✅ |
+
+**The reading, and the sentence it produces.**
+
+> `74 of 74 task(s) replayed, 74 of 74 request(s) served, 11 repaired / 9 inert of the 20 that failed without
+> memory (55.00%); 7 broken and 47 kept of the rest; harm share 38.89%; against a no-memory replay: 9 repaired
+> / 7 broken = +2 net of 74 task(s) (2.70%), harm share 43.75%`
+
+Two without-sides, and they are not the same draw. Against **the learn half itself** — the drawer that selected
+the store's cases — the store repairs 11 of the 20 failures (55.00%) and breaks 7 of the 54 passes (13.0%).
+Against **a fresh no-memory draw of the same 74 tasks** — the control — 9 repairs survive and 7 cases are still
+lost, for a net of +2. The two numbers that differ, 11 and 9, are the *same cell* on two populations, and the
+first thing this readback had to do was stop printing them as one word. AUDIT 34.168 is that defect.
+
+**`net = +2` is on the boundary, and the boundary is finer than the sample.** R133 fixed its bands at ±2 and gave
+the reason in the registration: "the discordant count is ~8: a difference of two cases is the smallest one this
+sample can distinguish". The control produced **16** discordant pairs, twice the estimate — so `repaired − broke`
+has SE √(16 − 4/74)/74 = **5.40pp**, and the 95% interval on the net is **+2.70pp [−7.88, +13.28]**. A ±2 band
+is not a band this arm has; the row that `+2` nominally fires (`net ≥ +2` → conditioning) fires on a resolution
+the measurement does not have. AUDIT 34.167.
+
+**What the pack actually served, which the four cells could never say.**
+
+| | R133's replay (store on) | R133's control (store off) |
+| --- | --- | --- |
+| episodes | 74 | 74 |
+| prompt tokens | 8,558,308 | 6,068,231 |
+| of which uncached | **2,508,270** | 594,961 |
+| cache hit rate | **0.7069** | 0.9020 |
+| **cost** | **$0.4847** | **$0.1996** |
+| **per episode** | **$0.00655** | **$0.00270** |
+
+The store costs **2.43× the bill for the same 74 tasks**, and the mechanism is not the items' length — it is that
+a four-item pack **replaces the prompt prefix on every call**, so 2.5M tokens arrive uncached instead of 0.59M.
+This is the first time this lane has priced a memory arm against its own control on identical work, and the
+number is a property of the *pack*, not of the model: the same backbone, the same tasks, the same minute.
+
+**The census that explains it.** 73 active items, `supportMean 0.947`; of the 64 the artefact lists, **62 carry
+`supportTasks: 1`**, one carries 4, one carries 2. Every item is `kind: procedure` written on a `shape` of the
+exact call sequence — a procedure in name, a transcript of one episode in fact. And the pack on those items:
+
+| pack census | 40 held-out requests |
+| --- | --- |
+| mean items per pack | **3.975** |
+| mean characters | **2,239.3** of a 2,400 budget |
+| dropped for size | **161** (4 per request) |
+| suppressed by the fold | 15 |
+| emptied by size | 0 |
+| margin p10 / p50 / p90 | 0.0418 / 0.1136 / 0.2175 |
+
+Served 40 of 40 — so this is not a store that fails to reach its cases. It is a store that hands the agent four
+unrelated single-episode scripts, fills 93% of the budget doing it, drops four more for size, and lets the agent
+choose.
+
+**The hypothesis that died before it was paid for.** The obvious explanation for "four scripts, one is right" is
+*competition*: rival scripts for the same intent, and the agent imitates the wrong one. The ledger refutes it at
+zero cost — grouping the active items by `(intent, field)` gives **56 groups, 52 of them singletons** and four of
+size two. There are no rivals. The four items a request receives are four *unrelated* scripts.
+
+**What was fixed, and what it cost.** The main clause now names its without-side ("the 20 the learn half itself
+failed", "of the 54 it passed") and the control clause says "a fresh no-memory draw of the same task(s)", so the
+two `repaired` counts cannot be read as one arithmetic error. `packLimit` is now a registration header: a
+character budget leaves the count to how long the distiller wrote its records, which is exactly how R133 came to
+serve four. Five tests were added and three existing expectations updated; the header is printed by
+`prereg-caps`, so a dispatch log states the count beside the budget.
+
+**Tests.** Five new tests and three updated expectations: the two-reference property of the double reading
+(AUDIT 34.168) with a fixture whose draws disagree 2-to-1, `packLimit` read and refused on three malformed values,
+the CAPS line that carries it, and the replay episode accounting R133's own prose assertion had never been checked
+(`1 x 40 + 3 x 74 = 262` accepted, `2 x 40 + 3 x 74 = 302` refused with the numbers the arithmetic used). Two
+`> 0 ? : 40` fallbacks in that block were **deleted** rather than covered — the header parser refuses a
+non-positive count, so they could not be reached. Full suite: **5,426 tests in 265 files**, coverage
+**99.98 / 99.85 / 100 / 99.98**, `prereg.ts` back to **100 / 100 / 100 / 100**.
+
+**R134 is registered and about to spend.** One change from R133 — `packLimit: 1` — and 114 episodes instead of
+262, because the instrument that measured own-case effect was R132's and R133's and this arm's subject is the
+pack. Its first criterion is not a rate: `pack.summary.meanIds == 1.0`, because a header that does not reach the
+query is R132's first dispatch all over again. Its second is the bill: a cost that does not fall says the pack's
+*content*, not its length, is what evicts the cache.
+
+| reading | question | decision |
+| --- | --- | --- |
+| `meanIds == 1`, `harmShare < 0.185`, cost −30% | was competition the mechanism | the item: abstraction over a class, not a transcript of an episode |
+| `meanIds == 1`, `harmShare` flat, cost −30% | was the pack only a cost defect | the write side: R129 deletion, then a verifier |
+| `meanIds == 1`, repair collapses, harm falls | is the store a cache whose value is breadth | coverage: which item each request needs |
+| `meanIds != 1` | did the count reach the query | nothing; fix the wiring |
+
+**The board does not move.** The pool (§216) still reads `pass^4` **0.723 [0.531, 0.915]** against ALTK-Evolve's
+0.675 and 0.575 — inside the interval, therefore unrankable — and the episode rate **84.73% [80.77, 88.69]** is
+still the only quantity this record can quote at 5pp. What R133 adds to the board is a column no competitor
+publishes: **$0.00655 an episode against $0.00270**, on identical work.

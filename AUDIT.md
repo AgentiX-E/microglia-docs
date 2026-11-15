@@ -10953,3 +10953,100 @@ intervals that each spanned more than half of it.
 than leaving that to the reader, because the retracted ranking was produced by a reader doing that arithmetic
 silently and getting it wrong. A reading that states its own resolution cannot be quoted out of context — and if it
 is, the quote carries the refutation with it.
+
+## 34.166 A store is priced per episode, and the pack is what prices it
+
+R133 bought three phases: the held-out half (40 episodes), a replay of the learn half with the store (74), and
+the same 74 with the store off. Same backbone, same tasks, same two hours. The artefact carries a bill for each,
+and this is the first time the lane has compared them:
+
+| phase | episodes | cost | per episode | prompt tokens | uncached | cache hit |
+| --- | --- | --- | --- | --- | --- | --- |
+| held-out, store on | 40 | $0.2461 | $0.0062 | — | — | — |
+| replay, store on | 74 | $0.4847 | **$0.00655** | 8,558,308 | 2,508,270 | **0.7069** |
+| control, store off | 74 | $0.1996 | **$0.00270** | 6,068,231 | 594,961 | **0.9020** |
+
+**The store costs 2.43× per episode on identical work**, and the mechanism is not the items' length. A four-item
+pack is *different text on every request*, so the provider's prefix cache is replaced rather than reused: 2.5M
+tokens arrive uncached against the control's 0.59M, and the hit rate falls eleven points. The three numbers are
+one fact — count, cache, bill — and the lane had never printed them side by side because it never ran the same
+episodes twice.
+
+**The defect this replaces.** R133's registration priced the arm from R132's "$0.00196 an episode over 262
+episodes". R132's own mixture was 228 episodes across two arms at two trials, and the number was carried into a
+registration for a *different* mixture: the dispatch cost **$0.9304**, 1.82× the estimated $0.51. A per-episode
+price extrapolated from another arm's mixture is a prediction, not a measurement, and this lane has now paid
+twice for the distinction (R85's clipped records were the first).
+
+**The rule.** Any arm whose pack differs from its predecessor's must print its own bill beside the control's, in
+the same artefact, as cost **per episode** — because the number that matters is not what an arm cost but what an
+*episode* costs, and an episode is the only unit both phases have in common. And a registration may quote a
+per-episode price only from an arm that ran the same phases; otherwise the estimate carries its own error bar
+and the dispatch is held to the upper one, which is what R134's cost section does ($0.55 with the fall priced
+in, $0.73 if it does not).
+
+## 34.167 A band whose justification is measured is a band that can be refuted
+
+R133 fixed three bands — `net ≥ +2`, `−2 < net < +2`, `net ≤ −2` — and gave the reason in the registration:
+
+> The bands are ±2 because the discordant count is ~8: a difference of two cases is the smallest one this sample
+> can distinguish, and stating the band in advance is what keeps the readback from becoming a story.
+
+That justification is a **claim about the control's discordant count**, made before the control ran, from R132's
+raw reading of 8 discordant pairs (5 repaired, 3 broken) against the learn draw. The control produced **16** —
+twice the estimate, because a fresh draw disagrees with the treatment on both sides rather than only on the
+failures. The measured net is therefore
+
+> +2 of 74 = +2.70pp, SE = √(16 − 4/74)/74 = **5.40pp**, 95% **[−7.88, +13.28]**
+
+and the smallest difference this sample distinguishes is **±4 tasks**, not ±2. `+2` landed exactly on the
+`net ≥ +2` boundary — the row fired, on a band the measurement says does not exist.
+
+**Both halves of that are recorded, and neither is edited.** The row fired: the readback says so, and R134 is a
+conditioning arm on that ground. The justification is refuted: the readback says that too, in the same table.
+What the lane may not do is quietly re-cut the bands to ±4 after seeing the number, which would make the
+registration a post-hoc summary of the data rather than a constraint on it.
+
+**The rule.** A band's justification is itself a measurement to be checked on readback. When a registration says
+"the bands are ±2 because the count is ~8", the readback must report the count it got and whether the band it
+used is the band its own arithmetic supports; when they disagree, the row fires *and* the disagreement is filed.
+A decision rule stated in advance buys the freedom to decide without a story; it does not buy immunity from
+having its premises measured.
+
+**What this does not license.** Reading `+2` as evidence *for* conditioning. The row's premise — "the store is
+right on its own cases and misapplied elsewhere" — is what the interval refutes: +2.70pp with a lower bound of
+−7.88pp is not "right on its own cases". R134 is therefore registered as conditioning executed on the **pack's
+composition** rather than on the threshold, and its registration carries the argument: at a 55.00% repair rate
+among the failures and a 13.0% damage rate among the passes, a gate tuned until it stops breaking the seven also
+stops repairing most of the eleven.
+
+## 34.168 One word, two denominators
+
+R133's first readback printed this sentence:
+
+> `11 repaired / 9 inert of the 20 that failed without memory (55.00%); 7 broken and 47 kept of the rest; harm
+> share 38.89%; against a no-memory replay: 9 repaired / 7 broken = +2 net of 74 task(s) (2.70%), harm share
+> 43.75%`
+
+Two `repaired` counts, eleven and nine, in one sentence, both correct. They are the same cell measured against
+two different without-sides: the learn half's own run — the draw that *selected* the store's cases — and a fresh
+no-memory draw of the same 74 tasks. The sentence named neither. A reader who checks the arithmetic finds
+11 + 9 = 20 and 9 + 7 = 16, two partitions of the same 74 tasks that do not agree, and no way to recover which
+clause was which after the fact.
+
+This is AUDIT 34.164's family one layer down. There the denominator was also the selector; here the *word* is
+the selector — the same noun counting two populations — and the ambiguity is in the prose rather than in the
+statistic. The four cells are right; the sentence that reports them was not.
+
+**The fix, and why it is a code change rather than a wording change.** `rehearsalLine` now says which population
+each clause divides by: "the 20 **the learn half itself failed**" and "of the 54 **it passed**" for the raw
+reading, "against **a fresh no-memory draw of the same task(s)**" for the control. The control clause's three
+absences say the same thing, so an arm that bought no control cannot be read as one that bought a control and
+found nothing. The test pins the property rather than the sentence: a fixture whose two draws disagree 2-to-1
+asserts that each count follows its own named reference, and that the two references appear in the order the
+counts do.
+
+**The rule.** A reading with more than one without-side names every one of them, in the sentence, at the point
+of use. "Repaired" is not a quantity; "repaired against the draw that selected the store" is, and the two
+differ by two tasks out of seventy-four in this arm — which is the size of the effect the whole round was
+trying to measure.
