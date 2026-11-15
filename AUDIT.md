@@ -11107,11 +11107,14 @@ attributed from a share above 1, and a verdict that names a repair anyway is a v
 on. The attribution clause ("and the two newest messages account for all of them") is now printed only
 when `residual_tokens_per_call` says they do, which is a measurement rather than an inference.
 
-**What this does not retroactively fix.** R133's and R123a's published premium sentences were produced by
-the same classifier and carry the same defect. They stand as recorded, with this entry beside them: the
-numbers in them (2.5M uncached against 0.59M) are measurements and survive; the sentence attached to them
-does not. A reading's numbers and a reading's story fail separately, and only one of them is repairable
-after the fact.
+**What this does not retroactively fix.** Every arm whose log carries a `cache first` / `cache second`
+sentence was produced by this classifier, and a scan of the two artefacts that carry a per-call census
+finds exactly two records above 1.02 — both R134's (2.2639 and 1.4752), so the sentences that need this
+entry beside them are R133's replay and R134's pair. They stand as recorded: the numbers in them (2.5M
+uncached against 0.59M; 1,639 against 420 a call) are measurements and survive; the sentence attached to
+them does not. R123a is outside the class — its premium came from `premiumSplitOf`, which divides the
+served characters rather than a cache coverage, and is unaffected. A reading's numbers and a reading's
+story fail separately, and only one of them is repairable after the fact.
 
 ## 34.171 A caveat that outlives its arm is a caveat that misleads
 
