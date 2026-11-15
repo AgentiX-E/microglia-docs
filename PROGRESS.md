@@ -20642,3 +20642,57 @@ served on two requests is +1 and another is −1 while both pass rates are ident
 rather than read as a failure, the empty-ledger sentence, the bound's wording, the no-baseline sentence, and a
 store smaller than the ledger. `item-ledger.ts` is **100 / 100 / 100 / 100**. Full suite: **5,435 tests in 266
 files**, coverage **99.98 / 99.85 / 100 / 99.98**.
+
+### 219 — R134: one script is harmless and useless, and the 2.25× is not the pack
+
+R134 (`43974181202`, 114 episodes, 96 minutes, **$0.3152**) changed one line of R133's arm —
+`packLimit: 1` — and bought five criteria, of which **three held and two failed**.
+
+| criterion | registered | measured | |
+| --- | --- | --- | --- |
+| the count reaches the query | `meanIds == 1.0`, `empty == 0` | **1.0**, 0, `droppedForSize` **0** | ✅ |
+| the reply's prefix is restored | `cache_hit_rate > 0.83` | **0.6941** | ❌ |
+| the bill falls by the text's share | ≥30% below $0.00655 | **$0.00546** (−16.0%) | ❌ |
+| the harm count falls | `harmShare < 0.185` | **10.81%** (4 of 37) | ✅ |
+| the store keeps teaching from `supportTasks: 1` | repair survives | **2 of 40** (5.4%) — collapsed | ❌ |
+
+**The reading.** Memory **35 of 40 (0.875)** against the reference's **37 of 40 (0.925)**: paired
+**−5.00pp [−17.50, +7.50]**, p=0.6875, `UNRESOLVED`, 2 repaired and 4 broken. Against R123a's four-item
+arm on the same 40 tasks (harm share 29.63%), one script cuts the damage to **10.81%** — and cuts the
+repairs with it, from 9 of 74 to 2 of 40. **The harm was the other three scripts; the benefit was never in
+the first one.** R134's third decision row fired on exactly that pair of facts: *the store is a cache whose
+value is breadth → coverage, measured before any distiller change*.
+
+**The money did not move, and that is the round's most useful number.** The pack shrank from 4 items /
+2,239 characters to 1 item / 747 characters — two thirds of the text, 161 dropped-for-size down to 0 — and
+the per-episode multiple went from **2.43× to 2.25×** ($0.00546 against $0.00242). The driver's own
+premium split says the served characters can account for **15.3–17.5%** of the +1,218.7 uncached tokens a
+call even if every call paid for the block in full. So AUDIT 34.166's mechanism — "the four-item pack
+replaces the prompt prefix on every call" — is **refuted by its own successor**, and the instrument that
+should have caught it was measuring the answer and discarding it (AUDIT 34.169).
+
+**The coverage ledger, at zero cost.** Joining R133's `pack.ledger` to `per_task` prices an *item* rather
+than a store, and R134's pack of one makes that join exact instead of an upper bound: **27 of 64 items
+served over 40 item-requests, 4 negative summing −4, 2 positive summing +2, 37 never served.** Every harm
+sits on a distinct item at net −1.
+
+**What was fixed, and why each is a defect rather than a feature.**
+
+| defect | what it was doing | fix |
+| --- | --- | --- |
+| `_census_of` computed `system_chars` / `conversation_chars` and no field read them | every artefact's `prefix_tokens` was **system + history under one name** | both exported per call, with `tail2_tokens`, `tools_tokens_per_call` and `residual_tokens_per_call` beside them |
+| `prefix_coverage` can exceed 1 by construction; the verdict read ≥0.85 as "honoured" | printed "the provider credited **226.4%** of the 1880-token prefix it had seen … the 420 uncached tokens a call are the turn's own material, not the memory's" on both arms | new state `prefix-undercounted` above 1.02, `repair: unmeasured`, and the attribution withheld (AUDIT 34.170) |
+| `tools` was never counted | `prompt_tokens` covers a dozen JSON schemas no message contains, and the gap was charged to the agent | `tools_tokens_per_call`, counted from the request |
+| `margins` kept the ladder and not the rows | R134's harm could not be located in the ladder, so its conditioning row could not be entered | `margins.perRequest`, aligned with `ledger` and `per_task` |
+| `itemLedgerLine` asserted "a pack that serves four guarantees they are not" | false on the arm it was run against: R134 serves one, so the sum is **exact** | the caveat is derived from the packs the arm served (AUDIT 34.171) |
+
+**Tests.** Nine new and four updated: the undercounted state with the sentence that must *not* contain the
+old claim, the split and the residual with and without a tools block, `perRequest` in a deliberately
+unsorted ledger with a missing decision, the exact-vs-bound pair on the item ledger, and the ladder's own
+output branch. Python self-check: **26 cases, 87 assertions**. Full suite **5,445 tests in 266 files**,
+coverage **99.98 / 99.85 / 100 / 99.98**, `cache-census.ts`, `item-ledger.ts` and `tau2-pack.ts` at
+**100 / 100 / 100 / 100**.
+
+**R135 is registered**, no treatment change and ~$0.32: R134's arm plus the three instruments, because the
+next dollar has to know whether the premium is the memory's text, the agent's behaviour, or the request's
+framing — and whether a rung could ever have separated the four harmed requests from the two repaired ones.

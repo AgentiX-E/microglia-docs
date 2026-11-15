@@ -9205,3 +9205,47 @@ served on any of the 40 held-out requests**. A third of the store is invisible t
 `rewardsOf(read(read(path)))`, a nesting that the package's own `tsconfig` never sees because bins are excluded
 from it and the workflow type-checks them in a separate pass (`pnpm typecheck:lanes`). The lanes command is now
 part of the local loop, not a post-push discovery.
+
+### 17.140 The bill's decomposition: three fields, one denominator, and a guard above 1
+
+**The gap.** Every arm since R93 has reported `usage.cache`, and every arm has reported one number as if
+it were two: `prefix_tokens`. The Python callback computes, per call, `system_chars` and
+`conversation_chars` — where the pack and the adapter's preamble sit versus where the agent's own turns
+sit — sums them into a counter, and `cache_census()` reads neither. The comment above the counter states
+the purpose in the language of attribution ("whether those tokens were the pack, the conversation in front
+of it, or the observation appended behind it") and the field that would answer it was never printed.
+
+**The design.** Three additions, all derived from a callback that already runs:
+
+1. **`system_tokens_per_call` / `conversation_tokens_per_call`** — the existing character counts divided by
+   the same characters-per-token ratio the other fields use, so the two sum to `messages` and the reader can
+   subtract. A premium in the first is the memory's text; a premium in the second is the agent's behaviour,
+   which no renderer can fix.
+2. **`tail2_tokens` and `residual_tokens_per_call`** — the second-newest message, and
+   `uncached − last − tail2`. The residual is material no message carries, which on this benchmark is the
+   `tools` block and the chat template's framing. `tools_tokens_per_call` is counted from the request
+   (`len(json.dumps(kwargs["tools"]))`) so the residual has a named candidate beside it instead of an
+   implied one. Without it, a census dividing only message characters can never reach the provider's
+   `prompt_tokens`, and the gap is silently charged to the agent.
+3. **`PREFIX_UNDERCOUNTED = 1.02`** — `prefix_coverage` is `credited / seen`, and `seen` stops two messages
+   short of the end by construction, so the ratio is a quotient by a **lower bound** and lands above 1 on
+   arms whose prefix is held perfectly well (measured: 1.4752 and 2.2639 on R134's two arms). Above the
+   guard the state is `prefix-undercounted`, `repair` is `unmeasured`, and the sentence names the
+   denominator as the defect. Below it, the attribution clause is printed only when `residual` says the two
+   newest messages account for the bill.
+
+**Why the guard is arithmetic rather than taste.** The previous classifier read `coverage >= 0.85` as
+`prefix-honoured` and printed "the provider credited 226.4% of the 1880-token prefix it had seen … the 420
+uncached tokens a call are the turn's own material, not the memory's". A share above 100% of what a
+provider was shown cannot be a cache that held extra, and a verdict that names a repair anyway is a verdict
+that will be acted on — which it was, in AUDIT 34.166.
+
+**The lesson the module now carries.** An instrument that computes a quantity and does not report it has
+published a story rather than a measurement. The mechanical check: every key `_census_of` returns is either
+read by `cache_census()` or deleted from `_census_of`. The Python self-check asserts the split's arithmetic
+(100.0 / 101.7 tokens on a fixture whose 400-character system prompt repeats three times) rather than the
+counter's existence.
+
+**What it costs.** Nothing: the callback already receives the messages and the tools, and the three fields
+are divisions of counts it already holds. What it buys is the difference between "memory costs 2.25×" and
+"the pack, the agent, or the framing costs 2.25×" — three answers with three different repairs.

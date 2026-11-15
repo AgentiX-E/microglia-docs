@@ -11050,3 +11050,94 @@ counts do.
 of use. "Repaired" is not a quantity; "repaired against the draw that selected the store" is, and the two
 differ by two tasks out of seventy-four in this arm — which is the size of the effect the whole round was
 trying to measure.
+
+## 34.169 The instrument measured the answer and threw it away
+
+`_census_of` has returned `system_chars` and `conversation_chars` for every call since the cache census
+was written. `_record_usage` sums them into `_cache`. `cache_census()` reads `seen_chars`, `last_chars`,
+`prompt_tokens` and `cached_tokens` — and never reads the two that separate a pack from a conversation.
+The module's own comment says the point is to know "whether those tokens were the pack, the conversation
+in front of it, or the observation appended behind it", and the field that would answer it was discarded
+on every arm for the whole life of the census.
+
+The cost of that is a wrong published mechanism. R133's AUDIT 34.166 said:
+
+> The mechanism is not the items' length — it is that a four-item pack **replaces the prompt prefix on
+> every call**, so 2.5M tokens arrive uncached instead of 0.59M.
+
+R134 tested it the only way a mechanism can be tested — by moving the thing the mechanism names. The pack
+went from 4 items and 2,239 characters to 1 item and 747 characters; nothing else changed. The multiple
+went from **2.43× to 2.25×**. A mechanism whose cause is removed by two thirds and whose effect moves by
+seven per cent is not the mechanism. And the number that would have refused the claim on day one is a
+number the instrument already had: `system_chars`.
+
+**The rule.** An instrument that computes a quantity and does not report it is an instrument that has
+published a story instead of a measurement. This is the fourth time in four rounds that the defect is not
+a missing measurement but an unused one — R127's one-sided ladder, R131's unjoined arrays, R132's
+selector-as-denominator, and now this. The check to add is mechanical: every key `_census_of` returns must
+be read by `cache_census()` or be deleted from `_census_of`, and the Python self-check now asserts the
+split's arithmetic rather than the counter's existence.
+
+**What is still not known, and is now measurable.** Where the +1,218.7 uncached tokens a call actually go.
+Three candidates, three fields: `system_tokens_per_call` (the pack and the preamble),
+`conversation_tokens_per_call` (the agent's own turns), `residual_tokens_per_call` (the tools block and the
+chat template, which no message carries). R135 buys all three on an arm whose treatment does not move.
+
+## 34.170 A share above 100% is not a cache that held extra
+
+Both of R134's arms printed this sentence:
+
+> `cache first (reference): prefix-honoured — the provider credited 226.4% of the 1880-token prefix it had
+> seen, and the newest message was 163 tokens: the 420 uncached tokens a call are the turn's own material,
+> not the memory's`
+
+and the same shape at **147.5%** for the memory arm. `prefix_coverage` is `cached / seen`, `seen` stops two
+messages short of the end by construction, and the provider routinely credits the newest of those excluded
+messages as well. So the ratio is a quotient by a **lower bound**, and it lands above 1 on arms whose
+prefix is held perfectly well.
+
+The classifier read `coverage >= 0.85` as `prefix-honoured`, which is true of 2.26 in the same sense that
+"at least one" is true of "one thousand" — and then drew a causal conclusion from it. 226.4% of what a
+provider was shown is not a provider being generous; it is the lane dividing by a number it knows is too
+small, and then attributing the remainder.
+
+**Both halves of the fix are arithmetic.** The state is `prefix-undercounted` above 1.02, `repair` is
+`unmeasured`, and the sentence says the denominator is the defect — because nothing downstream *can* be
+attributed from a share above 1, and a verdict that names a repair anyway is a verdict that will be acted
+on. The attribution clause ("and the two newest messages account for all of them") is now printed only
+when `residual_tokens_per_call` says they do, which is a measurement rather than an inference.
+
+**What this does not retroactively fix.** R133's and R123a's published premium sentences were produced by
+the same classifier and carry the same defect. They stand as recorded, with this entry beside them: the
+numbers in them (2.5M uncached against 0.59M) are measurements and survive; the sentence attached to them
+does not. A reading's numbers and a reading's story fail separately, and only one of them is repairable
+after the fact.
+
+## 34.171 A caveat that outlives its arm is a caveat that misleads
+
+`itemLedgerLine` closed with:
+
+> Deleting the negative ones recovers at most +N case(s) if each item's cases are its own, and a pack that
+> serves four guarantees they are not: this is an upper bound on a deletion arm, not a prediction of one
+
+The bound is real: when a request is served four ids, one break is counted against all four, so `Σ|net|`
+over the negative items cannot be recovered by deleting them. But the sentence asserts the pack's shape
+rather than reading it, and R134's arm serves **one** item a request — 40 item-requests, 40 packs, no
+sharing at all. On that arm every case an item carries *is* its own, `Σ|net|` is the exact number a
+deletion recovers, and the tool was printing "this is an upper bound, not a prediction" over an exact
+measurement.
+
+A reader who trusts the caveat discounts a figure that needs no discount, and — worse — the discount is in
+the direction that makes a deletion arm look unpromising, which is the arm the literature's largest
+published effect belongs to.
+
+**The rule.** A qualifier is a claim about the data and gets the same treatment as any other claim: it is
+derived from the run, or it is not printed. `itemLedgerLine` now takes the number of served requests that
+carried more than one id, and says either "no served request carried a second item, so the sum is exact,
+not a bound" or "N served request(s) carried more than one item, so their cases are shared: this is an
+upper bound on a deletion arm, not a prediction of one". Both halves are produced by a committed test.
+
+**Why this one mattered enough to file.** It is the third defect in three rounds of the same shape —
+R133's two `repaired` counts under one word (34.168), the verdict's 226.4% (34.170), and now a caveat that
+describes an arm nobody ran. In each case the arithmetic was right and the sentence around it was not, and
+in each case the sentence is what a reader takes away.

@@ -6985,3 +6985,44 @@ if the interval later clears zero. R134 is therefore designed to be cheaper *and
 `packLimit: 1` should remove most of the cache eviction (the four-item pack is different text on every call), so the
 arm predicts ≥30% off the per-episode bill as one of its registered criteria. A memory method that cannot be run at
 or below its control's price is not a product, whatever it does to the rate.
+
+## Appendix AX — The cost column keeps its shape and loses its explanation (2026-11-17)
+
+Appendix AW published the per-episode bill and the mechanism behind it: a four-item pack replacing the
+prompt cache on every call. R134 (`43974181202`) removed two thirds of the pack and the multiple stayed.
+
+| | R133 (4 items, 2,239 chars) | R134 (1 item, 747 chars) |
+| --- | --- | --- |
+| cost per episode, memory | $0.00655 | $0.00546 |
+| cost per episode, control | $0.00270 | $0.00242 |
+| **multiple** | **2.43×** | **2.25×** |
+| cache hit rate | 0.7069 | 0.6941 |
+| uncached tokens a call, memory | 1,872.7 | 1,639.2 |
+| uncached tokens a call, control | — | 420.4 |
+
+The served characters explain **15.3–17.5%** of the premium even at the assumption that every call pays
+for the block in full. So the explanation in AW is withdrawn and the numbers in AW stand: this record knows
+what its mechanism costs and does not yet know what the cost *is*. That distinction is worth stating in a
+competitive file, because every board in this file ranks methods by a rate and none of them prices the
+rate — and the second column is where the honest position currently is.
+
+**What R134 changed in the ranking.** On the held-out half it is **35 of 40 (0.875)** against its own
+reference's **37 of 40 (0.925)**: −5.00pp [−17.50, +7.50], p=0.6875, unresolved. Pooled with R123a and
+R133 the record's position is unchanged — `pass^4` **0.723 [0.531, 0.915]**, I²=16%, containing
+ALTK-Evolve's 0.6754 submission and its 0.575 baseline, therefore **unrankable**, and the record's own
+resolution at 40 tasks is ±10.25pp (`episode_half_width_pp`, R134) to ±19pp (pooled).
+
+| quantity | microglia | nearest published competitor | rankable? |
+| --- | --- | --- | --- |
+| `pass^4`, τ²-retail | 0.723 [0.531, 0.915], I²=16% | ALTK-Evolve 0.6754 (submission), 0.575 (baseline) | **no** — interval contains both |
+| episode rate, 160/arm | **84.73% [80.77, 88.69]**, I²=0, ±3.96pp | none publishes it | no comparison exists |
+| harm share, held out | **10.81%** (R134) vs 29.63% (R123a) | none publishes it | same-backbone only |
+| cost per episode vs own control | **2.25×**, unexplained | none publishes a cost | no comparison exists |
+| items admitted per learnt task | 75 per 74, `sup2` 2 of 66 | MemHarness / SEMV report corroboration gates | not yet measured on a shared denominator |
+
+**The two facts this file can now put beside a competitor's.** First, **harm is not a competition effect**:
+cutting the pack from four scripts to one cut the damage from 29.63% to 10.81% and cut the repairs from 9
+of 74 to 2 of 40 — the extra scripts were doing both. Second, **the price is not the payload**: 2.25× for
+−5pp, with the payload accounting for a sixth of it. A method that cannot be run at its control's price is
+not a product, and the next arm is a measurement of where the other five sixths are rather than a larger
+claim about a rate.
