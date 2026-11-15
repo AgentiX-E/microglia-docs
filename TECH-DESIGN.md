@@ -9100,3 +9100,73 @@ reach. The driver still passes its own checkout; the difference is that a test c
 between two arms would produce two numbers under one registration. The registration is the guard (it states
 the split, and `benchmark` is carried in every artefact), which is the same guard the rest of this lane uses —
 a value a reader can grade, rather than a mechanism that prevents the choice.
+
+### 17.137 The rehearsal and its control: a denominator that is not the selector
+
+**The design problem is narrower than "measure whether memory helps".** A store is distilled from *failures*: the
+learn half runs every training task with no memory, and each failure writes one item. Replaying those tasks with
+the store asks the only question a held-out number cannot — *does an item repair the case that wrote it* — and the
+first version of that reading (R132) was wrong in one direction that no amount of arithmetic fixes.
+
+| cell | meaning | what it was measured against |
+| --- | --- | --- |
+| repaired | failed without memory, passed with it | the learn draw |
+| broke | passed without memory, failed with it | the learn draw |
+| inert | failed both times | **the learn draw — which is also the selector** |
+| kept | passed both times | the learn draw |
+
+`inert` therefore counts "failed twice", and a task that fails two thirds of the time lands there whether or not
+the store exists. The arithmetic is not wrong; the denominator is a tautology.
+
+**The repair is a third pass, not a smaller claim.** `rehearsalControl` runs the same task list, at the same one
+trial, with the same reduction, using the agent the learn half ran and **no facade at all**. The four cells are
+then recomputed with the control as the *without* side, and `repaired`/`broke` become discordant pairs between two
+phases that differ only in whether the store was on. `net = repaired − broke` is the store's own-case effect with
+the draw held fixed; the sign is the reading.
+
+**Four type-level decisions, each of which could have been made the other way.**
+
+| decision | why |
+| --- | --- |
+| the control block carries **no** `requests` and **no** `served` | it has no facade to count, and `0 of 0 served` reads as a store that found nothing — the misreading §17.128 exists to prevent |
+| `rehearsalControl` reads the phase's own wire for its dependency | two variables that can disagree about what the dispatch bought are two premises for one run; R132's first dispatch died on a switch whose ends were never joined |
+| the header is refused without `rehearsal`, at read time | a comparison whose other side was never bought is a phase whose only product is a bill |
+| sizing counts three passes: `trials × testTasks + 3 × trainTasks` | 74 + 40 + 74 + 74 = 262 episodes; a third pass at two trials would be 302, one over the ceiling, and the refusal names the sum before the first model call |
+
+**Three absences, because two of them would otherwise collapse into "no effect".** No `control` key means the
+registration never bought it; `control.reading === undefined` means it ran and paired nothing; `control.refused:
+peak-window` means the window closed before it opened. Each prints its own clause; a `0 net` would say the store
+changed nothing, which none of the three supports.
+
+**And the phase's own refusal is a reading.** `run_split.py` declines to open a phase in a peak-rate window, which
+can happen between the graded facade and the replay. That one refusal is recorded as a field with `requests: 0`
+rather than thrown — the arm is already paid for, and a second phase must not take the primary measurement with
+it — while every other failure throws, because a phase that crashed mid-way did spend money.
+
+### 17.138 Two spreads: why the pool is a module and not a mean
+
+**The problem is that this record quotes point estimates.** R131 read `pass^4` 0.625 on the arm that read 0.775 in
+R123a and 0.750 in R124 — one configuration, three dispatches, and the largest was being quoted as a score. A pool
+of an arm's dispatches turns those numbers into an estimate with an interval, and the part that matters is not the
+mean but the **ratio of between-dispatch to within-dispatch variance**: above roughly half, the pooled value is a
+summary of disagreeing runs rather than an estimate of one quantity.
+
+| statistic | estimator | why this one |
+| --- | --- | --- |
+| `tau2` | DerSimonian–Laird, truncated at zero | standard for a handful of studies; the truncation is what lets a homogeneous set collapse to fixed effect instead of inheriting a negative variance |
+| `iSquared` | `(Q − df) / Q` | the share of the spread that lives between dispatches, printed because it decides whether the pooled value may be quoted at all |
+| quantile | `t(dispatches − 1)` when `tau2 > 0`, else `1.96` | the interval must follow the variance the estimate is made of: 4.303 at three dispatches is a factor of 2.2 on the width, and `t(1) = 12.706` on a homogeneous pair would report ±36pp for two 160-episode runs that agree, which is not conservative but wrong |
+
+**The refusals are the design.** One dispatch is `undefined` with a sentence, because a mean of one number dressed
+in an interval is the error this module exists to stop. Two `k` values throw and name both: R132 published
+`pass4: 0.825` at `k: 2`, and averaging that with a `pass^4` under one name is the same defect one layer out. An
+artefact with no `metrics.k` is refused by the reader with the field named, since a `k` inferred from a field
+called `pass4` is how a `pass^2` enters a pool of `pass^4`s. And nothing is dropped: a pool over the readable
+subset of a record's runs is a selection.
+
+**What it settled, in one reading.** `pass^4` at forty tasks: 0.723 [0.531, 0.915], I² = 16% — the movement was
+sampling. Harm share at ~29 changed trials: 38.35% [3.85, 72.86], I² = 60% — the dispatches genuinely disagree, and
+that quantity is retracted. Episode rate over two arms: 84.73% [80.77, 88.69], I² = 0 — the first interval in this
+record narrow enough for a 5pp claim, and a by-product of every arm already run. The design consequence is a
+practice rule rather than a feature: **nothing is quoted from one dispatch, and nothing is compared across arms
+until I² is under 50%.**
