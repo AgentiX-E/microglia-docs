@@ -10587,3 +10587,48 @@ count is free.
 denominator joined to the population it claims to describe. §34.157 had the merge, had the number, and had
 the direction; what it did not have was the join, and the join took one artefact and forty lines of Python.
 The cost of the check is the reason it belongs in the readback and not in the dispatch.
+
+## 34.159 A refutation clause fired on a wire that was not connected, and a null result was the most expensive thing this record could have believed
+
+R123a's registration contained one refutation and it was the right one: *if `rivaled` is zero, no rung has a
+population to act on and the margin gate is dead on this store*. The run printed `0 rivaled request(s)` over
+164 requests, and the sentence was true of the payload and false of the store.
+
+```
+served.meanPerRequest   4.05
+served.distinct         61 of 76 items
+pack.summary.meanIds    4.05
+memory.rivaled          0
+```
+
+The last row is arithmetically impossible next to the first three, and that impossibility is the whole audit.
+`startRecallFacade` answered `{ rendered }` — a response with one field — because the design note that put the
+census in-process was written when the only reader was the driver's own `packReadings`. R123a is the first
+registration that reads a margin ladder, and it reads it from Python, across a socket. `_margins` never
+received a value; `len([])` printed as `0`.
+
+**Why this class is worse than a crash.** A crash ends a dispatch and costs a dollar. A zero that looks like a
+measurement ends a *question*: the record would have written "the margin gate has no population on a distilled
+τ² store", retired R123, and moved on — with the real answer, whatever it is, unmeasured. The three prior
+instances in this record (§34.154's counter with no caller, §34.155's threshold mistaken for a curve, §34.158's
+census counting renders) each cost a round. This one would have cost a mechanism, and the only reason it did
+not is that the artefact carried three other numbers that disagreed with it.
+
+**The rule that comes out of it is arithmetic, not discipline.** A census whose value is zero must be
+accompanied, in the same artefact, by a second count of the same quantity that cannot be zero for the same
+reason. Here that is `meanPerRequest`: an empty ranking and a four-item pack cannot both be true, and no amount
+of care in reading would have caught it as reliably as the contradiction did. So the repair is not "be
+careful with zeros" — it is:
+
+1. **the wire carries the field** (`decision`, only when the pack has one, so no other host's bytes move);
+2. **the reader counts its own arrivals** (`_census`), and reports `rivaled: null` — a distinct value from `0`
+   — when nothing arrived;
+3. **the measurer counts the same quantity again** (`PackCensus.margins`), so the two halves of one run can be
+   compared without a third party;
+4. **the contract test crosses the boundary with real bytes** (`--parse-decision` over a live response),
+   because the previous contract test handed the Python half a fixture it had written itself.
+
+**Two predictions that were graded and one that was not.** `merged`, `crossTaskGroups`, `support ≥2` and
+`maxSupport` all held in R124. R123a's population prediction did not fire because it was never measured. Both
+facts are recorded here rather than in a footnote, because a record that only reports the criteria it could
+check is a record that cannot tell an untested criterion from a passed one.

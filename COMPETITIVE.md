@@ -6590,3 +6590,50 @@ evidence orders them, and the 114 is neither.
 **Ranking, still not claimed.** What changes with this appendix is only the reason: not "our sample is
 small and theirs is not" — the samples are the same 40 tasks — but "the metric's standard error exceeds
 the gap at every `n` this corpus can supply, and the backbones differ across all of them."
+
+## Appendix AR — The harm share is the one number this lane can compare today, and the comparison says the store is ordinary rather than good (2026-11-16)
+
+Appendix AQ priced the ranking and refused it. This appendix takes the one quantity in the record that is
+**comparable across backbones, splits and sample sizes**, because it is a ratio inside a single arm rather
+than a score between two: **of the trials where the memory changed anything at all, how many did it change
+for the worse.**
+
+| source | population | harm share | what it counts |
+| --- | --- | --- | --- |
+| microglia, R123a (`43719474599`) | 21 informative trials of 160, τ²-retail held-out 40 × 4 | **12 / 21 = 57.1%** | trials the control passed and the memory arm failed |
+| *Don't Just Trust Your Memory* (arXiv, cited in §34.88) | memory-induced failures over a benchmark suite | **52%** | the same quantity, published |
+| microglia, R124 (`43705196364`) | 31 informative trials of 160 | **10 / 31 = 32.3%** | the same quantity, one dispatch earlier, on a store consolidation had cut from 70 items to 66 |
+
+Three rows, one arithmetic, and the intervals overlap: 12 of 21 is 57.1% ± 21pp at 95% and 10 of 31 is
+32.3% ± 17pp, so the first contains the published 52% and **this lane's store is not distinguishable from the
+published harm rate** on either dispatch. That is the honest reading and not the flattering one. What the table does establish is that the harm is **not a defect
+of this implementation**: a store distilled from 74 τ² tasks and served 4.05 lines per request breaks about
+as many trials as the literature's stores do, and R124's 30.8% on a store consolidated from 70 items to 66 says
+the same quantity moves with the *store*, not with the harness.
+
+**Why this number survives the objection that killed the score.** `pass^4` compares two arms' outcomes over
+40 tasks and inherits a 7.7pp standard error from a metric whose sample is smaller than its noise. The harm
+share compares **trials within one pair**, conditions on the trials where nothing changed, and is a property
+of the treatment's direction rather than of its size — so a different backbone changes *whether* a trial
+flipped, and the ratio of flips to non-flips is a weaker function of the model than the score is. That is a
+claim about robustness, not a licence to rank: an arm at 57% harm and an arm at 52% harm on 21 and unknown-n
+trials are the same measurement, and this table has no ordering column for that reason.
+
+**Where the board stands, as of this appendix** — the SOTA table, with the one column the record will defend:
+
+| entry | metric | value | sample | comparable to microglia? |
+| --- | --- | --- | --- | --- |
+| ALTK-Evolve, **submission** | τ²-retail `pass^4` | **0.6754** | 114 base, **74 in-sample** | no — 65% of its tasks were trained on |
+| ALTK-Evolve, **held-out** | τ²-retail `pass^4` | **0.675** | 40 test | **yes, same 40 tasks** |
+| τ² stock (published) | τ²-retail `pass^4` | 0.575 | 40 test | yes |
+| **microglia R120** | τ²-retail `pass^4` | **0.7500** | 40 test | yes |
+| **microglia R124** | τ²-retail `pass^4` | **0.6750** | 40 test | yes |
+| **microglia R123a** | τ²-retail `pass^4` | **0.6500** | 40 test | yes |
+| **microglia R119/R120/R124, `episode_rate`** | per-episode | **0.8750 / 0.8812 / 0.8812** | 160 episodes | yes, and it is the stable one |
+
+**Current SOTA on the row that matters** is ALTK-Evolve's held-out `0.675` against this lane's three readings
+of `0.750 / 0.675 / 0.650`, and the fact that this lane's own three dispatches span 10pp on the headline
+while reading the same rate to four decimals is the reason the ranking column says *not rankable* rather than
+a position. **The gap this record will not paper over** is `sup2`: R124 took it from 0 to 2, which is the
+first non-zero the cell has ever had, and 2 corroborated claims over 66 is not a mechanism at the scale
+ALTK's guidelines operate at.

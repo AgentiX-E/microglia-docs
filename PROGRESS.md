@@ -19845,3 +19845,83 @@ three groups span tasks, and the pack census prints `support ≥2 89, ≥3 16, m
 has to buy resolution first. **R125** (trials 4 → 8, ~$2.9, one dispatch inside the 340-minute ceiling)
 is what writes that sentence into a dispatch, and `R123a` — dispatched at 13:31Z — is the one arm that does
 not need it, because a margin ladder is a count rather than a contrast.
+
+### 209 — R123a returned a zero that was not a measurement, and the transfer ledger is the first negative reading this record has
+
+**Dispatch.** `43719474599`, completed 16:21Z, **$1.60** (memory `$0.9476` + reference), 169 minutes. τ²
+v1.0.1, the benchmark's own halves, 40 held-out tasks × 4 trials, `speakMargin: 0`, `speakCensus: 1` — the
+free arm that prices every rung without gating on one.
+
+**The line the run printed, and why it could not be read.**
+
+```
+[tau2] speak: margin 0 (the default: every non-empty pack is served); 164 request(s) reached the facade,
+       164 served, 0 withheld, 0 failed; 0 rivaled request(s) (the population a rung acts on),
+       no median (no request had a rival), ladder 0.01 0 / 0.02 0 / 0.05 0 / ... / 0.30 0
+```
+
+The registration's refutation clause was `rivaled: 0` — *the store gave nothing to be contested, so no rung
+has anything to act on*. The run printed exactly that, and **it was not what happened**:
+
+| the artefact | the value | what it rules out |
+| --- | --- | --- |
+| `served.meanPerRequest` | **4.05** | a store serving one line per pack |
+| `served.distinct` | 61 of 76 items | a store with nothing to rank |
+| `pack.summary.meanIds` | 4.05 | the same, computed on the other side |
+| `memory.rivaled` | 0 | **contradicts every row above** |
+
+Four items a pack cannot be one candidate. The census never crossed the process boundary: `startRecallFacade`
+answered `{ rendered }`, with a design note that was correct while its only reader was the driver's own
+`packReadings` — *"the census travels in-process, so a facade cannot become a second artefact channel"*. R123a
+is the first arm whose **registration** reads that census, and it reads it on the far side of a socket.
+`_margins` stayed empty, and an empty list printed as a fact about the store.
+
+**This is AUDIT 34.154's class, introduced by this record's own hand, and it is the ninth time.** A field that
+is absent and a field that is zero produce the same sentence. The repair is four lines on the wire and one
+counter on the reader:
+
+- `FacadeRecall` now returns `{ rendered, decision? }` and the response carries `decision` only when the pack
+  has one, so a host that asked for no census sees the bytes it always saw.
+- `microglia_agent._census` counts requests that carried one, `rivaled` is **`null`** when that count is zero
+  and `0` only when a census ran and found no rival.
+- `PackCensus.margins` counts the same quantity **in process**, so the ladder a run prices is checked against
+  the side that measured it: `margins 118 rivaled of 164 censused` beside the Python half's ladder.
+- The contract test hands a real response body to `selfcheck_agent.py --parse-decision` — the lane's own
+  reader, not a re-implementation — because a fixture of the payload would have agreed with itself.
+
+**The run is refuted as evidence about the store and kept as evidence about the arm.** `rivaled: 0` may not be
+cited for or against R123, and R123a re-dispatched at 06:5x Z with the repaired wire.
+
+**What the arm did measure, and it is the finding this record has been circling.**
+
+```
+[tau2] memory    pass4=0.6500 episode_rate=0.8438  episode_half_width_pp=5.63
+[tau2] reference pass4=0.7000 episode_rate=0.8688
+[l4-pair] transfer: 8 repaired, 12 broken of 160 measured (21 informative), net -2.50pp, verdict `unmeasured`
+[l4-pair] l4-paired: -5.00pp (p=0.6250, n=40, 164 served packs): UNRESOLVED
+```
+
+The paired contrast is unresolved, as every 40-task contrast is. The **transfer ledger is not**: on the 21
+trials where the memory changed anything at all, it repaired **8** and broke **12**. That is a same-run,
+same-task, same-store, same-seed paired count of the *direction* of the memory's effect, and its sign is
+negative. 139 of the 160 trials are uninformative for a mechanical reason the gate names — τ²'s own retry
+already repaired them — so the honest denominator is 21, and on it the memory is a net harm of 4 trials.
+
+**Two stores, two arms, opposite signs, and the difference is the store.** R124's memory arm ran a store that
+consolidation had taken from 70 items to 66 and reported `episode_rate 0.8812` against a reference at 0.8063.
+R123a's store holds 76 (67 servable) and reports `0.8438` against `0.8688`. The mechanism between them is not
+the gate — `speakMargin: 0` withholds nothing — it is **which claims the store admitted**, and the funnel says
+so: R124 distilled 73 corrections, R123a 19.
+
+That is the first quantitative support this record has for the hypothesis that the memory's *content* rather
+than its *use* is what hurts. The reading is not yet a claim: 21 informative trials, a store that differs in
+two ways at once (correction count and consolidation), and a transfer verdict that the gate itself marks
+`unmeasured`. What it changes is the ordering of the board — a census of *which* claims break trials is now
+worth more than any gate on whether packs are served, because the gate's own population just measured zero
+and the transfer ledger's measured harm.
+
+**The instrumentation this round is what makes that census buildable.** `pack.ledger` carries the ids served
+per request; `served.byItem` carries the requests each item was in; `use` carries the statements the agent
+read. A record that broke a trial can be joined to the claim it was served from — and until this round the
+join was impossible from outside the process, because the decision that names the ranking was the one field
+the wire dropped.
