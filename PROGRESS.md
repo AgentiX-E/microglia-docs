@@ -19977,3 +19977,51 @@ carries both, and the next dispatch (R125) does.
 `blocking-gates=PASS`, bundle core 52,422 / 52,500. One defect fixed on the way: the committed coupling snapshot
 still described the tree before two new modules existed, which is a gate that fails a push rather than a review —
 exactly what it is for.
+
+### 211 — The arm this record was about to buy cannot resolve anything, and the arithmetic says so before the dollar
+
+**R125 was registered as "trials 4 → 6, so a 10pp effect becomes visible". The registration validator refused
+it in four ways, and two of them were right.**
+
+```
+header 'effectClaimPp': a claim of 10.00pp on 240 paired tasks cannot be resolved:
+                        this design's floor is 18.09pp even if every pair disagrees
+header 'effectClaimPp': a registration that claims an effect must buy a control: its arms name only 'memory'
+```
+
+The second is paperwork — R125 would have paired against the reference arm of the same dispatch. The **first is
+the finding**, and it invalidates the plan rather than the file: `l4-paired` compares **tasks**, and there are
+forty of them no matter how many trials are bought.
+
+| unit | n at trials 4 | n at trials 6 | SE of a difference | `z` at 10pp |
+| --- | --- | --- | --- | --- |
+| **task** (what `l4-paired` tests) | 40 | **40** | **7.76pp** | **1.29** |
+| episode (what `episode_rate` reports) | 160 | 240 | 2.97pp | 3.37 — **but unpaired** |
+| episode, paired (`transfer`) | 21 informative | ~32 informative | harm share ±21pp → ±17pp | still wider than the effect |
+| turn (11.1 per episode) | 1,777 | **2,666** | — | **the only denominator that is large** |
+
+**Trials buy precision on a quantity that is not tested.** `episode_rate` moves to 240 observations and its
+interval narrows, but the hypothesis test in this lane is McNemar over paired **tasks**, and six trials on forty
+tasks is still forty tasks. The paired-episode reading that does exist — `transfer`'s 21 informative trials —
+would reach 32 at trials 6, which takes a harm-share interval from ±21pp to ±17pp: not enough to order 52% from
+57%, which is the comparison Appendix AR went to the trouble of refusing.
+
+**So the next dollar does not go to the SOTA table, and it does not go to more trials either.** The conclusion
+the arithmetic forces is about **units** rather than samples:
+
+> This lane's effects (5–10pp on task success, 5–10pp of harm share) are not measurable in task-success units at
+> any sample this corpus can supply. 114 tasks give 4.60pp of standard error against a 7.5pp gap; 300 tasks are
+> needed and retail ships 114. What *is* measurable at affordable `n` is **per-turn** behaviour —
+> 2,666 turns at trials 6 — where a memory that induces a wrong action shows up as a wrong tool call rather than
+> as a lost episode.
+
+**R125 is rewritten around that.** The treatment is not `trials`; it is a **turn-level census** the harness can
+read from trajectories it already recorded — tool calls that came back in error, repeated calls to the same tool
+with the same arguments, and the user turns that follow them — with `$0` model cost, since the messages are
+already in `simulations`. Its registered reading is a paired per-episode count (`toolErrors`, `repeatCalls`) with
+a Poisson-style interval at 160 episodes, and its refutation is that the two arms' counts do not differ by more
+than their own intervals — which, unlike the task-level test, is a test that can actually come out either way.
+
+**What this costs the record.** One registration written and withdrawn before dispatch ($0), and one plan
+reordered. The alternative was $2.2 spent to learn that 40 tasks is still 40 tasks — and the record has already
+paid for that lesson twice, in R124's 26.21pp and R123a's 14.01pp minimum detectable differences.
