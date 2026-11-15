@@ -20599,3 +20599,46 @@ query is R132's first dispatch all over again. Its second is the bill: a cost th
 0.675 and 0.575 — inside the interval, therefore unrankable — and the episode rate **84.73% [80.77, 88.69]** is
 still the only quantity this record can quote at 5pp. What R133 adds to the board is a column no competitor
 publishes: **$0.00655 an episode against $0.00270**, on identical work.
+
+### 218 — The ledger was already in the artefact: 21 of 64 items were never served
+
+R133's artefact carries `pack.ledger` — the item ids each of the 40 held-out requests was served — and
+`per_task` — whether that request passed. Two arrays, written by two parts of the driver, never joined. The join
+costs nothing: no calls, no dispatch, no LLM. It prices an **item** instead of a store, which is the unit the
+next decision is actually about.
+
+`eval:item-ledger` is that join, and its first reading on R133 is a reachability fact the store-level numbers
+could not produce:
+
+| | |
+| --- | --- |
+| items in the store (`storeItems`) | 64 listed, 73 active |
+| items served on ≥1 held-out request | **43** |
+| items **never served** | **21** (33%) |
+| item-requests | 159 (matches `pack.fold.units`, which is why the join is trustworthy) |
+
+**A third of the store is invisible to the held-out half.** Every one of those items was admitted, trusted at
+0.9, and given a place in the pack budget — and on the 40 tasks that decide the score, no request ever retrieved
+it. With `supportTasks: 1` on 62 of 64, the store is very nearly a per-task cache: an item written from one
+learn episode is retrieved by the neighbours of that episode and by nothing else, so a third of it simply never
+has a neighbour.
+
+**The join is checked against a third array, not assumed.** `pack.ledger[i]`, `per_task[i]` and
+`turnCensus.rows[i]` are written by three different places; the command refuses when the third disagrees with
+the second about which task a row is. That check is not ceremony — this lane has published a census whose order
+was assumed once already, and the failure mode is a number rather than an error.
+
+**What it does not say, and says so.** Without a store-off draw of the same 40 tasks, each row carries its cases
+rather than a net: an item served on three passing requests and an item served on none are different counts, and
+only a baseline can say what the passing ones cost. R134 was dispatched with both arms for exactly this reason,
+so its artefact will price the per-item net. Until then the ledger's own sentence prints the absence rather than
+a zero, and the sum it will print over negative items is named an **upper bound**: a pack that serves four ids
+counts one break against four items, so deleting the negative ones cannot recover their sum of cases, only at
+most it.
+
+**Tests.** 9 in `item-ledger.test.ts`: the row-count refusal with its reason, a repeated id inside one pack
+counted once, cases without a baseline with the null kept distinct from zero, the signed reading where an item
+served on two requests is +1 and another is −1 while both pass rates are identical, an unscored task left out
+rather than read as a failure, the empty-ledger sentence, the bound's wording, the no-baseline sentence, and a
+store smaller than the ledger. `item-ledger.ts` is **100 / 100 / 100 / 100**. Full suite: **5,435 tests in 266
+files**, coverage **99.98 / 99.85 / 100 / 99.98**.
