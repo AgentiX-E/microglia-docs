@@ -7026,3 +7026,46 @@ of 74 to 2 of 40 — the extra scripts were doing both. Second, **the price is n
 −5pp, with the payload accounting for a sixth of it. A method that cannot be run at its control's price is
 not a product, and the next arm is a measurement of where the other five sixths are rather than a larger
 claim about a rate.
+
+## Appendix AY — Four 2026 papers that predicted our result, and the one that says what to do (2026-11-17)
+
+R134 measured three things that looked surprising in isolation: shrinking the pack to one item kept the
+harm low (10.81%) and destroyed the repair (2 of 40); the items are 1:1 with learnt tasks (`supportTasks:
+1` on 62 of 64); and 37 of 64 items never reached a held-out request. Four papers published between
+February and October 2026 measured the same three things on purpose.
+
+| paper | its finding | the number | our matching measurement |
+| --- | --- | --- | --- |
+| **Break It Down, Pass It On** (2608.20274, Feng et al.) | **task-level** induced skills *reduce* performance below the no-memory baseline; **subtask-level** raise it above | task-level ↓, subtask-level ↑ on average; text skills transfer better than code | our items are task-level by construction — `kind: procedure` on the exact call `shape` of one episode — and R134 read **−5.00pp** against its own reference |
+| **Structurally Aligned Subtask-Level Memory** (2602.21611, Shen et al.) | instance-level memory has a **granularity mismatch**: similarity of surface descriptions is the wrong key when two similar tasks need different reasoning | **+4.7pp** mean Pass@1 over vanilla, **+6.8pp** on the strongest backbone | our ranker keys on exactly that surface similarity; margins p50 **0.0489**, and the top-1 item repairs **2 of 40** |
+| the same paper's **ablation** | "category filtering and abstract transferable insights drive the gains, while **raw trajectories and globally similar memories add noise**" | ablation, not a headline | our store is 100% raw-trajectory-shaped, and R123a's four-item pack read harm **29.63%** |
+| **More Memory, Worse Agents** | error **reproduction**: a wrong abstracted rule regenerates itself from the trajectories it produced; the fix is Anti-Persistence — keep trajectories, do not persist abstractions, rebuild per task | its best design is also the **cheapest** in LLM calls | we persist abstractions (a distilled `lesson` per correction) and never revise them; 37 of 64 are never retrieved again |
+| **AMD** (hierarchical memory distillation, AppWorld) | retrieval **k=1 is the global optimum**; k=3 and k=5 degrade monotonically | 49.40% → 33.34% from k=1 to k=5 on a 4B agent | R134 bought exactly this contrast and got the same *direction* (harm 29.63% → 10.81%) with a different *consequence*: repair collapsed too |
+
+**What the four agree on, and what we can now say in their language.** The problem is not how much memory
+is stored, and it is not the retrieval budget: it is **the granularity at which an item is cut**. A
+task-level item is a transcript of one episode; it is maximally specific (it matches the case it was
+written from, which is why own-case repair was 55.00% in R132) and minimally abstract (its relevance does
+not spread, which is why 37 of 64 were never retrieved on a held-out task). 2608.20274 reports that this
+combination scores low on the utility score it builds from *specificity × abstractness* and that
+task-level skills land **below** the no-memory baseline — which is where R134 landed.
+
+**The actionable one.** 2602.21611's ablation says the gain comes from **category filtering plus abstract
+insights**, and that globally similar memories add noise. We already store the category on every item —
+`scope.intent` and `scope.field`, 56 groups over 64 items, 52 of them singletons — and our retrieval ranks
+on surface similarity alone. So the cheapest arm the literature licenses is not a new distiller: it is
+**filter the candidates by the item's own category before ranking**, which is a two-line change in the
+recall query with a countable criterion (`items reached per request`, and the repair count).
+
+**What none of them report, and this record does.** A per-episode price against the arm's own control on
+identical tasks — **2.25×** at R134 — and a per-item outcome ledger (27 items served, 4 negative, 2
+positive, 37 never served). The four papers above report Pass@1 deltas on benchmarks with different
+backbones and no cost column; that gap is why Appendix AX's ranking is unrankable on the rate and
+defensible on everything else.
+
+**The one number that should worry a reader of this file.** 2608.20274's headline is that task-level skills
+put the agent *below* its own no-memory baseline. R134's −5.00pp [−17.50, +7.50] is consistent with that
+and does not establish it — 40 tasks resolve 10pp per arm — but the direction has now been measured twice
+in this record (R123a's harm share 29.63%, R134's net negative) and once in a controlled study. Treating
+our store as a net positive on held-out tasks is no longer the default hypothesis; it is the one under
+test.
