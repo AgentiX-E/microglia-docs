@@ -6507,3 +6507,86 @@ rather than the citation count.
 tasks against microglia **0.7500** on 40 tasks, with `sup2` served at **0** here and non-zero there. The two
 samples cannot resolve a 2.5pp rate difference, so no rank is claimed in either direction; what this round
 adds to the table is a mechanism column, not a score column.
+
+## Appendix AQ — The 114 is a different population, not a larger sample of the same one, and no sample this benchmark ships can rank the two (2026-11-15)
+
+The question that produced this appendix is the right one to ask of every "not rankable" line in this
+record: *if the samples differ, why not grow ours until they match?* It has a numeric answer, and the
+answer is that the 40 is not this lane's sample.
+
+### AQ.1 Three numbers, three populations, and only two of them share a task set
+
+| row | value | task set | what the set is | backbone |
+| --- | --- | --- | --- | --- |
+| ALTK-Evolve, held-out | **0.675** | **τ² retail `test`, 40 tasks** | the benchmark's held-out half | gpt-4.1 agent, gpt-5.5 simulator |
+| ALTK-Evolve, submission | **0.6754** | τ² retail `base`, 114 tasks | **74 train + 40 test**, disclosed `training-task overlap` | same |
+| microglia R120 / R121 memory arm | **0.7500** | **τ² retail `test`, 40 tasks** | the same held-out half, `TAU_TASK_SPLIT=official` | deepseek-flash |
+
+The middle row is the only 114 in the table, and it is not a wider sample — it is **65% in-sample for
+the entry that reports it**. The held-out number exists, it is 0.675, and this lane has been running on
+its task set since R120. So "grow our sample to 114" would not make two samples comparable; it would
+replace a held-out measurement with a partly in-sample one, which is the specific move §34.114 and
+Appendix T.1 were written about. That is an available option priced in AQ.3, not a correction of an
+oversight.
+
+### AQ.2 The arithmetic: at n = 114 the metric cannot resolve the gap it is being asked to resolve
+
+`pass^4` is a proportion over tasks, so its standard error is `√(p(1−p)/n)` with `n` = tasks, not
+episodes. Both held-out numbers are `n = 40`, so the gap between them is 7.5pp against:
+
+| comparison | `n` per arm | SE per arm | SE of the difference | `z` | two-sided `p` |
+| --- | --- | --- | --- | --- | --- |
+| as measured (40 vs 40) | 40 | 7.40pp | 10.47pp | **0.72** | 0.47 |
+| both grown to the base split | 114 | 4.38pp | 6.19pp | **1.21** | 0.23 |
+| base split, three domains pooled | 278 | 2.81pp | 3.98pp | **1.88** | 0.06 |
+| `n` needed for `z = 1.96` | **300** | 2.71pp | 3.83pp | 1.96 | 0.05 |
+
+**Retail ships 114 base tasks.** The row that would make the gap significant needs 300, so the number
+does not exist inside the corpus: the largest admissible retail sample still leaves the difference at
+`z = 1.21`. The pooled row is the whole τ² English family (retail 114 + telecom 114 + airline 50) and it
+buys `p ≈ 0.06` — against a competitor whose telecom figure this lane has never located, so half of that
+278 is a row with no counterpart to compare to.
+
+The same arithmetic one level down is why this record stopped ranking its own arms by `pass^4`: at
+p ≈ 0.88 the per-episode rate has SE 2.7pp on 160 episodes while the headline has SE 7.7pp on 40 tasks,
+and R119/R120 differ by **one episode in 160** and **fifteen points in the headline** (Appendix AN.1).
+
+### AQ.3 What "running more" actually costs, at this lane's measured prices
+
+Every cost below is extrapolated from two measured dispatches: R120 spent **$0.9256** on **160 episodes
+serving both facade units in one pass** (~165 min wall clock), and the L4 step's ceiling is 340 minutes
+per unit cluster, so anything above ~6 trials has to be split across dispatches.
+
+| action | episodes per arm | delta vs today | cost | dispatches | resolves the 7.5pp gap? |
+| --- | --- | --- | --- | --- | --- |
+| today (40 × 4) | 160 | — | $0.93 | 1 | no, `z = 0.72` |
+| **base split (114 × 4)** | 456 | `2.85×` | **~$2.6** | 2 | no, `z = 1.21` — and 65% in-sample |
+| three domains (278 × 4) | 1,112 | `6.95×` | **~$6.4** | 4 | borderline `p ≈ 0.06`, half has no competitor row |
+| 300 tasks × 4, if they existed | 1,200 | `7.5×` | ~$6.9 | 4 | yes on retail, which ships 114 |
+| **gpt-4.1 backbone on 40 × 4** | 160 | — | **~$22–45** | 1–2 | **yes, and it is the only axis that matters** |
+
+The last row is a cost estimate from ALTK's own published **$0.139 per conversation** with the full
+guideline set (`$0.084` without it) times 160 episodes, plus a gpt-5.5 user simulator; it needs an
+OpenAI key this lane does not hold, which is why Appendix T already wrote the sentence that governs every
+row above: *"a reader who wants the backbone removed needs a GPT-4.1 key, not another dispatch of this
+arm."*
+
+### AQ.4 What the money is on, if not the 114
+
+The three axes are not equally hard. `split` is already aligned (40 vs 40, `official`). `n` is reachable
+only by spending 3-7× for a `p` between 0.06 and 0.23, because the corpus is smaller than the sample the
+metric needs. **`backbone` is the one axis no amount of tasks moves**, and it is priced at roughly
+twenty times the cheapest alternative.
+
+Which is why the next marginal dollar does not go to the SOTA table at all. The only contrast in this
+record that holds split, `n`, seed, judge and backbone fixed is **memory against τ² stock inside one
+run**: `rate 0.8812 ±5.01pp` against `0.83125`, **+5.00pp, 9 tasks gained and 4 lost, p = 0.2668 at 160
+episodes**. That is a treatment effect with every axis controlled, and it is unresolved for one reason
+that money can fix: the same `p = 0.88` arithmetic says `z = 1.96` needs **~370 episodes per arm**
+(trials 4 → 9, **$2.1**, one dispatch inside the ceiling) and 80% power needs ~750 (three dispatches,
+~$4.2). Two dollars on a controlled contrast, or twenty on a cross-backbone one: the record's own
+evidence orders them, and the 114 is neither.
+
+**Ranking, still not claimed.** What changes with this appendix is only the reason: not "our sample is
+small and theirs is not" — the samples are the same 40 tasks — but "the metric's standard error exceeds
+the gap at every `n` this corpus can supply, and the backbones differ across all of them."
