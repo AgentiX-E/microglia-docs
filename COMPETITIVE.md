@@ -7069,3 +7069,53 @@ and does not establish it — 40 tasks resolve 10pp per arm — but the directio
 in this record (R123a's harm share 29.63%, R134's net negative) and once in a controlled study. Treating
 our store as a net positive on held-out tasks is no longer the default hypothesis; it is the one under
 test.
+
+## Appendix AZ — The category does not exist, measured in one command (2026-11-17)
+
+Appendix AY ended with the cheapest arm the literature licenses: filter candidates by the item's own
+category before ranking, as 2602.21611's ablation says the gain comes from category filtering plus abstract
+insights. That recommendation rests on an assumption this record had not checked — that the store *has*
+categories. It does not.
+
+Read off R134's own store (`storeItems.items`, 57 active):
+
+| | |
+| --- | --- |
+| active items | 57 |
+| distinct `scope.intent` strings, as written | **43** |
+| distinct after naive normalisation (case, underscores, plural, token order) | **41** |
+| largest normalised group | **5** items (`item return`) |
+| second and third | 3 (`exchange item order`), 3 (`delivered item order return`) |
+| items with `scope.field` set | **19 of 57** |
+| learnt tasks the store was written from | 74 |
+
+The same intent was written four ways in one store — `return_items`, `return_item`,
+`return delivered items`, `return_delivered_order_items` — because the intent is a **phrase the distiller
+chose**, not a member of a closed set. After normalisation, 57 items carry 41 labels, which is a taxonomy
+with the same cardinality as the thing it is supposed to classify.
+
+**Three consequences, none of them about retrieval.**
+
+1. **Corroboration is impossible by construction.** `sup2` — items corroborated by two or more tasks —
+   stands at **2 of 66** in the memform census, and R134's own fold census agrees on its own population
+   (`atLeastTwo: 2`, `atLeastThree: 1` over 40 served packs, maximum support 5). It cannot be otherwise
+   when 41 labels cover 57 items: two items almost never share a label, so nothing can accumulate support. The number was read for three rounds as a property of the
+   distiller's caution. It is a property of the label's cardinality.
+2. **Category filtering would split, not select.** Filtering by `intent` on this store would return one
+   item per request most of the time — the same effect as `packLimit: 1`, which R134 measured at 2 repairs
+   of 40. The filter is only a filter if the set is coarser than the items.
+3. **"Abstraction" is a word we have been using without a measurement.** An item labelled
+   `return delivered items` and an item labelled `return_items` are the same lesson under two names; a
+   store that cannot say so is a store of 57 transcripts wearing 43 labels.
+
+**What this changes about AY's recommendation.** The licensed arm is not "filter by category" — it is
+**make a category**, at write time, from a closed set, and cut the item at that level (2602.21611's
+`Z = {Analyze, Reproduce, Edit, Verify}`, or an equivalent the retail domain actually needs). Its
+criterion is countable before any dispatch: **distinct labels ≤ 12 over ≥ 57 items, and `sup2` above 2 of
+66**, which is a property of the store rather than of a rate.
+
+**Why this belongs in a competitive file.** A competitor reading only AY would conclude this record is
+about to run a retrieval experiment that a 2602.21611 ablation already validated. It is not: the same
+ablation assumes a category set, and the measurement above says we have none. The gap between "the
+literature says X" and "we can run X" is one command wide, and running that command is cheaper than
+running the arm.
