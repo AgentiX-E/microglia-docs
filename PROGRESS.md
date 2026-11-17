@@ -20982,8 +20982,11 @@ re-scored — the facade took 42 requests for 40 trials — so `serve split` ref
 second round running. This is now a known population fact rather than a mystery: τ² re-runs a simulation whose
 first attempt died, the abandoned attempt opens a boundary the runner never scores, and the requests it
 opened belong to no trial. The split's refusal is correct and the alternative — attributing them by position —
-is the misattribution the identity join exists to prevent. **R138 is where this stops being acceptable**: a
-refused split costs every per-item reading in the arm, and per-item readings are what the next question needs.
+is the misattribution the identity join exists to prevent. What the refusal costs is the **gate comparison**
+(the served-versus-withheld rates), not the transfer: `itemTransfer` reads the ledger and the trial table
+directly and returned its 5-and-2 on this arm. **R138 names the abandoned attempt as an attempt** so the split
+can measure over the 40 named groups and report the requests it dropped, which costs nothing and removes the
+last reading in this lane that a harness retry can suppress.
 
 **Decision rule applied.** Copies 1.0 · cost 1.08× the control · harm share fell from 8.11% to 6.06% → the
 branch the registration named: **buy the block itself.** With one copy in the prompt and a bill that is the
