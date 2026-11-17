@@ -20938,3 +20938,66 @@ above 1.0 sends the next dollar at the fixture, and no score from the arm may be
 **State.** 5,476 tests over 266 files, **99.99 / 99.90 / 100 / 99.99**; `cache-census.ts` at
 100/100/100/100; the two Python self-checks at **29 cases / 96 assertions** and **38 cases / 129 assertions**.
 Pushed as `7eea4af`. Dispatch `44106251734` is running off-peak, forecast **~$0.32**.
+
+### 223 — R137 read back: the block is carried once, and the premium is eleven tokens
+
+**Every registered criterion held, the cost halved, and the direction of the pair flipped from −5.00pp to
++7.50pp.** Dispatch `44106251734`, `prereg/R137-one-block-a-call.md`.
+
+**The instruments first, because they decide whether the score may be read at all.**
+
+| reading | R136 (the defect) | R137 (one copy) | predicted |
+| --- | --- | --- | --- |
+| `pack_copies_per_packed_call` | **5.40** | **1.00** | 1.00 |
+| `packed_calls_with_copies` | **369 of 410** | **0 of 428** | 0 |
+| `system_chars_per_packed_call` | 11,105.9 | **7,793.9** (−29.8%) | ≈7,320 |
+| `injected_chars_per_packed_call` | 705.1 | 737.9 | — |
+| `carriage_chars_per_packed_call` | 10,400.8 | **7,056.0** | — |
+| `uncached_tokens_per_call` | 1,542.4 | **431.5** (−72%) | toward 500 |
+| `cached_tokens_per_call` | 3,654.6 | **4,435.5** | above the control's 4,232.7 |
+| `prompt_tokens_per_call` | 5,197.0 | 4,867.0 | — |
+| cost, memory arm | $0.2033 | **$0.0996** (−51%) | < 1.5× the control |
+| uncached premium over the control | **+1,128.8** a call | **+8.9** a call | fall |
+
+The carriage is now **the policy prompt and nothing else**: 7,793.9 of system minus 737.9 of message leaves
+7,056 — one number for the benchmark's own instructions, on every packed call, with a standard deviation the
+mean does not even need to hide behind. The remaining premium is **8.9 uncached tokens a call**, which is
+1.7% of the pack's own 149 tokens and inside the differential character counts (735 against the control's
+706 a request). **The memory now costs what its text costs.**
+
+**The pair.** Memory **36 of 40 (0.900)** against the reference's **33 of 40 (0.825)**: **+7.50pp
+[−5.00, +20.00]**, p=0.4531, **5 repaired and 2 broken** of 33 trials the control passed — a harm share of
+**6.06%**, against R136's 8.11%. The sample cannot resolve 7.5pp (its minimum detectable difference is
+18.53pp), so this is not a claim that memory helps; it is the first pair in this record whose point estimate
+is positive *and* whose treatment costs nothing extra.
+
+**What is not attributable, stated before a reader assumes it.** The two runs drew different stores (69
+servable items against 66, 735 characters a pack against 708) and different numbers of abandoned attempts
+(two against one), so the change in the score is not the fix's doing. What the fix owns is the carriage, the
+copy count, the cache and the bill — quantities that moved by 30–72% with a mechanism that predicts each
+direction. The score moved inside its own noise and is reported as such.
+
+**The join, again.** **42 boundaries for 40 tasks, 2 unresolved.** Two simulations were abandoned and
+re-scored — the facade took 42 requests for 40 trials — so `serve split` refuses (`tasks-unresolved`) for the
+second round running. This is now a known population fact rather than a mystery: τ² re-runs a simulation whose
+first attempt died, the abandoned attempt opens a boundary the runner never scores, and the requests it
+opened belong to no trial. The split's refusal is correct and the alternative — attributing them by position —
+is the misattribution the identity join exists to prevent. **R138 is where this stops being acceptable**: a
+refused split costs every per-item reading in the arm, and per-item readings are what the next question needs.
+
+**Decision rule applied.** Copies 1.0 · cost 1.08× the control · harm share fell from 8.11% to 6.06% → the
+branch the registration named: **buy the block itself.** With one copy in the prompt and a bill that is the
+control's, pack content is finally the only thing that varies — item count, order, form and dose are
+measurable again, and none of them was measurable under a prompt that repeated the block.
+
+**The specific next dollar, and it is free.** R137's own pair carries the per-item ledger: `itemTransfer`
+reads `kept`, `broke` and `net` for every id the packs served, joined to the trial it was served into. On a
+clean carriage the two broken trials can be attributed to items, and the question becomes answerable without
+a dispatch — *would a quarantine of the net-negative items have removed exactly those two and kept the five
+repairs?* R129 registered that mechanism before this record knew the carriage was the block; the census that
+prices it can now be run on an artefact already paid for.
+
+**State.** 5,481 tests over 266 files, **99.99 / 99.90 / 100 / 99.99**; `cache-census.ts` and
+`tau2-attribution.ts` at 100/100/100/100; agent self-check **30 cases / 98 assertions**, census
+**38 cases / 129 assertions**. Pushed `7eea4af`, `6e15a73`, `3b3853a`. Cost of the round: **$0.0996 + the
+control's ≈$0.09**, against a $0.32 forecast.

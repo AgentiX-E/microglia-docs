@@ -7151,3 +7151,32 @@ change accuracy enough to be visible at n=40 — it changes the bill and the var
 the evidence: **−5.00pp [−15.00, +5.00]** is a result the sample cannot separate from zero, while the cost
 ratio 2.20× is not uncertain at all. The defect was legible in the invoice for four rounds before it was
 legible in the score.
+
+## R137 read back — the memory now costs its text, which is where the comparison becomes honest
+
+**The standing is unchanged and that is the point of this entry.** AskData remains SOTA on BIRD at **83.40
+test / 78.49 dev**; on τ²-bench retail `pass^4` the published rows remain IBM **67.5**, SapientAI **72.8**,
+RAFT-30B-A3B **61.4**, ALTK-Evolve **57.5** and stock `llm_agent` **34.0**. R137's arm read memory **0.900**
+against its own control's **0.825** — a rate this lane still refuses to place on that board
+(`bar_backbone_matches: 0`), because the backbone and the 40-task sample are not the board's.
+
+**What changed is the column a competitor would look at.** The memory's uncached premium over a memory-free
+control on the same tasks was **+1,128.8 tokens a call** in R136 and is **+8.9** now, with the served text at
+735 characters (≈151 tokens). A memory framework that substitutes a block per turn — MemGPT, MemoryBank,
+Reflexion, ExpeL, AWM, Mem0, A-MEM — pays that 151 and no more, so the honest comparison is no longer
+"microglia costs 2.2× what an unmemoised agent costs" but "microglia costs what its pack costs". Per episode
+that is **$0.0025 against the control's ≈$0.0023**.
+
+**The direction is now positive and still unresolved.** +7.50pp [−5.00, +20.00] at p=0.4531 with 5 repaired
+and 2 broken: the first pair in this record whose point estimate favours memory *and* whose treatment is
+free. Against ALTK-Evolve's published 57.5 on the 114-task retail split, this arm's 0.900 on a 40-task
+held-out half is not a comparable number and is not offered as one — but a memory that repairs five trials
+while breaking two, at no token premium, is the first configuration here that could plausibly be entered on
+that board without a handicap.
+
+**What a competitor has that this store still does not.** The outcome field: none of the seven frameworks
+above writes, per item, how many trials it was served into and how many of those the arm won — except the
+three 2026 mechanisms (SEMV, ACE, STRATA) that make that field their admission gate. R137's pair carries the
+ledger needed to compute it offline, and R138 is the census that decides whether quarantining net-negative
+items would repair the two broken trials. That is the next axis on which this project can differ from a
+framework that only substitutes better text.

@@ -9404,3 +9404,46 @@ implementation already assumes.
 every memory-versus-control delta in that window was measured with a repeated block. Nothing in that window
 is void — the arms that found memory harmful found it under a treatment that was harmful for a second reason
 — but the size of any memory effect measured there is not separable from the duplication.
+
+### 17.144 The carriage resolved: it was the policy prompt, and the copies were the premium
+
+17.143 made the injection idempotent and registered what the census should then report. This is the reading,
+and it is the first one in this record where a memory's bill is its text.
+
+| column | before (one copy per turn, growing) | after (one copy a call) | what changed |
+| --- | --- | --- | --- |
+| `pack_copies_per_packed_call` | 5.40 | **1.00** | the wrapper stops appending to a threaded state |
+| `packed_calls_with_copies` | 369 of 410 | **0 of 428** | no call carries the block twice |
+| `system_chars_per_packed_call` | 11,105.9 | **7,793.9** | −3,312 characters a call |
+| `injected_chars_per_packed_call` | 705.1 | 737.9 | the pack itself, 735 a request |
+| `carriage_chars_per_packed_call` | 10,400.8 | **7,056.0** | the policy prompt, alone |
+| `uncached_tokens_per_call` | 1,542.4 | **431.5** | −72% |
+| `cached_tokens_per_call` | 3,654.6 | **4,435.5** | a stable front is what a cache holds |
+| `prompt_tokens_per_call` | 5,197.0 | 4,867.0 | −6.3% |
+| cost, memory arm | $0.2033 | **$0.0996** | −51% |
+
+**Three readings follow, and each is a structural fact rather than a measurement of a draw.**
+
+1. **The carriage was the policy prompt all along.** 7,056 characters a packed call, constant, and larger
+   than any estimate this record had made from a mixture (6,614 – 7,062 from the control's mean). The
+   subtraction was right in 17.142 and the noun was wrong: there was no adapter preamble worth the name, only
+   the benchmark's own instructions plus, in the defective arm, five extra copies of the block.
+2. **The premium was the copies, in full.** 1,128.8 uncached tokens a call became **8.9**. The residual is
+   smaller than the difference in served characters (735 against 706 a request, 29 characters = 7 tokens), so
+   the honest statement is that the memory's uncached cost is now indistinguishable from zero at this
+   precision. What was read for four rounds as "the memory makes the prompt expensive" was one line of
+   Python appending to a copy.
+3. **The cache recovered without being told to.** `cached_tokens_per_call` rose 21% and `prefix_coverage`
+   fell from 2.19 to 1.52 on the same corpus, because a prefix that stops moving is a prefix the provider can
+   hold. The lane never touched a cadence: the boundary was the bug.
+
+**What the carriage is now good for.** With `system_chars_per_packed_call` a clean function of the policy, the
+pack's own length and nothing else, the difference between two arms' system columns is a statement about
+their packs. That is the precondition the dose axis never had: R99 could raise supply fivefold and read
+nothing, because a bigger pack also meant a bigger duplication, and the two effects pointed the same way in
+the bill and the opposite way in the prompt.
+
+**What is still refused.** The serve split, for the second round running: 42 boundaries for 40 trials, two
+unresolved. The refusal is correct — an abandoned simulation's requests belong to no trial — and it costs
+every per-item reading in the arm. The repair is not a fallback to position; it is to make the abandoned
+attempt visible as an attempt, which is the next registration's business rather than this one's.

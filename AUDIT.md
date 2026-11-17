@@ -11275,3 +11275,37 @@ as readings of the arms that produced them; they no longer stand as readings of 
 3. **An instrument that reports a number the registration did not anticipate is worth more than the arm that
    was dispatched for it.** R136 was registered as an instrument arm with a negative control, and its one
    useful output was neither the rate nor the carriage it predicted.
+
+## 34.176 A prediction table read back, including the one that was wrong
+
+R137 registered its criteria before the dispatch. Reading them back is the whole point of having registered
+them, and one prediction missed in a way that matters.
+
+| prediction | reading | verdict |
+| --- | --- | --- |
+| `pack_copies_per_packed_call == 1.00` | 1.00 | hit |
+| `packed_calls_with_copies == 0` | 0 of 428 | hit |
+| `system_chars_per_packed_call ≈ 7,320` | 7,793.9 | **missed high by 6.5%** |
+| `uncached_tokens_per_call` toward 500 | 431.5 | hit, and below the mark |
+| `cached_tokens_per_call` above 4,232.7 | 4,435.5 | hit |
+| cost below 1.5× the control | 1.08× ($0.0996 against ≈$0.0923) | hit |
+| the score's direction | +7.50pp [−5.00, +20.00] | direction hit, not resolvable |
+
+**The miss is the useful line.** 7,320 was built from an estimate of the policy prompt at ~6,600 characters,
+solved from the control arm's `system_chars_per_call` on R136's corpus under an assumption: that the control's
+450 agent calls and 213 simulator calls were the same split as the memory arm's. 17.143 printed that estimate
+as a *range* (6,614 – 7,062) and then used its lower end in the forecast, which is the arithmetic version of
+rounding towards the answer one expects. The measured carriage, 7,056 characters, sits at the top of the range
+the same entry printed. **A range used as a point is a point.**
+
+**What may not be read from this round.** The score improved by 12.5pp against R136's pair, and none of it is
+attributable to the fix: the two runs drew different stores (69 servable items against 66) and different
+numbers of abandoned attempts (two against one). What the fix owns is the carriage, the copy count, the cache
+and the bill — each moved 30–72% in the direction its mechanism predicts. The score moved inside a sample
+whose minimum detectable difference is 18.53pp, and is reported as a reading of *this* arm rather than as an
+effect of that change.
+
+**The lesson, which is the third time this section has written it.** An instrument bought to size a remainder
+found a defect (34.175); the repair's readback found that the remainder was the policy prompt and the defect
+was the whole premium. Neither result was the one the arm was dispatched for, and both were only visible
+because the registration fixed the *instrument's* criteria before the *treatment's* number.
