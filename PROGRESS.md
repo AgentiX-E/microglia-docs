@@ -21178,5 +21178,8 @@ says the arm served every trial, which is R123's finding repeated (`served 162 o
 uninformative until a registration names a `recallFloor` that withholds. That is why the repair is filed as an
 instrument and not as an arm.
 
-**State.** 5,511 tests over 267 files (+6); **99.99 / 99.90 / 100 / 99.99**; `tau2-attribution.ts`
-100/100/100/100. Cost: **$0.00**.
+**State.** 5,512 tests over 267 files (+6 here, and +1 for R139's wire case); **99.99 / 99.90 / 100 /
+99.99**; `tau2-attribution.ts` and `consolidate.ts` at 100/100/100/100. The wire case is R139's, and it exists
+for this round's reason: the header is parsed in one process, read as an env var in another and turned into an
+option in a third, and the assertion is the arm's own verdict sentence — *every pair reached the guards: the
+key was not consulted*. Cost: **$0.00**.
