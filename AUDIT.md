@@ -11420,11 +11420,11 @@ them; the two that were corroborated carried `+1` and `0` between them:
 
 | support at serve time | items served | broken | kept | net |
 | --- | --- | --- | --- | --- |
-| 1 | 19 | 3 | 3 | **0** |
+| 1 | 19 | **5** | **5** | **0** |
 | 2 | 2 | 0 | 1 | **+1** |
 
 Every net-negative item was a singleton — and so were three of the four net-positive ones. A floor at 2 removes
-−3 and +3 from this arm: it is a *composition* change, not an improvement, and a round that reported only the
+five broken trials and five kept ones from this arm: it is a *composition* change, not an improvement, and a round that reported only the
 harm it removed would be reporting half of its own table.
 
 **Why that is still worth a dispatch.** Because the alternative is a counter with no population. R129's

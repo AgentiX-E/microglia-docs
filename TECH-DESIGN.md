@@ -9623,6 +9623,25 @@ means the write-back was partial; a *served* item with support 1 means the floor
 learning block *and* in the diagnostics of a refusal: `0 servable` over seventy items is two facts — a floor
 that emptied the store, and a distiller that wrote nothing — and only the record separates them.
 
+**The join its criterion is written in, and why it is a module.** "No served item carries support below the
+floor" spans two artefacts: the attribution table says which item the pack served and what it did, the store
+sample says how many tasks stand behind it. On R139's pair that join was a python script written after the
+number arrived, which is this record's oldest defect shape. `serveSupportCensus` decides it once and prints one
+line:
+
+```
+serve support: 21 of 55 servable item(s) served; support 1: 19 item(s), 5 broke, 5 kept, net +0;
+support ≥2: 2 item(s), 0 broke, 1 kept, net +1; floor absent, so a floor of 2 would have retired 19 of the 21
+```
+
+Two readings are exclusive inside it and that is the design: on an arm that ran no floor the useful number is
+the **counterfactual** (what a floor of two would have removed), and on an arm that ran one the counterfactual
+is meaningless because a floor that ran and let a singleton through is a carriage defect and not a prediction.
+Two refusals sit beside them — a served id the capped sample omits counts as **one task**, because the store
+writes one task per correction and a bucket named `unknown` would make the census look like it measured
+something it declined to; and an artefact with no sample at all is *absent* rather than empty, because a map
+built from nothing would call every served item a singleton.
+
 **What it costs.** Nothing. The floor is arithmetic over evidence the store already carries, it makes no model
 call, and the census rides the run that was going to be made anyway — which is why its first read is a $0.20
 dispatch on R139's own pair rather than a new lane.

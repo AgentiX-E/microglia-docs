@@ -21218,12 +21218,13 @@ served in this arm had **one task** behind them, and the two corroborated items 
 
 | support at serve time | items served | broken | kept | net |
 | --- | --- | --- | --- | --- |
-| 1 | **19** | 3 | 3 | **0** (−3 and +3) |
+| 1 | **19** | **5** | **5** | **0** |
 | 2 | **2** | 0 | 1 | **+1** |
 
 Every one of the three negative-net items was a singleton; so were three of the four positive ones. A floor at
-2 would have removed **all** of the harm in this arm and **all** of the gain with it — and it would have left
-eleven servable items where there were fifty-five, of which the pack had ever reached two.
+2 would have removed **all five** of the trials this arm broke and **five of its six** repaired ones — the
+corroborated item that survived is the only gain left — and it would have left eleven servable items where
+there were fifty-five, of which the pack had ever reached two.
 
 **What the round therefore hands forward, stated as numbers rather than as a hope.** The store's consensus is
 real, small and mostly unused: 11 of 55 items corroborated, 21 of 55 ever served, 40 requests. The floor is the
