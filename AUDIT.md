@@ -11309,3 +11309,36 @@ effect of that change.
 found a defect (34.175); the repair's readback found that the remainder was the policy prompt and the defect
 was the whole premium. Neither result was the one the arm was dispatched for, and both were only visible
 because the registration fixed the *instrument's* criteria before the *treatment's* number.
+
+## 34.177 R129 refused on evidence, and the entry that had to be corrected twice
+
+**First the correction.** PROGRESS 223 said the refused serve split "costs every per-item reading"; the same
+entry was amended within the hour to say it costs only the gate comparison, because `pairAttribution` returned
+its trial-level 5-and-2 while the split refused. That amendment was also wrong: `item-ledger` refuses
+separately, on `42 request(s)` against `40 episode(s)`, so the per-item census *was* suppressed. The entry now
+names all three — trial transfer computes, gate comparison lost, item census lost — and the sequence is
+recorded rather than tidied, because two wrong statements about one refusal is what "read it before publishing"
+is for.
+
+**Then the refusal.** R129 registered "an item whose outcomes are net-negative is quarantined rather than
+served". The mechanism can now be priced without a dispatch, because R137's artefact carries the ledger and the
+trial table:
+
+- 19 distinct items across 40 requests, one item a request.
+- **2 negative, −1 each**; **4 positive, +5 together**; 45 never served.
+- Deleting the negatives recovers **at most +2 cases**, and the sum is exact.
+- The two negatives are the two broken trials: one served **once**, one served **ten times with eight passes**.
+
+A deletion rule therefore either deletes an item on a single failed case or trades eight passes for two
+failures. A support threshold protects against the second and can never judge the first, which is the one that
+broke a trial. **The counter is not the missing piece; recurrence is.**
+
+**Why this is a refusal and not a deferral.** A deferral says "later, with more data". This says the
+configuration cannot produce the data: with 19 items over 40 requests and 45 never served, no item accumulates
+a sample, and the same cardinality was measured from the store's own labels two rounds ago (41 labels over 57
+items, `sup2` 2 of 66). Writing the field first and coarsening later would have bought a schema that records
+one case per item and a quarantine that deletes on it.
+
+**The rule this adds.** *Price a deletion rule against the artefact that would feed it, before writing the
+field it reads.* `item-ledger` exists for that reason and had never been pointed at an arm whose treatment was
+sound; pointing it at one took ten minutes and refused a four-round-old registration without a model call.

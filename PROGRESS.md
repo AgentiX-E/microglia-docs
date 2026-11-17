@@ -20982,11 +20982,11 @@ re-scored — the facade took 42 requests for 40 trials — so `serve split` ref
 second round running. This is now a known population fact rather than a mystery: τ² re-runs a simulation whose
 first attempt died, the abandoned attempt opens a boundary the runner never scores, and the requests it
 opened belong to no trial. The split's refusal is correct and the alternative — attributing them by position —
-is the misattribution the identity join exists to prevent. What the refusal costs is the **gate comparison**
-(the served-versus-withheld rates), not the transfer: `itemTransfer` reads the ledger and the trial table
-directly and returned its 5-and-2 on this arm. **R138 names the abandoned attempt as an attempt** so the split
-can measure over the 40 named groups and report the requests it dropped, which costs nothing and removes the
-last reading in this lane that a harness retry can suppress.
+is the misattribution the identity join exists to prevent. What the refusal costs is three readings, and this entry
+first said one of them was free. `pairAttribution` returns its trial-level 5-and-2 regardless, because it joins
+on the trial table alone; `serveSplit` refuses, so the gate comparison is lost; and `item-ledger` **also**
+refused — `42 request(s)` against `40 episode(s)` — so the per-item census was lost too. That is corrected in
+224, which repairs the join.
 
 **Decision rule applied.** Copies 1.0 · cost 1.08× the control · harm share fell from 8.11% to 6.06% → the
 branch the registration named: **buy the block itself.** With one copy in the prompt and a bill that is the
@@ -21004,3 +21004,65 @@ prices it can now be run on an artefact already paid for.
 `tau2-attribution.ts` at 100/100/100/100; agent self-check **30 cases / 98 assertions**, census
 **38 cases / 129 assertions**. Pushed `7eea4af`, `6e15a73`, `3b3853a`. Cost of the round: **$0.0996 + the
 control's ≈$0.09**, against a $0.32 forecast.
+
+### 224 — R138: the two broken trials are named, and the counter that would delete them is not identifiable
+
+**The join is repaired and the census it blocked was run on an artefact already paid for. It refuses R129's
+mechanism, and the reason is a cardinality this record diagnosed two rounds ago.**
+
+**The repair.** τ² re-ran two simulations whose first attempt died, so the facade took 42 requests for 40
+trials and `item-ledger` refused on the count — which suppressed the per-item census on the one arm whose
+carriage is clean, while `pairAttribution` returned its trial-level 5-and-2 regardless. Each boundary owns
+exactly one ledger row, in order (a recall succeeds once per boundary and the ledger records the requests that
+succeeded), so a row whose *own* boundary names no task is removable rather than guessed at.
+`namedLedgerOf` removes those rows and reports the count:
+
+```
+[item-ledger] 2 request(s) belong to an attempt no trial names, and are dropped before the join rather than
+paired with a neighbour
+```
+
+It is conservative on purpose: a row is dropped only when its own boundary names no scored task **and** the
+survivors cover every trial exactly once. A task simulated twice fails the second test and is still refused,
+because that case needs `boundaryJoin`'s spans and a positional join would merge two ranges.
+
+**What it read, on R137's pair.**
+
+| reading | value |
+| --- | --- |
+| items in the store | 64 |
+| items served over the 40 requests | **19** |
+| item-requests | 40 (one item a request, so each case is its item's own) |
+| negative net | **2 items, −1 each** |
+| positive net | **4 items, +5 together** |
+| never served | 45 |
+| deleting the negatives recovers | **at most +2 cases**, exact rather than a bound |
+
+**Two of them are the two broken trials, and that is the problem.** One of the negative items was served
+**once** and failed its one case; the other was served **ten** times, passed eight and failed two, for a net of
+−1. A quarantine that deletes net-negative items would therefore remove an item whose entire evidence is a
+single failed case — indistinguishable from a case that was going to fail anyway — while the only item with
+support has eight wins against two losses and deleting it trades 8 passes for 2 failures.
+
+**So R129 is refused, and not for want of a mechanism.** The registered treatment was "an item whose outcomes
+are net-negative is quarantined rather than served". Priced offline against an arm that already exists, the
+mechanism deletes items on n=1 evidence and would trade a supported item's eight passes for its two failures.
+The counter is not the missing piece; **support** is. With 19 distinct items across 40 requests, no item
+accumulates the outcomes that would make a deletion rule identifiable, and that is the same cardinality this
+record measured in the store's own labels: **41 labels over 57 items**, `sup2` **2 of 66**, nothing corroborated
+by two tasks. An outcome counter written onto that store counts one case per item and calls it a rate.
+
+**What that changes about the write-side axis.** R129's mechanism needs a store in which items *recur* — the
+same lesson served into several trials — and this store is built to produce a distinct statement per
+correction. The precondition is therefore not the counter but the **category**: cut the item at a level where
+57 corrections become ≤12 kinds, so an item is served into many trials by construction, and the outcomes
+accumulate on the *kind* rather than on the instance. That is AZ's criterion (`distinct labels ≤ 12 over ≥57
+items`, `sup2` > 2), which this record had already fixed as the write-side entry condition and had not yet
+connected to the outcome field. They are the same measurement seen from two ends.
+
+**What is bought by this round.** Nothing was dispatched and no dollar was spent: the census runs on the
+artefact R137 wrote. The repair removes the last reading in this lane that a harness retry could suppress, and
+it converted R129 from "registered, not implemented" into "refused on evidence, with the precondition named".
+
+**State.** 5,487 tests over 266 files, **99.99 / 99.90 / 100 / 99.99**; `tau2-attribution.ts` and
+`item-ledger.ts` at 100/100/100/100. Pushed `e8f7024`. Round cost: **$0.00**.

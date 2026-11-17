@@ -7180,3 +7180,35 @@ three 2026 mechanisms (SEMV, ACE, STRATA) that make that field their admission g
 ledger needed to compute it offline, and R138 is the census that decides whether quarantining net-negative
 items would repair the two broken trials. That is the next axis on which this project can differ from a
 framework that only substitutes better text.
+
+## R138 — the outcome field, priced before it was written, and refused
+
+**Standing unchanged.** AskData SOTA on BIRD at **83.40 / 78.49**; τ² retail `pass^4` published rows IBM
+**67.5**, SapientAI **72.8**, RAFT-30B-A3B **61.4**, ALTK-Evolve **57.5**, stock `llm_agent` **34.0**.
+microglia's R137 arm reads memory **0.900** against its own control's **0.825** on 40 held-out retail tasks,
+and still declines to place itself on that board.
+
+**Where the gap to the 2026 mechanisms now is, and it moved.** SEMV, ACE and STRATA all gate admission on an
+item's **outcome**: how many trials it was served into, and how many of those the arm won. This project had
+never written that field, and R129 registered the gap. Priced offline against R137's own ledger, it refuses:
+
+| reading | value |
+| --- | --- |
+| distinct items served | **19** over 40 requests |
+| negative | 2 items, **−1 each** |
+| positive | 4 items, **+5** |
+| never served | 45 of 64 |
+| best deletion recovers | **≤ +2 cases**, exact |
+
+Two negatives, one served once and one served ten times with eight passes. A net-negative quarantine deletes
+the first on a single observation and the second in exchange for eight wins; a support threshold protects
+against the second and can never judge the first. **The competitor's mechanism is identifiable because their
+stores serve the same lesson into many trials. Ours does not, and the reason is the label cardinality measured
+two rounds ago: 41 labels over 57 items, `sup2` 2 of 66.**
+
+**What that means for the SOTA claim.** Copying SEMV's admission gate onto this store would copy the schema and
+not the effect — the field would record one case per item and the gate would act on it. The order that a
+competitive implementation needs is therefore: **coarsen the item first** (AZ's ≤12 kinds over ≥57
+corrections), which makes recurrence structural, then write the outcome field, which then accumulates support,
+then gate on it. That is not a slower path to the same result; it is the only path on which the third step is a
+mechanism rather than a threshold on noise.

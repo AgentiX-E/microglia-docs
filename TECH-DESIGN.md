@@ -9447,3 +9447,47 @@ the bill and the opposite way in the prompt.
 unresolved. The refusal is correct — an abandoned simulation's requests belong to no trial — and it costs
 every per-item reading in the arm. The repair is not a fallback to position; it is to make the abandoned
 attempt visible as an attempt, which is the next registration's business rather than this one's.
+
+### 17.145 The named ledger, and why an outcome counter needs recurrence before it needs a field
+
+**The join.** `pack.ledger` has one row per request; `per_task` has one row per scored trial; and a harness
+that re-runs a dead simulation makes the first longer than the second. The repair is not a truncation and not a
+positional join — both attribute one trial's requests to another — but the identity the boundary already
+carries: **row *i* belongs to boundary *i***, because a recall succeeds once per boundary and the ledger
+records the requests that succeeded. `namedLedgerOf` drops the rows whose own boundary names no scored task and
+reports how many, with two gates that keep it conservative:
+
+| gate | why it is there |
+| --- | --- |
+| survivors == trials | a task simulated twice has two named boundaries and its rows outnumber the trials; that case needs spans, not a positional join |
+| every name is a scored task | a boundary that resolves to a task this arm never scored belongs to no trial, and pairing it would be the misattribution the identity join exists to prevent |
+
+**What the census then read, and the trap in it.**
+
+| field | value | what it means |
+| --- | --- | --- |
+| items in the store | 64 | |
+| items served over 40 requests | 19 | one item a request (`packLimit: 1`) |
+| negative net | 2 items, −1 each | the two broken trials |
+| positive net | 4 items, +5 together | the five repairs, one item repairing two |
+| never served | 45 | |
+| deletions recover | ≤ +2 cases | exact, because no request carried a second item |
+
+**The identification problem, stated as arithmetic.** A deletion rule acts on an item's net. For the two
+negative items the evidence is **one case each** — one served once and failed, the other served ten times with
+eight passes. Under a rule that deletes net-negative items, both are deleted: the first on a single observation,
+the second in exchange for eight wins. Under any rule with a support threshold (`served ≥ k` before an item may
+be judged), the first is *never* judged, because it is served once in the whole arm — and that is the item that
+broke a trial.
+
+So the counter cannot be made identifiable by adding fields. It needs **recurrence**: the same lesson served
+into many trials, so that an item's outcomes are a sample rather than an anecdote. That is exactly the
+measurement this record already made from the other end — **41 labels over 57 items, `sup2` 2 of 66** — and the
+two facts are one fact: a store that writes a distinct statement per correction cannot corroborate anything,
+and a counter written onto it counts one case per item.
+
+**The consequence for the write-side axis.** The entry condition is not the field, it is the **level at which
+the item is cut**: coarsen so that ≤12 kinds cover the ≥57 corrections, an item is then served into many trials
+by construction, and outcomes accumulate on the kind. Until that exists, an outcome counter is a field that
+records noise with a schema. R129 is refused on this reading rather than deferred, and the refusal names its
+own repair.
