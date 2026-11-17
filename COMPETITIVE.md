@@ -7253,3 +7253,23 @@ competitor comparison that follows from this round is therefore narrower and bet
 replaces: **not "our `sup2` is 2 and theirs is 148", but "with every duplicate reachable, does serving
 corroborated items beat serving instances, at the same pack budget?"** That is a question a 40-task arm can
 answer in one direction and a 114-task arm in two.
+
+**AM.6 — the comparison the merge made askable, and the arm that answers it.** R139 settled the mechanism
+question and, in settling it, replaced the competitor comparison with a sharper one. The store now corroborates
+— `supportAfter {1: 44, 2: 8, 3: 2, 4: 1}`, eleven items taught by two or more tasks — and the pack served
+**21** distinct items over 40 requests, **19** of them singletons, and all three net-negative items among those
+singletons.
+
+| mechanism | what it counts before serving | this record's position |
+| --- | --- | --- |
+| **ALTK-Evolve** `sup2` / `sup3` | distinct tasks behind a cluster on `task_description` | `retireBelowSupport` at serve time: same statistic, computed on the claim the distiller actually writes, applied where the store is read rather than where it is written |
+| **ACE** helpfulness counters | a per-item outcome delta, updated as the item is served | still refused, and now for a *third* reason: R138 refused it on cardinality, R139 showed the cardinality was our own filter, and R141's own table says the population is 21 served items with 3 negative — a counter on that is a counter on nothing |
+| **SEMV / STRATA** admission | an outcome gate on the item | identical refusal: the gate needs a serve count above one per item, which is what a floor creates and what the pack did not have |
+
+The comparison that is now worth making is not about counts of duplicates at all. It is **serving consensus
+against serving instances at the same pack budget**, and R141 is the first arm in this record that can state it
+as a treatment: both arms run the same pass, the same key, the same linkage, and the same pack; one retires what
+a single task taught. If the harm share falls while the mean does not move, corroboration is a *safety*
+statistic — the same claim ALTK's `sup2` cell makes, measured on a benchmark where the harm is identifiable. If
+it does not, then the leading mechanisms' shared premise is wrong on this corpus, and the axis moves to the
+content of the served claim rather than to how many tasks agreed with it.

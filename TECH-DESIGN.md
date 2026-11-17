@@ -9582,3 +9582,47 @@ the ledger too and the reading is specifically about requests that belong to *no
 the registration set `recallFloor: 0`. It is a reading of the gate rather than of the memory, and it will stay
 uninformative until an arm names a floor that withholds. The repair is filed as an instrument for that reason:
 its value is that a future arm with a floor can be read at all, not that this arm's number moved.
+
+### 17.148 The support floor: where it runs, and the four things that decide whether it can be read
+
+**The gap it fills.** R139's store carried `supportAfter {1: 44, 2: 8, 3: 2, 4: 1}` over 55 items — eleven
+corroborated claims — and the pack served 21 distinct items over 40 requests, three of them net-negative and
+all three singletons. A pass that *labels* recurrence is not a mechanism that *acts* on it, and the cheapest
+act is a threshold on the label at the moment the memory is served.
+
+**Where it runs is the whole design.** Four candidate sites, one accepted:
+
+| site | what breaks |
+| --- | --- |
+| write side, on admission | the label does not exist yet: support is a property of a finished store |
+| inside the recurrence pass | the pass would stop being a census and start being a policy, and the ablation that prices merging would be measuring two changes |
+| the recall path / facade | another process, and a second implementation of a rule the store's own `statusReason` vocabulary already states |
+| **after the pass, before the funnel gate** | accepted |
+
+The fourth is chosen for a reason that is empirical rather than aesthetic: `funnelVerdict` reads
+`servable` from the census of the store the recall path will open. A floor applied after that read is priced
+as a store that carried something and served nothing — the sentence R42 paid an hour of pack-free evaluation
+to misread, and the one R120's census exists to prevent.
+
+**Retirement, not deletion, and not a quarantine.** `status: retired` with `statusReason: "support-floor"`,
+`systemUntil` set to the pass's clock. Three consequences, all wanted: the store's index already skips
+non-active items so the recall path needs no change; the census groups the retirement under `reasons`, so the
+mechanism's population is legible beside the consolidation pass's own; and the act is reversible, which is what
+lets a readback price what the floor removed by re-activating it.
+
+**The support it counts is the score's own definition, including the fallback.** Distinct `taskId` over an
+item's evidence, with `run:<runId>` standing in when a record names no task — the trace unit's records are
+exactly that shape, and a floor that read `taskId` alone would count every one of them as zero support and
+retire the store. Two attempts of one task count once: a floor that counted evidence rows would keep an item
+two episodes of one task taught and serve it as though a second task had agreed.
+
+**Four ways it can be unreadable, and the field that sees each.** `supportFloor.retired` out of band with the
+pass's `supportAfter[1]` means the population was mispredicted; `reasons['support-floor']` disagreeing with it
+means the write-back was partial; a *served* item with support 1 means the floor did not reach the pack; and
+`retained` equal to the store's length means the switch never resolved. That is why the record travels in the
+learning block *and* in the diagnostics of a refusal: `0 servable` over seventy items is two facts — a floor
+that emptied the store, and a distiller that wrote nothing — and only the record separates them.
+
+**What it costs.** Nothing. The floor is arithmetic over evidence the store already carries, it makes no model
+call, and the census rides the run that was going to be made anyway — which is why its first read is a $0.20
+dispatch on R139's own pair rather than a new lane.

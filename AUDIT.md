@@ -11412,3 +11412,35 @@ option: the name is evidence of a mislabelled artefact, and excluding its reques
 a smaller denominator. The rule that separates the two is not "be lenient" — it is whether the missing
 information can be recovered from the artefact. Null is recoverable (an attempt that died is an attempt);
 a wrong name is not.
+
+### 34.180 A floor that removes the harm and the gain in equal measure is not a result yet
+
+**The reading.** R139's arm served 21 distinct items over 40 requests. Nineteen of them had **one task** behind
+them; the two that were corroborated carried `+1` and `0` between them:
+
+| support at serve time | items served | broken | kept | net |
+| --- | --- | --- | --- | --- |
+| 1 | 19 | 3 | 3 | **0** |
+| 2 | 2 | 0 | 1 | **+1** |
+
+Every net-negative item was a singleton — and so were three of the four net-positive ones. A floor at 2 removes
+−3 and +3 from this arm: it is a *composition* change, not an improvement, and a round that reported only the
+harm it removed would be reporting half of its own table.
+
+**Why that is still worth a dispatch.** Because the alternative is a counter with no population. R129's
+outcome-based quarantine was refused in R138 for want of recurrence: an item served once cannot be quarantined
+on one observation. A floor at 2 changes the denominator by construction — eleven items over forty requests is
+3.6 serves each — so the *next* round's quarantine has something to count. The claim this round can support is
+therefore about identifiability, and the registration says so before the number exists.
+
+**What would falsify it.** `broke` not falling while `retained` is in band. Then corroboration is not what
+separates the harmful items from the helpful ones, the three −1s were three singletons by coincidence, and the
+axis for the following round is what the served claim *says* rather than how many tasks agreed with it. That is
+the same shape of correction R137 forced on the carriage hypothesis, and it is cheaper to make on a $0.20 arm
+than on a 114-task one.
+
+**The instrument this round adds, and the pattern behind it.** `supportFloor {total, retired, retained, floor}`
+travels in the learning block and in the diagnostics of a refusal. The pattern is now three rounds old in this
+record: a mechanism whose population is not in the artefact gets read as a mechanism that did not work
+(R121's merge, R137's carriage, and — the earlier one — R42's empty store). The floor's own retired count is
+what makes "44 of 55 retired, 11 servable" a reading rather than a guess about why the pack got shorter.

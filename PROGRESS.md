@@ -21183,3 +21183,102 @@ instrument and not as an arm.
 for this round's reason: the header is parsed in one process, read as an env var in another and turned into an
 option in a third, and the assertion is the arm's own verdict sentence — *every pair reached the guards: the
 key was not consulted*. Cost: **$0.00**.
+
+### 227 — R139 read back: the store corroborates, the score cannot see it, and one prediction was falsified
+
+**The pass now folds the store, and the merge arrived with the bill unchanged.** `44141846982`, `$0.0958` for
+the memory arm against `$0.0962` for the reference: the premium R137 still carried is gone.
+
+| reading | predicted | measured |
+| --- | --- | --- |
+| `skippedKey` (arm) | 0 | **0** |
+| `groups` | 8–21 | **11** |
+| `merged` | 8–21 | **15** |
+| `retained` | 49–62 | **55** |
+| `supportAfter[2]` | ≥ 8 | **8** |
+| `maxSupportAfter` | 5–9 | **4** — falsified |
+| `weakestPair` in every group | ≥ 0.60 | **0.600** (largest group 0.6364) |
+
+`supportBefore {1: 70} → supportAfter {1: 44, 2: 8, 3: 2, 4: 1}`: **eleven items are now taught by two or more
+tasks**, all eleven groups cross-task, and the four-item group is one routine a chain of paraphrases carried —
+its weakest pair 0.6364 over a 0.60 floor. The falsified prediction is the interesting one: the store's largest
+claim is **nine** statements in the text and the largest group the pass could defend is **four**. Nine copies
+wording one claim are not nine wordings a containment test admits at 0.60; they are four that do and five that
+paraphrase too loosely for it. So `sup2` is a **floor** on the store's consensus, not an estimate of it.
+
+**The score did not move, and it could not have.** 82.50% for the memory arm against 80.00% for the reference:
+`+2.50pp [−15.00, +17.50]`, p = 1.0000, six trials repaired and five broken. The audit's own sentence is the
+finding: at n = 40 pairs this split resolves **23.23pp**, so a delta of two and a half points is not a small
+effect, it is an unmeasured one — and the harm share is 15.63% of the trials the control passed, up from
+R137's 6.06%. A round that bought fifteen merges and lost three trials did not buy harm reduction.
+
+**The per-item table says why, and it is the table R141 needs.** Nineteen of the twenty-one items the pack
+served in this arm had **one task** behind them, and the two corroborated items that were served carried
+`+1` and `0` between them:
+
+| support at serve time | items served | broken | kept | net |
+| --- | --- | --- | --- | --- |
+| 1 | **19** | 3 | 3 | **0** (−3 and +3) |
+| 2 | **2** | 0 | 1 | **+1** |
+
+Every one of the three negative-net items was a singleton; so were three of the four positive ones. A floor at
+2 would have removed **all** of the harm in this arm and **all** of the gain with it — and it would have left
+eleven servable items where there were fifty-five, of which the pack had ever reached two.
+
+**What the round therefore hands forward, stated as numbers rather than as a hope.** The store's consensus is
+real, small and mostly unused: 11 of 55 items corroborated, 21 of 55 ever served, 40 requests. The floor is the
+cheapest mechanism that acts on the first fact and the second at once — retire the singletons and the eleven
+that remain circulate 3.6 times each instead of once — so R141 was registered to buy **identifiability** for a
+counter (three harms with a denominator, one corroborated item with a positive net) and not a point estimate.
+Its registration's own prediction says the trade is a wash on the mean and that the reading to grade is the
+harm share.
+
+**Two numbers of mine, corrected here rather than in the registration.** The R141 registration's motivation
+says *43 of 64 items were never served*; the committed artefact says the sample is 64 rows of a 70-item store,
+**55** of them servable, and **21** ever served — so 34 of 55 is the fact, and the registration's 43-of-64
+mixes R138's statement-level sample with R139's item-level store. It also says the floor removes *four* positive
+items; it removes **three**, because the fourth positive item (`k_01hf7uaq6r_7zfhc`, `+1`) is corroborated and
+survives. Both are recorded here, unedited in the registration, because a pre-registration that is repaired
+after its dispatch is not a prediction.
+
+**State.** 5,530 tests over 268 files; **100 / 99.92 / 100 / 100**; `tau2-support-floor.ts`,
+`tau2-turn.ts`, `consolidate.ts`, `tau2-attribution.ts`, `tau2-trace.ts` and `prereg.ts` at
+100/100/100/100. Pushed `986e5d0`, `b2b8e65`, `4e45062` (the second is the docs and this round's paired
+artefact, the third regenerates the power audit the artefact invalidated). Round cost: **$0.20**.
+
+### 228 — R141: the floor is applied where the store is read, and the gate reads the store it serves
+
+**R139 left a consensus in the store and no mechanism that acts on it.** A merge is a label; the item keeps
+being served. `retireBelowSupport` is the act, and the three decisions inside it are the design:
+
+| decision | the alternative, and why not |
+| --- | --- |
+| a **status** (`statusReason: support-floor`) | a predicate in the recall path, which is another process and would be a second implementation of a rule the store already has |
+| applied **after the pass, before the gate** | a filter at pack time, which the funnel would price as a store that carried something and served nothing |
+| **refused** above 1 without `consolidate: true` | a silent empty arm: without the pass every item's support is 1 by construction, so floor 2 retires the whole store and the arm serves no memory under the treatment's name |
+
+The refusal is the part that took the reading rather than the writing to get right. `serveSupport` is a header,
+`prereg-form` prints it as a line, `sota.yml` reads that line into `TAU_SERVE_SUPPORT`, and a driver that
+resolved it to 1 inside a dispatch would measure the control and call it the arm. The header therefore refuses
+a floor above 1 unaccompanied by the pass, at the same layer `consolidateKey` and `consolidateLinkage` are
+refused, and the wire is asserted by running the binary and reading the printed line.
+
+**What the artefact now carries.** `supportFloor {total, retired, retained, floor}` in the learning block, and
+the same record in the **diagnostics of a refusal** — because a store emptied by a floor and a store a
+distiller never wrote produce the same sentence (`0 servable`), and they have different fixes. The store's own
+census counts the retirement under `reasons['support-floor']`, so the mechanism and its population travel
+together.
+
+**Two defects the new field exposed in older code**, both closed with the case that defines them:
+`pairedTurnLine` never printed the word *separated* — 40 pairs at 0 against 40 at 8 is the smallest
+arrangement that separates, and no test had ever made one; and `turnCensusOfBlock`'s `episodes ?? 0` had never
+taken its fallback, so a block that stated no count was untested rather than unreachable.
+
+**Prediction (registered before dispatch).** `retired` 40–46 and `retained` 9–13, from R139's
+`supportAfter[1] = 44`; the three negative items gone; `serveSplit.served` falling to at most 13 because the
+population that can be served is the floor's `retained`; the mean flat and possibly worse, because the floor
+removes `−3` and `+3` in equal measure on this arm; **~$0.20**.
+
+**State.** 5,530 tests over 268 files (+18); **100 / 99.92 / 100 / 100**. Registration
+`prereg/R141-the-floor-at-serve-time.md`, refused without the pass, valid against all 103 other registrations.
+Dispatched as `44162747993`. Round cost before the dispatch: **$0.00**.
