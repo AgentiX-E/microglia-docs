@@ -7119,3 +7119,35 @@ about to run a retrieval experiment that a 2602.21611 ablation already validated
 ablation assumes a category set, and the measurement above says we have none. The gap between "the
 literature says X" and "we can run X" is one command wide, and running that command is cheaper than
 running the arm.
+
+## R137 — the one defect no competitor has, because they all replace the block
+
+**Where this project sits, unchanged by this round.** AskData remains the SOTA on BIRD at **83.40 test /
+78.49 dev**; microglia is not on that board. On τ²-bench retail `pass^4` the published rows are IBM learned
+guidelines **67.5**, SapientAI **72.8**, RAFT-30B-A3B **61.4**, ALTK-Evolve **57.5** (this lane's registered
+bar) and stock `llm_agent` gpt-oss-120b **34.0**. R136's arm read memory **0.875** against its own
+no-memory control **0.925** on the 40 held-out retail tasks — a rate the lane itself refuses to place on that
+board (`bar_backbone_matches: 0`, `published_bar_applies: 0`), because the backbone and the sample are not
+the board's.
+
+**What is competitive about this round is not a number.** Every memory framework this record has studied —
+MemGPT's working-context block, MemoryBank's summary, Reflexion's self-reflection, ExpeL's insight list,
+AWM's workflow, Mem0's extracted facts, A-MEM's linked notes — delivers its memory the same way: **the block
+is composed per turn and substituted into the prompt**. Substitution is idempotent by construction, so none
+of them can accumulate it, and none of them has published a cost curve that grows with the square of the
+episode. This project's wrapper *appended* to a state the benchmark threads back, which is a departure from
+the pattern rather than a variant of it, and it is why the axis R133–R136 were chasing — "the memory makes
+the prompt expensive" — was measured on a treatment no competitor runs.
+
+**The comparison that follows, stated without a claim.** For the arm R136 ran, the memory's own text was
+**5.7%** of the system column it rode in (705 of 11,106 characters). A competitor's per-turn substitution at
+the same pack size would sit at the same 5.7% and cost the same 149 tokens; this arm paid **2,132** because
+five copies came with it. The gap between the two is not a capability gap and cannot be closed by a better
+store, a better renderer or a better ranking — which is what makes it worth a round of its own before any
+further SOTA attempt on the memory axis.
+
+**Why the literature did not warn us.** The papers report accuracy, and a repeated block does not usually
+change accuracy enough to be visible at n=40 — it changes the bill and the variance. R136's own reading is
+the evidence: **−5.00pp [−15.00, +5.00]** is a result the sample cannot separate from zero, while the cost
+ratio 2.20× is not uncertain at all. The defect was legible in the invoice for four rounds before it was
+legible in the score.

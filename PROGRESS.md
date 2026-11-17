@@ -20832,3 +20832,109 @@ rule is fixed: carriage ≈ 150 tokens with 409 unexplained buys a per-system-me
 2,700 characters buys a renderer that strips its wrapper; a named retry buys the retry path, where a
 re-simulated task must not buy a second pack. Cost forecast **~$0.32**, from R135's own bills on the same
 114 episodes.
+
+### 222 — R137: the memory was in the prompt six times, and the fixture asserted it could not be
+
+**R136 was read back, the number it produced was not the number it was built to produce, and the reason is
+a defect that has been in every memory arm since R92.** The registration is
+`prereg/R137-one-block-a-call.md`; the arm is dispatched as `44106251734`.
+
+**What R136's arm returned.** Memory **35 of 40 (0.875)** against the reference's **37 of 40 (0.925)**,
+paired **−5.00pp [−15.00, +5.00]**, p=0.6250, **1 repaired and 3 broken** — 8.11% of the trials the control
+passed. Its bill: **$0.2033** against **$0.0923**, **2.20×** per episode on identical tasks. Both arms were
+inside the same off-peak band, so the ratio is not a rate.
+
+The join is not what failed this time. **40 boundaries for 40 tasks, none repeated, 1 unresolved**: the
+identity instrument worked, and the one request that names no scored task is the abandoned attempt R135's
+extra boundary was. The split still refuses (`tasks-unresolved`), because a boundary that names no trial is
+a request that belongs to no trial, and "half an identity is not an identity" is the rule this lane wrote
+for itself. That is a *reading* now rather than a refusal to read.
+
+**The census produced a number nobody expected.** 410 packed calls, **11,105.9** characters of system on
+each, **705.1** injected, **10,400.8** of carriage — **2,132 tokens** — and **2,017.2** on the calls that
+carried no pack.
+
+R136's decision rule had two branches and neither fits: 150 tokens meant "buy a per-system-message census",
+2,700 characters meant "buy a slimmer renderer". 10,400 characters is not a renderer's wrapper around 705
+characters of knowledge; it is four times the block.
+
+**Three measurements, one answer.**
+
+1. **The policy prompt is ~6,600 characters.** The control arm carries no pack, so its
+   `system_chars_per_call` of **5,137** over 663 calls with 450 agent turns is the agent's policy mixed with
+   the simulator's **2,017.2**-character prompt — and 2,017.2 is exactly what the memory arm reports for its
+   *unpacked* calls. Solving for the policy gives 6,614 (450 agent calls) or 7,062 (410): the answer does
+   not depend on the count.
+2. **6,614 + 705.1 = 7,319, and the column is 11,105.9.** The remaining **3,787 characters** are 5.4 copies
+   of the same 705-character block.
+3. **An episode spends ~10 calls** (410 over 41 boundaries), so a wrapper that appends once a turn carries
+   the block (1+10)/2 = **5.5** times on average. Measured: 5.4.
+
+**The defect.** `generate_next_message` copied the state and appended the block to the copy, and the comment
+above the copy says the copy is what prevents accumulation. It is not: **tau2 threads the state the agent
+returns**, so the copy is exactly the object the next turn appends to. Nothing in the wrapper could see
+that, and nothing in the tests did either:
+
+```python
+state = state.model_copy(deep=True)
+state.system_messages = list(state.system_messages) + [injected]   # every turn, one more copy
+```
+
+**The fixture asserted a contract the benchmark does not have.** `episode_step` handed the same
+never-growing object back on every turn, so a copy of a state that never grew carried one injected message
+however many turns passed — and `the_pack_does_not_accumulate` passed for forty-five rounds for a reason
+that had nothing to do with the wrapper. It threads the returned state now, and the case went red before the
+repair existed:
+
+```
+FAIL  one injected message, not one per turn: expected [1, 1, 1, 1, 1], got [1, 2, 3, 4, 5]
+```
+
+**The repair is one filter.** The block is constant for an episode (`pack_for` holds it), so the correct
+prompt has exactly one and any earlier copy is this method's own output read back:
+
+```python
+kept = [m for m in state.system_messages if not is_pack_message(m)]
+state.system_messages = kept + [injected]
+```
+
+`is_pack_message` identifies the block by the element the renderer emits, so a policy prompt that never
+mentions the tag cannot be matched, a stale block from another episode is replaced rather than stacked, and
+the wrapper still needs no import from the facade. Three cases hold that: the policy survives, the stale
+block is replaced, and the copy count is exact.
+
+**Two instruments, both free.**
+
+- **`memory.packCopiesDropped`** — the copies removed from the state the agent was handed. On a phase with
+  **B** boundaries and **C** calls it reads `C − B` when the wrapper is idempotent and `0` when it is not:
+  410 − 41 = **369**.
+- **`cache.pack_copies_per_packed_call`** — `system_messages − 1` per packed call, because the policy is one
+  system message and the block is the only thing this lane puts beside it. And
+  **`packed_calls_with_copies`**, the calls that carried two or more, because a mean of 2.0 can be half the
+  calls at one copy and half at three and a count cannot.
+
+The verdict names a duplication and points the repair at the pack rather than at the turn — over the prefix
+and partial states too, because a block re-sent at the front of the prompt *is* what ends a cached prefix.
+
+**What this corrects, retroactively.** Every memory arm from R92 to R136 was prompted and billed for a
+memory it had already read. The cost figures in that window are upper bounds on what the memory costs, and
+every memory-versus-control delta in it was measured with a prompt that repeated the block up to ten times.
+R102.0 is the sharpest case: *"the block adds 1,497 prompt tokens a call and 31 uncached ones"* — 1,497
+tokens is 7,300 characters at the corpus's own ratio, ten copies of a 725-character pack, and they were
+cached because they sit at the front of the prompt. The conclusion drawn from that probe — that a cached
+block cannot be a cache the memory destroys — was true of the wrong object.
+
+**Registered criteria, before the number.** `pack_copies_per_packed_call == 1.00` and
+`packed_calls_with_copies == 0` first, because a phase that reports copies has not been repaired;
+`packCopiesDropped == calls − boundaries`; `system_chars_per_packed_call` falling from 11,105.9 to ≈7,320
+(−34%); `uncached_tokens_per_call` falling from 1,542.4 toward 500; and cost per episode below 1.5× the
+control. The score is registered as a direction and explicitly not a size.
+
+**Decision rule.** Copies 1.0 with cost under 1.5× and a falling harm share buys the block itself — with one
+copy in the prompt, item count, order and form are measurable again. Copies 1.0 with the cost unchanged buys
+the turn, because a premium that survives a 34% smaller system column is the conversation. Copies still
+above 1.0 sends the next dollar at the fixture, and no score from the arm may be read.
+
+**State.** 5,476 tests over 266 files, **99.99 / 99.90 / 100 / 99.99**; `cache-census.ts` at
+100/100/100/100; the two Python self-checks at **29 cases / 96 assertions** and **38 cases / 129 assertions**.
+Pushed as `7eea4af`. Dispatch `44106251734` is running off-peak, forecast **~$0.32**.

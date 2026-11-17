@@ -9328,3 +9328,79 @@ length by a mixture is how a 750-character message becomes a 300-character one.
 count all travelled — `carriagePair` returns `null` if any of the four (including a zero-width column) is
 missing, and the verdict then says nothing rather than zero. That is the same rule as `toolErrors: null`:
 an arm that did not record the instrument is not an arm that measured zero.
+
+### 17.143 The injected block, and the state the benchmark threads back
+
+**The question the carriage could not answer.** 17.142 subtracted the injected message from the system
+column and named the remainder a carriage. On the arm it was built for, the remainder was **10,400
+characters a call against a 705-character message** — 4× the block — and a subtraction cannot say whether
+that is a long preamble or the same block a second time. The second is what it was.
+
+**The decomposition, in characters, with the policy made visible.** The control arm carries no pack, so it
+is the one place the policy prompt can be measured: its `system_chars_per_call` is the policy and the
+simulator's prompt mixed, and the memory arm's `system_chars_per_unpacked_call` reports the simulator's
+prompt alone.
+
+| quantity | memory arm | control arm | what it means |
+| --- | --- | --- | --- |
+| `system_chars_per_unpacked_call` | 2,017.2 | — | the user simulator's own prompt |
+| `system_chars_per_call` | 7,637.7 | 5,137.0 | a mixture over both agents' calls |
+| agent calls (packed / total) | 410 / 663 | 450 / 663 | the pack rides only the agent's |
+| implied policy prompt | 6,614 – 7,062 | same | solved from the control's mean either way |
+| `system_chars_per_packed_call` | 11,105.9 | — | policy + **copies** |
+| `injected_chars_per_packed_call` | 705.1 | — | one message |
+| unexplained | **3,787** | — | 5.4 copies of 705 |
+
+**The mechanism.** τ² hands the agent's **returned** state to the next turn. A wrapper that copies the state
+before appending is therefore copying the object the next turn will append to, and one block a turn becomes
+10 blocks over a 10-call episode — mean 5.5, measured 5.4. The wrapper's own comment claimed the copy
+prevented exactly this; the copy was the mechanism.
+
+Two consequences follow from the same fact, and both were being read as properties of memory:
+
+| reading | with the defect | without it | why |
+| --- | --- | --- | --- |
+| `cached_tokens_per_call` | 3,654.6 | should exceed the control's 4,232.7 | the block sits at the front, so a new copy shifts every message after it and the cached prefix ends at the insertion point |
+| `uncached_tokens_per_call` | 1,542.4 (control 413.6) | should fall toward 500 | every call re-bills the conversation behind a prefix that moved |
+
+**The repair: idempotence, not omission.** The block is constant for an episode, so the correct prompt has
+exactly one, and any earlier copy is the agent's own output read back. `is_pack_message` identifies it by the
+element the renderer emits — the only identity available, since a state carries messages and not provenance —
+and the injection becomes:
+
+```python
+kept = [m for m in state.system_messages if not is_pack_message(m)]
+state.system_messages = kept + [injected]
+```
+
+Three properties are load-bearing and each has a case: the **policy prompt survives** (a wrapper that reset
+the list to `[injected]` would pass a count and delete the benchmark's instructions), a **stale block from
+another episode is replaced rather than stacked** (a retry has a pack of its own, and two blocks that
+disagree are not a treatment), and the **copy count is exact** rather than merely non-zero.
+
+**One instrument on each side of the socket.** The census counts copies from outside, the agent counts the
+copies it removed from inside, and neither can be produced by the other:
+
+| field | side | sound | the arm that bought it |
+| --- | --- | --- | --- |
+| `pack_copies_per_packed_call` | census | 1.00 | 5.40 |
+| `packed_calls_with_copies` | census | 0 | 369 of 410 |
+| `packCopiesDropped` | agent | `calls − boundaries` | 0 |
+| `system_chars_per_packed_call` | census | ≈7,320 | 11,105.9 |
+
+The count of *calls* is not decoration: a mean of 2.0 is produced both by a phase where every call carried
+two copies and by one where half carried one and half three, and those are different treatments. A verdict
+that reads the mean and not the count would call the second sound.
+
+**The test contract, which was wrong before the code was.** `episode_step` handed the same never-growing
+state back on every turn, so the wrapper looked idempotent for a reason external to it. A fixture is a claim
+about the caller; this one claimed tau2 passes a fresh state per turn, and the benchmark does the opposite.
+The case now threads the return value, and the suite went red before the repair existed — `[1,2,3,4,5]`
+against `[1,1,1,1,1]`. The general rule this record keeps re-learning: **a test that models a foreign
+contract must model the half that is inconvenient**, because the convenient half is the one the
+implementation already assumes.
+
+**What is now bounded, and what is not.** Memory-side cost figures from R92 to R136 are upper bounds, and
+every memory-versus-control delta in that window was measured with a repeated block. Nothing in that window
+is void — the arms that found memory harmful found it under a treatment that was harmful for a second reason
+— but the size of any memory effect measured there is not separable from the duplication.

@@ -11226,3 +11226,52 @@ that then has to be discounted. The bill for `44043271824` is **$0.00**; the re-
 the same discipline as a gate: a job that failed in two seconds did not measure anything, and treating its
 absence as "the arm did not move" would be the tenth occasion this lane read a missing measurement as a
 result.
+
+## 34.175 The wrapper, the fixture and the forty-five rounds
+
+**What was wrong.** `MicrogliaAgent.generate_next_message` copied `LLMAgentState` and appended the recalled
+block to `state.system_messages`. The copy was written to protect the caller's state and the comment above it
+claims the copy is what prevents accumulation. It is the opposite: τ² threads the **returned** state into the
+next turn, so the copy is exactly the object the next turn appends to, and an episode of ten turns carried ten
+copies of the same block.
+
+**How long it was wrong.** From the commit that introduced the injection, which is R92's arm, to R136 — every
+memory arm this record has run. The block's cost was billed on every turn, the model was told up to ten times
+per episode which data to act on, and the block sat at the front of the prompt, so each new copy ended the
+provider's cached prefix and the whole conversation behind it was re-billed.
+
+**Why no test caught it.** `episode_step`, the fixture every agent case shares, called the agent with one
+state object and **discarded the returned state**, then appended the turn's messages to the object it had
+kept. So the agent's copy was never handed back, the accumulated list was never re-read, and
+`the_pack_does_not_accumulate` — a case that exists for exactly this defect and names it in its own comment —
+asserted `[1,1,1,1,1]` against a fixture that could not produce anything else. The test was not weak; it was
+testing a caller that does not exist.
+
+**How it was found.** Not by a test and not by a score. R136's census reported `system_chars_per_packed_call`
+of 11,105.9 against an injected message of 705.1, and the arithmetic of one known population closed it: the
+control arm's `system_chars_per_call` solves the policy prompt at ~6,600 characters, so 11,105.9 − 6,614 −
+705.1 = 3,787 characters are 5.4 copies of the block, which is the mean of 1..10 on an episode of ~10 calls.
+**An instrument built to name a remainder named a defect instead.**
+
+**The correction to the record.** R102.0 measured the block at *"1,497 prompt tokens a call and 31 uncached
+ones"* and concluded that a cached block cannot be the cache a memory destroys. 1,497 tokens is ~7,300
+characters at the corpus's own ratio: ten copies of a 725-character pack, cached because they are all at the
+front of the prompt. The conclusion is true of a different object than the one it named. R135's "559-token
+system growth" is the same quantity seen through a mean that mixed the agent's calls with the simulator's.
+
+**What is amended, and what is not.** No published score is retracted: every arm's rate is what that arm
+scored. What is amended is the **attribution** — no memory effect measured between R92 and R136 is separable
+from the duplication, and every memory-side cost figure in that window is an upper bound. The mask-and-
+relative docket of 34.168, R99's "supply is an anti-constraint" and R134/R135's bracket around zero all stand
+as readings of the arms that produced them; they no longer stand as readings of *the memory alone*.
+
+**Three rules this adds.**
+
+1. **A fixture that models a foreign contract must model the inconvenient half.** A test double that
+   normalises away the part of the caller's behaviour the implementation depends on certifies the
+   implementation against itself.
+2. **A remainder is not an attribution until its contents are counted.** 17.142's carriage was a correct
+   subtraction and an empty noun; the copy count is what filled it, and the field should have come first.
+3. **An instrument that reports a number the registration did not anticipate is worth more than the arm that
+   was dispatched for it.** R136 was registered as an instrument arm with a negative control, and its one
+   useful output was neither the rate nor the carriage it predicted.
