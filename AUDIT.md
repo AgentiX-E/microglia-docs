@@ -11342,3 +11342,73 @@ one case per item and a quarantine that deletes on it.
 **The rule this adds.** *Price a deletion rule against the artefact that would feed it, before writing the
 field it reads.* `item-ledger` exists for that reason and had never been pointed at an arm whose treatment was
 sound; pointing it at one took ten minutes and refused a four-round-old registration without a model call.
+
+### 34.178 The key that was read as a finding: fifteen rounds of `sup2` measurements were measurements of a filter
+
+**The finding.** From R124 to R138 every statement this record made about corroboration — `sup2` 2 of 66,
+"nothing is corroborated by two tasks", "the store writes a distinct statement per correction" — was read off
+a pass whose linkage key removed **34 of the 35 duplicate pairs** before the similarity test ran. The numbers
+were true and the sentences were wrong: the store knew 43 distinct claims over 64 statements, one claim
+repeated nine times, and the pass merged one.
+
+**Why no instrument caught it.** Three instruments existed and each answered a different question:
+
+| instrument | what it counts | why it stayed silent |
+| --- | --- | --- |
+| `skippedScope` | pairs removed by the key | it counts *all* of them, including pairs with no overlap, so a large number read as "the store is 64 unrelated claims" |
+| `redundancy` (R120) | distinct claims over the whole store, **keyless** | it was in the same artefact as `merged`, and nobody subtracted the two |
+| `merge.support` (R120) | routines taught by ≥2 corrections | it describes the *corrections*, not the items, so its `atLeastTwo 12` looked like a different subject rather than a contradiction |
+
+The missing field was the intersection: pairs the key removed **after** every other test admitted them. R139
+adds it as `skippedKey` and prints it on the operating line ahead of the population verdict, because the
+sentence a reader needs is not "how many pairs did the key remove" but "did the key remove any pair that would
+otherwise have merged".
+
+**The correction this makes to R138.** R138's decision rule said the next dollar goes at the *category* — cut
+the item so 57 corrections become ≤12 kinds. The premise was that the store cannot corroborate because its
+unit is too fine. R139 shows the unit was never given a chance: the same store already contains 43 claims, and
+a pass that compared every pair would have merged a third of it. The category may still be worth cutting, but
+it is no longer the precondition for R129's counter, and R138's rule is superseded rather than extended.
+
+**Two errors of this round, both mine, both caught by existing tests.**
+
+1. **The split `continue`d before the merge.** The first version of the redundancy key split counted a pair
+   and then skipped the union-find step for any pair with a key on one side only. Four pre-existing cases in
+   `store-redundancy.test.ts` went red — the census reported three distinct claims over three statements while
+   its own `joined` said one — which is precisely the class of defect the census exists to prevent, committed
+   inside the census. The fix moves the split into the loop body; the case is now a test.
+2. **A registration that quoted the wrong denominator.** R139's first draft said "1,953 live pairs, 35 above
+   the floor" — `C(63,2)` over the sample's active items — while the pass considered **70** items and tested
+   **2,415**. The registration now cites the pass's denominator and the census's sample separately, and the
+   prediction is stated against the population the arm will actually run on.
+
+**The rule this adds.** *A filter and a measurement are different instruments, and a field named after the
+filter is not a measurement of it.* `skippedScope` counted what the key did; nothing counted what the key
+cost. When a mechanism is introduced to make something affordable, the round that introduces it owes the
+rounds after it a counter for what it removed — and the counter has to be positioned **after** the other
+tests, or it reports the mechanism's activity instead of its price.
+
+### 34.179 A conservative join that refuses is not free: it cost two readings in three rounds
+
+**The pattern.** R136's ledger join refused a 42-versus-40 pair and suppressed the per-item census on the one
+arm whose carriage was clean (R138). R138's serve split refused the same pair and suppressed the gate
+comparison. Both refusals were *correct* about the defect and wrong about the cost: the arms' treatments were
+sound, the instruments were not, and each round lost a reading it had already paid for.
+
+**Why the refusals were written that way, and why that reasoning expired.** A join that guesses is worse than a
+join that refuses — R135 spent a whole course on positional joins that paired one episode's requests with
+another's outcome. But "refuse rather than guess" is only right while there is no *third* option. Here there
+was: the boundary already carries the identity of the attempt it opened, and the only ambiguity left is
+*absent* versus *wrong*, which are distinguishable at the point of reading (§TECH-DESIGN 17.147).
+
+**The audit finding.** An instrument that refuses must state what it refuses **and** what the refusal costs,
+and every refusal has to be re-read in the round after it fires. Three of this record's refusals (R135's join,
+R138's ledger, R138's split) were each written when the alternative was a guess; one of them (R140) had a
+correct refusal replaced by a correct drop, and the other two are now the same question: *is the ambiguity the
+refusal names actually irreducible?*
+
+**What is still refused, and why.** A boundary naming a task the arm never scored. That case has no third
+option: the name is evidence of a mislabelled artefact, and excluding its requests would hide the break behind
+a smaller denominator. The rule that separates the two is not "be lenient" — it is whether the missing
+information can be recovered from the artefact. Null is recoverable (an attempt that died is an attempt);
+a wrong name is not.

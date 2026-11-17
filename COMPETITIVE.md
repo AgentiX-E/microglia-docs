@@ -7212,3 +7212,44 @@ competitive implementation needs is therefore: **coarsen the item first** (AZ's 
 corrections), which makes recurrence structural, then write the outcome field, which then accumulates support,
 then gate on it. That is not a slower path to the same result; it is the only path on which the third step is a
 mechanism rather than a threshold on noise.
+
+### AM.5 The `sup2` gap was ours, and it was a filter rather than a construction
+
+**AM.1 through AM.3 diagnosed the widest measurable gap in this record — `sup2` at 2 of 66 against ALTK-Evolve's
+`sup2`/`sup3` cells and ACE's grow-and-refine — as a difference in the *unit of write*: they cluster corrections
+and write one guideline per cluster, this lane writes one statement per correction. That diagnosis was half
+right and its action was wrong.**
+
+**The half that was right.** Their `sup2` is real: an ALTK guideline is kept only when two or three tasks agree
+on it, so the corroboration is a property of the object they chose to write. Ours could not corroborate a
+store-wide claim because the objects were instances.
+
+**The half that was wrong.** Before any of that mattered, the pass that would have folded the instances could
+not see them. On R137's store — 64 statements, 43 distinct claims, one claim repeated nine times — the
+recurrence pass merged **one** item, and **34 of the 35** duplicate pairs were filed under different keys,
+which is the only kind of pair its linkage key lets it compare. The store repeated a third of itself and the
+mechanism built to notice was looking in one bucket at a time.
+
+**What that changes in the comparison.** Three of the four leading mechanisms this record tracks implement the
+same repair at different layers, and none of them gates on a key:
+
+| mechanism | how it reaches the duplicate | what this record now does |
+| --- | --- | --- |
+| **ACE** grow-and-refine | dedups items in the playbook by content on every update | `consolidateKnowledge` compares content — and until R139 it first removed the pairs whose keys disagreed |
+| **ALTK-Evolve** `sup2`/`sup3` | clusters on cosine over `task_description`, then keeps what N tasks agree on | deterministic containment over the claim's own terms, restricted to no bucket at all under `linkage: 'all'` |
+| **SEMV / STRATA** admission | gates on the item's *outcome* across the trials it was served into | refused twice: first for the field (R129), then for the population (R138) — and the population was the key |
+
+So the ordering AM.4 stated — coarsen, then count, then gate — loses its first step. **The store does not need
+a coarser unit; it needs a pass that reads the unit it has.** Whether a coarser unit is *also* worth cutting is
+now a separate question with its own arm, and the answer no longer blocks the outcome field: if R139's arm
+reports `supportAfter[2] ≥ 8`, an item is served into several trials by construction because the store's
+duplicates became one item, and R129's quarantine has a population to act on without any change to the
+distiller's register.
+
+**The honest limit of this claim.** R139 buys the *identifiability* of the counter, not the effect. A merged
+item is a more confident claim, which is worth nothing if the claim is wrong — and R137's harm share (6.06% of
+the trials the control passed) is the number that says whether the memory's content is the lever at all. The
+competitor comparison that follows from this round is therefore narrower and better posed than the one it
+replaces: **not "our `sup2` is 2 and theirs is 148", but "with every duplicate reachable, does serving
+corroborated items beat serving instances, at the same pack budget?"** That is a question a 40-task arm can
+answer in one direction and a 114-task arm in two.

@@ -9491,3 +9491,94 @@ the item is cut**: coarsen so that ≤12 kinds cover the ≥57 corrections, an i
 by construction, and outcomes accumulate on the kind. Until that exists, an outcome counter is a field that
 records noise with a schema. R129 is refused on this reading rather than deferred, and the refusal names its
 own repair.
+
+### 17.146 The linkage key has two jobs and the pass was using the wrong one
+
+**The shape of the error.** A consolidation pass is quadratic in the store, so it groups items before comparing
+them: `scopeKey(item.scope)` by default, or a key the host supplies. The grouping was introduced as an
+affordance and then read as a measurement — *two items filed under different keys are two claims* — which the
+pass cannot know before it compares their text. R121 measured the cost of the default key (60 buckets for 64
+items, 4 of 2,016 pairs tested) and answered it by moving the key to the routine (R124). Both rounds reduced
+the number of buckets and neither asked what happened to the pairs the key removed.
+
+**The two jobs, separated.**
+
+| job | what it costs when it is the only thing done | how it is measured |
+| --- | --- | --- |
+| narrow the search so the quadratic test is affordable | the pass can only find duplicates that share a bucket, so a store whose duplicates are cross-bucket reports `groups 0` and every refusal counter at zero | `skippedKey` — pairs the key removed *after* every other test admitted them |
+| describe how the store is filed | nothing, if it is not also used as a gate | `linkage: 'scope' \| 'host' \| 'all'` in the census |
+
+The pass now does the first only when it is asked: `linkage: "all"` stops the key removing a pair and leaves
+every test that decides whether two items state one claim in force. The implementation detail that makes this
+a repair rather than a loosening is that **the counter gates moved**: `skippedOverlap`, `refusedCondition`,
+`refusedPayload` and `refusedDuplicateEvidence` are incremented only for a pair whose keys agree, exactly as
+before, so no artefact written between R121 and R138 is reinterpreted by the new field. `skippedKey` is the
+subset of `skippedScope` that passed every other test — and it is computed in *both* modes, because an arm and
+its control have to describe the same candidate population or the arm's `groups` cannot be read against the
+control's hidden count.
+
+**The guards are what makes `all` an arm and not a collapse.** Six tests stand between a pair and a merge:
+`kind`, containment at `threshold`, the condition floor, payload equality, duplicate-evidence refusal, and
+complete linkage. `all` removes the seventh (the key) and nothing else. The suite pins the difference with a
+pair of unrelated claims that stays two items under `all` — `keeps the guards in force when the key is not` —
+because the failure mode of this option is that a later round reads it as "merge the store".
+
+**Why the census had to move with it.** A pass's `groups` is only interpretable against a census that asks the
+same question, and `storeRedundancy` has always asked it *without* a key. That produced two numbers in one
+artefact that nobody subtracted: `redundancy.groups 43` and `consolidation.merged 1`. The census now takes a
+key per row and reports `joinedWithinKey` / `joinedAcrossKey`, and its line states the share a keyed pass cannot
+reach. Half a key is counted by neither and still merged — the census is a reading of the filing, not a gate on
+the claim, and an early version that `continue`d before the union reported three distinct claims over three
+statements while its own `joined` said one.
+
+**The wire, and why the header exists.** `consolidateLinkage` travels the path every other switch travels:
+registration header → `prereg-form` → `distill.env` → `sota.yml` → `TAU_CONSOLIDATE_LINKAGE` →
+`resolveConsolidationLinkage` → the pass. A repository variable would apply to every queued dispatch, and an
+unrecognised value is refused before the first model call rather than falling back to the control — the defect
+this family of resolvers exists to prevent, and the one a misspelt `all` would commit silently, since `key` is
+a perfectly legal value.
+
+**What it predicts, before the number.** On R137's store the control hides **at least 34** admissible pairs and
+the arm must report `skippedKey: 0`; `merged` lands between 8 and 21, from two independent ceilings (the
+corrections census's `atLeastTwo 12` and the keyless claim census's 21 restatements of 64); `supportAfter[2] ≥ 8`
+and `maxSupportAfter` between 5 and 9. If `groups < 8` with `skippedKey == 0`, the cross-key pairs are not one
+claim and the write-side axis closes as a finding rather than a deferral.
+
+### 17.147 Two reasons a boundary resolves to no trial, and only one of them may be dropped
+
+**The refusal.** R123's mechanism check splits an arm's episodes by whether the pack was served, and it is the
+only within-arm comparison the lane has. It refused on R138's arm — **42 boundaries for 40 trials** — because
+τ² re-ran two simulations whose first attempt died and each abandoned attempt opened a boundary no trial owns.
+`pairAttribution` still returned its trial-level 5-and-2, so the loss was specific: the gate comparison
+disappeared while everything else in the artefact was intact.
+
+**Why the boundary count and the ledger length are not the same number.** `episodeStarts` is a partition of
+the request stream: consecutive entries bracket one episode's requests, and a re-run appends a new range for a
+task it has already scored. So the ledger is longer than the trial table by exactly the requests the abandoned
+attempts sent, and a join that requires the two counts to agree is asking the instrument to be something it
+is not.
+
+**The distinction the join now makes.** A boundary that resolves to no trial does so for one of two reasons,
+and they call for opposite actions:
+
+| `boundaryTasks[i]` | meaning | action |
+| --- | --- | --- |
+| `null` | the harness could not resolve the attempt — an episode that died and was re-run | drop the range, count its requests, keep measuring |
+| a task id the arm never scored | a mislabelled artefact | refuse the whole reading |
+
+`boundaryJoin` returns `unresolved` (the total) and `abandoned` (the nulls), and `serveSplit` proceeds only
+when every unresolved boundary is abandoned **and** a coverage test passes: every scored trial must still be
+opened by a surviving boundary. A trial whose only boundary was abandoned has no requests in the phase, and
+counting it as `withheld` would report a refusal that never happened; that case is a named absence,
+`trial-uncovered`.
+
+**The number that makes the drop honest.** `ServeSplit.droppedRequests` is the requests the abandoned ranges
+contained, counted from the spans rather than from `ledger.length − trials`, because a retried task lengthens
+the ledger too and the reading is specifically about requests that belong to *no* trial. On R137's pair it is
+**2**, printed as `2 request(s) belonged to abandoned attempt(s) and are in neither rate`.
+
+**What the reading was worth, and what it was not.** The split now measures on R137's pair —
+`served 36 of 40 = 90.00% [76.9, 96.0]; withheld none measured` — which says the gate withheld nothing, because
+the registration set `recallFloor: 0`. It is a reading of the gate rather than of the memory, and it will stay
+uninformative until an arm names a floor that withholds. The repair is filed as an instrument for that reason:
+its value is that a future arm with a floor can be read at all, not that this arm's number moved.

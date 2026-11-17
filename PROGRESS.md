@@ -21066,3 +21066,117 @@ it converted R129 from "registered, not implemented" into "refused on evidence, 
 
 **State.** 5,487 tests over 266 files, **99.99 / 99.90 / 100 / 99.99**; `tau2-attribution.ts` and
 `item-ledger.ts` at 100/100/100/100. Pushed `e8f7024`. Round cost: **$0.00**.
+
+### 225 — R139: the key was a filter, and the census that says so was already on the artefact
+
+**R138 refused the outcome counter because items do not recur. This round asked the store why, and the answer
+is not the grain it named: it is our own merge key.**
+
+R138's write-side precondition was "cut the item at a level where 57 corrections become ≤12 kinds". That
+presupposes the store cannot corroborate because it writes a distinct statement per correction. Checked
+against the store R137 actually wrote, the presupposition is false — and the truth is more embarrassing,
+because every number needed to see it was already in the artefact.
+
+**What the store holds** (`pnpm eval:bin store-redundancy`, $0.00, on R137's committed pair):
+
+| reading | value |
+| --- | --- |
+| statements sampled | 64 of 70 |
+| distinct claims, keyless, complete-linkage closure at 0.60 | **43** (32.8% restated) |
+| largest claim | **9** statements |
+| pairs at or above 0.60 | **35** of 2,016 |
+| of those, filed under **different** keys | **34** |
+| what the pass merged | **1** |
+
+The pass's own census on the same store: `considered 70, pairs 2,415, groups 1, merged 1, supportBefore {1: 70}
+→ supportAfter {1: 68, 2: 1}, skippedKind 1,247, skippedScope 1,138, skippedOverlap 29` — and
+1,247 + 1,138 + 29 + 1 = 2,415 exactly, so nothing is being hidden by the arithmetic.
+
+**Three statements, one sentence.** The store knows 43 claims; the pass merged one; and **34 of the 35 joins
+sit under different keys**, which a pass keyed on the routine never compares. `sup2 = 2 of 66` was not a
+property of the corpus, the distiller or the unit. It is the arithmetic of a filter — a key introduced in R121
+to make the quadratic test affordable, moved in R124 to the routine, and read in both rounds as a statement
+that two items filed differently are two claims.
+
+**The defect is ours and it is structural.** "Return actions require the order_id, the item_ids being
+returned, and a payment_method_id" appears **six times** in that store across six routines, in six wordings.
+Each copy occupied a slot in a 2,400-character pack, so the memory spent a fifth of its budget restating one
+sentence — which is a fact about the product, not only about the census.
+
+**The repair is one option and it keeps every guard.** `linkage: "key" | "all"` on `consolidateKnowledge`:
+`all` stops the key removing pairs and leaves kind, containment at 0.60, the condition floor, payload
+equality, duplicate-evidence refusal and complete linkage untouched. It is *look everywhere*, not *merge
+everything*, and the suite pins the difference on a pair of unrelated claims that stays two items under `all`.
+The counters are gated on the key agreeing, so no earlier artefact's `skippedOverlap`, `refusedCondition`,
+`refusedPayload` or `refusedDuplicateEvidence` is reinterpreted; `skippedKey` is new and counts the subset of
+`skippedScope` that passed every other test — the number that separates "the store holds distinct claims" from
+"the key is deleting the answer".
+
+**The census carries it too**, because a pass's number cannot be checked against a census that does not ask the
+same question: `storeRedundancy` now takes a key per row and reports `joinedWithinKey` / `joinedAcrossKey`, and
+the line prints *34 of the 35 joined pairs that carry a key on both sides are filed under different keys, which
+a keyed pass cannot reach*. One command, one artefact, both numbers.
+
+**Pre-dispatch prediction (R139's registration).** Arm `skippedKey: 0`; `merged` 8–21, `retained` 49–62, from
+two independent ceilings — the corrections census (`atLeastTwo 12`, `max 8`) and the keyless claim census (21
+restatements of 64). `supportAfter[2] ≥ 8`, `maxSupportAfter` 5–9, `weakestPair ≥ 0.60` by construction. The
+score is stated as a direction and the number to read is the **harm share** (6.06% in R137), not the point
+estimate at n = 40.
+
+**One bug of my own, caught before it shipped.** The first implementation of the key split `continue`d before
+the union-find merge, so a pair with a key on one side only was counted and not merged: the census reported
+three distinct claims over three statements while its own `joined` said one. Four existing cases went red and
+named it. Fixed by moving the split inside the loop body rather than in front of it, and the case that would
+have missed it is now a test (`counts a half-keyed pair by neither counter and still merges it`).
+
+**One number of my own, corrected.** The registration's first draft quoted "1,953 live pairs" — `C(63,2)` over
+the sample's active items — while the pass considered 70 and tested 2,415. The registration now cites the
+pass's own denominator and the census's own sample separately.
+
+**State.** 5,505 tests over 267 files (+18), **99.99 / 99.90 / 100 / 99.99**; `consolidate.ts`,
+`store-redundancy.ts`, `consolidation-sweep.ts`, `tau2-trace.ts` and `prereg.ts` at 100/100/100/100; 18 new
+cases — 6 on the pass, 5 on the redundancy split, 3 on the resolver, 2 on the wire, 1 on the census line, 1 on
+the registration. Pushed `693017a`; R139 dispatched as `44141846982`. Round cost before the dispatch:
+**$0.00**.
+
+### 226 — R140: the abandoned attempt is a drop, not a refusal, and R137's split measures
+
+**A join that refuses costs a reading it does not have to cost.** R138's arm took 42 requests for 40 trials:
+τ² re-ran two simulations whose first attempt died, each abandoned attempt opened a boundary no trial owns
+(`boundaryTasks` carried two `null`s), and `serveSplit` refused the whole reading while `pairAttribution`
+returned its 5-and-2 regardless. The trial-level transfer survived; the **gate comparison** — the one reading
+that says whether the pack being present changed the outcome of the episodes that carried it — was lost.
+
+**The distinction the refusal was missing.** A boundary that resolves to no trial does so for two different
+reasons, and only one of them is a defect:
+
+| boundary | what it means | what the split should do |
+| --- | --- | --- |
+| name is `null` | the harness could not resolve the attempt: an episode that died and was re-run | **drop it and its requests**, and say how many |
+| name is a task the arm never scored | a mislabelled artefact | **refuse**, because excluding its requests would hide the break |
+
+`boundaryJoin` now counts the two apart (`unresolved` and, inside it, `abandoned`), and `serveSplit` proceeds
+when every unresolved boundary is abandoned. The condition that makes the drop safe is a coverage test: **every
+scored trial must still be opened by a surviving boundary**, because a trial whose only boundary was abandoned
+has no requests in this phase and counting it as `withheld` would report a refusal that never happened. That
+case is a named absence of its own, `trial-uncovered`.
+
+**What the split now reads on R137's pair**, at $0.00:
+
+```
+boundary: 40 boundar(ies) for 40 task(s), none repeated; 2 unresolved
+serve split: served 36 of 40 = 90.00% [76.9, 96.0]; withheld none measured;
+             2 request(s) belonged to abandoned attempt(s) and are in neither rate
+```
+
+Which is the honest shape of that arm: the gate withheld nothing (floor 0), so there is no withheld bucket to
+compare against, and the two abandoned requests are neither a pass nor a failure. Before this repair the second
+line was `not measured (tasks-unresolved)` and the arm's mechanism check was absent from the artefact.
+
+**What it does not buy.** A split with an empty withheld bucket is a reading of the gate, not of the memory: it
+says the arm served every trial, which is R123's finding repeated (`served 162 of 162`), and it will stay
+uninformative until a registration names a `recallFloor` that withholds. That is why the repair is filed as an
+instrument and not as an arm.
+
+**State.** 5,511 tests over 267 files (+6); **99.99 / 99.90 / 100 / 99.99**; `tau2-attribution.ts`
+100/100/100/100. Cost: **$0.00**.
