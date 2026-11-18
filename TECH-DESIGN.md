@@ -9679,3 +9679,32 @@ must not appear in the record as if one had.
 on, and every arm whose registration omits the header reads exactly the value it read before. The change is
 where the number comes from, not what it is — which is the property that lets R142 be compared to the arms
 before it at all.
+
+### 17.150 The window is checked per run, because a per-phase guard is a guard that fires after the money
+
+**The failure it closes.** R142's first dispatch began at 00:47 UTC with thirteen minutes of off-peak left. The
+learn half is a legitimate run and it ran; the eval phase began at 01:19, inside the peak window, and the
+runner refused it. `$0.1617` bought a store that nothing scored. The guard was working exactly as written — per
+phase, at the moment a phase starts — and the property nobody checked is the one a dispatch has: *does the whole
+run fit in the window it starts in?*
+
+**Where the arithmetic lives.** `windowFit({now, episodes})` in `window-fit.ts`, with `episodes = (train +
+test) × trials × arms`. Three things are inputs and all three are already in the record: the caps come from the
+registration (`prereg-caps` prints them), the arms from the dispatch's own `l4_arms`, and the window from the
+rate card `cost.ts` prices with — so the guard and the bill cannot disagree about when peak is.
+
+| decision | the alternative, and why not |
+| --- | --- |
+| a **pure function**, refused by a command | twenty lines of `date` arithmetic in a step, which is where `planBandWait` lived before it was extracted and where it was run by one job and not the other |
+| **26 s an episode**, measured on R141 | a per-lane constant per phase; the difference between a learn episode (distillation included) and an eval one is real, and a single conservative constant errs toward refusing a dispatch that would have fitted rather than toward the failure this exists for |
+| **refuse**, never wait | waiting hides a dispatch that named no window behind a two-hour job; `not_before` is the stated way to wait and `planBandWait` already prices it |
+| refuse a **zero-episode** estimate | a dispatch whose caps are unpinned would otherwise read as a free run — the same defect as a floor that reads an absent sample as a singleton store |
+
+**The refusal names the hour.** `Dispatch with not_before: 04:00` is a string an operator pastes; a guard that
+says "not now" and not "at four" is a guard that gets overridden, and overriding it at double price is the
+history R77/R78 already wrote down (`$0.531` at 23:19 against `$1.111` at 03:19 for the same experiment).
+
+**What it does not replace.** `--require-off-peak` stays exactly where it is. The runner's refusal is the
+authority — it reads the provider's clock at the moment of the call and this guard reads a rate card — and a
+run whose estimate was wrong must still be stopped by the layer that bills it. This adds the check that was
+missing in front of it, at the only point where being wrong is free.

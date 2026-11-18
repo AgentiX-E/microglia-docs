@@ -6929,7 +6929,7 @@ without removing repair. It is unresolved at n = 40 (MDE 17.16pp), which is what
 
 | # | step | the number it needs | state |
 |---|---|---|---|
-| 1 | **R142 — the other cut** (57/57) | harm share < 5%, delta ≥ 0 at a bound of 14.4pp | **dispatched** |
+| 1 | **R142 — the other cut** (57/57) | harm share < 5%, delta ≥ 0 at a bound of 14.4pp | **re-dispatched for 04:00 UTC** after the first attempt lost its learn half to the peak window (§PROGRESS 230, §AUDIT 34.182) |
 | 2 | the outcome counter (R129), now identifiable | ≥ 8 corroborated items served more than once per arm | blocked on 1: it needs a serve population that recurs, which the floor creates and the 40-task arm barely reaches |
 | 3 | the content axis (R14's pair, STRATA's contrast edge) | the harm share *rising* at 2, or a broken set that is not singleton | blocked on 1: if the floor holds, the axis is unnecessary; if it fails, the axis is the next dollar |
 | 4 | a resolved paired read on τ² retail | ~114 pairs for a 10pp effect | needs a cross-fit lane (two folds of the 114, each evaluated by a memory that never saw it); R142 is n = 57 and cannot get there |

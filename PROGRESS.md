@@ -21337,3 +21337,62 @@ incomparable with nothing in either artefact saying why.
 **State.** 5,553 tests over 269 files (+7); **100 / 99.92 / 100 / 100**; `prereg.ts` and `serve-support.ts` at
 100/100/100/100. R142 registered as `prereg/R142-the-other-cut.md`, dispatched as the run that follows this
 commit. Round cost before the dispatch: **$0.00**.
+
+### 230 — The guard fired after the money was spent: a learn half bought, an evaluation refused
+
+**What the dispatch did.** `44210655651` was sent at 00:47 UTC, thirteen minutes before the peak window opened
+at 01:00. The learn half ran from 00:48 to 01:19 — 57 episodes, 57 corrections, 67 items, **`$0.1617`** — and the
+eval phase then started inside the window and was refused by the driver's `--require-off-peak`. The reference
+arm was refused for the same reason, the pairing step had nothing to pair, and the run produced **no reading**.
+
+**What the partially run arm did say, read as a population rather than as a score**, because it is the only
+cheap thing the money bought:
+
+| reading | predicted | measured |
+| --- | --- | --- |
+| `supportFloor.retired` | 30–42 | **41** of 67 |
+| servable (`retained`) | 8–14 | **10** |
+| consolidation | — | 67 considered, 2,211 pairs, **10 groups, 16 merged, 51 retained**, `support ≥2 0→5`, max 4 |
+| `skippedKey` / `hidden by the key` | 0 | **0** |
+
+Both bands held, from ratios that predicted 30–42 against a measured 41. That is a prediction about the store
+and not about the treatment, and it is the only thing this dispatch established.
+
+**The defect is the guard's position, not its rule.** `--require-off-peak` is evaluated **per phase**, so a run
+that was legitimately off-peak when it started can be halfway through when the window closes — and the half
+already paid for is lost with the half not yet bought. Nothing in the workflow asked the question a dispatch
+actually has: *will this finish before the window closes?* The 13 minutes the run had were visible at dispatch
+time; the 109 minutes it needed were computable from its own caps.
+
+**`windowFit` is that question as arithmetic.** Remaining off-peak minutes from the rate card, against
+`episodes × 26 s + 10 min`, where 26 is **measured**: R141's memory arm ran 114 episodes (74 learn, 40 held out,
+distillation included) in 49 minutes and its control ran 40 in 15. The margin covers checkout, environment and
+probe. Three verdicts and no waiting — waiting is `planBandWait`'s job:
+
+```
+off-peak window: 13 minute(s) left against an estimate of 109 — the run would cross into the window that
+opens at 01:00, and `--require-off-peak` is checked per phase, so the half it paid for would be lost.
+Dispatch with not_before: 01:00
+```
+
+`pnpm eval:window-fit` is the workflow step, placed after the registration is resolved and before the first
+model call, and it refuses a dispatch whose caps are unpinned rather than estimating zero episodes — a guard
+that reads "no caps" as "a free run" is the same shape of defect as a floor that reads "no sample" as "every
+item is a singleton". The line prints on the passing side too: *120 minutes left, 109 estimated — it fits* is how
+the next dispatch gets sized deliberately.
+
+**R142 re-dispatched with a window that fits.** `not_before: 04:00` gives the pair 120 minutes against the 109
+it is estimated at, and the peak windows are 01–04 and 06–10 UTC, so the run ends before the second one opens.
+
+**Also in this round, and stated as unread on purpose: `taskSplit: official-swapped`.** The second direction of
+the benchmark's own halves — the store learns from the 40 and answers the 74 — which is the other fold of a
+cross-fit over all 114 tasks and the only population on this lane that can resolve a ten-point effect. It is a
+header value, a pure `directedSplit` and seven cases, and **no registration names it yet**: its first arm is
+R143, which starts only if R142's harm share holds. Landing a switch before the arm that reads it is a debt this
+record usually refuses; it is taken here because the value is two words in a header rather than an instrument
+the lane must call, and because the alternative — building it after R142's readback — delays the only arm that
+can resolve the effect to a third dispatch.
+
+**State.** 5,570 tests over 270 files (+17 here, +7 in 229); **100 / 99.92 / 100 / 100**; `window-fit.ts`,
+`band-wait.ts`, `tau2-plan.ts`, `prereg.ts` and `serve-support.ts` at 100/100/100/100. Round cost: **$0.1617**,
+all of it the lost learn half.

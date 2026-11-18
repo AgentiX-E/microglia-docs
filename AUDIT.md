@@ -11491,3 +11491,35 @@ the schedule. At n = 57 the pair resolves ~14.4pp, so the delta will most likely
 claim the round grades is the **harm share**, which can separate: 1 in 47 is 2.13% against R139's 5 in 32,
 Fisher's p ≈ 0.04. A round that states it cannot resolve its own mean before it runs is a cheaper round than one
 that discovers it afterwards.
+
+### 34.182 A guard evaluated per phase is a guard that fires after the money is spent
+
+**The loss.** `44210655651`, dispatched 2026-11-18 at 00:47 UTC. The learn half ran 00:48–01:19 and cost
+**`$0.1617`**; the eval phase started at 01:19, thirteen minutes into a peak window, and `--require-off-peak`
+refused it. The reference arm was refused next, the pairing step found nothing to pair, and the arm the round
+was registered for produced no score. Two of the round's four predictions were nonetheless readable from the
+half that ran — `retired` 41 against a 30–42 band and `retained` 10 against 8–14 — and that is a statement about
+the store, not about the treatment.
+
+**Why no existing check caught it.** Three checks exist and none of them asks this question. `planBandWait`
+answers "how long until the window" and is used only when a dispatch names `not_before`. `isPeak` answers "is it
+peak now", per call. `--require-off-peak` answers the same question at each phase boundary, which is the layer
+where being wrong is expensive. The missing question — *will the run still be off-peak when it finishes* — is a
+comparison of two numbers that were both known before the first episode was paid for.
+
+**The class this belongs to, and its third instance.** The record has twice been bitten by a check placed where
+it can only report rather than prevent: R42's empty store, read as "the mechanism did not work" instead of "the
+store was never written"; R137's carriage, where the copies were counted in a process that could no longer act
+on them. This is the same shape at the billing layer: a guard whose refusal arrives after the spend. The repair
+is the same in all three — move the decision to the earliest point where it is still free, and make the number
+it decides on a field rather than a habit.
+
+**What the guard must not become.** A waiting mechanism. `not_before` already exists, it is priced, and it is
+capped at 240 minutes; a guard that sleeps to avoid a refusal would convert "this dispatch was mistimed" into
+"this job held a runner for two hours", which is a different cost with the same cause. The guard's whole output
+is a sentence and an exit code, and the sentence ends with the hour to name.
+
+**One number of mine, corrected in the same round.** The comment written first said the lost half cost `$0.10`.
+The learn phase's own `cost.usd` is **`0.1617`**, which the log states and the sentence in `window-fit.ts` now
+quotes. An estimate of a cost in a file about not estimating costs is the smallest possible version of this
+record's recurring defect.
