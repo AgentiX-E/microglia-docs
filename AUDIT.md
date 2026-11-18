@@ -11984,3 +11984,50 @@ ledgers that were already committed once the artefact could be fetched.
 **The class this belongs to.** §34.188 through §34.192 are all one defect: a reading the record makes and does
 not confront. Two of them were found by joining artefacts across rounds, which is the cheapest instrument this
 lane has and the one it forgets most often.
+
+### 34.194 The treatment identity had five fields, and the serving policy would have arrived as a sixth that nobody compared
+
+**The defect, found before it could be paid for.** R152's arm bounds how many times one item may be served. The
+pair artefact states a treatment as `unit`, `form`, `scope`, `model`, `traceClaims`, `knobs` — five of the six
+fields the record has added one at a time, each *after* the round in which the omission mattered. The rotation
+was about to be a seventh addition, and it was about to be omitted in exactly the same way: the arm's own
+artefact would carry the reading, the pair would not state the policy, the pool would normalise the silence to
+`none`, and R152's bounded fold would have pooled with R143's two unbounded ones as one treatment at 114 pairs.
+The number that would have come out is an average of two servings, which is the error §34.191 records at the
+guard below this one.
+
+**What surfaced it was writing the guide.** §32.2's table says what each header value records in the artefact, and
+the row for `serveRotation: off` claimed `serveRotation.cap: 0`. The code did not do that: a declared identity
+built no ledger at all, so the artefact carried no block, which made a declared control indistinguishable from a
+switch nobody had mentioned. The row was wrong, and the reason it was wrong — the artefact had no field for the
+*policy* as distinct from its *reading* — is the same reason the pool would have had nothing to compare.
+
+**The repair, in the order the record is read.**
+
+| layer | before | after |
+| --- | --- | --- |
+| the arm artefact | `serveRotation: { cap, maxRenders, … }` | `serveRotation: { mode, cap, maxRenders, … }`, and a declared `off` ships `{ mode: 'off' }` with no reading |
+| the pair artefact | `treatment` had six fields | `treatmentOf` compares `rotation` as a seventh, stated by the arm that declared one and silent on a control that serves no pack |
+| the fold record | `TREATMENT_FIELDS` had six names | seven, with `rotation` in a `STRICT_FIELDS` set |
+| the pool | `identityOf` compared five names | six; `rotation` absent and `rotation: 'off'` are different values (`none` / `off`) |
+| the guide | the row above | `serveRotation.mode: 'off'`, and a paragraph saying why the mode travels separately from the reading |
+
+**The one place the new field breaks a rule the other six follow.** `fold-records.ts` *carries* a field that one
+fold states and the other does not, with a derivation line, because an older artefact's silence usually means "the
+field did not exist yet" and refusing it would let one artefact's age decide that two folds ran different
+treatments. For a serving policy that reasoning inverts: silence means the arm **did not bound anything**, so
+carrying it would convert an unbounded fold into a bounded one. `rotation` is therefore refused rather than
+carried, and the refusal names the asymmetry:
+
+```
+the folds are two experiments, not one corpus: rotation is 'fair-share' on official and unstated on swapped
+  — a field whose absence is the control may not be carried
+```
+
+**The class, and the count.** This is the fourth field this record has added to a treatment identity after the
+round in which its absence produced a number (R109's unit, R120's split, R150's knobs, and now the policy). Three
+of the four were found by a *readback* joining artefacts that disagreed. This one was found by writing the
+sentence that describes the field, which is the cheapest instrument in this record and the one it uses least.
+What makes the sentence harder to get wrong next time is the type rather than the prose: `ServeRotationReport`
+has a mandatory `mode`, so a block cannot ship without the policy it belongs to, and the guide's table is
+checked against that type by hand once rather than re-derived on every readback.
