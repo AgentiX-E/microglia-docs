@@ -10165,3 +10165,67 @@ repairs and 15 breaks (net −8 tasks). Per rendered break, the thin store costs
 folds differ in corpus half as well as in supply. What it does license is the *shape* of the next registration:
 bound the renders one item may take, not the number of items the store may hold — a per-item travel budget, which
 is measurable with the instruments this round already committed (`serveYield` per record, `serveTasks` per task).
+
+### 17.163 The travel budget: an exclusion the store honours, and why a post-filter would have been a different arm
+
+§17.162 ended with the shape of the next registration rather than a rule: bound the renders one item may take,
+not the number of items the store may hold. R152 is that arm, and the design question it had to answer first is
+**where** the bound is enforced.
+
+**Three places it could have gone, and what each would have measured.**
+
+| enforcement point | what the request returns | what the arm would be |
+| --- | --- | --- |
+| after the pack is built (`pack.items.filter(...)`) | one item fewer | a **dose** change: the phase serves less memory, and dose is an axis this record already priced (§17.50, the dose arm set) |
+| at the pack's selection (`mmrSelect` over a filtered candidate list) | a different item, same count | an allocation change, but with the store's ranking already spent |
+| inside the store's search, before scoring | a different item, same count, and the normalisation taken over what may be served | **the allocation change** |
+
+The third is what shipped. The second is nearly the same and was rejected for the reason R139 gives about
+`supportFloor`: the pack layer would then need an opinion about ids, which is state the caller owns, and a filter
+applied after the store has ranked cannot give the slot to a candidate the store already discarded.
+
+**The contract, stated as four properties rather than as an implementation.**
+
+1. `RecallQuery.exclude` is a list of ids, honoured by `EmbeddedMemory.search` before ranking. An id the store does
+   not hold is ignored rather than fatal: the caller's list is state, and an item can be retired between the
+   moment the list is built and the moment the request is sent.
+2. The pack keeps its size. With `limit: 2` and the leader withheld, the pack carries the runner-up and the tail —
+   the substitution is asserted in `exclude-pack.test.ts`, because a pack that lost a slot is a different arm.
+3. The relevance normalisation is taken over the items the request may serve. BM25 scores are divided by the pack's
+   own maximum, so a maximum left over an excluded item would deflate every remaining score and hand a margin gate
+   a contest the exclusion invented.
+4. The wire parses the list with a shape test and a count bound (`MAX_EXCLUDED = 256`, ids matching the alphabet
+   this kernel mints). An empty value is refused rather than read as "nothing excluded": the way to exclude
+   nothing is to omit the parameter, so a present-but-empty one is a caller whose list came out empty, and
+   honouring it would serve the item it meant to hold.
+
+**The cap is arithmetic, and it is resolved from the store the run built.**
+
+```
+cap = ceil(requests / servable)      # 40 requests over 11 servable items → 4
+```
+
+A constant in the header would be a guess about a store the distiller has not written yet, and a guess that does
+not bind produces an arm that ran as its own control. The resolution is therefore the driver's, and the artefact
+carries what it resolved to (`serveRotation.cap`) beside the maximum any item actually took
+(`serveRotation.maxRenders`) — the pair that tells a bound which acted from a registration which intended one.
+
+**Two failures the reading has to separate, and does.**
+
+| state | what it means | where it is counted |
+| --- | --- | --- |
+| `maxRenders < cap` | the ranking never reached the bound: the arm is its own control | `serveRotation.maxRenders` against `cap` |
+| `starved > 0` | every servable item had taken its share, so the pack could only be empty | `serveRotation.starved` |
+| `servable = 0` | the store can serve nothing, so no share exists | `serveRotation.servable` |
+| cap 0 with `requests = 0` | the phase asked nothing | `serveRotation.requests` |
+
+**What the arm holds fixed, which is the whole of its claim.** The same 74/40 split of the benchmark's own
+boundary, the same distillation population, the same recurrence pass, the same support floor of 2, the same
+one-item pack, the same budget, the same model, one trial per task. The only difference from R143's `official`
+fold is which item fills the pack — which is why the registration buys a **count** (breaks, repairs, served
+requests) at a resolution where a delta cannot be claimed.
+
+**Cost, priced from the store rather than from a rate card.** One dispatch, not two: the swapped fold's fair share
+is `ceil(75 / 3) = 25`, exactly what the ranking already did, so a rotation arm there would be the identity and
+would buy a second sample of R143 rather than a second reading. The `official` fold's bill is the one measured on
+2026-11-18 for the same shape: **$0.3840**.
