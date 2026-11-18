@@ -21680,3 +21680,57 @@ the id, an episode that named none leaves it off), plus five expectations update
 than to hide it. Repository **5,659 tests over 274 files** (+13), coverage **100 / 99.92 / 100 / 100** — the
 residual is `app.ts`'s one branch, unchanged. `pnpm typecheck:lanes` clean, `audit:repo` ok, coupling ledger
 **242 modules** (+1), `core coupled=0`. Round cost **$0.00**.
+
+### 236 — Five papers say the rule travels; our store says it does not, and that is a finding
+
+**What was read, and from what.** R141's memory-arm artefact, already downloaded for R145's readback, put
+through `pnpm eval:retrospect` with the four dimensions the dump carries declared explicitly:
+
+```
+store      64 record(s): 64 repair(s), 0 pass(es), 0 with no side
+scope      READ — 0 of 64 readable record(s) declare nothing beyond their task (0.0000),
+           the widest dimension left open is `reasonCode` at 0.5156
+universal  READ — 0 of 64 record(s) state no condition and declare no scope dimension (0.0000)
+clusters   2 at threshold 0.6
+census     fragmentation 0.906 (58/64 repair(s) no cluster claims)
+```
+
+**The hypothesis this refutes, at our own sample.** The 2026 literature's dominant explanation for memory harm
+is that abstraction strips applicability conditions, so a rule formed on a benign interaction governs a
+high-stakes one (*Memory Trap* arXiv 2611.07554, 35–81% of episodes; *Useful Memories Become Faulty* arXiv
+2605.12978; *MemDev-Bench* arXiv 2610.27524; *More Memory, Worse Agents* arXiv 2610.27406). WikiTrace (arXiv
+2611.14320) attributes **52%** of degradation events to a followed memory entry, of which 20% were outright
+wrong and 80% were valid-but-out-of-scope. If that mechanism were ours, a store with **0 of 64** records
+declaring nothing beyond its task and **0 of 64** universal records would be nearly immune — and a store that is
+nearly immune should not be the one whose renders are 85% inert.
+
+**The reading that explains both.** Fragmentation **0.906**: 58 of 64 repairs belong to no cluster at the
+0.6 threshold, and the store's 64 records fall into 60 distinct scope keys (R121). Our failure is the mirror of
+theirs — not over-generalisation but **under-consolidation**. A record scoped so tightly that nothing else joins
+it is served on the episode that produced it and nowhere else, which is exactly a store whose lift is capped by
+the corpus's headroom rather than by the quality of its lessons. That is consistent with the conditional read:
+71.4% of the opportunities it got were repaired, and it got very few (7 of 40).
+
+| candidate mechanism | the number that would support it | what we measured |
+| --- | --- | --- |
+| rules outrun their scope | `scope` share declaring nothing beyond task > 0 | **0.0000** (0 of 64) |
+| universal rules | records with no condition and no dimension > 0 | **0.0000** (0 of 64) |
+| a single dimension left open | one dimension's `openShare` far above the rest | `reasonCode` **0.5156** — the only open dimension above half |
+| under-consolidation | fragmentation high, clusters few | **0.906**, 2 clusters, 58 of 64 repairs unclaimed |
+
+**So the content axis changes shape.** ROADMAP step 3 was written as "read a claim's content against the trial
+it was served into", with provenance ids as the missing instrument. That is still true, but the priority inside
+it moves: the axis worth testing first is **`reasonCode` openness** (half the store declares *what* it applies
+to and not *why*), and the second is **consolidation**, because a store that does not group cannot be tested for
+generalisation at all. Both are cheap: the first is a serve-time gate on a dimension the record already
+carries, the second is a threshold on a census that already prints.
+
+**What this costs and what it refuses.** $0.00 — the artefact was already on disk. It refuses to call the store
+"scope-blind": the census is a count and not a verdict, and a broad rule can be correct. What it does assert is
+that the mechanism five papers point at is *measurably absent* from our store's records, so a fix aimed at it
+would be a fix for a different system.
+
+**Acceptance.** No code change. This round's deliverable is the reading above, its comparison in
+§COMPETITIVE AM.11 (including WikiTrace's +3.2pp provenance ablation and its 52/20/80 decomposition), and the
+re-shaped priority in ROADMAP step 3. Repository unchanged at **5,659 tests / 274 files**, coverage
+**100 / 99.92 / 100 / 100**.

@@ -7352,3 +7352,69 @@ report neither the headroom nor the harm share their own gates leave behind.
 test / 78.49 dev); the τ² cell remains unrankable (`bar_backbone_matches = 0`). What changes is the vocabulary a
 future row would have to use: a marginal +10pp is now demonstrably consistent with a mechanism that is inert on
 85% of its exposure, and a benchmark that reports only the marginal cannot tell the two apart.
+
+**AM.11 — the harm mechanism five papers name, measured on our own store, and the one they get wrong about us
+(2026-11-18).** The 2026 literature has converged on a single explanation for memory-induced degradation:
+*the rule travels further than the interaction that produced it*. *The Memory Trap* (arXiv 2611.07554) measures
+benign sessions producing notes that govern high-stakes ones in 35–81% of episodes; *Useful Memories Become
+Faulty* (arXiv 2605.12978) names the mechanism as abstraction stripping applicability conditions; *More Memory,
+Worse Agents* (arXiv 2610.27406) calls the resulting loop **error reproduction**; *MemDev-Bench* (arXiv
+2610.27524) attributes failures to reuse without reassessing applicability; and **WikiTrace** (arXiv
+2611.14320, 2026-11-10) puts a number on the attribution:
+
+| WikiTrace's decomposition of degradation events | share |
+| --- | --- |
+| traced directly to a retrieved memory entry the agent followed | **52%** |
+| of those, a rule that was outright incorrect | 20% |
+| of those, a valid insight applied outside its operational scope, misread, or a bad heuristic | 80% |
+
+and an ablation that matters more than the headline: insights **with** provenance links and test-time descent
+score **90.2%** against **87.0%** for the identical insights without them, and 79.5% for no memory. So the
+provenance half of their design is worth **+3.2pp** on its own, measured against a baseline that received the
+same text — the cleanest estimate anyone has published of what "let the agent check the lesson" buys.
+
+**What that predicts for us, and what our store says instead.** If the mechanism is *rules without scope*, then
+a store whose records declare scope should be insulated from the largest share of it. R141's store, read with
+`pnpm eval:retrospect` on the arm's own artefact:
+
+```
+store      64 record(s): 64 repair(s), 0 pass(es), 0 with no side
+scope      READ — 0 of 64 readable record(s) declare nothing beyond their task (0.0000),
+           the widest dimension left open is `reasonCode` at 0.5156
+universal  READ — 0 of 64 record(s) state no condition and declare no scope dimension (0.0000)
+clusters   2 at threshold 0.6
+census     fragmentation 0.906 (58/64 repair(s) no cluster claims)
+```
+
+Three readings, none of which the literature would predict for a store this small:
+
+1. **0% declare nothing beyond their task.** Every record carries at least one scope dimension. The "rules
+   travel" mechanism is therefore *not* what our harm is made of, at the record level — which is a claim no
+   competitor makes because none of them publishes the census.
+2. **0% are universal** (no condition and no dimension). The population every one of those five papers is about
+   is empty in this store.
+3. **51.6% leave `reasonCode` open**, the widest gap in the store and the only dimension where a rule can be
+   right about an intent and wrong about why.
+
+**And the reading that reframes the whole comparison: fragmentation 0.906.** Fifty-eight of sixty-four repairs
+belong to no cluster at threshold 0.6. Our store does not over-generalise — it **under-consolidates**. That is
+the mirror image of the failure mode the literature describes, and it explains the number those papers do not
+have: on R141, 85% of the store's renders were inert (AM.10). A store whose rules are too narrow to group is a
+store that is served on the one episode that taught it and nowhere else, which is why the ceiling on its lift is
+the corpus's headroom rather than the strength of its lessons.
+
+| the mechanism | who names it | what our store measures |
+| --- | --- | --- |
+| rules travel beyond their scope | Memory Trap, Useful Memories Become Faulty, MemDev-Bench | **0 of 64** records declare nothing beyond their task; `reasonCode` is the only wide-open dimension at 51.6% |
+| error reproduction through re-abstraction | More Memory, Worse Agents | not observable in a single fold: it needs two rounds of distillation, which is what R143's two folds begin to make visible |
+| following an unverifiable lesson | WikiTrace (+3.2pp for provenance and descent) | 3.03% of the renders that could only do harm actually harmed; the claim text is in the artefact, the *source* is not — that is ROADMAP step 3 |
+| under-consolidation (ours) | this record | **fragmentation 0.906**, 58 of 64 repairs in no cluster |
+
+**Ranking, unchanged and stated plainly.** WikiTrace's 90.2% / 87.0% / 79.5% is on its own suite average (eight
+suites, five benchmarks, τ³ retail among them) and its baseline is a bare terminal agent under DeepSeek-V4-Flash
+— a different corpus, a different split, and no paired control, so the cell is **not comparable** to our
+`0.825 / 0.925` on τ² retail 40 tasks in the sense a leaderboard needs (`bar_backbone_matches = 0` again). What
+*is* comparable is the shape of the evidence, and there WikiTrace is the first competitor to publish the
+decomposition this record has been reporting since AM.10: they count memory-caused failures, we count them per
+render with the headroom beside them. Their 20% incorrect / 80% misapplied split is the number our
+`serveTaskCensus` and the `reasonCode` gap are built to test with our own denominator.
