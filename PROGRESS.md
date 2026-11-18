@@ -21801,7 +21801,7 @@ and `typecheck:lanes` clean, `audit:repo` ok, coupling ledger **244 modules** (+
 ## 175 — The store was eighty-two per cent descriptions of success, and the rung now prices itself
 
 **What R142 read.** `run 44256793758`, τ²-bench retail, the lane's own 57 learn / 57 held out cut, floor 2,
-`scope: all`, off-peak, **$0.2610** for the pair (memory `0.1338`, reference `0.1272`):
+`scope: all`, off-peak, **$0.4129** for the dispatch (learn `0.1519`, memory `0.1338`, reference `0.1272`):
 
 | reading | R142 |
 | --- | --- |
@@ -21916,3 +21916,82 @@ parse failure, and a record's margin read from the request that served *it*), `l
 (the sweep published at 0.08 on a four-trial fixture, and nothing published when the arm carries no census).
 Repository **5,705 tests over 276 files** (+30), coverage **100 / 99.92 / 100 / 100**. `pnpm typecheck`,
 `typecheck:lanes`, `audit:repo` ok; coupling ledger **245 modules** (+1), `core coupled=0`. Round cost **$0.00**.
+
+## 176 — The failures-only store was worse, and two reference arms priced the lane's own noise
+
+**What R151 read.** `run 44303966152`, the same 57/57 cut as R142, `distillScope: edited`, the floor at its
+identity, off-peak, and the memory arm's bill is the only term that moved:
+
+| reading | R142 (all, floor 2) | **R151 (edited, no floor)** |
+| --- | --- | --- |
+| learn | 57 corrections → 112 candidates → 61 items | **11 corrections → 22 candidates → 16 items** |
+| consolidation | 11 groups, 13 merged | **1 group, 1 merged** |
+| served | 57 requests from 9 records | 57 requests from **12** records, 738 chars |
+| reference `pass^4` | 0.8246 (47/57) | **0.8947 (51/57)** |
+| memory `pass^4` | 0.7895 (45/57) | **0.807 (46/57)** |
+| delta | −3.51pp [−14.04, +7.02] | **−8.77pp** [−21.05, +3.51], p 0.2668 |
+| broken / repaired | 6 / 4 | **9 / 4** |
+| harm share | 12.77% | **17.65% (9 of 51)** |
+| serve support | 9 items, all ≥ 2, 6 broke | **support 1: 11 items, 8 broke, 4 kept; support ≥2: 1 item, 1 broke** |
+| verdict | UNRESOLVED | **HARM** (point estimate negative; `V5`, `V16` and `l4-paired` fail) |
+
+**The knob reached the distiller, read from the store rather than from the header.** The registration's own
+refutation clause asked for `provenance.edited` rather than for the `scope=` line, and the artefact answers:
+`{"edited": 11, "passed": 0, "itemsEditedOnly": 16, "itemsPassedOnly": 0, "itemsMixed": 0}` — the store is
+100% failure-derived, which is what R142's 11/50 split said it was not.
+
+**The content axis is refuted, and the refutation is specific.** The population changed as registered — 11
+corrections, all from failures, one merged pair, sixteen items — and the store got **worse**, not better:
+9 breaks against R142's 6, on a larger opportunity population (51 control-passed trials against 47). The line
+that explains it is the one the floor left behind: with `serveSupport: 1` **eleven of the twelve served records
+carry support 1**, and eight of those eleven broke a trial. A repair written for one task is served to every
+other task that resembles it, and a store built from failures is a store of *corrections to specific tasks*.
+
+The repair rate tells the same story from the other side: R151 repaired **4 of the 6** opportunities (67%)
+against R142's 4 of 10 (40%). The failures-only store is *better* at the task it was written for and *worse*
+everywhere else — and everywhere else is eight times the population.
+
+**What the two reference arms bought for nothing.** Both dispatches ran the same reference configuration, on the
+same 57 tasks, with the same model, forty minutes apart. Joining the two transfer ledgers by task id:
+
+| cells | count |
+| --- | --- |
+| both passed | 44 |
+| both failed | 3 |
+| R142 passed → R151 failed | **3** |
+| R142 failed → R151 passed | **7** |
+| agreement | **47 / 57 = 82.5%** |
+| McNemar exact, two-sided | p = 0.344 |
+
+**The same arm, run twice, differs by 7.02pp and flips 17.5% of its tasks.** That is larger than the delta R142
+reported (−3.51pp) and of the same order as R151's (−8.77pp). The lane has been reporting a minimum detectable
+effect computed from **within-run discordance alone**, which assumes the control half is fixed; it is not, and
+the two reference arms are the first measurement of how far it moves.
+
+**What that does to every MDE this record has published.** A per-arm flip share of 17.5% on 57 trials is a
+sampling SD of √(0.175 × 0.825 / 57) = **5.0pp** per arm. A difference of two independently sampled arms then
+carries √2 × 5.0 = **7.1pp**, against the **5.55pp** paired standard error the artefact reports. The 80%-power
+MDE follows: 2.802 × 7.1 = **19.9pp**, not 15.55pp — and R151's own 17.72pp is light by the same factor.
+
+**No effect this lane has measured survives that correction.** −3.51pp, −8.77pp, +10.00pp: all three sit inside
+19.9pp. The mechanisms are not refuted by this; they are *unmeasurable at one trial per task*, which is a
+different and more useful statement.
+
+**What the next dollar buys, given that.** Resolution, and the registered instrument for it is R143's two folds —
+114 independent task pairs at 10.98pp, rather than 228 correlated trial pairs at a nominal 7.8pp. Both mechanism
+axes have now been measured and both are negative or indistinguishable from the lane's own noise: content (R151,
+17.65% harm) and usage (the margin, AUC 0.625, exact p 0.305). Buying a third mechanism reading at an MDE of
+twenty points would produce another sentence nobody can act on.
+
+**Acceptance.** Code: `serve-sweep.ts` 23 cases at 100% on all four dimensions, `l4-pair-transfer` 6 (the sweep,
+the absent-census refusal, and the repeated-trial refusal), `tau2-attribution` 72. Repository **5,706 tests over
+276 files**, coverage **100 / 99.92 / 100 / 100**, `audit:repo` ok, coupling **245 modules**, `core coupled=0`.
+Round cost: **$0.4172** for R151 (learn `0.1562`, memory `0.1333`, reference `0.1277`) and **$0.4129** for
+R142, both off-peak.
+
+**And a correction this readback forces on the record's own arithmetic.** The registration above priced this
+dispatch at "$0.26, which is R142's measured bill", counting the two arm files and missing the **learn phase**,
+which is a third paid phase on the same endpoint. The true bill per dispatch is **≈$0.41**, 1.6× what every
+cost paragraph in this record has said since the memory half was split from the learning half. The numbers on
+this page are corrected; the registration's estimate is left as it was written before the run, because a
+registration edited after its result is not a registration.

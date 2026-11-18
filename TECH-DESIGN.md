@@ -10012,3 +10012,45 @@ contribution is not separated in it.
 distiller's 2 candidates per correction), `servable` ≥ 8, `repairs` ≥ 4, `breaks` ≤ 2, delta ≥ 0 at a bound of
 15.55pp. Refutation is banded the same way: `breaks` ≥ 5 sends the axis to **usage** — which this round has
 already priced — and `repairs` ≤ 2 sends it to the **cut**.
+
+### 17.159 What two reference arms license, and the third phase the cost arithmetic was missing
+
+**The estimator the pair actually is.** `l4-pair` reports a paired delta with a McNemar interval on the
+discordant pairs. That interval is exact **given two realised draws**: it answers "if these two arms were the
+only randomness, how surprising is this split". It does not answer "would another dispatch of the same
+treatment land here", and until R151 nobody had asked.
+
+**The data.** Two dispatches of one treatment, same tasks, same model, same commit family:
+
+```
+R142 reference: 47 / 57      R151 reference: 51 / 57
+agree 47   (both pass 44, both fail 3)      disagree 10   (3 down, 7 up)
+flip share 0.175            McNemar exact p 0.344
+```
+
+**The arithmetic that follows, stated so it can be checked.**
+
+| quantity | value | from |
+| --- | --- | --- |
+| per-arm sampling SD | `√(0.175 × 0.825 / 57)` = **5.0pp** | the flip share |
+| delta SD, two independent arms | `√2 × 5.0` = **7.1pp** | independence of the two dispatches |
+| paired SE the artefact reports | **5.55pp** | within-run discordance alone |
+| published MDE80 | **15.55pp** | `2.802 × 5.55` |
+| MDE80 with both draws sampled | **19.9pp** | `2.802 × 7.1` |
+
+The published figure is not wrong; it is the MDE of a *conditional* question. The unconditional one is 28%
+wider, and the difference is the reason a −3.51pp delta and a +7.02pp test–retest are the same number in
+disguise.
+
+**What would shrink it, and what would not.** More tasks shrink both terms by `√n`; more trials per task shrink
+the per-arm term by `√k` only to the extent the trials are independent, which the pass^k metric exists to
+question. The two are not interchangeable: 114 tasks buy 10.98pp, while 228 correlated trial pairs on 57 tasks
+buy a nominal 7.8pp that the within-task correlation inflates back toward 15. Unless a correlation is measured,
+the task count is the honest lever — which is what the R143 cross-fit is.
+
+**The third paid phase.** The registration for R151 priced the dispatch at "$0.26, which is R142's measured
+bill", reading the two arm files. A τ² arm runs **three** paid phases — learn, memory eval, reference eval — and
+the learn phase is billed separately (`$0.1519` on R142, `$0.1562` on R151). The true per-dispatch cost is
+**≈$0.41**, 1.6× every cost paragraph this record has published since the memory half was split from the
+learning half. Both rounds are corrected in §PROGRESS 175–176; the registration is not, because a registration
+edited after its result is not a registration.

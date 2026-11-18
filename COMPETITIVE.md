@@ -7475,3 +7475,42 @@ published bar while its own control clears it. It is the population — `prereg/
 changes the store from 82% descriptions to failures only, which is the object ACE actually writes, and measures
 whether the harm survives. If it does not, this lane is first at something the field has not published: a
 quantified statement that **corroboration is not safety** when the corroborated population is made of successes.
+
+### AM.8 The harm share rose to 17.65%, and the board is now bounded by our own noise
+
+**What R151 changed in the comparison.** The content axis — the store built only from failures, which is what
+ACE's generator writes and what ALTK's corrections are — produced a **worse** arm than the widened population it
+replaced:
+
+| reading | R142 (all, floor 2) | R151 (edited, no floor) |
+| --- | --- | --- |
+| harm share | 12.77% (6/47) | **17.65% (9/51)** |
+| repaired / opportunities | 4 / 10 = 40% | **4 / 6 = 67%** |
+| delta | −3.51pp | **−8.77pp** |
+| served records with support 1 | 0 | **11 of 12** |
+
+The second row is the interesting one for the field: the failures-only store **repairs better** where it applies
+(67% of the opportunities against 40%) and **breaks more** elsewhere, because a one-task correction is exactly
+the object that gets applied outside its scope. On this corpus the failure-derived store is a sharper instrument
+with a wider blast radius, and the blast radius is eight times the population it can help (51 control-passed
+trials against 6 the control failed).
+
+**The number that bounds every row on this board.** Two reference dispatches of the same configuration, same 57
+tasks, agree on 82.5% and flip 17.5% — the arm moves **7.02pp** on its own. The lane's MDE, recomputed with
+both draws sampled, is **19.9pp** rather than the published 15.55pp.
+
+| system | published cell | what it can resolve | microglia's position |
+| --- | --- | --- | --- |
+| **ALTK-Evolve** | τ² retail `pass^4` **0.6754** (`sup2`) | single run, no test–retest published | not comparable: `bar_backbone_matches = 0` — this lane's control is 0.8947 |
+| **AskData** | BIRD test **83.40**, dev 78.49 | 1,534 dev questions → ±1.5pp | different lane; the only one where a 2pp claim is resolvable |
+| **ACE / SEMV / STRATA** | no harm share, no noise floor | — | this lane is alone on both |
+| **microglia** | control 0.8947 / memory 0.807; harm 17.65%; margin AUC 0.625, exact p 0.305; **noise floor 7.02pp** | **19.9pp** at one trial per task, 10.98pp at 114 pairs | first at measuring why memory hurts, and last at being able to claim an effect of the size the field trades in |
+
+**What that means for the SOTA claim, stated plainly.** The field's published cells are single runs of systems
+on large corpora; none publishes a test–retest, and none publishes a harm share. This record now has both, and
+they say something the field does not: **at the sample sizes the public benchmarks offer per split, a 4–9pp
+movement cannot be distinguished from the agent's own variance.** That is a constraint on every competitor's
+claim as much as on ours — and it is the one contribution that does not require beating 0.6754 to be true.
+
+The next dollar therefore goes to resolution (the R143 cross-fit, 114 task pairs, 10.98pp), not to another
+mechanism. A third mechanism at 20pp would be another sentence nobody can act on.

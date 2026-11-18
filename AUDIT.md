@@ -11803,3 +11803,47 @@ function; the expensive version is one dispatch per candidate value, and the lan
 
 **Cost.** $0.00. Bought: every future pair prices every rung at readback time, and the next arm's margin is
 chosen from a number rather than from a guess.
+
+### 34.190 A minimum detectable effect computed on one half of the pair it describes
+
+**What was found.** Every MDE this record has published — 23.23pp, 17.16pp, 15.55pp, 17.72pp — is computed
+from the **discordant pairs inside one dispatch**, which treats the control arm's outcome as a fixed quantity.
+It is not fixed: it is one sample from a stochastic agent on a stochastic model. Nobody had measured that.
+
+**The measurement, which cost nothing.** R142 and R151 dispatched the *same* reference configuration, on the
+same 57 tasks, with the same model, forty minutes apart. Two transfer ledgers, joined by task id:
+
+| cell | count |
+| --- | --- |
+| both passed | 44 |
+| both failed | 3 |
+| passed at R142, failed at R151 | **3** |
+| failed at R142, passed at R151 | **7** |
+| agreement | **82.5%** |
+| McNemar exact, two-sided | p = 0.344 |
+
+The arm did not change. **It moved 7.02pp and flipped 17.5% of its tasks.**
+
+**What that does to the arithmetic.** A per-arm flip share of `f` on `n` trials is a sampling SD of
+`√(f(1−f)/n)`; on 17.5% of 57 that is 5.0pp. A delta between two independently sampled arms carries `√2 × 5.0
+= 7.1pp`, against the **5.55pp** paired standard error `l4-pair` reports — and 80%-power MDE is `2.802 × 7.1 =
+19.9pp`, against the published 15.55pp. Every row is light by the same factor, and none of the three deltas the
+lane has produced (−3.51, −8.77, +10.00) clears even the published bound.
+
+**The class.** This is the same defect as §34.188, one level up: an instrument that reports a number about a
+population it did not sample. `l4-pair`'s interval is exact *given* two draws; the question a reader asks is
+whether the treatment moved the outcome, and answering it needs the variance of both draws. The pair refuses to
+average two treatments (§AM.5's fold identity) and then silently assumes one of them does not vary.
+
+**Why it was invisible.** A test–retest needs two dispatches of one treatment, and this lane has always spent
+its dispatches on two *different* treatments — the control is a means to a delta, not an object of study. The
+two reference arms existed as a by-product of two mechanism rounds; nobody joined them. The join is ten lines
+against artefacts already on disk.
+
+**What it changes.** No effect this record has measured is claimable, and the next dollars buy resolution rather
+than mechanism. A third mechanism reading at a 20pp MDE would produce a sentence nobody can act on. The
+registered instrument for resolution is the R143 cross-fit — 114 independent task pairs rather than 228
+correlated trial pairs — and it is now the head of the queue for a reason that did not exist when it was written.
+
+**Cost.** $0.00. The two reference arms were already paid for. What the round bought is the knowledge that the
+lane's own noise floor is ~7pp per arm, which is larger than every effect it has reported.

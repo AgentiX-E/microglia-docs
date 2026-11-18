@@ -6973,3 +6973,30 @@ population was chosen for supply, and supply was bought with successes. That is 
 can be first — no competitor publishes a harm share, and none of them writes a store that is 82% descriptions of
 behaviour that already worked. What remains unreachable is the leaderboard: a control that clears the published
 bar on a cheaper backbone means no delta on this harness is a comparable row, whatever the memory does.
+
+## Where the flywheel stands, 2026-11-18 (R151 read, the noise floor measured)
+
+**The one thing that changed.** The content axis was bought and lost: a store built only from failures
+(11 corrections, 16 items) broke **9 of 51** control-passed trials and repaired 4 of 6, for **−8.77pp** — worse
+than the store it replaced. And the same readback produced the first measurement of the lane's own noise: two
+reference dispatches on the same 57 tasks agree on 82.5% and flip 17.5%, so **the same arm moves 7.02pp** and
+the MDE every earlier round published is 28% too tight.
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | **resolution: the R143 cross-fit** (114 independent task pairs) | MDE ≤ 11pp over two folds | **head of the queue, and for a new reason** (§17.159, §AUDIT 34.190): with one trial per task the lane's own noise is ~7pp per arm, so no delta it has produced (−3.51, −8.77, +10.00) is claimable. The folds are registered; they must run **serially**, both on the floor-2 store, and pool through `crossFitPool` |
+| 2 | content (axis 1) | a failures-only store that breaks fewer trials | **measured and refuted** (§PROGRESS 176): 9 breaks against 6, harm share 12.77% → **17.65%**, and the reason is one line — 11 of the 12 served records carry support 1 and 8 of those broke. A repair written for one task is served to every task that resembles it |
+| 3 | usage (axis 2) | a margin that separates a repair from a break | **measured and refuted for nothing** (§17.157): AUC 0.625, exact permutation **p 0.305** over 210 labellings; the cleanest rung (0.30) keeps 2 repairs and serves 7 of 57. On R151 the sweep finds **no clean rung at all** |
+| 4 | the lexical anchor (axis 3) | breaks fall while repairs hold, on a store and corpus already measured | **registrable, and now the only mechanism left**: it targets the failure mode both refuted axes share — an item applied to a request it was not written for — with content rather than a ranking gap. It waits behind resolution, because a 4pp movement cannot be seen at 20pp |
+| 5 | the published bar (0.575 pass^4, ALTK 0.6754) | a backbone whose own cell is comparable | **not reachable on this lane**: the control scores 0.8947 at 57 tasks with `deepseek-flash`, so `bar_backbone_matches = 0` |
+| 6 | the outcome counter (R129) | ≥3 opportunities per record, repairs below the arm's own rate | unchanged: R151 gave 13 opportunities over 57 renders, spread across 12 records |
+| 7 | BIRD dev | 6,600 paired questions ≈1pp | unchanged — and now the lane whose resolution the record can actually use |
+| — | cortex release (W1) | — | **excluded by the standing instruction** |
+
+**The honest summary of the gap to SOTA.** Two mechanism axes have now been measured with a control and both are
+negative; the store as built does not help, and the record can now say *why* with a number: it serves one-task
+corrections to tasks that resemble them, and the control is already strong enough (89%) that the population of
+trials it can break is eight times the population it can repair. What remains first-in-field is the measurement
+itself — a harm share, a noise floor, a margin with an exact null — none of which any competitor publishes. What
+remains out of reach is the leaderboard, and the distance is now stated in the only unit that matters: **19.9pp
+is what this lane can resolve, and the field's gaps are smaller than that**.
