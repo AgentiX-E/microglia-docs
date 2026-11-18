@@ -22155,3 +22155,111 @@ comparison.
 **Next.** The mechanism is now identified well enough to be attacked: harm scales with renders-per-servable-item,
 so the next dollar goes to a serving rule that bounds how far one item may travel beyond its evidence — not to a
 fourth store size.
+
+## 179 — R152: the leader fell from twelve renders to three, and the artefact could not say who had bounded it
+
+**Dispatched** 2026-11-18 17:53 UTC, run `44363599721`, on `d7343a3d` — `taskSplit: official`, 74 learn / 40 held
+out, `serveRotation: fair-share`, one trial per task, `$0.3717` (registered $0.3840).
+
+| reading | value |
+| --- | --- |
+| learn | 73 corrections from 74 task(s) → 144 candidates → **72 created**, 0 failed |
+| consolidation | 72 considered, 2,556 pairs, 14 groups, 17 merged, 55 retained; refused 1 payload / 9 linkage |
+| support floor 2 | **41 of 72 retired**, **14 servable** |
+| travel budget | **cap 3** from 40 request(s) over 14 servable item(s); `max 3`, 40 renders over 14 items, 13 exhausted, **0 starved** |
+| pack | 40 of 40 served, mean 1.0 item / 754 chars; 40 rivaled, p50 0.1136 |
+| memory arm | **pass^4 0.875** (35/40) |
+| reference arm | **pass^4 0.850** (34/40) |
+| paired | **+2.50pp** [−7.50, +12.50], p = 1.0000, 2 lost / 3 gained — **UNRESOLVED** against 15.66pp |
+| degradation | **2 of 34 (5.88%)** broken, **3 repaired** |
+| serve yield | 40 renders, **opportunity 6** (15.0%), 3 repairs, 2 breaks, 35 inert, repair rate 0.50 |
+| attribution | **no item above 3 renders**; the two breaks and the three repairs are all on different items |
+| serve support | 14 of 14 servable served; support ≥ 2: 14 items, 2 broke, 3 kept, net +1 |
+| serve split | served 35 of 40 = **87.50%** [73.9, 94.5] |
+| margin sweep | no clean rung; AUC **0.500**, exact p 0.600 over 10 labellings; net +2.50pp down to rung 0.02 |
+| verdict | **UNRESOLVED**; `V16-transfer-resolvable` and `l4-effect-resolved` fail non-blocking, `l4-projection-complete` fails **blocking** (§AUDIT 34.195) |
+| cost | **$0.3717** — learn 0.1883, memory 0.0918, reference 0.0916 |
+
+### The mechanism, moved
+
+R143's `official` fold had one item taking **12 of 40 renders** and breaking two trials, while the three items that
+repaired something were served five, six and one time. Under a fair share of three:
+
+| reading | R143 `official` | **R152** |
+| --- | --- | --- |
+| renders the leader took | **12** | **3** |
+| items served | 10 of 11 servable | **14 of 14 servable** |
+| distinct items, top item's share | — | top1 **7.5%**, top5 37.5% |
+| harm share | 8.33% (3 of 36) | **5.88%** (2 of 34) |
+| repairs | 4 | 3 |
+| delta | +2.50pp | **+2.50pp** |
+| effective items | — | **13.70** |
+
+**The concentration moved and the number did not.** Every servable item was served, the worst item's renders fell
+by three quarters, the harm share fell by 2.45 points, and the delta is identical to R143's — which is what a
+40-task sample does with a ±7.5pp between-run spread (§AUDIT 34.193). What the round bought is a **count**, as its
+registration said it would: the bound bites, the phase is served in full, and nothing was starved.
+
+### Against the six registered predictions
+
+| registered prediction | outcome |
+| --- | --- |
+| `cap` 3–5, `starved` 0, `maxRenders ≤ cap` | **holds at the band's floor**: cap 3, starved 0, max 3 |
+| ≥ 36 of 40 requests carry a pack | **holds**: 40 of 40 |
+| `breaks` ≤ 3, and the leader's own breaks fall from 2 to ≤ 1 | **holds**: 2 breaks in total, on two different items, and no item broke twice |
+| `repairs` ≥ 3 of the four opportunities | **holds as a count**, but the denominator moved: opportunity rose 4 → 6 (10% → 15% of renders) and 3 repaired, rate 0.50 |
+| the delta stays unresolved; `pass^4` in 0.875–0.975 | **holds at the band's floor**: 0.875, UNRESOLVED |
+| `serveYield.opportunity` stays near 10% of renders | **falsified in degree**: 15.0% against 10.0%, half the doubling the refutation named |
+
+No refutation fired. The registration's fifth row — *`maxRenders` = 12 again or no `serveRotation` block in the
+artefact* — is the one that decided the round, and it fired for the second reason rather than the first
+(§AUDIT 34.195): the bound acted, and the artefact has no block to say so.
+
+### The decision rule, and the clause the round refuses to obey
+
+| registered row | fired? |
+| --- | --- |
+| **breaks ≤ 2 and repairs ≥ 3 → allocation is the lever: ship the rotation as the serving default, and buy the same arm on the swapped fold so the pool reads 114 pairs** | **this one** |
+
+Ship it as the default: yes, and that is a change to the registration template rather than to the kernel. The
+row's second clause is refused, and the refusal is the registration's own arithmetic: the swapped fold's fair
+share is `ceil(75 / 3) = 25`, exactly what its ranking already did, so a rotation arm there is the identity. The
+row was written as a generic pair of actions and its own "why this fold and not the other" section had already
+shown the second one to be unbuyable. **A decision table row can name an arm the registration has ruled out, and
+nothing checks the two against each other** — worth stating, because the table is the part a later round reads.
+
+### What the artefact cannot say
+
+The arm file carries `unprojected: ["serveRotation"]` and no block, so the fold's policy is absent from its own
+evidence and `rotationModeOf` reads it as `none`. Every number above therefore comes from the run's log and from
+the pair artefact, both of which are complete; the treatment *identity* is the field that is missing, and it is
+exactly the field the pool compares. The two defects and their repair are §AUDIT 34.195; the short version is that
+a spread hid the field from the compile guard and a snapshot taken before the loop would have made the block lie,
+and neither can be repaired from the arm files at $0 because the arm files are the input.
+
+### Cost
+
+| item | cost |
+| --- | --- |
+| learn phase (74 tasks, 1,234 calls) | $0.1883 |
+| memory arm (40 tasks, 642 calls) | $0.0918 |
+| reference arm (40 tasks, 655 calls) | $0.0916 |
+| readback, composition, gates | $0.00 |
+| **round total** | **$0.3717** |
+
+Three per cent under the registered $0.3840, which was R143's measured bill for the same shape rather than a rate
+card. The two folds differ by the store they drew and by the eval phase's cache hit rate (91.04% here against
+91.09% on the swapped fold), so a three-point variance is the estimate doing its job, not a finding.
+
+### Acceptance
+
+Code: `serve-rotation.ts` at 100/100/100/100 (21 unit cases), `tau2-instrument` projection at 100/100/100/100,
+`tau2-driver` gains an end-to-end case with the switch on and a stand-in that actually calls the facade.
+Repository **5,781 tests over 281 files**, coverage **100 / 99.92 / 100 / 100**, `audit:repo` ok, coupling
+**247 modules** with `core coupled=0`, bundle core 52,781 / 18,006 B within 53,000 / 18,300.
+
+**Next.** The rule says ship the rotation as the serving default, and shipping a default needs an artefact that
+states the policy it is the default of. This fold's cannot. So the next $0.37 is the **same registration's
+replication**, declared before the draw: it produces a complete artefact, and it gives the lane the one reading it
+has never had for a *bounded* arm — a second draw at the same treatment, against the 7.5pp spread R141/R143
+measured for the unbounded one.

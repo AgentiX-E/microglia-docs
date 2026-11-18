@@ -7540,3 +7540,33 @@ them everywhere, and the harm follows the renders, not the count.
 
 What remains behind the field is unchanged and now measured: at 114 pairs this lane resolves 13.24pp, and the
 median published τ² cell is a single run whose own sampling interval is never printed.
+
+**AM.10 — the serving cap is a mechanism no row on this board has, and it moved harm without moving rank.** R152
+bounded how many times one item may be served, at a constant dose, on the fold that had measured the most harm per
+render:
+
+| reading | R143 `official` | **R152** (cap 3) | what it is |
+| --- | --- | --- | --- |
+| renders the leader took | **12** | **3** | the concentration the mechanism names |
+| items served | 10 of 11 | **14 of 14** | supply reached rather than recycled |
+| harm share | 8.33% (3/36) | **5.88%** (2/34) | the only positive movement on harm in this record |
+| repairs | 4 | 3 | held, on a denominator that moved 4 → 6 |
+| delta | +2.50pp | **+2.50pp** | unresolved at both resolutions |
+| cost | $0.3840 | **$0.3717** | one dispatch, off-peak |
+
+| system | the serving question it answers | what it publishes |
+| --- | --- | --- |
+| **ACE** grow-and-refine | how the playbook is *edited* between trials | no harm share, no serving cap |
+| **SEMV / STRATA** | whether an item is *admitted*, by its outcome count | no harm share, no noise floor |
+| **ALTK-Evolve** | how items are *clustered* and which survive `sup2` | `pass^4` 0.6754, single run |
+| **AskData** | which schema links are *retrieved* | BIRD 83.40, 1,534 dev questions |
+| **microglia** | **how often one item may be served, at constant dose** — `cap = ceil(requests / servable)`, exclusion inside the store's search | harm 5.88% at cap 3 against 8.33% unbounded on the same fold shape; whole-corpus −6.14pp [−14.91, +2.63]; 13.24pp resolution |
+
+**Why this row is a comparison and not a claim.** Every other row answers a question about *content* — what to
+write, what to keep, what to admit. None of them can answer this one, because none of them publishes how often a
+single record was served: an admission gate acts before the first serve and a cluster acts before any serve, so
+"the same item, served twenty-five times" is invisible in their reported cells. The quantity is one line in this
+record and it separates two folds of one treatment that disagreed in sign (§AM.9). **Rank does not move**: the
+largest published cell is 0.6754 on a different backbone, this lane's control is 0.8684, and `bar_backbone_matches
+= 0` keeps them off one scale. What moves is the explanation — and an explanation a competitor can falsify is
+worth more here than a point estimate this sample cannot resolve.

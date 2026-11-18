@@ -12031,3 +12031,82 @@ sentence that describes the field, which is the cheapest instrument in this reco
 What makes the sentence harder to get wrong next time is the type rather than the prose: `ServeRotationReport`
 has a mandatory `mode`, so a block cannot ship without the policy it belongs to, and the guide's table is
 checked against that type by hand once rather than re-derived on every readback.
+
+### 34.195 A spread is a field the type cannot see, and a snapshot is a reading taken at the wrong moment
+
+**Two defects, one dispatch, one red gate.** R152 bounded how many times one item may be served and reported
+`+2.50pp` at a harm share of 5.88%, and its job failed on one blocking row:
+
+```
+[gate fail] [l4-pair] FAIL l4-projection-complete: memory: serveRotation
+```
+
+`V16-transfer-resolvable` and `l4-effect-resolved` also failed and are non-blocking in both readings (§34.190: a
+count too small to resolve and an effect the sample cannot separate are facts about the arm). The projection row
+is a defect, and it is the third time this class has cost a round.
+
+**Defect 1 — the field was emitted through a spread, so the compile guard was never asked.**
+
+```ts
+...(primary.rotation === undefined ? {} : { serveRotation: primary.rotation })   // driver
+```
+
+`PROJECTION` is typed `{ [K in keyof Tau2Raw]-?: 'carried' | 'reduced' }`, and its comment claims *"a field added
+to the driver's record fails to compile until it is given a decision"*. That is true of a field the type declares.
+A spread member is exempt from excess-property checking, `Tau2Raw` never grew the key, and the table stayed
+exhaustive over a type that no longer described the record. §34.161 found this hole with `memory` and
+`turnCensus`; the repair it installed was the runtime one — `armRecordFromDriver` names every key without a
+decision and the pair refuses the arm. **That repair worked, one dispatch late.** The arm file carries
+`unprojected: ["serveRotation"]` and no block.
+
+The declaration is now in `Tau2Raw`, which restores the compile-time guard in the direction that matters: a
+declared field with no table entry does not build, so the only way to emit one is to declare it, and the only way
+to declare it is to decide about it.
+
+**What the omission cost, in the currency this record uses.** Not one gate row — the fold's place in the pool. The
+policy is a treatment identity field (§34.194), the arm's file cannot state it, `rotationModeOf` reads the fold as
+`none`, and a fold whose policy is unstated cannot be pooled with one that states it. The evidence is complete
+except for the one field that says which experiment it was, and it cannot be re-derived at $0 from the arm files:
+the two files are the input to the join and the missing field is one of them. R143's fold was regenerable because
+the *pair* reader was at fault; here the *arm* is, and that is the difference between a $0 repair and a $0.37
+replication.
+
+**Defect 2 — the report was a snapshot taken before the loop, and it never reached a file.**
+
+```ts
+const rotation = new ServeRotationLedger(rotationCap);
+const rotationReport = { mode, ...(rotation?.reading() ?? {}) };   // ← before the phase
+```
+
+`reading()` is a snapshot. Taken there it says `requests: 0`, `renders: 0`, `maxRenders: 0`, `exhausted: []`,
+`starved: 0` — a phase that served nothing — while the log line printed after the loop says `cap 3 … max 3, 40
+render(s) over 14 item(s), 13 exhausted`. Defect 1 removed the block before anyone could read it, so this one
+surfaced only when a test asserted the identity that ties the two together:
+
+```
+serveRotation.requests === recall.requests        # one next() per recall
+```
+
+Had the projection carried the block, the artefact would have said the phase served nothing beside a log that
+said forty, and the artefact is the file that survives. The repair is one read after the phase feeding both
+consumers — a snapshot read once cannot disagree with itself.
+
+**The test that should have caught both was measuring zero.** The end-to-end case drives the real driver against
+a stand-in for τ². The stand-in wrote its result document and never asked the memory: the recall facade is a real
+HTTP server in the driver's process, and no case had ever called it. Every serving reading in that file — the pack
+census, the served sizes, the ledger — was asserted over a phase that served no pack, and passed. A conditional
+field whose branch is off in the whole suite is invisible to the compile guard (the branch is a spread), to the
+runtime guard (the key is never emitted) and to the test (nothing asserts the reading). The stand-in now asks once
+per episode behind `TAU_STUB_RECALL`, and the case asserts the identity above rather than a constant.
+
+| layer | what it refuses | when | cost |
+| --- | --- | --- | --- |
+| `Tau2Raw` declaration | a field no table must decide about | `tsc` | $0 |
+| `PROJECTION` entry | a declared field with no decision | `tsc` | $0 |
+| `unprojected` at the pair | an emitted key no decision covers | after the run | one dispatch |
+
+**The class, and the count.** Third top-level instance of "a field lost in a projection" (R56's three, R123's
+two, R152's one) and fifth field-level one with `dropped` and `pin` inside `learning`. Every one of them was
+emitted through a spread, and every one was found after a run. What is new here is that the runtime backstop from
+the previous instance *did* fire — the guard is not the missing piece any more, the declaration is, and the two
+are not substitutes: a guard that fires after the dispatch turns a $0 defect into a paid one.

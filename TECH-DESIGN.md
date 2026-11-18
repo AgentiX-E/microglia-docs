@@ -10229,3 +10229,85 @@ requests) at a resolution where a delta cannot be claimed.
 is `ceil(75 / 3) = 25`, exactly what the ranking already did, so a rotation arm there would be the identity and
 would buy a second sample of R143 rather than a second reading. The `official` fold's bill is the one measured on
 2026-11-18 for the same shape: **$0.3840**.
+
+### 17.164 A field reaches an artefact through a type, a table and a read — and R152 got past two of the three
+
+§17.116 and §17.117 state the rule that an artefact must carry every field its driver emitted, and `AUDIT 34.161`
+records the first time it failed. R152 failed it again, in a form worth stating separately because it is the form
+that survives every check the record already had.
+
+**What happened, in the order it happened.**
+
+1. The driver emitted the phase's rotation report through a conditional spread:
+   `...(primary.rotation === undefined ? {} : { serveRotation: primary.rotation })`. TypeScript exempts spread
+   members from the excess-property check, so the object literal compiled with a key its own declared type did not
+   have.
+2. `PROJECTION` — the table whose exhaustiveness is *supposed* to make a forgotten field a compile error — is
+   exhaustive over `keyof Tau2Raw`. `Tau2Raw` did not declare the field, so the table had nothing to be exhaustive
+   about. The compile-time guard was not defeated; it was never asked.
+3. `armRecordFromDriver` had the runtime backstop installed after R123: it names every key the table has no
+   decision for, and the pair refuses an arm that has one. It fired, correctly, and it fired **after** the paid
+   dispatch: `FAIL l4-projection-complete: memory: serveRotation`.
+4. The arm file carries `unprojected: ["serveRotation"]` and no block. The policy this fold declared is therefore
+   absent from its own evidence, `rotationModeOf` reads the fold as `none` rather than `fair-share`, and the fold
+   cannot enter the pool as the treatment it was.
+
+**The layer that was missing is the type, and it is the cheapest one.** Three layers guard this now, and they are
+not redundant — each fails at a different cost:
+
+| layer | what it refuses | when | cost of the failure |
+| --- | --- | --- | --- |
+| `Tau2Raw` declaration | a field no table must decide about | `tsc` | $0 |
+| `PROJECTION` entry | a declared field with no decision | `tsc` | $0 |
+| `unprojected` at the pair | an emitted key no decision covers | after the run | one dispatch |
+
+The declaration is what makes the second row meaningful, and R152 is the demonstration: the table's own comment
+claimed a forgotten field "fails to compile until it is given a decision", which is true only of fields the type
+declares. A spread is the one way to emit a field without declaring it, and the driver's record is built almost
+entirely from spreads. The rule that follows — **declare the field on `Tau2Raw` in the same edit that emits it** —
+is a convention, and conventions fail; what makes it checkable is that the wrong direction is now caught for free,
+because a declaration without a table entry does not compile.
+
+**The reading had a second defect of its own, and it is the worse one.** The report was built beside the ledger:
+
+```ts
+const rotation = new ServeRotationLedger(rotationCap);
+const rotationReport = { mode, ...(rotation?.reading() ?? {}) };   // ← before the loop
+```
+
+`reading()` is a snapshot. Taken there it holds `requests: 0`, `renders: 0`, `maxRenders: 0`, `exhausted: []`,
+`starved: 0` — a phase that served nothing — while the log line printed after the loop said `cap 3 … max 3, 40
+render(s) over 14 item(s), 13 exhausted`. The two files describe the same run and disagree; the log is what the
+readback greps and the artefact is what survives, so the disagreement would have been resolved in favour of the
+false one as soon as nobody was looking at the log.
+
+The fix is not "move the line". It is that **a snapshot is read once, after the phase, and the same object feeds
+both consumers**:
+
+```ts
+const rotationReading = rotation?.reading();                    // after the loop
+if (rotationReading !== undefined) write(rotationLine(rotationReading));
+const rotationReport = { mode: ROTATION.mode, ...(rotationReading ?? {}) };
+```
+
+One read cannot disagree with itself. `AUDIT 34.113` makes the same argument about the store census: two
+reductions of one population are only comparable when they are reductions of the same population, taken at the
+same moment — which is why the driver builds all three use-side readings from one observation list.
+
+**And the test that should have caught both was measuring zero.** The end-to-end case drives the real driver
+against a stand-in for τ², and the stand-in never asked the memory: the facade is a real HTTP server in the
+driver's process and the stub simply wrote its result file. So every serving reading in that file — the pack
+census, the served sizes, the rotation ledger — was asserted over a phase that served nothing, and passed. The
+stand-in now asks once per episode behind an explicit switch (`TAU_STUB_RECALL`), and the case asserts the
+identity that ties the artefact to the phase rather than a constant:
+
+```
+serveRotation.requests === recall.requests       # one next() per recall, so a snapshot taken early disagrees
+```
+
+**Cost, stated as what the defect cost rather than as what the fix cost.** The fix is three lines and four tests.
+The defect cost the fold its completeness: the artefact cannot say which policy produced it, so the fold is
+readable but not poolable, and the number it bought (+2.50pp, harm 5.88%) stands on its log rather than on its
+file. That is the price of a spread, and it is why the next dispatch is a declared replication rather than a
+repair: a projection defect cannot be re-derived from the arm files at $0, because the evidence is what went
+missing.

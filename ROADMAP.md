@@ -7030,3 +7030,31 @@ competitor publishes, and it is also an admission: this lane's memory is current
 margin its own design cannot yet resolve to zero. What it can resolve is 13.24pp at 114 pairs, 15.55pp at 57 and
 18.53pp at 40 — so the next dollar goes to a serving rule whose effect is expected to be larger than that, and not
 to another store size.
+
+## Where the flywheel stands, 2026-11-18 (R152 read: the bound bites, the artefact does not say so)
+
+**The one thing that changed.** Row 2 was bought and it worked as a *mechanism* and failed as an *instrument*. The
+fair share bound the leader from **12 renders to 3**, served all 14 servable items instead of 10 of 11, and the
+harm share fell from 8.33% to **5.88%** — while the delta stayed at +2.50pp, which a 40-task sample with a 7.5pp
+between-run spread cannot move. The job is red on one blocking row because the arm artefact could not carry the
+policy it declared (§AUDIT 34.195), so the fold is readable and not poolable.
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | resolution (114 pairs) | MDE ≤ 11pp | done: 13.24pp, §PROGRESS 178 |
+| 2 | **the travel budget** | harm falls while repairs hold | **measured and it acts** (§PROGRESS 179): cap 3, 0 starved, leader 12 → 3 renders, harm 8.33% → 5.88%, breaks 3 → 2, repairs 4 → 3. The registered rule fires: *allocation is the lever* |
+| 3 | **the same registration, replicated** | a complete artefact, and the bounded arm's own between-run spread | **head of the queue, $0.37**: shipping the rotation as the serving default needs an artefact that states the policy it is the default of, and this fold's cannot. One dispatch to the same registration, with its own predictions written before the draw |
+| 4 | the serving default | a fold that runs the bound without being told to | **after row 3**: the template's `serveRotation: fair-share`, and the registration of the next axis written on top of it |
+| 5 | the lexical anchor (axis 3) | breaks fall while repairs hold | **still second**: the same failure mode as row 2, attacked with content rather than a cap. The cap is now the cheaper test of it and it has acted |
+| 6 | the outcome counter (R129) | within-phase evidence that an item repairs | **not triggered**: its trigger was `breaks ≥ 5`, and breaks fell to 2. Its case rests on R143's attribution, and row 3 would price the spread first |
+| 7 | the published bar (0.575, ALTK 0.6754) | a comparable backbone | not reachable on this lane: `bar_backbone_matches = 0`, control 0.8684 pooled |
+| 8 | BIRD dev | 6,600 paired questions ≈ 1pp | unchanged — the lane whose resolution the record can use |
+
+**The honest summary of the gap to SOTA, one round after the mechanism was named.** The concentration hypothesis is
+now measured, priced and acted on: at 3.6 renders per servable item harm is 8.33%, at 25.0 it is 23.81%, and under
+a cap of 3 it is 5.88% on the same corpus with the same store shape. That is the first positive movement this
+record has on harm, and it is 2.45 points on a denominator of 34, which is a count rather than an effect. What
+stands between the mechanism and a claim is resolution, not mechanism: 40 tasks resolve 15.66pp and this arm
+delivers 2.50pp of *net accuracy* while removing a third of its harm — the two are not the same quantity, and the
+record's own decision rule now says to spend the next dollar making the artefact complete rather than chasing a
+point estimate it cannot resolve.
