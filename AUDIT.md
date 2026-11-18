@@ -11944,3 +11944,43 @@ the ordinary reason — the sample is small — not because the estimator is wro
 
 **Cost.** $0.00. Two committed pair artefacts and one afternoon of arithmetic that should have been done before
 the claim was published.
+
+### 34.193 The first test–retest of a *delta*: one pipeline, two dispatches, 7.5pp apart
+
+**What was found.** The record has had a test–retest of one **arm** (§34.190) and none of a **delta**. R141 and
+R143 `official` are the same registration parameters — `distillScope: all`, `distillUnit: correction`,
+`distillForm: lesson`, `consolidate: routine/all`, `serveSupport: 2`, `speakMargin: 0`, `packBudget: 2400`,
+`packLimit: 1`, `taskSplit: official`, 74 learn / 40 held out, one trial — dispatched two days apart. Joining
+their two ledgers by task id:
+
+| reading | R141 | R143 `official` |
+| --- | --- | --- |
+| memory arm | 37/40 | 37/40 |
+| reference arm | 33/40 | 36/40 |
+| delta | **+10.00pp** [0.00, 22.50] | **+2.50pp** [−10.00, 15.00] |
+| McNemar p | 0.2187 | 1.0000 |
+| lost / gained | 1 / 5 | 3 / 4 |
+| resolution | 17.16pp | 18.53pp |
+| store created / servable | 83 / 14 | 77 / 11 |
+
+**Per task, both arms moved.** The control arm flipped **9 of 40 tasks (22.5%)** and the memory arm **6 of 40
+(15.0%)** between the two dispatches, and 10 tasks changed their *within-run* difference. The store is not the
+same object in the two runs either: distillation and consolidation are model calls, so 83 records against 77 with
+14 servable against 11 is the same pipeline producing two stores.
+
+**What it licenses.** The difference between the two deltas is **7.5pp**, and its standard error computed from the
+paired per-task differences is **10.97pp** — 0.68 of an SE. Two dispatches of one pipeline on one population
+therefore agree as closely as the design's own noise allows, which is the empirical counterpart of §34.192's
+retraction: the paired interval is not 28% too narrow, and a delta at this size is reproducible to about its own
+resolution and no better. Both flip shares also sit at the independence expectation (23.7% expected against
+22.5% for the control, 13.9% against 15.0% for the memory arm), so there is still no measured extra-binomial
+discharge that a widened bound would be pricing.
+
+**What it saves.** §34.190's arithmetic created a case for buying a third `official` dispatch to measure the
+delta's reproducibility. This comparison answers that question for **$0.00** and with the same population, so the
+dispatch is not made. The two artefacts it reads were both already paid for, and the join is ten lines against
+ledgers that were already committed once the artefact could be fetched.
+
+**The class this belongs to.** §34.188 through §34.192 are all one defect: a reading the record makes and does
+not confront. Two of them were found by joining artefacts across rounds, which is the cheapest instrument this
+lane has and the one it forgets most often.
