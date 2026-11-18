@@ -9741,3 +9741,39 @@ reading was never written down as a finding, which is the only reason this defec
 discipline is what its guards enforce: an id a fold does not name is not evidence of anything. `crossFitPool`
 refuses a fold that cannot state its learning half for the same reason the census refuses to bucket an id it
 cannot resolve — **a check that cannot run must not be reported as a check that passed.**
+
+### 17.152 Opportunity is the denominator, and the corpus's headroom is the confounder
+
+**The question.** Every outcome counter this record considered (§R129, refused twice on evidence) needed to know
+what a served record *could* have done. Repairs per render cannot answer it: a render lands on a trial the bare
+agent already passed, where no claim can repair anything, and on τ² retail that is most of them.
+
+**The decomposition.** A render has exactly one of four outcomes, and only two of them are decisions the memory
+made:
+
+| | memory passed | memory failed |
+| --- | --- | --- |
+| **control passed** | `kept` — inert | `broke` — the memory cost a pass |
+| **control failed** | `repaired` — the memory bought a pass | `inert` — nothing changed |
+
+`repairs / opportunities` is the conditional value; `breaks / (renders − opportunities)` is the conditional
+damage. R141: **5/7 = 71.4%** and **1/33 = 3.03%**, against a marginal `+10.00pp` that hides both.
+
+**Why the counter needed this and not more data.** "Zero repairs" is evidence only relative to a rate. The
+binomial lower tail `P(X ≤ repairs | n = opportunities, p = rate)` gives the test, and the threshold is
+`ceil(log α / log(1 − p))` — **three** opportunities at R141's rate, **sixteen** at a corpus-wide 17.5%. The
+most-served record had one. So R138's conclusion ("recurrence is the missing piece") was right about the
+symptom and wrong about the cure: R141 *had* recurrence — nine renders — and the counter still could not act,
+because recurrence and opportunity are different populations and only the second is a denominator.
+
+**The confounder this names.** The opportunity share is a property of the **corpus**, not of the memory: 33 of 40
+held-out trials were passed by the bare agent, so 82.5% of the memory's exposure could only be inert or harmful.
+Two arms of the same lane on a harder split would show a different conditional rate with the same store, which
+means **any cross-arm comparison of repair rates has to state the headroom it was measured at** — and the
+cross-fit (§17.151) doubles the population without touching the headroom.
+
+**What it does not claim.** A render that landed on an opportunity and did not repair it is not a failure of that
+record: the pack carried one record and the trial had ten turns, and the record may have been irrelevant to the
+turn that failed. The census is a population statement — how much of the memory's exposure was live — and the
+per-record tail is a *screening* statistic with the same standing as the transfer table's net: a candidate for
+an ablation, not a verdict.

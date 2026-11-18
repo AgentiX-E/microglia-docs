@@ -21468,3 +21468,58 @@ refusals), `serve-support.ts` 19 cases at **100/100/100/100**, and the two suite
 Repository totals **5,623 tests over 272 files** (+53, +2), coverage **100 / 99.92 / 100 / 100** — the residual
 0.08 is `app.ts`'s one uncovered branch, unchanged since before this round. `audit:repo` ok. Round cost
 **$0.00**.
+
+### 232 — Where the bare agent failed, the memory repaired five of seven
+
+**The measurement that reframes R141.** R141's marginal reading is `0.925` against `0.825`, `+10.00pp`, five
+repaired and one broken. That sentence averages two populations that behave nothing alike, and separating them is
+what this round's second instrument does. Over R141's forty measured renders, one record at a time:
+
+| population | trials | what the memory did |
+| --- | --- | --- |
+| the reference arm **failed** — the only place a repair is possible | **7** (17.5% of renders) | **5 repaired**, 2 left failed |
+| the reference arm **passed** — the only place a break is possible | **33** (82.5% of renders) | **1 broken**, 32 left passed |
+| renders that changed nothing | **34 of 40 (85.0%)** | — |
+
+So the memory's **conditional** value is `5 / 7 = 71.4%` where the bare agent was wrong, and its damage is
+`1 / 33 = 3.03%` where the bare agent was right. Neither number is visible in a delta over forty tasks, and the
+delta is the number the record has been publishing for four rounds.
+
+**Why the outcome counter kept failing, in one number.** The rule R129 wanted — retire the record that never
+repaired — needs a *denominator*, and the denominator is not renders. At R141's repair rate per opportunity
+(5/7), a record needs **three** opportunities before "zero repairs" is evidence at 5%; the most-served record in
+the store had **one**:
+
+| record | renders | opportunities | repairs | breaks |
+| --- | --- | --- | --- | --- |
+| `…7b_d7azp` | **9** | **1** | 0 | 0 |
+| `…8n_d8ar8` | 5 | 2 | 2 | 0 |
+| `…70_bbwnd` | 4 | 0 | 0 | 0 |
+| `…6s_bpyj2` | 4 | 1 | 1 | 0 |
+| `…7l_6evrb` | 1 | **0** | 0 | **1** |
+
+Nine renders, one opportunity: eight of them landed on trials the bare agent already passed, where no claim
+could have changed anything. And the single breaking record was rendered **once, with no opportunity at all** —
+it was served into a trial the control passed and broke it, so it is the one record a per-render harm counter
+would condemn on n = 1. R138 refused that counter by argument; this is the arithmetic behind the refusal.
+
+**The instrument, and the one artefact it cannot yet read.** `serve-yield.ts` takes one row per render and
+reports renders, opportunities, repairs, breaks, inert, the repair rate per opportunity, the records below that
+rate at 5%, and the opportunities a record would need before zero repairs means anything. It is wired into
+`l4-pair` beside the item table and into the pair artefact (`serveYield`). It does **not** print on R141, and the
+reason is the join rather than the census: that arm opened 41 boundaries for 40 scored trials (one abandoned
+attempt), and `pairedEpisodes` refuses a named boundary that resolves to nothing — R137's repair, working as
+designed. The table above therefore comes from a reconstruction that drops the unmatched boundary, and it is
+stated as one.
+
+**What it changes about the next round.** The corpus's headroom is 17.5%, so a memory arm on τ² retail is being
+asked to demonstrate its value on less than a fifth of its exposure, and 85% of what it does is inert by
+construction. Two consequences, both measurable: the cross-fit doubles the population but not the headroom, so
+**n = 114 buys a tighter estimate of a conditional rate rather than a larger effect**; and a corpus with more
+headroom — a harder split, or the errors the ablation sets aside — is the only way to raise the repair count
+without paying twice for the same tasks.
+
+**Acceptance.** `serve-yield.ts` 10 cases at **100/100/100/100**; `tau2-attribution.ts` 62 cases with the render
+rows added to two shape assertions; `l4-pair` prints the line and writes `serveYield`. Repository totals
+**5,633 tests over 273 files**, coverage **100 / 99.92 / 100 / 100**, `audit:repo` ok, coupling ledger
+regenerated at 241 modules with `core coupled=0`. Round cost **$0.00**.

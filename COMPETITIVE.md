@@ -7325,3 +7325,30 @@ lane's control at 0.825 pass^4 against a published 0.575), and BIRD's same-split
 AskData's 83.40 test / 78.49 dev. What is new is the sample: 114 pairs instead of 40 is the difference between
 an instrument that can see a ten-point effect and one that cannot, and no competitor publishes a paired reading
 at that size on this corpus with a control.
+
+**AM.10 — the conditional rate, and why every leaderboard cell hides it (2026-11-18).** Every published memory
+number this project can compare against is a **marginal** one: a pass rate over the whole suite. R141's marginal
+is `+10.00pp`, which is what a leaderboard would show. Its conditional numbers are `5 of 7` where the bare agent
+failed and `1 of 33` where it passed:
+
+| population | share of the arm's exposure | the memory's rate there |
+| --- | --- | --- |
+| the reference agent **failed** | 17.5% (7 of 40 renders) | **71.4% repaired** |
+| the reference agent **passed** | 82.5% (33 of 40 renders) | **3.03% broken** |
+
+**Why this is a comparison, and not a boast.** ALTK-Evolve's playbook reports a suite-level gain; STRATA reports
+the lift from contrast edges on a suite; AskData's BIRD cell is a suite accuracy. None of them publishes the two
+conditional rates, and the split is what decides where a mechanism is worth its money: a system that repairs
+70% of failures and costs 3% of passes is a very different object from one that repairs 20% and costs 20%, and
+both can post the same +10pp on a corpus whose headroom is 17.5%.
+
+**The measurement claim this record can defend.** A conditional rate on a named corpus, with the headroom
+stated, a control, a refusal rule taken before the number, and a denominator (opportunity) that was itself a
+finding rather than an assumption. No competitor publishes that pair on τ² retail, and the two 2026 papers that
+come closest — MemHarness (reconstruct-then-replay, GRPO-trained) and ConsistencyGate (write-time consensus) —
+report neither the headroom nor the harm share their own gates leave behind.
+
+**Where the leaderboard stands, unchanged.** BIRD's same-split gap remains **20.86pp** against AskData (83.40
+test / 78.49 dev); the τ² cell remains unrankable (`bar_backbone_matches = 0`). What changes is the vocabulary a
+future row would have to use: a marginal +10pp is now demonstrably consistent with a mechanism that is inert on
+85% of its exposure, and a benchmark that reports only the marginal cannot tell the two apart.
