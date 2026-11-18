@@ -9777,3 +9777,34 @@ record: the pack carried one record and the trial had ten turns, and the record 
 turn that failed. The census is a population statement — how much of the memory's exposure was live — and the
 per-record tail is a *screening* statistic with the same standing as the transfer table's net: a candidate for
 an ablation, not a verdict.
+
+### 17.153 A partial join is a reading with a counted hole, not a refusal
+
+**The contract.** `pairedEpisodes` joins episode boundaries to trials by task id, with a positional fallback.
+Two outcomes were conflated in one condition: a boundary that resolved to no trial, and a join with nothing
+measured. The first is a hole; the second is an absence of a reading.
+
+| condition | measure | publish | why |
+| --- | --- | --- | --- |
+| no boundary resolved | `measured.length === 0` | refuse (`undefined`) | there is no table |
+| some boundaries resolved | `measured.length > 0` | publish, with `unmatchedRequests` | the hole is a field |
+
+`unmatchedRequests` is computed from **coverage of the spans**: a boolean per ledger request, set by the spans
+the resolver returned, and counted at the end. The previous expression — `ordered.length === 0 ? ledger.length :
+0` — tested the join's input and reported a property of its input as if it were a property of its output; on the
+arm that had dropped a boundary it read `0`, because that arm had episodes.
+
+The positional fallback keeps its own precondition unchanged: it is used only when the arm recorded no boundary
+names at all. A named boundary the reader cannot honour does not fall back, because `end` is derived from the
+next episode's start, which is the assumption the names exist to replace.
+
+**What travels with the reading.** `itemTransfer` now returns one `ServeRender` per record per episode —
+`{ id, trial, repaired, broken }` — so the yield census is a function of the artefact rather than of a
+reconstruction. That is the shape §17.152 needed and could not get: `repairs / renders` versus
+`repairs / opportunities` is a difference of denominator, and the denominator is only visible if the per-render
+outcome is a row.
+
+**Interaction with the cross-fit (§17.151).** The same artefact now carries `foldSplit` and `treatment`; a pool
+refuses a file without them. The two work in opposite directions on purpose: the fold refuses what it cannot
+check (a leak), and the attribution publishes what it can (a hole). Both are the same rule — *state the part you
+cannot see* — applied to a sample the instrument cannot verify and to a join it can only partly resolve.

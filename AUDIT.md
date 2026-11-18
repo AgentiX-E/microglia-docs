@@ -11564,3 +11564,41 @@ to, and re-justified whenever that population changes from "the store" to "a pre
 **What it cost and what it bought.** $0.00 and one afternoon; in exchange, R142's readback will grade the
 round's criterion on the correct population, and the cross-fit — whose denominators rest on the same join — was
 built with the guard in place rather than after it failed.
+
+### 34.184 A conservative join that refuses is not neutral: it deleted the arm it was written for
+
+**What was found.** `pairedEpisodes` returned `undefined` for the entire attribution when any boundary resolved
+to no trial. R141 opened 41 boundaries for 40 scored trials — one abandoned attempt — and the arm published no
+attribution at all. `l4-pair` printed nothing for it, and R232's census was written, wired, tested at 100%
+coverage and yet never exercised on the artefact it was built for.
+
+**Why the guard looked right.** It came from R137, where a boundary the reader could not honour was a wiring
+finding: the arm had said which task it opened and the join could not match it, so the honest response was to
+refuse rather than to fall back to position. That reasoning holds when the unresolved boundary means the join is
+broken. It does not hold when the run abandoned one attempt, which is a fact about the *run* — and the arm that
+needs the diagnosis most is exactly the arm with an abandoned attempt in it.
+
+**The class, and it is the fourth of its shape.** §34.179 counted the refusals this lane has paid for; §34.181
+found a denominator that had never been printed; §34.183 found an instrument grading the arm it was built for.
+This is the same defect as §34.179 seen from the other side: **a refusal is not a neutral act.** It has the
+shape of rigour and the effect of deleting a measurement, and because it deletes it silently — `undefined` in a
+field that may simply be absent — nothing downstream can report that it happened.
+
+| the guard | what it protects against | what it actually did |
+| --- | --- | --- |
+| any unresolved boundary → `undefined` | a join silently mis-attributing requests | deleted a 40-of-41 table, and left `serve support` and `serve yield` unexercised on the only arm that mattered |
+| `unmatchedRequests = ordered.length === 0 ? … : 0` | counting an artefact arm wrong | reported **0** on the one arm that had dropped requests, because it tested the input rather than the output |
+
+**The rule this adds.** A partial join is a reading with a **counted** hole; only a total failure is a refusal.
+The test is whether anything remains to publish, not whether anything was dropped — and the dropped quantity is
+a field of the result, because a hole that is only in the code is a hole nobody reads.
+
+**The secondary lesson, about test suites.** The census had 10 cases at 100% coverage and could not have caught
+this: its unit is a list of renders, and the defect was in the caller that never produced one. Coverage measures
+which lines ran; it cannot measure whether the pipeline reaches them. The only check that would have caught it is
+the end-to-end read — running the instrument on a real pair artefact — which is now what the round does before it
+writes the report, and what R232 did only after the fact.
+
+**Cost.** $0.00, one afternoon, and three cases added to the suite (partial publishes, all-unresolved refuses,
+coverage counts the dropped range). Bought: R141's two instrument lines, the `informative` count that every
+conditional rate depends on, and the two artefact identities the cross-fit will refuse without.

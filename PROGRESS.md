@@ -21523,3 +21523,53 @@ without paying twice for the same tasks.
 rows added to two shape assertions; `l4-pair` prints the line and writes `serveYield`. Repository totals
 **5,633 tests over 273 files**, coverage **100 / 99.92 / 100 / 100**, `audit:repo` ok, coupling ledger
 regenerated at 241 modules with `core coupled=0`. Round cost **$0.00**.
+
+### 233 — The join refused the arm it was built for, and the census was never the problem
+
+**What 232 could not print.** R232 wrote the opportunity census into `serve-yield.ts`, wired it into `l4-pair`
+and the pair artefact, and then had to reconstruct R141's table by hand, because the line did not print. The
+reason was one line in `pairedEpisodes`: a boundary that resolves to no trial returned `undefined` for the
+whole attribution. R141 opened **41** boundaries for **40** scored trials, and one abandoned attempt was enough.
+
+That is R137's rule — a named boundary the reader cannot honour is an instrument finding — applied where it does
+not hold. The finding is real; the disposition was wrong. Forty of forty-one is a table, and refusing it costs
+the reading while reporting nothing about the hole.
+
+**The repair, and the distinction it rests on.** `pairedEpisodes` now proceeds over the groups it can name and
+returns `unmatchedRequests` as a **measurement of coverage** rather than a test of the join's input:
+
+| field | before | after |
+| --- | --- | --- |
+| `unmatchedRequests` | `ordered.length === 0 ? ledger.length : 0` | requests no span covered |
+| a boundary that resolves to nothing | whole attribution `undefined` | its requests counted, the table published |
+| every boundary resolving to nothing | `undefined` | `undefined` (nothing to publish) |
+
+The old expression is the shape this record keeps deleting: a property of the join's **input** reported as if it
+were a property of its **output**. On the one arm that had dropped requests it read `0`, because the arm had
+episodes.
+
+**The reading it unlocks, on R141's own artefacts** — no re-run, no reconstruction:
+
+```
+serve yield: 40 render(s) over 14 record(s); 7 landed where a repair was possible (17.50%);
+5 repaired, 1 broke, 34 inert (85.00%); no record is below its own rate at 5%
+serve support: 14 of 14 servable item(s) served; no singleton was served;
+support ≥2: 14 item(s), 1 broke, 5 kept, net +4; floor 2 in force
+[l4-pair] transfer: 5 repaired, 1 broken of 40 measured (7 informative), net 10.00pp, verdict `unmeasured`
+```
+
+`7 informative` is the number R232 had to derive by hand and that the pipeline refused to state: only seven of
+forty renders could have moved in either direction. Everything downstream — the repair rate, the coefficient,
+the per-record test — is a function of that count, and the instrument now prints it beside the delta instead of
+leaving the delta to be read as if it were thirty-three more opportunities than it is.
+
+**The pair artefact grew the two identities the cross-fit refuses without.** `foldSplit` (the two id sets, read
+from the arms) and `treatment` (unit, form, scope, model, trace ceiling). Both are written by `l4-pair` and both
+are absent from every artefact before this round, which is why R143's pool will refuse those files rather than
+assume the boundary they ran.
+
+**Acceptance.** `tau2-attribution.ts` 65 cases (+3: partial join publishes, all-unresolved refuses, coverage
+counts the dropped range), `cross-fit.ts` 42 at **100/100/100/100**, `cross-fit` command 7, `serve-yield.ts` 10
+at **100/100/100/100**, `serve-support.ts` 19 at **100/100/100/100**. Repository totals **5,636 tests over 273
+files** (+3), coverage **100 / 99.92 / 100 / 100** — the residual is `app.ts`'s one branch, unchanged. `audit:repo`
+ok. Coupling ledger unchanged at 241 modules, `core coupled=0`. Round cost **$0.00**.
