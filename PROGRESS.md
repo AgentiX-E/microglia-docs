@@ -21396,3 +21396,14 @@ can resolve the effect to a third dispatch.
 **State.** 5,570 tests over 270 files (+17 here, +7 in 229); **100 / 99.92 / 100 / 100**; `window-fit.ts`,
 `band-wait.ts`, `tau2-plan.ts`, `prereg.ts` and `serve-support.ts` at 100/100/100/100. Round cost: **$0.1617**,
 all of it the lost learn half.
+
+**Three red builds on the way, recorded because each one is a different class.** The first was the head this
+round inherited: `serve-support.ts` assigned `servable: input.servable` under `exactOptionalPropertyTypes`, so
+`tsc` refused the tree and every later step was skipped — fixed by making the key absent rather than present and
+undefined, with the case that asserts `'servable' in census === false`. The second was this round's own
+workflow edit: `? :` is not in GitHub's expression language, so the dispatch answered **422** with a parse error
+at the line instead of failing a step, which is the one failure mode where a *push* is green and the *dispatch*
+is not. The third was the missed re-export: the lane CLI imports `@agentix-e/microglia-eval`'s built surface,
+`directedSplit` was on the module and not on the surface, and the stricter `typecheck:lanes` step caught what
+`tsc -b` does not compile. A fourth would have been silent — the coupling ledger still described the tree from
+before two modules arrived — and the committed snapshot is regenerated with 239 modules and `core coupled=0`.
