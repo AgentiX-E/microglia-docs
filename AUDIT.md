@@ -11650,3 +11650,44 @@ direction was the control arm.
 **Cost.** One two-hour wait, one cancelled run, **$0.00 of model calls** (the log ends at the label count; no
 arm reached an episode). Bought: the guard now works for the case it exists for, both arms obey it, and R143's
 two folds — which must each fit a window — are dispatched behind a gate that has been run.
+
+### 34.186 A field withheld for two rounds on a sound argument, and a comment where a test belonged
+
+**What was withheld.** `ServeRender` carried no task id. The reason is written into §17.152 and it is correct:
+`itemTransfer` de-duplicates at the episode, where the identity is known, and a second id invites a second
+de-duplication at a different grain — two grains of one count are two answers, and the wrong answer is the one
+that reads plausibly.
+
+**What it cost.** Three rounds of readings could say *which record* broke a trial and *how many* renders it
+took, and could not say *which task* the break landed on. On R141 that left one break with no address, in a
+lane whose remaining question is exactly whether the harm is reach (a store used on task families it has
+nothing to say about) or interference (a store used on the episode it was taught). Those are fixed by different
+mechanisms — a retrieval gate versus a floor — and the instrument could not tell them apart.
+
+**The mistake, stated precisely.** The risk the argument named was real; the remedy was a comment. A withheld
+field is a *silent* restriction: nothing in the suite could fail when its absence cost a reading, because
+absence is not a defect any assertion was written against. This is §34.184's shape from the other side — a
+refusal that looks like rigour and deletes a measurement — and the fourth time this lane has paid for a
+decision recorded only in prose.
+
+| the reasoning | the remedy then | the remedy now |
+| --- | --- | --- |
+| a second identity invites a second count | withhold the identity | the identity is **attribution only**, and a case asserts `serveYieldCensus` is identical with and without it |
+| the counting grain is the episode | state it in a doc comment | `serveTaskCensus` is the only reader, it groups and never divides, and its rows are the join grain a content axis needs |
+| an artefact may predate the field | not applicable (the field did not exist) | the census counts what it could not attribute (`unattributed`) and says so in its own line |
+
+**The class, and the test that would have caught it.** No test can fail for a field that does not exist. The
+only instrument that would have caught this is the *question* the lane could not ask — and the discipline that
+produces it is to write the question down as a census before deciding the field is unnecessary. The round that
+withheld the id had already printed `1 broke`; the next question was "where", and it was never asked because
+there was no line that would have answered it.
+
+**What the new instrument refuses.** It does not report a rate per task: a task reached once and broken once is
+`net -1`, and the census prints that rather than `-100%` or `0%`, because one render is not evidence at any
+level. It also does not fold the armed-but-neutral tasks into the total: `neutral` is 35 of 40 on R141's shape,
+which is the same reading as the yield census's 85% inert from a different angle — the store was served and
+changed nothing.
+
+**Cost.** $0.00, one instrument round. Bought: the population axis on every future run, the join grain for the
+content axis, and a guard (`the task id is attribution only`) that makes the original objection load-bearing
+instead of decorative.

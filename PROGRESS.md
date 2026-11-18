@@ -21627,3 +21627,56 @@ guard's output exists, both arms consult it, the guard reads `steps.wait.outputs
 **5,646 tests over 273 files** (+10), coverage **100 / 99.92 / 100 / 100**. `pnpm typecheck:lanes` clean,
 `audit:repo` ok, workflow parsed with a YAML reader before dispatch — the round that follows two 422s checks
 that first. Round cost **$0.00** (the cancelled run made no model call).
+
+### 235 — The harm had a count and no address
+
+**What R141's reading could not say.** `serve yield` reports 1 break over 40 renders, and 1 is a number without
+a place. A store that breaks one trial of a hundred and a store that breaks one *task* of a hundred are the
+same count and different diseases: the first is interference on an episode, the second is reach into a task
+family the store has nothing to say about. Only the second is what a content axis addresses, and only the
+first is what a floor addresses. Three rounds of readings divided their attention between "which record" and
+"how many" without being able to ask "which task".
+
+**Why the id was missing, and why the argument was half right.** `ServeRender` carried no task id by an
+explicit decision (§17.152): a second identity invites a second de-duplication, and two grains of one count are
+two answers. The reasoning holds — and the remedy was wrong, because it answered the risk with a comment. The
+field is now present and *forbidden a count*: `serveYieldCensus` is asserted to produce an identical table on
+the same renders with and without it, which is a guard rather than a promise.
+
+**What the instrument now reads.** `serveTaskCensus` groups the same renders by the task they were served into:
+
+```
+serve tasks: 40 task(s) reached by 40 render(s); 1 harmed, 4 helped, 35 neutral, 0 contested; worst t21 -1 over 1 render(s)
+```
+
+(the shape on R141's own numbers; the ids are the corpus's, and R142 is the run that gives it 114 rows.)
+
+| field | what it is for | what it is not |
+| --- | --- | --- |
+| `tasks[]` | per task: renders, **distinct records**, opportunity, repairs, breaks, inert, net | not a rate: nothing in the census divides by a task |
+| `rendered` / `unattributed` | the renders that named a task, and the ones that named none | not a filter: an unattributed render is counted, not dropped |
+| `contested` | tasks where both a repair and a break occurred, whatever the net | not `harmed`: a task can be contested at net zero |
+| `worst` | the lowest net, ties by id | not a verdict, because one render on one task is not evidence |
+
+**Three states, three sentences.** No render at all, a render that named no task (every artefact before this
+round), and a population. The middle one prints `no render named a task, so the population axis is unread on
+this artefact (N render(s))` rather than `0 task(s) reached`, which is the collapse of absent into zero that has
+cost this lane two dispatches.
+
+**The join grain travels.** `EpisodeOutcome` carries `task`, both join paths set it from the trial row's own
+`id` — the identity join and the positional fallback — and `itemTransfer` copies it onto the render. Absent is a
+state and not the empty string: `exactOptionalPropertyTypes` keeps the distinction, and a case covers a render
+whose episode named none. The pair artefact carries `serveTasks` with the per-task rows, which is the grain a
+content axis needs: `(record, task)` is now in one file, and the store sample's cap is the only remaining
+sampling question.
+
+**What is still missing, stated before it is bought.** The *text* is not joined. `storeItems` is capped at 64 of
+83 items, and a record's source tasks are not in the artefact at all, so "was this claim right for the tasks that
+taught it" cannot be asked yet. That is a distillation-output change (provenance ids on the distilled unit),
+not a benchmark run, and it is the next instrument step in ROADMAP step 3.
+
+**Acceptance.** `serve-tasks.ts` 9 cases at **100/100/100/100**, `tau2-attribution.ts` 67 (+2: both paths carry
+the id, an episode that named none leaves it off), plus five expectations updated to state the new field rather
+than to hide it. Repository **5,659 tests over 274 files** (+13), coverage **100 / 99.92 / 100 / 100** — the
+residual is `app.ts`'s one branch, unchanged. `pnpm typecheck:lanes` clean, `audit:repo` ok, coupling ledger
+**242 modules** (+1), `core coupled=0`. Round cost **$0.00**.

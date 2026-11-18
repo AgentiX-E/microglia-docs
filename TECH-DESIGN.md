@@ -9839,3 +9839,42 @@ rather than the string `04:00` and its own clock.
 **And the case it must still refuse.** The same 228 episodes started at 05:30 need 109 minutes against a
 window closing in 30, and the line names `not_before: 06:00` — a refusal that says when, because a guard an
 operator cannot satisfy is a guard an operator overrides.
+
+### 17.155 Attribution is a field; a count is a grain — and the difference is asserted
+
+**The contract.** `ServeRender` carries `task?: string`. It is set by `itemTransfer` from `EpisodeOutcome.task`,
+which both join paths in `pairedEpisodes` fill from the trial row's `id`. The field exists for grouping and for
+nothing else:
+
+| question | reader | grouped by | divided by |
+| --- | --- | --- | --- |
+| what did a record do with what it was given | `serveYieldCensus` | record | opportunities |
+| where did the harm land | `serveTaskCensus` | task | nothing |
+| where did the money go (per episode) | `itemTransfer` | record × episode | nothing |
+
+Three grains, three readers, and no statistic divides by a task. The invariant that keeps it that way is a test
+rather than a convention: `serveYieldCensus` must return a deep-equal table on the same renders with and
+without `task`. That is the only form of the guarantee that can fail when somebody later adds a division.
+
+**`contested` exists because net zero is two readings.** A task whose repairs equal its breaks has `net 0`,
+which is also what a task the store reached and changed nothing about reports. `contested` is the list of tasks
+where both directions occurred — evidence that a record is *wrong* for that task rather than irrelevant to it —
+and it cross-cuts the net classification on purpose:
+
+```
+net < 0                      harmed
+net > 0                      helped
+net = 0                      neutral
+repairs > 0 && breaks > 0    contested   (an independent flag, not a fourth bucket)
+```
+
+**Absent is a state.** `task` is optional, and `exactOptionalPropertyTypes` makes "no key" different from
+`task: undefined`. `serveTaskCensus` therefore has three line forms rather than one with a zero in it: no
+render at all, a render that named no task (every artefact written before this round), and a population. The
+middle form is the honest reading of an artefact that cannot answer the question, and it names how many renders
+it could not attribute instead of leaving them out of its own total.
+
+**What this deliberately does not join.** The record's text and its *source* tasks. `storeItems` is a sample
+capped at 64 rows of 83 and carries `supportTasks` as a count, not as a list, so a claim cannot yet be read
+against the tasks that taught it. The join grain is now in the artefact; the provenance is a distillation-output
+change, and it is scheduled rather than assumed.
