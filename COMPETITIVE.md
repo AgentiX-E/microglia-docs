@@ -7418,3 +7418,60 @@ suites, five benchmarks, τ³ retail among them) and its baseline is a bare term
 decomposition this record has been reporting since AM.10: they count memory-caused failures, we count them per
 render with the headroom beside them. Their 20% incorrect / 80% misapplied split is the number our
 `serveTaskCensus` and the `reasonCode` gap are built to test with our own denominator.
+
+### AM.7 The `sup2` premise did not replicate, and the field's unit of write is a failure
+
+**What R142 measured against AM.6's prediction.** AM.6 stated the comparison as *serving consensus against
+serving instances at the same pack budget*, and predicted that if the harm share fell while the mean did not
+move, corroboration would be a **safety** statistic — "the same claim ALTK's `sup2` cell makes, measured on a
+benchmark where the harm is identifiable".
+
+The floor ran exactly as specified and the premise did not replicate:
+
+| reading | R141 (74/40 cut, floor 2) | R142 (57/57 cut, floor 2) |
+| --- | --- | --- |
+| singletons served | 0 | **0** |
+| items served | 14 | 9 |
+| harm share | 3.03% (1 of 33) | **12.77% (6 of 47)** |
+| repaired | 5 | 4 |
+| delta | +10.00pp [0.00, +22.50] | **−3.51pp** [−14.04, +7.02] |
+| verdict | UNRESOLVED (MDE 17.16pp) | UNRESOLVED (MDE 15.55pp) |
+
+Every served item carried support ≥ 2, and six of the nine broke a trial. So the corroboration statistic that
+ALTK's `sup2`/`sup3` cells and ACE's grow-and-refine both rest on — *keep what N tasks agree on* — was satisfied
+in full and did not separate a harmful record from a helpful one on this corpus.
+
+**Why, and it is the part that changes the comparison.** The statistic is only as good as the population it
+counts over, and this lane's population was chosen for supply. `distillScope: all` has been in every
+registration since R131, and R142's own `provenance` census says what that produced: **`edited 9`, `passed 48`,
+`itemsEditedOnly 11`, `itemsPassedOnly 50`**. `support ≥ 2` therefore certified two tasks whose *successful
+episodes read alike* — a shared description, not a shared repair — and the nine served records are all
+`kind: procedure`, all `polarity: repair`, each a call plan ("resolve the user by email, then fetch each order,
+then issue one return per order").
+
+**Which puts this lane's store outside what any leading competitor writes.** ACE's generator is driven by a
+failed episode and its feedback; ALTK's clusters are built from task corrections; SEMV and STRATA gate on an
+item's outcome across the trials it was served into. A store where **82% of the items describe behaviour that
+already worked** is not a weaker version of those stores — it is a different object, and no `sup`-cell can grade
+it.
+
+| system | what a memory item is made from | what keeps it | this record's position after R142 |
+| --- | --- | --- | --- |
+| **ACE** | a reflection on a failed episode, refined on each update | content dedup, helpfulness counters | the population matches ACE; the counters are still refused for want of a population (R129/R138/R141) |
+| **ALTK-Evolve** | a guideline over a cluster of task corrections | `sup2`/`sup3`: N tasks agree | the *filter* is implemented and was measured; it is not sufficient on a population 82% built from passes |
+| **SEMV / STRATA** | an item admitted on its served outcomes | an outcome gate before serving | identical refusal, and R142 says the gate's premise — that a corroborated item is a safer item — fails here |
+| **WikiTrace** | a provenance-linked trace with test-time descent | scope anchoring | the lexical anchor is registrable as of R150 and is now the *usage* axis if R151 refutes content |
+
+**The scoreboard, stated as it is.**
+
+| lane | current SOTA | microglia | comparable? |
+| --- | --- | --- | --- |
+| τ²-bench retail, `pass^4`, published | **ALTK-Evolve `sup2` 0.6754** | control **0.8246**, memory **0.7895** at 57 held-out tasks; 0.65 at the benchmark's 40 | **no row claimed**: `bar_backbone_matches = 0`, because the control outscores the published bar on a different backbone, and a delta against a bar the control already clears is not a comparison |
+| τ²-bench retail, mechanism (harm share) | no competitor publishes one | **12.77%** at floor 2, **AUC 0.625** for the margin | **first**: this is the only lane in the record that measures *why* a memory hurts with a control and a resolution |
+| BIRD dev | **AskData 83.40 test / 78.49 dev** | unchanged since its last cell | different lane; the largest claim it can support is ~1pp at 6,600 paired questions |
+
+**What the next dollar is, and what it is not.** It is not the scoreboard: no arm on this harness can claim the
+published bar while its own control clears it. It is the population — `prereg/R151-the-failures-only-store.md`
+changes the store from 82% descriptions to failures only, which is the object ACE actually writes, and measures
+whether the harm survives. If it does not, this lane is first at something the field has not published: a
+quantified statement that **corroboration is not safety** when the corroborated population is made of successes.

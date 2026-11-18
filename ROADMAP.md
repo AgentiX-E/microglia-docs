@@ -6945,3 +6945,31 @@ leaderboard: a memory worth ~10pp on 40 retail tasks is not a 20-point generator
 leaders use to close that gap (a fine-tuned generator and a large candidate pool) cost weights this harness does
 not have. What this project can be first at remains what it has been first at all along: measuring *why* memory
 hurts, with a control, a resolution, and a refutation stated before the number.
+
+## Where the flywheel stands, 2026-11-18 (R142 read, R151 registered)
+
+**The one thing that changed.** The floor did what it was registered to do and the harm came back anyway:
+`retired` 37 of 61, `retained` 11, **no singleton served**, and 6 of the 9 served records broke a trial
+(12.77% of the trials the control passed, against 3.03% on R141's smaller cut). The registration's own decision
+table had already said what that means, in a row written before the run: *harm share ≥ 10% → content, not
+support*. The population question is now answerable from the same artefact, and it answers itself:
+**`itemsPassedOnly 50` against `itemsEditedOnly 11`** — the store is 82% descriptions of behaviour that already
+worked, because `distillScope: all` has bought the consolidation pass its second witness since R131.
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | **R151 — the failures-only store** (`prereg/R151-the-failures-only-store.md`) | `created` 8–16, `repairs` ≥ 4, `breaks` ≤ 2 | **registered, dispatch next off-peak window** — the content axis, and the branch R142's decision table selected. Same 57/57 cut, same pass, same key, same `packLimit: 1`, same margin of zero; `distillScope: edited` and the floor at its identity (`serveSupport: 1`), with the two-knob confound registered rather than dissolved (§17.158). Cost ~$0.26, which is R142's measured bill |
+| 2 | **the rung** (usage axis) | a margin that separates a repair from a break | **priced for nothing, and refuted at n = 57**: `serve-sweep.ts` joins `margins.perRequest` to `ledger` and `per_trial`, and R142 reads **AUC 0.625** (4 kept vs 6 broke), with the highest-margin break (0.275) *inside* the repairs' range (0.310, 0.317). The cleanest rung, 0.30, keeps 2 repairs, withholds all 6 breaks and serves **7 of 57** trials — a fitted value, not a lever (§17.157, §AUDIT 34.189). It stays on the board as the fallback if R151 refutes content |
+| 3 | the lexical anchor arm (R150's switch) | breaks fall while repairs hold, on the same store and corpus | **registrable, and now the third axis rather than the second**: WikiTrace's 80% "valid rule, applied outside its scope" class is what it excludes, but R142's harm is *interference* — six breaks on six distinct tasks, one render each — not reach. It runs after R151 |
+| 4 | a resolved paired read on τ² retail | ~114 pairs for a 10.98pp effect | **registered and queued** (`prereg/R143-fold-official.md`, `R143-fold-swapped.md`): R142's own resolution line says a 5pp half-width needs **270 tasks** and 3pp needs **749**, so the cross-fit buys resolution and cannot buy a claim at 114 either. It prices the *effect* once one exists; it cannot create one |
+| 5 | the published bar (0.575 pass^4, ALTK 0.6754) | a backbone whose own cell is comparable | **not reachable on this lane**: the control scores 0.8246 at 57 tasks and 0.65 at the benchmark's 40 with `deepseek-flash`, so `bar_backbone_matches = 0` and no row can be claimed (§COMPETITIVE AM.7) |
+| 6 | the outcome counter (R129) | a record whose repairs are below its own rate at 5%, over ≥3 opportunities | **waiting on a population**: R142 offered 10 opportunities over 57 renders and the most-served record had one. The counter is not broken; the corpus's headroom is 17.5% per render and the floor's 9 records produced 10 chances between them |
+| 7 | BIRD dev, the only lane with a published same-split cell | 6,600 paired questions for ~1pp | unchanged, and the largest claim it can support is ~1pp |
+| — | cortex release (W1) | — | **excluded by the standing instruction** |
+
+**The honest summary of the gap to SOTA.** The flywheel's mechanism was ahead of its control on one 40-task
+reading and is behind it on the 57-task one, and the reason is now measured rather than argued: the store's
+population was chosen for supply, and supply was bought with successes. That is the one axis on which this lane
+can be first — no competitor publishes a harm share, and none of them writes a store that is 82% descriptions of
+behaviour that already worked. What remains unreachable is the leaderboard: a control that clears the published
+bar on a cheaper backbone means no delta on this harness is a comparable row, whatever the memory does.

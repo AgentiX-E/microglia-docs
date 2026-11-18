@@ -9929,3 +9929,86 @@ support floor, speak margin, serve anchor — nine properties of one experiment,
 refused when it contradicts another. The list is the answer to "what can two dispatches of one registration
 differ in", and it is meant to be complete: a property that is not here is a property a run can only describe
 after the fact.
+
+### 17.157 The rung priced from the outcome ledger, and the premise the estimate states
+
+**The join the sweep makes.** Three arrays, one row per request, in arrival order:
+
+| array | carries | written by |
+| --- | --- | --- |
+| `pack.ledger` | the record ids served at that request | the host, per recall |
+| `pack.margins.perRequest` | the gate's margin for that request, `null` when uncontested | `marginCensus` (R135) |
+| `per_trial` + `memory.episodeStarts` + `memory.boundaryTasks` | which trial the request belonged to, and what each arm scored | the runner |
+
+The episode join already existed (`pairAttribution`, R128/R136/R145) because the attribution table needs the
+outcomes. R151 adds the third array to it and one field to the render: the **highest margin among the requests
+of the episode that served that record**. The aggregation is a maximum because a gate acts per request while an
+outcome is measured per trial — a record that cleared the rung at one request of a trial and not at another was
+still served into the trial, and the question the sweep asks is "would this trial have been served".
+
+**The three states of a margin, kept apart.** Absent (the arm carried no census: nothing was asked), `null` (the
+census was there and this request served one candidate: nothing was contested), and a number. The first two are
+priced identically — served at every rung, because a gate with no measurement cannot have withheld anything — and
+reported separately, because a store that serves one candidate per request is a store no rung can act on and a
+reader should see that rather than infer it.
+
+**What the sweep reports, and what it refuses to report.** One decision-shaped statistic:
+
+```
+firstClean = the first rung (ascending) with broke = 0 and kept > 0
+```
+
+and not the argmax of `netPp`. A maximum over rungs is a parameter fitted to the sample it is read from; "the
+cheapest rung that removes every break" is a question the next run can refute. The `kept > 0` clause is in the
+predicate rather than in a reader's eye, because a rung that withholds everything is trivially clean.
+
+**The premise, stated in the line itself.** A withheld trial is estimated at **its control outcome**. The
+alternative to a served pack is the bare agent that produced the control half of the pair, which is what the
+arm's reference run is — but a model shown a procedure and then not shown it is not the model that never saw it,
+and the estimator cannot see the difference. So the line begins `serve sweep (estimated, withholding is priced
+as the control outcome)`, and a verdict on a rung still needs the dispatch that runs it. What the estimate buys
+is the elimination of the *first* dispatch in a two-dispatch loop.
+
+**What it read on R142, and the reading it forbids.**
+
+| rung | served | kept | broke | net pp | AUC of the margin |
+| --- | --- | --- | --- | --- | --- |
+| 0.00 | 57 | 4 | 6 | −3.51 | **0.625** (4 vs 6) |
+| 0.10 | 34 | 3 | 4 | −1.75 | median kept 0.310, broke 0.221 |
+| 0.30 | 7 | 2 | 0 | **+3.51** | the highest-margin break, 0.275, sits inside the repairs' range |
+
+Rung 0.30 is a fitted value and is not a lever: it withholds 88% of the traffic to win two trials, and it is
+clean only because the six breaks happen to sit below the two survivors. The instrument's value here is that it
+was able to say so **for nothing**, four hours before the alternative — a dispatch per candidate rung — would
+have produced the same table at $0.26 apiece.
+
+### 17.158 A failures-only store, and the two knobs that are one decision
+
+**What R142 established about the population.** `provenance` on the same artefact: `edited 9`, `passed 48`,
+`itemsEditedOnly 11`, `itemsPassedOnly 50`, `itemsMixed 0`. The store is 82% descriptions of behaviour that
+already worked, because `distillScope: all` widens the population until the consolidation pass has two tasks per
+routine. The floor then selects the largest of those groups, which is why `support ≥ 2` certified a shared
+description rather than a shared repair.
+
+**What R151 measures.** The same 57/57 cut, the same consolidation pass and key, the same `packLimit: 1`, the
+same `speakMargin: 0`, the same budget — and `distillScope: edited`.
+
+**Why the floor moves with it.** `serveSupport: 2` over a ten-item store is a measurement of nothing: on R142
+11 of 61 items carried support ≥ 2 (18%), and a failures-only store at the same ratio would serve one or two
+items out of ten. The floor has no denominator on a population with one witness per routine, so it returns to
+its identity (`serveSupport: 1`) and the round is registered with that stated:
+
+| knob | R142 | R151 | why |
+| --- | --- | --- | --- |
+| `distillScope` | `all` | **`edited`** | the content axis: what the claim was made from |
+| `serveSupport` | 2 | **1** | the floor's denominator is a corroborated population, which this arm does not have |
+
+A reader who wants the floor isolated on this population is asking for a third arm, and the honest answer is
+that the floor is not identifiable there. The confound is registered rather than dissolved: if R151 breaks fewer
+trials than R142, the reading is "a store of repairs serves better than a store of descriptions", and the floor's
+contribution is not separated in it.
+
+**The prediction, in the units the arm reports.** `created` 8–16 (the learn half's failure count, widened by the
+distiller's 2 candidates per correction), `servable` ≥ 8, `repairs` ≥ 4, `breaks` ≤ 2, delta ≥ 0 at a bound of
+15.55pp. Refutation is banded the same way: `breaks` ≥ 5 sends the axis to **usage** — which this round has
+already priced — and `repairs` ≤ 2 sends it to the **cut**.

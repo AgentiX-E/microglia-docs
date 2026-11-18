@@ -21797,3 +21797,118 @@ from four `npx tsx` spawns to one, which is also why the local run's worker stop
 knobs). Repository **5,675 tests over 275 files** (+16), coverage **100 / 99.92 / 100 / 100**. `pnpm typecheck`
 and `typecheck:lanes` clean, `audit:repo` ok, coupling ledger **244 modules** (+2), `core coupled=0`. Round cost
 **$0.00**.
+
+## 175 — The store was eighty-two per cent descriptions of success, and the rung now prices itself
+
+**What R142 read.** `run 44256793758`, τ²-bench retail, the lane's own 57 learn / 57 held out cut, floor 2,
+`scope: all`, off-peak, **$0.2610** for the pair (memory `0.1338`, reference `0.1272`):
+
+| reading | R142 |
+| --- | --- |
+| reference `pass^4` | 0.8246 (47 / 57) |
+| memory `pass^4` | 0.7895 (45 / 57) |
+| paired delta | **−3.51pp** [−14.04, +7.02], p = 0.7539 |
+| lost / gained | **6 / 4** |
+| harm share | **6 of 47 = 12.77%** |
+| store | 61 items from 57 corrections and 112 candidates |
+| consolidation | 11 groups, 13 merged, 48 retained, cross-task 11 |
+| floor 2 | **37 retired**, 11 servable, 9 served, no singleton |
+| renders | 57 requests from 9 records, mean 1.00 items, 872 chars |
+| attribution | 4 records carried all six breaks and all four repairs |
+| verdict | UNRESOLVED at MDE 15.55pp, SE 5.55pp, `tasksForFivePp` 270 |
+
+The floor did exactly what it said and the arm still lost more trials than it repaired. Two of R142's four
+predictions were graded on their bands and passed — `retired` 37 against 30–42, `retained` 11 against 8–14,
+no served item carrying support below the floor — and the falsifiable one failed: the registration said a harm
+share back above 10% would refute the floor's *mechanism*, and it came back at 12.77%.
+
+**The branch that was written before the number.** R142's decision table, pushed before the run:
+
+> | harm share ≥ 10% | **content**, not support: the axis moves from how many tasks agreed to what the served
+> claim says |
+
+So this round does not choose an axis. It reads the one the record had already committed to, and the only
+question left is *which* content fact to measure.
+
+**The population nobody had asked about.** `provenance` was in the artefact and no readback had ever quoted it:
+
+```
+{"edited": 9, "passed": 48, "tasksEdited": 9, "tasksPassed": 48,
+ "itemsEditedOnly": 11, "itemsPassedOnly": 50, "itemsMixed": 0, "itemsUnattributed": 0}
+```
+
+**Fifty of the sixty-one items were distilled from a trajectory that already passed.** Every arm since R131 has
+carried `distillScope: all`, and it was chosen for a reason that is visible one line away in the same artefact:
+the consolidation pass needs two tasks behind one routine, a store built only from failures has one witness per
+routine, and `scope: all` widens the population until the fold has something to fold. What it folds is two
+*tasks whose successful episodes read alike* — `cross-task 11` is eleven routines that two passing tasks
+describe in similar words. So `support ≥ 2` did not certify a repair twice over; it certified a **description**
+twice over, and then served that description into a third task.
+
+The nine records that were served are all of one kind:
+
+| property | value |
+| --- | --- |
+| `kind` | `procedure` × 9 |
+| `polarity` | `repair` × 9 — a label the distiller assigns, not a measurement |
+| `supportTasks` | 2 or 3 |
+| what they say | a call plan: "resolve the user by email, then fetch each order, then issue one return per order" |
+
+That is the content axis in one sentence: a store of *plans* harvested mostly from episodes that needed no plan.
+
+**The rung, priced at readback for nothing.** `pack.margins.ladder` said rung 0.10 would withhold 23 of 57
+requests and could not say whether it would withhold the ones that did damage — the artefact carried the
+ladder's counts and the decisions themselves were dropped. They were not dropped: `margins.perRequest` sits
+beside `ledger` and `per_trial`, all three one row per request in arrival order, and the episode join already
+exists for the attribution table. Joining them prices every rung against the outcomes R142 already paid for:
+
+| rung | served | kept | broke | net | net pp |
+| --- | --- | --- | --- | --- | --- |
+| 0.00 | 57 | 4 | 6 | −2 | −3.51 |
+| 0.05 | 46 | 3 | 5 | −2 | −3.51 |
+| 0.08 | 39 | 3 | 4 | −1 | −1.75 |
+| 0.10 | 34 | 3 | 4 | −1 | −1.75 |
+| 0.15 | 27 | 3 | 3 | 0 | 0.00 |
+| 0.20 | 19 | 2 | 3 | −1 | −1.75 |
+| 0.25 | 14 | 2 | 2 | 0 | 0.00 |
+| 0.30 | 7 | 2 | 0 | +2 | **+3.51** |
+
+**The margin does not separate a repair from a break.** It ranks weakly in the right direction — AUC 0.625 on
+four repaired against six broken trials, medians 0.310 against 0.221 — and it ranks wrongly where it matters:
+the single highest-margin break (retail/9, 0.275) sits *between* the two highest-margin repairs (0.310, 0.317),
+and the lowest-margin repair (0.033) sits below the lowest-margin break (0.039). The rung that looks clean,
+0.30, is clean because it withholds all but seven requests: it keeps two repairs and loses two, and it wins only
+because the six breaks happen to sit below the two survivors. At n = 4 versus 6 that is a fitted parameter, not
+a lever, and the record does not buy one.
+
+**What the sweep is, and the premise it states.** A withheld trial is estimated at **its control outcome**,
+because the alternative to a served pack is the bare agent that produced the control half of the pair. That is
+an estimate: a model shown a procedure and then not shown it is not the model that never saw it, and the
+instrument cannot see the difference. Every line says `estimated` for that reason, and a verdict on a rung still
+needs the dispatch that runs it. What the sweep removes is the *first* dispatch of a two-dispatch loop — the one
+that exists only to price a candidate.
+
+**The instrument, and where the number travels.** `serve-sweep.ts` prices a list of rungs and reports one
+decision-shaped statistic rather than a maximum: **the first rung that withholds every break and keeps a
+repair**, with the repairs it costs and the trials it silences. The render carries the gate's own decision — the
+highest margin among the requests of its episode that served the record, because a gate acts per request and an
+outcome is measured per trial — and the field is **absent** when an arm carried no census at all while it is
+**`null`** when the census was there and the record was never contested. `l4-pair` prints the line and publishes
+`serveSweep`, and it publishes neither when the margin census is absent: an arm that asked no census cannot be
+read as a store whose packs were never contested.
+
+**The registration the branch buys.** `prereg/R151-the-failures-only-store.md`: the same 57/57 cut, the same
+pass, the same key, the same `packLimit: 1`, the same margin of zero — and `distillScope: edited` with the floor
+at its identity (`serveSupport: 1`). Predicted: `created` 8–16, `servable` ≥ 8, `repairs` ≥ 4, `breaks` ≤ 2,
+delta ≥ 0 at a bound of 15.55pp. Refuted by `breaks` ≥ 5 (then the next axis is usage after all, and the sweep
+has already priced it), by `repairs` ≤ 2 (then the axis is the cut), or by `created` < 6 (then the axis is
+supply). The confound is stated rather than dissolved: two knobs move because a floor of two over a ten-item
+store is a measurement of nothing, and the floor has no denominator on a population that has one witness per
+routine.
+
+**Acceptance.** `serve-sweep.ts` 15 cases at 100% on all four dimensions, `tau2-attribution` +5 (the margin is
+absent without a census, `null` with an unpriced one, the maximum over a span's requests, NaN refused as a
+parse failure, and a record's margin read from the request that served *it*), `l4-pair-transfer` +2 end-to-end
+(the sweep published at 0.08 on a four-trial fixture, and nothing published when the arm carries no census).
+Repository **5,697 tests over 276 files** (+22), coverage **100 / 99.92 / 100 / 100**. `pnpm typecheck`,
+`typecheck:lanes`, `audit:repo` ok; coupling ledger **245 modules** (+1), `core coupled=0`. Round cost **$0.00**.

@@ -11734,3 +11734,71 @@ ROADMAP step 3's next dollar, gated on R142's readback.
 
 **Cost.** $0.00, one round. Bought: a published product axis made nameable, the filter recorded in every future
 artefact, a sixth identity field the pool refuses by, and one fewer silent contradiction on the wire.
+
+### 34.188 An artefact that said what the store was made of, in a lane that never asked
+
+**What was found.** R142's memory arm carries `tau2.provenance` — a census written by R62 that joins every
+item's evidence back to the trajectory it came from and splits the store into `edited`, `passed`, `itemsMixed`
+and `itemsUnattributed`. R142's reads:
+
+```
+{"edited": 9, "passed": 48, "itemsEditedOnly": 11, "itemsPassedOnly": 50, "itemsMixed": 0}
+```
+
+**Eighty-two per cent of the store was distilled from a trajectory that already passed.** Eleven rounds of
+readbacks quoted `created`, `retired`, `servable`, `support`, `meanIds`, `top1`, `render(s)` and `net`, and not
+one of them quoted the field that says what the sixty-one items were *made of*. The field has been in the
+artefact since R62 and in the log since the same round; the readback regex list is the artefact of this audit —
+sixteen patterns, none of them `provenance`.
+
+**Why it mattered, in the numbers the same artefact carries.** `distillScope: all` has been in every
+registration since R131, and the reason is one line away: the consolidation pass needs two tasks behind one
+routine, and a failures-only store has one witness per routine. Widening the population to passes buys the
+witnesses — and then `support ≥ 2` certifies two tasks whose *successful episodes read alike*, which is a shared
+**description** and not a shared **repair**. R142's `cross-task 11` reads as eleven routines with independent
+evidence and is in fact eleven routines two passing tasks describe similarly. The floor was in force, no
+singleton was served, and six of the nine served records broke a trial.
+
+**The class.** This is not a missing instrument; it is a missing *reader*. §34.183 and §34.187 are instruments
+that could not see the thing they were built for, and both cost a paid round. This one cost nothing to fix and
+had already cost eleven rounds of direction: the store's population was chosen for supply in R131, the content
+axis became the registered next step in R142, and the number that says why was in every artefact in between.
+
+| what carried the fact | since | who read it |
+| --- | --- | --- |
+| `tau2.provenance.itemsPassedOnly` | R62 | nobody, until this round |
+| `tau2.learning.edited` (beside `distilled`) | R62 | nobody: the readback quoted `created` from the log line instead |
+| `distill.scope` | R62 | the cross-fit's identity, which compares it and never reports it |
+
+**What was done.** The number is quoted in the readback patterns and in §PROGRESS 175, and the axis it names is
+what `prereg/R151-the-failures-only-store.md` measures. No code was needed to obtain it, which is the audit's
+point: the fix is a reader, and the rule it leaves behind is that a census an artefact carries and no readback
+prints is a census the record has paid for twice.
+
+### 34.189 A ladder that priced a rung nothing could choose
+
+**What was found.** `pack.margins.ladder` counts, for each rung of the margin grid, how many requests that rung
+would withhold. R142's reads `0.01 4 / 0.02 6 / 0.05 11 / 0.10 23 / 0.15 30 / 0.20 38 / 0.30 50` — and the only
+question a rung is chosen by is **which** requests it withholds, and whether those are the ones that did damage.
+The ladder answers the first half and cannot answer the second, and the artefact carried the answer anyway:
+`margins.perRequest`, `pack.ledger` and `per_trial` are three arrays of one row per request, in arrival order,
+and the episode join that pairs them was written in R128 for the attribution table.
+
+**So the defect is a census that counts without joining.** R135 wrote `perRequest` for exactly this question and
+said so in its own comment ("the ladder above is a *count* of requests under each rung, which prices a rung in
+advance but cannot answer the question a rung is chosen by"). Four rounds later the lane was still one dispatch
+away from every candidate rung, and R142's registration listed "the margin rung" as the fallback axis with no
+way to choose a value for it.
+
+**What was done.** `serve-sweep.ts` joins the three arrays and prices every rung against the measured outcomes;
+`l4-pair` prints the line and publishes `serveSweep`. On R142 it reproduces the hand reading exactly — rung 0.30
+keeps 2 repairs, withholds all 6 breaks, serves 7 of 57 trials — and it says what the maximum would hide: the
+margin separates a repair from a break at **AUC 0.625** on four against six, which is not a lever, and the
+cleanest rung is clean because it withholds 88% of the traffic.
+
+**The rule this leaves.** A census of a knob must carry the join that decides the knob's value, or it is a
+pricing table without a buyer. The cheap version of that rule was available four rounds ago at the cost of one
+function; the expensive version is one dispatch per candidate value, and the lane was on the expensive one.
+
+**Cost.** $0.00. Bought: every future pair prices every rung at readback time, and the next arm's margin is
+chosen from a number rather than from a guess.
