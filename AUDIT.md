@@ -11847,3 +11847,47 @@ correlated trial pairs — and it is now the head of the queue for a reason that
 
 **Cost.** $0.00. The two reference arms were already paid for. What the round bought is the knowledge that the
 lane's own noise floor is ~7pp per arm, which is larger than every effect it has reported.
+
+### 34.191 Two guards that refused every artefact this lane writes, and the fixtures that agreed with them
+
+**What was found.** R143's two folds cannot be pooled, and the reason has been committed in the pair artefact
+for three rounds, in two fields nobody read:
+
+| field | value the artefact carried |
+| --- | --- |
+| `foldSplitAbsent` | `the arms scored different splits: 'memory' learned 57 and answered 57, against 0 and 57` |
+| `treatmentAbsent` | `the arms do not both state unit: reference record none, so nothing can compare it` |
+
+Both sentences describe the **design**, not a defect. The reference arm serves no pack and distils nothing, so
+`controlRaw` records `train: []` on purpose — "this arm learned nothing" — and it has no unit, form, scope or
+knobs to report. `foldSplitOf` required both arms to state the same two halves and `treatmentOf` required both
+to state every field, so the pair could never state what a cross-fit pools on. The pool then refused the
+artefact with *"fold(s) that do not say what they learned from"*, which blames the file for the guard's
+assumption.
+
+**The third instance, in the same feature.** `bin/cross-fit.ts` typed the artefact's `treatment` without the
+R150 `knobs` field and its loader dropped it, so two folds served through two different anchors would have
+reached `identityOf` as `'none'` and `'none'` and been pooled. The pool's comparison was tested; the wiring
+that feeds it was not. Measured: before the fix, the command exited 0 on two folds whose filters differed.
+
+**Why it was invisible.** Every test of both guards used a **symmetric fixture** — two arms, each stating the
+same halves, each stating a unit — because the fixtures were written from the function's contract rather than
+from an artefact. Forty-six cases in `cross-fit.test.ts` and not one of them is a control arm. The shape that
+fails was in the committed `poc-l4-pair.json` the whole time; so was the sentence explaining it.
+
+**The class.** §34.188 (a `provenance` field written for eleven rounds and read by nobody) and §34.189 (a
+ladder computed and never connected) are the same failure one layer over: an instrument whose output is never
+confronted with the input it claims to describe. Here the instrument is a guard, and its output is a refusal —
+which is why it looked like diligence.
+
+**What was fixed.** `foldSplitOf` now requires an **evaluation** half from every arm and takes the learning
+half as the union of the non-empty ones, refusing two different non-empty halves, refusing a pair where no arm
+learned anything, and refusing an overlap between the two halves. `treatmentOf` compares the arms that **state**
+a field and still refuses a disagreement. The loader carries `knobs`. Five guard expectations were rewritten to
+the shape the driver writes, three command cases were added (two filters pool, two filters refuse, one filter
+pools), and two end-to-end cases publish a pair from a reference arm carrying `train: []` and assert the
+artefact now states `foldSplit` and `treatment`.
+
+**What it costs and what it saved.** $0.00 — no dispatch. It was found while R143's official fold was in
+flight, whose pair artefact is written by the **old** guards; the two arm files are uploaded as evidence, so the
+fold is regenerated locally from them with the fixed code rather than re-bought.

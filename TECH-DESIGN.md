@@ -10054,3 +10054,37 @@ the learn phase is billed separately (`$0.1519` on R142, `$0.1562` on R151). The
 **≈$0.41**, 1.6× every cost paragraph this record has published since the memory half was split from the
 learning half. Both rounds are corrected in §PROGRESS 175–176; the registration is not, because a registration
 edited after its result is not a registration.
+
+### 17.160 The split a pair can state, and why the two arms are not symmetric
+
+**The premise the guards were written on.** `foldSplitOf` and `treatmentOf` (R143) were designed as *agreement*
+checks: two arms, one corpus, therefore the same learning half, the same evaluation half, and the same
+treatment stated twice. The premise is false for this lane and has been since R130, when `controlRaw` began
+writing a `tau2` block for the reference arm so the pair could difference a turn census. A control arm states
+`train: []` — "this arm learned nothing" is its record — and it has no store, so no `distillUnit`, no
+`distillForm`, no `distillScope` and no serving knobs exist on it to compare.
+
+**What the pair can state instead, and still be a pair.**
+
+| the pair states | from | refused when |
+| --- | --- | --- |
+| the evaluation half | every arm's `split.test` | an arm records none, or two arms answered different lists |
+| the learning half | the union of the arms' non-empty `split.train` | no arm learned anything, or two arms learned different non-empty halves |
+| the leak check | the learning half against the evaluation half | any task sits in both |
+| the treatment | the arms that state each field | two arms that state a field and disagree |
+
+The asymmetry is the point: **one arm carries the store and one is the counterfactual.** A field carried by
+one arm is not a field nobody compared — an arm without a store has nothing to state, and inventing a default
+for it would make two different runs look identical, which is the failure the old guard was trying to prevent.
+
+**What that restores.** The pair artefact now publishes `foldSplit` (74 or 40 learned, the other half
+evaluated) and `treatment` (unit, form, scope, model, knobs), which are exactly the two things `crossFitPool`
+needs. Without them a cross-fit is arithmetically impossible, not merely unverified: the pool refuses an
+artefact that cannot state its learning half, because the leak check — the only property a cross-fit claims —
+cannot run against a boundary nobody recorded.
+
+**Regeneration rather than re-dispatch.** A pair artefact is a deterministic join of two arm files: nothing in
+`l4-pair` calls a model. A fold dispatched under the old guards therefore does not have to be re-bought; its
+two arm files are in the run's evidence, and the join is re-run locally with the fixed code. The fold that was
+in flight during the fix is read that way, and its artefact is committed under
+`eval/results/folds/` so the cross-fit reads a file a reader can regenerate.
