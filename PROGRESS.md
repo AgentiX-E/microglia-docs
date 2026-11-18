@@ -21616,7 +21616,7 @@ Both registrations are in `prereg/` with their arithmetic:
 | 114 (the corpus) | 7/40 carried over | **10.98pp** |
 
 The pool therefore buys **7.5 points of resolution** and not a bigger effect, and a ten-point delta sits on
-that line rather than inside it. What the round can resolve is the count: at R141's shape the pool holds 12–16
+that line rather than inside it. What the round can resolve is the count: at R141's shape the pool holds 12–15
 gained against 3–5 lost, and exact McNemar separates 12/3 (p = 0.0352) but not 10/5 (p = 0.3018). The
 confounder is registered too — the swapped fold's store is built from 40 tasks, so 65% of the pool is the thin store's fold.
 
