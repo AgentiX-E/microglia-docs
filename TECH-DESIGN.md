@@ -9708,3 +9708,36 @@ history R77/R78 already wrote down (`$0.531` at 23:19 against `$1.111` at 03:19 
 authority — it reads the provider's clock at the moment of the call and this guard reads a rate card — and a
 run whose estimate was wrong must still be stopped by the layer that bills it. This adds the check that was
 missing in front of it, at the only point where being wrong is free.
+
+### 17.151 A capped sample is a prefix, so absence from it is not evidence
+
+**The defect class, stated once.** The record has three prior instances of an absence read as a fact: R42's
+empty store read as "the mechanism did not work", R137's carriage counted where it could no longer act, R141's
+`servable` denominator omitted rather than printed. This is the fourth, and it is the first where the absence
+belongs to an *instrument* rather than to a run.
+
+`storeItemSample` caps at 64 rows and says so — `omitted: 19` on R141 — and `serveSupportCensus` read every id
+not in those rows as one task. The store writes one task per correction, so that default is right for a
+*complete* sample and wrong for a prefix: on R141 six of fourteen served records were among the nineteen the
+sample left out, each a member of a consolidation group carrying two or three tasks.
+
+**Two decisions, and the alternative each refuses.**
+
+| decision | the alternative, and why not |
+| --- | --- |
+| resolve a merged member **through its group** | joining on the id alone, which loses exactly the records corroborated enough to merge — the population a floor of two exists to keep |
+| a truncated sample's unresolved ids are **counted, not bucketed** | the old default of one, which prints a singleton bucket the store never had, or a bucket named `unknown`, which makes the census look like it measured what it declined to |
+
+The `truncated` flag is derived from the sample's own `omitted`, not from a length comparison: the writer knows
+what it left out, and a reader inferring it from `items.length === limit` would be wrong on the one sample whose
+store happened to be exactly 64 items.
+
+**What the corrected census changes, and what it does not.** R141's score does not move. The attribution does:
+three repairs the shipped join credited to singletons belong to support-2 records, so `support ≥2` becomes
+14 items with 5 kept and 1 broken, and the reading "the floor traded repairs for harm" loses its evidence. That
+reading was never written down as a finding, which is the only reason this defect cost nothing but a day.
+
+**Why the cross-fit lives beside it.** The same join is what a cross-fit's denominator rests on, and the same
+discipline is what its guards enforce: an id a fold does not name is not evidence of anything. `crossFitPool`
+refuses a fold that cannot state its learning half for the same reason the census refuses to bucket an id it
+cannot resolve — **a check that cannot run must not be reported as a check that passed.**

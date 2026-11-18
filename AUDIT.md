@@ -11523,3 +11523,44 @@ is a sentence and an exit code, and the sentence ends with the hour to name.
 The learn phase's own `cost.usd` is **`0.1617`**, which the log states and the sentence in `window-fit.ts` now
 quotes. An estimate of a cost in a file about not estimating costs is the smallest possible version of this
 record's recurring defect.
+
+### 34.183 An instrument graded the arm it was built for, and the grade was the instrument's
+
+**The finding.** `serveSupportCensus` — the join R141's criterion is written in — reads the store sample to learn
+how many tasks stand behind a served record. The sample is capped at 64 rows and records the 19 it left out. The
+census read every id outside those rows as one task. On R141, **six of the fourteen served records were in the
+omitted nineteen**, and all six were members of consolidation groups with two or three tasks behind them.
+
+| reading | shipped join | corrected |
+| --- | --- | --- |
+| `belowFloor` (floor 2) | **6** | **0** |
+| printed verdict | `6 of the 14 served item(s) carry support below it` | `no served item carries support below it` |
+| `support ≥2` bucket | 8 items, 1 broke, 2 kept | **14 items, 1 broke, 5 kept** |
+| singleton bucket | 6 items, 0 broke, **3 kept** | — |
+| `unresolved` | 0 (claimed) | 0 (resolved through the groups) |
+
+**What the wrong number would have said.** Not merely "the floor failed". It would have said **the singletons
+repaired three cases and broke none**, which is the sentence that argues the floor *cost* three repairs — and it
+would have been printed beside a round whose actual result is that the floor's survivors did all five. A
+criterion failing on a run that satisfied it is bad; a mechanism being argued against by its own instrument is
+worse, and this one is both.
+
+**Why nothing caught it.** Three guards exist around this join and none of them can see a *prefix*. `supportMapOf`
+returns `undefined` only when the artefact carries no sample at all. The census's own doc argues explicitly
+against a bucket named `unknown`, on the ground that the store writes one task per correction — an argument that
+is correct for a complete sample and silent about a capped one. And `storeItemSample` records `omitted`, so the
+fact was in the artefact the whole time; the reader simply did not ask.
+
+**The class.** Fourth instance of an absence read as a fact (§34.117's empty store, §34.135's unrecorded scope
+dimension, §34.181's unprinted denominator), and the first where the absence is the *sample's own size*. The
+repair is the same as the previous three: make the absent case a stated field (`truncated`) rather than a
+default, and make the thing that cannot be resolved a count (`unresolved`) rather than a bucket.
+
+**The discipline this buys, stated as a rule.** A default is a claim about a population. `?? 1` is "the store
+writes one task per correction" — true of the store, false of the sample. Every default in an instrument reads
+as a measurement once it reaches an artefact, so it has to be justified for the population it will be applied
+to, and re-justified whenever that population changes from "the store" to "a prefix of the store".
+
+**What it cost and what it bought.** $0.00 and one afternoon; in exchange, R142's readback will grade the
+round's criterion on the correct population, and the cross-fit — whose denominators rest on the same join — was
+built with the guard in place rather than after it failed.

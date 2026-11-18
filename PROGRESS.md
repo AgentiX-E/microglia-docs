@@ -21407,3 +21407,64 @@ is not. The third was the missed re-export: the lane CLI imports `@agentix-e/mic
 `directedSplit` was on the module and not on the surface, and the stricter `typecheck:lanes` step caught what
 `tsc -b` does not compile. A fourth would have been silent — the coupling ledger still described the tree from
 before two modules arrived — and the committed snapshot is regenerated with 239 modules and `core coupled=0`.
+
+### 231 — The join that would have failed the run it was built for
+
+**Two instruments and one defect, and the defect is the headline.** R142 is still waiting for its 04:00 UTC
+window, so this round is all $0: the cross-fit pool that makes 114 pairs possible, the two identities a pair has
+to state before those pairs mean anything, and a repair to the serve-support join that would have graded R141 —
+the arm it was written for — as having failed its own criterion.
+
+**The defect, on R141's own numbers.** The census joins served ids to the store sample. The sample is capped at
+64 rows and records that it left 19 out; the census read every unlisted id as **one task**. On R141 six of the
+fourteen served records were in the omitted nineteen, and all six were members of consolidation groups carrying
+two or three tasks:
+
+| reading | the shipped join | through the groups |
+| --- | --- | --- |
+| served records | 14 | 14 |
+| resolved by the sample | 8 | 14 |
+| support 1 bucket | **6 items, 0 broke, 3 kept** | — (none) |
+| support ≥2 bucket | 8 items, 1 broke, 2 kept | **14 items, 1 broke, 5 kept** |
+| `belowFloor` at floor 2 | **6 of 14** | **0** |
+| verdict printed | `floor 2 in force, and 6 of the 14 served item(s) carry support below it` | `floor 2 in force, and no served item carries support below it` |
+
+The score is unchanged — 0.925 against 0.825, `+10.00pp`, 5 repaired and 1 broken. What changes is **who gets
+the credit**: the shipped join attributed three repairs to *singletons*, which reads as "the floor removed three
+repairs along with the harm" and is an argument against the mechanism. Corrected, every one of the five repairs
+came from a corroborated record, and the floor's survivors are 14 for 14.
+
+**Why it matters now rather than later.** R142's own line is printed by this instrument. Had it run unchanged,
+the dispatch would have printed `retired`/`retained` in band and then graded its criterion FAILED for a reason
+that lives in a sample cap — the fourth time this record has paid for an absence read as a fact (§34.117,
+§34.135, §34.181), and the first time the absence was the sample's own size.
+
+**The fix is two fields and one sentence.** `supportMapOf` takes the consolidation groups and resolves a member
+to its group's support; `serveSupportCensus` takes `truncated` (the sample's own `omitted > 0`) and refuses to
+grade an id it cannot resolve, reporting `unresolved` instead of bucketing it as a singleton. A *complete*
+sample keeps the old reading, because there absence really is a fact about the store: the store writes one task
+per correction.
+
+**The cross-fit, which is the sample problem solved rather than described.** 40 tasks resolve 17.16pp; 114
+resolve ~10pp. Two folds — the benchmark's boundary and its reverse — give 114 pairs with every task answered
+once by a store that never saw it. `crossFitPool` pools them through `comparePaired`, the same estimator every
+other reading in this record uses, and refuses five things:
+
+| refusal | what it would have produced |
+| --- | --- |
+| one fold | the fold itself, described as a corpus |
+| a task evaluated in both folds | n inflated, interval narrowed in the flattering direction |
+| a fold evaluating a task its **own** store learned from | a leak, and the number comes out better than the truth |
+| a fold that does not state its learning half | the check cannot run, and an average never reports a missing check |
+| folds whose `treatment` differs | a larger sample of two experiments |
+
+The pair artefact now carries both identities — `foldSplit` (learned/evaluated id sets) and `treatment` (unit,
+form, scope, model, ceiling) — so the leak check reads the file rather than the dispatch. Both are refusals with
+a reason when an arm predates the fields: **every artefact written before this round will be refused**, which is
+the correct answer and the one R143's dispatch has to pay for by running both folds under the new writer.
+
+**Acceptance.** `cross-fit.ts` 42 cases at **100/100/100/100**, `cross-fit` as a command 7 cases (one pool, six
+refusals), `serve-support.ts` 19 cases at **100/100/100/100**, and the two suites' files unchanged in count.
+Repository totals **5,623 tests over 272 files** (+53, +2), coverage **100 / 99.92 / 100 / 100** — the residual
+0.08 is `app.ts`'s one uncovered branch, unchanged since before this round. `audit:repo` ok. Round cost
+**$0.00**.

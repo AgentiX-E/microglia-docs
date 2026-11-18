@@ -7302,3 +7302,26 @@ each one bears on the next decision rather than on this one:
 | **STRATA** (arXiv 2610.19386) | single-level concrete memory suffers *catastrophic negative transfer*, repaired by **contrast edges** that flag confusable, direction-opposite experiences | direction-opposite is the axis this record has not tested. R14 did test the *pair* form against the sentence (53.8% vs 30.7% reproduction) and R15 found neither transferred, so a contrast edge is a different object: not a better sentence but a second claim that says when the first is wrong |
 | **When Continual Learning Moves to Memory** (arXiv 2604.27003) | under a bounded window, old and new experience compete at retrieval; abstract procedural memory transfers, negative transfer concentrates on the **hard** cases, and finer granularity is not universally better | the hard-case concentration is the shape this record sees — 1 broken trial of 33 is not a uniform tax — and their "retrieval frequency" axis is the one R141 changed by accident: retiring 50 items made the 14 survivors circulate **2.9 times each** where the 21 served items had circulated 1.9 |
 | **MemHarness** (arXiv 2607.28272) | retrieved experience should be *reconstructed* against the current state (critique, then rewrite or discard) rather than replayed, learned end-to-end with GRPO | untestable on this harness without weights, and it is the reason the record's content axis is written as a prompt-form question (R143's candidate) rather than as a training one |
+
+**AM.9 — the field's gates are all write-time, and the reading they need is serve-time (2026-11-18).** Read
+while building the cross-fit, and it settles a question the last four rounds kept circling: **every published
+consensus gate this project can compare against acts when a fact is written**, and the one mechanism here that
+moved the harm share acts when a fact is read.
+
+| source | where the gate acts | what it costs | what this record measures |
+| --- | --- | --- | --- |
+| **ConsistencyGate** (arXiv 2607.22962) | write: admit a candidate only when K samples agree | K model calls per candidate — 73 candidates, 73K calls on R141 | the same statistic one layer later, at **zero** model calls: R141 retired 50 of 83 records and served 41 renders from 14 |
+| **ALTK-Evolve** `sup2` cell | write: a playbook entry must be seen twice | the entry never exists, so the second sighting cannot arrive | serving it once and counting the second task is what makes `sup2` reachable at all |
+| **STRATA** (arXiv 2610.19386) | read: contrast edges flag confusable, direction-opposite experience | one extra claim per stored fact | untested here; R14's pair form is the nearest instrument |
+| **When Continual Learning Moves to Memory** (arXiv 2604.27003) | read: retrieval frequency under a bounded window | — | R141 raised the survivors' circulation 1.9 → 2.9 renders per record by retiring 50, which is that paper's axis changed by accident |
+
+**The corrected R141 read, and why it is a competitive datum.** With the join repaired (§34.183) the arm's
+fourteen served records are **14 for 14 corroborated**, together **5 repaired and 1 broken**, net **+4 trials**.
+The shipped join would have reported three repairs inside the singleton bucket — i.e. the floor discarding
+repairs — which is the sentence a reader of ALTK's write-time gate would expect, and it was the instrument's.
+
+**Where the leaderboard stands.** No row moves: the τ² cell remains unrankable (`bar_backbone_matches = 0`, this
+lane's control at 0.825 pass^4 against a published 0.575), and BIRD's same-split gap remains **20.86pp** against
+AskData's 83.40 test / 78.49 dev. What is new is the sample: 114 pairs instead of 40 is the difference between
+an instrument that can see a ten-point effect and one that cannot, and no competitor publishes a paired reading
+at that size on this corpus with a control.
