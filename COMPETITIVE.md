@@ -7273,3 +7273,32 @@ a single task taught. If the harm share falls while the mean does not move, corr
 statistic — the same claim ALTK's `sup2` cell makes, measured on a benchmark where the harm is identifiable. If
 it does not, then the leading mechanisms' shared premise is wrong on this corpus, and the axis moves to the
 content of the served claim rather than to how many tasks agreed with it.
+
+**AM.7 — R141 read: serving consensus is a safety statistic, and the field's write-side gate is its mirror
+(2026-11-18).** The arm ran the same pass, the same key, the same linkage and the same 2,400-character pack as
+R139, and retired every item fewer than two tasks taught. Served items fell from 21 distinct over 40 requests to
+**41 renders from 14 records**, and the pair moved from `+2.50pp` to **`+10.00pp`** with the harm share falling
+**15.63% → 3.03%** (1 broken trial in 33 against 5 in 32). Unresolved at n = 40, and stated as unresolved.
+
+| reading | R139 (no floor) | R141 (floor 2) | what a competitor would need to show to beat it |
+| --- | --- | --- | --- |
+| memory vs control | 0.825 / 0.800 | **0.925 / 0.825** | the same cell on the same 40 tasks with a control, which none of the four systems below publishes |
+| repaired / broken | 6 / 5 | **5 / 1** | a harm count, not a harm claim: ALTK-Evolve reports the playbook's accuracy and STRATA reports the lift from contrast edges, neither reports per-trial damage against a control |
+| harm share | 15.63% | **3.03%** | — |
+| cost | $0.0958 | **$0.1986** (learn + eval, off-peak) | an admission gate that costs a model call per candidate cannot undercut a floor that costs none |
+
+**Where the leaderboard stands, unchanged.** No row moves this round, and the reason is arithmetic rather than
+modesty: the τ² cell is not rankable because the control's own pass^4 is 0.825 against a published bar of 0.575 —
+`bar_backbone_matches = 0` — and the BIRD cell is unchanged at 57.63 dev with a memory arm at 56.26 against
+AskData's 78.49 dev (83.40 test). **The current SOTA on the only lane this project can rank on is AskData (AT&T
+CDO / DSAIR), 83.40 test / 78.49 dev**, and the same-split gap is 20.86pp, which §2 prices as generator and pool.
+
+**AM.8 — three 2026 sources that describe this round's finding from the other side.** Read while sizing R142, and
+each one bears on the next decision rather than on this one:
+
+| source | what it claims | what this record's data says |
+| --- | --- | --- |
+| **ConsistencyGate** (arXiv 2607.22962) | memory *contamination* is a write-time problem: admit a candidate fact only when K samples agree above a threshold, because a hallucinated premise poisons every later step | the same statistic, one layer later. Their support is a self-consistency score over one context; ours is a count of distinct tasks over one claim. R141's evidence is that the **serve-time** version is cheap (no model call) and sufficient on this corpus: 50 of 83 items retired, harm 5 → 1. A write-time gate would have had to ask the model about 73 candidates |
+| **STRATA** (arXiv 2610.19386) | single-level concrete memory suffers *catastrophic negative transfer*, repaired by **contrast edges** that flag confusable, direction-opposite experiences | direction-opposite is the axis this record has not tested. R14 did test the *pair* form against the sentence (53.8% vs 30.7% reproduction) and R15 found neither transferred, so a contrast edge is a different object: not a better sentence but a second claim that says when the first is wrong |
+| **When Continual Learning Moves to Memory** (arXiv 2604.27003) | under a bounded window, old and new experience compete at retrieval; abstract procedural memory transfers, negative transfer concentrates on the **hard** cases, and finer granularity is not universally better | the hard-case concentration is the shape this record sees — 1 broken trial of 33 is not a uniform tax — and their "retrieval frequency" axis is the one R141 changed by accident: retiring 50 items made the 14 survivors circulate **2.9 times each** where the 21 served items had circulated 1.9 |
+| **MemHarness** (arXiv 2607.28272) | retrieved experience should be *reconstructed* against the current state (critique, then rewrite or discard) rather than replayed, learned end-to-end with GRPO | untestable on this harness without weights, and it is the reason the record's content axis is written as a prompt-form question (R143's candidate) rather than as a training one |

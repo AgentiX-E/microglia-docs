@@ -9645,3 +9645,37 @@ built from nothing would call every served item a singleton.
 **What it costs.** Nothing. The floor is arithmetic over evidence the store already carries, it makes no model
 call, and the census rides the run that was going to be made anyway — which is why its first read is a $0.20
 dispatch on R139's own pair rather than a new lane.
+
+### 17.149 The cut is a header: what a share may and may not be
+
+**The defect it closes.** The boundary between the half a store learns from and the half it is scored on has
+been `TAU_TRAIN_SHARE` since the lane was written — a repository variable, defaulting to 0.5, read by one line
+of the driver and by nothing in the artefact. R92 moved the *split* into the registration (`taskSplit:
+official`) precisely because a number produced on a half the benchmark does not define cannot be ranked
+against one that is, and the lane's own cut stayed outside the record for every arm that did not name one. R142
+is the first arm to go back to the lane's cut deliberately, and a deliberate cut that no diff states is the
+same defect wearing the opposite sign.
+
+**Three decisions, and the alternative each one refuses.**
+
+| decision | the alternative, and why not |
+| --- | --- |
+| a **share**, not two counts | counts go stale the moment the corpus is re-listed: 57/57 is a fact about retail's 114 tasks at 0.5, not a fact about the corpus |
+| one **spelling**, `0.` plus digits | `half`, `50%` and `.5` are one number in three registers; a header a later dispatch compares to a variable must have one |
+| refused **with** `taskSplit` | the benchmark's halves are not cut by a number, so a registration naming both states a boundary that one line would read and the other ignore |
+
+The open interval is enforced by value rather than by range check: a share of one holds nothing out and a share of
+zero learns from nothing, and both leave a run whose two halves are one half — the failure mode a `0 < share < 1`
+check states and a clamp would hide.
+
+**Why it is a header and not a menu entry.** `l4_train_share` already exists as a dispatch input, and it stays:
+the menu is for the operator, the header is for the record. What changes is precedence — registration first,
+menu second, variable last — so a dispatch that names a registration cannot silently run a different cut than
+the one the registration's prediction was written against. `prereg-caps` prints the line only when the
+registration states one, for the reason the store pin is printed that way: a default no registration authored
+must not appear in the record as if one had.
+
+**What it does not change.** `splitTaskIds` is untouched, so 114 at 0.5 is still the 57/57 every pre-R92 arm ran
+on, and every arm whose registration omits the header reads exactly the value it read before. The change is
+where the number comes from, not what it is — which is the property that lets R142 be compared to the arms
+before it at all.

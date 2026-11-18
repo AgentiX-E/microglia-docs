@@ -11444,3 +11444,50 @@ travels in the learning block and in the diagnostics of a refusal. The pattern i
 record: a mechanism whose population is not in the artefact gets read as a mechanism that did not work
 (R121's merge, R137's carriage, and — the earlier one — R42's empty store). The floor's own retired count is
 what makes "44 of 55 retired, 11 servable" a reading rather than a guess about why the pack got shorter.
+
+### 34.181 The floor removed the harm and kept the gain, and the unit of one prediction was wrong
+
+**The reading, and the one table it changes.** R141's arm retired 50 of 83 items for want of a second task and
+served 41 renders from the 14 that survived. Against its own control it scored **0.925 against 0.825** —
+`+10.00pp [0.00, +22.50]`, p = 0.2187, **5 repaired and 1 broken** — where R139's floorless arm, on a store
+with the same pass, had repaired 6 and broken 5. The harm share fell from **15.63% to 3.03%** of the control's
+passes. The registration had predicted the opposite sign on the mean ("flat and may be worse") and the
+prediction that fails is the informative one: the floor was supposed to trade harm for gain one-for-one
+(`−3` removed against `+4` removed) and instead removed the harm and left the gain.
+
+**What the prediction that failed by unit cost.** `serveSplit.served` "falls from 33 of 40 to at most 13" is a
+sentence comparing a *request* rate to an *item* count. The split counts requests — 37 of 40 were served — and
+the population that fell to 13 was the served *records*, 14. Both numbers are in the artefact; the prediction
+put one in the other's column. The previous round's readback made the same slip in the opposite direction
+(reading 43-of-64 unserved as a rate over items when the census counts statements), so this is now the second
+occurrence of one defect: **a prediction written in a unit the artefact does not print is unfalsifiable in
+practice and looks falsified in the readback.** R142 states its own quantities by the field that will carry them.
+
+**The two counts that were out of band are one fact.** `retired` 50 against a 40–46 band and `retained` 14
+against 9–13 are the same observation: the pass merged 19 items where R139 merged 15, so the population the
+floor acted on was larger and less corroborated than the band forecast from R139's ratios. A band built from one
+arm's ratios carries that arm's merge rate, and the merge rate is content. The registration's own margin was
+four items wide on an axis whose round-to-round movement is five.
+
+**No refutation condition fired, and that is the weaker of the two statements available.** The rules were
+`retired < 30`, `retained ≥ 20`, a served singleton, and `broke` flat while `retained` is in band. None fired.
+The hypothesis survives at n = 40, which is a statement about a sample that can resolve 17pp; the harm-share
+difference the round actually produced is Fisher's p = 0.10 on 33 and 32 trials. A surviving hypothesis is not
+a supported claim, and this entry does not write it as one.
+
+**The instrument that did not fire, and the audit's own timing.** `serve support` — the join the round's
+criterion is written in — is absent from the log because it was committed twenty minutes after the head the
+workflow checked out. So the round's criterion ("no served item carries support below the floor") was answered
+from a *different* line: the pack's `support ≥2 41, ≥3 9, max 3`, which says every render carried an item two or
+more tasks taught. That is the same fact read from the pack rather than from the join, and it is worth recording
+that a round can pass its criterion without its instrument firing — the criterion is about the pack, and the
+instrument is about the reconciliation between the pack and the store sample. The reconciliation is what R142
+buys.
+
+**What the round hands forward, as arithmetic rather than as a hope.** The next arm is the same treatment on the
+lane's 0.5 cut of all 114 tasks — 57 learn, 57 held out — because the two ways this reading is wrong are that
+the 40 tasks the benchmark chose are a lucky sample and that one broken trial in thirty-three is an accident of
+the schedule. At n = 57 the pair resolves ~14.4pp, so the delta will most likely be unresolved again and the
+claim the round grades is the **harm share**, which can separate: 1 in 47 is 2.13% against R139's 5 in 32,
+Fisher's p ≈ 0.04. A round that states it cannot resolve its own mean before it runs is a cheaper round than one
+that discovers it afterwards.

@@ -21283,3 +21283,57 @@ removes `−3` and `+3` in equal measure on this arm; **~$0.20**.
 **State.** 5,530 tests over 268 files (+18); **100 / 99.92 / 100 / 100**. Registration
 `prereg/R141-the-floor-at-serve-time.md`, refused without the pass, valid against all 103 other registrations.
 Dispatched as `44162747993`. Round cost before the dispatch: **$0.00**.
+
+### 229 — R141 read back: the floor removed the harm and kept the gain, and one prediction was written in the wrong unit
+
+**The first arm in this lane whose memory beat its control.** `44162747993`, memory arm `$0.1986`, reference
+`$0.0973` — `$0.2959` for the pair, off-peak, against a registration that predicted `$0.20`. The reading:
+
+| reading | R139 (no floor) | R141 (floor 2) |
+| --- | --- | --- |
+| store | 55 items, `supportAfter {1:44, 2:8, 3:2, 4:1}` | 83 admitted, 14 groups, 19 merged, 64 retained, `support ≥2 0→9`, max 3 |
+| retired at serve time | — | **50 of 83**, 14 servable |
+| served | 21 distinct over 40 requests, 19 singletons | **41 renders from 14 records**, every one `support ≥ 2` |
+| memory / control | 0.825 / 0.800 | **0.925 / 0.825** |
+| paired delta | +2.50pp [−15.00, +17.50], p = 1.0000 | **+10.00pp [0.00, +22.50], p = 0.2187** |
+| repaired / broken | 6 / 5 | **5 / 1** |
+| harm share | 15.63% of the control's passes | **3.03%** (1 of 33) |
+| informative trials | 11 | 7 |
+| verdict | UNRESOLVED, MDE 23.23pp | UNRESOLVED, MDE 17.16pp |
+
+**Four predictions, and what became of each.** `retired` landed at **50** against a 40–46 band and `retained` at
+**14** against 9–13 — both out of band in the same direction, which is one fact and not two: the pass merged 19
+items where R139 merged 15, so the population the floor acted on was larger and less corroborated than the band
+assumed. The three net-negative items are gone from the served set: the pack's own line reads `support ≥2 41,
+≥3 9, max 3`, so no render carried an item below the floor, which is the round's criterion and it holds. And
+`serveSplit.served` "at most 13" was **falsified by being written in the wrong unit** — the split counts
+*requests*, and 37 of 40 requests were served from 14 records. Items and requests were compared as if they were
+the same number; the last round's readback made exactly this mistake in the other direction.
+
+**No refutation condition fired.** `retired ≥ 30` (50), `retained < 20` (14), no served singleton, and `broke`
+fell from 5 to 1 while `retained` was in band. On its own rule the hypothesis survives, and the claim it
+survives as is a claim about the **harm share**, not about the mean: the mean moved in the direction the
+registration called unlikely (+10.00pp against "flat and may be worse") and cannot be read at n = 40.
+
+**One instrument did not fire, and why that is not a defect in it.** The `serve support` line is the join the
+round's criterion is written in, and it is absent from this dispatch's log because it landed at `61d0a65d`,
+twenty minutes *after* the run's head `2275ccc3` — the workflow checks out the head it was dispatched at, so the
+arm ran without the reader. The criterion was still answerable from the pack's own `support ≥2` count, and the
+honest statement is that R142 will be the first dispatch in which the line exists and the criterion is read
+where the registration says it is read.
+
+**What one arm cannot say, and the $0.30 that makes it sayable.** Ten points at an MDE of seventeen is not a
+small effect, it is an unmeasured one, and a harm share of 3.03% against 15.63% on 33 and 32 trials is Fisher's
+p = 0.10. So the next round is not a mechanism: it is the same treatment on the other half of the corpus — the
+lane's own 0.5 cut of all 114 retail tasks, 57 learn and 57 held out — because the two ways this reading can be
+wrong are that the population was the 40 the benchmark chose and that the harm was a one-arm accident.
+
+**The cut became a header.** `trainShare` is now a registration key rather than `vars.TAU_TRAIN_SHARE`, refused
+with `taskSplit` (one would be read and the other ignored), refused as `half`, `50%`, `0` or `1`, and printed by
+`prereg-caps` as its own line so `sota.yml` reads it from the file. It is the same defect class the store pin,
+the serve floor and the split were moved out of: a boundary that moves between dispatches makes two numbers
+incomparable with nothing in either artefact saying why.
+
+**State.** 5,553 tests over 269 files (+7); **100 / 99.92 / 100 / 100**; `prereg.ts` and `serve-support.ts` at
+100/100/100/100. R142 registered as `prereg/R142-the-other-cut.md`, dispatched as the run that follows this
+commit. Round cost before the dispatch: **$0.00**.
