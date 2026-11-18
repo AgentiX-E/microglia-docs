@@ -22360,3 +22360,115 @@ registration is $0.2929 wasted and $0.3717 still owed.
 **Next.** `R152c` is dispatched with both arms — the third draw of the treatment, the first fold
 `l4-rotation-reconciles` grades, and the pair artefact without which none of R152's four unanswered predictions can
 be read.
+
+## 181 — R152c: three draws of one treatment, 15 points apart, and the mechanism R143 inferred from two points
+
+**Dispatched** 2026-11-18 20:52 UTC, run `44395483632`, on `54285862` — `taskSplit: official`, both arms,
+`serveRotation: fair-share`, `$0.3884`.
+
+| reading | value |
+| --- | --- |
+| learn | 73 corrections from 74 task(s) → 145 candidates → **78 created**, 0 failed |
+| consolidation | 78 considered, 3,003 pairs, 13 groups, 19 merged, 59 retained; refused 38 linkage |
+| support floor 2 | **46 of 78 retired**, **13 servable** |
+| travel budget | **cap 4** from 40 request(s) over 13 servable item(s); `max 4`, **41** renders over 13 items, 6 exhausted, **0 starved** |
+| pack | 41 of 41 served (one retry carried a second request), mean 1.0 item / 743 chars; p50 margin 0.1435 |
+| memory arm | **pass^4 0.775** (31/40) |
+| reference arm | **pass^4 0.850** (34/40) |
+| paired | **−7.50pp** [−22.50, +7.50], p = 0.5488, **7 lost / 4 gained** |
+| degradation | **7 of 34 = 20.59%** broken, **4 repaired** |
+| serve yield | 40 renders, opportunity **6**, repairs 4, breaks 7, inert 29, repair rate 0.67 |
+| serve split | served 31 of 40 = 77.50% [62.5, 87.7]; 1 request belonged to an abandoned attempt |
+| margin sweep | no clean rung; AUC **0.607**, p 0.324 over 330 labellings; best net **+2.50pp** at rung 0.15 |
+| verdict | **HARM** — `l4-paired` fails the R45 cost bar, `V5-resolution` fails at 23.23pp, `l4-effect-resolved` passes and should not (AUDIT 34.197) |
+| instrument | `l4-projection-complete` **passes**, `l4-rotation-reconciles` **passes**, `treatment.rotation: 'fair-share'`, `unprojected: []` |
+| cost | **$0.3884** — learn 0.1979, memory 0.0961, reference 0.0944 |
+
+### Four draws of the store, and the number that does not follow
+
+| fold | created | servable | renders/item | harm share | memory | reference | delta |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| R143 `official` (unbounded) | 77 | 11 | **3.64** | **8.33%** | 0.900 | 0.925 | +2.50pp |
+| R152 (cap 3) | 72 | 14 | **2.86** | **5.88%** | 0.875 | 0.850 | +2.50pp |
+| R152b (cap 4, arm only) | 83 | 13 | **3.08** | not measured | 0.925 | — | — |
+| R152c (cap 4) | 78 | 13 | **3.15** | **20.59%** | 0.775 | 0.850 | −7.50pp |
+
+**At renders per servable item of 3.0 and 3.1 the harm share is 5.88% and 20.59%.** The two points R143 used to
+infer the mechanism varied *both* axes at once — 3.6 renders per item with 11 servable, 25.0 with 3 — and the
+restricted range made one line look like a law. The third and fourth draws hold the first axis nearly fixed and
+move the second by 15 points.
+
+**What the bound did do, in all three bounded draws.** `maxRenders` equalled the cap (3, 4, 4), every servable item
+was served (14 of 14, 12 of 13, 13 of 13), no request was starved, and the leader's renders fell from R143's 12 to
+3, 4 and 4. The instrument acts on *allocation* exactly as its own reading says it does. What it does not do is
+determine the outcome: the same cap, the same servable count to within one, and the harm share moves from 5.88% to
+20.59%.
+
+**The control is the stable arm.** The reference arm read 0.850 in both paired draws and 0.925 in R143. The
+treatment arm read 0.900, 0.875, 0.925, 0.775. Whatever moves, it is not the scaffold.
+
+### Against the six registered predictions
+
+| registered prediction (`R152c`) | outcome |
+| --- | --- |
+| `rotationReconciled` with no problems, `unprojected` empty, `l4-rotation-reconciles` passes | **holds in full**: six fields agree, `mode`/`cap`/`servable` reported as unreachable, and the pair states `rotation: 'fair-share'` |
+| `cap` 3–4, `starved` 0, `maxRenders` within one of the cap | **holds**: cap 4, 0 starved, max 4 |
+| `breaks` ≤ 3 and `repairs` ≥ 2, delta unresolved | **falsified on breaks**: 7 broken against 4 repaired — and the delta is not "unresolved", it is a cost the revert bar acts on |
+| the delta within ±7.5pp of +2.50pp | **falsified**: −7.50pp, exactly at the edge of the band and in the other direction |
+| `pass^4` in 0.85–0.975 | **falsified**: 0.775 |
+| `serveYield.opportunity` in 10–20% of renders | **holds**: 15.0% (6 of 40) |
+
+Three of six falsified, and all three are the same fact: the third draw is a bad store, not a bad policy. The
+registration's own refutation list named this outcome — *`breaks` ≥ 5 means the two earlier draws were the
+favourable tail* — and it is the row that fired.
+
+### The decision rule, and what the revert costs
+
+| registered row | fired? |
+| --- | --- |
+| green instrument, breaks ≥ 5 → **the bound ships as a concentration control with no harm claim, and R129's outcome counter becomes the arm** | **this one** |
+
+And R45's cost bar fires independently of the prediction: −7.50pp is below the −5pp floor with 41 packs served, so
+`l4-paired` blocks. The policy is **withdrawn as a default**: nothing changes in `prereg/TEMPLATE.md`, the switch
+stays in the code as a serving instrument with a working ledger, and no future registration inherits it.
+
+**R152's harm claim is retracted.** PROGRESS 179 wrote that 8.33% → 5.88% was "the only positive movement on harm
+in this record". Two draws later the bounded arm reads 20.59% on the same corpus with the same cap arithmetic. The
+correct sentence is the one this round can support: **the fair share removes concentration, and concentration is
+not what the harm follows.** §AUDIT 34.198 records the inference error, because it is the class this record has
+spent three rounds learning to avoid and it made it again in the opposite direction.
+
+### What four draws say about resolution
+
+| quantity | value |
+| --- | --- |
+| treatment-arm `pass^4` across four draws | 0.900, 0.875, 0.925, **0.775** — range **15.0pp** |
+| reference-arm `pass^4` across three draws | 0.925, 0.850, 0.850 — range 7.5pp |
+| the fold's own MDE at 40 pairs | **15.66pp** (R152) / **23.23pp** (R152c, from 11 discordant pairs) |
+| the pooled MDE at 114 pairs | 13.24pp (§PROGRESS 178) |
+
+**The treatment arm's own spread is larger than every resolution this design can buy at 40 tasks.** A single fold
+of this shape therefore cannot establish a 3pp mechanism in either direction, and neither +2.50pp nor −7.50pp is
+evidence about the rotation: they are two draws from a distribution whose width is the experiment.
+
+### Cost
+
+| item | cost |
+| --- | --- |
+| learn phase (74 tasks, 1,265 calls) | $0.1979 |
+| memory arm (40 tasks, 658 calls) | $0.0961 |
+| reference arm (40 tasks, 652 calls) | $0.0944 |
+| readback, reconciliation, gate audit | $0.00 |
+| **round total (three dispatches)** | **$1.0530** |
+
+### Acceptance
+
+Repository **5,791 tests over 281 files**, coverage **100 / 99.92 / 100 / 100**, `audit:repo` ok, coupling
+**247 modules** with `core coupled=0`, bundle core 52,781 / 18,006 B within 53,000 / 18,300. CI green on
+`54285862` and `5d843220`. The fold's artefact carries `rotationReconciled` and both new gates' rows.
+
+**Next.** Nothing about allocation. The five mechanisms this record has measured — floor, margin, content,
+allocation, ranking — have now all been measured against a control on this corpus, and the only quantity that moved
+was the one the bound was built to move. The next dollar goes to the axis the refutation list named two rounds ago
+and this round's evidence now supports: **the outcome counter (R129)**, whose evidence is within-phase (an item's
+own served trials) and therefore not exposed to a 15pp between-draw spread.

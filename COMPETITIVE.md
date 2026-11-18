@@ -7589,3 +7589,33 @@ That is the quantity no row on this board publishes for a serving rule — ACE, 
 run per configuration, and none of them has a serving cap to draw twice. It is also the reason this record declines
 to quote either draw as *the* number: a 40-task fold that moves 5pp between dispatches cannot resolve a 2.5pp
 effect, and saying so is more useful to a reader than a third decimal place.
+
+**AM.12 — the row is withdrawn, and the withdrawal is the comparison.** AM.10 put a serving cap on this board as "a
+mechanism no published row has" and reported the only positive movement on harm in the record. The third draw
+retires that reading:
+
+| draw | renders per servable item | harm share | delta |
+| --- | --- | --- | --- |
+| R143 `official` (unbounded) | 3.64 | 8.33% | +2.50pp |
+| R152 (cap 3) | 2.86 | 5.88% | +2.50pp |
+| **R152c (cap 4)** | **3.15** | **20.59%** | **−7.50pp** |
+
+At renders-per-item of 2.9 and 3.2 the harm share differs by 15 points. The quantity AM.10 offered as a
+reproducible mechanism — *renders per servable item* — does not determine the outcome at these store sizes, and the
+number AM.10 quoted as the record's only positive movement was a draw. **microglia's position on the board does not
+move: it was already last, and it is still last.**
+
+| system | what it publishes about serving | what this lane now knows |
+| --- | --- | --- |
+| **ALTK-Evolve** | `pass^4` 0.6754, `sup2`/`sup3` | — |
+| **ACE / SEMV / STRATA** | admission on outcome, no harm share | — |
+| **AskData** | BIRD 83.40 on 1,534 dev questions | — |
+| **microglia** | harm share, noise floor, four draws of one treatment, and a serving cap that provably acts | **the cap moves allocation and not accuracy**; the treatment arm's own spread (0.775–0.925) exceeds every resolution the design can buy at 40 tasks |
+
+**What this buys in the comparison, and it is not a rank.** Every row above reports one run per configuration, and
+the field's smallest published sample (BIRD dev, 1,534 questions) resolves ~1.5pp while τ² retail's per-split samples
+resolve 15–23pp. This record can now say, with four draws rather than an argument, that **a mechanism whose true
+effect is a few points is unmeasurable on the corpus the field reports `pass^4` on** — and that a serving rule
+designed to fix it moves the one quantity it controls without moving the score. No competitor publishes two draws of
+any arm, so none of them can say whether their 0.6754 is a level or a draw. That remains the only claim on this board
+that does not require beating 0.6754 to be true, and it is now better supported than when it was first written.

@@ -12163,3 +12163,101 @@ instrument, which is the only reason it is not a total loss.
 was wrong, every gate that ran passed, and the run is still wasted. The rule it contributes is that the dispatch
 input is part of the registration — the file commits to a treatment, and the input commits to a *comparison*, and
 only the second one decides whether a control is bought.
+
+### 34.197 A gate that passed the thing its own criterion forbids
+
+**Found by reading the artefact R152c wrote**, which is the only place it could be found:
+
+```
+V5-resolution          False (blocking)  minimum detectable 23.23pp against a 6.00pp target; claims -7.50pp …
+l4-effect-resolved     True  (advisory)  the memory costs accuracy: -7.50pp
+```
+
+Two rows, one pair, opposite readings — and the second row's own `criterion` string says
+
+> the pair resolves the effect it reports: `|delta| >= minimum detectable difference`, or no direction is claimed
+
+`|−7.50pp|` against a `23.23pp` resolution is exactly the case that sentence forbids, and the gate passed it. The
+predicate is not the criterion:
+
+```ts
+pass: input.registeredBand === undefined ? input.state !== 'UNRESOLVED' : inBand
+```
+
+`state` comes from `pairedVerdict`, and `HARM` is the **R45 cost bar** — *significantly negative, or below −5pp with
+a served pack* — which is a bar rather than a resolution. So a harm of any size above the cost bar passes a gate
+whose stated condition is a resolution test. `detectablePp` is used in the gate's *sentence* for the
+`UNRESOLVED` branch and never in its predicate.
+
+**Why it matters even though the gate is advisory.** The row is the record's answer to "may this pair be quoted as
+a finding". A `True` there, next to a red `V5`, tells a reader who trusts the first line that −7.50pp is a resolved
+harm. The run is red either way, so no decision changed — but the row certifies something it did not check, and this
+record has three entries about gates that said more than they checked.
+
+**The repair, one line plus a sentence.** The predicate becomes the criterion:
+
+```ts
+const resolves = input.detectablePp === undefined || Math.abs(input.deltaPp) >= input.detectablePp;
+pass: band ? inBand : input.state !== 'UNRESOLVED' && resolves
+```
+
+and the non-band branch gains a sentence for the case it used to hide: *"−7.50pp against a 23.23pp minimum
+detectable difference — a cost the revert rule acts on and a direction this pair cannot claim"*.
+
+**Why it is not done in this commit.** The predicate change rewrites a row of two committed pair artefacts
+(`poc-l4-pair-official.json` and `poc-l4-pair-swapped.json`, the latter currently `True` at −10.81pp against a
+13.24pp resolution, which the new rule flips). Regenerating committed evidence is a change of its own, with its own
+before/after table, and mixing it into a round whose subject is the rotation would leave a reader unable to tell
+which commit moved which number. It is therefore the whole of the next instrument round, whose scope is exactly:
+**the predicate, the sentence, the two regenerated artefacts, and a case per branch.**
+
+**The class.** Third instance of "the gate's text and the gate's code disagree", and the first where the text was
+the stricter of the two. §34.161's four failures were all silence; this one is a false green, which is worse for a
+reader and cheaper to fix — one boolean.
+
+### 34.198 The mechanism was a line through two confounded points
+
+**What was claimed.** §PROGRESS 178 and §TECH-DESIGN 17.163 stated a mechanism: *harm follows renders per servable
+item*. The evidence was two folds, same treatment, same day:
+
+| fold | servable items | renders per item | harm share |
+| --- | --- | --- | --- |
+| `official` | 11 | 3.6 | 8.33% |
+| `official-swapped` | 3 | **25.0** | 23.81% |
+
+Two points, one monotone line, and a slogan — *"a store that keeps fewer items does not become conservative, it
+applies each of them everywhere"* — that reads as an explanation. It is not an explanation; it is a line through
+two points that differ in **both** the quantity named (renders per item) and the quantity that produced it (how many
+items survived the floor). The two axes were perfectly confounded by construction, because the cap was not there
+yet: renders per item was a *consequence* of the store size, so no fold could hold one fixed while moving the other.
+
+**What separated them.** A serving cap. Three bounded draws, all at the same dose:
+
+| draw | servable | renders/item | harm share | `maxRenders` |
+| --- | --- | --- | --- | --- |
+| R152 (cap 3) | 14 | 2.86 | **5.88%** | 3 |
+| R152b (cap 4) | 13 | 3.08 | not measured | 4 |
+| R152c (cap 4) | 13 | 3.15 | **20.59%** | 4 |
+
+**At renders per item of 2.9 and 3.2 the harm share is 5.88% and 20.59%.** The independent variable moved by 10% and
+the dependent one by 15 points. The mechanism, as stated, is refuted: renders per item does not determine the harm
+share at these store sizes, and the quantity that does — which items the store drew — was never measured in R143
+because the draw *was* the confounded variable.
+
+**What survives, and it is not nothing.** The cap acts on exactly what it says it acts on: `maxRenders` equals the
+cap in all three bounded draws, the leader's renders fall from 12 to 3–4, every servable item is served, and no
+phase is starved. The instrument is sound and the *policy's* effect on accuracy is unmoved, which is a different
+statement from "the policy does not work" and a much more useful one: **allocation is under the experimenter's
+control now, and moving it does not move the outcome.**
+
+**The method failure, stated as a rule.** A mechanism inferred from two points is a line. Before a line becomes a
+claim in this record it needs a third point that holds one of the two axes fixed — and if the design cannot produce
+one without an instrument that does not exist yet, the honest first dispatch is the *instrument*, not the second
+fold. R152 was that instrument and it arrived after the claim rather than before it. The rule, written where the
+next registration will read it: **an explanation quoted from a scatter gets one point more than the number of axes
+it varies.**
+
+**What it cost.** Two dispatches at $0.37 to make the third point, one at $0.29 to learn that a dispatch input can
+skip the control (§34.196), and one published claim retracted (§PROGRESS 181). Cheaper than most of this record's
+method errors, and the retraction is the part that matters: the harm share of a four-draw treatment is
+5.88%, 20.59%, 8.33% and (unbounded, thin store) 23.81%, which supports no ordering at all.

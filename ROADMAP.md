@@ -7084,3 +7084,28 @@ servable item was 3.6 on R143's rich unbounded fold and **25.0** on its thin one
 fold resolves 15.66pp, this round spent $1.03 to learn that a dispatch input can silently skip the control, and the
 one number that would settle the mechanism — a poolable bounded fold at 114 pairs — is exactly the number no single
 dispatch can produce.
+
+## Where the flywheel stands, 2026-11-18 (R152c read: the bound acts, the harm does not follow, the policy is reverted)
+
+**The one thing that changed.** The third draw of the bounded arm came back at **0.775** against a control of 0.850 —
+**−7.50pp**, 7 broken against 4 repaired, and R45's cost bar fires: the serving policy is **withdrawn as a default**.
+The instrument passes everything it was built to pass (`l4-projection-complete`, `l4-rotation-reconciles`, a stated
+`rotation: 'fair-share'` in the pair), and the mechanism that motivated it is refuted by it (§AUDIT 34.198).
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | resolution (114 pairs) | MDE ≤ 11pp | done: 13.24pp, §PROGRESS 178 |
+| 2 | the travel budget | harm falls while repairs hold | **measured and reverted** (§PROGRESS 179, 180, 181): the cap acts on every draw (`max = cap`, 0 starved, all servable served) and harm reads 5.88%, —, **20.59%** at constant renders per item |
+| 3 | **the outcome counter (R129)** | within-phase evidence that an item repairs, immune to the between-draw spread | **head of the queue**: its denominator is an item's own served trials, so the 15pp store-draw variance that killed rows 2 and 3 does not enter it |
+| 4 | the gate whose text and code disagree | a predicate that is its criterion | **instrument round, $0**: §AUDIT 34.197, one boolean, its sentence, and two regenerated pair artefacts |
+| 5 | the lexical anchor (axis 3) | breaks fall while repairs hold | **defers to row 3**: it is a content axis with the same exposure to the draw, and the counter is cheaper to identify |
+| 6 | the serving default | — | **withdrawn**: nothing in `prereg/TEMPLATE.md` changes, and the switch stays as an instrument |
+| 7 | the published bar (0.575, ALTK 0.6754) | a comparable backbone | not reachable on this lane: `bar_backbone_matches = 0` |
+| 8 | BIRD dev | 6,600 paired questions ≈ 1pp | unchanged |
+
+**The honest summary, four draws in.** The treatment arm reads 0.900, 0.875, 0.925 and **0.775** across four
+dispatches at one treatment; the control reads 0.925, 0.850, 0.850. The spread of the arm that receives the
+treatment is **15 points**, and the best resolution 40 tasks buy is 15.66pp — so this lane's per-fold measurements
+of a 3pp mechanism are noise, and the record now says so with four points instead of one. The way forward is not a
+fifth policy: it is an estimator whose denominator is inside a single episode (row 3) or a pooled one at 114 pairs,
+and everything else is a draw.

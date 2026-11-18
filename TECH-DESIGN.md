@@ -10330,3 +10330,45 @@ can never prove a policy right, so a fold whose block went missing is unrecovera
 price — R152's position — while a fold whose block is present but wrong is caught for $0 by a gate that was always
 one file-read away. That is why the reconciliation ships as a gate rather than as a repair tool: the repair it
 could perform is exactly the one that was never needed.
+
+### 17.165 The third point: what a design owes a mechanism before the record may quote it
+
+§17.162 and §17.163 built a mechanism and then an instrument from it. R152c refuted the mechanism with the very
+instrument that was built to test it, and the shape of the error is worth stating as a design rule because it will
+recur: **the two folds that suggested the mechanism differed in both of its axes at once.**
+
+| fold | servable items | renders per item | harm |
+| --- | --- | --- | --- |
+| `official` | 11 | 3.6 | 8.33% |
+| `official-swapped` | 3 | 25.0 | 23.81% |
+
+Renders per item was a *consequence* of the floor's survival rate, not an independent variable: nothing in the lane
+could hold one fixed while moving the other, because the only way to change renders per item was to change the
+store. A line through two such points has one degree of freedom and the explanation attached to it is a story about
+which axis one believes.
+
+**What a mechanism claim costs, in dispatches.** One instrument that can separate the axes. Here it was a serving
+cap whose arithmetic comes from the store (`ceil(requests / servable)`), which makes renders-per-item a *decision*
+rather than a consequence — and the moment it existed, three draws at 2.86, 3.08 and 3.15 renders per item read
+5.88%, unmeasured and **20.59%** harm. The independent variable moved by 10%, the dependent one by 15 points, and the
+mechanism is gone.
+
+**The rule this leaves, phrased for the next registration.**
+
+> A mechanism inferred from *n* points that vary *k* axes needs *k + 1* points before it is quoted as a mechanism,
+> and if the design cannot produce the extra point without an instrument that does not exist yet, the instrument is
+> the next dispatch — not the second fold.
+
+**What the rule does not say.** It does not say the instrument was wasted. The cap is now the only quantity in this
+lane that an experimenter can set and that provably moves: `maxRenders` equals the cap in every bounded draw,
+supply is reached (13 of 13 servable served in two draws), nothing is starved, and the leader's renders fall from 12
+to 3–4. **Allocation is controlled and the outcome is unmoved** — which converts "does memory help" into a question
+about *content and selection*, with the serving policy exonerated rather than unknown. That is a stronger position
+than the one the mechanism claim left the record in, and it was bought by refuting the claim rather than by
+confirming it.
+
+**The design consequence for what ships.** `serveRotation` stays in the kernel as a serving instrument with a
+ledger, a report and a reconciliation gate, and it does **not** become a default: a policy whose benefit is
+unestablished and whose one adverse draw sits below the revert bar is reverted by R45's own rule, not shipped
+because its mechanism was elegant. The distinction between *instrument* and *policy* is the one this round had to
+draw, and it is the reason the code is unchanged while the guide's recommendation is withdrawn.
