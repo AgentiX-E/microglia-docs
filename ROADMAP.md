@@ -7002,3 +7002,31 @@ remains out of reach is the leaderboard, and the distance is now stated in the o
 at 57 pairs and 10.98pp at 114 is what this lane can resolve, and the field's gaps are smaller than that**. (The
 19.9pp this sentence used to quote is withdrawn — §AUDIT 34.192 — because it put an unpaired SD beside a paired
 estimator.)
+
+## Where the flywheel stands, 2026-11-18 (R143 pooled: the whole corpus, read once)
+
+**The one thing that changed.** Resolution was bought and delivered: two folds over the benchmark's own boundary
+give **114 independent task pairs**, and the pooled reading is **−6.14pp** [−14.91, +2.63] with a resolution of
+**13.24pp**. The measurement is not the headline though — the folds are. `official` reads **+2.50pp** on 11
+servable items over 40 renders, `official-swapped` reads **−10.81pp** on 3 servable items over 75 renders, and
+**they disagree in sign**. Same treatment, same model, same day; the difference is how far the surviving items
+travelled beyond their evidence.
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | **resolution** (114 pairs) | MDE ≤ 11pp | **done and read** (§PROGRESS 178): 13.24pp, −6.14pp, folds split ±. One fold was regenerated from its own arm files by the fixed guards (§AUDIT 34.191), the other ran on them |
+| 2 | **a travel budget on serving** | harm falls while repairs hold, on the store and corpus already measured | **head of the queue, and it is a new instrument**: harm tracked renders-per-servable-item (3.6 → 25.0 gave 8.33% → 23.81%), so bound the renders one item may take rather than the number of items. Measurable with `serveYield` per record and `serveTasks` per task, both committed |
+| 3 | content (axis 1) | a failures-only store that breaks fewer trials | **measured and refuted** (§PROGRESS 176): 9 breaks against 6, harm 17.65%, because a repair written for one task is served to every task that resembles it — the same mechanism row 2 now prices |
+| 4 | usage (axis 2) | a margin that separates a repair from a break | **refuted twice more**: AUC 0.625 (p 0.305) on R142, **0.333** (p 0.771) on the official fold, **0.495** with the null not even walkable on the swapped fold. Three independent readings, no separation |
+| 5 | the lexical anchor (axis 3) | breaks fall while repairs hold | **registrable, still second**: it targets the same failure mode as row 2 with content rather than a cap, and a cap is now the cheaper test of the same hypothesis |
+| 6 | the published bar (0.575, ALTK 0.6754) | a comparable backbone | **not reachable on this lane**: `bar_backbone_matches = 0`, control 0.8684 pooled |
+| 7 | BIRD dev | 6,600 paired questions ≈1pp | unchanged — the lane whose resolution the record can use |
+
+**The honest summary of the gap to SOTA.** Three mechanisms have now been measured against a control on two
+different populations and none of them helps; the best reading in the record is a **negative** one over the whole
+corpus, and the reason is now a quantity rather than an adjective: **an item served 25 times per unit of evidence
+breaks five trials for every one it repairs, and the same item served 3.6 times breaks 0.27.** That is a claim no
+competitor publishes, and it is also an admission: this lane's memory is currently worse than no memory, by a
+margin its own design cannot yet resolve to zero. What it can resolve is 13.24pp at 114 pairs, 15.55pp at 57 and
+18.53pp at 40 — so the next dollar goes to a serving rule whose effect is expected to be larger than that, and not
+to another store size.

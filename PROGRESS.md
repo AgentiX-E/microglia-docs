@@ -22060,3 +22060,98 @@ Round cost so far: **$0.3840** for `official`; the `swapped` fold was dispatched
 **Next.** Pool the two folds with `pnpm eval:cross-fit` — 114 independent task pairs at 10.98pp — and read the
 per-fold deltas before the pooled one, because the swapped fold carries a thinner store and the registration
 says the pool is 65% that store.
+
+## 178 — R143 pooled: 114 pairs, −6.14pp, and two folds pointing opposite ways
+
+**Dispatched** 2026-11-18 15:12 UTC, run `44332852585`, on `974496cc` — the first paid run on the fixed guards
+(§AUDIT 34.191) — `taskSplit: official-swapped`, 40 learn / 74 held out.
+
+| reading | value |
+| --- | --- |
+| learn | 40 corrections from 40 task(s) → 80 candidates → **40 created**, 0 failed |
+| consolidation | 40 considered, 780 pairs, 3 groups, 5 merged, 35 retained; refused 5 linkage |
+| support floor 2 | **32 of 40 retired**, **3 servable** |
+| pack | 75 of 75 served, mean 1.0 item / 778 chars, margins 75 rivaled, p50 0.1227 |
+| memory arm | **pass^4 0.7432** (55/74) |
+| reference arm | **pass^4 0.8514** (63/74) |
+| paired | **−10.81pp** [−22.97, +1.35], p = 0.1338, 15 lost / 7 gained |
+| degradation | 15 of 63 (23.81%) broken, 7 repaired |
+| margin sweep | no clean rung; AUC **0.495**, exact null **not walked** (170,544 labellings > cap); best net −1.35pp at 0.25 |
+| serve support | 3 of 3 servable served; support ≥ 2: 3 items, **15 broke**, 7 kept, net −8 |
+| serve yield | 74 render(s) over **3 record(s)**; 11 landed where a repair was possible (14.86%); 7 repaired, 15 broke, 52 inert (70.27%) |
+| verdict | **HARM**; gates `V5-resolution`, `V16-transfer-resolvable` and `l4-paired` fail, so the run is recorded as a failure |
+| cost | **$0.4927** — learn 0.0962, memory 0.1948, reference 0.2017 (registered ~$0.30) |
+
+### The pool, which is what the two folds were bought for
+
+Both artefacts now state their own halves — the swapped run on the fixed guards, the official run regenerated
+from its two arm files by the same code — so the pool reads them without a single derived field:
+
+```
+[cross-fit] pooled n=114 memory=0.8070 control=0.8684 delta=-6.14pp [-14.91, 2.63] p=0.2649 lost=18 gained=11 mde80=13.24pp
+[cross-fit] folds: poc-l4-pair-official +2.50pp (n=40), poc-l4-pair-swapped -10.81pp (n=74)
+[cross-fit] tiles 114 of 114 task(s); folds disagree in sign
+```
+
+**Every task is answered once, by a store that never saw it, and the memory costs 6.14pp.** The interval is
+[−14.91, +2.63] and the design resolves 13.24pp at 114 pairs — the resolution R143 was built to buy, and it is
+still not enough to separate this effect from zero. What the pool adds that neither fold could is the flag on the
+third line: **the two folds disagree in sign**, so the pooled point estimate is an average of a gain and a loss
+rather than one finding.
+
+### The supply curve the registration predicted, and got
+
+The swapped registration said, before the number: *"swapped ≤ 0 while official > 0 → the supply curve: the same
+treatment at two store sizes, which prices corroboration per correction for the first time."* That is the branch
+the data took, and the two folds are two stores:
+
+| fold | items created | servable after the floor | renders | renders per servable item | harm share | delta |
+| --- | --- | --- | --- | --- | --- | --- |
+| `official` (74 learn) | 77 | **11** | 40 | 3.6 | 8.33% | **+2.50pp** |
+| `official-swapped` (40 learn) | 40 | **3** | 75 | **25.0** | 23.81% | **−10.81pp** |
+
+**Three servable items circulated 75 times.** At 25 renders per item the harm share is 23.81% against 8.33% at 3.6
+renders per item: the mechanism is not "small stores are bad", it is **an item served far outside the evidence
+that created it**. The floor of two corroborating tasks retained 3 of 40 items on the thin half — and each of
+those three then appeared in almost every request, because the recall path had nothing else to offer.
+
+### What the round bought, stated against its registration
+
+| registered prediction (`official-swapped`) | outcome |
+| --- | --- |
+| `retired` 22–32, `retained` 5–10 | **retired 32**, retained 8 of which 3 servable — the counts hold |
+| every served item carries support ≥ 2 | holds; no singleton served, and the floor's own criterion is met |
+| harm share **below 8%** | **falsified**: 23.81%, three times the bar and above R139's 15.63% |
+| delta **+4pp to +9pp** | **falsified in sign**: −10.81pp |
+| `serveYield.opportunity` a smaller share than the official fold's 17.5% | **falsified**: 14.86% against the official fold's 10.00% — three records carried every render, so a larger share of them landed where a repair was possible |
+| no fold evaluates a task it learned from | holds; the pool's leak check and the tiling census both pass |
+
+Three of six predictions falsified, and all three are the same fact: **the floor does not survive a thin
+store.** The registration's own refutation list said a harm share above 15.63% means "the floor does not survive a
+thin store, and its claim is bounded by the supply rather than by corroboration as such". That is the finding.
+
+### Cost
+
+| item | cost |
+| --- | --- |
+| `official` fold | $0.3840 |
+| `official-swapped` fold | $0.4927 |
+| delta test–retest (R141 vs `official`) | $0.00 — two artefacts already paid for |
+| composition, pool, power audit, CI gates | $0.00 |
+| **round total** | **$0.8767** |
+
+The swapped fold came in 64% above its registered $0.30: the estimate priced 114 episodes per arm but the
+held-out half is billed per task, and 74 held-out tasks cost more than 40 — the same class of error as §176's
+missing learn phase, in the other direction.
+
+### Acceptance
+
+Code: `fold-records.ts` at 100/100/100/100 (15 unit cases + 5 command cases), `cross-fit.ts` at 100/100/100/100,
+`l4-pair-transfer` 8 cases, `cross-fit-bin` 10 cases. Repository **5,735 tests over 278 files**, coverage
+**100 / 99.92 / 100 / 100**, `audit:repo` ok, coupling **246 modules** with `core coupled=0`. Two new CI gates
+recompose the folds and recompute the pool on every push, each with its own assertions beside the byte
+comparison.
+
+**Next.** The mechanism is now identified well enough to be attacked: harm scales with renders-per-servable-item,
+so the next dollar goes to a serving rule that bounds how far one item may travel beyond its evidence — not to a
+fourth store size.

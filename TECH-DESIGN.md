@@ -10123,3 +10123,45 @@ noise the protocol models and the reason a single trial per task resolves ~15pp.
 **Consequence.** R143's cross-fit is held to **10.98pp** at 114 pairs. 15.55pp at 57 pairs stands. 19.9pp is
 withdrawn from §17.159's table, from PROGRESS 176, from COMPETITIVE AM.8, from the roadmap's distance figure,
 and from the user guide's worked example.
+
+### 17.162 The pooled reading, and the quantity that explains both folds
+
+The cross-fit R143 was registered for now exists, over 114 independent task pairs, and its reading is a negative
+one that the per-fold rows explain better than the pooled number does:
+
+| reading | value |
+| --- | --- |
+| pooled delta | **−6.14pp** [−14.91, +2.63], p = 0.2649 |
+| resolution at 114 pairs | **13.24pp** |
+| discordant pairs | 18 lost, 11 gained |
+| tiling | 114 of 114; no fold evaluates a task it learned from |
+| folds | `official` **+2.50pp** (n = 40), `swapped` **−10.81pp** (n = 74) — **disagree in sign** |
+
+**The pooled number is an average of two findings.** That is the case §17.159 and the registration both
+anticipated, and the reason the tool carries `agreeInSign` rather than only a point estimate: −6.14pp is 65% the
+thin store's fold by construction, and a reader told only the mean would conclude the memory costs six points when
+what happened is that it gained on one half of the corpus and lost on the other.
+
+**What separates the two halves is not the corpus, it is the density of what survived the floor.**
+
+| fold | items created | servable | renders | renders per servable item | harm share | repairs | delta |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `official` (74 learn) | 77 | 11 | 40 | 3.6 | 8.33% | 4 | +2.50pp |
+| `official-swapped` (40 learn) | 40 | 3 | 75 | **25.0** | 23.81% | 7 | −10.81pp |
+
+Three servable items, 74 renders: the recall path found something to serve in every single request because it had
+three candidates for the whole corpus, and each of them was correlated with a single task's failure. The mechanism
+the whole campaign has been circling is visible in that column — **the harm tracks how far an item travels beyond
+the evidence that created it, not how many items the store holds.** A store of 3 items hurts more than a store of
+11 because each of the 3 is applied 25 times; the floor's job is supposed to be retiring items whose evidence is
+thin, and on the thin half it retired 32 of 40 and still left 3 that covered everything.
+
+**What this prices.** Corroboration per correction, for the first time: the official half's 11 servable items over
+40 trials produced 4 repairs and 3 breaks (net +1 task); the swapped half's 3 items over 74 trials produced 7
+repairs and 15 breaks (net −8 tasks). Per rendered break, the thin store costs 5 breaks per servable item against
+0.27 — a factor of 18, on the same treatment, the same model and the same day.
+
+**What it does not license.** A serving rule tuned on this comparison. Two points do not make a curve, and the two
+folds differ in corpus half as well as in supply. What it does license is the *shape* of the next registration:
+bound the renders one item may take, not the number of items the store may hold — a per-item travel budget, which
+is measurable with the instruments this round already committed (`serveYield` per record, `serveTasks` per task).

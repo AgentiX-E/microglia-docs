@@ -7510,7 +7510,7 @@ both draws sampled, is **19.9pp** rather than the published 15.55pp.
 | **ALTK-Evolve** | τ² retail `pass^4` **0.6754** (`sup2`) | single run, no test–retest published | not comparable: `bar_backbone_matches = 0` — this lane's control is 0.8947 |
 | **AskData** | BIRD test **83.40**, dev 78.49 | 1,534 dev questions → ±1.5pp | different lane; the only one where a 2pp claim is resolvable |
 | **ACE / SEMV / STRATA** | no harm share, no noise floor | — | this lane is alone on both |
-| **microglia** | control 0.8947 / memory 0.807; harm 17.65%; margin AUC 0.625, exact p 0.305; **noise floor 7.02pp** | **15.55pp** at 57 pairs, 10.98pp at 114 (19.9pp withdrawn, §AUDIT 34.192) | first at measuring why memory hurts, and last at being able to claim an effect of the size the field trades in |
+| **microglia** | tau2 retail **whole-corpus cross-fit**: control 0.8684 / memory 0.8070, **−6.14pp** over 114 task pairs; harm 23.81% on the thin half; margin AUC 0.495 | **13.24pp** at 114 pairs, 15.55pp at 57, 18.53pp at 40 (19.9pp withdrawn, §AUDIT 34.192) | the only row here with a whole-corpus paired reading and a harm share; still behind every published cell, and now able to say by how much |
 
 **What that means for the SOTA claim, stated plainly.** The field's published cells are single runs of systems
 on large corpora; none publishes a test–retest, and none publishes a harm share. This record now has both, and
@@ -7520,3 +7520,23 @@ claim as much as on ours — and it is the one contribution that does not requir
 
 The next dollar therefore goes to resolution (the R143 cross-fit, 114 task pairs, 10.98pp), not to another
 mechanism. A third mechanism at 20pp would be another sentence nobody can act on.
+
+**AM.9 — the whole-corpus reading exists, and the board's unit changes with it.** R143's cross-fit pools the two
+halves of τ² retail into **114 independent task pairs**, each answered once by a store that never saw it:
+
+| reading | value | what it is comparable to |
+| --- | --- | --- |
+| pooled delta | **−6.14pp** [−14.91, +2.63], p = 0.2649 | a published `pass^4` cell's *difference*, not its level |
+| pooled control | **0.8684** | ALTK-Evolve's 0.6754 is not comparable: `bar_backbone_matches = 0`, different scaffold |
+| pooled memory | **0.8070** | — |
+| resolution | **13.24pp** | the field's largest per-split samples resolve ~1.5pp; this lane's smallest is 0.82pp on 7,000 questions |
+| folds | +2.50pp (n=40) / −10.81pp (n=74), **disagree in sign** | no competitor publishes two folds at all |
+
+Two things change on this board. First, the **harm share** is no longer a single number: it is 8.33% on the fold
+whose store kept 11 servable items and **23.81%** on the fold whose store kept 3, on the same treatment and the
+same day. Second, the **mechanism** is now stated in a quantity a competitor could reproduce: renders per servable
+item, 3.6 against 25.0. A store that keeps fewer, thinner items does not become conservative — it applies each of
+them everywhere, and the harm follows the renders, not the count.
+
+What remains behind the field is unchanged and now measured: at 114 pairs this lane resolves 13.24pp, and the
+median published τ² cell is a single run whose own sampling interval is never printed.
