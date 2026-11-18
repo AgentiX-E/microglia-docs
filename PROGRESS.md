@@ -22263,3 +22263,100 @@ states the policy it is the default of. This fold's cannot. So the next $0.37 is
 replication**, declared before the draw: it produces a complete artefact, and it gives the lane the one reading it
 has never had for a *bounded* arm — a second draw at the same treatment, against the 7.5pp spread R141/R143
 measured for the unbounded one.
+
+## 180 — R152b: the artefact can now say it, and the dispatch forgot the control
+
+**Dispatched** 2026-11-18 19:46 UTC, run `44383776557`, on `915351b2` — the commit that declared the field on
+`Tau2Raw`, `l4_arms: memory`, `$0.2929`.
+
+| reading | value |
+| --- | --- |
+| learn | 73 corrections from 74 task(s) → 143 candidates → **83 created**, 0 failed |
+| consolidation | 83 considered, 3,403 pairs, 13 groups, 18 merged, 65 retained; refused 1 evidence / 25 linkage |
+| support floor 2 | **52 of 83 retired**, **13 servable** |
+| travel budget | **cap 4** from 40 request(s) over 13 servable item(s); `max 4`, 40 renders over **12** items, 8 exhausted, **0 starved** |
+| pack | 40 of 40 served, mean 1.0 item / 751 chars; 40 rivaled, p50 0.1052 |
+| served | top1 **10.0%**, top5 50.0%, effective **11.34** items |
+| memory arm | **pass^4 0.925** (37/40) |
+| reference arm | **not bought** — `l4_arms: memory` |
+| delta, degradation, sweep, serve split | **none exist**: no pair artefact was written |
+| cost | **$0.2929** — learn 0.1974, memory 0.0955 |
+
+### The instrument, which is what this dispatch was for
+
+The arm file carries the block and the projection is complete:
+
+```
+block: {"mode":"fair-share","cap":4,"requests":40,"servable":13,"distinct":12,"renders":40,
+        "exhausted":[8 ids],"starved":0,"maxRenders":4}
+unprojected: []
+checked:  requests, renders, distinct, maxRenders, exhausted, starved (bounded above)
+unchecked: mode, cap, servable
+verdict:  agrees
+```
+
+`l4-rotation-reconciles` did not exist when this run was dispatched and the check above was run against the
+downloaded arm with the shipped `reconcileServeRotation`; the next fold is the first the gate grades. What it
+establishes is narrow and was the whole point: **a field emitted through a spread is now declared, projected,
+carried and checkable against the ledger filed beside it.**
+
+### Against the six registered predictions
+
+| registered prediction | outcome |
+| --- | --- |
+| block present and internally consistent (`requests = recall.requests`, `renders = requests`, `maxRenders ≤ cap`) | **holds**: every one, and the reconciliation agrees on all six reachable fields |
+| `cap` 3–5, `starved` 0 | **holds**: cap 4 from 13 servable, 0 starved, 40 of 40 served |
+| `pass^4` in 0.85–0.975 | **holds**: 0.925 |
+| the delta lands within ±7.5pp of +2.50pp | **not measurable** — no control arm was bought |
+| `breaks` ≤ 3 and `repairs` ≥ 2 | **not measurable**, same reason |
+| `serveYield.opportunity` in 10–20% of renders | **not measurable**: the census is a pair reading |
+
+Two answered, four unanswerable, and the four are the half of the registration that mattered for the *fold*. The
+round's third goal — a third point on the arm's distribution — was met: the bounded arm now reads **0.875** and
+**0.925** on two draws, 5pp apart, both served in full, both reaching their cap, neither starving.
+
+### Why four predictions were unanswerable, and why the job was green anyway
+
+`sota.yml:1839` runs the pair step only when `l4_arms` is `both`, `scaffold` or empty. The dispatch passed
+`memory`, so the workflow did exactly what it says: it ran the treatment, skipped the pair, and finished
+**success** — no `l4-pair` lines, no gates, no artefact. A green job that measures nothing is the most expensive
+shape a run can have, because a red one at least says what is missing.
+
+The guard is one flag. `dispatch.py` now refuses `--arms memory|reference` unless `--single-arm` is passed and
+prints why, in the operator's own tool rather than in the workflow, because the workflow's behaviour is correct:
+a single-arm dispatch is a legitimate experiment for a baseline. The registration is the thing that should have
+said so, so `R152c` was written with the fold in its title and both arms in its dispatch.
+
+### The gate this window added
+
+`8e4b15aa` adds `l4-rotation-reconciles` and the reader behind it (§TECH-DESIGN 17.164). It exists because of what
+R152's block would have said had the projection carried it: `requests: 0`, `renders: 0`, `maxRenders: 0`, next to a
+pack ledger holding forty requests in the same file. The ledger was there and unread.
+
+The asymmetry it encodes is the useful part: **a ledger can prove a count wrong and can never prove a policy
+right.** `mode` is unreachable from any ledger, which is exactly why R152's fold cannot be repaired at $0 — and
+why the reconciliation is a gate rather than a repair tool. The repair it could perform is the one that was never
+needed.
+
+### Cost
+
+| item | cost |
+| --- | --- |
+| learn phase (74 tasks, 1,247 calls) | $0.1974 |
+| memory arm (40 tasks, 675 calls) | $0.0955 |
+| readback, reconciliation against the downloaded arm, gates | $0.00 |
+| **round total** | **$0.2929** |
+
+All of it bought an arm without its control. Recorded rather than absorbed: the round's cost against its
+registration is $0.2929 wasted and $0.3717 still owed.
+
+### Acceptance
+
+`serve-rotation.ts` 100/100/100/100 (28 unit cases), `pair-gates.ts` 100/100/100/100 (17 cases),
+`tau2-instrument` and `tau2-driver` unchanged in coverage. Repository **5,791 tests over 281 files**, coverage
+**100 / 99.92 / 100 / 100**, `audit:repo` ok, coupling **247 modules** with `core coupled=0`, bundle core 52,781 /
+18,006 B within 53,000 / 18,300. CI green on `915351b2`, `8e4b15aa` and `54285862`.
+
+**Next.** `R152c` is dispatched with both arms — the third draw of the treatment, the first fold
+`l4-rotation-reconciles` grades, and the pair artefact without which none of R152's four unanswered predictions can
+be read.

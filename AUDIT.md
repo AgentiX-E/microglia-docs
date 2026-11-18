@@ -12110,3 +12110,56 @@ two, R152's one) and fifth field-level one with `dropped` and `pin` inside `lear
 emitted through a spread, and every one was found after a run. What is new here is that the runtime backstop from
 the previous instance *did* fire — the guard is not the missing piece any more, the declaration is, and the two
 are not substitutes: a guard that fires after the dispatch turns a $0 defect into a paid one.
+
+### 34.196 A green job that measured nothing, and the flag that made it green
+
+**The run.** R152b was registered to produce two things: a complete artefact for the bounded arm (R152's fold had
+lost the field, §34.195) and a second draw of the same treatment against its own control. It produced the first and
+not the second, and its job finished **success**:
+
+```
+[pass4] pass4=0.925 ... arm=1
+(no [l4-pair] lines, no pair artefact, no gates)
+```
+
+**The mechanism, in one workflow line.** `sota.yml:1839` gates the pair step on `l4_arms`:
+
+```yaml
+if: always() && (github.event.inputs.l4_arms == 'both' || ... == 'scaffold' || ... == '')
+```
+
+The dispatch passed `l4_arms: memory`, which is a legitimate value — it buys the treatment arm and nothing else, and
+that is the right shape for a baseline or a single-arm probe. For a fold it produces a run that **cannot** have a
+delta, and nothing in the run says so: the job is green, the step summary lists no missing artefact, and the
+registration's own prediction rows about `breaks`, `repairs` and the delta were simply never graded. Four of six
+predictions unanswerable, and the file that would have said so does not exist.
+
+**Why this is worse than a red run.** A red job names its failure in one line (§34.195 is exactly that) and the next
+dispatch is the repair. A green job with no pair looks like a fold that passed: it is the only failure shape in this
+record whose *symptom is the absence of a symptom*. The $0.2929 it cost is the least of it — the run also consumed
+a draw of the treatment, and three draws of one treatment is one more than an honest spread needs.
+
+**The repair, at the layer that can see both facts.** The workflow is right and the registration is right: only the
+dispatch input was wrong, and the dispatch input is the one thing the workflow does not read. So the guard goes in
+the operator's dispatcher rather than in the pipeline:
+
+```
+$ dispatch.py --prereg R152c-the-paired-fold --arms memory
+--arms memory buys one arm: no pair artefact, no pair gates and no delta.
+Pass --single-arm if that is the experiment.
+```
+
+A flag rather than a refusal, because a single-arm dispatch is the correct call for a baseline, and the guard's job
+is to make the operator say which experiment they are buying. That is the same principle as the doc's own
+`l4-effect-resolved`: state the claim, then check the number against it.
+
+**What the round still bought.** The instrument goal was met in full: the block is present, `unprojected` is empty,
+and the shipped `reconcileServeRotation` agrees with the file's own pack ledger on all six reachable fields while
+naming the three it cannot reach. And the bounded arm now has two draws — **0.875** and **0.925**, 5pp apart, both
+served in full, both reaching their cap, neither starving. A green job that measured nothing still measured the
+instrument, which is the only reason it is not a total loss.
+
+**The class.** This is the first entry in this record whose defect is *operational* rather than mechanical: no code
+was wrong, every gate that ran passed, and the run is still wasted. The rule it contributes is that the dispatch
+input is part of the registration — the file commits to a treatment, and the input commits to a *comparison*, and
+only the second one decides whether a control is bought.

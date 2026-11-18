@@ -7570,3 +7570,22 @@ record and it separates two folds of one treatment that disagreed in sign (§AM.
 largest published cell is 0.6754 on a different backbone, this lane's control is 0.8684, and `bar_backbone_matches
 = 0` keeps them off one scale. What moves is the explanation — and an explanation a competitor can falsify is
 worth more here than a point estimate this sample cannot resolve.
+
+**AM.11 — two draws of the bounded arm, and the field's silence on the only quantity that separates them.** A second
+dispatch of the same treatment (§PROGRESS 180) drew a different store and read a different level:
+
+| reading | draw 1 (run `44363599721`) | draw 2 (run `44383776557`) |
+| --- | --- | --- |
+| servable after the floor | 14 | 13 |
+| cap resolved | 3 | **4** |
+| renders the leader took | 3 | 4 (= cap) |
+| served / starved | 40 of 40 / 0 | 40 of 40 / 0 |
+| items reached | 14 | 12 |
+| `pass^4` | 0.875 | **0.925** |
+| the artefact states the policy | no (projection defect) | **yes, and it reconciles** |
+
+**5pp between two draws of one treatment**, with the cap tracking the draw exactly as its arithmetic says it must.
+That is the quantity no row on this board publishes for a serving rule — ACE, SEMV, STRATA and ALTK all report one
+run per configuration, and none of them has a serving cap to draw twice. It is also the reason this record declines
+to quote either draw as *the* number: a 40-task fold that moves 5pp between dispatches cannot resolve a 2.5pp
+effect, and saying so is more useful to a reader than a third decimal place.

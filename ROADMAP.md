@@ -7058,3 +7058,29 @@ stands between the mechanism and a claim is resolution, not mechanism: 40 tasks 
 delivers 2.50pp of *net accuracy* while removing a third of its harm — the two are not the same quantity, and the
 record's own decision rule now says to spend the next dollar making the artefact complete rather than chasing a
 point estimate it cannot resolve.
+
+## Where the flywheel stands, 2026-11-18 (R152b read: the instrument is whole, the fold is not)
+
+**The one thing that changed.** The artefact can now state its own serving policy and be audited against itself:
+R152b's block reconciles with the pack ledger filed beside it on all six reachable fields, `unprojected` is empty,
+and `l4-rotation-reconciles` grades the next fold. What the dispatch did **not** buy is a control: `l4_arms: memory`
+skips the pair step (`sota.yml:1839`), so the job went green having measured no delta (§AUDIT 34.196). The bounded
+arm has two draws — **0.875** and **0.925** — and one of them has an artefact that can be pooled.
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | resolution (114 pairs) | MDE ≤ 11pp | done: 13.24pp, §PROGRESS 178 |
+| 2 | the travel budget | harm falls while repairs hold | **measured, three times** (§PROGRESS 179, 180): cap 3 and cap 4 on two stores, `max = cap` both times, 0 starved, 40 of 40 served |
+| 3 | **R152c: the paired fold** | a fold artefact, and `l4-rotation-reconciles` green | **dispatched 20:52 UTC, run `44395483632`, both arms**: the first fold the reconciliation gate grades, and the pair without which four of R152b's six predictions cannot be read |
+| 4 | the serving default | a fold that runs the bound without being told to | **after row 3**, and conditional on it: `serveRotation: fair-share` in `prereg/TEMPLATE.md`, with the lexical anchor registered on top |
+| 5 | the lexical anchor (axis 3) | breaks fall while repairs hold | **second**, and now measurable on top of a bounded default rather than beside it |
+| 6 | the outcome counter (R129) | within-phase evidence that an item repairs | not triggered: its trigger was `breaks ≥ 5` and the two draws read 2 and unknown |
+| 7 | the published bar (0.575, ALTK 0.6754) | a comparable backbone | not reachable on this lane: `bar_backbone_matches = 0` |
+| 8 | BIRD dev | 6,600 paired questions ≈ 1pp | unchanged |
+
+**What the lane has learned to price, in two rounds.** The mechanism is no longer the open question: renders per
+servable item was 3.6 on R143's rich unbounded fold and **25.0** on its thin one, harm followed it from 8.33% to
+23.81%, and the two bounded draws sit at **2.86** and **3.08** with `max = cap` and nothing starved. What is open is **resolution and instrument cost**: a 40-task
+fold resolves 15.66pp, this round spent $1.03 to learn that a dispatch input can silently skip the control, and the
+one number that would settle the mechanism — a poolable bounded fold at 114 pairs — is exactly the number no single
+dispatch can produce.
