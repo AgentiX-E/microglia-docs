@@ -10038,6 +10038,12 @@ flip share 0.175            McNemar exact p 0.344
 | published MDE80 | **15.55pp** | `2.802 × 5.55` |
 | MDE80 with both draws sampled | **19.9pp** | `2.802 × 7.1` |
 
+> **Withdrawn in §17.161.** The last two rows are wrong. `√(0.175 × 0.825 / 57)` uses the *flip share* as if it
+> were the outcome proportion, and `√2` is then applied to a quantity that is already a difference. The
+> independent-draw SD is `√((p₁(1−p₁)+p₂(1−p₂))/57)` = **6.47pp** against a 7.02pp observation — 1.08 of the SD,
+> which is sampling noise. The paired SE the artefact prints (5.36pp) is the variance of the design that
+> produced the number; it is not too narrow.
+
 The published figure is not wrong; it is the MDE of a *conditional* question. The unconditional one is 28%
 wider, and the difference is the reason a −3.51pp delta and a +7.02pp test–retest are the same number in
 disguise.
@@ -10088,3 +10094,32 @@ cannot run against a boundary nobody recorded.
 two arm files are in the run's evidence, and the join is re-run locally with the fixed code. The fold that was
 in flight during the fix is read that way, and its artefact is committed under
 `eval/results/folds/` so the cross-fit reads a file a reader can regenerate.
+
+### 17.161 Which variance belongs to which design, and the retraction of the 19.9pp bound
+
+§17.159 widened every MDE in this record by 28% on the strength of a test–retest. The widening was wrong, and
+the error is instructive enough to keep:
+
+| quantity | value | is it the variance of the estimator? |
+| --- | --- | --- |
+| disagreement between two independent draws of one arm | `p₁(1−p₂)+(1−p₁)p₂` = 0.2438 | no — this is the **unpaired** sampling frame |
+| observed disagreement between the two control arms | 0.1754 | below the independence expectation |
+| SD of an unpaired difference of two rates | 6.47pp | no |
+| McNemar SE of the paired difference | 5.36pp | **yes** — this is what `comparePaired` reports |
+
+`comparePaired` estimates the variance of the paired difference from the discordant pairs inside one dispatch.
+That estimate already contains the control arm's noise; what it does not contain — and should not — is the
+variance of drawing a whole new pair of arms. The test–retest measured exactly the latter, compared it with the
+former, and concluded the former was too small. It is not: the two differ by the within-task correlation, and
+both the McNemar ratio (`1 − (5.36/6.47)² = 0.31`) and the flip share (`1 − 0.1754/0.2438 = 0.28`) estimate that
+correlation at about 0.3.
+
+**The rule this leaves.** A variance has to be estimated from the design that produced the number it is quoted
+beside. Pairing is a claim that the same task carries the same difficulty for both arms, and a test–retest of
+one arm measures the stability of the *task*, not the noise of the *pair*. The useful residue of the exercise is
+the stability figure itself: 17.5% of 57 tasks flip between two dispatches of one arm, which is the binomial
+noise the protocol models and the reason a single trial per task resolves ~15pp.
+
+**Consequence.** R143's cross-fit is held to **10.98pp** at 114 pairs. 15.55pp at 57 pairs stands. 19.9pp is
+withdrawn from §17.159's table, from PROGRESS 176, from COMPETITIVE AM.8, from the roadmap's distance figure,
+and from the user guide's worked example.

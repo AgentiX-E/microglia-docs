@@ -7499,12 +7499,18 @@ trials against 6 the control failed).
 tasks, agree on 82.5% and flip 17.5% — the arm moves **7.02pp** on its own. The lane's MDE, recomputed with
 both draws sampled, is **19.9pp** rather than the published 15.55pp.
 
+> **Withdrawn in §AUDIT 34.192.** The recomputation applied an *unpaired* two-sample SD to a *paired* estimator
+> and derived that SD from the flip share rather than from the outcome proportion. Two independent draws at the
+> observed rates (0.8246, 0.8947) would disagree on 24.4% of tasks; they disagreed on 17.5%, which is *less*
+> variation than independence predicts. The lane's paired MDE is **15.55pp at 57 pairs and 10.98pp at 114**, and
+> the reproducibility figure that survives is the 17.5% flip share itself.
+
 | system | published cell | what it can resolve | microglia's position |
 | --- | --- | --- | --- |
 | **ALTK-Evolve** | τ² retail `pass^4` **0.6754** (`sup2`) | single run, no test–retest published | not comparable: `bar_backbone_matches = 0` — this lane's control is 0.8947 |
 | **AskData** | BIRD test **83.40**, dev 78.49 | 1,534 dev questions → ±1.5pp | different lane; the only one where a 2pp claim is resolvable |
 | **ACE / SEMV / STRATA** | no harm share, no noise floor | — | this lane is alone on both |
-| **microglia** | control 0.8947 / memory 0.807; harm 17.65%; margin AUC 0.625, exact p 0.305; **noise floor 7.02pp** | **19.9pp** at one trial per task, 10.98pp at 114 pairs | first at measuring why memory hurts, and last at being able to claim an effect of the size the field trades in |
+| **microglia** | control 0.8947 / memory 0.807; harm 17.65%; margin AUC 0.625, exact p 0.305; **noise floor 7.02pp** | **15.55pp** at 57 pairs, 10.98pp at 114 (19.9pp withdrawn, §AUDIT 34.192) | first at measuring why memory hurts, and last at being able to claim an effect of the size the field trades in |
 
 **What that means for the SOTA claim, stated plainly.** The field's published cells are single runs of systems
 on large corpora; none publishes a test–retest, and none publishes a harm share. This record now has both, and

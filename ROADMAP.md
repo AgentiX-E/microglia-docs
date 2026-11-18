@@ -6998,5 +6998,7 @@ negative; the store as built does not help, and the record can now say *why* wit
 corrections to tasks that resemble them, and the control is already strong enough (89%) that the population of
 trials it can break is eight times the population it can repair. What remains first-in-field is the measurement
 itself — a harm share, a noise floor, a margin with an exact null — none of which any competitor publishes. What
-remains out of reach is the leaderboard, and the distance is now stated in the only unit that matters: **19.9pp
-is what this lane can resolve, and the field's gaps are smaller than that**.
+remains out of reach is the leaderboard, and the distance is now stated in the only unit that matters: **15.55pp
+at 57 pairs and 10.98pp at 114 is what this lane can resolve, and the field's gaps are smaller than that**. (The
+19.9pp this sentence used to quote is withdrawn — §AUDIT 34.192 — because it put an unpaired SD beside a paired
+estimator.)

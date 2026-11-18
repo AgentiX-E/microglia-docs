@@ -11891,3 +11891,56 @@ artefact now states `foldSplit` and `treatment`.
 **What it costs and what it saved.** $0.00 — no dispatch. It was found while R143's official fold was in
 flight, whose pair artefact is written by the **old** guards; the two arm files are uploaded as evidence, so the
 fold is regenerated locally from them with the fixed code rather than re-bought.
+
+### 34.192 The 28% wider MDE was an unpaired model applied to a paired estimator
+
+**What was claimed.** §34.190 concluded, from two reference arms that moved 7.02pp, that the lane's minimum
+detectable effect is **19.9pp** rather than the 15.55pp the pair artefact prints, and that "no effect this lane
+has measured survives that correction". The second sentence of that conclusion is withdrawn here.
+
+**What the two reference arms actually say.** The same four cells, read as proportions rather than as a flip
+count:
+
+| quantity | value | from |
+| --- | --- | --- |
+| control arm, R142 | `p₁ = 0.8246` | 47/57 |
+| control arm, R151 | `p₂ = 0.8947` | 51/57 |
+| disagreement two **independent** draws would produce | `p₁(1−p₂) + (1−p₁)p₂` = **0.2438** | the same two rates |
+| disagreement actually observed | **0.1754** | 10 of 57 tasks flipped |
+| SD of a difference between two independent arm means | `√((p₁(1−p₁) + p₂(1−p₂))/57)` = **6.47pp** | the same two rates |
+| observed difference | **7.02pp** | 1.08 of that SD |
+
+The observed disagreement sits **below** the independence expectation, which is the direction of a positive
+task-level correlation across dispatches — tasks that were hard in one round were hard in the next. The
+observed 7.02pp is 1.08 standard deviations of the independent-draw model: ordinary sampling noise, not a
+dispatch effect.
+
+**Where the 19.9pp came from.** `√(0.175 × 0.825 / 57) = 5.0pp` treats the **flip share** as if it were the
+outcome proportion; multiplied by `√2` it produced a 7.1pp "delta SD", and `2.802 × 7.1 = 19.9pp`. Two errors
+compounded: the wrong `p`, and `√2` applied to a quantity that was already a difference.
+
+**Why the estimator is not unpaired.** `comparePaired` forms its interval from the discordant pairs of **one**
+dispatch; that is the variance of the paired difference and it already contains the control arm's noise. What
+the test–retest measures is the variance of an **unpaired** comparison. Put side by side:
+
+| reading | SE | what it estimates |
+| --- | --- | --- |
+| McNemar, as published | **5.36pp** | the paired difference, both arms in one dispatch |
+| independent draws of one arm | **6.47pp** | the unpaired difference of two rates |
+
+The ratio gives the within-task correlation `1 − (5.36/6.47)² = 0.31` — and the flip share independently
+implies `1 − 0.1754/0.2438 = 0.28`. Two estimators, different data, one number: pairing buys about 0.3 of
+correlation, and the interval the artefact prints is on the right scale.
+
+**What survives and what does not.** The task-level outcome of one arm is **not reproducible**: 17.5% of 57
+tasks flipped between two dispatches. That is the binomial noise the protocol already models, and it is why one
+trial per task resolves ~15pp. What does not survive is the claim that the lane's intervals are 28% too narrow,
+and the sentence that no measured effect survives. Both are retracted; the numbers they were about are R142's
+−3.51pp [−14.04, +7.02] and R151's −8.77pp [−21.05, +3.51], which are unresolved against a 15.55pp bound for
+the ordinary reason — the sample is small — not because the estimator is wrong.
+
+**What it changes for R143.** Nothing in the plan; everything in the reading. The two-fold cross-fit is held to
+**10.98pp**, and 19.9pp is withdrawn from every document that quotes it.
+
+**Cost.** $0.00. Two committed pair artefacts and one afternoon of arithmetic that should have been done before
+the claim was published.

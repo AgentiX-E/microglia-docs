@@ -21977,6 +21977,13 @@ MDE follows: 2.802 × 7.1 = **19.9pp**, not 15.55pp — and R151's own 17.72pp i
 19.9pp. The mechanisms are not refuted by this; they are *unmeasurable at one trial per task*, which is a
 different and more useful statement.
 
+> **Retracted in §177 / AUDIT 34.192.** Both paragraphs above are wrong. `√(0.175 × 0.825 / 57)` uses the flip
+> share as if it were the outcome proportion, and the resulting SD was compared — after a pointless `√2` —
+> against a **paired** standard error. The independent-draw SD at the rates the two arms actually ran is 6.47pp,
+> and the arms disagreed on 17.5% of tasks where independence predicts 24.4%, so the pairing is doing its job.
+> **15.55pp at 57 pairs and 10.98pp at 114 stand; 19.9pp is withdrawn.** What survives is the 17.5% flip share
+> as a reproducibility figure.
+
 **What the next dollar buys, given that.** Resolution, and the registered instrument for it is R143's two folds —
 114 independent task pairs at 10.98pp, rather than 228 correlated trial pairs at a nominal 7.8pp. Both mechanism
 axes have now been measured and both are negative or indistinguishable from the lane's own noise: content (R151,
@@ -21995,3 +22002,61 @@ which is a third paid phase on the same endpoint. The true bill per dispatch is 
 cost paragraph in this record has said since the memory half was split from the learning half. The numbers on
 this page are corrected; the registration's estimate is left as it was written before the run, because a
 registration edited after its result is not a registration.
+
+## 177 — R143 `official`: the fold runs, and the artefact that could not be pooled
+
+**Dispatched** 2026-11-18 13:55 UTC, run `44318618847`, on `049f634b`, `taskSplit: official` — the benchmark's
+own boundary, 74 learn / 40 held out, `serveSupport: 2`, `distillScope: all`, one trial per task.
+
+| reading | value |
+| --- | --- |
+| learn | 73 corrections from 74 task(s) → 146 candidates → **77 created**, 0 failed |
+| consolidation | 77 considered, 2,926 pairs, 11 groups, 15 merged, 62 retained; refused 0 condition / 1 payload / 0 evidence / 23 linkage |
+| support floor 2 | **51 of 77 retired**, 11 servable |
+| pack | 40 of 40 served, mean 1.0 item / 777 chars, margins 40 rivaled of 40 censused, p50 0.1554 |
+| memory arm | **pass^4 0.925** (37/40) |
+| reference arm | **pass^4 0.900** (36/40) |
+| paired | **+2.50pp** [−10.00, +15.00], p = 1.0000, 3 lost / 4 gained |
+| resolution | **18.53pp** at n = 40; verdict `UNRESOLVED` |
+| degradation | 3 of 36 (8.33%) broken, 4 repaired |
+| serve support | 10 of 11 servable served, no singleton; support ≥ 2: 10 items, 3 broke, 4 kept, net +1 |
+| margin sweep | no clean rung; AUC **0.333** over 4 repaired against 3 broken, exact p 0.771 (35 labellings) |
+| cost | **$0.3840** — learn 0.1988, memory 0.0923, reference 0.0929 |
+
+**The fold's own number is unremarkable and its sign is the other one.** +2.50pp on the published boundary
+against −8.77pp on the 57/57 lane cut, both inside their own resolution (18.53pp and 15.55pp). Two cuts of one
+corpus, two signs, neither resolvable: that is the case for the cross-fit stated as data rather than as an
+argument.
+
+**And the artefact it produced could not be pooled.** `foldSplitAbsent` and `treatmentAbsent`, again, on a fresh
+run: the two guards demanded that both arms state the same learning half and the same store fields, and the
+reference arm states `train: []` and no store fields *by design*. §AUDIT 34.191 has the diagnosis, the third
+instance in the same feature (a loader that dropped the R150 `knobs` field its own type omitted), and the fix:
+the pair's split is the evaluation half both arms answered plus the union of the non-empty learning halves, the
+pair's treatment is what the arms that state a field agree on, and a disagreement still refuses. Five guard
+expectations were rewritten to the shape the driver writes, three command cases and two end-to-end cases were
+added, and `cross-fit.ts` sits at 100/100/100/100.
+
+**A retraction, on the record's own arithmetic.** §176 widened every MDE in this record by 28% — 15.55pp →
+19.9pp — from two reference arms that moved 7.02pp. That widening was wrong (§AUDIT 34.192): it applied an
+**unpaired** two-sample SD to a **paired** estimator, and it computed that SD from the flip share rather than
+from the outcome proportion. The check that settles it is the disagreement rate. The two control arms ran
+0.8246 and 0.8947; two *independent* draws at those rates disagree on a task with probability
+`p₁(1−p₂) + (1−p₁)p₂ = 0.2438`. They disagreed on **0.1754** of tasks. The observation is *below* the
+independence expectation, which is the direction of a positive task-level correlation — and the McNemar SE
+(5.36pp) against the independent-draw SD (6.47pp) implies the same correlation, `1 − (5.36/6.47)² = 0.31`
+against `1 − 0.1754/0.2438 = 0.28`. **15.55pp at 57 pairs stands; 10.98pp at 114 pairs is the number R143 is
+held to; 19.9pp is withdrawn.**
+
+**What survives from §176.** The reproducibility figure itself: 17.5% of 57 tasks flip between two dispatches of
+one arm. That is the binomial noise the protocol models, and it is the reason one trial per task resolves ~15pp
+rather than ~5pp.
+
+**Acceptance.** Repository **5,714 tests over 276 files**, coverage **100 / 99.92 / 100 / 100**, `audit:repo` ok,
+coupling **245 modules** with `core coupled=0`, CI **success** on `974496cc` (run `44327255559`, 44 steps green).
+Round cost so far: **$0.3840** for `official`; the `swapped` fold was dispatched at 15:12 UTC on the fixed tree
+(run `44332852585`, registered ~$0.30) so that its pair artefact carries the split natively.
+
+**Next.** Pool the two folds with `pnpm eval:cross-fit` — 114 independent task pairs at 10.98pp — and read the
+per-fold deltas before the pooled one, because the swapped fold carries a thinner store and the registration
+says the pool is 65% that store.
