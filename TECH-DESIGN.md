@@ -10311,3 +10311,22 @@ readable but not poolable, and the number it bought (+2.50pp, harm 5.88%) stands
 file. That is the price of a spread, and it is why the next dispatch is a declared replication rather than a
 repair: a projection defect cannot be re-derived from the arm files at $0, because the evidence is what went
 missing.
+
+**The third layer is inside the artefact, and it is the only one that can say the block is true.** The two guards
+above decide whether a field is *written*; neither can tell whether what was written describes the run.
+`l4-rotation-reconciles` reconciles the declared reading against the ids the same file's pack ledger carries —
+the list the counter itself charged — and blocks on any disagreement:
+
+| field | reachable from the ledger? | why |
+| --- | --- | --- |
+| `requests`, `renders`, `distinct`, `maxRenders` | **yes** | one entry per request, one id per render |
+| `exhausted` | yes, when the block states its `cap` | it is a function of the cap, so a cap-less block has no rung to derive at |
+| `starved` | bounded above only | an empty pack has two causes — a spent rotation and a store with nothing to say — and the ledger holds the same empty list for both |
+| `mode` | **no** | a policy is not a measurement |
+| `cap`, `servable` | no | they are arithmetic over the store, which the ledger does not describe |
+
+**The asymmetry is the finding, and it prices every future artefact defect.** A ledger can prove a count wrong and
+can never prove a policy right, so a fold whose block went missing is unrecoverable from its own files at any
+price — R152's position — while a fold whose block is present but wrong is caught for $0 by a gate that was always
+one file-read away. That is why the reconciliation ships as a gate rather than as a repair tool: the repair it
+could perform is exactly the one that was never needed.
