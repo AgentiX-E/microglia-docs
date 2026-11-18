@@ -7467,7 +7467,7 @@ it.
 | lane | current SOTA | microglia | comparable? |
 | --- | --- | --- | --- |
 | τ²-bench retail, `pass^4`, published | **ALTK-Evolve `sup2` 0.6754** | control **0.8246**, memory **0.7895** at 57 held-out tasks; 0.65 at the benchmark's 40 | **no row claimed**: `bar_backbone_matches = 0`, because the control outscores the published bar on a different backbone, and a delta against a bar the control already clears is not a comparison |
-| τ²-bench retail, mechanism (harm share) | no competitor publishes one | **12.77%** at floor 2, **AUC 0.625** for the margin | **first**: this is the only lane in the record that measures *why* a memory hurts with a control and a resolution |
+| τ²-bench retail, mechanism (harm share) | no competitor publishes one | **12.77%** at floor 2, **AUC 0.625** and exact p 0.305 for the margin | **first**: this is the only lane in the record that measures *why* a memory hurts with a control and a resolution |
 | BIRD dev | **AskData 83.40 test / 78.49 dev** | unchanged since its last cell | different lane; the largest claim it can support is ~1pp at 6,600 paired questions |
 
 **What the next dollar is, and what it is not.** It is not the scoreboard: no arm on this harness can claim the

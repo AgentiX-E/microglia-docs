@@ -11793,7 +11793,8 @@ way to choose a value for it.
 **What was done.** `serve-sweep.ts` joins the three arrays and prices every rung against the measured outcomes;
 `l4-pair` prints the line and publishes `serveSweep`. On R142 it reproduces the hand reading exactly — rung 0.30
 keeps 2 repairs, withholds all 6 breaks, serves 7 of 57 trials — and it says what the maximum would hide: the
-margin separates a repair from a break at **AUC 0.625** on four against six, which is not a lever, and the
+margin separates a repair from a break at **AUC 0.625** on four against six with an exact permutation
+**p 0.305**, which is not a lever, and the
 cleanest rung is clean because it withholds 88% of the traffic.
 
 **The rule this leaves.** A census of a knob must carry the join that decides the knob's value, or it is a

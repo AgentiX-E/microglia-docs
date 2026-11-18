@@ -21873,8 +21873,9 @@ exists for the attribution table. Joining them prices every rung against the out
 | 0.25 | 14 | 2 | 2 | 0 | 0.00 |
 | 0.30 | 7 | 2 | 0 | +2 | **+3.51** |
 
-**The margin does not separate a repair from a break.** It ranks weakly in the right direction — AUC 0.625 on
-four repaired against six broken trials, medians 0.310 against 0.221 — and it ranks wrongly where it matters:
+**The margin does not separate a repair from a break.** It ranks in the right direction and not beyond chance —
+AUC 0.625 on four repaired against six broken trials, **exact permutation p 0.305 over all 210 labellings**,
+medians 0.310 against 0.221 — and it ranks wrongly where it matters:
 the single highest-margin break (retail/9, 0.275) sits *between* the two highest-margin repairs (0.310, 0.317),
 and the lowest-margin repair (0.033) sits below the lowest-margin break (0.039). The rung that looks clean,
 0.30, is clean because it withholds all but seven requests: it keeps two repairs and loses two, and it wins only
@@ -21890,7 +21891,10 @@ that exists only to price a candidate.
 
 **The instrument, and where the number travels.** `serve-sweep.ts` prices a list of rungs and reports one
 decision-shaped statistic rather than a maximum: **the first rung that withholds every break and keeps a
-repair**, with the repairs it costs and the trials it silences. The render carries the gate's own decision — the
+repair**, with the repairs it costs and the trials it silences. It reports the ranking underneath the rungs on
+the same line — AUC plus the **exact** one-sided permutation probability over every labelling of the same
+margins, enumerated rather than approximated, and named as not walked when the labellings pass twenty thousand.
+Four against six is 210 labellings and p 0.305, which is what "no rung is a lever" looks like as a number. The render carries the gate's own decision — the
 highest margin among the requests of its episode that served the record, because a gate acts per request and an
 outcome is measured per trial — and the field is **absent** when an arm carried no census at all while it is
 **`null`** when the census was there and the record was never contested. `l4-pair` prints the line and publishes
@@ -21910,5 +21914,5 @@ routine.
 absent without a census, `null` with an unpriced one, the maximum over a span's requests, NaN refused as a
 parse failure, and a record's margin read from the request that served *it*), `l4-pair-transfer` +2 end-to-end
 (the sweep published at 0.08 on a four-trial fixture, and nothing published when the arm carries no census).
-Repository **5,697 tests over 276 files** (+22), coverage **100 / 99.92 / 100 / 100**. `pnpm typecheck`,
+Repository **5,705 tests over 276 files** (+30), coverage **100 / 99.92 / 100 / 100**. `pnpm typecheck`,
 `typecheck:lanes`, `audit:repo` ok; coupling ledger **245 modules** (+1), `core coupled=0`. Round cost **$0.00**.

@@ -9973,7 +9973,7 @@ is the elimination of the *first* dispatch in a two-dispatch loop.
 
 | rung | served | kept | broke | net pp | AUC of the margin |
 | --- | --- | --- | --- | --- | --- |
-| 0.00 | 57 | 4 | 6 | −3.51 | **0.625** (4 vs 6) |
+| 0.00 | 57 | 4 | 6 | −3.51 | **0.625**, exact p **0.305** over 210 labellings |
 | 0.10 | 34 | 3 | 4 | −1.75 | median kept 0.310, broke 0.221 |
 | 0.30 | 7 | 2 | 0 | **+3.51** | the highest-margin break, 0.275, sits inside the repairs' range |
 
