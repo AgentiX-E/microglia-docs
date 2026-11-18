@@ -11602,3 +11602,51 @@ writes the report, and what R232 did only after the fact.
 **Cost.** $0.00, one afternoon, and three cases added to the suite (partial publishes, all-unresolved refuses,
 coverage counts the dropped range). Bought: R141's two instrument lines, the `informative` count that every
 conditional rate depends on, and the two artefact identities the cross-fit will refuse without.
+
+### 34.185 A guard that reads its own request a second time, and the arm that obeyed it alone
+
+**The reading.** R142's second dispatch (`44219333602`) waited 126 minutes for `not_before: 04:00`, woke at
+04:00:22, and was refused five seconds later:
+
+```
+##[error]not_before 04:00 is 1440 minutes away; this lane waits at most 240, because the job limit is 340
+```
+
+`planBandWait` reads an hour that has already passed as the **next day's** — correct for a dispatch sent at
+05:00 naming 04:00, wrong for a guard that runs after the wait it is grading. The wait step had already
+consumed the one parse this dispatch needed, and the guard asked the question again with a different clock.
+
+**Two defects, and the second is the expensive one.**
+
+| # | defect | what it did |
+| --- | --- | --- |
+| 1 | the guard re-parses `not_before` instead of consuming the instant the wait produced | refused every dispatch that named a window and had to wait for it — after the wait, so the sleep was spent |
+| 2 | the memory arm's condition names no status function (implicit `success()`, so it was skipped) and the reference arm's names `!cancelled()` (no implicit `success()`, so it ran) | a refused dispatch bought one arm of a run the guard had just rejected |
+
+The guard was added in §34.182 for R142's first failure — $0.1617 of learn half with no eval. It has now cost
+R142 three attempts: the first by paying for half a run, the second by paying for a two-hour wait and refusing
+it, and neither by the mechanism it was written to protect.
+
+**Why nothing caught it, again.** `window-fit.ts` had 12 cases, all of which passed a `now` and asserted the
+arithmetic. The defect was in what the caller passed as `now`: the bin re-derived it, and no test ran the bin
+with a `not_before` it had already waited out — because a test cannot wait. The case that would have caught it
+is the one added here: a published start plus a `not_before` that has passed, asserting **no refusal**.
+
+**The class.** Fifth instance of "a value derived twice" (§34.117's empty store, §34.135's scope dimension,
+§34.181's denominator, §34.183's sample, and this), and the second where the two derivations live in different
+processes — which is the version that cannot be caught by reading either one.
+
+| the shape | the field that now carries the single derivation |
+| --- | --- |
+| a duration and a moment, both derived from `not_before` | `wait_min` (for the deadline arithmetic) and `start_at` (for the window arithmetic), both published by the step that slept |
+| a step's exit code used as gating for steps whose `if:` may or may not inherit `success()` | `fits`, an output both arms read explicitly |
+
+**The rule this adds.** A guard is not a step that fails; it is a **value** its dependants read. An exit code
+gates only the steps that happen to inherit `success()`, and GitHub's rule for that inheritance is invisible
+at the call site: `if: a != b` inherits it, `if: !cancelled() && a != b` does not. Two arms of one dispatch
+therefore disagreed about whether the run had been refused, and the one that disagreed in the expensive
+direction was the control arm.
+
+**Cost.** One two-hour wait, one cancelled run, **$0.00 of model calls** (the log ends at the label count; no
+arm reached an episode). Bought: the guard now works for the case it exists for, both arms obey it, and R143's
+two folds — which must each fit a window — are dispatched behind a gate that has been run.

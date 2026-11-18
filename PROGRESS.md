@@ -21573,3 +21573,57 @@ counts the dropped range), `cross-fit.ts` 42 at **100/100/100/100**, `cross-fit`
 at **100/100/100/100**, `serve-support.ts` 19 at **100/100/100/100**. Repository totals **5,636 tests over 273
 files** (+3), coverage **100 / 99.92 / 100 / 100** — the residual is `app.ts`'s one branch, unchanged. `audit:repo`
 ok. Coupling ledger unchanged at 241 modules, `core coupled=0`. Round cost **$0.00**.
+
+### 234 — The guard refused the dispatch it had just spent two hours waiting for
+
+**What happened to R142's second dispatch.** `44219333602` was sent at 01:54 with `not_before: 04:00`. The L4
+job slept 126 minutes, woke at 04:00:22, and 5 seconds later the window guard refused it:
+
+```
+##[error]not_before 04:00 is 1440 minutes away; this lane waits at most 240, because the job limit is 340
+```
+
+The guard parses `not_before` itself — `planBandWait(new Date(), '04:00')` — and by 04:00:27 the hour named
+had passed, so the parser rolled it to **tomorrow**. The dispatch waited two hours for a window and was then
+told the window was a day away.
+
+**What it cost, exactly.** No model call: the log stops at `[tau2] 114 task(s) in retail` for the step that
+counts labels, and neither arm had reached an episode. The bill is one two-hour wait and one cancelled run.
+
+**What the refusal did to the money, which is the second defect.** Step 15 (memory) carries
+`if: l4_arms != 'reference'` — no status function — and GitHub adds an **implicit `success()`** to exactly that
+shape, so the refused guard skipped it. Step 16 (reference) carries `if: !cancelled() && …`, which *does* name a
+status function, so no implicit `success()` was added and the arm ran. A guard that refuses and is obeyed by one
+arm is not a guard; it is a coin flip on which half gets bought. The run was cancelled at 04:13.
+
+**The repairs, in the order they removed the class.**
+
+| defect | repair |
+| --- | --- |
+| the guard parses `not_before` a second time, minutes after the wait ended | `eval:wait-band` publishes `start_at` (the ISO instant it woke) and the guard consumes it; `not_before` is parsed in one place |
+| the arms inherit gating from an implicit `success()` that only one of them gets | the guard publishes `fits`, and both arm conditions consult `steps.window.outputs.fits != 'false'` |
+| an unreadable `TAU_START_AT` would fall back to the wall clock | refused by name, because the wall clock at the check is not the instant of the start and at a boundary it is on the other side of one |
+
+**R143 registered while that was being fixed.** The cross-fit needs two pair artefacts that state their own
+split, and no artefact before R145 does: `417` R141's pair records the halves inside the arm files and not in
+the pair file. So the `official` fold is a **re-run** of R141's treatment (a test–retest this lane has never
+had, and 35% of the pool) and the `swapped` fold is the new population (74 evaluated trials, 65% of the pool).
+Both registrations are in `prereg/` with their arithmetic:
+
+| population | discordance | `mde80` |
+| --- | --- | --- |
+| 40 (R141's held-out half) | 7/40 = 17.5% | 18.53pp |
+| 114 (the corpus) | 7/40 carried over | **10.98pp** |
+
+The pool therefore buys **7.5 points of resolution** and not a bigger effect, and a ten-point delta sits on
+that line rather than inside it. What the round can resolve is the count: at R141's shape the pool holds 12–16
+gained against 3–5 lost, and exact McNemar separates 12/3 (p = 0.0352) but not 10/5 (p = 0.3018). The
+confounder is registered too — the swapped fold's store is built from 40 tasks, so 65% of the pool is the thin store's fold.
+
+**Acceptance.** `window-fit` command 18 cases (+6: published start, unreadable start, start inside peak,
+`fits` on both answers, non-integer cap, and the one-trial/two-arm default), `wait-band` command 7 (+1:
+publishes `start_at`), `sota-source` 47 (+3: the
+guard's output exists, both arms consult it, the guard reads `steps.wait.outputs.start_at`). Repository
+**5,646 tests over 273 files** (+10), coverage **100 / 99.92 / 100 / 100**. `pnpm typecheck:lanes` clean,
+`audit:repo` ok, workflow parsed with a YAML reader before dispatch — the round that follows two 422s checks
+that first. Round cost **$0.00** (the cancelled run made no model call).

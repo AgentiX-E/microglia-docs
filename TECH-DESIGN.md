@@ -9808,3 +9808,34 @@ outcome is a row.
 refuses a file without them. The two work in opposite directions on purpose: the fold refuses what it cannot
 check (a leak), and the attribution publishes what it can (a hole). Both are the same rule — *state the part you
 cannot see* — applied to a sample the instrument cannot verify and to a join it can only partly resolve.
+
+### 17.154 The waiter publishes the instant, and a guard is a value its dependants read
+
+**The contract.** `not_before` is parsed exactly once, by `eval:wait-band`. Everything downstream consumes
+what that step publishes:
+
+| output | consumer | what it is for |
+| --- | --- | --- |
+| `wait_min` | the two deadline checks, which subtract it from the job limit | how long the job has already been asleep |
+| `start_at` | `eval:window-fit`, which needs a moment rather than a wait | when the run actually starts |
+| `fits` | both L4 arms' `if:` conditions | whether the window guard permits the spend |
+
+`window-fit`'s own `now` is `new Date(TAU_START_AT)` when the variable is present, and `planBandWait` only when
+it is not (a dispatch with no window). An unreadable `TAU_START_AT` is a refusal that names the variable; a
+fallback to the wall clock is the defect this key removes, because the clock at the check is not the instant of
+the start and at a window boundary the two are on opposite sides.
+
+**Why the guard is an output and not an exit code.** GitHub adds an implicit `success()` to a step's `if:` only
+when the expression names no status function. Both arm conditions name something — one an input comparison,
+one `!cancelled()` — so exactly one inherited the gate and the other ran after the refusal. A step that fails
+is a red job; a step that **publishes its answer** is a gate. The arms read `steps.window.outputs.fits !=
+'false'`, which is empty on a push run (no guard) and therefore true.
+
+**The arithmetic the guard now performs, on the values R142's registration pins.** 114 tasks × 1 trial × 2 arms
+= 228 episodes × 26 s = 99 minutes, plus 10 minutes of setup: **109**, against the 120 minutes an 04:00 start
+has before 06:00. It fits — which is what the guard would have said at 04:00:22 had it been given 04:00:22
+rather than the string `04:00` and its own clock.
+
+**And the case it must still refuse.** The same 228 episodes started at 05:30 need 109 minutes against a
+window closing in 30, and the line names `not_before: 06:00` — a refusal that says when, because a guard an
+operator cannot satisfy is a guard an operator overrides.
