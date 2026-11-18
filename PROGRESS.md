@@ -21734,3 +21734,12 @@ would be a fix for a different system.
 §COMPETITIVE AM.11 (including WikiTrace's +3.2pp provenance ablation and its 52/20/80 decomposition), and the
 re-shaped priority in ROADMAP step 3. Repository unchanged at **5,659 tests / 274 files**, coverage
 **100 / 99.92 / 100 / 100**.
+
+**Amendment to 236, same hour.** Two corrections after checking the code, recorded here rather than left in the
+roadmap as an intention. `reasonCode` **cannot** be a serve-time gate: `RecallQuery.scope` carries the dimension,
+but a user's request has no reason code, so there is nothing on the request side to gate against — it is a
+readability gap (half the store does not say why it exists), not a retrieval one. What *is* gateable is
+`anchoring`, and it is a published contract the τ² driver never wires: `'lexical'` requires a scope-matched rule
+to share a word with the query, which is the minimal guard against the failure class WikiTrace puts at 80% of
+its degradation events. That is the candidate treatment for the next paid round, and the choice between it and a
+consolidation widening waits for R142's readback rather than being decided on a store of 64 records.
