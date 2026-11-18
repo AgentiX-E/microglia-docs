@@ -21743,3 +21743,57 @@ readability gap (half the store does not say why it exists), not a retrieval one
 to share a word with the query, which is the minimal guard against the failure class WikiTrace puts at 80% of
 its degradation events. That is the candidate treatment for the next paid round, and the choice between it and a
 consolidation widening waits for R142's readback rather than being decided on a store of 64 records.
+
+### 237 — The filter was a parameter nobody could name, and a treatment the pool could not see
+
+**Two defects, one axis.** `RecallQuery.anchoring` has been a published contract since the iteration that wrote
+`recall-query.ts`: `'scope'` lets a structured scope be the only reason a rule appears, `'lexical'` requires it to
+share a word with the request. Every committed artefact in this lane ran `'scope'`, because **no registration
+could name the other one** — the driver takes its knobs from `pack-mode-plan` and `pack-shape-plan`, and anchoring
+is neither a *place* nor a *unit*. And the second defect is worse: `tau2.pack` recorded the budget, the request
+count and the ledger, and **not the knobs the request carried**, so no artefact could say which filter it ran.
+
+Why it matters for this lane's question rather than for tidiness: WikiTrace (arXiv 2611.14320) puts **52%** of
+memory-degradation events on a followed entry, and **80%** of those on a *valid* insight applied outside its
+scope. `'lexical'` is precisely the guard against that class, and the lane could not test it — while its own
+85% inert renders include every case where a rule matched on structure and said nothing about the request.
+
+**The third axis, resolved on its own plan.** `serve-anchor.ts`:
+
+| declared | knobs sent | what it means |
+| --- | --- | --- |
+| unset | nothing | the request is byte-identical to every committed artefact's |
+| `lexical` | `anchoring=lexical` | a scope-matched rule must share a word with the query |
+| `scope` | nothing | the published default, **named** — declared in the artefact, absent on the wire |
+
+The refusal is the interesting one: `packMode: prefix` **and** `serveAnchor: lexical` cannot both hold. A prefix
+arm injects every admitted entry, so a lexical anchor has nothing to filter, and the two knobs would contradict
+each other on the wire (`anchoring=scope` from the mode, `anchoring=lexical` from the anchor, last key wins).
+That is refused where the three plans are joined, not where one of them is read.
+
+**The identity the pool was missing.** `treatment` carried unit, form, scope, model and the trace ceiling. Two
+folds of one store served through two filters are **two experiments**, and the pool would have averaged them into
+a treatment neither fold ran. `tau2.pack.knobs` now carries the fragment verbatim, `l4-pair` puts it in
+`treatment`, and `crossFitPool` compares it as a sixth identity field:
+
+| reading | why it is the right normalisation |
+| --- | --- |
+| absent and `''` both become `none` | a run that carried no knob and an artefact that could not say produced the same request; a pool that refused them would refuse every fold written before the field |
+| the string is compared, never parsed | an anchor re-derived from `anchoring=…` would be a second reader of the vocabulary, and the two readers would disagree the first time a knob was added |
+| a differing filter is a refusal, not a warning | averaging two filters produces a number about a serving that never happened |
+
+**The wiring, and the audit rule that shaped it.** The chain is header → `eval:prereg-form`'s `anchor=` →
+`TAU_SERVE_ANCHOR` on the resolver's process → `eval:pack-knobs` → the Python agent's query. It is an environment
+variable rather than a fourth argument because `scripts/audit.mjs` refuses an environment read no workflow can
+set — the rule that has now caught four knobs that existed below the wire and not on it.
+
+**And one refactor the round needed.** The join of the three axes moved out of the bin into `pack-knobs.ts` as
+`knobFragment`, because a rule the lane relies on should not be checked by four process launches. The suite went
+from four `npx tsx` spawns to one, which is also why the local run's worker stopped timing out.
+
+**Acceptance.** `serve-anchor.ts` 9 cases (+4 in the bin-integration block), `pack-knobs` fragment 4,
+`prereg.ts` 3 (accepts both names, refuses a third, leaves it absent), `sota-source` +1 (the two YAML links),
+`cross-fit` 44 (+2: two arms, two filters; two folds, two filters), `tau2-pack` 30 (+1: the census carries the
+knobs). Repository **5,675 tests over 275 files** (+16), coverage **100 / 99.92 / 100 / 100**. `pnpm typecheck`
+and `typecheck:lanes` clean, `audit:repo` ok, coupling ledger **244 modules** (+2), `core coupled=0`. Round cost
+**$0.00**.

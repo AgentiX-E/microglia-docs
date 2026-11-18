@@ -11691,3 +11691,46 @@ changed nothing.
 **Cost.** $0.00, one instrument round. Bought: the population axis on every future run, the join grain for the
 content axis, and a guard (`the task id is attribution only`) that makes the original objection load-bearing
 instead of decorative.
+
+### 34.187 An axis the product has, the lane cannot name, and the pool cannot see
+
+**What was found.** Two things, and they compound. `RecallQuery.anchoring` is a published contract with two
+values and the τ² lane has only ever run one of them, because no registration could name the other. And the arm's
+artefact recorded `tau2.pack.{budget, requests, filled, empty, ledger}` — everything about a pack except **what
+filter produced it**. So the lane could not vary the filter, and could not have told that it had varied it.
+
+**How it was found, which is the interesting part.** Not by a failing test — by reading the literature and asking
+which of its mechanisms is reachable from here. WikiTrace (arXiv 2611.14320) decomposes degradation events into
+52% "followed a retrieved entry", and of those 20% outright wrong and 80% *valid but applied outside its scope*.
+The 80% class is what a lexical anchor excludes, and the answer to "do we have that?" was: the kernel has it, the
+HTTP route parses it, the Python agent forwards arbitrary knobs — and nothing in the registration vocabulary can
+set it. `recall-query.ts` had already written this defect down one layer up ("a capability that exists below the
+wire and not on it … is the layer nobody's tests were looking at"); this is the same defect at the *registration*
+layer, four rounds after that comment was written.
+
+**The compounding defect.** Even with the knob reachable, the pool would not have known. `treatment` is the
+cross-fit's identity — unit, form, scope, model, trace ceiling — and a fold served through `anchoring=lexical`
+would have pooled with one served through the default as one corpus. Two filters are two treatments, and a pooled
+rate over them is a number about a serving that never happened. This is §34.183's class (an instrument that cannot
+see the thing it was built for) with a shorter fuse: it would have surfaced as a pool that "worked" and reported a
+mean of two different experiments.
+
+| the field | why it had to be added before the arm, not after |
+| --- | --- |
+| `tau2.pack.knobs` | it is the only trace of the filter; an artefact written without it can never be re-read for the question |
+| `treatment.knobs` | the pool's identity is fixed at the fold, and a fold is expensive: discovering the missing axis after two $0.30 folds costs the folds |
+| `serveAnchor` in the header vocabulary | a treatment that cannot be registered is a treatment that will be run by hand and documented by memory |
+
+**The refusal this round added, and why it is not defensive coding.** `packMode: prefix` with
+`serveAnchor: lexical` is refused where the three plans are joined. A prefix arm renders every admitted entry, so
+a lexical anchor has nothing to filter; on the wire the two knobs would collide (`anchoring=scope` from the mode,
+`anchoring=lexical` from the anchor) and the *last key would win in silence*. Every silent conflict in this record
+has ended the same way — an arm published under a treatment it did not run — and the fix is one sentence in the
+one place both plans are visible.
+
+**What this does not claim.** No model was called, so nothing is known yet about whether a lexical anchor helps on
+τ² retail. The round buys the ability to ask, and the pool's ability to refuse a mixed answer. The arm itself is
+ROADMAP step 3's next dollar, gated on R142's readback.
+
+**Cost.** $0.00, one round. Bought: a published product axis made nameable, the filter recorded in every future
+artefact, a sixth identity field the pool refuses by, and one fewer silent contradiction on the wire.

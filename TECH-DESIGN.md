@@ -9878,3 +9878,54 @@ it could not attribute instead of leaving them out of its own total.
 capped at 64 rows of 83 and carries `supportTasks` as a count, not as a list, so a claim cannot yet be read
 against the tasks that taught it. The join grain is now in the artefact; the provenance is a distillation-output
 change, and it is scheduled rather than assumed.
+
+### 17.156 Three axes of a serve, and the fourth thing a registration may fix
+
+**The axes.** A pack is a function of (store, query, options), and the lane has been able to vary two of the
+options since R55.1 and R109. R150 adds the third, which the product has always had:
+
+| axis | question | vocabulary | default |
+| --- | --- | --- | --- |
+| `packMode` | *where* a pack is served from | `retrieved` / `prefix` | `retrieved`, undeclared |
+| `packShape` | *what unit* it is written in | `per-failure` / `collapse` | the unit the distiller wrote |
+| `serveAnchor` | *what may appear inside it* | `lexical` / `scope` | `scope`, and the wire says nothing |
+
+The third is deliberately not a third `PackMode`: that type's own contract says its names are **places**, and a
+filter on what may appear inside a place is a different question with a different default. Its plan
+(`serve-anchor.ts`) returns knobs, not a mode, and `declared` distinguishes "this arm is the default" from
+"nobody said" — the distinction `PackModePlan.declared` exists for, one axis over.
+
+**The join.** `knobFragment({mode, shape, anchor})` in `pack-knobs.ts` merges the three plans' knobs into one
+`name=value&…` string, and refuses the one combination that cannot be honoured:
+
+```
+TAU_PACK_MODE=prefix + TAU_SERVE_ANCHOR=lexical  ->  refused
+```
+
+because `prefix` sets `anchoring=scope` (no retrieval) and the anchor would set `anchoring=lexical`; one request
+cannot carry both and the last key wins in silence. The join is a pure function rather than code in a bin so that
+the rule is tested by assertions rather than by process launches — the previous shape needed four `npx tsx`
+spawns to check what four `expect`s check now.
+
+**The record.** `tau2.pack.knobs` carries the fragment verbatim, empty when the arm carried none. It is the only
+trace of the filter, because by the time the request is made `anchoring`, `minCoverage`, `limit` and `budget` are
+one string.
+
+**The identity.** `treatment` is what the cross-fit pool refuses two folds over, and it gains `knobs` as a sixth
+field:
+
+| fold A | fold B | pool |
+| --- | --- | --- |
+| `anchoring=lexical` | `anchoring=lexical` | pools |
+| `anchoring=lexical` | `''` | **refused**: two filters, two experiments |
+| `''` | absent (pre-R150 artefact) | pools: both normalise to `none` |
+
+The string is compared and never parsed. An anchor re-derived from `anchoring=…` would be a second reader of a
+vocabulary that lives in one module, and the two readers would disagree the first time a knob was added — which is
+the defect §34.117 and §34.185 both record.
+
+**What a registration may now fix, in one list.** Unit, form, scope, trace ceiling, pack mode, pack shape, serve
+support floor, speak margin, serve anchor — nine properties of one experiment, each with its own resolver, each
+refused when it contradicts another. The list is the answer to "what can two dispatches of one registration
+differ in", and it is meant to be complete: a property that is not here is a property a run can only describe
+after the fact.
