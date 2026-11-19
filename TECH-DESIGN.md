@@ -10673,3 +10673,63 @@ prediction, then reading — is checkable by anyone holding both repositories.
 words in code) and `DEFERRALS` carries the reason: it reads two strings per case and executes nothing. The
 deferral is a written decision in the same table as the other 24, and `V72` fails if the entry disappears.
 
+## 17.173 — `pack-attribution`: a fixed effect, one ratio bootstrap, and a ledger
+
+R159's module asks where a corpus-level loss lives. Three design decisions carry it.
+
+**The contrast is inside a database.** `contrastOf(rows, isExposed, resamples, seed)` groups rows by cluster, keeps
+only clusters with both sides, and forms one unit per cluster:
+
+```
+numerator_d = Σ_exposed gain − (n_exposed / n_rest) · Σ_rest gain
+denominator_d = n_exposed
+```
+
+The estimate is `Σ numerator / Σ denominator`, which is the average effect on the treated: each database's own
+exposed-minus-rest difference, weighted by how many exposed cases it holds. `exposed` counts every case whose pack
+carried the property, including clusters that cannot form the contrast; `att` counts only the weight the estimate
+rests on. A database that cannot compare contributes nothing and is not read as an absence of effect.
+
+**The bootstrap is a ratio of sums, so it gets a ratio bootstrap.** `clusterBootstrapRatio(units, resamples, seed)`
+in `stats.ts` accumulates per-cluster totals, draws multiplicities with the same `mulberry32` stream in the same
+order as `clusterBootstrapStatistic`, and recomputes the ratio from the reweighted sums. The two are the same
+experiment by construction, which a test asserts by running both; the difference is cost, and the cost is what makes
+a 210-hypothesis screen possible: 210 × 58 multiply-adds per resample instead of 210 × 7,000 row copies.
+
+**The dose is a fixed-effect regression over pre-aggregated cross-products.** `doseOf(rows, predictors, resamples,
+seed)` demeans every variable inside its cluster and accumulates `A_d = X̃'X̃` and `b_d = X̃'ỹ` per cluster. A draw's
+coefficient is `(Σ m_d A_d)^{-1} (Σ m_d b_d)`, which is exactly a refit on the drawn rows: demeaning a cluster drawn
+twice is demeaning it once, and both cross-products scale by the multiplicity. A test refits the drawn rows with a
+hand-written solver and asserts equality to 1e-8.
+
+The parameterisation is `(statements, unsupported, gold-constructs)` rather than `(unsupported, supported)` because
+the finding is the *extra* cost of an unsupported statement and a difference of two coefficients is not a
+coefficient. `gold-constructs` is the confound control: a simple gold is easier to contradict, and without it the
+reading would report "memory hurts easy questions" as "memory prescribes machinery".
+
+**The screen publishes its own multiplicity.** `statementScreen` returns one row per statement with `cases`,
+`databases`, `comparable`, `att` (the weight the estimate rests on) and an interval when
+`comparable ≥ MIN_COMPARABLE = 5`. `ledgerOf`
+then publishes `screened`, `resolved`, `expected = screened × 0.05`, the negative/positive split, and
+`massAtRiskPp = Σ_{resolved negative} |point| × cases / corpus`. The mass is a bound and not a prediction: a case can
+carry several resolved statements at once.
+
+**The readings.** `mentionsOf` reads which constructs a sentence names, polarity-blind; `constructsOf` reads which the
+gold uses, from the shape rather than the text; `unsupportedOf` counts statements whose mentions fall wholly outside
+the gold's constructs, and `unusedConstructsOf` returns the union so the artefact can publish which construct is
+doing the flagging. `filterPriceOf` prices the serve-time proxy — a per-database profile of constructs, built offline
+— in delivered statements before and after, and in cases left with nothing.
+
+**The refusals.** A predictor constant inside every cluster returns `null`, not zero. A draw that cannot be solved is
+dropped and counted. `resamples: 0` returns the point and `null` intervals. A statement below the floor keeps its
+point estimate and gets no interval.
+
+**The gate.** `eval/results/poc-pack-attribution.json` is a pure function of four committed artefacts and the readings
+above; `pnpm eval:pack-attribution --check` recomputes it and fails on a byte, in CI and in `pnpm check`. The
+`registered` field names `ROADMAP.md §R159`, written before the module existed.
+
+**Why it carries no deferral.** The coupling walk assigns `deferred` only to a module with a scenario word **in code**;
+`pack-attribution` reads identifiers and gold text and names no dataset, so it is `general` and the ledger records 255
+modules with the same 25 deferrals as before. An entry for it would have been documentation nothing reads, which is
+the defect 34.203 describes.
+

@@ -23046,3 +23046,147 @@ pack, and these packs no longer exist once the filter runs. It needs one dev arm
 (1,534 questions), and that arm can carry both halves of the intervention: the filter, and a distillation policy
 that anchors a statement to the case's schema.
 
+## 188 — R159: the harm is prescription, not contradiction, and this time the interval resolves
+
+**$0.00, no dispatch.** One module, one artefact, one gate, and the first content axis in this record to resolve
+away from zero on the corpus large enough to see it. The round was scheduled to find out whether any single
+statement carries the store's loss. It found that none does, that the *polarity* R158 tested was the wrong one, and
+that the right one — a pack naming machinery the answer does not use — costs **1.83pp** on 70% of `bird-train`.
+
+### 188.1 The unit, and why it cannot be a case
+
+A statement's harm cannot be read from "cases that received it" against "cases that did not". The store delivers a
+statement where it looks relevant, relevance is mostly schema resemblance, and so the two groups are two
+populations of database. Every estimate here is therefore **inside a database**: exposed against rest, weighted by
+exposed cases, with each database its own control. A database that cannot form both sides contributes nothing and
+is counted.
+
+The outcome is the **paired gain** (`correct` minus `withoutMemoryCorrect`), so a statement delivered to hard
+questions is not blamed for them. `MIN_COMPARABLE = 5` databases is the screening floor; below it the module
+publishes the point estimate and no interval, because an interval resampled from four clusters describes four
+clusters.
+
+### 188.2 The polarity was backwards
+
+R158 counted **denials** — `without DISTINCT`, `rather than COUNT(*)` — and found 1.8% of cases carrying one. But
+this store does not mostly deny; it prescribes. *"Aggregate expressions in the `SELECT` list are left unaliased
+unless the question asks for a name"* is not a prohibition, it is an instruction, and read as an instruction the
+question becomes: does the pack name machinery the answer does not use?
+
+`mentionsOf` reads the mention; `constructsOf` reads the gold's shape; the intersection of mentions and the
+complement of the gold's constructs is the case's **unsupported** count.
+
+### 188.3 The reading, on four arms
+
+| arm | cases | unsupported pack | delta [95%] | pack names only what the gold uses | delta [95%] |
+| --- | --- | --- | --- | --- | --- |
+| BIRD train | 7,000 | 4,894 (70%) | **−1.83pp [−3.13, −0.51]** | 2,106 | **+2.04pp [+0.26, +3.72]** |
+| BIRD dev | 1,534 | 809 | −2.80pp [−6.96, +1.57] | 725 | +0.58pp [−4.17, +5.11] |
+| BIRD dev, lexicon | 1,534 | 705 | −3.57pp [−7.82, +0.31] | 829 | +1.75pp [−2.37, +6.13] |
+| BIRD mini-dev | 350 | 111 | −0.21pp [−5.10, +4.07] | 239 | −0.35pp [−6.07, +5.10] |
+
+The sign is the same in four of four arms and the interval resolves in one. Neither has happened before in this
+record: coverage (AM.15), imported identifiers (R31) and denial (R158) were all null everywhere.
+
+Two things keep this from being a clean discovery, and both are in the table rather than in a footnote:
+
+- **Three of four arms do not resolve.** The dev arms hold 11 clusters each, and an 11-cluster interval over 1,534
+  cases is ±4pp at best. The finding is one resolved estimate plus three same-signed replications, which is
+  weaker than one resolved estimate and stronger than a null.
+- **The flag's composition differs by arm.** On train it is dominated by `select-alias` (2,953 of 4,894 cases); on
+  dev by `distinct` (285) and `join` (222), with aliasing flagging only 64. So the *property* replicates and the
+  *construct* does not — which is a statement about two different stores, not about one mechanism.
+
+### 188.4 The dose agrees, and the control holds
+
+Fitting paired gain on `(statements, unsupported, gold-constructs)` with database fixed effects:
+
+| arm | per statement | per unsupported statement | per gold construct |
+| --- | --- | --- | --- |
+| BIRD train | −2.96pp [−5.85, +0.31] | −0.76pp [−1.55, +0.08] | −0.31pp [−1.00, +0.41] |
+| BIRD dev | −0.00pp [−2.78, +3.58] | −1.14pp [−3.42, +1.77] | **+1.22pp [+0.15, +2.20]** |
+| BIRD dev, lexicon | −2.69pp [−6.12, +2.25] | −1.82pp [−3.94, +1.20] | +0.74pp [−0.20, +1.67] |
+| BIRD mini-dev | −5.66pp [−13.71, +3.27] | −0.45pp [−4.03, +4.07] | +1.12pp [−2.03, +3.84] |
+
+`gold-constructs` is the confound control and it earns its place: a simple gold is more likely to be contradicted,
+so without it the reading would be "the pack hurts easy questions" wearing the costume of "the pack prescribes
+machinery". The unsupported coefficient survives the control on train and holds its sign on the other three.
+
+On dev the one coefficient that resolves is the control — **+1.22pp per gold construct** — which is the memory
+system doing what it is for: the more complex the answer, the more memory helps.
+
+The two estimators have to agree in sign and order of magnitude and they do: 0.85 unsupported statements per case ×
+−0.76pp ≈ −0.65pp of point mass, against a categorical −1.83pp. They estimate different quantities — "did any
+arrive" against "how many arrived" — and a reader should not expect them to match to the digit.
+
+### 188.5 No single statement is to blame
+
+| statement | cases | dbs | delta | 95% |
+| --- | --- | --- | --- | --- |
+| `Aliasing an aggregate expression with a column alias produces an output column name …` | 168 | 45 | **−4.88pp** | [−8.80, −1.50] |
+| `Aggregate expressions in the SELECT list are left unaliased unless the question asks for a name …` | 641 | 55 | **−2.69pp** | [−4.85, −0.78] |
+| `Columns referenced in a query must exist in the tables named in that query's FROM clause …` | 52 | 25 | −3.19pp | [−11.19, +5.30] |
+| `Counting rows for an entity identified by name uses COUNT on the entity's primary key …` | 27 | 15 | **+4.86pp** | [+0.59, +13.92] |
+| `A comparison question asking which of two named entities has a higher attribute …` | 20 | 9 | **+10.79pp** | [+0.33, +25.89] |
+
+**39 of 210 statements** clear the five-database floor; the other 171 are local notes compared inside one database.
+**Four of the 39 resolve against 1.95 expected** under a global null, and two of the four are positive. So the
+screen does not establish that any statement is individually to blame, and it does establish something better: both
+resolved negatives are widely delivered — 55 databases and 641 cases, and 45 databases and 168 cases, in a store
+where 171 of the 210 statements can be compared in fewer than five databases — and their combined mass is
+**0.36pp of the corpus's −0.71pp**. Half the loss, in two statements out of 210, is a bound on the mass at risk —
+a case can carry both at once — and it is the first number in this record that says *where* the corpus effect
+lives rather than that it exists.
+
+### 188.6 R158's circulation interval is withdrawn
+
+AM.18 reported the all-boilerplate stratum at **−0.94pp [−1.50, −0.40]** and called it the only resolved interval
+in that census. That estimate compared cases in **different databases**. Re-estimated inside a database:
+
+| stratum | cases | comparable databases | delta [95%] |
+| --- | --- | --- | --- |
+| none | 948 | 37 | +1.38pp [−1.47, +4.32] |
+| mixed | 1,811 | 44 | −0.09pp [−1.96, +1.59] |
+| all-boilerplate | 2,617 | 43 | −1.34pp [−3.58, +0.71] |
+
+The sign holds, the resolution does not: 15 of 58 databases cannot form both sides, so the comparison loses a
+third of the corpus, and the monotone ordering R158 read survives only as ordering. The previous interval was too
+narrow for the estimator printed beside it. This is the second withdrawal in two rounds (§AUDIT 34.204 was the
+first) and it is the one that costs something: R158's "only resolved interval" was the round's headline.
+
+### 188.7 What a filter would cost, and why it is not the next step
+
+| arm | delivered | after profile | kept | emptied |
+| --- | --- | --- | --- | --- |
+| BIRD train | 13,578 | 10,968 | 80.8% | 65 |
+| BIRD dev | 2,688 | 2,566 | 95.5% | 1 |
+| BIRD dev, lexicon | 2,691 | 2,608 | 96.9% | 1 |
+| BIRD mini-dev | 625 | 609 | 97.4% | 1 |
+
+The oracle reading would drop 37% of dev's delivered statements (0.64 unsupported per case against 1.75
+delivered); the deployable profile drops 4.5%, because a profile is the union over hundreds of questions and one
+gold is one question. The oracle's −1.83pp is therefore an upper bound on a filter, and the deployable filter is a
+fraction of it. **Filtering cannot pay for itself at this store's composition** — which is the same conclusion
+R158 reached from the other direction, now with two independent estimates behind it.
+
+### 188.8 Acceptance
+
+| dimension | reading |
+| --- | --- |
+| tests | **5,984 over 289 files** (+53 on `pack-attribution.test.ts`: the fixed-effect estimator, the screen's floor, the ledger, mentions, the dose's equality with a naive refit and with the generic bootstrap, the filter price, both printers' alignment, the ratio bootstrap's equivalence) |
+| coverage | **100 / 99.91 / 100 / 100** overall; `pack-attribution.ts` is **100 / 100 / 100 / 100**; `stats.ts` 100/100/100/100 |
+| gates added | `pnpm eval:pack-attribution --check` (census drift, in CI and in `pnpm check`); coupling ledger rebuilds at 255 modules with 11 checks passing and no new deferral — the module has no scenario word in code |
+| artefacts committed | `eval/results/poc-pack-attribution.json` (69 KB: four arms, 88 screened statements, every stratum, the dose and the filter price); `eval/results/poc-coupling.json` (rebuilt, +1 module) |
+| flaky test fixed at the root | `exchange.test.ts`'s alignment test ran 10,000 resamples over 7,000 rows to assert a substring, and timed out at 20s under coverage; it now asks for 400, because the assertion reads the printed row and none of its bounds |
+| dispatch cost | **$0.00** |
+
+**Next.** The queue's head was "an arm that changes the store's composition, $0.95". This round does not change
+that price and does change what the arm must contain: a distillation rule, not a filter. The measured shape of the
+defect is *prescription without condition* — a sentence that names `DISTINCT`, a join, an alias, and does not say
+when it applies — and the rule that follows is that a stored statement may name a construct only if it also
+carries the condition under which the construct is warranted. That is a distillation change, so it needs one dev
+arm, and its effect size is capped by the same arithmetic that capped the filter: the store's unsupported mass is
+−1.83pp on train, and a rewrite that halves it buys about 0.9pp, against an 11-cluster resolution of ±4pp on dev.
+The honest statement is that **no single dev arm can measure this**; what can measure it is a corpus with more
+databases, which is what BIRD dev's 11 clusters cannot supply.
+

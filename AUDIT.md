@@ -12609,3 +12609,55 @@ explains why every content axis so far has been null — coverage (AM.15), impor
 denial have all been asked of a store that has little content about any particular case to be right or wrong
 about.
 
+## 34.206 — The interval that was comparing databases while it described sentences
+
+**Defect class: an estimator whose unit of comparison is finer than its claimed unit of inference.** The last four
+audits have found a re-grader that could not fail (34.202), a metric field nothing read (34.203), a ratio that
+applied the corpus odds twice (34.204), and a classifier whose label inverted a third of what it counted (34.205).
+This one is the first in which **the number was right for the question it answered and wrong for the question it was
+printed under**.
+
+**What R158 printed.** The all-boilerplate stratum at **−0.94pp [−1.50, −0.40]**, described as "the only stratum
+interval in the table that excludes zero" and read as a content effect: packs made entirely of lessons from other
+databases lose about a point.
+
+**What it measured.** Which cases received all-boilerplate packs is not random: the store has local notes for some
+databases and none for others, so the stratum and its complement are **different databases** — and databases differ
+in difficulty. The estimator was a between-database comparison with a clustered interval that resampled databases,
+which is internally consistent and answers "does the all-boilerplate stratum sit lower than the rest of the corpus",
+not "does an all-boilerplate pack cost anything".
+
+**The corrected estimate.** Re-estimated inside a database — exposed against rest, weighted by exposed cases,
+databases as fixed effects — the same contrast is:
+
+| stratum | cases | comparable databases | delta [95%] |
+| --- | --- | --- | --- |
+| none | 948 | 37 | **+1.38pp [−1.47, +4.32]** |
+| mixed | 1,811 | 44 | −0.09pp [−1.96, +1.59] |
+| all-boilerplate | 2,617 | 43 | **−1.34pp [−3.58, +0.71]** |
+
+The sign survives — it even grows — and the interval triples in width, because 15 of 58 databases have no
+case-specific cases at all and the within-database comparison loses a third of the corpus. So R158's headline was
+**an estimate whose resolution came from variation between databases, attributed to variation in content**.
+
+**Why this is the second withdrawal and not a scandal.** 34.204 withdrew a ratio that applied the corpus odds twice;
+this withdraws an interval whose estimator carried a confound its vocabulary hid. Both were found by the same
+method — re-estimating the same quantity with the unit of inference raised to the unit of the claim — and both were
+published with the original number beside the correction rather than in place of it. A record that can only add
+findings is not measuring; it is accumulating.
+
+**What replaced it, and why the replacement is stronger.** `contrastOf` is the same estimator for *any* stratum, so
+the correction cost nothing to write and everything to notice. Applying it to the pack's *prescriptions* — does the
+pack name a construct the gold does not use — gives **−1.83pp [−3.13, −0.51]** on 4,894 of 7,000 cases, the first
+content axis in this record to resolve away from zero. That reading is not a rescue of the withdrawn one: the
+boilerplate stratum and the unsupported stratum overlap but are not the same cases, and the unresolved circulation
+contrast is printed beside the resolved prescription contrast in the same table.
+
+**The residual defect this audit does not fix.** Receipt is chosen by retrieval, so within a database the exposed
+cases are still the ones the statement looked relevant to. A statement can therefore read as harmful because it is
+retrieved for the cases memory cannot help, which is a fact about retrieval and not about the sentence. No
+committed artefact separates those two readings, and the module says so where the estimator is defined rather than
+in a limitations section. Nothing in this round establishes that rewriting a statement would recover a point; it
+establishes that the pack's prescriptions co-occur with the loss and that the two most-delivered of them carry
+half of it.
+

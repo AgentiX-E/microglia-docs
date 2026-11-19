@@ -7832,6 +7832,52 @@ rejection.
 four memory boards. What R158 adds is not a rank but a diagnosis of why the four boards are the wrong next
 purchase at the current store shape: the boards measure a memory system's end-to-end benefit, and an end-to-end
 measurement of a store whose content is 60.6% cross-database boilerplate measures the boilerplate, not the
-system. The next dollar is better spent on one arm that changes the store's composition (≈$8.6 on BIRD dev at the
+system. The next dollar is better spent on one arm that changes the store's composition ($0.95 on BIRD dev at the
 recorded per-question cost) than on a board row that would rank a store nobody has fixed yet.
+
+**AM.19 — The field's harm mechanism is conflict; this store's is prescription without condition, and the second one
+is measurable per statement.**
+
+The 2026 memory literature is unusually clear about *how* memory hurts. FactConsolidation takes accuracy from 100%
+to 44.6% with one competing statement; Coverage-Calibrated shows that neither a similarity score nor an LLM judge
+ranks harmful cases better than chance; Memory Tax accounts the loss to construction, with 11.4–22.6% of sampled
+facts partially or wholly lost and up to 38.0% never stored. All three describe a store that holds **specific**
+content, correctly or incorrectly — a fact about Lisbon, a stale price, a superseded preference.
+
+R158 tested that mechanism on this store and rejected it: 1.8% of cases carried a denial the gold contradicts, and
+the contradicted stratum sat *above* the rest. R159 says why, with a number: the store's harm is not a false
+specific, it is a **true general applied where it does not hold**. *"Aggregate expressions in the `SELECT` list are
+left unaliased unless the question asks for a name"* is not wrong; it is unconditional, and 55 databases received
+it.
+
+| axis | microglia (R159) | nearest published number | what the comparison establishes |
+| --- | --- | --- | --- |
+| pack names machinery the answer does not use | **4,894 of 7,000 cases, −1.83pp [−3.13, −0.51]**; +2.04pp [+0.26, +3.72] for packs that do not | FactConsolidation's 100% → 44.6% needs a *competing* claim; this store produces one in 1.8% of cases (R158) | the field's mechanism is absent here, and the substitution — unconditional prescription — costs a tenth as much but reaches 70% of cases |
+| per-statement attribution | **39 of 210 screened, 4 resolved against 1.95 expected, mass at risk 0.36pp**; worst −4.88pp [−8.80, −1.50] on 168 cases across 45 databases | Memory Tax accounts construction loss in aggregate (11.4–22.6%); no paper in this file attributes harm to a named stored sentence | attribution is a *different instrument* from accounting: it says which sentence, at what exposure, with an interval |
+| dose | **−2.96pp per additional statement [−5.85, +0.31]**, −0.76pp extra for an unsupported one [−1.55, +0.08] | Memory Tax's "tax" is a per-system net, not a per-statement slope | the tax has a slope, and the slope is measurable inside database fixed effects |
+| circulation, re-estimated | **−1.34pp [−3.58, +0.71]** within database, against R158's between-database −0.94pp [−1.50, −0.40] | Retain-or-Consolidate's −0.080 over 75 questions, supported only where intervals exclude zero | the field's and this record's composition numbers were both estimated at a coarser unit than the claim; one of the two now has its within-unit estimate published |
+
+**What this changes about the gap to the leaders.** The leaders' advantage is a *store built per corpus*: Memory
+Tax's systems reach 73–81% on LongMemEval-s with stores constructed from the corpus in front of them, and this
+record's store is 210 statements distilled once and delivered everywhere. R159 prices the difference in a way the
+previous rounds could not: at 0.85 unsupported statements per case and −0.76pp each, replacing the generic
+curriculum with conditional statements is worth **≈0.6–0.9pp on BIRD**, and BIRD dev's 11 clusters resolve ±4pp. So
+the gap is real, the fix is identified, and **the fix cannot be measured on the corpus this record can afford**.
+
+That is the uncomfortable finding of the round and it is worth stating as a position rather than a limitation:
+
+- **Against the boards.** On BIRD dev, AskData's 78.49 EX against this record's 57.63 is a 20.9pp gap that no
+  statement-level rewrite closes. On τ²-bench retail, SapientAI's 72.8 `pass^4` is a different backbone and this
+  record refuses the row (`bar_backbone_matches = 0`) rather than claiming a rank it did not earn.
+- **Against the memory boards.** Unchanged from AM.17/AM.18: LoCoMo, LongMemEval, BEAM and MemoryAgentBench are
+  unrun, and the reason is not budget but composition — an end-to-end row on a store that prescribes unconditionally
+  measures the prescription.
+- **Against the literature.** Where this record is ahead is instrumentation: a per-statement screen with a
+  multiplicity ledger, a fixed-effect estimator, a drift gate. None of that is a *capability* the leaders lack; it is
+  the ability to tell whether a capability worked, which is the precondition for catching up rather than a substitute
+  for it.
+
+**Board position, unchanged: one board, τ² retail, and no rank claimed.** What R159 adds is the first measured
+answer to "why is the store not better": because 70% of its packs prescribe machinery the answer does not use, and
+because fixing that is a 0.6–0.9pp effect on a corpus that resolves at 4pp.
 

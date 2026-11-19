@@ -7274,3 +7274,46 @@ rounds that buys a *different store* rather than a better reading of this one.
    (≈¥8.6 / $1.2) or the 592-pass certification (≈¥32 / $4.5) once the store is worth certifying, then one memory
    board row (¥150–400). The critical path is row 1 and nothing before it.
 
+## Where the flywheel stands, 2026-11-19 (R159 read: the harm is prescription, and it resolves once)
+
+**The one thing that changed.** The content axis resolved. Reading the pack as a set of **prescriptions** rather
+than denials — does it name machinery the answer does not use — gives **−1.83pp [−3.13, −0.51]** on 4,894 of 7,000
+`bird-train` cases, with **+2.04pp [+0.26, +3.72]** for the 2,106 cases whose packs name only what the gold uses.
+Same sign in all four arms; first resolved interval in this record's ten content axes. R158's denial axis and
+R158's circulation interval are both retired in the same round (§PROGRESS 188, §AUDIT 34.206, §TECH-DESIGN 17.173,
+§COMPETITIVE AM.19).
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | **a distillation rule: a statement may name a construct only with the condition under which it applies** | unsupported statements per case, from 0.85 to ≤0.4 | **head of the queue**: the defect is measured and priced — 0.85 unsupported statements per case at −0.76pp each, so a rewrite that halves the count is worth **≈0.6–0.9pp**. It is a distillation change, so it needs one dev arm, **$0.95**, and that arm **cannot resolve it**: 11 clusters give ±4pp |
+| 2 | a corpus with more databases | ≥40 clusters at dev scale | **the binding constraint, and the round's real finding**: 58 clusters resolve ≈1.5pp, 11 resolve ≈4pp, and the effect being chased is 0.9pp. No axis, filter or gate can fix this; only another corpus can |
+| 3 | per-statement attribution | 39 of 210 screened, 4 resolved vs 1.95 expected | **done, $0**: the instrument exists and says no single statement is to blame; the two resolved negatives carry 0.36pp of the corpus's −0.71pp |
+| 4 | the circulation axis | within-database −1.34pp [−3.58, +0.71] | **withdrawn**: R158's −0.94pp [−1.50, −0.40] compared databases while describing sentences |
+| 5 | the contradiction axis | 127 of 7,000 cases, +1.57pp | **retired**: the field's conflict mechanism is absent from this store |
+| 6 | the 149 / 592-pair folds | certify a 5.39% / 8.08% break rate | unchanged in price (¥8.6 / ¥32), still displaced: certifying the current store certifies a store that prescribes unconditionally |
+| 7 | BIRD dev 6,600 paired | ≈1pp resolution | **promoted**: this is now the only affordable lane whose resolution reaches the effect size, and it is the first place a distillation rule can be tested at all |
+| 8 | the four memory boards | a same-backbone comparable row | unchanged, and now with a sharper reason to wait: an end-to-end row measures the prescription |
+
+**The honest summary, ten axes in.** Every axis that asked *whether the store is about this case* is null; the one
+that asked *whether the store tells the executor to do something the answer does not do* resolves. That is a change
+in the diagnosis, not yet in the system: the store's defect is unconditional prescription, the fix is a distillation
+rule, the fix's effect is 0.6–0.9pp, and the corpus this record can afford resolves at 4pp. So the sequence is now
+forced — **row 7 (BIRD dev 6,600 paired) before row 1 can be read**, and row 1 before the boards are worth buying.
+
+**What the four questions answer, this round.**
+
+1. **Are the field's authoritative sets and boards complete?** For this lane's purpose, no — and the round sharpens
+   why. What is missing is not a board but a **resolution**: every board in AM.16 is sized to rank systems whose
+   differences are 5–20pp, and this record's remaining effect is 0.9pp. The set that would help is a BIRD-scale
+   multi-database corpus with ≥40 clusters at dev size, which does not exist as a public board.
+2. **The census of sets, stacks, metrics and token cost** is unchanged from AM.17/AM.18. This round adds a column
+   nobody publishes: per-statement harm with exposure and a clustered interval, computed for four arms at $0.
+3. **Has microglia learned everything the leaders offer?** No. The leaders build a store per corpus (73–81% on
+   LongMemEval-s); this store is 210 statements distilled once. The instrumentation is ahead — fixed effects, a
+   multiplicity ledger, drift gates — and instrumentation is not capability.
+4. **Can SOTA still be taken, and at what price?** Not on BIRD (20.9pp behind AskData) and not on τ² (no matched
+   backbone). The reachable prize is the position this record already holds: the only system that can say *which
+   sentence* cost what, with an interval. Defending that costs $0; extending it costs **¥30–150** for the BIRD dev
+   6,600-pair lane (≈1pp resolution, the only lane that can see a 0.9pp effect), then **$0.95** for the distillation
+   arm, then **¥150–400** for one memory board row once the store is worth ranking.
+
