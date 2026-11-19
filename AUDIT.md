@@ -12368,3 +12368,59 @@ with extra steps.** The arithmetic that selects the next fold — 164 pairs, ret
 mechanism (34.198). This is the third face of the same error: **a significant reading is not a resolved one**, and
 six discordant pairs give `p = 0.0156` on a fold whose ceiling is 15.00pp and whose interval is [3, 27]. Every time
 the error has been a quantity that looked like evidence and was a property of the instrument.
+
+### 34.201 The delta was a mixture, and four rounds of "the mechanism moved" were its weights
+
+**What was never divided.** Every delta this record has published is `(repairs − breaks) / n`. The two counts come
+from disjoint populations — a repair only from a trial the control failed, a break only from one it passed — so the
+delta is a **weighted average** whose weights are the corpus's composition:
+
+```
+delta = f·r − (1−f)·b
+```
+
+On τ² retail `f ≈ 0.14`. The delta therefore reports 14% of the store's behaviour on the population it exists for,
+and 86% of its behaviour on the population where it can only lose. **Four dispatches were read as four facts about a
+mechanism; pooling them gives one repair rate and one break rate, both stable, and a delta that is their weighted
+difference.**
+
+| draw | trials | failed | repaired | passed | broken | repair rate | break rate | break-even | net |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `official` | 40 | 4 | 4 | 36 | 3 | 100.0% | 8.3% | 11.1% | +2.50pp |
+| `swapped` | 74 | 11 | 7 | 63 | 15 | 63.6% | 23.8% | 11.1% | −10.81pp |
+| R152 | 40 | 6 | 3 | 34 | 2 | 50.0% | 5.9% | 8.8% | +2.50pp |
+| R152c | 40 | 6 | 4 | 34 | 7 | 66.7% | 20.6% | 11.8% | −7.50pp |
+| pooled | 194 | 27 | 18 | 167 | 27 | **66.7%** | **16.2%** | **10.8%** | −4.64pp |
+
+**The finding, stated so it can be refuted.** The store repairs two thirds of the trials the bare agent fails
+(`18/27`, 95% `[47.8%, 81.4%]`) and breaks one in six of the trials it already passes (`27/167`, `[11.4%, 22.5%]`).
+Its break-even on this corpus is 10.78%; it is at 16.17%. A store that cut its break rate to 10% would read positive
+on retail without changing its repair rate at all — which is a testable prediction and the first one this lane has
+had for the harm side that does not require a bigger sample.
+
+**Why this is an audit entry rather than a progress note.** The record has spent three rounds discovering that its
+*instruments* could not certify what they reported: a resolution gate whose predicate was not its criterion (34.197),
+a serving policy withdrawn on a delta below its own MDE (34.198), a headroom bound that made four folds silent
+(34.200). This is the fourth face of one error and the most elementary: **the quantity itself was a mixture.** Each
+earlier entry blamed a bound; this one says the number those bounds were applied to was never a rate.
+
+**The bar's own price, which nobody computed either.** `tasksForDelta` inverts the protocol's formula to
+`n = z²·d/effect²`. At this lane's observed discordance (0.232) the `−5pp` revert rule needs **729 paired trials**
+to be resolvable; 3pp needs 2,024; the largest fold ever run is 74. So every revert this lane has made on the cost
+bar — R134's `packLimit`, R152c's serving policy — was a decision taken on a reading the design could not certify,
+and the rule's direction is the expensive one: it reverts on noise. That does not un-make the decisions (a cost rule
+may legitimately be conservative), but it does mean the record must stop describing them as findings about harm.
+
+**The two defects the round found in itself.**
+
+| defect | how it surfaced | why it is the same class |
+| --- | --- | --- |
+| a duplicated `wilsonInterval` | `Multiple exports with the same name` broke 20 test files at import time; `reproduction.ts` has exported one since the BIRD lane | two formulas for one quantity is two answers — the failure mode `detectable.ts`'s header exists to prevent |
+| a gate that failed on scheduling | 5,830 tests passed and the run exited 1 with `[vitest-worker]: Timeout calling "onTaskUpdate"` | a green reading that is not a measurement; a gate people re-run until it passes is a gate nobody reads |
+
+**And a comparability fact that makes the rank claim weaker, recorded rather than repaired.** R152c carries
+`metrics.k = 1` beside a field named `pass4`, and the pair protocol carries no `k`; the published bars are `pass^4`.
+`bar_backbone_matches = 0` already disqualified the level comparison on backbone grounds. This disqualifies it
+again on metric grounds, and the pair artefact cannot even show the mismatch because the field is absent — which is
+the same shape as 34.199's finding one level down: *a claim the artefact cannot check is a claim a reader has to
+take on trust.*

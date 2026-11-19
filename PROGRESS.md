@@ -22635,3 +22635,94 @@ dollar; it is the same dollar as the pooled fold, because both need a corpus whe
 with the airline fields stated explicitly — a past arm inherited `TAU_TEST_DOMAIN=airline` and produced a pair whose
 delta measured the two scenarios (§ROADMAP). Until that exists, every retail fold is a design that cannot certify
 what it is asking.
+
+## 184 — R155: the delta is a mixture, and its weights are the corpus's failure share
+
+**$0.00, no dispatch.** Every delta in this record is `(repairs − breaks) / n`, and that number is a weighted
+average of two rates nobody divided: a repair can only come from a trial the control failed, a break only from one
+it passed. On a corpus the bare agent already solves 86% of, the delta spends 86% of its weight on the population
+where the memory can only lose. Dividing the same counts by the populations they came from turns four rounds of
+apparent noise into one stable signal and one target.
+
+### The table, from the artefacts
+
+```console
+$ pnpm eval:conditional eval/results/poc-l4-pair-official.json eval/results/poc-l4-pair-swapped.json \
+      .cache/r152-pair/poc-l4-pair.json .cache/r152c-pair/poc-l4-pair.json
+| fold | trials | failed | repaired | passed | broken | repair rate | break rate | break-even | net |
+| poc-l4-pair-official | 40 | 4 | 4 | 36 | 3 | 100.00% [51.01, 100.00] | 8.33% [2.87, 21.83] | 11.11% | 2.50pp |
+| poc-l4-pair-swapped  | 74 | 11 | 7 | 63 | 15 | 63.64% [35.38, 84.83] | 23.81% [14.99, 35.64] | 11.11% | -10.81pp |
+| r152-pair            | 40 | 6 | 3 | 34 | 2 | 50.00% [18.76, 81.24] | 5.88% [1.63, 19.09] | 8.82% | 2.50pp |
+| r152c-pair           | 40 | 6 | 4 | 34 | 7 | 66.67% [30.00, 90.32] | 20.59% [10.35, 36.80] | 11.76% | -7.50pp |
+| **pooled (4 folds)** | 194 | 27 | 18 | 167 | 27 | **66.67% [47.82, 81.36]** | **16.17% [11.36, 22.50]** | **10.78%** | −4.64pp |
+```
+
+The exact identity, with `f` the failure share, `r` the repair rate and `b` the break rate:
+
+```
+delta = f·r − (1−f)·b        ⇒        b* = r·f/(1−f)
+```
+
+**Pooled over four draws, the store repairs two thirds of the failures and breaks one in six of the passes.** 18 of
+27 failures `[47.8%, 81.4%]`; 27 of 167 passes `[11.4%, 22.5%]`. Both are large effects. The delta is negative
+because passes outnumber failures 6:1, which is a fact about retail and not about the store.
+
+### The first numeric target the harm side has had
+
+Setting the identity to zero gives the break rate at which the store pays for itself on this corpus: **10.78%** at a
+13.92% failure share. The observed pooled break rate is **16.17%**, so the store is **5.39pp over its own bar** —
+it has to cut breaks by a third to break even here. That is a target a content axis can be graded against, and
+unlike "the delta must be positive" it separates the store from the corpus: the same store on a 30%-failure corpus
+breaks even at 28%.
+
+### The bars, priced in pairs for the first time
+
+`tasksForDelta` is the inverse of `detectableDelta` — `n = z²·d/effect²` — and it says what a bar costs before it
+fires. At this lane's own discordance (0.232 pooled):
+
+| bar | paired trials needed | largest fold this record has run |
+| --- | --- | --- |
+| 3pp | 2,024 | 74 |
+| 5pp | 729 | 74 |
+| 10pp | 183 | 74 |
+| 15pp | 81 | 74 |
+
+The rule this lane reverts on is `−5pp with a served pack`, and at its own discordance that rule needs **729 paired
+trials** to be resolvable. R152c's revert was therefore a cost decision taken below the design's resolution — the
+record has said so qualitatively (§PROGRESS 181); this is the number. (At retail's own 0.275 the same bar costs 864;
+the command uses each artefact set's observed discordance rather than a borrowed one.)
+
+### Two defects the build found, both in the round's own work
+
+| defect | how it surfaced | repair |
+| --- | --- | --- |
+| a second `wilsonInterval` | `Multiple exports with the same name "wilsonInterval"` across 20 test files — the module had re-implemented a Wilson interval that `reproduction.ts` has exported since the BIRD lane | the new module calls the existing one through `proportionRate`, and the duplicate is deleted; one formula, two populations |
+| the gate failing on scheduling | `pnpm test` reported **5,830 passing** and exited **1** with `[vitest-worker]: Timeout calling "onTaskUpdate"` at the default worker count (one per core, 32 here) | `maxWorkers: 8` in `vitest.config.ts`, with the reason in the file: a gate that fails for a scheduling reason is a gate people re-run until it passes |
+
+Both are the same class this record keeps meeting: a second copy of a thing that already exists, and a green reading
+that is not a measurement.
+
+### One comparability fact, recorded rather than fixed
+
+R152c's arm carries `metrics.k = 1` and `episode_trials = 40` — one trial per task — while the field beside it is
+named `pass4` and the published bars (0.575, 0.6754) are `pass^4`. The pair's `protocol` block carries no `k` at
+all, so a reader cannot audit metric parity from the artefact. `bar_backbone_matches = 0` already says the bars
+belong to weaker backbones; this says they are also on a **stricter metric**, which makes the rank claim weaker
+still and the "last on published score" line more misleading than it was. Recorded here, and queued: the pair's
+protocol should carry `k` and `trials`, and the bar block should carry `bar_k_matches` beside
+`bar_backbone_matches`.
+
+### Acceptance
+
+| dimension | reading |
+| --- | --- |
+| tests | **5,830 over 284 files** (+14: 11 for the conditional block, 3 for the inverse formula) |
+| coverage | **100 / 99.92 / 100 / 100**; `conditional.ts` and `detectable.ts` **100 / 100 / 100 / 100** |
+| new surface | `conditional.ts`, `bin/conditional.ts`, `tasksForDelta`, a printed line and a compact block in every pair |
+| gate | `pnpm eval:conditional` in `pnpm check`: a decomposition that misses the published delta by >0.005pp fails the build; a negative measurement does not |
+| dispatch cost | **$0.00** |
+
+**Next.** The queue's head is now a number rather than a fold: **get the break rate under 10.8% on retail's failure
+share**, measured on a fold whose ceiling clears its resolution. That is the first time the two halves of the
+programme meet — §PROGRESS 183 priced the fold, and this round prices the store's own bar — and it is why the next
+dispatch is a pooled fold with a content axis, not a fifth draw of the same forty tasks.

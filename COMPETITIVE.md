@@ -7648,3 +7648,68 @@ mechanism is unmeasurable, and no other row can show that it isn't.
 **What it would take to move the rank.** A corpus where the control fails enough tasks for a memory to show: 164
 pairs (retail 114 + airline 50) computes to ≈11.5pp resolution under a 15.0pp ceiling, the first composition in this
 record with margin. That is the registered next step, and it is a corpus change, not a better store.
+
+**AM.14 — the row that reports its two rates, and the rank claim it has to give up.** AM.10–AM.13 were about
+serving policies, design bounds and instruments. This is about the *number* every row on the board headlines.
+
+| system | headline | what it divides | can a reader tell the harm from the corpus? |
+| --- | --- | --- | --- |
+| **AskData** | BIRD dev 83.40 | accuracy over 1,534 questions | no memory, so no repair/break split to report — but the denominator is large enough to mean something |
+| **ALTK-Evolve** | τ² retail `pass^4` 0.6754 | one rate over one run | no: no control pass rate, no failure share, no `k` for this lane to check |
+| **ACE / SEMV / STRATA** | one run per configuration | one rate | no |
+| **microglia** | `pass^4` 0.925 / 0.850 / 0.775 across draws | **two rates**: 66.7% of failures repaired, 16.2% of passes broken | **yes** — and the two rates explain a 15pp spread that the single rate made look like noise |
+
+**What the row adds.** A delta is `f·r − (1−f)·b`; a board that ranks deltas is ranking a mixture whose weights are
+the benchmark's difficulty. Two systems can be ranked one above the other while one repairs more and breaks more,
+purely because their corpora fail at different rates. **This is the only row on the board that can say that about
+itself**, and it is why its own rank is the least meaningful thing about it: microglia's break-even is 10.78% and it
+sits at 16.17%, which is a statement a competitor cannot make without publishing two denominators it does not
+publish.
+
+**The half of the rank claim that got weaker.** R152c's arm records `k = 1` (one trial per task) beside a field named
+`pass4`, and the pair's protocol carries no `k`. ALTK-Evolve's 0.6754 is `pass^4`. So the level comparison fails on
+**two** counts now — backbone (`bar_backbone_matches = 0`; this lane's memory-free control reads 0.925) and metric
+(a `pass^1` beside a `pass^4`). **microglia's position: last on published score, and no longer able to claim the
+comparison is apples to apples even in principle** — which is a smaller claim than AM.13 made, and a true one.
+
+**What it would take to move the rank.** Two things, and neither is a better store: a fold whose ceiling clears its
+resolution (164 pairs, ≈10.5pp against 15.0pp) and a metric both sides report (`pass^4`, `k = 4`, control rate, failure
+share). Until a competitor publishes the second and this lane pays for the first, every row on this board is
+unrankable — including the one at the top.
+
+**AM.15 — the 2026 memory literature has already measured our break-even, and calls it coverage.** A read of the
+current boards (2026-11-19), and the one result that lands on this record's own numbers.
+
+| board | size | current top rows | what it grades |
+| --- | --- | --- | --- |
+| **MemoryAgentBench** (UCSD, rev. 06/2026) | four competencies, incremental feed | Raw-RAG **48.32** (4o-mini) / **53.41** (DeepSeek-V4-Flash); Memora 43.84 / 47.88; CMI-Mem 46.1; **BM25 60.5** on accurate retrieval | retrieval accuracy, long-range understanding, selective forgetting |
+| **LoCoMo** (Snap) | 1,540 questions | vendor-reported: Mem0 **92.5**, Hindsight 89.61, MemOS 88.83, Letta 74.0; independent re-grade of retrieved text: GoodMem **57.6%**, Letta 52.2, Mem0 50.0, LangMem 45.7, Zep 37.0 | QA over long conversations |
+| **LongMemEval** (ICLR 2025) | 500 questions, ~115k-token histories | Mem0 94.4 (platform); Zep 71.2 vs **full-context 60.2**; CMI-Mem 67.0 | five memory abilities incl. knowledge update and abstention |
+| **BEAM** (ICLR 2026) | 100 sessions, 2,000 questions, 128K–10M | 64.1 at 1M, 48.6 at 10M | ten abilities, at scales a window cannot hold |
+| **τ²-bench** retail | 114 tasks, `pass^4` | ALTK-Evolve **0.6754** (earlier bar 0.575) | tool-use episodes, this lane's primary board |
+| **BIRD** dev / test | 1,534 / 1,534 | AskData **83.40** test / 78.49 dev; GrainSQL 82.95 | single-shot SQL, memory-free |
+
+**The finding that matters for this record.** Across MemoryAgentBench, the 2026 result is that systems differ far
+more in **coverage of necessary evidence** than in **utilisation once the evidence is present** — Raw-RAG's
+coverage is 45.29% against a utilisation band of 80–90% — and that ablations *adding* atomic facts, summaries or
+graph expansion on top of raw retrieval **hurt by 5.78 to 19.62 points**. Its stated mechanism is that
+ingestion-time compression discards information later retrieval cannot recover.
+
+That is this record's break-even, measured from the other end. The store here is the compressing side (73
+corrections → 78 items → 13 servable, each truncated to 240 chars), its served item covers a **median 10.5%** of a
+request's assertions (`coverage.p50 = 0.105`, p90 = 0.182), and it breaks **16.2%** of already-passing trials against
+a **10.8%** break-even. **Two independent measurements, one from a 194-pair paired fold and one from a public
+benchmark suite, say the same thing: the harm is low-coverage injection, not wrong rules.**
+
+**What this changes about the plan, and what it forbids.** It forbids the next content axis being *more
+distillation* — every abstraction this lane has added (rules, consolidation, packing) sits on the side of the
+ablation that lost 5.78–19.62 points. It selects instead: **retrieve evidence the request can use, and serve
+nothing when no such evidence exists.** The break-even gives that change a target (`b < 10.8%` at `r = 66.7%`), the
+coverage distribution gives it a threshold (`minCoverage` ≥ 0.15 empties 21 of 41 packs), and the sweep already
+prices it (`net +2.5pp` at rung 0.15, below resolution and therefore a hypothesis, not a result).
+
+**Where microglia stands, restated against these boards.** Last on published score on τ² (0.925 at `k = 1` against
+a memory-free 0.850 vs ALTK's 0.6754 at `pass^4` — not comparable on metric or backbone), absent from every
+memory board above (no LoCoMo, LongMemEval, BEAM or MemoryAgentBench run), and **first on one thing**: it is the only
+row that reports `f`, `r`, `b`, `b*` and a fold ceiling, which is what makes its null results informative rather
+than merely negative.

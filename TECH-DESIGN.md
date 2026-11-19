@@ -10455,3 +10455,55 @@ ceiling is below its resolution cannot certify any effect at any treatment quali
 **Cost of the instrument.** $0.00 — it is subtraction on numbers already filed. The cost of *not* having it is four
 dispatches whose conclusions were read as statements about memory when the file also contained, unread, the
 statement that no memory could have been certified.
+
+### 17.168 A serving metric owes its two denominators, and every threshold owes its sample price
+
+§17.167 priced a *design* in tasks. This prices the *metric* a design reports, and the rule it produces is about
+decomposition rather than arithmetic.
+
+**The metric.** A serving delta is `(repairs − breaks) / trials`, and that is a mixture: repairs come from failed
+trials, breaks from passed ones. The design therefore owes three numbers, not one:
+
+```
+delta = f·r − (1−f)·b          f = failure share, r = repair rate, b = break rate
+b*    = r·f/(1−f)              the break rate at which the store pays for itself on this corpus
+```
+
+| term | what it is | why the design must carry it |
+| --- | --- | --- |
+| `f` | the corpus's failure share | the mixing weight; a property of the benchmark and the backbone, not of the store |
+| `r` | repairs over failures | the effect on the population the store exists for; the only rate a content axis can move |
+| `b` | breaks over passes | the harm, on the population that dwarfs the first |
+| `b*` | the break-even | turns "the memory costs points" into a threshold a change can be graded against |
+
+**Rule 1 — a rate is reported with the population it was estimated on.** `18/27` and `27/167` are the two readings;
+`−4.64pp` is their weighted difference and carries strictly less information than either. The intervals differ for
+the same reason (34 points against 11), and averaging them into one delta is how this record spent four rounds
+reading corpus composition as mechanism (34.201).
+
+**Rule 2 — the break-even is part of the metric, because it moves with the corpus.** The same store breaks even at
+10.8% on retail's 14% failure share and at 28% on a corpus with a 30% share. A threshold stated without the share it
+was computed at is a threshold that cannot be transferred, and this lane has been quoting one.
+
+**Rule 3 — every threshold in the design carries the sample it needs.** `tasksForDelta` is the design's own
+arithmetic inverted: `n = z²·d/effect²`. At an observed discordance of 0.232 the `−5pp` cost bar needs **729** pairs,
+the 3pp claim needs **2,024**, and the largest fold this record has run is 74. A design that states a bar and not
+its price will fire the bar on readings the sample cannot certify, and the error is not symmetric: the bar is a
+*revert*, so its false positives discard work that was fine.
+
+**Rule 4 — a cross-system comparison carries the metric's parameters, not only its value.** The published bars
+(0.575, 0.6754) are τ² `pass^4`; R152c's arm records `k = 1` beside a field named `pass4`, and the pair protocol
+carries no `k` at all. `bar_backbone_matches = 0` already disqualified the level comparison on backbone grounds;
+this disqualifies it again on metric grounds, and the artefact cannot show the mismatch because the field is not
+there. The queued repair is one field in the protocol (`k`, `trials`) and one in the bar block
+(`bar_k_matches`), which is the same discipline as §17.164's projection table applied to a comparison rather than
+to an arm.
+
+**What the gate is, and is not.** `pnpm eval:conditional` fails the build when a pair's four counts do not
+reconstruct its published delta (±0.005pp) — two blocks about one comparison disagreeing means one of them is wrong
+and neither says which. It does **not** fail when the store is over break-even: that is a measurement, and a build
+that goes red on a measurement teaches its readers to skip the line (§17.166's reason for keeping the resolution row
+advisory while the cost row blocks).
+
+**Cost of the whole axis.** $0.00, over artefacts that already existed, and it produced the first target on the harm
+side that a $0 change could be graded against: get `b` under `b*` without moving `r`.

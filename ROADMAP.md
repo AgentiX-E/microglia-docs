@@ -7150,3 +7150,26 @@ the memory were perfect, because the baseline agent already passes 85–90% of t
 binding constraint is headroom, and headroom is a property of the corpus and the backbone, not of the store.** That
 reframes every remaining row: the next dollar does not buy a better memory, it buys a setting where a memory could
 show up at all.
+
+## Where the flywheel stands, 2026-11-19 (R155 read: the delta is a mixture)
+
+**The one thing that changed.** Every delta this lane has published is a weighted average of two rates it never
+printed, and the weights are the corpus's failure share: `delta = f·r − (1−f)·b`. Pooled over four draws the store
+repairs **two thirds of the failures** (`18/27`, `[47.8%, 81.4%]`) and breaks **one in six of the passes**
+(`27/167`, `[11.4%, 22.5%]`); it is net-negative only because passes outnumber failures six to one. Its break-even on
+retail is **10.78%** and it is at 16.17% (§PROGRESS 184, §AUDIT 34.201, §TECH-DESIGN 17.168).
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | **a content axis graded against the break-even** | `b < 10.8%` with `r` held at 66.7% | **head of the queue**: the first target on the harm side that a $0 change can be graded against, and the first that separates the store from the corpus. The lexical anchor (axis 3) is the candidate already built |
+| 2 | **the fold the target has to be read on** | a ceiling above the resolution | 164 pairs (retail 114 + airline 50) is ≈10.5pp against a 15.0pp ceiling at the observed 0.232 discordance — the first composition with margin. Cost ≈$1.3, and it needs the airline control rate as a pre-reading (≈$0.15, one arm) before it is bought |
+| 3 | metric parity (`k`, `trials`) in the pair protocol | an auditable comparison | **$0, new**: R152c records `k = 1` beside a field named `pass4`, the published bars are `pass^4`, and the protocol carries no `k`, so the mismatch cannot be seen from the artefact |
+| 4 | the published bar (0.575, ALTK 0.6754) | a comparable backbone **and** metric | reframed: this lane's memory-free control reads 0.925 at `k = 1`; the bars belong to weaker backbones at `k = 4`. `bar_backbone_matches = 0` **and** a missing `k` — two reasons the comparison is not one |
+| 5 | BIRD dev | 6,600 paired questions ≈1pp | unchanged, and now the only lane whose resolution reaches the 3pp claim (2,024 pairs at this discordance) |
+| 6 | the serving default | — | withdrawn (§PROGRESS 181); the switch stays as an instrument |
+
+**The honest summary, six bounds in.** The record has established, at $0 and with artefacts it already had, three
+things that change what the next dollar buys: the fold has a ceiling (§PROGRESS 183), the target is a rate and not a
+delta (this round), and the bar has a price in pairs (729 for `−5pp`). **The next spend should buy a fold that can
+see the target and a change that moves the rate — not another draw of the same forty tasks.** Every remaining row is
+now stated as a number a change can be graded against, which is the difference between a queue and a wish list.
