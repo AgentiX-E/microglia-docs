@@ -10620,3 +10620,56 @@ eventually disagree at a boundary, so the design keeps one test and one display.
 refuses an arm with no cluster key (`perCaseRows` and `pairRows` name the row they could not read), because an
 unclustered arm cannot be interval'd and a census that silently treated it as independent would be worse than no
 census.
+
+## 17.172 — `pack-copy`: two readers over one set of rows, and the statistics they share
+
+`pack-copy.ts` (R158) answers "is the pack about this case" with two functions, because the question splits into
+one part English states unambiguously and one part that is arithmetic.
+
+**Denial: a table, not a parser.** `DENIAL_RULES` holds eleven entries, one per member of `CONSTRUCTS`, each a
+pattern and the phrase family it names. The pattern admits only connectives between cue and construct — `using`,
+`be`, `wrapped in`, an article — so `a join problem` and `the joined result` do not fire. The alternative was a
+cue-then-window reader, which on dev reported 1,092 of 1,534 cases contradicted; that is what a reader measures
+when it measures English. A rule and a construct are kept 1:1 by a test, because a construct with no rule is a
+construct nothing can detect and a rule for an unlisted construct would report a hit the gold reader cannot
+corroborate.
+
+**The gold side is read from the shape.** `constructsOf` uses `sqlShapeOf` for clauses, aggregates and subquery
+count, and the shared tokeniser for `cast`, `round(`, `count(*)` and — the one construct `sqlShapeOf` does not
+separate — a top-level `AS` in the select list followed by a name that is not a type keyword. Reading the gold's
+*text* instead would count `WHERE label = 'distinct'` as a use of `DISTINCT`.
+
+**Two flags on every denial, for two different reasons.**
+
+| flag | meaning | why it is not a filter |
+| --- | --- | --- |
+| `conditional` | the sentence carries `when` / `if` / `unless` / `whenever` | parsing an antecedent into a predicate over the question is a second classifier with its own error rate; the flag lets the census publish a strict reading beside the wide one |
+| `warning` | the sentence carries a failure predicate (`does not`, `cannot`, `inflates`, `drops rows`) | a warning tells the executor what *not to try*; read as a prescription it inverts the sentence. 23% of train's denials are warnings, which is a property of the store worth publishing |
+
+`DenialReading` therefore reports `denials`, `warnings`, `hits` and `strict` separately. `hits` excludes
+warnings; `strict` is `hits` minus the conditional ones. A reader can reconstruct every number in the artefact
+from those four counts and the case's own pack.
+
+**Circulation is arithmetic.** `spreadOf` counts, per statement, the cases that received it and the distinct
+databases among them; `boilerplateShareOf` scores a case by the fraction of its statements whose spread is ≥ 2,
+and returns `null` for a pack with no statements. The database is the unit because cases in one database share a
+schema; a statement delivered twice inside one database is about a schema those cases have, and the same
+statement in `hockey` and `student_loan` is about neither. `circulationStratumOf` maps `null` to `none` — an
+empty pack has no composition and must not be scored as clean by default.
+
+**One resampling loop, two kinds of stratum.** `carve` reports a stratum's delta with
+`clusterBootstrapStatistic` over databases; `carveGap` bootstraps the **corpus** — clusters drawn, both strata
+recomputed inside the draw, a draw losing either stratum returned as `null` and counted in `dropped`. Resampling
+inside a stratum would condition the interval on a label derived from the same rows, and would report a width
+the design cannot support. The gap's sign is the finding; its width is why four source rows can disagree in sign
+and still be one honest table.
+
+**The gate.** `eval/results/poc-pack-copy.json` is a pure function of four committed artefacts and two rule
+tables; `pnpm eval:pack-copy --check` recomputes it and fails on a byte, in CI and in `pnpm check`. The
+`registered` field names `ROADMAP.md §R158`, which was written before the module existed, so the order —
+prediction, then reading — is checkable by anyone holding both repositories.
+
+**Why it is deferred and not an adapter.** The coupling walk classifies `pack-copy` as coupled (it names scenario
+words in code) and `DEFERRALS` carries the reason: it reads two strings per case and executes nothing. The
+deferral is a written decision in the same table as the other 24, and `V72` fails if the entry disappears.
+

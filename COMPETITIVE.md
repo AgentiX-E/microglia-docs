@@ -7796,3 +7796,42 @@ boards; on the τ² board its headline is cross-backbone and cross-sample and ra
 changed is that its own numbers are now in the same unit as Memory Tax's and Retain-or-Consolidate's — a paired
 delta with an interval over a stated cluster — so the only remaining gap to those two is that this record has one
 7,000-question reading and they have three benchmarks each.
+
+**AM.18 — The axis the field names is not the defect this store has, and the difference is measurable in its
+composition.** AM.17 closed by predicting that contradiction would be the content axis that separates harm from
+noise. R158 tested it on committed rows at $0 and rejected it — with a mechanism that is more useful than the
+rejection.
+
+| reading | microglia (R158) | the comparison that matters |
+| --- | --- | --- |
+| pack contradiction of the gold | **127 of 7,000 cases (1.8%)**, delta **+1.57pp [−2.76, +6.38]** | FactConsolidation moves 100% → 44.6% with **one** competing statement; this store cannot produce that effect because it produces almost no competing statement |
+| pack composition | **210 distinct statements for 7,000 questions**; 39 reach ≥2 databases; those 39 wholly compose **60.6% of packs**; 171 never leave their database | Memory Tax measures facts **lost** at construction (11.4–22.6%, up to 38.0% never stored); this store's loss is **abstraction** — the fact is not dropped, it is generalised until no schema survives |
+| harm by composition | all-boilerplate **−0.94pp [−1.50, −0.40]**; none −0.11pp [−2.78, +2.66]; gap −0.84pp [−3.64, +1.78] | Retain-or-Consolidate: −0.080 over 75 questions, supported only where intervals exclude zero — the same rule, applied to a composition rather than a memory |
+| negative advice that inverts | **902 of 3,963 denials (23%)** are warnings about the wrong method on train, 28 of 257 on dev | no paper in this file measures the polarity of its own stored advice; it is a defect class this record can quantify and nobody else's table has a column for |
+
+**What follows for microglia's position, stated as the three things a reader can check.**
+
+1. **The literature's harm mechanism is absent here, and that is a statement about construction, not about
+   selection.** A store that produces 1.8% contradictions cannot be harmed by contradiction; Obsolete-
+   FactConsolidation's effect needs facts specific enough to conflict, and this store's lessons are schema-free
+   procedure ("aggregate expressions are left unaliased", "a join between a product table and its cost history
+   table"). The three null content axes in this record — coverage (AM.15), imported identifiers (R31), denial
+   (R158) — are one finding seen three times: **there is little case-specific content to be right or wrong
+   about.**
+2. **The composition is where the gap to the field now sits.** Memory Tax's systems sit at 73–81% on LongMemEval-s
+   with a *built* store; this record's store distils 210 statements for 7,000 questions. A same-corpus comparison
+   is impossible until this lane runs one of the four memory boards (AM.17, unchanged), but the quantity that
+   would have to move first is visible without them: the share of delivered statements that are about the case's
+   own schema.
+3. **What this record still has that the field does not.** A census, `pnpm eval:pack-copy`, that recomputes both
+   readings from committed artefacts and fails CI on a byte of drift — so the composition claim above is not
+   this document's assertion but a file a reader can regenerate. The field's papers publish the effect; none of
+   them publishes the store's composition in a form anyone can re-derive.
+
+**Board position, unchanged and now with a reason.** microglia still appears on one board (τ² retail) and not the
+four memory boards. What R158 adds is not a rank but a diagnosis of why the four boards are the wrong next
+purchase at the current store shape: the boards measure a memory system's end-to-end benefit, and an end-to-end
+measurement of a store whose content is 60.6% cross-database boilerplate measures the boilerplate, not the
+system. The next dollar is better spent on one arm that changes the store's composition (≈$8.6 on BIRD dev at the
+recorded per-question cost) than on a board row that would rank a store nobody has fixed yet.
+

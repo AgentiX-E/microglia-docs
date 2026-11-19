@@ -22940,3 +22940,109 @@ statements and `goldSql` are both in the committed `per_case` rows, so the first
   census implements: claims are supported only where "question-bootstrap intervals exclude zero", point-estimate
   orderings are reported without dominance where they do not. Independent confirmation that the interval, not
   the ratio, is the unit of a claim.
+
+## 187 — R158: the pack does not compete, it generalises, and that is a construction defect
+
+**$0.00, no dispatch.** Two mechanical readings over four committed arms, one artefact, one gate. The round was
+scheduled to test the axis the 2026 literature predicts will separate harm from noise — "does the pack assert
+something the gold contradicts" — and it returns a rejection with a mechanism: the pack almost never makes a
+claim specific enough to compete.
+
+### 187.1 Two readers, because one of them cannot be written
+
+`pack-copy.ts` computes **denial** and **circulation**, both from `per_case` rows that every arm already commits.
+
+| reading | definition | why it is mechanical |
+| --- | --- | --- |
+| denial | a negation cue bound to a construct in one phrase (`without DISTINCT`, `rather than COUNT(*)`, `left unaliased`), where the gold query uses that construct | eleven patterns, each allowing only connectives between cue and construct; the construct is read from `sqlShapeOf`, not from the query's text |
+| circulation | the number of **databases** that received a delivered statement; a case's boilerplate share is the fraction of its statements whose spread is ≥ 2 | arithmetic over the `injected` arrays of every case in the arm |
+
+A window-based reader was tried first and is recorded as the reason the patterns are narrow: on dev it bound
+`a join problem`, `the joined result` and `nothing was joined` to `join`, and called **1,092 of 1,534** cases
+contradicted. That number is a property of English, not of the pack.
+
+### 187.2 The composition, before any outcome is read
+
+```console
+$ pnpm eval:pack-copy
+source                              n  clus  stmts   xdb  denial   warn   hit  strict
+bird-train                       7000    58    210    39    3108    902   127      98
+bird-dev                         1534    11    215    31     257     28    62      31
+bird-dev-lexicon                 1534    11    212    31     215     32    47      18
+bird-mini                         350    11    192    24      33      0    14       6
+```
+
+The store distilled **210 statements for 7,000 questions**, and **39 of them reach cases in two or more
+databases**. Those 39 compose **60.6% of packs entirely** (4,241 of 7,000 cases). One statement — *"a customer
+name filter must match the stored `customerName` value exactly, including any suffix such as 'Distributors Ltd.'
+that appears in the schema description"* — arrived in **53 databases**, 650 cases, at a median of 12 per
+database.
+
+So the store is not a library of case-specific experience with a few bad entries. It is a generic curriculum with
+a thin layer of local notes: **171 of 210 statements never leave their database**, and the 39 that do account for
+the majority of what the model actually reads.
+
+### 187.3 The denial axis does not separate harm, and one number says why
+
+| source | contradicted (n) | delta [95%] | else (n) | delta [95%] | gap [95%] |
+| --- | --- | --- | --- | --- | --- |
+| BIRD train | 127 | **+1.57pp [−2.76, +6.38]** | 6,873 | **−0.76pp [−1.33, −0.17]** | +2.33pp [−1.95, +7.20] |
+| BIRD dev | 62 | +0.00pp [−7.41, +10.64] | 1,472 | +0.34pp [−0.61, +1.48] | −0.34pp [−8.19, +9.83] |
+| BIRD dev, lexicon | 47 | **+6.38pp [+0.00, +21.21]** | 1,487 | +0.54pp [−0.89, +2.23] | +5.84pp [−1.09, +21.12] |
+| BIRD mini-dev | 14 | +7.14pp [+0.00, +15.00] | 336 | +0.30pp [−4.17, +4.93] | +6.85pp [−4.09, +15.71] |
+
+Three of four arms put the contradicted stratum **above** the rest, which is the opposite of the prediction, and
+the fourth is zero. The `else` stratum on train is the only interval in the table that resolves away from zero,
+and it is negative: **the loss is in what the pack says when it is not contradicting anything.**
+
+Two limitations keep this from being a claim about the mechanism rather than about the reader:
+
+- **Scope.** 3,963 denial sentences, 127 contradictions — **1.8% of cases**. An axis that fires on one case in
+  fifty-five cannot carry a 0.7pp corpus effect even if every hit were harmful.
+- **Precision.** Eight hits were hand-audited: five genuine, one bound to a longer object (`rather than joining
+  the Answer table to itself`, against a gold that joins a different table), one conflated a select-list
+  `DISTINCT` with `COUNT(DISTINCT)`, one was conditional. Five in eight is enough to reject a large effect and
+  not enough to establish a small one.
+
+### 187.4 A third of the store's negative advice inverts if read as advice
+
+The census carries `warn` because the first pass scored warnings as contradictions. *"Counting rows from the
+incidents table without joining and grouping by case does not measure how many officers were involved"* is not
+advice to avoid joining; it is advice that a shortcut fails, and the gold query joins. On train **902 of 3,963
+denials (23%) are that shape**; on dev it is 28 of 257 (11%); on mini none.
+
+That is a defect of the store independent of any outcome: a sentence whose polarity depends on a failure
+predicate three words later is a sentence a model can read backwards, and the pack delivers it as text.
+
+### 187.5 Circulation separates only as a stratum, and not as a contrast
+
+| source | none | mixed | all-boilerplate | gap all − none |
+| --- | --- | --- | --- | --- |
+| BIRD train | 948, −0.11pp [−2.78, +2.66] | 1,811, −0.50pp [−1.57, +0.52] | 4,241, **−0.94pp [−1.50, −0.40]** | −0.84pp [−3.64, +1.78] |
+| BIRD dev | 943, +0.42pp [−0.55, +1.32] | 422, +0.95pp [−1.63, +3.81] | 169, −1.78pp [−5.56, +3.82] | −2.20pp [−5.95, +3.33] |
+| BIRD dev, lexicon | 914, +0.88pp [−0.85, +2.20] | 459, +0.00pp [−2.82, +3.08] | 161, +1.86pp [−1.69, +8.87] | +0.99pp [−2.93, +7.87] |
+| BIRD mini-dev | 252, +1.98pp [−2.80, +6.41] | 92, −3.26pp [−7.41, +3.51] | 6, 0.00pp | −1.98pp [−6.74, +2.85] |
+
+The monotone ordering on train — −0.11, −0.50, −0.94 — is the first time a content property of this store has
+ordered three strata in the predicted direction, and the all-boilerplate stratum resolves. The gap does not, and
+the lexicon arm reverses it, so the honest statement is: **a pack made entirely of lessons from other databases
+loses more than 1pp on the only corpus large enough to see it, and the difference between that stratum and a
+case-specific pack is still inside this design's resolution.**
+
+### 187.6 Acceptance
+
+| dimension | reading |
+| --- | --- |
+| tests | **5,931 over 288 files** (+33 on `pack-copy.test.ts`: eleven rules and their refusals, warnings, conditional attribution across sentence bounds, the shape reader, both strata, both refusals, the table's alignment, the artefact reader's five refusals, the sentinel) |
+| coverage | **100 / 99.92 / 100 / 100** overall; `pack-copy.ts` is **100 / 100 / 100 / 100** |
+| gates added | `pnpm eval:pack-copy --check` (census drift, in CI and in `pnpm check`); 11 coupling checks still pass at 254 modules, with `pack-copy` carrying a written deferral |
+| artefacts committed | `eval/results/poc-pack-copy.json`; `eval/results/poc-coupling.json` (rebuilt: one module, +33 deferred lines) |
+| dispatch cost | **$0.00** |
+
+**Next.** The queue's head moves from "is the pack wrong" to "can the pack be made specific". The finding prices
+that, and it also constrains how it can be tested: a filter that drops statements with spread ≥ 2 changes what
+the model reads, so **it cannot be evaluated on the rows already bought** — the outcome is a function of the
+pack, and these packs no longer exist once the filter runs. It needs one dev arm, ≈$8.6 at the recorded
+$0.00062 per question, and that arm can carry both halves of the intervention: the filter, and a distillation
+policy that anchors a statement to the case's schema.
+

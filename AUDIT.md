@@ -12565,3 +12565,47 @@ construction and up to 38.0% never stored; the NeurIPS 2026 coverage-calibrated 
 similarity and an LLM judge "rank the harmful cases no better than chance" and that where no comparable structure
 exists the transfer sign is *unidentifiable*. This record's −0.71pp [−1.26, −0.18] is the same shape as the first,
 and its three unresolved arms are the second's licensing rule rather than a failure of the measurement.
+
+## 34.205 — The reader that inverted a third of what it counted
+
+**Defect class: a classifier whose label is not the label the decision needs.** Three rounds have now found the
+same shape in three different places — a re-grader that could not fail (34.202), a metric field nothing read
+(34.203), a ratio that applied the corpus odds twice (34.204). This one is the first where the arithmetic was
+right and the *reading* was wrong: the denial census counted a sentence as contradicting the gold when the
+sentence was warning the executor away from a method the gold does not use either.
+
+**What the first pass did.** `denialsOf` bound a cue to a construct, and `denialReadingOf` counted every such
+binding whose construct the gold query uses as a *hit*. On BIRD train that produced 160 hits — and among eight
+hand-audited samples, four were sentences of the form *"doing X without joining does not measure Y"*. The pack
+was telling the executor that a shortcut fails. The gold joins. Read as a prescription the sentence inverts, and
+the census scored the inversion as a contradiction.
+
+**The fix, and why it is a flag rather than a filter.** A sentence carrying a failure predicate (`does not`,
+`cannot`, `fails to`, `inflates`, `drops rows`) is a warning about the wrong method; `Denial.warning` records it,
+`denialReadingOf` excludes it from `hits` and counts it in `warnings`, and the composition table publishes
+`warn` beside `denial` and `hit`. A filter would have hidden the quantity; as a column it is a finding of its own
+— **902 of 3,963 denials on train (23%) are warnings**, against 28 of 257 on dev (11%) and none on mini. A store
+whose negative advice is a quarter warnings is a store that can be read backwards, and no outcome reading was
+needed to establish it.
+
+**What the correction changed in the numbers, and what it did not.** Train's contradicted stratum went from 160
+to 127 cases and its delta from +1.25pp to +1.57pp; dev's stayed at 62. The direction did not move: three of four
+arms read a *positive* delta in the contradicted stratum, so the axis is rejected either way. That is the useful
+part of the audit — the conclusion was robust to the label error, and the error was still worth fixing, because a
+record that publishes 160 when the answer is 127 has no way to notice the next sentence its reader inverts.
+
+**The limitation, stated where the number is.** Eight hits were hand-audited: five genuine, three not (one bound
+to a longer object, one conflated select-list `DISTINCT` with `COUNT(DISTINCT)`, one conditional). A lexical
+reader is about five-in-eight precise. That is enough to reject a large effect — 127 cases at +1.57pp cannot
+carry the corpus's −0.71pp — and not enough to establish a small one, which is why the census publishes `denial`
+beside `hit` and why the round's conclusion is a rejection rather than a discovery.
+
+**The structural finding that outlived the defect.** The store distilled **210 statements for 7,000 questions**;
+39 of them reach two or more databases and entirely compose **60.6% of packs**. The pack is not a library of
+case-specific experience with a few bad entries — it is a generic curriculum with a thin layer of local notes.
+That is the Memory Tax shape (11.4–22.6% of facts lost during construction, up to 38.0% never stored) with a
+different loss mechanism: not facts dropped, but facts abstracted until nothing case-specific remains. It also
+explains why every content axis so far has been null — coverage (AM.15), imported identifiers (R31), and now
+denial have all been asked of a store that has little content about any particular case to be right or wrong
+about.
+
