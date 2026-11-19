@@ -7317,3 +7317,51 @@ forced — **row 7 (BIRD dev 6,600 paired) before row 1 can be read**, and row 1
    6,600-pair lane (≈1pp resolution, the only lane that can see a 0.9pp effect), then **$0.95** for the distillation
    arm, then **¥150–400** for one memory board row once the store is worth ranking.
 
+## Where the flywheel stands, 2026-11-19 (R160 read: the corpus does not carry the lesson, and the queue head is withdrawn)
+
+**The one thing that changed.** Twelve content axes have been null, and this round stopped looking for a thirteenth
+and tested why they were all null. A lesson can only transfer to a question whose answer already shares something
+with the case it came from, so reuse is a ceiling on every content axis at once. Measured as the column overlap
+between each case and its nearest neighbour inside its own database — question text only for retrieval, gold answers
+only for measurement — the ceiling is **not** the constraint: median overlap is **0.500** and half the corpus shares
+at least half its columns with a neighbour. What fails is the *predictive* reading of reuse: the highest band reads
+**+2.69pp [0.00, +5.66]** on dev and **−1.04pp [−2.20, +0.18]** on train, which shares no database with dev and
+resolves 0.92pp. **The verdict is `contradicted`, not `null`** — a sign flip cannot be blamed on power.
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | **a recurring-defect task family, priced before it is bought** | a public procedure where the same defect recurs; ALFWorld is the one the experience-reuse literature uses | **head of the queue, and it is a scope decision**: the mechanism's only positive evidence is the synthetic lane (100.00% vs 31.79%), which is not a board. Priced at **¥40–120 and 3–5 days**, engineering-dominated; the price is to be published and reviewed **before** any call is made |
+| 2 | BIRD dev 6,600 paired | — | **withdrawn, with arithmetic**: dev has 11 databases and 1,534 questions, so 6,600 pairs on dev is the same eleven twice; 0.9pp needs 7,267 questions and a 7,000-question design lands at 0.92pp — a coin flip on the effect it was bought to see |
+| 3 | the four memory boards | a store worth ranking | **withdrawn for the same reason as row 2**: the record already states that nothing about memory resembles the 9.26pp `linked` channel, so a board row buys a loss already predicted |
+| 4 | a distillation rule (conditional prescription) | ≈0.6–0.9pp | **parked, not cancelled**: correct in diagnosis, unmeasurable on 11 clusters, and it is a change to a store whose corpus cannot show the effect either way |
+| 5 | per-statement attribution | 39 of 210 screened, 4 resolved vs 1.95 expected | done, $0 — unchanged |
+| 6 | the circulation axis | within-database −1.34pp [−3.58, +0.71] | withdrawn (R159), unchanged |
+| 7 | the 149 / 592-pair folds | certify a 5.39% / 8.08% break rate | unchanged in price (¥8.6 / ¥32), displaced behind row 1 |
+
+**The honest summary, thirteen axes in.** Every axis asked *whether the store is about this case* and was null. R159
+asked *whether the store tells the executor to do something the answer does not do* and resolved, but could not be
+made to pay. R160 shows why both are true at once: the corpus does admit reuse, and reuse does not predict where the
+pack pays. That is not a property a better store can fix and it is not a property a bigger sample can overturn — it
+is the wrong task family for a mechanism whose premise is that a defect recurs. The record's own positive result,
+100.00% against 31.79% on a corpus built to repeat its defects, has been sitting in this repository the whole time
+and has never been converted into a public number.
+
+**What the four questions answer, this round.**
+
+1. **Are the field's authoritative sets and boards complete?** No, and the gap has a name now: every board in AM.16
+   is **one-shot** — BIRD, τ², LoCoMo, LongMemEval all score a system on tasks it has not seen — while the mechanism
+   under study is *learning across repeats*. The missing instrument is a recurrence board, not another accuracy
+   board. ALFWorld is the closest public procedure and it is a game, not a ranking.
+2. **The census of sets, stacks, metrics and token cost** is unchanged from AM.17/AM.18 except for one column this
+   round can now fill: **does the corpus admit reuse** (median 0.500 on BIRD, 50.1% of pairs at ≥ half). No published
+   paper reports that column, and two 2025 papers — Xiong et al. and MemCollab — assume it.
+3. **Has microglia learned what the leaders offer?** Partly. Xiong et al.'s selective addition and history-based
+   deletion are the field's best remedies and both need a **quality** signal that only exists after execution on a
+   recurring defect; MemCollab's contrastive distillation needs two backbones. This record has the instrumentation to
+   test either and has not yet had a corpus on which the test means anything.
+4. **Can SOTA still be taken, and at what price?** Not on BIRD (20.9pp behind AskData) and not on τ² (no matched
+   backbone). The reachable prize is unchanged and now better founded: the only system that can say *which sentence*
+   cost what, with an interval, **and** the only one that has measured whether its corpus could carry a lesson at
+   all. Extending it costs **¥40–120** for one recurring-defect family, with the price published first.
+
+

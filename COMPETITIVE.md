@@ -7881,3 +7881,38 @@ That is the uncomfortable finding of the round and it is worth stating as a posi
 answer to "why is the store not better": because 70% of its packs prescribe machinery the answer does not use, and
 because fixing that is a 0.6–0.9pp effect on a corpus that resolves at 4pp.
 
+**AM.20 — The literature's two remedies both assume reuse, and R160 is the first measurement of whether a corpus
+has it.**
+
+Two 2025 papers give the field's best account of why memory hurts, and both prescribe the same shape of fix. Xiong
+et al. (arXiv 2505.16067, Harvard/Michigan State) name the **experience-following property**: high input similarity
+between a stored case and the current task produces high output similarity, so an error in a stored case propagates
+to every task that resembles it. Their remedy is selective addition against a quality bar plus **history-based
+deletion** of records that repeatedly produce low output similarity, worth **+10% absolute** over naive growth
+across an EHR agent, a driving agent and a network-security agent. MemCollab (ICLR 2025) names **negative transfer**
+directly — a store distilled by Qwen-32B makes Qwen-7B *worse than no memory* — and its remedy is contrastive
+trajectory distillation plus **task-aware routing** so a geometry hint cannot reach an algebra question.
+
+Both prescriptions rest on a premise neither paper measures: **that the corpus admits reuse at all**. Xiong et al.
+can assume it because EHR and driving tasks repeat their defect; MemCollab can assume it because the two models face
+the same tasks. On a one-shot benchmark neither assumption holds, and R160 measures the gap rather than assuming it.
+
+| axis | microglia (R160) | nearest published number | what the comparison establishes |
+| --- | --- | --- | --- |
+| does the corpus admit reuse | **median column overlap with the nearest same-database case 0.500**; **50.1%** of pairs share ≥ half their columns | Xiong et al. assume high input similarity and measure its consequence; no published number states what share of a corpus actually has it | reuse is not rare on BIRD — it is *uninformative*: the highest band reads **+2.69pp [0.00, +5.66]** on dev and **−1.04pp [−2.20, +0.18]** on train |
+| does selective addition pay | **no**: every reuse band on the corpus that resolves 0.92pp is negative or within noise | Xiong et al.: +10% absolute from selective addition and history deletion | their selection is by **quality**, which is only knowable after execution, on tasks where a defect recurs; selection by **relevance** — the only signal available before execution — does not transfer |
+| is the harm cross-model negative transfer | **no**: this store is self-distilled by one backbone | MemCollab: 32B memory makes 7B worse than none | their mechanism is a dialect mismatch; on a single backbone the loss is **−0.71pp [−1.27, −0.18]** with no dialect involved, so the two failures are different and one remedy does not fix the other |
+| routing / retrieval gating | R72's routing table and R160's band gate both fail to move accuracy | MemCollab: two-stage task-typed retrieval is load-bearing | task-typed routing needs a task taxonomy; a column-overlap gate needs reusable answers; BIRD supplies neither |
+
+**The uncomfortable half.** These two papers are the strongest external evidence that the *mechanism* works, and
+R160 is the strongest internal evidence that this *corpus* cannot show it. Both can be true and the difference is
+task family: their corpora repeat a defect, BIRD does not. The record's synthetic lane — 100.00% against 31.79% —
+is the one place where the mechanism has been demonstrated, and it is not a public board. That is the honest
+position, and it is different from "the memory does not work", which is what eleven earlier rounds of null axes
+would have been read as.
+
+**Board position, unchanged and narrowed.** One board (τ² retail), no rank claimed, and BIRD dev 6,600-pair now
+**withdrawn from the queue** with its arithmetic: it buys the same 11 clusters twice and lands at 0.92pp resolution
+for a 0.9pp effect. The only lane this round endorses is a recurring-defect family under a public procedure, and it
+is endorsed as a *price to be published before it is paid* — not as a purchase.
+

@@ -23190,3 +23190,91 @@ arm, and its effect size is capped by the same arithmetic that capped the filter
 The honest statement is that **no single dev arm can measure this**; what can measure it is a corpus with more
 databases, which is what BIRD dev's 11 clusters cannot supply.
 
+## 189 — The twelve nulls were one hypothesis, and it is testable
+
+### 189.1 What this round refused to do
+
+The queue's head was "buy BIRD dev 6,600 paired for ¥30–150 to resolve a 0.9pp effect". That price was wrong twice
+over and the round began by killing it with arithmetic rather than by spending it. **Dev has 11 databases and 1,534
+questions**, so 6,600 pairs on dev is not more clusters, it is the same eleven twice. And the resolution arithmetic
+the record already publishes says 0.9pp needs **7,267 questions** at this discordance rate: a 7,000-question design
+lands at **0.92pp**, which is a coin flip on the effect it was bought to see. The four memory boards were withdrawn
+for a different reason: `README` §"Why the memory numbers disagreed" already states that nothing about memory looks
+like the 9.26pp `linked` channel, so a board row would buy a loss the record had already predicted.
+
+### 189.2 The question that replaced it
+
+Twelve content axes have come back null on BIRD. Each was explained afterwards by saying that axis does not carry
+the effect, and twelve explanations of one shape are a hypothesis about the corpus: **a lesson can transfer only to
+a question whose answer shares something with the case the lesson came from.** If that ceiling is low, every axis
+built on answers reads null for the same reason, and no thirteenth feature will change it. That is a corpus
+property and it can be measured at $0 from artefacts the project already paid for.
+
+### 189.3 The measurement
+
+Every case is paired with its nearest other case **inside its own database**, found from question text alone — the
+only input a deployed system has — and reuse is the Jaccard overlap of the two gold queries' column sets, divided by
+the union so a fragment is not counted as a whole answer. Columns come from `sqlShapeOf`, which excludes keywords,
+tables, aliases, output labels and CTEs and reads a quoted multi-word identifier as one name.
+
+The first implementation used backticks and is recorded as **AUDIT 34.207**: it saw a column in **8%** of gold
+queries and reported a median reuse of exactly **0.000**, a number that agreed with the conclusion being drawn and
+was false. With the tokenizer the same corpus reads a median of **0.500** and **50.1%** of pairs share at least
+half their columns, against 2.7% before.
+
+### 189.4 What the bands say, on both corpora
+
+| corpus | cases | databases | reuse ≥ 0.75 | 95% | bands above / below zero |
+| --- | --- | --- | --- | --- | --- |
+| dev | 1,534 | 11 | **+2.69pp** | [0.00, +5.66] | 2 / 2 |
+| train | 7,000 | 58 | **−1.04pp** | [−2.20, +0.18] | 0 / 4 |
+
+| band | dev pairs | dev | train pairs | train |
+| --- | --- | --- | --- | --- |
+| 0.00–0.25 | 309 | −0.97pp | 1,351 | −1.70pp |
+| 0.25–0.50 | 446 | +0.45pp | 1,849 | −0.32pp |
+| 0.50–0.75 | 444 | −0.68pp | 2,170 | −0.18pp |
+| 0.75–1.00 | 335 | **+2.69pp** | 1,630 | **−1.04pp** |
+
+Dev's highest band is the most encouraging content number this record has produced, and it is a sorting accident:
+the corpus that shares no database with dev and resolves **0.92pp** puts the same band at −1.04pp with an interval
+that excludes the dev point. **Every band on train is negative or within noise of it.** There is no subset of BIRD
+in which the pack pays for itself.
+
+### 189.5 The verdict, and why `contradicted` is stronger than `null`
+
+`verdictOf` has three labels and the record needs the distinction. `null` means the top band fails to clear zero
+everywhere and can still be blamed on power. **`contradicted` means the sign flips**, and a flip cannot be blamed
+on power: if 11 clusters produced +2.69 and 58 clusters produced −1.04, the ordering is a property of the corpus
+the ordering was computed on. That is the reading this round publishes, and it retires the promotion of row 7 from
+R159's queue — the lane it promoted resolves at 4pp on the corpus it was promoted for.
+
+### 189.6 What it authorises, and what it forbids
+
+**Forbids the thirteenth content axis.** If every band on the corpus that can resolve 0.92pp is negative, the next
+feature measures the same ceiling from another side.
+
+**Authorises exactly one direction.** The mechanism needs a task family in which the same defect recurs — which is
+what the synthetic corpus is (100.00% against 31.79% baseline) and what a one-shot benchmark is not. That is a
+scope claim, and the round states it as one rather than buying an arm that cannot settle it.
+
+**Does not claim the synthetic result transfers.** Nothing here measures a recurring-defect corpus under a public
+board, and the round says so rather than converting a mechanism result into a benchmark claim.
+
+### 189.7 Acceptance
+
+| dimension | reading |
+| --- | --- |
+| tests | **6,021 over 290 files** (+37 on `reuse-ceiling.test.ts`: nearest-neighbour pairing and its tie-break, band edges, the empty band, the single-cluster zero-width interval, determinism under a seed, all three verdicts and the two paths into `null`, every parser refusal, both printers) |
+| coverage | **100 / 99.92 / 100 / 100** overall (lines / statements / branches / functions); `reuse-ceiling.ts` is **100 / 100 / 100 / 100**; no file below 95% on any dimension |
+| gates added | `pnpm eval:reuse --check` — census drift over two corpora, one edge set, one seed; in CI as *The reuse ceiling has not drifted* and at the end of `pnpm check` |
+| artefacts committed | `eval/results/poc-reuse-ceiling.json` (1.9 KB: both corpora, four bands each, intervals, the verdict) |
+| defect found | the backtick extractor's false **0.000** (AUDIT 34.207), found by a column that disagreed with another column in the same printout |
+| dispatch cost | **$0.00** — every number is a column in a run that already existed |
+
+**Next.** Not another axis. The queue's head is now a **scope decision**: the mechanism's evidence is a corpus with
+recurring defects, and the record has none under a public board. The cheapest honest step is to price one recurring
+-defect family — ALFWorld is the one the experience-reuse literature uses, it is text-only, and its per-episode call
+count is bounded — and to publish that price before paying it, rather than an arm that cannot change a verdict.
+
+

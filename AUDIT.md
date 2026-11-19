@@ -12661,3 +12661,46 @@ in a limitations section. Nothing in this round establishes that rewriting a sta
 establishes that the pack's prescriptions co-occur with the loss and that the two most-delivered of them carry
 half of it.
 
+## 34.207 — The extractor that manufactured the number which explained twelve nulls
+
+**Defect class: a measurement whose resolution floor was read as a property of its object.** The previous audit
+found an estimator comparing at a finer grain than it claimed (34.206). This one is worse in a specific way: the
+wrong number **supported the conclusion that was already being drawn**, and it would have been published as the
+explanation for eleven earlier nulls.
+
+**What the first implementation did.** `columnReuseOf` extracted a query's columns with the obvious expression —
+everything between backticks — and intersected the two sets. On BIRD dev it reported a median overlap of exactly
+**0.000**, with only 2.7% of pairs sharing half their columns. Read at face value that says BIRD's consecutive
+questions have nothing in common, which is the strongest possible evidence for the hypothesis the round was
+written to test: no reusable answer, therefore no axis that operates on answers can work.
+
+**Why it was false.** The extractor was measuring its own reach. **Only 8% of this corpus's gold queries contain a
+backticked identifier**, because BIRD writes `SELECT player_api_id FROM Player_Attributes` without quoting. For the
+other 92% the extractor returned an empty set, and an empty set has zero Jaccard with everything — including
+itself. The reported 0.000 was therefore not "no overlap"; it was "no columns found", repeated 1,411 times.
+
+**How it was caught.** By a disagreement between two columns of one table rather than by a test: the same script
+reported that 46.7% of pairs share **all** their tables. Two answers in one database using the same table and no
+common column, for half the corpus, is possible; for the other half to then report zero columns *and* a positive
+table overlap is the shape of an extractor that finds tables and not columns. The table list came from `FROM`/
+`JOIN` position in the tokenizer; the column list came from a regex. One of them was working.
+
+**The corrected measurement.** `sqlShapeOf().columns` excludes keywords, tables, aliases, output labels, CTEs and
+function names, and reads quoted identifiers with spaces as one name — `Free Meal Count (K-12)` is one column, not
+five tokens. On the same corpus the median overlap is **0.500** and **50.1%** of pairs share at least half their
+columns, against 2.7% before. The finding that survives is much narrower than the one the broken number supported:
+reuse is real, it is *not* the binding constraint on average, and the band where it is highest still fails to
+replicate (top band **+2.69pp [0.00, +5.66]** on dev against **−1.04pp [−2.20, +0.18]** on train).
+
+**Why this one is recorded rather than quietly fixed.** A wrong number that argues against the project gets
+re-checked; a wrong number that argues **for** the project's current hypothesis gets published. The 0.000 was the
+second kind, and the only reason it did not reach a document is that a table-overlap column in the same printout
+disagreed with it. The rule this audit adds is narrow and mechanical: **a measurement that returns its extreme
+value should be asked what it cannot see** — an overlap of exactly zero, an accuracy of exactly 100%, a coverage of
+exactly 0 — because the extreme is where a broken instrument and a real result are hardest to tell apart.
+
+**What it does not change.** The round's verdict. Reuse is measurable, the median is 0.500, and the band reading
+still flips between corpora. What changes is the sentence that can be written about it: not "BIRD carries no
+reuse", but "BIRD carries reuse that does not predict where memory pays". The weaker claim is the true one, and
+the gate now compares the tokenizer's reading byte for byte so that a later regex cannot quietly return.
+

@@ -10733,3 +10733,53 @@ above; `pnpm eval:pack-attribution --check` recomputes it and fails on a byte, i
 modules with the same 25 deferrals as before. An entry for it would have been documentation nothing reads, which is
 the defect 34.203 describes.
 
+## 17.174 — `reuse-ceiling`: one ceiling for twelve axes, and a replication as the unit of evidence
+
+**Surface.** `reuse-ceiling.ts` exports the row type (`ReuseRow`), three pure measurements (`contentWordsOf`,
+`overlapOf`, `columnReuseOf`), the pairing (`reusePairsOf`), the banding (`bandOf`, `reuseBandsOf`), the decision
+rule (`verdictOf`), an artefact reader (`reuseRowsOf`), the assembly (`censusOf`) and two printers. `bin/
+reuse-ceiling.ts` reads dev and train, prints, and writes or checks `eval/results/poc-reuse-ceiling.json`.
+
+**The pairing is the only place a choice was made, and it is made from the text a deployment has.** Neighbours are
+chosen by the Jaccard overlap of question content words, with a stop list deliberately short enough to be quotable
+(nineteen words) because a longer one is a knob and this reading must not rest on a knob. Ties break on the source's
+gold query string: arbitrary, but deterministic, because a reading that changes when the file is re-ordered cannot
+gate a push. A database with one case yields an `unpaired` count, not a zero-reuse pair — "nobody to retrieve from"
+and "retrieved something useless" are different facts and only one of them is about memory.
+
+**The measurement reads answers, the retrieval reads questions.** `columnReuseOf` is the Jaccard overlap of
+`sqlShapeOf().columns`, divided by the union. That asymmetry is the design: the retrieval must be legal at inference
+time, and the measurement must be about the answer, because the claim is about answers. Using the same signal for
+both would have measured the retriever against itself.
+
+**The bootstrap accumulates (cluster × band) cells.** Each database contributes one `{sums, counts}` vector of four
+entries; a replicate reweights cells by cluster multiplicity and recomputes four ratios in one pass, so one set of
+draws serves all four bands and the bands are comparable as one shape rather than four experiments. This is the
+same sufficient-statistic construction `clusterBootstrapRatio` uses for one ratio, lifted to a vector; a 7,000-row
+corpus costs 58 cells per replicate rather than 7,000 rows.
+
+**Empty bands are published, not dropped.** A band with no pair gets `pairs: 0`, `gainPp: 0` and a zero-width
+interval, because a missing row reads as "not measured" when the truth is "nothing landed here". The same rule
+applies to a single-cluster corpus: its interval is zero width at its own value, which is `clusterBootstrapCI`'s
+convention and is asserted in a test rather than assumed.
+
+**The verdict has three labels because two would conflate two facts.** `null` — the top band does not clear zero
+anywhere — can still be blamed on power. `replicates` requires the same sign **and** an interval excluding zero on
+every corpus. `contradicted` requires a sign flip, and it is the label this round publishes: with 11 clusters
+reading +2.69pp and 58 clusters reading −1.04pp on the same band, the ordering is a property of the corpus it was
+computed on, and no increase in sample size turns a flip into a null.
+
+**What the module refuses.** It does not choose band edges per run (they are `REUSE_EDGES`, fixed in source, because
+a threshold fitted after seeing the gain is the exact failure the lane exists to catch). It does not impute a
+missing question or outcome in the reader — it throws, because a defaulted question pairs a case with an arbitrary
+neighbour and a defaulted outcome scores it as unchanged, and both produce numbers that look like measurements. It
+does not report a per-case reuse for a database of one. And it does not compare its two corpora on anything but the
+top band and the shape: dev and train were produced by different dispatches, so every other difference between them
+is uncontrolled, and only the sign of one fixed band survives that.
+
+**Why the artefact is 1.9 KB and the check still matters.** The census is four bands over two corpora and a verdict
+— small enough to read in one screen, which is the point: the reading that retires a queue head should be smaller
+than the queue head, not another 69 KB of strata. What the gate protects is not the size but the *edge set*: a later
+change to `REUSE_EDGES` or to the extractor moves the file, and the diff then says whether the corpus moved or the
+reader did.
+
