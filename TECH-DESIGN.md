@@ -10783,3 +10783,39 @@ than the queue head, not another 69 KB of strata. What the gate protects is not 
 change to `REUSE_EDGES` or to the extractor moves the file, and the diff then says whether the corpus moved or the
 reader did.
 
+
+## 17.175 — `eval/drivers/alfworld`: a data directory, a committed config, and a pre-flight that reports its bill
+
+The lane is two files and one workflow, and each one exists because something else could not be relied on.
+
+**`selfcheck.py` is the gate, and it asserts a contract rather than a score.** Four statements: a reset returns
+an observation that states a task and a non-empty admissible list; an admissible command changes the observation;
+an inadmissible command is refused in the environment's own words; a twelve-step walk keeps the episode alive and
+rendering. Exit code is the report. A score assertion was rejected for a reason that belongs in the design: this
+job calls no model, so a score could only be produced by a stand-in, and a stand-in's score is a fact about the
+stand-in.
+
+**`config.yaml` is committed rather than read from the installed package.** `alfworld 0.4.2` ships
+`configs/base_config.yaml` at the repository root, outside any package, so `find_packages` does not install it and
+a wheel install has no config at all. Beyond that, a lane that read whatever the wheel carried would record a
+different environment for the same commit on the day upstream changed a default. The file is the upstream default
+with `use_cuda` set to false, and `$ALFWORLD_DATA` is expanded by the driver so the path is a property of the run
+rather than of the file.
+
+**`alfworld.yml` installs, fetches, drives, and prints its bill.** Three decisions in it are load-bearing:
+
+- **the 0.4.2 tag, not PyPI.** PyPI stops at 0.3.5, which reads the z-machine release; this lane's data is the
+  PDDL release. 0.3.5 also declares `torch`, `torchvision`, `ai2thor` and `opencv` for a detector and a simulator
+  the text path never constructs, all imported at module scope — six runs were spent discovering them one at a
+  time, which is a slower way to read a manifest.
+- **`textworld` and `tatsu` in one command.** A pin in its own step runs after the resolve it was meant to
+  constrain (34.208).
+- **a wheel cache and three attempts.** The build fetches a 22 MB compiler from a host that failed once at 133
+  seconds and succeeded in seconds seven other times. A retry is not tolerance for a broken build: the build is
+  deterministic and the failure was a connection refused, so the third attempt either produces the same wheel or
+  the job fails loudly.
+
+**What the driver does not do, and why.** It does not replay the file's `walkthrough`: that field is a THOR
+trajectory in first-release symbolic coordinates and the text environment refuses every step (34.209). It does not
+construct a pack, which is the next lane's job and needs a measured per-episode bill first. It does not call a
+model, which is the only reason a green build here is a statement that can be trusted at $0.

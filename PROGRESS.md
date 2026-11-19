@@ -23278,3 +23278,58 @@ recurring defects, and the record has none under a public board. The cheapest ho
 count is bounded — and to publish that price before paying it, rather than an arm that cannot change a verdict.
 
 
+
+## 190. The recurring-defect lane gets an instrument, and the field's plan format turns out not to be executable
+
+**The one thing that happened.** R160 authorised exactly one direction — a task family where the same defect
+recurs — and left it as a scope claim with a price attached. R161 builds the part of that lane that costs
+nothing: the environment installs, a held-out game opens, and four contract assertions pass. **No model is
+called.** The line at the end of the job says so, because a green build that is silent about its bill reads as a
+result about memory.
+
+**What the build had to establish first, and what each cost.**
+
+| question | answer | cost of finding out |
+|---|---|---|
+| can the corpus be fetched | **36.5 MB, 4,027 files, MIT, 134 held-out games**, two minutes through a mirror | one probe |
+| can the environment be built here | **no** — `textworld` fetches a 22 MB Inform7 compiler from `emshort.com` at 3 KB/s and aborts | one 19-minute attempt |
+| can it be built in CI | **yes**, seconds, and intermittently: one run timed out on port 80 after 133s | four runs |
+| which package reads the data | **the 0.4.2 tag**; PyPI stops at 0.3.5, which reads the z-machine release | six runs on 0.3.5's import chain |
+| can the file's own plan be replayed | **no** — `walkthrough` uses first-release symbolic coordinates, and every step is refused | three runs |
+
+**The defect worth recording is the pin.** `textworld 1.6.1` imports `ParserConfig` from `tatsu.infos`. The
+resolver prefers 5.15.1, which does not carry it. The workflow carried `pip install 'tatsu==5.8.3'` as its own
+step, *after* the textworld install and *after* the import check — so the pin existed, looked correct, and had
+never been in force. Two runs failed with a file that appeared to answer them. The fix is one line: both
+constraints in one command. That is AUDIT 34.208.
+
+**The finding worth recording is the plan.** "Verify the environment against the gold plan" is the obvious first
+move and it is wrong in this lane: the walkthrough is a THOR trajectory rendered into the PDDL file, and the text
+environment refuses all of it. Three runs were spent, the third printing all nine rejected steps, and the shape of
+the failure — `Nothing happens.` on every step — is indistinguishable from a driver that never stepped at all.
+
+**What the gate asserts instead.** A reset states a task and publishes a non-empty admissible list; an admissible
+command changes the observation; an inadmissible one is refused in the environment's own words; a twelve-step walk
+keeps the episode alive. A statement about the driver, which is what a pre-flight can be.
+
+### 190.1 The arithmetic this makes available
+
+134 held-out games is the release's own held-out split. Paired, at the discordance the retired lanes showed
+(0.30), that resolves **13.3pp** at 80% power; 291 games resolve **9.0pp** and 943 resolve 5.0pp. ExpeL's
+published effect is 19pp and MemHarness's is 8.8pp, so the release's own split is the right size for the first
+and one and a half times too small for the second. Those two facts decide how many games an arm must run, and
+neither was pinned to a number before this round.
+
+### 190.2 Acceptance
+
+| dimension | reading |
+| --- | --- |
+| CI | `alfworld` run **44564782836 success**, 1m55s, **0 model calls** |
+| pre-flight | 134 held-out games; task rendered; 21 admissible commands; a move changes the room; `Nothing happens.` for an inadmissible command; a 12-step walk survives |
+| cost | **$0.00** — the job requests no provider secret and prints its own call count |
+| defects found | the pin that was never in force (34.208); the plan format that cannot be replayed (34.209) |
+| lanes unchanged | `pnpm check` and `ci` untouched; the new job is dispatch and path triggered only |
+
+**Next.** The lane can now be asked the question it was built for. The first arm is a calibration, not a result:
+twenty games, one arm, to replace the modelled $0.0139 per episode with a measured number. Until that number
+exists, every statement about what a full run costs is a model rather than a bill.

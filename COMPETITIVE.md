@@ -7916,3 +7916,39 @@ would have been read as.
 for a 0.9pp effect. The only lane this round endorses is a recurring-defect family under a public procedure, and it
 is endorsed as a *price to be published before it is paid* — not as a purchase.
 
+
+**AM.21 — The recurring-defect comparison now has an instrument on our side, and the field's own plan format is
+not executable in it**
+
+AM.20 endorsed a recurring-defect family as a price to be published. R161 builds the part of that lane which costs
+nothing, and the build produced a comparability fact worth putting beside the literature.
+
+| system | corpus | what the number is | resolution at its n | our status on it |
+|---|---|---|---|---|
+| ExpeL (AAAI'24) | ALFWorld **134 unseen** | 40.0% → **59.0%** with insights | 19pp clears 13.3pp at 134 paired | lane opens, no arm run |
+| MemHarness (2026) | ALFWorld/WebShop | 76.4% → 70.1% replay → **85.2%** reconstruct | 8.8pp needs ~305 games | same |
+| Mem0 / SimpleMem | ALFWorld | **52.0% / 54.5%** — below the 76.4% no-memory control | — | same |
+| **microglia** | ALFWorld 134 held-out | **environment pre-flight passed**, 0 model calls | — | **instrument only** |
+
+Three things the build established that the literature does not say, and that change what a replication means here.
+
+**The corpus is 134, and it is the same 134.** The release serves 134 held-out games; ExpeL's number is not a
+subset its authors picked. That removes a question about comparability before it is asked — the denominator is
+the release's.
+
+**The plan in each file cannot be replayed.** Every `.tw-pddl` carries a `walkthrough`, and it is written in the
+first-release symbolic coordinates the embodied agent used (`toilet_bar__minus_00_dot_54...`). The text
+environment answers `Nothing happens.` to all of them. Any lane that intends to validate itself against the gold
+plan — which is the obvious first move, and the one this round made — cannot, and the failure looks exactly like
+a broken driver. Three runs were spent on it.
+
+**The environment, not the corpus, is the entry cost.** 36.5 MB of data, MIT, two minutes through a mirror. An
+Inform7 compiler fetched from a host this sandbox reaches at 3 KB/s, and a Mask R-CNN detector plus a visual
+simulator imported at module scope by the older package that PyPI still serves. The lane therefore runs in CI, at
+zero model calls, and its gate reports the bill in the same line as the verdict.
+
+**What this does not claim.** No memory arm has been run on ALFWorld, so nothing here contradicts Mem0's or
+SimpleMem's sub-control readings, and nothing here supports ExpeL's 19pp. What exists is an instrument that can
+ask the question at a resolution the question needs (13.3pp at 134 games, 9.0pp at 291) for a cost that is now
+measured rather than estimated — and the field's papers report no per-episode bill, so ours will be the first
+number in that column that was actually counted.

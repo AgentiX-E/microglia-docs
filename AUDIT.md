@@ -12704,3 +12704,45 @@ still flips between corpora. What changes is the sentence that can be written ab
 reuse", but "BIRD carries reuse that does not predict where memory pays". The weaker claim is the true one, and
 the gate now compares the tokenizer's reading byte for byte so that a later regex cannot quietly return.
 
+
+## 34.208 — The pin that was never in force, and the import it was written to prevent
+
+`textworld 1.6.1` imports `ParserConfig` from `tatsu.infos`. A fresh resolve takes 5.15.1, which does not carry the
+name, and the failure surfaces at `textworld.logic.parser` rather than at install time — a traceback three frames
+deep in a dependency the workflow does not mention.
+
+The workflow answered it with `pip install 'tatsu==5.8.3'`, as its own step. That step ran **after** the textworld
+install and **after** the `python -c "import textworld"` check that was there to catch exactly this. The pin
+therefore never constrained the resolve it was written for, and the file read as a solved problem while two runs
+failed on the same line.
+
+This is the third time in this record that a control existed and did not apply — a floor that retired nothing, an
+arm whose cap was never reached, and now a pin that ran second. The shape is the same each time: **the control was
+written where it could be read rather than where it executes**, and a reader checking the file would have found it
+satisfying.
+
+The fix is that both constraints go in one command, so the resolver sees them together. The check now prints both
+versions before any textworld module is imported, because the twelfth run is the one that printed `5.15.1` and
+closed the question.
+
+## 34.209 — The gold plan that cannot be replayed, and a failure that looks like a broken driver
+
+Every `.tw-pddl` file carries a `walkthrough` field. It is the obvious thing to assert against before a model is
+in the loop, and three runs were spent asserting against it.
+
+It is written in the first-release symbolic coordinates the embodied agent used —
+`take toiletpaper_bar__minus_00_dot_12_bar__plus_00_dot_95_bar__plus_01_dot_63 from
+toilet_bar__minus_00_dot_54_bar__plus_00_dot_00_bar__plus_01_dot_49`. The text environment refuses every step
+with `Nothing happens.`, which is also what it returns when the driver is not stepping at all. The two are
+indistinguishable from the log, and the log is all a failing CI run gives you.
+
+Two earlier hypotheses were wrong in ways that kept the defect alive: the first read `games[0]` and blamed the
+plan's identity, the second read the same file and said so in the log — which made the second run look like a
+better experiment and was the same experiment. The environment publishes `extra.gamefile`, the path it actually
+opened, and reading that removed the identity question while leaving the format question, which is the real one.
+
+The gate now asserts what the driver needs rather than what the file offers: reset states a task and publishes
+admissible commands, an admissible command changes the observation, an inadmissible one is refused in the
+environment's words, and a twelve-step walk keeps the episode alive. **A gate on the score would have been a
+statement about a model the job does not call** — and the temptation to write one is exactly why the job prints
+its own call count.
