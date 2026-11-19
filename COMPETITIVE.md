@@ -7619,3 +7619,32 @@ effect is a few points is unmeasurable on the corpus the field reports `pass^4` 
 designed to fix it moves the one quantity it controls without moving the score. No competitor publishes two draws of
 any arm, so none of them can say whether their 0.6754 is a level or a draw. That remains the only claim on this board
 that does not require beating 0.6754 to be true, and it is now better supported than when it was first written.
+
+**AM.13 — the row reads its own headroom, and no published row can.** AM.10–AM.12 were all about a serving rule;
+this one is about the instrument every row on this board is measured with, including this lane's.
+
+| system | the sample its headline number rests on | can that sample express the effect claimed? |
+| --- | --- | --- |
+| **AskData** | BIRD dev, 1,534 questions | yes at ~1.5pp resolution — the only row here whose sample is sized for a small effect |
+| **ALTK-Evolve** | τ² retail `pass^4` 0.6754, one run | unpublishable: τ² retail's per-split resolution is 13–23pp, and the fold's own ceiling is unknown because its control's pass rate is not reported |
+| **ACE / SEMV / STRATA** | one run per configuration, no control pass rate | same |
+| **microglia** | four draws, a memory-free control and the fold's ceiling | **its own ceiling is below its resolution on four of five folds** (10.00/14.86/15.00/15.00pp against 18.53/17.76/15.66/23.23pp) |
+
+**What the row adds to the board is not a rank, it is a subtraction no other row performs.** `1 − controlPass⁴` is
+the largest delta a fold can express, and this record is the only one that computes it — which is why it can say
+something about the others that they cannot say about themselves: **a `pass^4` number on τ² retail is quoted without
+either of the two quantities that decide whether it means anything**, the control it was measured against and the
+floor that sample imposes. On this lane's own folds the ceiling turned out to be below the resolution, so an oracle
+store would have read as unresolved; a competitor whose control sits at 0.85 is in exactly the same position whether
+or not they say so.
+
+**And the level comparison, stated fairly.** ALTK-Evolve publishes 0.6754 (and 0.575 for the earlier bar) on
+τ² retail; microglia's **memory-free** control reads 0.925 on the committed fold. Those are not comparable numbers —
+`bar_backbone_matches = 0` — because the bars belong to weaker backbones, and a bar beaten by a control is a
+statement about the backbone rather than about memory. **microglia's position: still last on published score, first
+on published uncertainty**, with the one claim that does not require beating 0.6754: on this corpus a few-point
+mechanism is unmeasurable, and no other row can show that it isn't.
+
+**What it would take to move the rank.** A corpus where the control fails enough tasks for a memory to show: 164
+pairs (retail 114 + airline 50) computes to ≈11.5pp resolution under a 15.0pp ceiling, the first composition in this
+record with margin. That is the registered next step, and it is a corpus change, not a better store.
