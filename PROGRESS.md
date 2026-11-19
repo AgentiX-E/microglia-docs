@@ -23042,7 +23042,7 @@ case-specific pack is still inside this design's resolution.**
 **Next.** The queue's head moves from "is the pack wrong" to "can the pack be made specific". The finding prices
 that, and it also constrains how it can be tested: a filter that drops statements with spread ≥ 2 changes what
 the model reads, so **it cannot be evaluated on the rows already bought** — the outcome is a function of the
-pack, and these packs no longer exist once the filter runs. It needs one dev arm, ≈$8.6 at the recorded
-$0.00062 per question, and that arm can carry both halves of the intervention: the filter, and a distillation
-policy that anchors a statement to the case's schema.
+pack, and these packs no longer exist once the filter runs. It needs one dev arm, **$0.95** at the recorded $0.00062 per question
+(1,534 questions), and that arm can carry both halves of the intervention: the filter, and a distillation policy
+that anchors a statement to the case's schema.
 

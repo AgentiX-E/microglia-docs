@@ -7241,7 +7241,7 @@ databases, and those 39 wholly compose **60.6% of packs** (§PROGRESS 187, §AUD
 
 | # | step | the number it needs | state |
 |---|---|---|---|
-| 1 | **an arm that changes the store's composition** | delivered statements whose spread is 1, on BIRD dev | **head of the queue**: the census says 60.6% of train packs are entirely cross-database boilerplate and that stratum loses −0.94pp [−1.50, −0.40]. The intervention is two halves — a serve-time filter that drops statements with spread ≥ 2, and a distillation policy anchored to the case's schema — and **neither can be read off the rows already bought**: the pack is an input to the outcome, so a filtered pack has no outcome until it is dispatched. One dev arm, **≈$8.6** at the recorded $0.00062/question, carries both |
+| 1 | **an arm that changes the store's composition** | delivered statements whose spread is 1, on BIRD dev | **head of the queue**: the census says 60.6% of train packs are entirely cross-database boilerplate and that stratum loses −0.94pp [−1.50, −0.40]. The intervention is two halves — a serve-time filter that drops statements with spread ≥ 2, and a distillation policy anchored to the case's schema — and **neither can be read off the rows already bought**: the pack is an input to the outcome, so a filtered pack has no outcome until it is dispatched. One dev arm, **$0.95** at the recorded $0.00062/question, carries both |
 | 2 | the contradiction axis | 127 contradictions of 7,000 cases, delta +1.57pp [−2.76, +6.38] | **done, and it rejects**: 1.8% of cases cannot carry a 0.7pp corpus effect, and the one resolved stratum in the census is the *non*-contradicted one at −0.76pp [−1.33, −0.17] |
 | 3 | the store's warning share | 902 of 3,963 denials (23%) are warnings about the wrong method | **done, $0**: a sentence that inverts if read as a prescription is a defect no outcome reading was needed to find |
 | 4 | a content axis graded against `pays` | a stratum whose interval excludes zero | **partly done**: composition gives one stratum that resolves (all-boilerplate, negative) and a gap that does not (−0.84pp [−3.64, +1.78]); the gap needs a fold with fewer clusters than strata differences |
@@ -7270,7 +7270,7 @@ rounds that buys a *different store* rather than a better reading of this one.
    generic curriculum. What has been learned and re-implemented is the measurement apparatus — clustered
    intervals, the pay predicate, drift gates — which is now ahead of what the papers publish.
 4. **Can SOTA still be taken, and at what price?** Yes, but not by another reading. The shortest path is row 1:
-   a composition-changing distillation arm on BIRD dev (≈$8.6, one day), then the 149-pair certification
+   a composition-changing distillation arm on BIRD dev ($0.95, one day), then the 149-pair certification
    (≈¥8.6 / $1.2) or the 592-pass certification (≈¥32 / $4.5) once the store is worth certifying, then one memory
    board row (¥150–400). The critical path is row 1 and nothing before it.
 
