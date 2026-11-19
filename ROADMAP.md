@@ -7096,8 +7096,8 @@ The instrument passes everything it was built to pass (`l4-projection-complete`,
 |---|---|---|---|
 | 1 | resolution (114 pairs) | MDE ≤ 11pp | done: 13.24pp, §PROGRESS 178 |
 | 2 | the travel budget | harm falls while repairs hold | **measured and reverted** (§PROGRESS 179, 180, 181): the cap acts on every draw (`max = cap`, 0 starved, all servable served) and harm reads 5.88%, —, **20.59%** at constant renders per item |
-| 3 | **the outcome counter (R129)** | within-phase evidence that an item repairs, immune to the between-draw spread | **head of the queue**: its denominator is an item's own served trials, so the 15pp store-draw variance that killed rows 2 and 3 does not enter it |
-| 4 | the gate whose text and code disagree | a predicate that is its criterion | **instrument round, $0**: §AUDIT 34.197, one boolean, its sentence, and two regenerated pair artefacts |
+| 3 | **the outcome counter (R129)** | within-phase evidence that an item repairs, immune to the between-draw spread | **head of the queue as of R153**: its denominator is an item's own served trials, so the 15pp store-draw variance that killed rows 2 and 3 does not enter it — and R152c's bounded fold is the first draw whose aggregate renders per item (3.15) meets the precondition the counter has waited on since R142, so its first read is a **$0 readback on R152c's artefacts** |
+| 4 | the gate whose text and code disagree | a predicate that is its criterion | **done, $0** (§PROGRESS 182, §AUDIT 34.197/34.199, §TECH-DESIGN 17.166): the predicate is the criterion, the sentence for a harm below resolution is printed, both committed pair artefacts are re-graded (four lines, byte-identical elsewhere), and `pnpm check` now fails if a future edit moves a row without re-grading |
 | 5 | the lexical anchor (axis 3) | breaks fall while repairs hold | **defers to row 3**: it is a content axis with the same exposure to the draw, and the counter is cheaper to identify |
 | 6 | the serving default | — | **withdrawn**: nothing in `prereg/TEMPLATE.md` changes, and the switch stays as an instrument |
 | 7 | the published bar (0.575, ALTK 0.6754) | a comparable backbone | not reachable on this lane: `bar_backbone_matches = 0` |
@@ -7109,3 +7109,11 @@ treatment is **15 points**, and the best resolution 40 tasks buy is 15.66pp — 
 of a 3pp mechanism are noise, and the record now says so with four points instead of one. The way forward is not a
 fifth policy: it is an estimator whose denominator is inside a single episode (row 3) or a pooled one at 114 pairs,
 and everything else is a draw.
+
+**R153 closed row 4 at $0 and moved nothing else.** The gate now asks what its criterion asks, the sentence for a
+harm below the pair's resolution is printed beside the claim, and both committed pair artefacts were re-graded
+rather than re-bought — four lines across two 30–43 kB files, with `pnpm check` failing from now on if a future
+edit moves a row without re-grading (§PROGRESS 182, §AUDIT 34.199, §TECH-DESIGN 17.166). Nothing about the effect
+changed, because nothing about the effect was measured: this was the record's own bookkeeping made true, and it is
+the second half of the round that withdrew the serving policy — the instrument stays, and now the instrument's
+report is graded by the rule that ships.

@@ -22472,3 +22472,88 @@ allocation, ranking — have now all been measured against a control on this cor
 was the one the bound was built to move. The next dollar goes to the axis the refutation list named two rounds ago
 and this round's evidence now supports: **the outcome counter (R129)**, whose evidence is within-phase (an item's
 own served trials) and therefore not exposed to a 15pp between-draw spread.
+
+## 182 — R153: the row that certified what it never checked, and the evidence re-graded instead of re-bought
+
+**$0.00, no dispatch.** The whole round is one gate whose predicate was looser than its criterion, the sentence it
+now prints for the case it used to hide, and a tool that brings the two committed pair artefacts under the corrected
+rule without buying a third draw of 40 tasks.
+
+### The finding, as a reader met it
+
+R152c's pair artefact contains two rows about the same delta, one line apart:
+
+```
+V5-resolution          False (blocking)  minimum detectable 23.23pp against a 6.00pp target; claims -7.50pp …
+l4-effect-resolved     True  (advisory)  the memory costs accuracy: -7.50pp
+```
+
+The second row's own `criterion` reads *"the pair resolves the effect it reports: `|delta| >= minimum detectable
+difference`, or no direction is claimed"*, and `|−7.50pp|` against `23.23pp` is exactly the case that sentence
+forbids. The predicate was `input.state !== 'UNRESOLVED'`, and `state` is the **R45 cost bar** — significantly
+negative, or below −5pp with a served pack — which is satisfied by effects far smaller than the sample can resolve.
+The run was red either way, so no decision changed; what changed is that a row told a reader who trusted it that
+−7.50pp was a resolved harm. A false green is worse than a silence, and it is three lines to fix.
+
+### The repair, and the one place the audit's own draft was wrong
+
+| item | before | after |
+| --- | --- | --- |
+| predicate | `state !== 'UNRESOLVED'` | `state !== 'UNRESOLVED' && \|delta\| >= detectablePp` |
+| criterion | "…`\|delta\| >= minimum detectable difference`, or no direction is claimed" | "the pair may be quoted as a finding: it publishes a direction, and `\|delta\| >= its own minimum detectable difference`" |
+| `actual` on a harm below resolution | `the memory costs accuracy: -7.50pp` | `-7.50pp against 23.23pp minimum detectable difference — the memory costs accuracy: -7.50pp, which is a direction this pair cannot claim` |
+| `blocking` | false | false — unchanged, and deliberately |
+
+AUDIT 34.197 drafted the predicate as `detectablePp === undefined || …`. That `undefined` disjunct is the one thing
+in the draft that would have kept the gate green for a pair with **no** resolution at all — "no discordant task, so
+no variance to estimate" is not "any effect would have shown" — so it is dropped, and the drop is pinned by a case of
+its own. The criterion was also rewritten rather than kept, because the old text carried a disjunct (*"or no
+direction is claimed"*) that **neither** version implemented: an `UNRESOLVED` pair has always read `pass: false`
+here. A sentence the code does not act on is how this gate stopped saying one thing.
+
+### The evidence was re-graded, not re-bought
+
+Re-running the pair would cost two dispatches and answer a different question — a new draw of 40 tasks is not the
+same 40 tasks, so the numbers would move for reasons unrelated to the fix. `packages/eval/src/pair-regrade.ts`
+reads `verdict`, `comparison` and `protocol` out of the committed file and recomputes only the `l4-*` rows. Its
+three refusals are the design:
+
+| refusal | why it is not optional |
+| --- | --- |
+| a file whose round trip is not byte-identical | a re-grade of two rows that reindents a 43 kB file hides the re-grade inside a rewrite, and no diff shows it |
+| a file missing an input (no defaults, every accessor throws) | `detectablePp` defaulted to `undefined` would make every regraded row false — a reading that looks like a finding |
+| a row the file predates (`l4-rotation-reconciles`) | appending it dates the artefact to a driver that did not have the gate |
+
+What moved, in full:
+
+| artefact | row | before | after |
+| --- | --- | --- | --- |
+| `poc-l4-pair-official.json` | `l4-effect-resolved` | `pass: false`, old criterion | `pass: false`, new criterion (`\|2.50pp\|` vs `18.53pp`) |
+| `poc-l4-pair-swapped.json` | `l4-effect-resolved` | `pass: true`, `the memory costs accuracy: -10.81pp` | `pass: false`, `-10.81pp against 17.76pp … a direction this pair cannot claim` |
+
+Four lines across two files, and the two files on disk are byte-identical to the committed versions outside those
+lines — checked against the remote blobs before and after. The verdicts, the deltas, the p-values and the protocol
+rows are untouched, because a re-grade that touched them would be a new experiment wearing an old filename.
+
+### The re-grade is now a gate
+
+`pnpm check` runs `pnpm eval:l4-regrade` over both artefacts and exits non-zero on a dry run that would move a row.
+So the next edit to `pair-gates.ts` that moves a row fails the build until the evidence is re-graded — which is
+`l4-projection-complete` one level up: that gate says an arm's fields reached its artefact, and this one says the
+artefact's rows are graded by the rule that ships.
+
+### Acceptance
+
+| dimension | reading |
+| --- | --- |
+| tests | **5,809 over 282 files** (+18 over +1, including 14 cases for the re-grade and 4 for the branches of the row) |
+| coverage | **100 / 99.92 / 100 / 100**; `pair-regrade.ts` **100 / 100 / 100 / 100** |
+| `audit:repo`, `typecheck`, `typecheck:lanes` | ok |
+| committed evidence | re-graded; 0 rows would move on a second pass |
+| dispatch cost | **$0.00** |
+
+**Next.** The queue's row 3 is now the head: **the outcome counter (R129)**, whose denominator is an item's own
+served trials and therefore does not enter through the 15pp between-draw spread that killed the two rows above it.
+R152c's bounded fold is the first draw in this record where the aggregate renders-per-item reached 3.15, which is
+the precondition the counter has been waiting on since R142 — so its first read is a **$0 readback on R152c's own
+artefacts**, not a dispatch.

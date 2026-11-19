@@ -12261,3 +12261,58 @@ it varies.**
 skip the control (§34.196), and one published claim retracted (§PROGRESS 181). Cheaper than most of this record's
 method errors, and the retraction is the part that matters: the harm share of a four-draw treatment is
 5.88%, 20.59%, 8.33% and (unbounded, thin store) 23.81%, which supports no ordering at all.
+
+### 34.199 The repair 34.197 deferred, and the one line of its own draft that was wrong
+
+**34.197 promised a round and this is it**: the predicate, the sentence, the two regenerated artefacts and a case
+per branch. The predicate is now its criterion —
+
+```ts
+state !== 'UNRESOLVED' && Math.abs(deltaPp) >= detectablePp   // band replaces the question entirely
+```
+
+— and the row that certified `−7.50pp` at a `23.23pp` resolution now reads `false` with the sentence that says why.
+
+**The one place the entry's own draft was wrong.** 34.197 wrote the predicate as
+`detectablePp === undefined || Math.abs(deltaPp) >= detectablePp`. The first disjunct reads "no resolution was
+estimated" as "any effect would have shown", which is the opposite of what `undefined` means in this lane: it is
+what a pair with **no discordant task** reports, and a pair that changed no task has not resolved anything. Under
+the draft, a `HARM` on such a pair would have gone green — a smaller false green than the one being fixed, in the
+same gate, written by the same hand that was fixing it. It is dropped, and `pair-gates.ts` carries a case whose
+only purpose is to keep it dropped. **An audit that prescribes code owes the same scrutiny as code that prescribes
+nothing**, and this record has now paid for that lesson twice.
+
+**The criterion changed too, and that is not cosmetic.** The old text ended *"or no direction is claimed"*, which
+**neither** version implemented: an `UNRESOLVED` pair has always read `pass: false` here, because a row asking
+whether an effect resolved is false when nothing resolved. Two disjuncts in a sentence and one in the code is how
+the gate stopped saying one thing (34.161's class, in the opposite direction). The new text says only what is
+computed: *may this pair be quoted as a finding?* — it publishes a direction **and** that direction clears its own
+resolution.
+
+**Regenerating evidence without re-measuring it.** The two committed artefacts could have been re-bought for ~$0.75
+and would then have been two different draws of 40 tasks, with the row under test confounded by the draw. Instead
+`pair-regrade.ts` recomputes the `l4-*` rows from the numbers the file already carries, and refuses three things:
+
+| refusal | the failure it prevents |
+| --- | --- |
+| a file whose serialisation round trip is not byte-identical | a two-row re-grade that reindents 43 kB, hiding the change inside a rewrite |
+| an input it cannot read (every accessor throws; there are no defaults) | `detectablePp: undefined` turning every regraded row false, which reads as a finding |
+| a row the file predates | dating an artefact to a driver that did not have the gate |
+
+The diff is four lines across two files, and both files are byte-identical to the committed blobs outside them:
+
+| artefact | before | after |
+| --- | --- | --- |
+| `poc-l4-pair-official.json` | `pass: false`, old criterion | `pass: false`, new criterion |
+| `poc-l4-pair-swapped.json` | `pass: true` at −10.81pp / 17.76pp | `pass: false`, with the sentence for it |
+
+**The class, counted.** This is the fourth entry about a gate whose text and code disagreed, and the only one where
+the text was the stricter of the two. The other three were silences — a gate that measured nothing and said
+`true`. A false green is cheaper to fix and more expensive to catch: a silence eventually shows up as a number that
+never moves, while a green row is the one a reader stops reading. Which is why the re-grade is now wired into
+`pnpm check`: the row cannot drift from the rule again without the build failing first.
+
+**And the instrument half is the useful half.** Nothing in this round changes a measurement. The withdrawal of the
+serving policy (34.198) and the correction of its gate are the same lesson from two sides: on this lane, a reading
+that cannot be checked against its own evidence is worth less than no reading, and a reading that *can* be checked
+is worth keeping even when the policy it was built for is withdrawn.

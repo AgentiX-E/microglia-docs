@@ -10372,3 +10372,45 @@ ledger, a report and a reconciliation gate, and it does **not** become a default
 unestablished and whose one adverse draw sits below the revert bar is reverted by R45's own rule, not shipped
 because its mechanism was elegant. The distinction between *instrument* and *policy* is the one this round had to
 draw, and it is the reason the code is unchanged while the guide's recommendation is withdrawn.
+
+### 17.166 A gate is a derived field, so the design owes it a re-grade path
+
+§17.164 drew the discipline for a field that must be *written*: declare it on the record's type, decide it in the
+projection table, and read it back. A gate row needs the third of those and not the first two — it is not emitted
+by a driver, it is computed from fields the driver emitted — and the omission of the third is exactly what
+`l4-effect-resolved` suffered: its predicate was `state !== 'UNRESOLVED'` while its own criterion asked for
+`|delta| >= minimum detectable difference`, and nothing in the pipeline compared the two.
+
+**The design rule.** A row in a committed artefact is a **claim about the file**, and a claim that is computed
+rather than measured must be recomputable from the file by a command that ships. Three consequences:
+
+| consequence | in this repository |
+| --- | --- |
+| the computation lives in a module, not a `bin/` | `pair-gates.ts` (extracted from `bin/l4-pair.ts` for this reason), consumed by the driver and by the re-grade |
+| the artefacts are re-gradable without a dispatch | `pair-regrade.ts` + `bin/l4-regrade.ts`, dry-run by default |
+| the re-grade runs in the gate | `pnpm check` → `eval:l4-regrade` over both committed pair artefacts, non-zero if a row would move |
+
+**Why a re-grade is not a rewrite of evidence.** The distinction is enforced, not asserted: the text transform
+round-trips the parse through the writer's own `JSON.stringify(value, null, 2)` and refuses unless the result is
+byte-identical to the input, so a regrade cannot reindent a file it does not own; every input is read through an
+accessor that throws rather than defaulting, so a file the tool cannot read cannot become a file it silently grades
+with invented numbers; and a row the file predates is **reported** (`predates l4-rotation-reconciles — not added`)
+rather than appended, because an artefact must date to a driver that could have written it.
+
+**What the row now says, and the branch it used to hide.** `l4-effect-resolved` answers one question — may this pair
+be quoted as a finding — and the answer is a conjunction: a published direction **and** `|delta| >= detectablePp`.
+The pair that motivated the fix reads, verbatim:
+
+```
+-7.50pp against 23.23pp minimum detectable difference — the memory costs accuracy: -7.50pp,
+which is a direction this pair cannot claim
+```
+
+which is the sentence 34.197 asked for, printing the number that forbids the claim beside the claim. The row stays
+advisory: `l4-paired` is the gate that blocks a pair for costing accuracy, and a second blocking copy of one
+reading is how a red line teaches its readers to ignore red (§17.161's own reason for keeping `V5` singular).
+
+**What the axis costs.** $0.00, and for a reason worth recording: re-running the pair would have cost ~$0.75 and
+produced two *different* draws of 40 tasks, so the row under test would have moved for reasons unrelated to the
+predicate. A derived field's correction must be applied to the derivation, or the correction and the draw are
+confounded — the same error as §17.165's line through two points, one level down.
