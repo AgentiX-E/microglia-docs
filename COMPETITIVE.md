@@ -7720,3 +7720,40 @@ a memory-free 0.850 vs ALTK's 0.6754 at `pass^4` — not comparable on metric or
 memory board above (no LoCoMo, LongMemEval, BEAM or MemoryAgentBench run), and **first on one thing**: it is the only
 row that reports `f`, `r`, `b`, `b*` and a fold ceiling, which is what makes its null results informative rather
 than merely negative.
+
+**AM.16 — the metric was one level off, so the rank claim is restated rather than withdrawn.** AM.14 gave up the
+level comparison on backbone grounds; this gives it up again on metric grounds, and then puts back the version that
+survives both. Every one of this lane's four registration headers on τ² retail declares `trials: 1`, so its
+headlines — 0.925 for the memory arm, 0.850 for its control — are per-task rates over **one** trial, while
+ALTK-Evolve's `0.575` baseline and `0.6754` submission are `pass^4`.
+
+| row | as published | restated at `pass^4` | against 0.575 | against 0.6754 |
+| --- | --- | --- | --- | --- |
+| microglia memory arm (R143 `official`) | 0.925 (`pass^1`) | **0.7321** | +15.7pp | +5.7pp |
+| microglia memory-free control | 0.850 (`pass^1`) | **0.5220** | −5.3pp | −15.3pp |
+| ALTK-Evolve, no guidelines | — | 0.5750 | — | — |
+| ALTK-Evolve, submitted (292 rules) | — | 0.6754 | — | — |
+
+The restatement assumes the trials of a task are independent, which flatters a store whose misses cluster; the
+number travels with that sentence in the artefact (`protocol.restatedAtBarK.assumption`) and is not quoted without
+it. **Three things change in the rank table.**
+
+1. **The "+35pp over the published bar" was a metric difference.** The corrected lead over ALTK's *baseline* is
+   15.7pp, not 35; over its *submission*, 5.7pp.
+2. **The control does not clear the bar.** 0.522 against 0.575 is below it. This is the first statement in the
+   record that separates the treatment from its own control *against the published number* rather than against
+   each other: the memory arm clears a bar its memory-free twin does not.
+3. **The comparison is still cross-backbone and cross-sample** — `deepseek-flash` against GPT-4.1, 40 tasks against
+   114 — so it ranks nothing. What it establishes is that the *direction* survives the metric repair, which is more
+   than the previous version of this line could say.
+
+**And the same round priced the target the literature handed us.** AM.15's break-even (`b < 10.8%`) is a level, and
+a level is certified by an interval rather than by a delta: on this fold's 167 passes a 16.17% break rate is
+certified only below 22.50%, and certifying an 8% rate under the 10.78% bar takes **592 passes**. The change itself
+costs 170 pairs in the nested case and 847 at the corpus's discordance. **The 164-pair composition AM.15's queue
+was saving for is below the cheapest of those prices**, which is why it is withdrawn here rather than dispatched.
+
+**What this does to the four boards.** Nothing yet: LoCoMo, LongMemEval, BEAM and MemoryAgentBench are still
+unrun, and no metric repair substitutes for them. What it does is make the one board this lane *does* appear on
+falsifiable in its own units — a reader can now recompute the restatement from the artefact, check the assumption,
+and disagree with it in public.

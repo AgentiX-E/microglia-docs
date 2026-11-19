@@ -22726,3 +22726,110 @@ protocol should carry `k` and `trials`, and the bar block should carry `bar_k_ma
 share**, measured on a fold whose ceiling clears its resolution. That is the first time the two halves of the
 programme meet — §PROGRESS 183 priced the fold, and this round prices the store's own bar — and it is why the next
 dispatch is a pooled fold with a content axis, not a fifth draw of the same forty tasks.
+
+## 185 — R156: the metric was one level off, the target has two prices, and the re-grader invented a green
+
+**$0.00, no dispatch.** Three things this record has been quoting turned out to rest on a field nobody read.
+All three were resolvable from artefacts that already existed — two of them by *recovering* artefacts the record
+had cited but never committed, through the GitHub API that ran them.
+
+### 185.1 Every L4 headline is `pass^1`, and four rounds called it `pass^4`
+
+The four registrations behind the pooled fold each declare `trials: 1`:
+
+| draw | registration | header | artefact field | what it actually is |
+| --- | --- | --- | --- | --- |
+| `official` | `prereg/R143-fold-official.md` | `trials: 1` | `pass4` | per-task pass rate over **one** trial |
+| `swapped` | `prereg/R143-fold-swapped.md` | `trials: 1` | `pass4` | same |
+| `r152` | `prereg/R152-the-travel-budget.md` | `trials: 1` | `pass4` | same |
+| `r152c` | `prereg/R152c-the-paired-fold.md` | `trials: 1` | `pass4` | same |
+
+R152's arm artefacts were recovered from run `44363599721`'s evidence bundle and read directly:
+`metrics.k = 1`, `episode_trials = 40`, 40 `per_trial` rows, and the same on the reference arm. So the header
+reached the driver, the driver wrote it, and the only file that lost it was the pair artefact — which did not
+copy `metrics.k` and had no field to hold it.
+
+**The bar comparison was therefore a cross-metric one for its whole life.** 0.925 against `0.575 pass^4`, and
+0.851 against `0.6754 pass^4`. The pair's `protocol` block carried no `k` at all, so a reader could not audit
+it; §PROGRESS 181 recorded the fact for R152c alone and queued the fix.
+
+**What R156 ships, in the artefact rather than in prose.**
+
+| surface | field | statement |
+| --- | --- | --- |
+| arm | `bar_k_matches` | whether the arm and the bar share a statistic — the statement `bar_backbone_matches` makes about the model |
+| pair | `first.k`, `second.k` | each arm's own `metrics.k`, `null` when the artefact predates it |
+| pair | `protocol.k`, `protocol.kAbsent`, `protocol.barK`, `protocol.barKMismatch` | the level the pair shares, who stayed silent, and whether it is the bar's |
+| pair | `protocol.restatedAtBarK` | each headline at the bar's level, with its independence assumption in the same block |
+| gate | `l4-same-k` (blocking) | two arms scored at different levels are not a pair; absent when an arm stated none |
+
+The restatement, under independence: **0.925 → 0.7321** and **0.85 → 0.522**. The memory still clears `0.575`
+(+15.7pp, not +35pp) and clears the competitor's submitted `0.6754` by 5.7pp; **the control does not clear it**
+(0.522). That distinction is new, and it is the first defensible version of the rank claim in this record.
+
+### 185.2 The two prices of the target, and why the fold on the table buys neither
+
+`b* = 10.78%` is a level, so it has a different price from the `−5pp` delta bar — a factor of five:
+
+| question | statistic | price |
+| --- | --- | --- |
+| did the break rate **move** 16.17% → 10.78%? | `tasksForDelta`, at this corpus's 0.232 discordance | **170** pairs nested / **847** unrelated |
+| is the break rate **below** 10.78% at an 8.08% true rate? | Wilson upper end on the control's passes | **592** passes |
+| … at 5.39%? | same | **149** passes |
+
+Two properties follow, and both change the queue:
+
+- **A rate at its own bar can never be certified below it.** `passesToCertify(0.1078, 0.1078)` returns `null`,
+  not a large number, because the interval always has positive width. The target is not something a bigger
+  sample settles; it has to be *reached*.
+- **The 164-pair fold the roadmap was saving for is below the cheapest price.** 170 is the floor of the range
+  and 847 the honest middle; a 164-pair composition cannot buy the claim in its best case.
+
+The current fold's own certification is 22.50% — the same sentence its interval has printed since R155. So the
+harm side is not under-measured because the fold is small; it is under-measured because 167 passes cannot
+certify anything near 10.78%, and no re-read of the same 40 tasks changes that.
+
+### 185.3 The re-grader turned a recorded failure green
+
+Recovering R152's pair artefact put it through `pnpm eval:l4-regrade`, and the tool rewrote
+`l4-projection-complete` from `false` to `true`. The reason is structural: that row grades whether the driver's
+emitted fields reached the artefact, and a pair artefact records only the fields that *did*. A recomputation can
+therefore only ever confirm them. The same holds for `l4-rotation-reconciles`, whose evidence (the arm's serving
+policy and pack ledger) is not in the pair either.
+
+The repair is an allow-list — `l4-paired`, `l4-effect-resolved`, `l4-same-split` — plus a `preserved` list that
+prints what was not re-graded and why, plus a fourth rule: a row graded under `TAU_BAND` is preserved, because
+the band arrives through the environment and survives only in the row's own sentence (AUDIT 34.128). A block-list
+would have been wrong the other way: every row added later would be recomputed by default.
+
+### 185.4 The pooled fold is now reproducible from the repository
+
+Two of the four draws behind `b* = 10.78%` had never been committed; the record quoted `.cache/r152-pair/…`
+paths, which is an argument a reader cannot re-run. Both artefacts are now in `eval/results/`, byte for byte as
+their runs wrote them, and `eval/results/poc-l4-draws.json` records each draw's `k` with the evidence for it.
+
+```console
+$ pnpm eval:conditional eval/results/poc-l4-pair-*.json --draws=eval/results/poc-l4-draws.json
+| metric | draws | trials | failed | repaired | passed | broken | repair rate | break rate | break-even | net |
+| pass^1 | official, swapped, r152, r152c | 194 | 27 | 18 | 167 | 27 | 66.67% [47.82, 81.36] | 16.17% [11.36, 22.50] | 10.78% | -4.64pp |
+```
+
+**One stratum, and that is the finding rather than a null result.** The split was built to ask whether the
+10.78% target survives a metric mixture; the answer is that there is no mixture — all four draws are `pass^1` —
+so the target stands and the *label* was the defect. The command exits non-zero if a census row disagrees with
+the artefact it describes, which is what stops the census becoming a second copy of the numbers.
+
+### Acceptance
+
+| dimension | reading |
+| --- | --- |
+| tests | **5,874 over 286 files** (+44: 15 metric parity, 16 certification, 4 strata, 3 end-to-end levels, 6 re-grade preservation) |
+| coverage | **100 / 99.92 / 100 / 100**; every file this round touched — `certify.ts`, `metric-parity.ts`, `conditional.ts`, `pair-gates.ts`, `pair-regrade.ts` — is **100 / 100 / 100 / 100** |
+| gates added | `l4-same-k` (blocking), `pnpm eval:conditional … --draws=` (census ↔ artefact reconciliation, exits 1 on disagreement), four artefacts in `eval:l4-regrade` |
+| artefacts committed | `poc-l4-pair-r152.json`, `poc-l4-pair-r152c.json`, `poc-l4-draws.json` |
+| dispatch cost | **$0.00** |
+
+**Next.** The queue's head is unchanged in substance and now priced: get the break rate under **10.78%**, on a
+fold that can certify it — which is ≥592 tasks at an 8% target, or ≥149 at 5.4%. The 164-pair composition is
+withdrawn. What changed this round is that the *label* of every number the claim rests on is now auditable, and
+the rank against both published bars has a defensible version.

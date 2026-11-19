@@ -10507,3 +10507,65 @@ advisory while the cost row blocks).
 
 **Cost of the whole axis.** $0.00, over artefacts that already existed, and it produced the first target on the harm
 side that a $0 change could be graded against: get `b` under `b*` without moving `r`.
+
+### 17.169 The metric is a parameter of the comparison, and each layer owes one field of it
+
+§17.168's rule 4 queued the fix; this is the design. The rule it replaces is "the artefact states the statistic it
+reports", which every layer believed it was obeying.
+
+**Where the fact has to live.** A level is not a property of a run, a pair or a bar — it is a property of the
+*comparison*, and every layer that participates in one owes the field:
+
+| layer | field | what it must not do |
+| --- | --- | --- |
+| arm | `metrics.k`, from `TAU_TRIALS` (the same variable the driver reads) | default to a number the dispatch did not state |
+| arm bar block | `bar_k_matches` | withdraw the bar: `0` explains a withheld bar, which `published_bar_applies: 0` cannot |
+| pair | `first.k`, `second.k`, `protocol.k` | carry one arm's level as the pair's; `protocol.k` is the shared value or `null` |
+| pair | `protocol.kAbsent` | leave a hole: when an arm states nothing, the pair names it |
+| pair | `protocol.barK`, `barKMismatch` | fold the bar into the gate — a `k = 1` pair is internally consistent and must not be graded red for the comparison's defect |
+| gate | `l4-same-k`, blocking | be green when an arm stated nothing: absent is not agreement |
+| pair | `protocol.restatedAtBarK` | drop its assumption: `pass^k = rate^k` holds only while trials are independent |
+
+**The conversion, and why it is a field rather than a formula in a report.** `pass^k` at one level and `pass^j` at
+another are the same per-trial rate raised to different powers, so `restateAtLevel(rate, fromK, toK) = rate^(toK/fromK)`.
+On the published fold that is `0.925 → 0.7321` and `0.85 → 0.522` at `k = 4`. The number a reader needs is not the
+restatement alone but the restatement *with its premise*, and a formula in a report loses the second half; the
+second half is the field.
+
+**Why the pair, not the arm, owns the gate.** Two arms at two levels is a property of the two files, like
+`l4-same-split`. The arm cannot see the other arm, and the protocol's own `V5` grades the claim rather than the
+files. The gate therefore lives in `pair-gates.ts` — which is also the module that exists because `bin/` is
+excluded from coverage (17.166).
+
+**The re-grade corollary.** A row is re-gradable only if every input it reads is a field of the file being
+re-graded. `l4-projection-complete` reads the driver's emitted-field census and `l4-rotation-reconciles` reads the
+arm's serving policy and pack ledger; both are absent from the pair artefact, so both are preserved and printed with
+their reason (34.202). The allow-list is three ids, and the direction of the default is what matters: a row added
+later is preserved until somebody argues it into the list.
+
+### 17.170 A rate target has two prices, and the certification price binds
+
+A level and a change are different questions about the same number, and the design owes both prices before a
+dispatch is bought:
+
+| question | statistic | cost |
+| --- | --- | --- |
+| did the rate **move** from `b` to `b*`? | `tasksForDelta` on the delta the change would cause | `z²·d/effect²`, with `d` unknown before the run: `effect` if the new failures are nested in the old, the corpus's own discordance otherwise |
+| is the rate **below** `b*`? | Wilson upper end on the control's passes | `passesToCertify(b*, planned)` |
+
+**The certification price has a property the change price does not: it has no answer at the bar.** The Wilson
+upper end always exceeds the estimate, so `passesToCertify(b*, b*)` is `null` for every sample. That `null` is the
+design statement: a target sitting on its own bar cannot be reached by measuring again, and a fold specification
+that says "re-read the same tasks with a better store" owes a plan for getting *below* the bar by at least its own
+half-width.
+
+**Why the search is a bisection and not a closed form.** `wilsonInterval` is the repository's one interval
+(`reproduction.ts`); solving it algebraically would be a second derivation of the same quantity with its own
+rounding. `passesToCertify` doubles to bracket and bisects on whole pass counts, and it asserts nothing at runtime
+about monotonicity: a guard for the non-monotone case is a branch no input reaches, so the suite checks the
+property over a 50 × 600 grid instead (§17.166's rule, applied to an assumption rather than to a gate).
+
+**What it says about the fold on the roadmap.** The 164-pair composition was budgeted against the *delta* bar's
+arithmetic; against the target it is below the nested floor of 170 and five times below the unrelated price of 847.
+The two sizes worth buying are 149 pairs (certifies a 5.39% break rate) and 592 (certifies 8.08%), and which one
+is bought is a claim about how far the content axis is expected to move the rate — not a budget decision.

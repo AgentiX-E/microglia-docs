@@ -12424,3 +12424,79 @@ may legitimately be conservative), but it does mean the record must stop describ
 again on metric grounds, and the pair artefact cannot even show the mismatch because the field is absent — which is
 the same shape as 34.199's finding one level down: *a claim the artefact cannot check is a claim a reader has to
 take on trust.*
+
+### 34.202 The re-grader repaired a recorded failure into a green
+
+**Found by re-grading evidence this round had just recovered.** R152's pair artefact contains, in its own
+`gates` array:
+
+```
+l4-projection-complete   false   memory: sidecarCensus, recallQueries
+```
+
+That row was written by the run that produced it: two fields the driver emitted did not reach the artefact.
+`pnpm eval:l4-regrade` recomputes every `l4-*` row from the pair artefact, and for this row it reported
+
+```
+l4-projection-complete   fail -> pass   both arms carried every field the driver emitted
+```
+
+**The recomputation cannot fail.** The gate grades whether the driver's emitted fields arrived; the artefact
+records the fields that *did* arrive; so a reader of the file can only ever confirm them. The same holds one row
+over for `l4-rotation-reconciles`, whose inputs are the arm's `serveRotation` block and its `pack.ledger`, both
+of which live in the arm artefact. A re-grader that recomputes a row from evidence it does not have does not
+re-grade it, it overwrites it — and it overwrote it in the direction that hides a defect.
+
+**Why this is the worst direction.** Every other error this record has caught made a claim weaker. This one made
+a file say a defect had not happened. Had the allow-list not been introduced, the recovered R152 artefact would
+have entered the repository asserting a projection completeness that the run itself denied, and no later read
+would have had a reason to look.
+
+**The repair, and why it is an allow-list.** Three rows have every input in the pair artefact —
+`l4-paired`, `l4-effect-resolved`, `l4-same-split` — and those are re-graded. Everything else is preserved and
+printed with the reason. A block-list of the two known-bad rows would have been wrong the other way: any row
+added to `pairGates` later would be recomputed by default, which is the same defect with a delay. The fourth rule
+is a sentence: a row graded under `TAU_BAND` is preserved too, because the band came through the dispatch
+environment and the only trace of it is the row's own `actual` string (34.128).
+
+**A second defect in the same function, found by the same test.** `inputOf` did not read `planted_arm`, so a
+distractor arm's `l4-paired` row was recomputed as if the arm were a treatment and its sentence rewritten to
+claim a cost the arm never claimed. Fixed by reading the field the artefact already carries — R57's distractors
+now re-grade to "this row does not apply", which is what the rule says about them.
+
+### 34.203 The metric was one level off, and no artefact could say so
+
+**The fact.** All four registrations behind the pooled fold declare `trials: 1`. Read from
+`prereg/R143-fold-official.md`, `R143-fold-swapped.md`, `R152-the-travel-budget.md` and
+`R152c-the-paired-fold.md`; confirmed for R152 against its arm artefacts, recovered from run `44363599721`'s
+evidence bundle, which carry `metrics.k = 1`, `episode_trials = 40` and 40 `per_trial` rows on both arms.
+
+So every headline this record has published on τ² retail — **0.925, 0.900, 0.875, 0.850, 0.851, 0.775, 0.743** —
+is a per-task pass rate over **one** trial, stored in a field named `pass4`, and compared to two bars that are
+`pass^4` (0.575 and 0.6754).
+
+**Why nothing caught it.** The arm wrote `metrics.k`; the pairing step passed the protocol
+`trialCount: first.metrics?.k ?? 4`; and `trialCount` is read by no gate in the table. The pair artefact copied
+`pass4` and not `k`, so the one file a reader opens had the metric's *name* and not its *value*. §PROGRESS 181
+found this for R152c alone and queued it as a comparability note; the queue item is what R156 implements.
+
+**The repair, three layers down.** `bar_k_matches` on the arm (beside `bar_backbone_matches`), `k`/`kAbsent`/
+`barK`/`barKMismatch` on the pair, and a blocking `l4-same-k` that is **absent** rather than green when an arm
+states nothing. `PUBLISHED_K` moved from a private constant in `bin/l4.ts` into `l4-scenario.ts`, so the three
+readers that need it cannot drift.
+
+**What the corrected comparison says.** Under trial independence, `pass^1 = 0.925` restates to `pass^4 = 0.7321`
+and `0.85` to `0.522`. Against the baseline bar of 0.575: the memory is +15.7pp and the control is −5.3pp. The
+memory also clears the competitor's submitted 0.6754 by 5.7pp — cross-sample and cross-backbone, as the
+artefact's own notes say. **The published "+35pp" was a metric difference**, and the honest version is a
+smaller claim that separates the treatment from its own control for the first time.
+
+**The assumption is stated, not buried.** `restatedAtBarK.assumption` travels with the number: trials within a
+task are treated as independent, which flatters a store whose misses cluster. An estimate with its premise
+attached is a reading; the same number alone would be a rank claim this record cannot defend.
+
+**And a reproducibility hole closed in passing.** Two of the four draws had never been committed, so `b* =
+10.78%` could not be recomputed from the repository. Both are now in `eval/results/`, recovered through the
+GitHub artefacts API — which needs the `Authorization` header stripped on the cross-host redirect to blob
+storage, or the download answers 401 — and a census file records each draw's `k` with its evidence. A command
+reconciles the census against the artefacts and exits 1 on disagreement.

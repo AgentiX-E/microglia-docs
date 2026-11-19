@@ -7173,3 +7173,31 @@ things that change what the next dollar buys: the fold has a ceiling (§PROGRESS
 delta (this round), and the bar has a price in pairs (729 for `−5pp`). **The next spend should buy a fold that can
 see the target and a change that moves the rate — not another draw of the same forty tasks.** Every remaining row is
 now stated as a number a change can be graded against, which is the difference between a queue and a wish list.
+
+## Where the flywheel stands, 2026-11-19 (R156 read: the metric was one level off, and the target has two prices)
+
+**The one thing that changed.** Every L4 headline this record has published is `pass^1`, not `pass^4`: all four
+registrations behind the pooled fold declare `trials: 1`, and the pair artefact copied the field's *name* without
+its *value*. Worse, the tool that repairs gates by re-grading evidence had been turning a recorded
+`l4-projection-complete: false` into `true`, because it recomputed a row whose evidence is not in the file it
+re-grades (§PROGRESS 185, §AUDIT 34.202, §AUDIT 34.203, §TECH-DESIGN 17.169–17.170).
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | **a content axis graded against the break-even** | `b < 10.78%` with `r` held at 66.7% | head of the queue, and now **priced**: the change costs 170–847 pairs, and certifying the level costs 592 passes at an 8% rate |
+| 2 | ~~the 164-pair fold~~ | — | **withdrawn**: 164 is below the *nested* price of 170 and five times below the honest one. The sizes worth buying are **149** (certifies 5.39%) and **592** (certifies 8.08%) |
+| 3 | metric parity (`k`, `trials`) in the pair protocol | an auditable comparison | **done**: `l4-same-k`, `bar_k_matches`, `k`/`kAbsent`/`barK`/`barKMismatch`/`restatedAtBarK`, and the four draws committed so `b* = 10.78%` re-runs from the repository |
+| 4 | the published bar (0.575, ALTK 0.6754) | a comparable backbone **and** metric | reframed twice now: **cross-backbone** (`deepseek-flash` vs GPT-4.1) and **cross-sample** (40 vs 114). The metric is repaired — memory 0.7321, control 0.5220 at `pass^4` — and the memory clears 0.575 while its control does not |
+| 5 | BIRD dev | 6,600 paired questions ≈1pp | unchanged, and the only lane whose resolution reaches the 3pp claim (2,024 pairs at this discordance) |
+| 6 | the serving default | — | withdrawn (§PROGRESS 181); the switch stays as an instrument |
+
+**The honest summary, seven bounds in.** The record now knows three things it did not this morning: its headlines
+are one level below the bar it compares them to, its target costs either 170 or 847 pairs to *move* and 592 passes
+to *certify*, and its own repair tool had been hiding a failure. All three were found at $0 with artefacts that
+already existed — two of them by recovering artefacts the record had cited but never committed, which is the first
+time this lane has used the GitHub artefacts API as an evidence source.
+
+**What that does to the next dollar.** The spend that used to look obvious — a 164-pair pooled fold — cannot buy
+the claim in its best case. The two shapes that can are 149 pairs and 592; the first answers "is a 5.4% break rate
+believable" and the second answers "is 8% under the bar". Choosing between them is a claim about the content axis,
+not a budget line, and it is the decision the next round has to make before anything is dispatched.
