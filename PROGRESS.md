@@ -22557,3 +22557,81 @@ served trials and therefore does not enter through the 15pp between-draw spread 
 R152c's bounded fold is the first draw in this record where the aggregate renders-per-item reached 3.15, which is
 the precondition the counter has been waiting on since R142 — so its first read is a **$0 readback on R152c's own
 artefacts**, not a dispatch.
+
+## 183 — R154: the ceiling under every unresolved row, and the fold that cannot certify a perfect store
+
+**$0.00, no dispatch.** One subtraction that had never been done: the control's pass rate is also the fold's
+ceiling, because a memory can only repair a trial the bare agent failed. Compute it for the folds this record has
+already run and every `UNRESOLVED` row stops being a statement about the store.
+
+### The table
+
+```console
+$ pnpm eval:headroom eval/results/poc-l4-pair-official.json eval/results/poc-l4-pair-swapped.json \
+      .cache/r152-pair/poc-l4-pair.json .cache/r152c-pair/poc-l4-pair.json
+| fold | n | control pass^4 | ceiling | minimum detectable | verdict |
+| `poc-l4-pair-official` | 40 | 0.9000 | **10.00pp** | 18.53pp | silent |
+| `poc-l4-pair-swapped` | 74 | 0.8514 | **14.86pp** | 17.76pp | silent |
+| `r152-pair` | 40 | 0.8500 | **15.00pp** | 15.66pp | silent |
+| `r152c-pair` | 40 | 0.8500 | **15.00pp** | 23.23pp | silent |
+4 of 4 fold(s) could not express an effect even with a perfect store
+```
+
+**Ceiling** is `1 − controlPass⁴` in percentage points: the delta a store would produce if it repaired every failed
+task and broke nothing. **Resolution** is the `z·sqrt(d/n)` the protocol has carried since R42. On all four folds
+the ceiling is below the resolution, so an oracle memory would have been reported as an effect this design could
+not resolve — and `V5-resolution` would have blocked it for claiming a delta the sample cannot see.
+
+| fold | ceiling − resolution |
+| --- | --- |
+| `official` (committed) | **−8.53pp** |
+| `swapped` (committed) | **−2.90pp** |
+| R152 | −0.66pp |
+| R152c | −8.23pp |
+
+### What this changes about the last four rounds
+
+Nothing about what they measured, and everything about what they concluded. R152's refusal, R152c's withdrawal,
+R133's +2 net, R134's −5.00pp and R139's +2.50pp were each read as a fact about a mechanism — the floor, the
+margin, the count, the allocation. All five were taken on folds where the largest expressible delta was 15.00pp
+and the smallest resolvable one was 15.66pp or worse. **The design was answering a question it could not answer,
+and the record kept blaming the answer.**
+
+The one fold that could have expressed something was the pooled 114-pair reading (§PROGRESS 178, −6.14pp at
+13.24pp): ceiling 14.0pp against 13.24pp, a margin of 0.8pp. That is the first composition in this record whose
+ceiling clears its own resolution, and it clears it by less than the effect it is hunting.
+
+### Significance and resolution are not the same question
+
+Six discordant pairs, all in one direction, give `p = 0.0156`. So a perfect store **would** be significant on a
+40-task fold, and would still read `UNRESOLVED`: the resolution predicate is about the size of the point
+estimate, and a 15.00pp point estimate on forty tasks carries a 95% interval near [3, 27]. Both sentences are true
+of the same reading, and a record that reported only `p` would have called that a success. This is also the reason
+`l4-effect-resolved` had to be rewritten to ask about `|delta|` rather than about the verdict state (§PROGRESS
+182) — the two rows agreeing on the same number is not a coincidence, it is the design's two limits meeting.
+
+### What it selects for the next dispatch
+
+With retail's observed discordance (0.275) and a control at 0.85, clearing a 15pp ceiling needs **164 pairs** —
+retail's 114 plus airline's 50, which is the two corpora this repository already pins in its workflow. The
+recommendation is therefore **a pooled retail+airline pair**, not a fifth 40-task draw, with the arithmetic
+available before the spend: at 164 pairs the resolution reads ≈11.5pp against a 15.0pp ceiling.
+
+The outcome counter (R129) stays where it was put: its precondition is per-record opportunity, and R152c's bounded
+draw produced **6 opportunities in 40 renders** with `candidates: []` and `opportunitiesForEvidence: 3` — a corpus
+limit that three rounds (R141, R142, R151) have now measured and that no serving policy moved. It is not the next
+dollar; it is the same dollar as the pooled fold, because both need a corpus where the control fails more often.
+
+### Acceptance
+
+| dimension | reading |
+| --- | --- |
+| tests | **5,816 over 283 files** (+7 for the headroom module) |
+| coverage | **100 / 99.92 / 100 / 100**; `headroom.ts` **100 / 100 / 100 / 100** |
+| new surface | `headroom.ts`, `bin/headroom.ts`, a printed line and an artefact block on every pair |
+| dispatch cost | **$0.00** |
+
+**Next.** R155: the pooled retail+airline pair (164 pairs, ≈11.5pp resolution against a 15.0pp ceiling), registered
+with the airline fields stated explicitly — a past arm inherited `TAU_TEST_DOMAIN=airline` and produced a pair whose
+delta measured the two scenarios (§ROADMAP). Until that exists, every retail fold is a design that cannot certify
+what it is asking.

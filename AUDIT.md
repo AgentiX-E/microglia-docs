@@ -12316,3 +12316,55 @@ never moves, while a green row is the one a reader stops reading. Which is why t
 serving policy (34.198) and the correction of its gate are the same lesson from two sides: on this lane, a reading
 that cannot be checked against its own evidence is worth less than no reading, and a reading that *can* be checked
 is worth keeping even when the policy it was built for is withdrawn.
+
+### 34.200 The bound nobody computed, and four conclusions it invalidates
+
+**What was measured.** Every pair artefact has carried the control's `pass^4` since R42, and the protocol has
+carried a minimum detectable difference since the same round. Nobody multiplied them into the one number that
+matters: **a memory can only repair a trial the bare agent failed, so `1 − controlPass⁴` is a hard ceiling on any
+delta the fold can express.**
+
+| fold | n | control | ceiling | resolution | margin |
+| --- | --- | --- | --- | --- | --- |
+| `official` (committed) | 40 | 0.9000 | 10.00pp | 18.53pp | −8.53 |
+| `swapped` (committed) | 74 | 0.8514 | 14.86pp | 17.76pp | −2.90 |
+| R152 | 40 | 0.8500 | 15.00pp | 15.66pp | −0.66 |
+| R152c | 40 | 0.8500 | 15.00pp | 23.23pp | −8.23 |
+| R143 pooled | 114 | ≈0.86 | 14.0pp | 13.24pp | **+0.76** |
+
+**Every fold but one has a ceiling below its resolution.** On those folds an oracle store — one that repairs every
+failure and breaks nothing — would have produced a delta the design is forbidden from reading, and `V5-resolution`
+would have blocked the claim with the arithmetic that proves it. So `UNRESOLVED` was not a reading about the store
+on any of them; it was the design reporting its own limit.
+
+**The five conclusions it touches, and how far the damage goes.**
+
+| round | conclusion | status after this |
+| --- | --- | --- |
+| R133 | +2 net, 2.70% | consistent with any store between harmful and perfect; the fold could not separate them |
+| R134 | `packLimit: 1` costs −5.00pp | a 15.00pp ceiling against a 17.50pp half-width: the direction is as unsupported as its opposite |
+| R139 | +2.50pp, harm 15.63% | same fold shape, same limit |
+| R141/R142/R151 | the counter has no headroom to test on | unchanged — this is the *other* headroom, and it was measured correctly |
+| R152/R152c | the policy is withdrawn, the mechanism refuted | the withdrawal stands on R45's cost bar, which is a rule rather than a resolution; the *mechanism* claim was refuted by a third point, which is a different argument and survives |
+
+None of these is a reason to un-publish a finding, and none is a licence to re-interpret an artefact. What they
+share is a defect in the *reading*: each was written as a statement about memory when the file also contained,
+unread, the statement that no memory could have been certified there.
+
+**Why the record kept missing it.** Every round asked "how fine can this fold see" (resolution) and never "how far
+can it move" (headroom). The two are computed from different columns of the same comparison — discordance for one,
+the control's pass rate for the other — and only the first was ever put beside the delta in a printed line. The
+`ceiling` block that has been in artefacts since R42 is a *different* ceiling: the scenario's task supply against
+what a 5pp half-width would need. Two objects, one word, and the word was doing the work of hiding the second.
+
+**The rule.** A design owes two bounds before it is dispatched, and both are computable from one earlier fold of the
+same split: the finest effect it can distinguish, and the largest it can produce. **A fold whose headroom is below
+its resolution cannot certify an effect at any treatment quality, and buying more of those folds is buying silence
+with extra steps.** The arithmetic that selects the next fold — 164 pairs, retail's 114 plus airline's 50, for a
+≈11.5pp resolution under a 15.0pp ceiling — took one subtraction and would have saved four dispatches.
+
+**And the second-order lesson, which is the expensive one.** This record has spent three rounds learning that a
+`p` value is not an effect size (34.167, 34.197) and one round learning that a line through two points is not a
+mechanism (34.198). This is the third face of the same error: **a significant reading is not a resolved one**, and
+six discordant pairs give `p = 0.0156` on a fold whose ceiling is 15.00pp and whose interval is [3, 27]. Every time
+the error has been a quantity that looked like evidence and was a property of the instrument.

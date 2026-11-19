@@ -10414,3 +10414,44 @@ reading is how a red line teaches its readers to ignore red (§17.161's own reas
 produced two *different* draws of 40 tasks, so the row under test would have moved for reasons unrelated to the
 predicate. A derived field's correction must be applied to the derivation, or the correction and the draw are
 confounded — the same error as §17.165's line through two points, one level down.
+
+### 17.167 Headroom: the design bound that sits beside resolution
+
+§17.161 and §17.165 are about what a *reading* may claim once it exists. This is about what a *design* can produce
+before it is bought, and it is one subtracted column that the record never printed.
+
+**The bound.** A memory repairs only trials the bare agent failed, so
+
+```
+ceiling = 1 − controlPass⁴        (percentage points)
+```
+
+is the largest delta the fold can express: a store that repairs every failure and breaks nothing. Beside it sits
+the resolution `z·sqrt(d/n)` the protocol has computed since R42. **The two are independent, and a fold whose
+ceiling is below its resolution cannot certify any effect at any treatment quality.**
+
+| fold | n | ceiling | resolution | margin |
+| --- | --- | --- | --- | --- |
+| retail 40-task, control 0.900 | 40 | 10.00pp | 18.53pp | −8.53 |
+| retail 74-task, control 0.851 | 74 | 14.86pp | 17.76pp | −2.90 |
+| retail 40-task, control 0.850 | 40 | 15.00pp | 15.66 / 23.23pp | −0.66 / −8.23 |
+| retail pooled | 114 | 14.0pp | 13.24pp | **+0.76** |
+| retail + airline (computed, not run) | 164 | 15.0pp | ≈11.5pp | **+3.5** |
+
+**Design consequences.**
+
+1. **The dispatch predicate changes.** A fold is selected by clearing its own ceiling, not by the size of the store
+   it is testing. Under retail's observed discordance (0.275) and a control at 0.85, that means ≥164 pairs, which is
+   retail's 114 plus airline's 50 — the two corpora the workflow already pins.
+2. **The `ceiling` field that existed since R42 is a different object.** It compares the scenario's task supply
+   with what a 5pp half-width would need; headroom compares the control's pass rate with the resolution. One word,
+   two quantities, and the second was never printed — so `headroom` is a new artefact block rather than a
+   reinterpretation of the old one.
+3. **Significance does not substitute.** Six discordant pairs, one direction, `p = 0.0156`: a perfect store is
+   *significant* on a fold whose point estimate the design must refuse. The predicate for a quotable finding is
+   therefore `|delta| ≥ resolution`, which is what §17.166's gate now says, and the two rounds agree because they
+   are the same arithmetic from two sides.
+
+**Cost of the instrument.** $0.00 — it is subtraction on numbers already filed. The cost of *not* having it is four
+dispatches whose conclusions were read as statements about memory when the file also contained, unread, the
+statement that no memory could have been certified.

@@ -7117,3 +7117,36 @@ edit moves a row without re-grading (§PROGRESS 182, §AUDIT 34.199, §TECH-DESI
 changed, because nothing about the effect was measured: this was the record's own bookkeeping made true, and it is
 the second half of the round that withdrew the serving policy — the instrument stays, and now the instrument's
 report is graded by the rule that ships.
+
+## Where the flywheel stands, 2026-11-19 (R154 read: the ceiling under every unresolved row)
+
+**The one thing that changed.** The control's pass rate is also the fold's ceiling, because a memory repairs only
+trials the bare agent failed. `1 − controlPass⁴` is therefore the largest delta any store could produce on a fold,
+and on **four of the five folds this record has run it is below the fold's own resolution** — so an oracle memory
+would have been reported as an effect the design could not resolve (§PROGRESS 183, §AUDIT 34.200, §TECH-DESIGN
+17.167).
+
+| fold | n | control | ceiling | resolution | margin |
+| --- | --- | --- | --- | --- | --- |
+| `official` (committed) | 40 | 0.9000 | 10.00pp | 18.53pp | −8.53 |
+| `swapped` (committed) | 74 | 0.8514 | 14.86pp | 17.76pp | −2.90 |
+| R152 | 40 | 0.8500 | 15.00pp | 15.66pp | −0.66 |
+| R152c | 40 | 0.8500 | 15.00pp | 23.23pp | −8.23 |
+| R143 pooled | 114 | ≈0.86 | 14.0pp | 13.24pp | **+0.76** |
+| retail + airline (computed) | 164 | 0.85 | 15.0pp | ≈11.5pp | **+3.5** |
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | **the pooled retail+airline pair (R155)** | a fold whose ceiling clears its resolution | **head of the queue**: 164 pairs, ≈11.5pp resolution under a 15.0pp ceiling — the first composition with margin rather than a 0.76pp squeak. Cost ≈$0.55: one airline learn phase plus two arms; the airline fields stated explicitly, because a past arm inherited `TAU_TEST_DOMAIN=airline` and its delta measured two scenarios |
+| 2 | the outcome counter (R129) | per-record opportunity | **not the next dollar, and not a separate one**: R152c produced 6 opportunities in 40 renders with `candidates: []` and `opportunitiesForEvidence: 3`, and R141/R142/R151 measured the same corpus limit. It needs the same thing row 1 buys — a corpus where the control fails more — so it rides on row 1 rather than preceding it |
+| 3 | the lexical anchor (axis 3) | breaks fall while repairs hold | **defers to row 1**: a content axis measured on a 40-task fold is a draw, not a reading |
+| 4 | the published bar (0.575, ALTK 0.6754) | a comparable backbone | **reframed, not reachable**: this lane's memory-free control reads 0.925 on the committed fold, above both published bars, so `bar_backbone_matches = 0` is not a technicality — the bars belong to weaker backbones and a comparison at equal backbone is the only one that means anything |
+| 5 | BIRD dev | 6,600 paired questions ≈ 1pp | unchanged, and now with a sharper reason: it is the only lane in this record whose resolution reaches the 3pp claim at all |
+| 6 | the serving default | — | withdrawn (§PROGRESS 181); the switch stays as an instrument |
+
+**The honest summary, five bounds in.** The record has spent four dispatches learning that its measurements were
+noise (±15pp across draws) and this round learning why: the folds could not have produced a visible effect even if
+the memory were perfect, because the baseline agent already passes 85–90% of the tasks being measured. **The
+binding constraint is headroom, and headroom is a property of the corpus and the backbone, not of the store.** That
+reframes every remaining row: the next dollar does not buy a better memory, it buys a setting where a memory could
+show up at all.
