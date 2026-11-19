@@ -7704,9 +7704,16 @@ benchmark suite, say the same thing: the harm is low-coverage injection, not wro
 **What this changes about the plan, and what it forbids.** It forbids the next content axis being *more
 distillation* — every abstraction this lane has added (rules, consolidation, packing) sits on the side of the
 ablation that lost 5.78–19.62 points. It selects instead: **retrieve evidence the request can use, and serve
-nothing when no such evidence exists.** The break-even gives that change a target (`b < 10.8%` at `r = 66.7%`), the
-coverage distribution gives it a threshold (`minCoverage` ≥ 0.15 empties 21 of 41 packs), and the sweep already
-prices it (`net +2.5pp` at rung 0.15, below resolution and therefore a hypothesis, not a result).
+nothing when no such evidence exists.** The break-even gives that change a target (`b < 10.8%` at `r = 66.7%`) and
+the coverage distribution gives it a candidate threshold — `minCoverage` 0.10 empties 21 of 41 packs, 0.15 empties
+34, so the useful rungs sit between 0.05 (5 emptied) and 0.10.
+
+**And the instrument that is still missing, stated precisely because the two axes are easy to confuse.** The
+`serveSweep` block prices a **margin** rung, not a coverage floor: at rung 0.15 it withholds 21 of 40 episodes and
+reads `net +2.5pp`, which is below this fold's resolution and therefore a hypothesis rather than a result. No
+coverage rung has ever been priced against outcomes — `coverage.floors` counts emptied packs and says nothing about
+what those episodes did. Joining the two is a $0 readback over artefacts that already carry both, and it is the
+first thing the next round should do.
 
 **Where microglia stands, restated against these boards.** Last on published score on τ² (0.925 at `k = 1` against
 a memory-free 0.850 vs ALTK's 0.6754 at `pass^4` — not comparable on metric or backbone), absent from every
