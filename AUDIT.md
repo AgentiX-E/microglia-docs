@@ -12500,3 +12500,68 @@ attached is a reading; the same number alone would be a rank claim this record c
 GitHub artefacts API — which needs the `Authorization` header stripped on the cross-host redirect to blob
 storage, or the download answers 401 — and a census file records each draw's `k` with its evidence. A command
 reconciles the census against the artefacts and exits 1 on disagreement.
+
+### 34.204 The pay statistic divided by the corpus a second time, and three arms that helped were filed as losses
+
+**The defect, in one struct.** `ExchangeReading` carried `helpPerHarm`, `hurdle`, `clearance`,
+`requiredRepairRatePp` and `pays` is what it lacked. Net accuracy change is `repaired − broken`, so the bar on
+`helpPerHarm` is **1**:
+
+```
+pays ⇔ repaired ≥ broken ⇔ helpPerHarm ≥ 1 ⇔ repairRate ≥ breakRate · (breakable / repairable).
+```
+
+The rightmost term is `hurdle = breakable / repairable`, and `requiredRepairRatePp = breakRatePp × hurdle` is the
+same condition in rate units — which the module has computed, correctly, since R34. `clearance = helpPerHarm /
+hurdle` therefore applies the corpus's odds twice, and the doc comment's claim, "a clearance below one is a
+memory that loses", is false on committed data:
+
+| arm | repaired | broken | net | `helpPerHarm` | `hurdle` | `clearance` | `requiredRepairRatePp` | `repairRatePp` | `pays` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| BIRD dev, lexicon grain | 78 | 67 | **+11** | 1.164 | 1.328 | **0.877** | 10.17% | 11.84% | **true** |
+| BIRD dev, rule grain | 67 | 62 | **+5** | 1.081 | 1.349 | **0.801** | 9.49% | 10.26% | **true** |
+| BIRD mini-dev, recall order | 19 | 17 | **+2** | 1.118 | 1.059 | 1.056 | — | — | **true** |
+| BIRD train | 187 | 237 | −50 | 0.789 | 1.393 | 0.566 | 8.10% | 6.39% | false |
+
+**Two fields of one struct disagree about one row**, and the disagreement is not a matter of interpretation:
+`requiredRepairRatePp` is derived from `breakRatePp` and `hurdle`; `clearance` is derived from the counts. On the
+lexicon row the first says the arm clears its break-even by 1.67 points of repair rate, the second says it loses.
+Only one of them can be the pay test, and it is the one that agrees with `repaired ≥ broken`.
+
+**What the record did with it.** R37's P4 was recorded as "its exchange rate clears the bare model hurdle —
+0.8536 against 1.335 — holds: false", and R34's note says "§147 compared 0.79 against 1.0 and read a near miss
+where the arithmetic shows a 43% shortfall". The 43% is the distance to **rate parity**, not to paying: 1 −
+0.789 = 21% is the distance to paying, and a −0.71pp net on 7,000 questions *is* the near miss §147 called it.
+The R34 "correction" replaced a correct bar with a corpus-invariant-looking one that is not invariant at all —
+`clearance` moves with `breakable/repairable`, which is why it reads 0.108 on τ² retail and 0.566 on BIRD train
+while the decision statistic reads 0.667 and 0.789.
+
+**The second defect, found while fixing the first: no interval anywhere.** Every clearance comparison in this
+record was a ratio of four counts with no interval on it. `exchange.ts` now computes the census with a cluster
+bootstrap, and clustering is not cosmetic — BIRD dev is 1,534 questions over 11 databases:
+
+| reading | n | clusters | delta [95%] | netOdds [95%] | verdict |
+| --- | --- | --- | --- | --- | --- |
+| BIRD train | 7,000 | 58 | −0.71pp [−1.26, −0.18] | 0.789 [0.657, 0.942] | **loses** |
+| BIRD dev, rule | 1,534 | 11 | +0.33pp [−0.61, +1.40] | 1.081 [0.857, 1.382] | unresolved |
+| BIRD dev, lexicon | 1,534 | 11 | +0.72pp [−0.78, +2.39] | 1.164 [0.841, 1.650] | unresolved |
+| BIRD mini-dev | 350 | 11 | +0.57pp [−3.48, +5.02] | 1.118 [0.500, 3.250] | unresolved |
+| τ² retail, pooled | 194 | 114 | −4.64pp [−11.45, +1.60] | 0.667 [0.345, 1.167] | unresolved |
+
+**The only resolved reading in the family is the loss.** Three arms pay by point estimate and none of them
+resolves; the one reading large enough to decide says −0.71pp with an interval that excludes zero. And the τ²
+"−4.64pp" this record has been narrating was never a finding: `l4-effect-resolved` had refused to call it one
+since R153, and the prose had not caught up.
+
+**Why this is the same defect class as 34.202 and 34.203.** In all three the record published a number whose
+*relation to the decision* was never checked against the arithmetic that produced it: a re-grader that could not
+fail, a metric field that was read by nobody, and now a ratio whose documented meaning contradicts its own
+sibling field. The common repair is the same: make the decision a named predicate (`pass`, `k`, `pays`), derive
+it from the stored counts, and gate on it.
+
+**Where the field stands on the same question.** Memory Tax (arXiv 2610.34073) runs eleven memory systems against
+naive retrieval and finds most losing, with 11.4%–22.6% of sampled facts partially or wholly lost during
+construction and up to 38.0% never stored; the NeurIPS 2026 coverage-calibrated evaluation reports that
+similarity and an LLM judge "rank the harmful cases no better than chance" and that where no comparable structure
+exists the transfer sign is *unidentifiable*. This record's −0.71pp [−1.26, −0.18] is the same shape as the first,
+and its three unresolved arms are the second's licensing rule rather than a failure of the measurement.

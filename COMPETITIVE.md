@@ -7757,3 +7757,42 @@ was saving for is below the cheapest of those prices**, which is why it is withd
 unrun, and no metric repair substitutes for them. What it does is make the one board this lane *does* appear on
 falsifiable in its own units — a reader can now recompute the restatement from the artefact, check the assumption,
 and disagree with it in public.
+
+**AM.17 — the field's own numbers have the same shape, and its best papers use the interval this record was
+missing.** Four 2026 sources read this round, all of them reporting the *pair*, none of them reporting a ratio
+without one.
+
+| source | what it measures | the number | the statistic |
+| --- | --- | --- | --- |
+| **Memory Tax** (arXiv 2610.34073) | 11 memory systems vs naive retrieval over raw history, LongMemEval-s / PersonaMem-v2 / MINT-Eval, 3 backbones | naive 2-round RAG 81.4% on LongMemEval-s (Qwen3.6-27B); A-Mem 79.4%, MemOS 76.6%, SimpleMem 73.6%, MemoryOS 73.4%, LightMem 78.8%; 11.4% (MemOS) to 22.6% (OpenViking) of sampled facts partially or wholly lost at construction, 38.0% never stored on OpenViking | per-query benefit vs tax |
+| **Coverage-Calibrated Evaluation of Memory Interventions** (NeurIPS 2026) | memory reuse as an evaluation problem over (request, memory) pairs | similarity and an LLM judge rank harmful cases **no better than chance**; only structurally incompatible memories are reliably harmful; harm grows with executor size; where practice supplies no comparable structure the transfer **sign is unidentifiable** | transfer gain with coverage as the licence to decide |
+| **Obsolete facts in agent memory** (FactConsolidation, MemoryAgentBench) | stale vs unrelated evidence, prompt and evidence size frozen | 100% → 44.6% (Qwen2.5-7B) and → 87.8% (Qwen3-14B) when one unrelated statement is replaced by an **obsolete competing** one; BM25 45% → 32% as the evidence budget goes 64 → 512 tokens | paired flips, all 50 harmful classified stale |
+| **Retain or Consolidate?** (arXiv 2607.17545) | operator choice for agent memory on LongMemEval_S | knowledge-update −0.125 (2.0 helped / 7.0 harmed), temporal −0.154 (1.7/3.7), multi-session +0.051 (2.7/2.0), all 75 −0.080 (7.0/13.0) | helpPerHarm (in name), supported **only where question-bootstrap intervals exclude zero** |
+
+**Three things follow for microglia's position.**
+
+1. **Its resolved reading agrees with the field.** BIRD train's −0.71pp [−1.26, −0.18] is the same shape as
+   Memory Tax's "most dedicated memory systems lose to naive retrieval", and the mechanism named there —
+   information lost at construction — is the one this record has been calling coverage since AM.15.
+2. **Its unresolved arms are the field's licensing rule, not its embarrassment.** The NeurIPS 2026 paper proves a
+   forced use-or-reject decision is *provably costly* where the transfer sign is unidentifiable. Three arms at
+   +0.33/+0.72/+0.57pp with intervals containing zero are exactly that region, and a record that called them
+   wins would be making the mistake that paper formalises.
+3. **The one methodological thing this repository still has that these do not:** a census that a reader can
+   re-run from committed artefacts (`pnpm eval:exchange`), with the pay predicate named (`pays = repaired ≥
+   broken`), the cluster count published beside `n`, and drift gated in CI. `Retain or Consolidate?` states the
+   interval rule in prose; `poc-exchange-census.json` states it as a file with a check behind it.
+
+**What the field says the next content axis is, and it is not coverage.** Obsolete-FactConsolidation's result —
+one competing statement costs more than one unrelated statement of the same size — reframes the queue's head.
+This record has now tested "does the pack cover the question" (AM.15: null, and coverage *amplified* both rates)
+and "does the pack name the identifier the query imports" (R31: null, gap 1.24pp, p = 1.0). Neither is
+contradiction. BIRD's `injected` statements and `goldSql` sit in the same committed `per_case` rows, so the first
+test of "does the pack assert something the gold contradicts" is $0, and it is the axis the literature predicts
+will separate harm from noise.
+
+**Board position, unchanged in kind.** microglia still appears on one board (τ² retail) and not the four memory
+boards; on the τ² board its headline is cross-backbone and cross-sample and ranks nothing (AM.14, AM.16). What
+changed is that its own numbers are now in the same unit as Memory Tax's and Retain-or-Consolidate's — a paired
+delta with an interval over a stated cluster — so the only remaining gap to those two is that this record has one
+7,000-question reading and they have three benchmarks each.

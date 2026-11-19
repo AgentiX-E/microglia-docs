@@ -7201,3 +7201,32 @@ time this lane has used the GitHub artefacts API as an evidence source.
 the claim in its best case. The two shapes that can are 149 pairs and 592; the first answers "is a 5.4% break rate
 believable" and the second answers "is 8% under the bar". Choosing between them is a claim about the content axis,
 not a budget line, and it is the decision the next round has to make before anything is dispatched.
+
+## Where the flywheel stands, 2026-11-19 (R157 read: the pay statistic double-counted the corpus)
+
+**The one thing that changed.** `clearance` — the number this record has used for four rounds to say "the memory
+does not pay" — divides the exchange rate by the corpus's own odds a second time, and its documented meaning is
+false on committed data: three BIRD arms with a positive net (67/62, 78/67, 19/17) were carried as losses
+(§PROGRESS 186, §AUDIT 34.204, §TECH-DESIGN 17.171).
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | **a content axis graded against the pay predicate** | `pays` with a clustered interval that excludes zero | head of the queue, **and the axis is now named**: not coverage (AM.15, null) and not identifier naming (R31, null), but **contradiction** — Obsolete-FactConsolidation's 100%→44.6% from one competing statement. First cut is $0 on committed `injected` + `goldSql` |
+| 2 | the pay predicate itself | `pays = repaired ≥ broken`, with the cluster count beside `n` | **done**: `pnpm eval:exchange`, census committed, drift gated |
+| 3 | a reading large enough to decide | BIRD dev resolves ~±2pp at 11 clusters; train resolves ±0.7pp at 58 | **done, and it answers**: train −0.71pp [−1.26, −0.18] is the only resolved reading in the family, and it is a loss |
+| 4 | the 149 / 592-pair folds | certify a 5.39% / 8.08% break rate | unchanged in price, but no longer the head: the content axis has to move `pays` at $0 first |
+| 5 | BIRD dev 6,600 paired | ≈1pp resolution | unchanged; still the only lane whose resolution reaches 3pp |
+| 6 | the four memory boards (LoCoMo, LongMemEval, BEAM, MemoryAgentBench) | a same-backbone comparable row | unchanged; Memory Tax and Retain-or-Consolidate both publish there and this record does not |
+| 7 | the serving default | — | withdrawn (§PROGRESS 181); the switch stays as an instrument |
+
+**The honest summary, eight bounds in.** The record now knows that its own pay statistic was deflated by the
+corpus's parity (1.33–6.19× depending on corpus), that the only reading it has which resolves says memory loses
+0.71pp, that its three apparent wins are all inside their intervals, and that the τ² "−4.64pp" it narrated for
+two rounds was never a finding. Every one of those was computed from artefacts already in the repository, at $0,
+by asking what each stored number *means* rather than whether it is significant.
+
+**What that does to the next dollar.** Nothing should be dispatched until the contradiction axis is tested,
+because it is the first axis since AM.15 that the literature predicts will separate harm from noise and it costs
+nothing to test on rows already committed. If it separates, the next fold is sized against the rate it moves; if
+it does not, the queue's answer is that BIRD's memory problem is construction (Memory Tax's 11–38% fact loss) and
+not selection, and the fix is in the distill path, not in the gate.

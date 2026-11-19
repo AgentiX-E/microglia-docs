@@ -22833,3 +22833,110 @@ the artefact it describes, which is what stops the census becoming a second copy
 fold that can certify it — which is ≥592 tasks at an 8% target, or ≥149 at 5.4%. The 164-pair composition is
 withdrawn. What changed this round is that the *label* of every number the claim rests on is now auditable, and
 the rank against both published bars has a defensible version.
+
+## 186 — R157: the pay statistic double-counted the corpus, and three arms that helped were published as losses
+
+**$0.00, no dispatch.** One definition, five committed artefacts, and a census that recomputes them under a
+clustered interval. The defect is provable inside a single struct: two of its fields disagree about the same row.
+
+### 186.1 The identity, and the field that ignores it
+
+`admission.ts` published `clearance = helpPerHarm / hurdle` with the sentence "a clearance below one is a memory
+that loses". Net change is `repaired − broken`, so:
+
+```
+pays ⇔ repaired ≥ broken ⇔ helpPerHarm ≥ 1
+     ⇔ repairRate ≥ breakRate · (breakable / repairable) = breakRate · hurdle.
+```
+
+The last line is `requiredRepairRatePp`, which the same module has always computed correctly. The hurdle is
+**already** the bar in rate units, so dividing the count ratio by it applies the corpus's odds twice. There is no
+reading under which both fields are right:
+
+| arm | repaired | broken | net | `helpPerHarm` | `hurdle` | `clearance` | `requiredRepairRatePp` | `repairRatePp` | pays |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| BIRD dev, rule grain | 67 | 62 | **+5** | 1.081 | 1.349 | **0.801** | 9.49% | 10.26% | **yes** |
+| BIRD dev, lexicon grain | 78 | 67 | **+11** | 1.164 | 1.328 | **0.877** | 10.17% | 11.84% | **yes** |
+| BIRD mini-dev, recall order | 19 | 17 | **+2** | 1.118 | 1.059 | 1.056 | — | — | yes |
+| BIRD train | 187 | 237 | −50 | 0.789 | 1.393 | 0.566 | 9.29% | 6.39% | no |
+
+Two of the three rows are counterexamples, and the lexicon one is the sharpest: `clearance` 0.877 says loses, `repairRatePp`
+11.84% against a 10.17% break-even says pays, and the net is +11 questions. **Three arms with a positive net were
+carried in this record under a statistic that called them losses**, and the record's own prose drew the
+conclusion its statistic implied — R37's P4 was recorded as "clears the exchange rate: holds false".
+
+`clearance` also cannot order corpora, because it moves with the corpus: τ² retail reads 0.108 against BIRD
+train's 0.566, while `helpPerHarm` reads 0.667 against 0.789 — the opposite ordering, by a factor the parity
+ratio supplies.
+
+### 186.2 What replaces it, and the intervals nothing in this record had
+
+`exchange.ts` computes the census with `pays = repaired ≥ broken` and a **clustered** bootstrap on the delta.
+Clustering is the finding, not a refinement: BIRD dev is 1,534 questions over **11** databases, τ² is 194 pairs
+over 114 tasks, and an interval that resamples questions shrinks by roughly the square root of the cluster size.
+
+```console
+$ pnpm eval:exchange
+source                               n clus   rep   brk    netPp     low    high   netOdds   low  high verdict
+bird-train                        7000   58   187   237    -0.71    -1.26   -0.18     0.789 0.657 0.942 loses
+bird-dev-rule                     1534   11    67    62     0.33    -0.61    1.40     1.081 0.857 1.382 unresolved
+bird-dev-lexicon                  1534   11    78    67     0.72    -0.78    2.39     1.164 0.841 1.650 unresolved
+bird-mini-recall-order             350   11    19    17     0.57    -3.48    5.02     1.118 0.500 3.250 unresolved
+tau2-retail-pooled                 194  114    18    27    -4.64   -11.45    1.60     0.667 0.345 1.167 unresolved
+```
+
+Three consequences the record has to absorb:
+
+- **The only resolute reading in the family is negative.** BIRD train's −0.71pp [−1.26, −0.18] excludes zero; the
+  three arms that pay by point estimate all have intervals containing it.
+- **τ² retail's "−4.64pp" was never a finding.** Its interval is [−11.45, +1.60]. `l4-effect-resolved` had
+  already refused to call it one; the narrative had not caught up.
+- **The `b* = 10.78%` target survives, and its pricing does too**, because both were derived from
+  `b* = r·f/(1−f)`, which is exactly the `pays = 1` condition. What does not survive is any sentence that orders
+  retail against BIRD by `clearance`.
+
+### 186.3 The census is a gate
+
+`eval/results/poc-exchange-census.json` is committed and `pnpm eval:exchange --check` recomputes it from the five
+committed artefacts, failing on a one-byte difference. `stats.ts` grew `clusterBootstrapStatistic` — rows,
+cluster function, statistic — and `clusterBootstrapCI` is now that function with `mean` as its statistic, so
+every interval already in this repository is unchanged to the last digit while ratios get an interval for the
+first time. Resamples where a ratio has no denominator are dropped **and counted** (`dropped`), because a silent
+drop biases an interval toward the draws that had a denominator.
+
+### Acceptance
+
+| dimension | reading |
+| --- | --- |
+| tests | **5,898 over 287 files** (+24: 18 for the census — arithmetic, verdicts, clustering, refusals, artefact readers, the table — 4 for the generic resampler, 2 for `pays` in `admission.test.ts`) |
+| coverage | **100 / 99.92 / 100 / 100** overall; `exchange.ts` and `stats.ts` are **100 / 100 / 100 / 100**, `admission.ts` unchanged at 100 |
+| gates added | `pnpm eval:exchange --check` (census drift), `pays` in `ExchangeReading`, `clusterBootstrapStatistic` as the single resampling loop |
+| artefacts committed | `eval/results/poc-exchange-census.json` |
+| dispatch cost | **$0.00** |
+
+**Next.** The literature read this round (186.4) says the harm is carried by *competing* content, not by
+irrelevant content, and that similarity ranks the harmful cases no better than chance. That is a content axis
+the record has not tested: not "does the pack cover the question" (AM.15, null) and not "does it name the
+identifier the query imports" (R31, null), but "does it assert something the gold contradicts". BIRD's `injected`
+statements and `goldSql` are both in the committed `per_case` rows, so the first cut of that test is $0.
+
+### 186.4 What the field says this round
+
+- **Memory Tax (arXiv 2610.34073)** — eleven dedicated memory systems against naive retrieval over raw history
+  on LongMemEval-s, PersonaMem-v2 and MINT-Eval: most lose, and the loss is accounted to construction, 11.4%
+  (MemOS) to 22.6% (OpenViking) of sampled facts partially or wholly lost, up to 38.0% never stored. That is the
+  same shape as BIRD train's resolved −0.71pp and it names the mechanism the record has been calling coverage.
+- **Coverage-Calibrated Evaluation of Memory Interventions (NeurIPS 2026)** — "how relevant the memory looks does
+  not reveal" whether it helps or harms; a similarity score and an LLM judge rank harmful cases **no better than
+  chance**; harm grows with executor size; where practice supplies no comparable structure the transfer sign is
+  **unidentifiable** and a forced decision is provably costly. That is `unresolved` as a licensing rule rather
+  than a failure, and it is the strongest external statement that this record's three unresolved arms are not a
+  weakness in the measurement.
+- **Obsolete facts in agent memory (FactConsolidation)** — with the prompt frozen and evidence size fixed,
+  replacing one unrelated statement with an obsolete competing one takes accuracy from 100% to 44.6% (Qwen2.5)
+  and to 87.8% (Qwen3-14B); growing the evidence budget from 64 to 512 tokens drops BM25 accuracy from 45% to
+  32%. Competing content is not noise with a bad score; it is a different failure.
+- **Retain or Consolidate? (arXiv 2607.17545)** — reports helped/harmed per question and states the rule this
+  census implements: claims are supported only where "question-bootstrap intervals exclude zero", point-estimate
+  orderings are reported without dominance where they do not. Independent confirmation that the interval, not
+  the ratio, is the unit of a claim.

@@ -10569,3 +10569,54 @@ property over a 50 × 600 grid instead (§17.166's rule, applied to an assumptio
 arithmetic; against the target it is below the nested floor of 170 and five times below the unrelated price of 847.
 The two sizes worth buying are 149 pairs (certifies a 5.39% break rate) and 592 (certifies 8.08%), and which one
 is bought is a claim about how far the content axis is expected to move the rate — not a budget decision.
+
+### 17.171 One resampling loop, one pay predicate, and a census that cannot drift
+
+The design question this round is narrow: where does "does the memory pay" live, and how many implementations of
+it may exist?
+
+**The predicate, and its three equivalent forms.** For an arm with `repaired`, `broken`, `repairable` and
+`breakable`:
+
+| form | statement | where it belongs |
+| --- | --- | --- |
+| counts | `repaired ≥ broken` | the decision — this is `pays` |
+| ratio | `repaired/broken ≥ 1` | the exchange rate a reader quotes (`netOdds`) |
+| rates | `repairRate ≥ breakRate · breakable/repairable` | the break-even display (`requiredRepairRatePp`) |
+
+All three are the same inequality. The defect §34.204 records is a fourth quantity built by mixing the second and
+the third: `(repaired/broken) / (breakable/repairable)`. It is neither the exchange rate nor its bar. The design
+rule that follows: **a derived statistic must name the family it belongs to**, and `clearance` did not. It is kept
+in `admission.ts` because committed artefacts carry it, with its meaning written down as "distance above a memory
+that repairs and breaks at the same rate", and `pays` is added beside it so that no reader has to reconstruct the
+predicate from a ratio.
+
+**One loop.** `clusterBootstrapStatistic(rows, clusterOf, statistic, resamples, seed)` resamples clusters and hands
+each draw to the caller; `clusterBootstrapCI` is that function with `mean`. The alternative — a second loop for
+ratios — was rejected on this repository's own grounds: two loops are two definitions of the 2.5 / 97.5
+percentile, and they drift. The generic version preserves the draw order and the RNG of the original, so every
+interval already committed is unchanged to the last digit; the test suite asserts that identity directly.
+
+Three properties the loop has to state rather than assume:
+
+- **The effective sample is the cluster count.** `resamples` is a parameter, and the census reports `clusters`
+  beside `n`, because a reader who divides by `sqrt(n)` is computing an interval the design does not support.
+- **A ratio can be undefined on a draw**, and a dropped draw is not a zero. It is counted (`dropped`) so the bias
+  is visible: dropping conditions the interval on the denominator being positive.
+- **A single cluster returns its own statistic as both bounds**, because a resample of one cluster is that
+  cluster. This is the same rule the mean-only version had.
+
+**The census as a gate.** `eval/results/poc-exchange-census.json` is a pure function of five committed artefacts;
+`pnpm eval:exchange --check` recomputes it and fails on a byte of difference. The design choice is that the
+artefact is *derived*, so its drift is evidence drift — an arm whose numbers moved — and the gate's message says
+so rather than asking for a re-run. A census that regenerated itself silently would be a number nobody re-read.
+
+**Where the verdict is computed, and why not twice.** The verdict is read from the delta interval, because
+`l4-effect-resolved` and `V5-resolution` both gate on the delta and the break-even target `b*` is derived from the
+counts behind it. The exchange ratio keeps its own interval for display. Two null tests on one question would
+eventually disagree at a boundary, so the design keeps one test and one display.
+
+**The registry.** New arms are added to `CENSUS_SOURCES` only with a committed artefact behind them; the census
+refuses an arm with no cluster key (`perCaseRows` and `pairRows` name the row they could not read), because an
+unclustered arm cannot be interval'd and a census that silently treated it as independent would be worse than no
+census.
