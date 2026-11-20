@@ -7952,3 +7952,52 @@ SimpleMem's sub-control readings, and nothing here supports ExpeL's 19pp. What e
 ask the question at a resolution the question needs (13.3pp at 134 games, 9.0pp at 291) for a cost that is now
 measured rather than estimated — and the field's papers report no per-episode bill, so ours will be the first
 number in that column that was actually counted.
+
+**AM.22 — The board this project is aiming at has no ruler: one system is reported at four different numbers on the same split**
+
+AM.21 left a sentence standing: the field's papers report no per-episode bill, so ours would be the first number
+in that column that was actually counted. Reading the papers for the numbers to be counted *against* turned up
+something more useful and less comfortable. **ExpeL's ALFWorld result is reported at four different values by
+four different papers, and the spread is larger than the effect this record has been trying to measure.**
+
+| source | ReAct | ExpeL | the paper's own method | what it says the split is |
+| --- | --- | --- | --- | --- |
+| ExpeL (project page, arXiv 2308.10144) | — | **59.0** | 59.0 (vs Reflexion 54.0) | ALFWorld, GPT-4-class |
+| H²R (arXiv 2509.12810) | 46.3 | **72.4** | 75.9 | ALFWorld, 30-step cap, Qwen3-235B |
+| Graph-memory FSM (OpenReview bvaaydGKYp) | — | **75.37** | 80.60 | mean over six ALFWorld task types |
+| CoEx (arXiv 2410.02506) | 61.94 | **64.20** | 93.28 (WALL-E 95.00) | ALFWorld, six tasks |
+
+Four papers, one baseline, 59.0 / 64.20 / 72.4 / 75.37 — a **16.4-point spread** where the treatment effect being
+quoted is 8 to 26 points. The spread is not a scandal and each paper has a reason for it: a different base model,
+a different step cap (H²R states 30, the lane this project drives allows 50), a different reading of "mean over
+task types" against "overall success", and a different amount of the training split consumed to write the
+experience in the first place. What it does mean is that **no number in that column is comparable across rows**,
+which is the same conclusion R160 reached from the other direction: a board whose baselines move by 16 points
+across the literature cannot resolve a 5-point mechanism difference, because the ruler is not the same length in
+two hands.
+
+**And the board mixes two kinds of method that are not competing.** The current top of the "ALFWorld textual,
+unseen" aggregate is in the nineties — TSBPO reports 96.64 unseen with a Qwen2.5-1.5B actor, Embodied Planner-R1
+reports 96.27, RoboAgent 94. Every one of those **updates model weights** through reinforcement learning or
+distillation. ExpeL, H²R, the graph-memory FSM and this project all keep the model frozen and change only what
+the prompt carries. They are not on the same axis and a table that puts them in one column measures the
+difference between training and not training, which nobody disputes.
+
+| family | examples | ALFWorld unseen | changes |
+| --- | --- | --- | --- |
+| parameter-free memory | ExpeL, H²R, FSM graph memory, **this project** | 59.0 – 80.6 | the prompt only |
+| reinforcement / distillation | ETO, Embodied Planner-R1, TSBPO, EvoHarness-RL | 72.4 – 96.64 | the weights |
+| VLM + training | RoboAgent | 94 | the weights, and the modality |
+
+**What that leaves this project able to claim, stated exactly.** Within the parameter-free row, and only within
+it, the comparison that can be made honestly is a **paired one**: the same model, the same 134 held-out games,
+the same prompt skeleton, the same step cap, one arm carrying a memory and one not. That comparison cannot be
+compared to ExpeL's 19 points, because ExpeL's 19 points is itself four numbers. What it *can* be compared to is
+ExpeL's *mechanism*, which is why R162 registered the always-in arm as a port of `rule-bank.ts` rather than as a
+description of one — running the competitor's arithmetic is the only form of comparison the literature's own
+numbers support.
+
+**The gap this creates is an opportunity, not a complaint.** In a row where every published baseline carries an
+unstated ±8-point spread, a paired delta with a cluster bootstrap interval, a per-arm token bill, and the full
+trajectories is not a marginal improvement — it is the only artefact of its kind in the line. That is the thing to
+publish, and it is publishable before any arm beats anybody.

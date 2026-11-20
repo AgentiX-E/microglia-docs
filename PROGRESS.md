@@ -23333,3 +23333,81 @@ neither was pinned to a number before this round.
 **Next.** The lane can now be asked the question it was built for. The first arm is a calibration, not a result:
 twenty games, one arm, to replace the modelled $0.0139 per episode with a measured number. Until that number
 exists, every statement about what a full run costs is a model rather than a bill.
+
+## 192. The floor is exactly zero, the split replays exactly, and the price stops being a model of a run
+
+**The one thing that happened.** R161 left a lane that could open one game and a plan priced by arithmetic. Two
+of that price's three factors had never been read from the corpus: how many turns a game takes, and how much
+transcript a turn carries. R162 measures both, on all 134 held-out games, twice, with a walker that calls no
+model — and the two readings it produced are a floor of **zero** and a replay of **134 of 134**.
+
+| reading | value |
+| --- | --- |
+| games covered | **134 of 134**, no duplicate, keyed on the split-relative path rather than the file name |
+| episodes terminated | **134 of 134** at the environment's own 50-step cap |
+| floor | **0 wins**, Wilson 95% **[0.0%, 2.8%]** |
+| replay | **134 of 134 identical**; 0 mismatches on identity, win, steps, action digest, observation fingerprint |
+| commands at reset | **25.05** on average |
+| transcript | mean **5,367** chars, median 5,217, p90 6,846, max 8,405 |
+| environment time | **852 s** then **884 s**, 6,360 / 6,596 ms per game |
+
+**Zero is the reading that could not have been guessed.** A random walker scoring five percent would mean part of
+the family is reachable without understanding it, and every headroom figure in this record would be too
+generous by that much. Zero also means the whole board is above chance, which is the best possible news for a
+treatment whose effect is supposed to come from reuse.
+
+**The replay is the reading the power arithmetic depends on.** Every `mde` here is `2.802·√(b+c)/n`, the paired
+formula, and it is only correct if an arm is a function of its seed. Had the split shown any run-to-run variance,
+`b+c` would carry a term unrelated to the treatment and the quoted detectable effect would be too small — the
+error that buys a difference the split cannot see.
+
+### 192.1 The price, from a measured distribution instead of three assumptions
+
+The 5,367 characters are the cost model's only input that is not a guess. With a fixed prefix of about 8,000
+characters and `eval/manifests/model-rates.json` at off-peak:
+
+| layout | input tokens per episode | bill per episode | 134 × 3 arms |
+| --- | --- | --- | --- |
+| no prompt cache | 138,042 in / 750 out | $0.02116 = **¥0.150** | ¥60.4 |
+| prefix held by the cache | 3,492 miss + 134,550 hit | $0.00138 = **¥0.0098** | **¥3.93** |
+
+**The quote moved by a factor of fifteen without a single call being made**, and the movement is a property of
+the arm rather than of the provider: a transcript that is appended to keeps a stable prefix and hits; a pack
+re-injected per turn moves the prefix and misses. That is not a new lesson — τ² already measured the memory arm
+at **3.7× the control's uncached tokens on the same sixteen calls** — but it is the first time the lesson has
+been priced before the dispatch rather than after it.
+
+### 192.2 The axis changed from presence to form, and one of its two predictions is unresolvable
+
+Twelve rounds asked whether a store is *about* this case and found nothing; R159 found the harm is prescription
+and could not make it pay; R160 found the corpus does admit reuse and that reuse does not predict where it pays.
+All three readings are about a pack that is **injected**. The strongest published system in this line does not
+inject: ExpeL keeps a numbered list capped at twenty, renders it whole into every prompt, and retrieves
+trajectories rather than rules (`configs/agent/expel.yaml@LeapLabTHU/ExpeL`). **A rule that is always present
+cannot be present for the wrong question**, so the failure R159 measured is structurally unavailable to it.
+
+R162 therefore registers the arm as a **form**: `none`, `always-in` (a port of the competitor's maintenance
+arithmetic, `rule-bank.ts`), and `retrieved` (this record's mechanism on somebody else's corpus).
+
+| prediction | resolved at 134 games? |
+| --- | --- |
+| `always-in` − `none` | **yes**, at 13.3pp, if the effect is the 19 points the literature reports |
+| `always-in` − `retrieved` | **no.** 5pp needs **942 episodes**; 3pp needs **2,617** |
+| `retrieved` − `none` no worse than the dev band | yes, if R159's harm size holds |
+
+The second row is written down as unresolvable rather than left implied, because a registration that only names
+what its sample can see is a registration that will be read as having seen everything.
+
+### 192.3 Four things this round got wrong before it got them right
+
+| defect | how it surfaced | fix |
+|---|---|---|
+| `reset` called on `AlfredTWEnv`, which is a shell | smoke pass, 42 s in | call it on what `init_env` returns — which is why the workflow drives eight games before 134 |
+| the registration went into `prereg/`, whose schema is the dispatch's | `prereg-pack.test.ts`, on the push | moved beside the driver; the schema gap is AUDIT 34.210 |
+| a new module left the coupling snapshot describing an older tree | the coupling ledger, on the push | regenerated `poc-coupling.json`: 256 → 257 modules, and nothing else moved |
+| the port's identity test was assumed to deduplicate one reply | a test expecting one entry, getting two | the original does not deduplicate either — pinned as behaviour, counted as the fourth leak |
+
+**What is still not known, and is the next dispatch's whole purpose.** Whether the `none` arm lands far enough
+above zero to leave 13.3pp of headroom on this model. ExpeL's control is 40.0 with a different backbone; nothing
+here has run any arm with this one. **20 games, one arm, ≈ ¥0.20** answers it, and no larger purchase should
+happen before that answer exists.

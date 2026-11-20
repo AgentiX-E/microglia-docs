@@ -7317,9 +7317,9 @@ forced — **row 7 (BIRD dev 6,600 paired) before row 1 can be read**, and row 1
    6,600-pair lane (≈1pp resolution, the only lane that can see a 0.9pp effect), then **$0.95** for the distillation
    arm, then **¥150–400** for one memory board row once the store is worth ranking.
 
-## Where the flywheel stands, 2026-11-19 (R160 read: the corpus does not carry the lesson, and the queue head is withdrawn)
+## Where the flywheel stands, 2026-11-20 (R162: the floor is zero, the price is ¥3.93, and the axis is form rather than presence)
 
-**The one thing that changed.** Twelve content axes have been null, and this round stopped looking for a thirteenth
+**What R160 established, and what R162 would not use before checking.** Twelve content axes have been null, and R160 stopped looking for a thirteenth
 and tested why they were all null. A lesson can only transfer to a question whose answer already shares something
 with the case it came from, so reuse is a ceiling on every content axis at once. Measured as the column overlap
 between each case and its nearest neighbour inside its own database — question text only for retrieval, gold answers
@@ -7330,7 +7330,7 @@ resolves 0.92pp. **The verdict is `contradicted`, not `null`** — a sign flip c
 
 | # | step | the number it needs | state |
 |---|---|---|---|
-| 1 | **the recurring-defect lane: calibration before any arm** | a measured per-episode bill, then 13.3pp at 134 games | **the instrument exists as of R161**: `alfworld` run 44564782836 installs the environment, opens a held-out game and passes four contract assertions at **0 model calls**. The corpus is 36.5 MB, MIT, **134 held-out games** — the release's own split, which is what ExpeL reports. **Next: 20 games, one arm, to replace the modelled $0.0139 per episode with a measured one**; the full-run price is a multiplication of that number, not a quote |
+| 1 | **the recurring-defect lane: the headroom question, then the arm** | a `none` arm above the floor by more than 13.3pp | **the instrument is measured as of R162** (`alfworld` run 44644387139): all 134 games driven to termination twice, **floor 0/134 (Wilson [0, 2.8%])**, **replay 134/134 identical**, transcript **5,367 chars mean**, and the price is arithmetic over that (**¥0.0098/episode cached, ¥3.93 for 134 × 3 arms**, against ¥60.4 uncached). **Next: 20 games, one arm, ≈ ¥0.20** — not to price the unit, but to learn whether `none` lands far enough above zero to leave 13.3pp of room on this model |
 | 2 | BIRD dev 6,600 paired | — | **withdrawn, with arithmetic**: dev has 11 databases and 1,534 questions, so 6,600 pairs on dev is the same eleven twice; 0.9pp needs 7,267 questions and a 7,000-question design lands at 0.92pp — a coin flip on the effect it was bought to see |
 | 3 | the four memory boards | a store worth ranking | **withdrawn for the same reason as row 2**: the record already states that nothing about memory resembles the 9.26pp `linked` channel, so a board row buys a loss already predicted |
 | 4 | a distillation rule (conditional prescription) | ≈0.6–0.9pp | **parked, not cancelled**: correct in diagnosis, unmeasurable on 11 clusters, and it is a change to a store whose corpus cannot show the effect either way |
@@ -7345,6 +7345,27 @@ pack pays. That is not a property a better store can fix and it is not a propert
 is the wrong task family for a mechanism whose premise is that a defect recurs. The record's own positive result,
 100.00% against 31.79% on a corpus built to repeat its defects, has been sitting in this repository the whole time
 and has never been converted into a public number.
+
+**What R162 changed, in one paragraph.** The lane stopped being an estimate. Two numbers were assumptions and are
+now measurements: a floor of exactly zero over 134 games, and a split that replays 134 of 134 with the same seed.
+The third — the price — became arithmetic over a measured transcript and moved by a factor of fifteen, from ¥60.4
+to ¥3.93 for three arms, for a reason that is a property of the arm rather than of the provider: a transcript
+appended to keeps a stable prompt prefix and hits the cache, while a pack re-injected on every turn moves the
+prefix and misses. The axis also moved. Twelve rounds asked whether a store is *about* this case; ExpeL, the
+strongest published system in this line, never injects at all — it renders a twenty-rule list whole into every
+prompt and retrieves trajectories. A rule that is always present cannot be present for the wrong question, so the
+failure R159 measured is structurally unavailable to it, and the registered comparison is `none` / `always-in` /
+`retrieved` rather than a dose. **Of its three predictions, one is unresolvable at 134 games** — a 5pp form
+difference needs 942 episodes — and the registration says so rather than letting a null be read as a finding.
+
+**Where microglia sits on the board, stated exactly.** In the parameter-free row of the ALFWorld table (AM.22),
+the published numbers run 59.0 (ExpeL) to 80.60 (a graph-memory FSM), and the same ExpeL baseline is reported at
+59.0 / 64.20 / 72.4 / 75.37 by four different papers — a 16.4-point spread where the treatment being quoted is 8
+to 26 points. The row above it, 72.4 to 96.64, is reinforcement learning and distillation, which updates weights
+and is not this project's axis. **microglia has no number on that board, and will not get a comparable one by
+running a larger sample**: what it can produce, and no paper in the row produces, is a paired delta under one
+model and one split with a cluster bootstrap interval, a per-arm token bill, and the trajectories. That artefact
+is the contribution, and it is publishable before any arm beats anybody.
 
 **What the four questions answer, this round.**
 

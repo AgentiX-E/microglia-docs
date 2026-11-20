@@ -12746,3 +12746,81 @@ admissible commands, an admissible command changes the observation, an inadmissi
 environment's words, and a twelve-step walk keeps the episode alive. **A gate on the score would have been a
 statement about a model the job does not call** — and the temptation to write one is exactly why the job prints
 its own call count.
+
+## 34.210 — A registration that lied in its own header, and the schema that had no slot for a second lane
+
+The R162 registration was written into `prereg/` with a header describing what the arm actually is: three
+arms, 134 games, an identity mode, a cap of twenty, a discordance assumption and the resolution those imply.
+`prereg-pack.test.ts` failed it on the push, and it failed it correctly — but not for the reason the file was
+written.
+
+`prereg.ts` owns a fixed header schema. `REQUIRED_KEYS` is `id, step, opened, arms, sample, gates`; `split` is
+one of `minidev`/`dev`/`train`; `gates` must match `^V\d+$` and every `V`-code is defined in
+`tau2-gates.ts` against a τ² artefact field. None of those describe an ALFWorld arm. The `split` is
+`valid_unseen`, the gates are contract assertions over a textworld environment, and there is no fold partition
+to grade. Honouring the schema would have meant writing `gates: V0,V1,V5,V6,V8` — five codes whose grading code
+would never run against this lane — which is a header that lies about what will be measured, in the one artefact
+whose entire purpose is to be read by every later round.
+
+**The check that fired was the right check; the slot was missing.** The registration now lives at
+`eval/drivers/alfworld/REGISTRATION.md` and says so in its own second paragraph, and the schema gap is this
+entry. The gap is narrow and it has a shape: `prereg/` was built for lanes that share a dispatch (`sota.yml`),
+a store and a gate family, and the moment a lane with a different environment and a different gate family needs
+the same "registered before it ran" discipline, the directory has no way to accept it. The fix, when a second
+such lane exists, is a `lane` discriminator that selects a schema rather than a free-form header — building it
+for one lane would be a generalization with a sample of one.
+
+**What this round would have shipped without the gate.** A `prereg/` file whose header named five gates the
+lane does not run, discovered by whoever next read that file to decide whether the arm had been
+pre-registered. The gate caught it in ninety seconds on a push, which is the cheapest place for it to be caught
+and the reason the registration is checked on every push rather than only on a dispatch.
+
+## 34.211 — The snapshot that describes an older tree, and the two gates that caught what the round did not
+
+Adding `rule-bank.ts` broke the build twice, and neither break was the one the round was watching for. Both are
+worth recording because both are gates doing exactly the job they were built for against an author who had
+forgotten they existed.
+
+**The first was the registration schema**, recorded as 34.210. The second was the coupling ledger: `ci.yml` runs
+`scripts/check-coupling-ledger.mjs`, whose tenth check is
+
+```js
+committed.scanned === fresh.scanned &&
+  committed.totals?.modules === fresh.totals?.modules &&
+  (committed.gates ?? []).every((gate) => gate.pass)
+```
+
+— the committed snapshot must describe the tree it was taken from. A new module moves `totals.modules` from 256
+to 257 and `totals.lines` from 73,349 to 73,635, so the snapshot in `eval/results/poc-coupling.json` became a
+description of a tree that no longer existed. The check's own comment is explicit that module *counts* are
+deliberately not pinned anywhere else, because "adding a module is not a regression, and a check that fails when
+the tree grows teaches the project to edit the check". This is the one place a count belongs: not as a target,
+but as the snapshot's own identity.
+
+**The diff was verified before it was committed**, and that is the part worth keeping. Eight fields moved:
+
+| field | before | after |
+| --- | --- | --- |
+| `scanned` / `totals.modules` | 256 | 257 |
+| `totals.lines` | 73,349 | 73,635 |
+| `layers[3].modules` / `.lines` | 191 / 57,312 | 192 / 57,598 |
+| `totals.coupledShare` | 0.1597 | 0.1591 |
+| `statement` | "... 1,956 of 73,349 production lines across 256 modules ..." | "... 1,956 of 73,635 production lines across 257 modules ..." |
+
+`sql` stayed at 7 modules with every line adapter, `core` stayed at 0 coupled of 47, and the five package edges
+stayed downward. A snapshot regenerated without that comparison would have been a rewrite of the ledger by
+whoever happened to run the tool — which is precisely how a committed measurement stops being one.
+
+**Why the local run passed and CI did not, which is the subtle half.** The first invocation in this round was
+`npx tsx packages/eval/src/bin/coupling.ts` with no `POC_RESULT_DIR`, so it wrote straight to
+`eval/results/poc-coupling.json` and the working tree's "committed" copy became the fresh one. Every subsequent
+local check then compared the new snapshot to itself and passed, while CI compared the *pushed* snapshot to the
+new walk and failed. **A tool whose default output path is also its reference path cannot detect its own
+staleness locally**; the CI job, which writes to `$RUNNER_TEMP` and reads the repository copy, is the only place
+the comparison is real. That asymmetry is not a defect — the workflow was written that way on purpose — but it
+means a green local `pnpm eval:coupling-check` is not evidence about the push.
+
+**The two-gate tally for the round.** Four pushes, three red builds, and every red was a gate rather than a
+test: the registration schema, the coupling snapshot, and the first one in this series (the `reset`-on-a-shell
+`AttributeError`, which the smoke pass caught at 42 seconds). No test was weakened to get green, and no count was
+pinned to make a number stop moving.

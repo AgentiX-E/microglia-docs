@@ -10819,3 +10819,98 @@ rather than of the file.
 trajectory in first-release symbolic coordinates and the text environment refuses every step (34.209). It does not
 construct a pack, which is the next lane's job and needs a measured per-episode bill first. It does not call a
 model, which is the only reason a green build here is a statement that can be trusted at $0.
+
+### 17.172 A price owes a distribution, so the floor driver measures characters and replays once
+
+**The design question.** R161 delivered a lane that opens at zero calls and a plan that was priced by modelling:
+134 games × an assumed number of turns × an assumed prompt size. Two of those three factors were never read
+from the corpus, and the third — the per-episode bill — is the number a dispatch turns into money. A design that
+quotes it from arithmetic is quoting a model of a run.
+
+**The instrument.** `eval/drivers/alfworld/floor.py` drives the whole held-out split with a walker that chooses
+uniformly among `admissible_commands`, so the walker cannot hallucinate, cannot leave the action space, and needs
+no prompt. It records per game: the game's split-relative identity, the win, the step count, the action digest,
+and **the character count of every observation**.
+
+| decision | the alternative | why not |
+| --- | --- | --- |
+| characters, not tokens | count tokens with a local tokenizer | no tokenizer runs in that job, and a token figure produced there would be a second model standing in for a measurement |
+| every game, to termination | a fixed sample of N games | the tail is what a per-episode price is wrong about, and a sample cannot say how long the tail is |
+| two passes with one seed | one pass, variance assumed zero | the paired `mde` every quote rests on is only valid if an arm is a function of its seed |
+| win count reported, not gated | gate on a floor above zero | a floor of zero is a good floor; a gate would be a prior about the corpus wearing a threshold |
+
+**Three assertions, each closing a way the reading could be true and meaningless.** (1) Every game driven is a
+game the split publishes and every published game is driven exactly once — a walker that replayed one game 134
+times would report a floor and a determinism figure with no defect anywhere in its output; the identity is the
+split-relative path, not the file name, because every game file is called `game.tw-pddl` and a name-based key
+collapses 134 games onto one string. (2) Every episode reached a verdict the environment gave rather than the
+step cap — a truncated walk is a different measurement, and mixing them puts a driver defect into the same number
+as the floor. (3) The same seed replays, compared per game on identity, win, steps, action digest and
+observation-length fingerprint.
+
+**The assertion that fired first, and it fired on the driver.** The first version called `reset` on `AlfredTWEnv`,
+which is a shell that reads the split and hands back a textworld gym environment; only the latter has `reset`.
+The smoke pass caught it forty-two seconds in, which is why the workflow runs eight games before 134: a typo in a
+driver should cost ninety seconds, not the job's whole budget.
+
+**What the pass does not do.** It does not build a pack, does not call a model, and does not gate on the score.
+Its whole output is a JSON artefact and a printed summary; the workflow uploads the artefact and prints
+`model calls made by this job = 0`.
+
+**What the first measured pass returned, and which row mattered.** Run `44644387139`, job `135983146374`:
+
+| reading | value |
+| --- | --- |
+| coverage | 134 of 134, no duplicate — keyed on the split-relative path, because every game file is named `game.tw-pddl` and a name-based key would have collapsed the split onto one string |
+| termination | 134 of 134 at the environment's own cap, none truncated by the driver |
+| floor | **0 wins**, Wilson 95% **[0.0%, 2.8%]** |
+| replay | **134 of 134 identical**, 0 mismatches across five fields |
+| transcript | mean 5,367 chars, median 5,217, p90 6,846, max 8,405 |
+| time | 852 s and 884 s, 6.36 s per game |
+
+The floor being exactly zero is the row that decided something. A random walker at five percent would have
+meant part of the family is reachable without understanding it, and every headroom figure the registration
+quotes would have been too generous by that much. The transcript mean then turned the price into arithmetic:
+138,042 input tokens and 750 output per 50-turn episode, $0.02116 uncached against $0.00138 with the prefix
+held — **¥60.4 against ¥3.93 for 134 games across three arms**. A factor of fifteen, decided before any call,
+by whether the arm appends to a transcript or re-injects a pack on every turn.
+
+**The defect the smoke pass earned its keep on.** The first version called `reset` on `AlfredTWEnv`, which is a
+shell that reads the split and returns a textworld gym environment; only the latter has `reset` and `step`. The
+job failed 42 seconds in, on the eighth-game smoke pass rather than 30 minutes into the full sweep — which is
+the entire argument for running eight games before 134.
+
+### 17.173 A port owes its leaks a count, and owes its one divergence a sentence
+
+**The design question.** R162 registers an `always-in` arm whose treatment is a *form* — a short list rendered
+whole into every prompt — rather than a *dose*. For that arm to be a control rather than a description, the
+maintenance arithmetic has to be the competitor's, and the places the competitor's arithmetic leaks have to be
+**visible as counts** rather than discussed as opinions.
+
+**The division.** `rule-bank.ts` owns four things and refuses a fifth:
+
+| owned | how it is exposed |
+| --- | --- |
+| the parse of a reply into `ADD`/`AGREE`/`EDIT`/`REMOVE` | `parseOperations`, with the label-prefix rule and the period requirement kept |
+| the vote arithmetic (`+2`, `+1`, `−1`, `−3` past `cap + 5`) | `mergeOperations` |
+| the identity decision, in three modes | `sameRule` / `findRule` over `'exact' | 'substring' | 'tokens'` |
+| what a prompt would carry | `renderable` |
+
+**The four leaks, kept.** Identity is a one-directional substring test (`incoming.includes(existing)`), so a rule
+that grows is recognised and a rule that shrinks is not. The banned-word filter runs on substrings, so
+`ADDITIONAL care is needed.` is discarded. The cap evicts nothing — the arithmetic only raises the removal
+penalty, so bank size drifts with model compliance and `peak` is reported beside `culled`. And a single reply is
+not deduplicated against itself, because the pre-pass resolves every `ADD` against the *incoming* bank; this was
+found by a test that expected deduplication and got two entries, and it is now a pinned behaviour rather than a
+silent difference.
+
+**The one divergence, and why it is a rejection rather than a rewrite.** ExpeL checks `rule_num > len(rules)` but
+not `rule_num < 1`, so `EDIT 0` reaches `rules[-1]` and edits the last rule. That is a language accident, not a
+design: reproducing it would not have made the port more faithful to anything a model does on purpose, and it
+would have made the module harder to reason about. The operation is counted in `rejected` instead, so a run that
+produces one is visible in the report rather than silently different.
+
+**Why the default is the leaky mode.** A default call reproduces the competitor. `identity: 'tokens'` is one
+option away and is the candidate replacement, but choosing it by default would have made every comparison against
+the literature a comparison against an improvement on the literature — which is not a control, and the control is
+the entire point of building the arm this way.
