@@ -7651,3 +7651,33 @@ tuning a mechanism whose input is four sentences.
 by this lane's own strata: 32 rescued, 13 spoiled, and a measured 9.7-point gap between the pack as applied and the
 pack as it would need to be applied. That is a target rather than a hypothesis, and it is the first time this document
 has had one.
+
+## Where the flywheel stands, 2026-11-20 (R169/R170: the delta replicates, the bank does not, and the queue reorders itself)
+
+Two sweeps have now come back from two independent distillations of the same corpus. The order below is what the
+*second* one changed, and it moves two rows up and one row sideways.
+
+| # | the measurement | what the two replicates say | state | price |
+| --- | --- | --- | --- | --- |
+| 1 | the placebo (`sham` vs `none`) | +14.2 and +14.9 pp both survive nothing until shape is ruled out: three of six rules are advice about how to think | **in flight** (`44763220821`) | ≈ ¥1.9 |
+| 2 | the read-time gate (`--gate-share 0.2`) | *moves up*: with six rules, `k=3` is a real choice and it costs 7.5 pp; the gate is the only arm that can decline to inject | **built**, dispatchable once a bank is committed | ≈ ¥1.9 |
+| 3 | `retrieved(k=1)` against `k=3`, on the **six**-rule bank | *moves up*: the four-rule bank made `k=3` a 3-of-4 no-choice and hid the problem; the six-rule bank is the first where `k` matters | dispatchable | ≈ ¥1.9 |
+| 4 | a bank larger than six rules | *moves sideways*: the loop saturated at 4 in one pass and 6 in the other, and more rules made retrieval **worse**, so "bigger bank" is not a goal — "a bank whose rules are distinguishable" is | not built | ≈ ¥1.9 per attempt |
+| 5 | the pack-knob search (ALMA's analogue) | unchanged, and still last: searching knobs over a six-sentence bank is tuning the input, not the mechanism | not built | ≈ ¥15 |
+| 6 | `floor.py`'s unit coverage | unchanged, 31%, with a ¥0 real-run gate as its substitute | registered gap | ¥0 |
+
+**What the reordering rests on.** The `retrieved@k3` arm scored **exactly** `always-in`'s 99/134 when the bank held
+four rules, and **7.5 pp below the control** when it held six. That is not noise between replicates; it is the arm's
+own definition doing different work at two bank sizes. A reader of the first sweep alone would have concluded that
+retrieval neither helps nor hurts. A reader of the second alone would have concluded it hurts. Both readers would be
+wrong, and the pair is what says so.
+
+**The one thing that did not move.** The paired delta: +14.18 and +14.93. Two distillations, two banks, two runs,
+one effect — and the control moved 6 pp under it. Whatever else is unresolved, "carrying the bank beats not carrying
+it by about 14 points on 134 games" is now a replicated measurement rather than a single reading.
+
+**And the honest entry.** The bank's *content* is the weakest link in all of this: three of the six rules are about
+how to think rather than about the world, and the one rule with the most votes (12) is "use the think step to plan".
+If the placebo comes back at +10 pp, the finding is not "experience reuse works" but "a longer prompt of any
+kind works", and the row that would then lead the queue is a length-matched *content* control — the same bank with
+its rules replaced by other rules from the same corpus that the control never lost on.
