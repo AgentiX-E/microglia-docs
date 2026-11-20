@@ -13776,3 +13776,69 @@ observation it is looking at, which is a weaker requirement and a testable one.
 method's own reports (COMPETITIVE R167). What is claimed is a **paired** +14.2pp on 134 games with the same backbone,
 the same skeleton, the same step cap and the same examples, with the denominator, the harm share and the engagement
 rate published beside it — a configuration no row in that table reports.
+
+## 34.231 — The placebo beat the bank, and 34.230's attribution is retired by it
+
+`sham` carries the same header, the same four entries, the same token count and the same punctuation as the bank,
+with each rule's words permuted **inside itself**. Run `44763220821` drove it over the same 134 games, beside a control
+driven by the same code in the same hour:
+
+| arm | wins | rate | paired delta vs `none` | 95% CI | p |
+| --- | --- | --- | --- | --- | --- |
+| **`sham`** (permuted rules) | **105/134** | **78.4%** | **+17.91pp** | [+8.96, +26.87] | < 0.001 |
+| `always-in` (the bank) | 99/134 | 73.9% | +14.18pp | [+4.48, +23.88] | 0.0044 |
+| `none` (control, this run) | 81/134 | 60.4% | — | — | — |
+
+**The placebo is not distinguishable from the treatment, and its point estimate is higher.** The two intervals overlap
+across almost their whole width. R165 amendment 1 wrote the reading before the arm existed: *"If the sham's help share
+is within the interval of the bank's, the finding is that the mechanism this lane has spent four rounds building is
+formatting, and the next row is not a better bank — it is a different layer."* The help shares are 26.19% (`sham`) and
+24.24% (bank); the harm shares 7.14% and 9.85%. The condition is met.
+
+**The strata replicate, which is the strongest evidence that the two arms are the same mechanism.**
+
+| stratum | `sham` | `none` | delta | bank's delta |
+| --- | --- | --- | --- | --- |
+| hard (`none` lost, n=53) | 33 | 0 | **+62.26pp** | +59.26pp |
+| easy (`none` won, n=81) | 72 | 81 | **−11.11pp** | −16.25pp |
+
+A *scrambled* block reproduces the pattern — rescue everything that was lost, spoil a tenth of what worked — within a
+few points. Two independent treatments producing the same shape is not a coincidence of totals; it is the signature of
+a mechanism that reads the block's form and not its content.
+
+**What 34.230 said that this retires.** That entry attributed +14.2pp to "four rules about searching and verifying",
+and argued the bias was legible — worth everything when the agent is lost and harmful when it already knows the answer.
+The *shape* of that argument survives; the attribution does not. A permutation of those rules produces the effect, so
+the effect is not about what the rules say. What 34.230 got right and this entry keeps: the pooled number is a
+cancellation of a large rescue and a smaller spoiling, and a gate that could separate them is worth 9.7 points. What
+it got wrong: **whose** cancellation it is. It is the block's, not the bank's.
+
+**`arXiv:2601.22436` is confirmed on this corpus, and more strongly than it claimed.** That paper reports that corrupt,
+irrelevant and filler summaries "move the score little" and that agents respond to a block's existence and shape.
+Here a permutation does not move the score little — it moves it *slightly more than the real thing*. The paper's
+framing was that the content is inert; the measurement is that the content is inert and its *destruction* is not
+harmful, which is the same claim with a sharper edge: **there was nothing in the content to destroy.**
+
+**Why that is a coherent result rather than a broken experiment.** The four rules are general procedures — verify your
+inventory, prefer likely locations, retry with alternate phrasing when a put fails. A competent model already knows
+all four; that is why fourteen critiques produced only four of them and why twenty-eight of thirty-eight operations
+were agreements. A block of imperative sentences about being careful makes the model *behave* more carefully, and the
+sentences' particular content is redundant with what it already knew. The mechanism is instruction, not memory.
+
+**Three checks that an adversary would make, and their answers.**
+
+1. *Is the sham's win a fluke of 134 games?* It clears its own MDE (13.55pp) by 4.4 points and its interval excludes
+   zero by 8.96 points. A fluke would have to be a 33-game swing against 9 in the other direction.
+2. *Did the two runs' controls differ?* 80/134 in the first sweep and 81/134 in this one — one game apart, which is
+   the run-to-run reproducibility of the same games at temperature 0. The comparison that matters is intra-run, which
+   is why the placebo was dispatched with its own control rather than against the previous one.
+3. *Could the permutation have been cosmetic?* `sham_entries` seeds from the rule's own text and permutes every
+   multi-word rule; a test asserts a one-word rule is returned unchanged and a multi-word one is not. The four rules
+   are 15–25 words each.
+
+**What is now the sharpest question in the programme.** Not "does memory help" — a block helps, by 14 to 18 points. Not
+"which rules" — the rules are inert. The question is **which property of the block** does it: its existence, its
+length, its imperative grammar, or the fact that it looks like task instructions. That is separable in one dispatch:
+a length-matched block of neutral declarative text, and a length-matched block of filler. If filler also buys +15pp,
+the mechanism is "any preamble". If filler buys nothing and imperative text buys +17.9, the mechanism is "a block that
+reads as instructions" — which is a product feature and a completely different line of work from a rule bank.

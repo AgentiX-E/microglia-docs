@@ -8424,3 +8424,51 @@ same position, no syntax, no pairing. The intact bank scored 73.9 (4 rules) and 
 
 The first row is the one this record would buy next: it is the only one that can turn `+17.9 from word salad` into a
 statement about *what kind* of text an agent reads.
+
+## R170 — R169's attribution is corrected: the row is real, the memory in it is not (2026-11-20)
+
+R169 put a row on Board B — `microglia always-in`, 73.9, +14.2pp paired, 328 tokens, $0.0014 per episode — and called
+it the only row with both the step and its uncertainty published. The row stands. What it *is* has changed, because the
+placebo was run and it beat the bank:
+
+| arm | rate | delta vs control | 95% CI |
+| --- | --- | --- | --- |
+| microglia **sham** (four rules, words permuted inside each) | **78.4%** | +17.91pp | [+8.96, +26.87] |
+| microglia **always-in** (four distilled rules) | 73.9% | +14.18pp | [+4.48, +23.88] |
+| microglia **none** | 60.4% | — | — |
+
+**The corrected entry in Board B is "microglia, any instruction-shaped block: 73.9–78.4".** The content is not
+separable from the shape at this size, and `arXiv:2601.22436` is confirmed more strongly than it claimed: destroying
+the rules' meaning costs nothing, which means there was nothing in the meaning to destroy.
+
+**What this does to the comparison with the field.** Every row on Board B is a memory mechanism whose *content* is
+presumed to do the work — a cheatsheet of lessons, a graph of entities, an abstracted workflow. None of them reports a
+placebo. If a block of scrambled text is worth as much as a block of distilled rules in this harness, then the
+possibility that some of those rows' margins are also form rather than content is not a criticism of them, it is an
+untested alternative they have not published the control to exclude. **This lane cannot claim they are form effects —
+only that it can no longer assume its own is not, and that the field has no row where the question was asked.**
+
+**What is still comparable, and now more carefully.** The +14.2pp step, its interval, the engagement rate, the harm
+share and the 328 tokens are all still this lane's, measured on 134 paired games with the same backbone and skeleton.
+What is no longer claimed is that the step is a *memory* step. A reader comparing this row to ALMA's 87.1 should read
+it as: a four-sentence preamble is worth 14–18 points on this corpus and this model, and the sentences' meaning is
+not where the points come from.
+
+**The one number that gets better with the correction, and it is a product number rather than a science number.** The
+block costs 328 tokens per task against ALMA's 1,319 and raw-trajectory retrieval's 9,149, and the treatment's episodes
+are 20% cheaper than the control's because they finish sooner. If the effect is available from a block of *any*
+instruction-shaped text, then the cheapest useful prompt for this corpus is not a distilled bank at all — it is a fixed
+preamble, and it needs no distillation, no storage and no retrieval. That is a real possibility this record must now
+entertain, and the next three arms are what would settle it.
+
+### The corrected position
+
+| column | this lane | the nearest published row | comparable |
+| --- | --- | --- | --- |
+| ALFWorld, block arms | 73.9–78.4% | MemScope 71.64 (67 tasks) | as a range, not a point |
+| ALFWorld, control | 59.7–60.4% | DynamicCheatsheet 50.75 (67 tasks) | as a consistency check |
+| paired step from a block | **+14.2 to +17.9pp**, interval excludes zero | **nobody publishes one** | **yes, uniquely** |
+| share of the step that is *content* | **not distinguishable from zero at 134 games** | **nobody publishes a placebo** | **yes, uniquely** |
+| harm share | 7.1–9.9% | 52% for the τ² family | directionally |
+| tokens injected | 328 | 1,319 (ALMA) | yes |
+| cost per episode | $0.0014 | $0.09 per run (ALMA) | different denominators |

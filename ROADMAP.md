@@ -7702,3 +7702,34 @@ second one, and the queue collapses to a single question:
 kind. `distill.py` reads every episode it is given and `agent.py` already classifies each game into one of the six
 kinds, so the feature is a filter and a test, not a new mechanism. Until it exists, rank 1 cannot be dispatched — and
 every other row is tuning a mechanism whose contribution is currently indistinguishable from a shuffle.
+
+### R170 — The queue is re-based on a question the placebo created, and the memory rows are demoted with their reason
+
+The R169 queue was ordered by which memory mechanism to try next. The placebo removed its premise: the effect is a
+block's form, so tuning rules, retrievers or gates tunes something that is not doing the work.
+
+| # | step | the question | state | price |
+| --- | --- | --- | --- | --- |
+| 1 | a **neutral declarative** block, same token count | is imperative *grammar* what helps | not built | ≈ ¥1.5 |
+| 2 | a **filler** block, same token count | does *any* block help, or only one that reads as instructions | not built | ≈ ¥1.5 |
+| 3 | no block, task line reworded to sound procedural | can the effect be had for free | not built | ≈ ¥1.5 |
+| 4 | the object-location pack, as **facts** | the bank's four rules are procedures the model already knew; facts are the content it cannot infer | not built, and **promoted**: it is now the only arm on the list that carries information rather than tone | ≈ ¥1.9 |
+| 5 | the read-time gate | 9.7pp of headroom — **conditional on row 1 or 2 showing the block's form is necessary** | built | ≈ ¥1.9 |
+| 6 | `retrieved(k=1)` | retrieval admitted 2.9 of 4 rules and could not select | dispatchable | ≈ ¥1.9 |
+| 7 | a bank that is not saturated | the loop spent 28 of 40 operations agreeing | not built | ≈ ¥1.9 |
+| 8 | the pack-knob search (ALMA's analogue) | every knob was chosen by argument | not built | ≈ ¥15 |
+
+**Rows 1–3 are the cheapest and the most decisive, and they were not on any previous roadmap.** They cost less than
+the item they displace and they decide whether the next two years of this programme are about memory or about
+instructions. A lane that keeps tuning a rule bank after learning its rules are inert has stopped doing science.
+
+**Row 4 is promoted rather than demoted, and the reason is the placebo's.** The four rules are procedures a competent
+model already knows, which is why destroying them costs nothing. Facts about where objects live in a house family are
+not procedures and cannot be inferred from the observation — and the model's own rule 2 ("prioritize locations where
+similar objects have been observed") is a procedural proxy for exactly that knowledge. If a pack of facts moves the
+score where a pack of procedures does not, the flywheel has something to distil; if it does not, the honest conclusion
+is that this corpus rewards tone rather than knowledge, and the product is a preamble.
+
+**What rows 5–8 still are.** They are not deleted, because the block's form being sufficient does not make it
+necessary: a gate that fires only on hard observations is worth 9.7 points *of the block's effect*, and if rows 1–3
+show that the effect needs imperative form, the gate is still the way to keep the rescue and lose the spoiling.

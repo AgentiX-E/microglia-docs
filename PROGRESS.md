@@ -24374,3 +24374,68 @@ carried into the prompt" is not what produces the gain; *a block of that size an
 | **total** | **$2.305** | **¥16.4** |
 
 23,854 + 7,928 = **31,782 model calls, 0 retries refused, 3 banks, 22 arm-slices, 6 complete sweeps' worth of games.**
+
+## 201. The placebo reading: a scrambled block is as good as the bank (16:00 UTC)
+
+Run `44763220821`, eight jobs, a control driven in the same hour by the same code, the committed bank.
+
+| arm | wins | rate | delta vs `none` | 95% CI | MDE | engaged | harm | help |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `sham` | **105/134** | **78.4%** | **+17.91pp** | [+8.96, +26.87] | 13.55 | 94.0% | 7.14% | 26.19% |
+| `always-in` | 99/134 | 73.9% | +14.18pp | [+4.48, +23.88] | 14.03 | 98.5% | 9.85% | 24.24% |
+| `none` (this run) | 81/134 | 60.4% | — | — | — | — | — | — |
+
+`sham`'s strata reproduce the bank's shape within a few points: **hard +62.3pp** (33 rescued of 53), **easy −11.1pp**
+(9 spoiled of 81). By kind: `cool` +38.1, `clean` +25.8, `heat` +21.7, `put` +12.5, `puttwo` +5.9, `examine` −5.6.
+
+Bill: $0.3983, 7,928 calls, off-peak.
+
+### 201.1 What this means, in one sentence and then in the sentence it replaces
+
+**A word-permuted block is worth as much as the bank, so the block's form is doing the work and its content is not.**
+
+The sentence it replaces, written in PROGRESS 200 ninety minutes ago, was that four rules about searching and verifying
+are worth everything when the agent is lost and harmful when it already knows the answer. The shape of that finding
+survives — a large rescue and a smaller spoiling, hidden by pooling. Its attribution does not: the permutation
+reproduces both halves, so the rescue is the block's and not the rules'.
+
+This is the outcome R165 amendment 1 registered, in the words it registered them in, before the arm existed.
+
+### 201.2 Why the result is coherent
+
+The four rules are general procedures a competent model already knows. That is why fourteen critiques produced four of
+them and why 28 of 38 applied operations were agreements: there was nothing left to discover at that level of
+generality. A block of imperative sentences about being careful makes the model behave more carefully; the sentences'
+particular content is redundant. **The mechanism is instruction, not memory** — and the fact that destroying the
+content costs nothing is the measurement that says so, not a flaw in the experiment.
+
+### 201.3 The programme's cost to date, honestly
+
+| item | ¥ |
+| --- | --- |
+| round 164's chain, one dead shard | 1.54 |
+| four identical shards (the partition defect) | 1.96 |
+| the verification shard | 0.49 |
+| three slices joined to it | 1.47 |
+| bank | 0.10 |
+| sweep, 402 games | 4.26 |
+| placebo, 268 games | 2.85 |
+| **total** | **12.67** |
+
+$1.77 of provider spend at 7.15. Against a plan of ¥7.69 — the overrun is two failed training attempts (¥3.50) and
+one arm bought twice to keep a contrast intra-run (¥1.5). Both purchases of a defect rather than a number, and both
+caught before a sweep was paid for.
+
+### 201.4 The next dispatch is not on the old roadmap
+
+The queue was ordered by which *memory* mechanism to try next. The placebo removed the premise: there is no memory
+mechanism to tune while the effect is a block's form. The next contrast separates the block's properties:
+
+| arm | what it isolates | price |
+| --- | --- | --- |
+| neutral declarative text, same token count | whether *imperative grammar* is what helps | ≈ ¥1.5 |
+| filler words, same token count | whether *any* block helps, or only one that reads as instructions | ≈ ¥1.5 |
+| no block, but the task line reworded to sound procedural | whether the same effect can be had for free | ≈ ¥1.5 |
+
+All three are cheaper than the next item on the old list (`k=1`), and all three ask a question the last two hours
+created. They can run in parallel.
