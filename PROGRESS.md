@@ -24552,3 +24552,16 @@ retired its own attribution (+17.91 pp from a shuffled block), one bank artefact
 they cost a sweep, and one negative result that stopped a ¥2.0 purchase for ¥0.035. **¥3.68 per usable reading**, or
 **¥4.60 per reading including the four runs that produced none** — and both of those numbers will move when the
 filler sweep lands, which is why the table is rebuilt rather than adjusted.
+
+### 203.3 The flag that said "the control already exists" no longer says anything
+
+`--control-run` was accepted, printed as a fact, and dropped: the workflow declared no such input. 200.10 recorded
+the gap and worked around it by buying the control in the same run (one extra arm, ¥1.5, in the placebo). The gap is
+now closed by **refusing the flag** rather than by wiring it, because wiring it needs three premises it cannot check
+— the earlier run drove this commit, the same 134 games, and a cross-run control that clears the six-win floor
+AUDIT 34.232 measured. The refusal sits in the cheapest position in `check()` and names the alternative, and three
+cases pin it, one of them asserting that no network call happens before it.
+
+This is the third flag-shaped defect in the lane (`--control-run`, a workflow `if` that could never be true, and a
+`--bank-only` disabled by a directory nothing created). All three were found by reading the payload rather than the
+output, and all three were fixed by turning a silence into a sentence (AUDIT 34.234).

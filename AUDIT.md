@@ -13883,3 +13883,33 @@ rather than being closed with a pragma, because a pragma is how a number gets to
 its own arithmetic. What changes is what a reader may assume about the corpus underneath it. The floor that prices the
 next dispatch is now produced by code whose refusals have been triggered on purpose — twice for coverage, once for
 replay, and once for a game driven twice — rather than by code that has only ever succeeded.
+
+## 34.234 — A flag that was accepted, printed, and never sent is closed by refusing it rather than by wiring it
+
+`alf_dispatch.py --control-run` took a run id, printed "the control is the `none` slices of run 44744658304, already
+paid for", and returned success. The workflow declared no such input, so GitHub dropped the key and the sweep bought
+a treatment arm with **no control at all** — while the dispatch's own output asserted that the control existed. Two
+sweeps would have been read against a control the reader believed in and the run did not have.
+
+The first instinct was to wire it: download the named run's `none` slices and hand them to `aggregate.py`. That is
+wrong for three reasons, and each of them is a premise the flag cannot check.
+
+1. **The same commit.** A control bought yesterday ran yesterday's `agent.py`. The lane has changed `agent.py` five
+   times since the first sweep, and the arm's prompt assembly, its shim and its cap all live there.
+2. **The same games.** A control is only a control if it drove the same 134 games. `--shard` partitions a sorted
+   split, so this is checkable *after* the fact by tiling both slices — but a flag that is only checkable afterwards
+   is a flag that can be sent wrong.
+3. **The same noise.** The control arm scored 80/134 in one dispatch and 81/134 in another on identical code and
+   identical games (AUDIT 34.232). That is a six-win floor on any cross-run comparison, and it is the whole reason
+   the placebo was bought with its own control in the same run.
+
+So the flag is refused, in the cheapest position in `check()`, with the sentence that names the alternative: buy the
+control in the dispatch that buys the treatment, by naming `'none'` in `--arms`. Three tests pin it — a refusal with
+an arm list, a refusal without one (the flag's own reason comes before the missing `--arms`, so repairing one flag
+does not reveal the next refusal), and a `MainTest` case that asserts no network call is made before the refusal.
+
+**The lesson is not "test the flag".** It is that **an accepted flag is a promise**, and a promise that is dropped
+silently is worse than one that is refused loudly, because the dispatch record then says something the run did not
+do. The same shape appeared three times in this lane: `--control-run` here, a workflow `if` that could never be true,
+and a `--bank-only` disabled by a directory nothing created (34.231). Each was found by reading the payload rather
+than the output, and each was fixed by making the silence into a sentence.
