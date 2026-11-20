@@ -7484,3 +7484,28 @@ the first prediction is resolvable in one pass at about **¥3** for three arms.
 asserted the loop made zero calls by construction. The expensive version of this round is the one where the loop is
 written while the calibration is running, and the prefix turns out to have been counted from the wrong strings —
 which is what the round found, before it could cost anything.
+
+## Where the flywheel stands, 2026-11-20 (R163c: the control is 11 of 20, and the paper's baseline is below ours)
+
+**The headroom question is closed.** `none` scores **11 of 20 = 55.0%** (Wilson [34.2, 74.2]) against a floor of
+exactly 0, so the 13.3pp the split needs of it exists and prediction 1 is measurable in one pass. The reading cost
+**¥0.28** and is the first number in this record whose bill was counted by the provider rather than modelled.
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | the header question: does `none` leave room | 55.0% against a 0% floor | **done**, R163c. 15 points above ExpeL's own 40.0 control, so expect a smaller delta than the paper's |
+| 2 | distil a rule bank from `valid_seen` | a bank of ≤20 rules with the competitor's maintenance arithmetic | **next, ≈ ¥2.5**: 140 games at the measured ¥0.014 each, plus the extraction calls. Blocked by nothing |
+| 3 | three arms x 134, twelve jobs | `always-in - none`, at whatever the bank yields | **after 2**, ≈ ¥5.71 measured: 24 minutes per slice across four, 94 minutes on one runner |
+| 4 | the object-location pack | 20.5% of actions are refused; a pack that removes a third is worth ~6 points of turn budget | **registered, not built** (34.220). It needs its own arm: handing the model the admissible list would make `none` a treatment |
+| 5 | the reflection arm (ExpeL's ALFWorld branch) | — | **unavailable** (AM.24): needs repeated trials of one task; the split gives one |
+
+**What the 55.0% does to the queue, stated plainly.** Three of the four candidates in the registry carry published
+effects smaller than 13.3pp on a 134-game split, and two of them need samples that do not exist. With the control at
+55% rather than 40%, the room above it is 45pp and the room *below the ceiling* is what an intervention has to work
+in: a 19pp effect would put the treatment at 74%, which is inside the Wilson interval's upper bound for the control
+itself. **The first arm's result may therefore be a null for a reason that has nothing to do with memory**, and that
+is now a recorded expectation rather than a post-hoc explanation.
+
+**Cost of the round.** ¥0.45 across three dispatches: ¥0.28 for the calibration, ¥0.14 for the dispatch that found
+the loop could not represent a model giving up, ¥0.02 for the diagnostic that separated a spent budget from a lost
+game. The two defects were cheaper than the reading, which is the order they should be found in.

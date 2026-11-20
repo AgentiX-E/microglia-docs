@@ -23592,3 +23592,78 @@ produce one; it produced the thing that can.
 the loop made zero calls by construction. The expensive version of this round is the one where the loop is written
 while the calibration runs, and the prefix turns out to have been counted from the wrong strings — which is what the
 round found, before it could cost anything.
+
+## 195. The control is 11 of 20, the price is measured, and the literature's baseline turns out to be lower than ours
+
+194 ended with the arm built and unspent. This round spent ¥0.45 across three dispatches and got the answer the
+queue was waiting for, plus two design defects that only a real run could have found.
+
+### 195.1 The reading
+
+Run `44673057091`, job `136078308716`, 04:26:34–04:39:15 UTC. Arm `none`, `deepseek-flash`, 50-turn cap,
+`--policy model`, 20 games.
+
+| reading | value |
+| --- | --- |
+| wins | **11 of 20 = 55.0%**, Wilson 95% **[34.2%, 74.2%]** |
+| floor | **0 of 134**, so the headroom above it is 55pp |
+| turns | 728 calls, **36.4 per game** |
+| thoughts | 257 (35.3% of turns) |
+| refused actions | **149 (20.5%)**, of which 11 (1.5%) were not commands at all |
+| tokens | 1,800,595 in / 15,553 out, **90.43%** of the input a cache hit |
+| bill | **$0.040063 = ¥0.28**; **¥1.98** uncached for the same tokens (**7.0×**) |
+| wall clock | 846 s, 42 s per game |
+
+### 195.2 Three things follow, and the first one moves the programme
+
+**The control is 15 points above the paper's.** ExpeL reports its own ReAct control at **40.0** on this split with a
+different model; `none` here is **55.0%**. The literature's 19pp was therefore earned from a lower baseline than
+this one, and the same mechanism applied at 55% has less room above it before a ceiling starts helping the control.
+The registered prediction stays exactly as written — it is a prediction, and altering it after seeing the control
+would be the cheapest possible way to make it unfalsifiable — but **the expectation that the delta here will be
+smaller than the paper's is now on the record before the treatment's money is spent.** That sentence is the whole
+value of a registration: it is easy to write after the fact and worthless then.
+
+**The price stopped being an estimate, and it went up.** ¥5.71 for three arms over 134 games, against the ¥2.99 this
+record estimated for two rounds. The differences are all measurable ones: the prefix is **4,062** characters rather
+than 3,574 (the transcripts include `> think:` lines and the `OK.` acknowledgements, which the estimate had not
+counted), the hit rate is **90.4%** rather than the assumed 96%, and the extrapolation now runs from 728 real calls
+rather than from a token model. The estimate was wrong by 91% and the error was in the safe direction to be wrong
+in: a job that costs ¥5.71 when ¥2.99 was quoted is a discrepancy, and a job that costs ¥2,000 when ¥300 was quoted
+is an incident.
+
+**A fifth of the model's actions are refused, and that is a finding rather than a bug.** 138 of the 149 refusals
+were well-formed commands for a room the model was not in. Handing it `admissible_commands` would raise the score
+immediately and destroy the control in the same move — `none` would no longer mean the corpus's own difficulty, no
+arm's number would be comparable to a published ReAct row, and the memory would be measured against a control that
+had been given a different kind of help. So the list is not passed and the rate is reported (34.220). What it does
+is size the next candidate: a pack carrying *where objects live* would be worth about six points of turn budget if
+it removed a third of those refusals.
+
+### 195.3 The four questions
+
+1. **Is the field's board complete?** No, and 195.2 is why in one line: the same baseline is reported at 40.0 by the
+   system's own authors and quoted at 59.0–75.37 elsewhere, so a 19pp claim has a 16.4pp spread underneath it. What
+   is missing is not more systems but a **reproducible paired board** — same model, same split, interval, bill.
+2. **Competitors, exhaustively.** ALFWorld (ExpeL, ReAct, FSM, H²R, AWM, Synapse-ICLR), τ² (R57–R92), BIRD
+   (R24–R61), LoCoMo and LongMemEval (cortex), WebShop and Mind2Web (Synapse-ICLR, AWM), MiniWoB++ (Synapse-ICLR).
+   **No paper in the ALFWorld row reports a per-episode token bill**; this lane's ¥0.28 for 20 games is the first
+   number of its kind in this record, and it is measured rather than modelled.
+3. **Has microglia learned what the leaders have?** Not yet, and the gap is now three items with prices: the rule
+   bank (built, unrun, ¥5.71 for three arms), AWM's abstraction (registered, ~$0.70 + code), and ExpeL's reflection
+   chain (**unavailable here** — it needs repeated trials of one task and the split gives one attempt, AM.24). What
+   it has learned that the leaders have not published is a control's headroom on a contemporary model, which is the
+   number every one of those papers assumes.
+4. **If this is not SOTA, what is the shortest path?** The row's parameter-free SOTA is FSM at 80.60; microglia has
+   no number on it and this round did not produce one. The shortest path to a *publishable* number is: distil a rule
+   bank from `valid_seen` (**≈ ¥2.5**, 140 games at the measured rate plus the extraction calls), then three arms
+   over 134 games (**¥5.71**, twelve jobs across four slices at 24 minutes each). **Total ≈ ¥8.2 and about two
+   hours of runner time**, and it produces a paired delta with an interval, a per-arm bill, and the trajectories —
+   which no paper in that row publishes.
+
+### 195.4 Cost
+
+**¥0.45 across three dispatches.** The calibration itself was ¥0.28; the first dispatch spent about ¥0.14 before the
+loop raised on a model that had given up (34.218), and the diagnostic was ¥0.02 (34.219). Two of the three
+dispatches bought nothing but a defect, which is the cheap version of finding out that a skeleton cannot represent
+the failure it is measuring.

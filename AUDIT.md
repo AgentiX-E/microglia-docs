@@ -13100,3 +13100,33 @@ The trace from that same run is the other half of the answer, and it is the firs
 
 That is the task's own plan, in the competitor's format, at 1.05 s per call. The arm is capable and the win was four
 turns away when the diagnostic budget ran out — which is what makes the headroom question worth the twenty games.
+
+## 34.220 — A fifth of the model's actions are refused, and the fix is a new arm rather than a repair
+
+The calibration's counters, which are the reason they are in the artefact: of **728 calls** over twenty games,
+
+| counter | value | share of calls |
+| --- | --- | --- |
+| actions accepted by the environment | 460 | 63.2% |
+| thoughts | 257 | 35.3% |
+| actions refused (`invalid_actions`) | **149** | **20.5%** |
+| of which not even a command (`off_space_actions`) | 11 | 1.5% |
+
+So 138 of the 149 refusals were **well-formed commands for a world the model was not in**: `> go to desk 1` when
+the room has no desk 1, `> take mug 2 from shelf 3` when mug 2 is elsewhere. The model is not failing to follow the
+format — it is failing to know where things are, which is precisely the knowledge a memory of previous attempts
+would carry.
+
+**It is not repaired, and the temptation to repair it is the point of this entry.** Handing the model
+`admissible_commands` — which the environment publishes on every turn and `agent.py` already reads — would raise the
+score immediately and by a large margin. It would also make `none` no longer mean *the corpus's own difficulty*:
+every arm would be run with an oracle for the action space, the arm's absolute score would stop being comparable to
+any published ReAct number, and the memory's contribution would be measured against a control that had already been
+given a different kind of help. The list is therefore not passed, and the refusal rate is reported instead.
+
+**What it does change is the queue.** "Where objects live" is a memory whose effect this lane can now size before
+spending: at 20.5% refusals, a pack that removed a third of them would be worth roughly six points of turn budget.
+That is a different mechanism from the rule bank, it belongs on the microglia side (it changes what the prompt
+carries, not the substrate), and it needs its own registration and its own arm rather than an edit to this one.
+Registering it is the work; the temptation is to slip it in as an improvement to `none`, which would be a control
+that quietly became a treatment.
