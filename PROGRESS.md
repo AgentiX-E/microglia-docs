@@ -24532,7 +24532,8 @@ the provider's off-peak band and **7.15 CNY/USD**:
 | `run44754650978` | sweep B: the replication on the six-rule bank | $0.6381 | 4.56 |
 | `run44763220821` | the placebo: `none` and `sham` over 134 games | $0.3983 | 2.85 |
 | `run44774801298` | the cross-kind bank: 28 won episodes, four critique calls, no games driven | $0.0049 | 0.03 |
-| **total** | **nine runs, of which four bought no reading at all** | **$2.5769** | **18.42** |
+| `run44782732761` | the filler block: `none` and `always-in` over 134 games, the vocabulary reading | $0.4584 | 3.28 |
+| **total** | **ten runs, of which five bought no reading at all** | **$3.0353** | **21.70** |
 
 **Where each quoted figure went wrong.**
 
@@ -24547,11 +24548,12 @@ the provider's off-peak band and **7.15 CNY/USD**:
   `floor*` artefact for that reason, and the excluded number equals the run's slice total to five decimal places,
   which is what confirms it is a copy rather than a charge.
 
-**The honest unit cost.** ¥18.42 bought: one replicated paired delta (+14.18 pp, then +14.93 pp), one placebo that
-retired its own attribution (+17.91 pp from a shuffled block), one bank artefact for reuse, four defects found before
-they cost a sweep, and one negative result that stopped a ¥2.0 purchase for ¥0.035. **¥3.68 per usable reading**, or
-**¥4.60 per reading including the four runs that produced none** — and both of those numbers will move when the
-filler sweep lands, which is why the table is rebuilt rather than adjusted.
+**The honest unit cost.** ¥21.70 bought: one replicated paired delta (+14.18 pp, then +14.93 pp), one placebo that
+retired its own attribution (+17.91 pp), one vocabulary reading that retired the placebo's over-reach (−6.72 pp), one
+bank artefact for reuse, five defects found before they cost a sweep, and one negative result that stopped a ¥2.0
+purchase for ¥0.035. **¥5.43 per usable reading**, or **¥2.17 per dispatch including the five that produced none**.
+The second number is the one to plan with: half of this programme's dispatches so far were bought to find out that
+something else was wrong.
 
 ### 203.3 The flag that said "the control already exists" no longer says anything
 
