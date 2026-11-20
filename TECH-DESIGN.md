@@ -11023,3 +11023,32 @@ a slice that cannot be compared to the floor.
 **What it deliberately does not do.** It does not retry a failed call, does not fall back to a policy when the key
 is missing, does not re-anchor the pack inside an episode, and does not clip an action to the admissible set. Each
 of those would raise the score and lower the value of the number.
+
+## 17.177 — `eval/drivers/alfworld/aggregate.py`: joining the slices, where the unit is the game
+
+A 134-game pass is 20,100 calls and does not fit in one job, so `agent.py --shard i/n` dispatches it as contiguous
+slices. `aggregate.py` is what turns the slices back into the one number the design is about: a **paired** difference
+between two arms.
+
+**The pairing is the whole argument.** Two arms run the same games; they disagree on some and agree on the rest. An
+unpaired interval would be dominated by task-type difficulty, which both arms suffer equally, so the delta is
+`mean(a − b)` over games both arms ran, the interval is a bootstrap that **resamples games**, and the discordance
+`b + c` is reported beside it. Resampling episodes instead of games would shrink the interval by pretending the
+split is larger than it is — the cluster mistake this design was built to avoid, since 134 games repeated four times
+are 134 samples, not 536.
+
+**Three things are refused rather than averaged**, because each of them still yields a number:
+
+- a game driven twice across slices, which is two votes for one question;
+- an arm whose slices do not tile the split (`--expect 134`), which changes the denominator silently;
+- a pair of arms whose games do not coincide on every one, which would turn "these arms differ" into "these arms were
+  run on different corpora".
+
+**The MDE is printed next to the delta and for the same reason.** `mde = 2.802 · sqrt(b + c) / n` is what the sample
+could have seen. A delta whose interval spans zero is not automatically evidence of no effect; it may be evidence
+that the sample could not produce one, and those two readings call for different next steps — a bigger corpus versus
+a different mechanism. Printing the MDE makes the difference between them visible in the same table as the result.
+
+**Reproducibility is inherited rather than re-invented.** The bootstrap draws from the same splitmix64 `floor.py`
+uses, so an interval can be reproduced from its seed alone by anyone who has the episode list — which is the property
+that makes a resampled interval checkable at all.

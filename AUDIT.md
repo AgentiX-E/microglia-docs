@@ -13043,3 +13043,60 @@ true.
 The test found the drift a second time before it found the corpus: it failed on the `eval` row by 34 lines, because
 the round had added 34 lines to `coupling.ts` after the table was corrected. That is the gate doing its job on its
 own author.
+
+## 34.218 — The skeleton could not represent a model giving up, so it could not have measured one
+
+The first calibration dispatch (`44671462382`, 04:00:36–04:03:24 UTC) drove **zero games**. On the first one,
+`pick_cool_then_place_in_recep-Bread-None-CounterTop-10`, the model reached the end of its patience inside the
+50-step cap and began narrating:
+
+> I was unable to complete the task. I found bread 1 on countertop 3, picked it up, and cooled it using the fridge.
+> However, when I attempted to put it on the cou…
+
+`parse_reply` read it as a thought, which is correct — it is not a command, and the competitor's own parser would
+have wrapped it as `> think: …` too. The loop, however, had been written to **raise** on three thoughts in a row, on
+the theory that three means the format was not learned. It raised, the job ended, and the artefact was never written.
+
+**The rule was wrong about what it was protecting.** A model that gives up is not an infrastructure failure; it is
+the failure this arm exists to count. An arm whose question is *does the memory help* cannot have a skeleton that
+refuses to represent the model failing — the event it most needs to record is the one it crashes on. And the theory
+was wrong on its own terms too: three thoughts in a row is exactly what the competitor's *own* transcripts contain
+at their most deliberate, so the threshold would have failed on the format it was copied from.
+
+The repair changes what a turn is. **A thought spends one of the `max_steps` turns exactly as an action does.** The
+episode ends when its budget does, `steps` counts model turns, `actions` and `thoughts` sit beside it, and a run of
+three thoughts is a counted `stall`. A pass in which **no** episode produced an action still fails, because that is
+a skeleton nobody read rather than a low score.
+
+Two consequences, both in the conservative direction. The worst case per episode is now `max_steps` calls, where
+before it was `max_steps` actions plus an unbounded number of thoughts — the quote loses a tail it could not bound.
+And `--trace N` prints the first N replies, because a calibration's first three readings are what the model actually
+sent, not what it scored: a rate computed over a format the model ignored is a rate about the format.
+
+## 34.219 — "Never terminated" meant two opposite things, and the diagnostic pass was read as a defect
+
+The second dispatch (`44672529440`, 04:09:57–04:10:47 UTC) failed with `1 episodes never terminated`. It had driven
+its single game correctly for twenty turns and stopped, because `--max-steps 20` is smaller than any ALFWorld game.
+
+The field was `truncated = not done`, copied from `floor.py`, where it means the right thing: the floor pass uses
+the environment's own 50-step cap, so an episode the environment did not end is an episode the driver cut off — a
+defect. On a model pass the cap may be deliberately smaller than a game needs, and then the same field reports the
+design working as an error.
+
+Two endings, split: `budget_exhausted` is the pass's own cap doing its job and is **reported**; `truncated` is the
+environment undecided with turns to spare and **fails the run**. The distinction is one nobody would get from a
+rate, which is why it had to be a field: both endings score zero, and only one of them means the lane is broken.
+
+The trace from that same run is the other half of the answer, and it is the first evidence that the skeleton works:
+
+| turn | reply |
+| --- | --- |
+| 1 | `> think: To solve the task, I need to find and take a potato, then heat it with microwave…` |
+| 2–5 | `> go to fridge 1` · `> open fridge 1` · `> go to countertop 1` · `> go to countertop 2` |
+| 6 | `> think: Now I find a potato (1). Next, I need to take it.` |
+| 7 | `> take potato 1 from countertop 2` |
+| 9–10 | `> go to microwave 1` · `> heat potato 1 with microwave 1` |
+| 12 | `> go to garbagecan 1` |
+
+That is the task's own plan, in the competitor's format, at 1.05 s per call. The arm is capable and the win was four
+turns away when the diagnostic budget ran out — which is what makes the headroom question worth the twenty games.
