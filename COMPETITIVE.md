@@ -8151,3 +8151,71 @@ survive that difference (it is a statement about difficulty, not about sequence)
 collapse" and forgetting results are **not testable here at all**, and this lane will not claim them. The 59.0 that
 Appendix R138 shows belongs to the reflection branch is likewise not the arm being run. Both limits are the same
 kind: a number from a design this lane does not implement.
+
+## R167 — The ALFWorld board is two boards, and only one of them is a question this lane can answer (2026-11-20)
+
+Every previous board in this file compared systems on one axis. ALFWorld does not support that: the rows at the
+top of it are **trained or evolved**, and the rows this lane is built to be compared with are **prompt-only**. Put
+in one table they say a 55% arm is beaten by 45 points, which is true and means nothing.
+
+### Board A — what the corpus's absolute ceiling is, and what those systems are
+
+| system | reported | backbone | what it is |
+| --- | --- | --- | --- |
+| *Procedural Graph* | **100.0** | Gemini 3.1 Pro | aggregator-reported, 2026-09 |
+| SkillZip | 99.1 | Gemini 3 Pro | aggregator-reported, 2026-08 |
+| WikiTrace | 98.8 | — | aggregator-reported, 2026-11 |
+| RSIPO | 98.6 | Qwen2.5-7B-Instruct | aggregator-reported, 2026-10; a policy-optimisation method |
+| Anti-Persistence | 97.3 | — | aggregator-reported, 2026-10; the "do not persist abstractions" design |
+
+**All five are trained, evolved, or policy-optimised.** None is a frozen model carrying a block of text, and the
+aggregator that lists them (*paperswithcode.co*, *sota2.com*) does not publish a cost column, a prompt budget or a
+per-run bill for any of them. This lane cannot enter Board A, cannot check any row in it, and will not quote it as a
+gap: a 100 that was bought with weight updates is not a target for a repository whose premise is that the weights
+stay frozen.
+
+### Board B — prompt-only experience reuse, which is this lane's category
+
+| system | ALFWorld | backbone | harness | memory cost it reports |
+| --- | --- | --- | --- | --- |
+| **ALMA** (Xiong, Hu, Clune; ICLR 2026 RSI) | **87.1** (vs 80.0 best manual baseline); **84.1** under `valid_seen` → `valid_unseen` shift | GPT-5-mini | meta-learned memory design, sequential domains | **$0.09 per run** construction; **1,319 tokens** injected per task (raw trajectory 9,149, G-Memory 6,095) |
+| **MemScope** (`arXiv:2610.21170`) | **48/67 = 71.64** | **DeepSeek V3.2** | temperature 0, 32-token actions, 30 outer steps, **50-step environment cap**, memory updated online, disjoint evolution tasks | none reported |
+| ALMA's re-run of a manual baseline | **45/67 = 67.16** | DeepSeek V3.2 | same as above | — |
+| **DynamicCheatsheet**, same harness | **34/67 = 50.75** | DeepSeek V3.2 | same as above | — |
+| **ExpeL** (Zhao et al., AAAI 2024) | 46.3 avg on the 2026 aggregator board; 59.0 in its own paper | Qwen2.5-7B-Instruct / GPT-3.5 | the paper's own reflection branch | none reported |
+| Mem0 / ReAct / zero-shot, same board | 33.6 / 31.2 / 14.8 | Qwen2.5-7B-Instruct | — | none reported |
+
+**Three things in Board B matter more than any single number.**
+
+*First, the harness decides 20 points.* MemScope runs the **same corpus and the same 50-step cap this lane uses**,
+on a DeepSeek backbone, and reports DynamicCheatsheet at **50.75% and ALMA at 67.16%** — while ALMA's own paper
+reports **87.1%** for the same method on the same benchmark. The difference is the task subset (67 against 134), the
+outer-step budget, and what counts as a run. **A 40-point spread between two papers measuring one method is the
+strongest argument this record has for never quoting an absolute number from another repository**, which is what
+34.213 established as a rule and what R138 already applied to the 59.0.
+
+*Second, the cheapest comparable row is a memory system on the same model family.* DynamicCheatsheet at **50.75%**
+under MemScope's harness is the row this lane's `none` should be read against, and the 20-game calibration's
+**55.0% [34.2, 74.2]** is consistent with it rather than below it. That is a check on the control, not a claim of
+superiority: 20 games resolve 20pp.
+
+*Third, one competitor publishes a cost column and it is not per token.* ALMA reports **$0.09 per run** of memory
+construction and **1,319 tokens** injected per task, against 9,149 for raw trajectory retrieval. This lane reports
+**¥0.014 per episode** (≈ $0.0019) counted by the provider's own `usage` object, which is a different denominator:
+ALMA's is per run, ours is per episode including every model call inside it. The two are not comparable, and saying
+so is cheaper than discovering it in a review.
+
+### Where this lane sits, stated as a position rather than a rank
+
+| column | this lane | the nearest published row | comparable |
+| --- | --- | --- | --- |
+| ALFWorld success, full split | **no number yet** — the three-arm sweep is in flight | MemScope 71.64 on 67 tasks | no |
+| ALFWorld control (`none`), 20 games | **55.0% [34.2, 74.2]** | DynamicCheatsheet 50.75 on 67 tasks | **yes, as a consistency check** |
+| harm share (episode) | **not yet measured** — instrument built this round | published 52% for the τ² family (Appendix AS) | **yes, and no ALFWorld row exists** |
+| prompt tokens per episode | measured per episode from `usage` | ALMA 1,319 per task | **partly** — different granularity |
+| cost per episode | **¥0.014** = $0.0019 | ALMA $0.09 per run | no — different denominator |
+
+**The claim this lane can defend after the sweep, and the one it cannot.** It can defend a **paired** delta on 134
+games with a harm share and an engagement rate beside it, because nothing else in Board B reports either. It cannot
+defend an absolute score against Board B's rows, because the two tasks subsets, the two outer-step budgets and the
+two definitions of "run" are different, and the 40-point spread inside one method's own reports is the proof.
