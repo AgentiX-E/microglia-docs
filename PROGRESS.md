@@ -24583,3 +24583,66 @@ a sweep was dispatched with no `--rules` at all, which is when the control arm i
 
 Re-dispatched as `44782732761` against the corrected path, with the eight arm jobs confirmed running before this line
 was written — the check that the fix is a fix rather than a second refusal (AUDIT 34.235).
+
+## 204. The filler block scored below its own control, and relevance came back into the mechanism (17:55 UTC)
+
+Run `44782732761`, 134 held-out games, two arms, own control, 8,974 calls, **$0.4584 (¥3.28)**. The block was four
+entries about servicing a mechanical typewriter: same header, same per-entry lengths, same imperative form, no word
+about the task.
+
+| arm | wins | rate | paired delta | 95% interval | p |
+| --- | --- | --- | --- | --- | --- |
+| `none` | 89/134 | 66.42% | — | — | — |
+| `always-in` (filler) | 80/134 | 59.70% | **−6.72 pp** | [−14.93, +1.49] | 0.134 |
+
+**The three blocks now sit in one picture, and it is a three-layer decomposition rather than a two-way choice.**
+
+| block | paired delta | interval | what it says about the block |
+| --- | --- | --- | --- |
+| filler (no task words) | −6.72 pp | [−14.93, +1.49] | existence alone buys nothing |
+| always-in (4 distilled rules) | +14.18 pp | [+4.48, +23.88] | being about the task buys 14–18 |
+| sham (same words, permuted) | +17.91 pp | [+8.96, +26.87] | the order of those words buys nothing |
+
+So `sham − filler` = **+24.6 pp** (p 0.0001; p 0.004 with the eight-win run swing added) is the largest and most
+reliable contrast this lane has produced, and `sham − always-in` = −3.7 pp is not resolvable. **The vocabulary is the
+mechanism; the rules are not.**
+
+### 204.1 The shape the registration did not predict, and it is the same in all three
+
+| block | games the control lost | games the control won |
+| --- | --- | --- |
+| filler | +24.44 pp (11/45) | −22.47 pp (69/89) |
+| always-in | +59.26 pp (32/45) | −16.25 pp (67/89) |
+| sham | +62.26 pp (33/53) | −11.11 pp (72/81) |
+
+Every block helps the hard games and hurts the easy ones; what differs is the size of the two effects. A block is not
+a memory and not a hint — it is **a change of behaviour that pays only where the model was already failing**, and the
+magnitude of the payment is set by whether the block's words are the task's words.
+
+The counters agree with that reading and were not designed to: the filler arm produced **32.7% invalid actions against
+28.4%**, and off-space actions rose from **25 to 41**. The model did read the block — it diverged from its control on
+88.8% of games — and what it read made it try more things, most of them not in the action space.
+
+### 204.2 What this retires from the record
+
+AUDIT 34.231 concluded that "the block's form is the mechanism and its content is inert". **The second half is now
+wrong, and it was wrong because the sham was not vocabulary-free.** A permutation keeps every ALFWorld noun in place;
+it destroys order, not meaning. The correct statement, which this run purchased for ¥3.28:
+
+> the *ordering* of the rules is inert; the *domain of the words* is not.
+
+That is a smaller claim than the one the placebo licensed, and it restores a place for content: a block that names the
+right objects and receptacles is worth 14–18 points, a block of equal shape that names a typewriter is worth nothing,
+and a block that names the right things **in the wrong order** is worth the same as the right order.
+
+### 204.3 The one condition the registration should have written, and the price estimate it missed
+
+The `none` arm scored **89/134** here against **80** and **81** in the two earlier dispatches. Because the easy stratum
+is defined by the control's wins, that put **89 of 89** easy games in the stratum — a ceiling the treatment can only
+fall from, which is why the −6.72 point estimate carries a ceiling effect and the interval, not the point, is what
+licenses anything. Any future registration that stratifies by the control must state the control's own rate as a
+verbatim condition.
+
+The estimate was ¥2.0 and the bill was ¥3.28: the filler arm spent 4,492 calls against the placebo's 3,964 for the
+same games, because a block that confuses the model produces more turns. Third time this lane has under-quoted by
+pricing a treatment that changes the number of turns at the control's per-episode cost.

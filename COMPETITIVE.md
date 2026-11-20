@@ -8509,3 +8509,47 @@ lengths and the same imperative form. The third is running (run `44779423772`, �
 controls the most valuable missing column in this literature. A filler block that scores like the placebo collapses
 the whole family into prompt engineering and makes this lane's contribution a negative one: the measurement that
 shows the field's rule-bank numbers are not about rules.
+
+## R172 — The filler reading redraws the comparison: every rule-bank row in the field is a domain-priming row (2026-11-20, 18:05 UTC)
+
+Three blocks, one corpus, each paired against its own control in its own dispatch:
+
+| block | delta | interval | what it isolates |
+| --- | --- | --- | --- |
+| filler about typewriter maintenance | **−6.72 pp** | [−14.93, +1.49] | a block's existence |
+| four distilled ALFWorld rules | **+14.18 pp** | [+4.48, +23.88] | being about the task |
+| the same four rules, word order permuted | **+17.91 pp** | [+8.96, +26.87] | the order of those words |
+
+**This changes what the field's numbers can be said to measure, and it does so with a control nobody publishes.** Every
+rule-bank, workflow-library and memory-note method on this corpus injects text that came out of task trajectories, so
+every one of them is a *domain-primed* prompt as well as a memory. None of them reports a same-length, same-shape block
+about an unrelated task, which is the only arm that separates "the model was reminded what world it is in" from "the
+model was given knowledge it did not have".
+
+| method family | what its block contains | the step it reports | can that step be attributed to knowledge |
+| --- | --- | --- | --- |
+| ExpeL, this lane's bank | distilled rules over trajectories | +14 to +19 pp | **no**: a permuted version scores the same or better, and an unrelated block scores zero |
+| AWM (workflow abstractions) | reusable action sequences, all task terms | not separable as above | no |
+| H2R (two-tier memory) | high/low-level summaries of the same world | not separable as above | no |
+| Synapse (contrastive retrieval) | selected memories, all task terms | ablates retrieval, not vocabulary | no |
+| ALMA (meta-agent search) | a searched prompt/module | searches the injection, not the vocabulary | no |
+| DynamicCheatsheet | an accumulating note | length and domain both grow with it | no |
+| **microglia, this lane** | one fixed preamble + four controls | **+14.2 / +17.9 / −6.7 / 0** | **the decomposition is the contribution** |
+
+**Why the field's ablations do not already answer this.** They remove a *mechanism* (retrieval, tiers, search) and keep
+a prompt that talks about the task, so the ablation answers "is selection worth it" and leaves "is the talking worth
+it" untouched. The confound survives every one of them, and it is not a small effect: in this lane it is bigger than
+the effect being claimed (24.6 pp between vocabulary and no vocabulary, against 14.2 pp for the bank).
+
+**The honest position on the board.** microglia's level, 59.7–66.4% for the control and 59.7% for the filler arm, sits
+inside the range the other harnesses report for the same corpus (50.75–71.64 on 67 games). None of those levels is
+comparable across harnesses and this lane does not claim otherwise. What it claims is the column no other row has: a
+paired delta with a form-matched and a vocabulary-free control, on 134 games, published with its intervals and its
+counter-examples.
+
+**What the next dispatch is, and it is the cheapest question left on the board.** If vocabulary is the mechanism, the
+effect should be **dose-dependent on how much of the block is about the task**: two of the four entries replaced by
+filler text, length held constant, is one arm and one contrast (≈ ¥2–3). A linear midpoint would confirm priming; a
+step at the first real rule would mean any mention of the task suffices; landing back at the filler's value would mean
+that what matters is not the vocabulary but the specific factual advice, which would resurrect the memory claim the
+placebo retired.

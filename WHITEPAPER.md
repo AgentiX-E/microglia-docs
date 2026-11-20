@@ -66,6 +66,34 @@ The one positive number is a ceiling, and it sits on the output side. The gap be
 the best real selector — 4.66pp — is the entire opportunity this project has measured, and it is a
 verifier problem.
 
+### 1.2.1 The same question on ALFWorld, and the block that decided it
+
+BIRD measures a SQL prompt. ALFWorld measures a household agent, and there the memory object is an ExpeL-style rule
+bank: four sentences distilled from 140 training games, rendered on every episode. Three blocks, each paired against
+its own control inside its own dispatch, 134 held-out games, temperature 0:
+
+| block | delta | 95% interval | what it isolates |
+|---|---|---|---|
+| four entries about servicing a typewriter | **−6.72pp** | [−14.93, +1.49] | the existence of a block |
+| four distilled ALFWorld rules | **+14.18pp** | [+4.48, +23.88] | the block being *about the task* |
+| the same four rules, word order permuted | **+17.91pp** | [+8.96, +26.87] | the *order* of those words |
+
+The largest contrast the programme has measured is **vocabulary against no vocabulary: +24.6pp**. The contrast the
+field's ablations usually report — retrieval, selection, tiers — moves a layer that is worth −3.7pp with overlapping
+intervals.
+
+Three consequences, and the third is the product one:
+
+1. **A preamble is not knowledge.** A block of the same shape that talks about a different task buys nothing, which
+   is the first direct measurement of the confound under every published rule-bank number on this corpus: those
+   prompts are domain-primed whether or not their knowledge transfers.
+2. **Ordering is inert.** Permuting the rules' word order does not cost anything measurable, so distillation quality —
+   the thing the field optimises — is not where the 14 points come from.
+3. **Content is not dead; it is untested.** The rules themselves are procedures a competent model already knows,
+   which is why destroying their order costs nothing. The one block that could still beat +18 is a pack of *facts the
+   model cannot infer* — where objects live in these house families — and that is now the only open memory question
+   in this lane.
+
 ### 1.3 The measurement that ends the ambiguity
 
 R6 pointed every admitted rule at four foreign questions and recorded both what it repaired and what it

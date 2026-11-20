@@ -13946,3 +13946,43 @@ function of the command line, which is what keeps the other forty cases in `test
 **What the ¥0 bought.** A guard that fires inside a job protects money; a guard that fires before the dispatch
 protects money *and* time, and this lane has now paid both kinds of tuition. The other lesson is narrower and more
 useful: when a document and a runner disagree about where a file is, the document is the one that gets copied.
+
+## 34.236 — A placebo shares what you hold fixed, and the sham held the vocabulary fixed
+
+The sham block permuted each rule's word order and kept every word. It scored +17.91 pp, above the intact bank's
++14.18, and the record concluded that the block's form was the mechanism and its content inert. **That conclusion
+outran the control.** A permutation destroys order; it does not remove a single ALFWorld noun. `fridge`, `desk`,
+`put`, `receptacle` were all still there, so the sham was a control for *sequence* and had never been a control for
+*meaning*.
+
+The block that does remove meaning is a same-length, same-header, same-imperative block about a different task, and it
+cost ¥3.28 to run (run `44782732761`):
+
+| block | delta | interval | the layer it isolates |
+| --- | --- | --- | --- |
+| filler (typewriter maintenance) | −6.72 pp | [−14.93, +1.49] | existence of a block |
+| always-in (4 distilled rules) | +14.18 pp | [+4.48, +23.88] | being about the task |
+| sham (same words, permuted) | +17.91 pp | [+8.96, +26.87] | the order of those words |
+
+**Vocabulary is the mechanism; order is not.** `sham − filler` is +24.6 pp and is the most reliable contrast in the
+programme (p 0.0001, p 0.004 with the run-to-run swing added). `sham − always-in` is −3.7 pp with overlapping
+intervals. The corrected sentence is narrower than the retired one and more useful: *a block that names the task's
+objects and actions is worth 14–18 points regardless of how its sentences are arranged, and a block that names a
+typewriter is worth nothing.*
+
+**Two design defects this exposed, both in the record rather than in the code.**
+
+1. **A stratifier defined by the control has a ceiling bias.** The easy stratum is "the games the control won", so a
+   run whose control scores well puts a larger share of games at 100% and the treatment can only lose there. This
+   run's control scored 89/134 against 80 and 81 in the two earlier dispatches, giving 89 of 89 easy games. The
+   −6.72 point estimate therefore contains a ceiling effect the registration did not name as a condition, which is
+   why only the interval — which still excludes the +9 pp the "form is sufficient" row required — is quoted.
+2. **A per-episode price is wrong for a treatment that changes the number of turns.** The estimate was ¥2.0 and the
+   bill was ¥3.28: the filler arm used 4,492 calls against the placebo's 3,964 for the same 134 games. A confused
+   model is a more expensive model, and the lane has now under-quoted this way three times.
+
+**The positive evidence that the block was read at all.** The filler arm diverged from its control on 88.8% of games,
+its invalid-action rate rose from 28.4% to 32.7%, and its off-space actions from 25 to 41. A block that were ignored
+would move none of those counters. This is the first arm in the lane whose *mechanism of action* is visible in the
+refusal counters rather than in the score: it made the model try more, and more of what it tried was not in the
+action space.

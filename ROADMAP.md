@@ -7765,3 +7765,37 @@ it was, then relevance is required, the placebo needs a second explanation, and 
 retriever that selects well — stays paused. Nothing about it can be interpreted while the block's content is
 indistinguishable from a shuffle, and the last two days have produced two independent demonstrations of that
 (+17.91 pp from a permutation, and a filtered bank whose rules were the same rules).
+
+## R172 — The queue is a dose-response curve, and each point on it costs one arm
+
+The filler reading (PROGRESS 204) replaced the two-way question "form or content" with a three-layer one, and it
+retired the claim that content is inert: a block of typewriter maintenance scored **−6.72 pp** while the same shape
+of block about the task scored +14.18. The mechanism is now "a block that changes behaviour, pointed by the task's
+own vocabulary", and the next question is how much vocabulary is enough.
+
+| # | experiment | the question | price |
+| --- | --- | --- | --- |
+| **1** | **two distilled rules + two filler entries, total length held at 1,312 characters** | is the effect **dose-dependent** on how much of the block is about the task, or does one real rule flip it, or does it need the specific advice | **≈ ¥2–3**, one arm plus its control |
+| 2 | a neutral **declarative** block, same length, task vocabulary kept | is imperative grammar needed, or is a statement of the same facts equal | ≈ ¥2–3 |
+| 3 | the object-location **facts** pack | can content that the model cannot infer beat domain priming; this is the only arm that could exceed +18 | ≈ ¥2–3 |
+| 4 | the read-time **gate** (`--gate-share 0.2`) | the hard-stratum rescue (+24 to +62 pp) without the easy-stratum damage (−11 to −22) | ≈ ¥2–3 |
+| 5 | three more `none` arms at the same games | the run-to-run swing is now measured at 8 wins (89 against 81), and every stratified claim inherits it | ≈ ¥2 each |
+| 6 | `retrieved(k=1)` on the six-rule bank | does selection help when forced to one rule, now that vocabulary is known to matter | ≈ ¥2 |
+
+**Why row 1 is first and why it is one arm.** Two of the four entries already exist as endpoints: four filler entries
+(−6.72) and four real ones (+14.18). A half-and-half block, length held constant, is a single new treatment and it
+lands on one of three qualitatively different curves:
+
+* midpoint ≈ +4 pp → **linear priming**: the effect scales with how much of the block is about the task, which makes it
+  a dosage rather than knowledge, and the product is a preamble sized to the budget;
+* ≈ +14 pp → **threshold**: one real rule is enough, and the rest of the block is decoration;
+* ≈ −7 pp → **no priming at all**: the gain needs the specific procedural advice, which would revive the memory claim
+  the placebo was thought to have retired, and would send the queue to the facts pack (row 3) immediately.
+
+**What stays paused.** New distillation, better rule banks, and retrievers that select among rules. All three are
+tuning the layer that `sham − always-in` = −3.7 pp says is not resolvable at 134 games.
+
+**One condition every future registration must carry, learned the expensive way.** The easy stratum is defined by the
+control's wins, so a run whose control scores unusually well has a ceiling the treatment can only fall from. Row 1's
+registration states the control's rate as a verbatim condition, and if the control lands above 85/134 the reading is
+reported by stratum only.
