@@ -13913,3 +13913,36 @@ silently is worse than one that is refused loudly, because the dispatch record t
 do. The same shape appeared three times in this lane: `--control-run` here, a workflow `if` that could never be true,
 and a `--bank-only` disabled by a directory nothing created (34.231). Each was found by reading the payload rather
 than the output, and each was fixed by making the silence into a sentence.
+
+## 34.235 — The bank was named the way the lane's directory reads, and the jobs run from the repository root
+
+Run `44779423772` was the filler sweep — 134 games, two arms, ¥2.0 — and every one of its eight arm jobs failed. Not
+one made a model call. Total spend: **¥0**. Wall-clock lost: fourteen minutes, because each job installed textworld,
+fetched the games, waited for the off-peak window, and only then discovered there was no bank.
+
+**The failure is a coordinate mismatch, and the documentation was the source of the wrong one.** The registration
+wrote `banks/bank-filler-4.json`, because that is how the path reads from inside `eval/drivers/alfworld/`, where the
+bank lives and where every other file in this lane is described. The workflow runs `python eval/drivers/alfworld/agent.py`
+**from the repository root**, so the file it was told to read resolves to `<root>/banks/...`, which does not exist. The
+dispatch was written by copying the sentence out of the registration, which is exactly what a registration is for and
+exactly why the copy was wrong.
+
+**Two defects, and the second one is the one that would have been hidden by a successful run.**
+
+1. **A path resolved in one coordinate system and used in another.** `--rules` accepted a relative path and the jobs
+   resolved it against their working directory. Nothing failed until a job tried to open the file.
+2. **The treatment guard was applied to the control.** The `if [ ! -f "${RULES}" ]` check sat above the
+   `if [ "${ARM}" != "none" ]` branch, so the `none` arm — which carries no bank at all — was refused for a bank path
+   it never reads. Four of the eight lost jobs were controls dying of a file that is not theirs. A run that had
+   happened to have a valid path would have shipped this defect permanently.
+
+**The fixes are placed by what each one protects.** The dispatcher now resolves a relative `--rules` against the
+checkout it is given and refuses **before the dispatch**, naming the path that would have worked
+(`eval/drivers/alfworld/banks/bank-filler-4.json`); absolute paths, which is what a chained bank is, are left to the
+runner. The workflow's existence check moved inside the treatment branch, so the arm that carries no bank is no longer
+asked for one. `check()` keeps its signature by taking `tree=None` as the default: without a checkout it stays a pure
+function of the command line, which is what keeps the other forty cases in `test_alf_dispatch.py` readable.
+
+**What the ¥0 bought.** A guard that fires inside a job protects money; a guard that fires before the dispatch
+protects money *and* time, and this lane has now paid both kinds of tuition. The other lesson is narrower and more
+useful: when a document and a runner disagree about where a file is, the document is the one that gets copied.

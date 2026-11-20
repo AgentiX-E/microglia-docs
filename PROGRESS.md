@@ -24565,3 +24565,21 @@ cases pin it, one of them asserting that no network call happens before it.
 This is the third flag-shaped defect in the lane (`--control-run`, a workflow `if` that could never be true, and a
 `--bank-only` disabled by a directory nothing created). All three were found by reading the payload rather than the
 output, and all three were fixed by turning a silence into a sentence (AUDIT 34.234).
+
+### 203.4 Eight jobs, zero calls, fourteen minutes: the bank was named in the wrong coordinate system
+
+The first filler dispatch (`44779423772`) failed all eight arm jobs before a single model call. Spend: **¥0**. The
+bank had been named `banks/bank-filler-4.json` — how it reads from inside `eval/drivers/alfworld/`, and how the
+registration writes it — while the jobs run `python eval/drivers/alfworld/agent.py` **from the repository root**, where
+that path resolves to `<root>/banks/...` and does not exist.
+
+| defect | what it cost | where the fix is |
+| --- | --- | --- |
+| a relative `--rules` resolved in one directory and used in another | 8 jobs, 0 calls, 14 minutes | `check()` resolves it against the checkout it is given and names the path that works; absolute paths (a chained bank) are left to the runner |
+| the treatment guard applied to the control | 4 of the 8 jobs were `none`, refused for a bank it never reads | the `[ ! -f "${RULES}" ]` check moved inside `if [ "${ARM}" != "none" ]` |
+
+The second defect is the one a successful run would have buried: it would have shipped, silent, and surfaced the day
+a sweep was dispatched with no `--rules` at all, which is when the control arm is exactly what is missing.
+
+Re-dispatched as `44782732761` against the corrected path, with the eight arm jobs confirmed running before this line
+was written — the check that the fix is a fix rather than a second refusal (AUDIT 34.235).
