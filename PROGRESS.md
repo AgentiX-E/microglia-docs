@@ -24014,3 +24014,43 @@ in one afternoon.
 `retries: 0` over 1,305 calls is the first production reading of the column that was added because a pass died
 without it. It is one slice and thirty minutes, so it is a dimension rather than a result — but it exists now on
 every artefact, and the next reading will be over 402 games.
+
+### 199.9 The chain dispatched against a partition that has been checked (13:25 UTC)
+
+Run `44744658304`, with three slices this time and the fourth joined from the run that already paid for it:
+
+| input | value | why |
+| --- | --- | --- |
+| `train` | `140` | the bank's slice, `eval_in_distribution` |
+| `train_shards` | `["0","1","2"]` | slice 3 exists in `44738148591` and was verified disjoint |
+| `train_run_ids` | `44738148591` | the bank's `--expect-games 140` reads the union of two runs |
+| `chain` | `true` | train → bank → sweep in one run, so the bank is read from the artefact |
+
+**What it passes through, in order, and what each refusal would cost.**
+
+| gate | where | if it fires |
+| --- | --- | --- |
+| `check(arguments)` | before the POST | nothing is bought; ¥0 |
+| the green-tree gate | before the POST, on `ci.yml`'s conclusion for the head of master | nothing is bought; ¥0 |
+| `--expect-games 140` | the bank job, after three slices have been paid for | ¥1.47 spent, the sweep is skipped by `needs.distill-bank.result != 'failure'` |
+| the bank's emptiness check | the bank job, after distillation | ¥0.10 more spent, twelve jobs never start |
+| `pairs.json` | the readback, after eleven jobs | the whole sweep, ¥5.63, spent on a pairing that cannot be reported |
+
+That last row is the one that has not changed and cannot be: the pairing is verified at read time because the files
+are the only place the games are recorded. The three rows above it are the ones money buys their way past.
+
+**Price, off-peak, as dispatched.** ¥1.47 for the three training slices, ¥0.10 for the bank, ¥5.63 for the sweep:
+**¥7.20**, plus the ¥0.49 already spent on the verification and the ¥3.50 on the two runs that failed. Position:
+**¥11.19 spent, ¥7.20 committed**.
+
+**The three contrasts are now dispatch flags**, not edits to a workflow file. They are priced and waiting:
+
+| contrast | command | arms × jobs | price |
+| --- | --- | --- | --- |
+| the placebo | `--sweep true --arms '["none","sham"]' --rules banks/expel-140.json` | 2 × 4 | ≈ ¥1.9 |
+| retrieval budget | `--sweep true --arms '["none","retrieved"]' --rules … --top-k 1` | 2 × 4 | ≈ ¥3.8 |
+| the read-time gate | `--sweep true --arms '["none","retrieved"]' --rules … --gate-share 0.2` | 2 × 4 | ≈ ¥1.9 |
+
+They are not dispatched yet, and the reason is the same one that produced the two-phase dispatch: each of them is a
+statement about a bank that has not been read yet. A placebo against a bank that turns out to carry nothing is a
+placebo of nothing.

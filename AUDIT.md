@@ -13511,3 +13511,52 @@ before the first dispatch of the day, and did not.
 35 games rather than a different arm: shard 3's games begin with `look_at_obj_in_light` tasks, and the split's six
 task kinds do not score alike. It is recorded here so that nobody reads a four-point move between two slices of one
 split as a change in the system.
+
+## 34.229 — The guards that stop a payment lived outside the tree, and the first one written crashed instead of refusing
+
+Three contrasts this lane still owes — the placebo (`sham` against `none`), `retrieved@k1` against `k3`, and the
+gated retrieval at `--gate-share 0.2` — differ from the registered sweep in one string each. The only way to send one
+was to edit `.github/workflows/alfworld.yml` (and remember to edit it back) or to run a dispatcher that lived in
+`/workspace/.push/`, outside the repository, outside CI, and with no tests at all.
+
+That is the same defect this record has now found three times in other shapes: **a check that nothing runs is a check
+that is not there.** Of that dispatcher's checks, three exist to prevent money being spent — the green-tree gate, the
+"treatments without a control" refusal, and the "standalone sweep without a bank" refusal — and every one of them had
+been exercised only by dispatching, which is to say by paying.
+
+**The move.** The dispatcher is now `scripts/alf_dispatch.py`, with the decision separated from the network:
+
+| function | what it decides | how it is exercised |
+| --- | --- | --- |
+| `check(arguments)` | every reason this dispatch must not be bought, cheapest-to-read first | 18 tests, one per refusal, plus 3 for the two numeric boundaries |
+| `payload(arguments)` | the workflow's inputs, unnamed keys left out so each default stays in the workflow | 4 tests |
+| `green_tree(token, call=call)` | the CI conclusion on the head of master, which is what licenses a purchase | 4 tests, one per state: green, stale, red, still running |
+| `call`, `main` | the socket and the polling | 11 tests: a substituted response, a scripted listing, and the four ways `main` ends without a POST |
+
+`scripts/test_alf_dispatch.py` runs in `ci.yml` on the interpreter the lane runs: **40 tests, 99% of the module's
+statements, 98% of its branches**, the uncovered line being the `__main__` entry. The file name carries no hyphen so
+that the test can import it — a test that has to reach a hyphenated path through a loader is a test somebody deletes.
+
+**Two defects found while moving it, both in code written today.**
+
+1. **The `--gate-share` refusal crashed instead of refusing.** It was written `raise Refused(...) from error` inside
+   `except ValueError:` with no `as error`. A dispatch with `--gate-share half` would have died with `NameError` in
+   the guard whose whole purpose is to produce one readable sentence. The test existed before the code was run and
+   reported it as an error rather than a failure, which is exactly what an untested guard looks like when it is not
+   the happy path being exercised.
+2. **The first `--arms` rule was too strong.** It refused *any* sweep without a `none` arm, which forbade the
+   legitimate case: pair a treatment with the control slices a previous run already paid for. On a 134-game sweep
+   that is ≈ ¥2.3 spent twice for no reason. The repair is `--control-run <run-id>`, which names where the left side
+   comes from and prints it, so the assumption lives in the log line rather than in the absence of four jobs.
+
+A third, smaller one belongs to the harness rather than the code: a shell loop that ran the guards through `eval`
+stripped the JSON quotes, so five of them answered `--arms is not JSON`. The guards were right and the harness was
+wrong — but the shape is the one this record keeps meeting, a check that answers from the wrong input.
+
+**What the move does not fix.** `--control-run` trusts that the tree is unchanged between the two runs; nothing at
+dispatch time compares the reused control's games with the treatment's. `aggregate.py` refuses a pair whose games do
+not coincide, so the assumption is caught downstream — after the money, which is the wrong end. The honest state is
+that the reuse is licensed by a human naming a run, and that the readback is the check.
+
+**The rule.** A guard outside the tree is a guard nobody runs, and a guard written to refuse must be tested in the
+state where it refuses — not only in the state where it passes and says nothing.
