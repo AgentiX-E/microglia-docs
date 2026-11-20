@@ -8069,3 +8069,42 @@ it was two.
 deletion of one false candidate — and the queue now has an order that can be defended: **axis first** (with
 versus without a block, at ExpeL's effect size, on the split that exists), **then shape** (at 0.5× to 14× the
 sample, in ascending order of cost), **then substrate** (not this repository's to build).
+
+**AM.24 — ExpeL's ALFWorld arm is a reflection chain across trials, not the rule bank the arm ports, and the
+59.0 on that board belongs to the other one**
+
+AM.22 recorded that the board has no ruler; AM.23 recorded that one name had hidden two systems. Reading
+`prompts/alfworld.py@LeapLabTHU/ExpeL` at blob `2b2093ef` to extract the few-shot transcripts turned up a third
+distinction of the same kind, in the file the registration was about to quote.
+
+The file carries two memory mechanisms, and they are not interchangeable:
+
+| mechanism | where it lives in that repository | what it carries | what its ablation looks like |
+| --- | --- | --- | --- |
+| **rule bank** | `agent/expel.py` — `ADD` +2, `AGREE` +1, `EDIT` +1, `REMOVE` −1 (−3 past `max_num_rules + 5`), capped at 20, rendered whole into every prompt | short natural-language lessons extracted by comparing a successful and an unsuccessful trajectory | with / without the box |
+| **reflection chain** | `prompts/alfworld.py` — `PREVIOUS_TRIALS_FORMATTER` renders `Your memory for the task below:` then `Trial i:` per attempt, each ending `STATUS: FAIL` / `New plan:` | a prose critique of *the same task* from the previous attempt | with / without the reflections |
+
+`rule-bank.ts` ports the first. **The 59.0 this programme has been quoting as the ALFWorld reference is produced
+by the second**, because that is what the ALFWorld branch of that codebase runs: the memory is per task, it grows
+across repeated attempts at that task, and it says what went wrong last time rather than what is generally true.
+
+Three consequences, all of which change what a number from this lane can be compared to.
+
+*First, the arm is a control for a mechanism the board's number does not use.* `always-in` answers "is a global
+rule list better than nothing on 134 unseen games"; the published 59.0 answers "does a per-task reflection chain
+help when you may retry the task". Those are different experiments on different designs of the same corpus, so
+**the arm's score is not comparable to 59.0** and the registration does not claim it is. What survives is the
+paired comparison, which is what the arm was built for.
+
+*Second, the split cannot host the reflection mechanism at all.* A reflection chain needs several attempts at the
+same task; `valid_unseen` gives one attempt per task in this design, and repeating an attempt is the cluster
+problem the registration already prices (repeated passes share the game, so the interval has to be a cluster
+bootstrap and the effective sample is below `134R`). The mechanism that produced the 59.0 is therefore not merely
+untested here — it is **unavailable in the arrangement that makes 134 games a paired design**.
+
+*Third, the transcripts the registration quotes as a fixed prefix are the reflection branch's own examples.* They
+carry `> think:` lines and `OK.` acknowledgements, which is the ReAct format both mechanisms share, so using them
+as a format demonstration is correct — but it also means the prompt shows the model a *retry* transcript for a
+task it is about to see once. That is a small, unavoidable contamination of the arm's premise, and it is recorded
+rather than removed: the alternative is a hand-written prompt, which would be this programme's format rather than
+the field's.

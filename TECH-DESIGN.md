@@ -10969,3 +10969,57 @@ always-present block — is the only cell whose effect (ExpeL's 19.0pp) exceeds 
 only one that can be decided before the corpus question. The shapes follow in ascending cost, and the substrate does
 not follow at all: it is excluded by the standing instruction, and the projection stays a `MemoryValue`-shaped
 mirror with a conformance test against the real build whenever that build publishes.
+
+## 17.176 — `eval/drivers/alfworld/agent.py`: one loop, three arms, and a policy that proves the loop
+
+17.175 described the pre-flight: a driver that could cover the split, replay it, and price it without calling a
+model. This is the file that calls one, and its design decisions are almost all about making the *arm* the only
+thing that differs between two numbers.
+
+**The skeleton is the competitor's, transliterated.** `agent.py` sends the system line
+`Follow the syntax of the examples closely when taking actions.`, then one human turn beginning
+`{instruction}You may take maximum of {max_steps} steps.\nHere are two examples:`, then the two ReAct transcripts
+of the game's task type split into alternating turns, then the first observation. Replies are parsed by the same
+four-branch rule the competitor uses (`> think` → thought, `> …` → action, a bare verb → action, anything else →
+thought), and an action is lowercased before it reaches the environment, exactly as theirs is. The reason is not
+fidelity for its own sake: every published number in this line was produced by that skeleton, and a hand-written
+prompt would make the arm a measurement of this programme's phrasing.
+
+**The pack sits above the examples and is rendered once per episode.** This is the one structural decision that is
+not the competitor's, and it is forced by two facts. DeepSeek caches on a token-block prefix, so a block injected
+above the growing transcript is a single miss at the front and hits for everything after it; a block injected *per
+turn* moves the divergence point into the middle of the conversation and makes every subsequent turn a miss — the
+arrangement under which the τ² lane's memory arm was billed 3.7× its control's uncached tokens. And a pack that
+changes every turn is a different intervention every turn, so an episode's delta stops being attributable to "the
+memory". Rendering it once makes the arm a treatment rather than a sequence of treatments.
+
+**The three arms differ at exactly one message index, and a test says so.** `none` passes an empty string where
+`always-in` and `retrieved` pass `render_pack(entries)`; the opening is otherwise byte-identical, including the
+instruction and the examples. `test_agent.py` asserts that the two openings differ at index 1 and nowhere else —
+without it, "the only difference is the memory" is a sentence rather than a property.
+
+**Two policies that never call a model, and why the seed one is the important one.** `--policy seed` picks
+uniformly from the commands the environment publishes using `floor.Draw`, the same splitmix64 `floor.py` uses;
+`--policy first` takes the first. Both run through `run_episode`, the function the model arms run through, so the
+environment side of the loop is exercised by a policy that cannot be wrong about the model. `--assert-floor` then
+compares the two readings field by field — games, wins, steps, action digest, observation fingerprint — and the
+`agreement` job in `alfworld.yml` fails on a single mismatch. This is the only assertion in the lane that can catch
+a defect shared by all three arms, which is the class of defect that arm-against-arm comparison cannot see.
+
+**Nothing is repaired quietly.** A reply that parses to a thought does not step the world and is answered `OK.`,
+which is what the competitor's own examples contain. Three thoughts in a row raise rather than scoring zero: a
+zero would be a number about the prompt's syntax wearing the costume of a number about memory. An action outside
+the admissible set is stepped anyway (the environment answers `Nothing happens.`) and counted, because filtering it
+would make the arm smarter than the system it is measuring. The artefact carries `calls`, `thoughts`,
+`invalid_actions`, `off_space_actions`, `usage`, `prefix_chars` and `prompt_chars` per episode, which are the
+counters a calibration has to read before it reads its score.
+
+**Sharding is contiguous, and refused where it would be dishonest.** A model pass may be sliced (`--shard i/n`)
+because a job that drives 34 games needs nothing from the 100 it does not drive; the slices tile the split with no
+overlap and no gap. A `seed` pass may not be sliced, because its PRNG sequence is a whole-pass sequence — the draw
+consumed by game 40 is a function of the 39 before it — so `agent.py` refuses that combination instead of producing
+a slice that cannot be compared to the floor.
+
+**What it deliberately does not do.** It does not retry a failed call, does not fall back to a policy when the key
+is missing, does not re-anchor the pack inside an episode, and does not clip an action to the admissible set. Each
+of those would raise the score and lower the value of the number.

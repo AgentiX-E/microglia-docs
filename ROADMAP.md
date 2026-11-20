@@ -7382,6 +7382,7 @@ been attached to the wrong system, and two whose published effect this split can
 | two-section pack (H2R) | the pack's sections | microglia | AM.23 | +3.5pp | **1,923** | ¥28.5, and the sample does not exist |
 | graph-ordered pack (FSM) | the order items render in | microglia | AM.23 | +5.23pp | **861** | ¥12.7, and the sample does not exist |
 | dual-layer associative memory (Synapse, ACL 2026) | the substrate's structure; LoCoMo F1, no task score | **cortex** | AM.23 | LoCoMo F1 40.5 | not a paired task delta | not this repository's |
+| reflection chain (ExpeL, the ALFWorld branch) | the prompt carries a prose critique of the previous attempt at *the same task* | microglia | AM.24 | 19.0pp in the branch's own setting | **0** — it needs repeated trials of one task, and this split gives one attempt per task | not purchasable in this design |
 
 **The row that matters is not the money.** 1,923 episodes at ¥0.0074 each is ¥28.5 for two arms — affordable. The
 problem is that **1,923 episodes do not exist**: the held-out split is 134 games, and repeating 134 games fourteen
@@ -7440,3 +7441,46 @@ in between was a statement about one repository and vacuous about this one (AUDI
    all. Extending it costs **¥40–120** for one recurring-defect family, with the price published first.
 
 
+
+## Where the flywheel stands, 2026-11-20 (R163b: the arm exists before it is paid for, and its prefix was counted wrong)
+
+**What this round built.** `eval/drivers/alfworld/agent.py` — the loop the registration described and did not have.
+Three arms over one skeleton: `none`, `always-in` (the whole bank, rendered once per episode, above the examples),
+`retrieved` (the entries a lexical anchor admits). The skeleton is the competitor's, transliterated from the same
+file the few-shot transcripts come from, so an arm changes what sits above the transcript and nothing else.
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 1 | **20 games, one arm, the headroom answer** | whether `none` lands above the floor by more than 13.3pp on this model | **unblocked this round**: the loop exists, the prefix is measured per episode, and `--policy seed` reproduces `floor.py` game for game. **Next: the ≈ ¥0.15 calibration**, and its first two readings are `invalid_actions` and `thoughts`, not the score |
+| 2 | three arms x 134, sharded | `always-in - none`, at ExpeL's 19pp | **unblocked once 1 is read**, and now dispatchable: `--shard i/n` tiles the split with no overlap, model passes are concurrent, and each slice reports its own `usage` |
+| 3 | the reflection arm | — | **registered as unavailable** (AM.24): ExpeL's ALFWorld mechanism needs repeated trials of one task, and this split gives one attempt per task |
+| 4 | everything from the previous queue | unchanged | unchanged; rows 2–7 of the R163 queue are not moved by this round |
+
+**Three zero-cost readings, and the one that made them worth having.** The loop reproduces the floor under
+`--policy seed` (eight games, every field, an `agreement` job that fails on one mismatch); 81 unit tests cover the
+split, the parser's four branches, the shard arithmetic, the bill and the loop itself, at 99% statement coverage
+with `sys.exit(main())` the only uncovered line; and a test asserts that `none` and `always-in` differ at exactly
+one message index. **The middle reading is what makes the pattern worth copying**: `floor.py` walks a game with its
+own loop and `agent.py` walks it through `run_episode`, the function the model arms use, so agreement is a
+statement about the loop rather than about a policy. A defect shared by all three arms is invisible to arm-against-
+arm comparison and is exactly what that job catches.
+
+**Two defects, both found by tests, both of the same family.** The prefix the registration quoted was wrong in
+**four of its six rows** — the mean was 3,574 and is **3,965**, 11% low, and both arm prices were computed from it
+(AUDIT 34.215). The cause is the same one as the layer table in 34.212: the number was produced by reading a file
+in a session that then ended, so nothing in the tree could count it. The repair is the same shape: the twelve
+transcripts are committed with their source blob, and a test pins all six counts. And the `retrieved` arm's lexical
+anchor matched on `the` and `is`, which made **every** entry overlap **every** observation — the `retrieved` arm was
+`always-in` with extra steps, and the registration's second prediction would have come back a clean, false null
+(AUDIT 34.216).
+
+**What changed about the board, and what did not.** Nothing about it: microglia still has no number on the ALFWorld
+row, and this round did not produce one. What changed is that the thing which would produce one now exists, is
+asserted at zero cost, and reports the counters that say whether it measured memory or syntax. **The 19pp this arm
+is looking for is 65 episodes at 30% discordance**; the split has 134, so if `none` lands high enough to leave room,
+the first prediction is resolvable in one pass at about **¥3** for three arms.
+
+**Cost.** `¥0`. No dispatch, no model call: the two policies that ran cannot call one, and the three CI jobs that
+asserted the loop made zero calls by construction. The expensive version of this round is the one where the loop is
+written while the calibration is running, and the prefix turns out to have been counted from the wrong strings —
+which is what the round found, before it could cost anything.

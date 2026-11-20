@@ -12968,3 +12968,78 @@ green means something ran.
 where a repository has no workflow, that is a fact to report rather than a colour to assume. A gate that does not
 exist cannot fail, which is the cheapest possible way to have a perfect record and the most expensive way to discover
 one.
+
+## 34.215 — The prompt prefix that was counted from the wrong strings, four times, and quoted as a price
+
+Found while extracting the few-shot transcripts into the repository so that `agent.py` could render them instead of
+describing them. The registration quoted six counts, one per ALFWorld task type, and a mean of **3,574** characters
+as the fixed prefix of every prompt. Two of the six were right.
+
+| task type | quoted | measured | what was counted |
+| --- | --- | --- | --- |
+| `pick_and_place` | 3,199 | **3,199** | correct |
+| `look_at_object` | 3,096 | **3,738** | not the `_0`/`_1` pair |
+| `pick_clean_then_place` | 3,348 | **4,328** | not the `_0`/`_1` pair |
+| `pick_heat_then_place` | 3,732 | **3,837** | close, still wrong |
+| `pick_cool_then_place` | 3,782 | **4,403** | not the `_0`/`_1` pair |
+| `pick_two_obj_and_place` | 4,286 | **4,286** | correct |
+| **mean** | **3,574** | **3,965** | **11% low** |
+
+The file carries three transcripts per task type — `react_<kind>_0`, `_1`, `_2` — and its own template says *"Here
+are two examples"*, so the pair is `_0` and `_1`. That much the registration had right; the counts had drifted from
+the strings they claimed to describe, and nothing compared them. The means differ by a factor that is inside the
+noise of a hand count and outside the noise of a price: **11% of the prefix is 11% of every turn of every episode**,
+and both arm quotes in the registration were computed from it.
+
+**Why it could not have been caught where it was written.** The number was produced by reading a file on
+`api.github.com` in a session that then ended. Nothing in the repository held the strings, so no test could count
+them, no `diff` could show them, and the next round had only the sentence. That is the same failure 34.212 records
+about a layer table, and the repair is the same shape: **put the artefact in the tree and assert against it.**
+
+`eval/drivers/alfworld/prompts/alfworld-examples.json` now carries the twelve transcripts with their source blob
+(`2b2093ef`), the extraction rule, and the two template strings; `test_agent.py` pins all six counts. The
+registration's table is corrected and the two price rows are explicitly marked as computed at the old prefix rather
+than silently rescaled — rescaling would multiply a guess about `chars/token` by a correction factor, and the 20-game
+calibration is about to replace both rows with the provider's own `usage` anyway.
+
+## 34.216 — The lexical anchor matched on `the`, so the retrieved arm was the always-in arm with extra steps
+
+`agent.py`'s `retrieved` arm selects the bank entries whose words the observation already contains. The first
+implementation tokenised both sides and counted the intersection, which is correct and useless: `the`, `is`, `a`,
+`you`, `in` appear in every observation and in almost every rule, so **every entry overlapped every observation** and
+the arm rendered the whole bank — the `always-in` arm, with a retriever's steps added and a different header.
+
+The test that found it was written to assert the opposite: a bank holding only *"the fridge is cold"* must render
+nothing in a room with no fridge in it. It rendered one entry, and the reason was one shared stopword.
+
+The repair is a stopword list (`STOPWORDS`) subtracted from both sides. The larger point is what the defect would
+have cost had it shipped: the registration's second prediction is `always-in` beats `retrieved`, and a `retrieved`
+arm that is `always-in` under the hood makes that comparison **structurally zero** — the run would have produced a
+clean null, reported it, and the null would have been a bug. A retrieval arm that cannot withhold anything is not a
+weak treatment; it is no treatment, and it looks exactly like one that failed.
+
+## 34.217 — The layer table said it was recomputed on every push, and 34.212 is now closed
+
+34.212 recorded, without fixing it, that `README.md`'s layer table claimed `pnpm eval:coupling` recomputed it on
+every push while the table itself was typed once by hand. It had drifted by an order of magnitude in the layer the
+paragraph is about:
+
+| layer | published | measured |
+| --- | --- | --- |
+| `core` | 37 modules, 6,821 lines | **47 modules, 10,588 lines** |
+| `protocol` | 2, 1,215 | **3, 1,922** |
+| `sql` | 7, 1,766 | **7, 1,956** |
+| `eval` | 76, 24,799 | **192, 57,632** |
+| `node` | 6, 1,282 | **6, 1,291** |
+
+Three repairs, and the third is the one that makes the other two hold. `coupling.ts` now exports the scan's own
+definition of a production module (`NON_PRODUCTION_DIRS`, `isProductionModulePath`) so that the command and the gate
+share one definition instead of two copies of a skip list. `LayerTotal` gained `productionModules` beside `modules`,
+because the published column is literally *production modules* and a reader is entitled to know that `__tests__` is
+not in the denominator. And `readme-layers.test.ts` walks the tree itself, parses the table and the two sentences
+that quote it, and fails on any disagreement — which is what "recomputed on every push" has to mean if it is to be
+true.
+
+The test found the drift a second time before it found the corpus: it failed on the `eval` row by 34 lines, because
+the round had added 34 lines to `coupling.ts` after the table was corrected. That is the gate doing its job on its
+own author.

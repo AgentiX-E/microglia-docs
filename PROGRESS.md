@@ -23506,3 +23506,89 @@ and where one has no workflow that is a fact to report rather than a colour to a
 
 `¥0`. No dispatch, no model call, no runner minutes beyond a five-minute docs job. The expensive version of this
 mistake is the one where the queue is executed first and the reading happens when the result is null.
+
+## 194. The arm exists before it is paid for, and the prefix it was priced at was counted from the wrong strings
+
+193 closed with a queue whose head was "20 games, one arm, ≈ ¥0.15" — a price attached to a loop that did not
+exist. This round built the loop, and in doing so found that the price's largest input was wrong by 11%.
+
+### 194.1 One loop, three arms, and a policy that can prove the loop
+
+`eval/drivers/alfworld/agent.py` renders `none`, `always-in` and `retrieved` over a skeleton transliterated from
+`prompts/alfworld.py@LeapLabTHU/ExpeL`: its system line, its `{instruction}You may take maximum of {max_steps}
+steps.\nHere are two examples:` template, its two ReAct transcripts per task type split into alternating turns, and
+its four-branch reply parser. The pack is rendered **once per episode and above the examples**, because a block
+re-anchored per turn moves the cache's divergence point into the middle of the conversation — the arrangement under
+which the τ² lane's memory arm was billed 3.7× its control's uncached tokens — and because a pack that changes every
+turn is a different intervention every turn.
+
+Three readings hold it in place, and all three cost nothing:
+
+| reading | what it is | what it would catch |
+| --- | --- | --- |
+| `--policy seed` vs `floor.py` | eight games, five fields each, an `agreement` job that fails on one mismatch | a defect **shared by all three arms**, which arm-against-arm comparison cannot see |
+| 81 unit tests, 99% of `agent.py` | the split, the parser, the shard arithmetic, the bill, and the loop against a world with state | a decision that is wrong in a way a run would merely score lower for |
+| one differing index | the openings of `none` and `always-in` are identical except at index 1 | "the only difference is the memory" becoming a sentence instead of a property |
+
+The middle row is the one that changes how this lane is built. `floor.py` walks a game with its own loop; `agent.py`
+walks it through `run_episode`, the same function the model arms use. Agreement is therefore a statement about the
+loop, not about a policy — and the coverage is real rather than nominal: 333 statements, one uncovered, and that one
+is `sys.exit(main())`.
+
+**Nothing is repaired quietly.** A thought does not step the world and is answered `OK.`, as the competitor's own
+examples are. Three thoughts in a row raise rather than scoring zero, because a zero would be a number about the
+prompt's syntax wearing the costume of a number about memory. An action outside the admissible set is stepped anyway
+(the environment says `Nothing happens.`) and counted, since filtering it would make the arm smarter than the system
+it measures.
+
+### 194.2 The prefix was wrong in four rows out of six, and both prices were computed from it
+
+The registration quoted six character counts and a mean of **3,574** for the fixed prefix of every prompt. Extracting
+the transcripts into the repository — so that `agent.py` renders them rather than describing them — produced
+**3,199 / 3,738 / 4,328 / 3,837 / 4,403 / 4,286** and a mean of **3,965**. Two rows matched; four had drifted from
+the strings they claimed to describe. Full table and cause in AUDIT 34.215.
+
+The cause is identical to the layer table in 34.212, and so is the repair. A number produced by reading a file in a
+session that then ended cannot be counted by anything in the tree: no test can assert it, no diff can show it, and
+the next round has only the sentence. `eval/drivers/alfworld/prompts/alfworld-examples.json` now carries the twelve
+transcripts with their source blob (`2b2093ef`), the extraction rule and the two template strings, and
+`test_agent.py` pins all six counts. The two price rows in the registration are explicitly marked as computed at the
+old prefix rather than silently rescaled — rescaling multiplies a guess about `chars/token` by a correction factor,
+and the calibration is about to replace both rows with the provider's own `usage`.
+
+### 194.3 The retrieval arm was the always-in arm with extra steps
+
+`anchor()` tokenised the observation and each rule and counted the intersection — correct, and useless, because
+`the`, `is`, `a`, `you` and `in` occur in every observation and almost every rule. Every entry overlapped every
+observation, so `retrieved` rendered the whole bank: `always-in` with a retriever's steps added.
+
+The test that found it was written to assert the opposite — a bank holding only *"the fridge is cold"* must render
+nothing in a room with no fridge. It rendered one entry. The repair is a stopword list on both sides; the reason
+this matters more than a bug fix is the shape of the failure it would have produced: the registration's second
+prediction is `always-in` beats `retrieved`, and a `retrieved` arm that is `always-in` underneath makes that
+comparison **structurally zero**. The run would have returned a clean null, been reported as a finding, and the
+null would have been the retriever (AUDIT 34.216).
+
+### 194.4 The layer table stops being a paragraph
+
+34.217 closes 34.212. `coupling.ts` now exports the scan's own definition of a production module, `LayerTotal`
+gained `productionModules` beside `modules` so the published column's denominator is stated rather than implied,
+and `readme-layers.test.ts` walks the tree, parses the table and the two sentences that quote it, and fails on any
+disagreement. The table was wrong by an order of magnitude in the layer the paragraph is about — `core` at 37
+modules and 6,821 lines when it is 47 and 10,588 — and the test then failed on this round's own edits by 34 lines
+before it passed, which is the gate working on its author.
+
+### 194.5 What the round did not settle
+
+Whether the model follows the format. `invalid_actions`, `off_space_actions` and `thoughts` are in the artefact for
+that reason, and they are the first three numbers to read in the calibration's output: a high invalid rate means the
+arm measured the prompt's syntax rather than its content, and the score that follows would be a score about the
+wrong thing. The board is unchanged — microglia still has no number on the ALFWorld row — and this round did not
+produce one; it produced the thing that can.
+
+### 194.6 Cost
+
+`¥0`. No dispatch and no model call: the two policies that ran cannot call one, and the three CI jobs that asserted
+the loop made zero calls by construction. The expensive version of this round is the one where the loop is written
+while the calibration runs, and the prefix turns out to have been counted from the wrong strings — which is what the
+round found, before it could cost anything.
