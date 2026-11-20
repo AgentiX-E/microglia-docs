@@ -13415,3 +13415,60 @@ games they drove, and the games the slice *should* have driven are exactly what 
 which the 82 distinct games are unusable. **What it bought: a defect that would have invalidated every paired delta
 this lane was about to pay ¥5.63 for**, and that would have arrived as twelve arms disagreeing about which games they
 drove rather than as a partition that was never one.
+
+## 34.227 — 34.226 named half the cause: the shard was a window of an unstable order *and* it never advanced
+
+The run after the repair (`44731175801`) finished all four training slices, and the bank refused them:
+
+```
+FAIL the artefacts cover 35 games but the slice is 140
+```
+
+Four artefacts, and **four identical slices**. That identity is the first half of the diagnosis and the proof that
+34.226's sort worked: four processes on four runners now agree, to the game, on what the split is. It is also the
+proof that the sort was not the whole defect, because a stable order that is never advanced past still yields the
+same window every time.
+
+**The mechanism 34.226 missed.** `AlfredTWEnv.init_env` returns a **batch** environment, and a batch environment
+starts at the first game of its own list. `--shard i/n` computed `[start, stop)` and drove `stop - start` games — it
+never moved the environment to `start`. So every job drove games `0..34` of its own ordering:
+
+| run | jobs | what each drove | distinct games in the union |
+| --- | --- | --- | --- |
+| `44685314225` | 4 slices, 3 completed | games 0–34 of four **different** orders | **82** of 105 episodes |
+| `44731175801` | 4 slices, all completed | games 0–34 of one **sorted** order | **35** of 140 episodes |
+
+The two rows are the same defect measured under two orderings, and they are why the first number looked like a
+partial overlap and the second like a total collapse. 34.226 attributed the overlap to the unstable order alone; the
+unstable order explained *which* games the windows held, and the missing advance explained why there were windows at
+all. Correcting a diagnosis is cheaper than defending one: the first explanation made the sort sound sufficient, and
+a single shard of the next run showed it was not.
+
+**The repair, and why it is an advance rather than a selection.** A slice is now reached by calling `env.reset()`
+once for each game before the slice starts, and once for each game a checkpoint already holds:
+
+```python
+for _ in range(start + resumed):
+    env.reset()
+```
+
+The alternative was to read `shell.game_files` and ask the environment for named games, which means reaching past
+`init_env` into textworld's registration. The advance touches nothing internal and has a bound: at most 139
+initialisations for the last slice, and **zero model calls**, because a reset initialises a world and asks it
+nothing. That last property is asserted by a test, because an advance implemented with a step would have been 139
+games of money spent on games nobody wanted — and it would have looked correct in every artefact.
+
+**What the round cost, and what the guard did.** ¥1.96 on the four identical slices, ¥1.54 on the run before it:
+**¥3.50 sunk**. Against that, the completeness check refused the union at ¥0 twice — once at 82 of 140 and once at 35
+of 140 — and both refusals arrived *before* a bank existed and before any sweep was paid for. A guard that fires
+twice on two different causes in one afternoon is a guard that has earned its line.
+
+**The lesson, stated for the third time in this file because it keeps being true.** Each of the four defects in
+34.226 and the fifth here was a check satisfied by the thing that was wrong: an exception handler that named the
+wrong class, an artefact written where nothing could resume it, a job skipped where it should have spoken, a
+partition that was a sample, and now a *fix* that made the sample deterministic without making it a partition. The
+last one is the useful one to remember, because it was introduced by the repair.
+
+**What is not retired this time.** The sort is still correct and still necessary: without it two runs would disagree
+about which game index 106 names, and no advance could fix that. The two changes are independent, and the second
+one's failure mode was invisible while the first one was missing.

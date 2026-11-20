@@ -23956,3 +23956,33 @@ split is covered and terminates, replays it, and compares the two policies field
 functions (`Draw`, `digest_of`, `game_key`, `wilson`, `shard_bounds`) *are* unit-tested through `test_agent.py`. The
 gap is the driver's own I/O, and closing it means either a textworld install in the unit job or a fake that would
 test the fake. Recorded here so that the 31% is a decision with a reason rather than a number nobody looked at.
+
+### 199.7 The second run, the second refusal, and the half-wrong diagnosis (12:45 UTC)
+
+Run `44731175801` finished all four training slices in 26 minutes and the bank refused them at ¥0: **four identical
+slices of 35 games**. 34.226 had said the partition was a sample of an unstable order; the truth is that it was a
+window that never moved. `AlfredTWEnv.init_env` hands back a batch environment which starts at the first game of its
+own list, and `--shard` only ever decided *how many* games to drive.
+
+| | run `44685314225` | run `44731175801` | after the advance |
+| --- | --- | --- | --- |
+| order | filesystem (`os.walk`) | sorted | sorted |
+| what a shard drove | games 0–34 of its own order | games 0–34, all four the same | games `start..stop` |
+| distinct games over four shards | 82 (of 105 episodes) | 35 (of 140 episodes) | 140 |
+
+The repair is `env.reset()` for each game before the slice starts and each game a checkpoint holds: at most 139
+initialisations, **zero model calls**, asserted by a test because an advance that stepped would have bought 139 games
+nobody asked for.
+
+**Spend so far, and what it bought.**
+
+| run | games paid for | ¥ | what it produced |
+| --- | --- | --- | --- |
+| `44685314225` | 105 (82 distinct) | 1.54 | defects 1–4 of 34.226 |
+| `44731175801` | 140 (35 distinct ×4) | 1.96 | defect 5 of 34.227, and proof that the sort works |
+| **sunk** | | **3.50** | two refusals at ¥0 that stopped a ¥5.63 sweep twice |
+
+**The next dispatch is a verification, not a purchase.** One slice (`train_shards: ["3"]`, 35 games, ≈ ¥0.49) is
+bought first and its episode list compared with the previous run's slice 0: if the two sets are disjoint, the advance
+works and the remaining three slices plus the bank plus the sweep are dispatched as a chain joined to the first by
+`train_run_ids`. If they are not disjoint, ¥0.49 buys that fact instead of ¥1.96.
