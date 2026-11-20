@@ -10870,10 +10870,12 @@ Its whole output is a JSON artefact and a printed summary; the workflow uploads 
 
 The floor being exactly zero is the row that decided something. A random walker at five percent would have
 meant part of the family is reachable without understanding it, and every headroom figure the registration
-quotes would have been too generous by that much. The transcript mean then turned the price into arithmetic:
-138,042 input tokens and 750 output per 50-turn episode, $0.02116 uncached against $0.00138 with the prefix
-held — **¥60.4 against ¥3.93 for 134 games across three arms**. A factor of fifteen, decided before any call,
-by whether the arm appends to a transcript or re-injects a pack on every turn.
+quotes would have been too generous by that much. The transcript mean then turned the price into arithmetic, and the one remaining estimate — the fixed prefix —
+was read out of `prompts/alfworld.py@LeapLabTHU/ExpeL`: two ReAct trajectories per task type, 1,839 to 4,286
+characters, mean **3,574**. That gives 82,717 input tokens and 750 output per 50-turn episode, **$0.01286
+uncached against $0.00105 with the prefix held** — **¥36.7 against ¥2.99 for 134 games across three arms**. A
+factor of twelve, decided before any call, by whether the arm appends to a transcript or re-injects a pack on
+every turn.
 
 **The defect the smoke pass earned its keep on.** The first version called `reset` on `AlfredTWEnv`, which is a
 shell that reads the split and returns a textworld gym environment; only the latter has `reset` and `step`. The

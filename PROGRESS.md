@@ -23363,15 +23363,17 @@ error that buys a difference the split cannot see.
 
 ### 192.1 The price, from a measured distribution instead of three assumptions
 
-The 5,367 characters are the cost model's only input that is not a guess. With a fixed prefix of about 8,000
-characters and `eval/manifests/model-rates.json` at off-peak:
+The 5,367 characters are the cost model's only input that was not a guess — and the one that remained, the fixed
+prefix, was then read out of the competitor's prompt file rather than estimated. `prompts/alfworld.py@LeapLabTHU/ExpeL`
+carries two complete ReAct trajectories per task type: **3,199 / 3,096 / 3,348 / 3,732 / 3,782 / 4,286** characters
+across the six, mean **3,574**. With that prefix and `eval/manifests/model-rates.json` at off-peak:
 
 | layout | input tokens per episode | bill per episode | 134 × 3 arms |
 | --- | --- | --- | --- |
-| no prompt cache | 138,042 in / 750 out | $0.02116 = **¥0.150** | ¥60.4 |
-| prefix held by the cache | 3,492 miss + 134,550 hit | $0.00138 = **¥0.0098** | **¥3.93** |
+| no prompt cache | 82,717 in / 750 out | $0.01286 = **¥0.091** | ¥36.7 |
+| prefix held by the cache | 2,385 miss + 80,331 hit | $0.00105 = **¥0.0074** | **¥2.99** |
 
-**The quote moved by a factor of fifteen without a single call being made**, and the movement is a property of
+**The quote moved by a factor of twelve without a single call being made**, and the movement is a property of
 the arm rather than of the provider: a transcript that is appended to keeps a stable prefix and hits; a pack
 re-injected per turn moves the prefix and misses. That is not a new lesson — τ² already measured the memory arm
 at **3.7× the control's uncached tokens on the same sixteen calls** — but it is the first time the lesson has
@@ -23409,5 +23411,5 @@ what its sample can see is a registration that will be read as having seen every
 
 **What is still not known, and is the next dispatch's whole purpose.** Whether the `none` arm lands far enough
 above zero to leave 13.3pp of headroom on this model. ExpeL's control is 40.0 with a different backbone; nothing
-here has run any arm with this one. **20 games, one arm, ≈ ¥0.20** answers it, and no larger purchase should
+here has run any arm with this one. **20 games, one arm, ≈ ¥0.15** answers it, and no larger purchase should
 happen before that answer exists.
