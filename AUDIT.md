@@ -13677,3 +13677,46 @@ decision boundary flips.
 3. **The accident was the cheapest useful purchase so far.** ¥1.27 for a repeat measurement that no planned
    dispatch included. It should have been planned: a control arm driven twice is the first thing a lane that reports
    deltas owes its readers, and this one only got it because two sessions raced.
+
+## 34.229 — The flywheel produced four rules, and spent 38 of its 40 operations agreeing with them
+
+The bank exists (run `44754440122`, `bank_only`, the union of two runs tiling 140 games): **4 rules from 76 won
+trajectories in 10 critiques**, $0.0134, 0 retries. Both numbers are surprising and one of them is the answer to a
+question this programme has been asking since Phase I.
+
+**The census, which only became readable this round.**
+
+| operation | count | what it means |
+| --- | --- | --- |
+| ADD | **4** | four rules were discovered across ten critiques of eight trajectories each |
+| AGREE | **28** | twenty-eight times, the model read a fresh batch and restated a rule it already had |
+| EDIT | **6** | six rewrites of an existing rule's wording |
+| REMOVE | **0** | nothing was ever deleted; the vote arithmetic never had to cull (`culled: 0`) |
+| rejected | 2 | two operations named a rule the bank did not hold |
+
+**R164's prediction is refuted, and its refutation is more interesting than its confirmation would have been.** That
+entry registered that the bank should be *nearly add-only*, because a rule ends with a full stop and a substring
+identity test almost only fires on a verbatim restatement. The measured ratio is the opposite: **28 agreements to 4
+additions**, with 6 edits. The substring test fires far more often than predicted — the model does restate rules
+nearly verbatim — and the consequence is that the bank stops growing after the fourth critique. `peak: 4` against a
+cap of 20 means the cap was never the binding constraint: **the loop saturated**.
+
+**Why that is the answer to "is the memory wrong, or is the way we use it wrong".** Both, and the arithmetic separates
+them. The *pack* is four sentences — a few hundred characters — so any effect it has must come from four
+generalizations. The *feedback* that produced them ran 40 operations and spent 70% of them agreeing with itself, which
+is what a distillation loop looks like when the input distribution stops surprising it: eight trajectories per
+critique, ten critiques, and after four rules the marginal trajectory contributed wording rather than knowledge. A
+bigger bank was never available from this loop, and no amount of read-time machinery — retrieval, gates, placebos —
+can recover knowledge that was never extracted.
+
+**The one rule that matters for the next row.** Rule 2 is *"when searching for an object, prioritize locations where
+similar objects have already been observed"* — an object-location prior, produced by the model rather than designed
+by this lane. 34.226's row 6 demoted a hand-built object-location pack on the argument that 138 of 149 refusals were
+**instance identity inside one house**, which no cross-house memory can carry. The model's own distillation arrived at
+a weaker version of the same idea, and the argument against the hand-built version applies to it unchanged. That is a
+convergence worth recording: two independent routes to the same mechanism, and one measurement that bounds both.
+
+**What this costs the sweep's reading.** The treatment is a four-rule pack. If `always-in − none` is null, the correct
+statement is that *a four-rule pack* is null on this corpus — not that memory is. The distinction is the same one R168
+amendment 2 makes about the instrument, and it is sharper now that the treatment's size is a measured number rather
+than a cap.
