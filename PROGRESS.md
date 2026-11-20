@@ -23667,3 +23667,46 @@ it removed a third of those refusals.
 loop raised on a model that had given up (34.218), and the diagnostic was ¥0.02 (34.219). Two of the three
 dispatches bought nothing but a defect, which is the cheap version of finding out that a skeleton cannot represent
 the failure it is measuring.
+
+## 196. Three of the four mechanisms belong to the substrate, and they left as a handoff rather than as an arm
+
+**R163d.** Not a measurement round: the round that answered *whose work is this* before any of it was queued as
+work, and moved three items out of this repository. Records in `AUDIT.md` 34.221.
+
+### 196.1 What was decided, and by what test
+
+The four candidates the R163 report offered were sorted by **the score their authors report**, not by their names:
+
+| candidate | what it reports | side |
+| --- | --- | --- |
+| rule list rendered whole (`always-in`, ExpeL) | ALFWorld task success | **microglia** — the arm exists (R163) |
+| workflow abstraction (AWM) | WebArena / Mind2Web task success | **microglia** — registered, priced at ~$0.70 + code |
+| dual-layer associative memory (Synapse, ACL 2026) | LoCoMo **F1 40.5**, −95% tokens | **cortex** — handed off |
+| high/low separation (H²R, 75.9) | direct-to-store score; ablation is one layer against two | **cortex** — handed off, and unmeasurable here (1,923 episodes) |
+
+The third row is the one that would have been built in the wrong repository. It reports no task success at all, so
+there is no arm of this lane that could ever read it, and implementing it here would have meant building a second
+substrate — with decay, bitemporality and consistency owed to it — beside the one that already has all three.
+
+### 196.2 What the handoff is, and what it deliberately is not
+
+It is a **prompt** for a session that owns `AgentiX-E/cortex`, carrying: the boundary test in table form, the three
+items with the question each one has to answer (*how much of the −95% is top-k and how much is the activation?*),
+the starting facts (cortex is unpublished, this repository keeps a structural copy of its types, a weekly job checks
+the copy field by field), and the four things the other session must not touch — `renderPack`, `shapeFold`, the MMR
+ordering and the rule bank.
+
+It is not a branch and not a shared workspace. The two repositories are in different release states and a shared
+branch would make one repository's CI the other's gate; the weekly schema job stays the only thing that crosses, so
+the coupling remains one-directional and checkable.
+
+### 196.3 What this round does not claim
+
+No number was produced, so none of the four questions below has a new answer, and this section does not manufacture
+one. The one substantive change is to the queue: **three rows left it**, which is why the next measurement round is
+smaller than the last report implied rather than larger.
+
+### 196.4 Cost
+
+**¥0.** Reading, one table, and four sections of a prompt. The expensive version of this round is the one where the
+queue is executed first and the question *whose work is this* is asked when the numbers come back null.

@@ -13130,3 +13130,53 @@ That is a different mechanism from the rule bank, it belongs on the microglia si
 carries, not the substrate), and it needs its own registration and its own arm rather than an edit to this one.
 Registering it is the work; the temptation is to slip it in as an improvement to `none`, which would be a control
 that quietly became a treatment.
+
+## 34.221 — The boundary was drawn by a score, and what crossed it left as a prompt rather than a branch
+
+The R163 report ended with four competitor mechanisms offered as candidates. The user asked the question that
+ordering should have forced first — *are these microglia's or cortex's?* — and 34.213 answered it for the queue. This
+entry records what happened next: three of the mechanisms were found to belong to the substrate rather than to the
+delivery layer, and they were handed to a session that owns `AgentiX-E/cortex` instead of being built here.
+
+**The test is the score the authors report, not the name of the mechanism.** That is 34.213's finding and it is the
+whole rule:
+
+| what the authors report | whose work it is |
+| --- | --- |
+| a **task success rate** under a fixed model and a fixed prompt (ALFWorld, τ², BIRD, WebShop, Mind2Web) | **microglia** — the pack's shape and selection |
+| a score from **asking the store directly**, with no task and no prompt skeleton (LoCoMo F1, LongMemEval) | **cortex** — the substrate |
+| an ablation of *with this block / without this block* | microglia |
+| an ablation of *decay schedule on/off*, *one layer / two layers*, *bitemporal or not* | **cortex** |
+
+The reason is not taxonomic tidiness. `microglia`'s product is a block of text rendered into somebody else's prompt,
+and every point it reports is bought by some task succeeding. `cortex`'s product is the substrate — `MemoryValue`
+with confidence, source trust and FSRS scheduling, a bitemporal `Fact`, a consistency suite. Building a graph or a
+hierarchy inside this repository would be building a second substrate, and it would then owe decay, bitemporality
+and consistency to be worth comparing with the one that already has them.
+
+**So three items left.** They are recorded here with the evidence that moved them, because a handoff that is only a
+message is a handoff nobody can audit later.
+
+| item | the evidence that it is the substrate's | the state it left in |
+| --- | --- | --- |
+| dual-layer associative memory with spreading activation (**Synapse, ACL 2026**, Jiang et al.) | reports LoCoMo **F1 40.5** at **−95% tokens**; no task, no prompt skeleton | handed off. The question it must answer is how much of the 95% is "keep the top-k" and how much is "the activation selects better" — one number for both would be a claim nothing can refute |
+| high/low separation with different decay half-lives (**H²R**, 75.9) | reports a direct-to-store score; the ablation is one layer against two | handed off **and** unmeasurable here anyway: its +3.5pp needs 1,923 episodes against a 134-game split (34.213) |
+| cortex's own baseline recomputation | **83.55** on LongMemEval is an existing number whose split, commit and budget are not stated in this repository | handed off as a precondition: two of the three mechanisms cannot be externally checked until a decoupled suite exists |
+
+**Why a prompt and not a branch.** The two repositories are in different release states: `cortex` is not on npm, so
+this repository keeps a **structural copy** of its types in `packages/node/src/store/cortex.ts`, and
+`.github/workflows/cortex.yml` clones and builds it weekly to check the copy field by field. A shared branch would
+make one repository's CI the other's gate; a prompt makes the coupling **one-directional and checkable** — the
+weekly job is the only thing that crosses, and it crosses as a schema comparison rather than as a dependency.
+
+**What the handoff forbids, and why this repository is the one that forbids it.** The other session is told not to
+touch `renderPack`, `shapeFold`, the MMR ordering or the rule bank. Those are not style preferences: the pack's shape
+and its **position in the prefix** decide whether the provider's cache holds it, and the τ² lane already paid a 3.7×
+bill for getting that wrong (R57 Amendment 4). A pack rendered per turn by the substrate's own code would move
+numbers this repository reports, from a repository whose CI does not run this one's tests.
+
+**What this repository keeps.** The projection, its conformance job, and the right to say *no* to a mechanism whose
+score is not a task score. Nothing else crosses.
+
+**Cost of the boundary.** `¥0`. No dispatch, no model call: the work was reading three papers' reported metrics
+against one rule and writing the four sections above into a prompt.

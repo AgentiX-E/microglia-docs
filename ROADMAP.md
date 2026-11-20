@@ -7509,3 +7509,21 @@ is now a recorded expectation rather than a post-hoc explanation.
 **Cost of the round.** ¥0.45 across three dispatches: ¥0.28 for the calibration, ¥0.14 for the dispatch that found
 the loop could not represent a model giving up, ¥0.02 for the diagnostic that separated a spent budget from a lost
 game. The two defects were cheaper than the reading, which is the order they should be found in.
+
+### Out of scope, handed off — the three rows that left this queue
+
+`AUDIT.md` 34.221. The candidate registry above lists mechanisms by **the score their authors report**; three of the
+four names a previous report offered fail that test for this repository, and they are recorded here rather than
+deleted, because a queue that silently loses rows is a queue nobody can audit.
+
+| what left | where it went | the question it must answer there | why not here |
+| --- | --- | --- | --- |
+| dual-layer associative memory + spreading activation (Synapse, ACL 2026) | `AgentiX-E/cortex`, via a handoff prompt | of the −95% tokens, how much is "keep the top-k" and how much is "the activation selects better"? | it reports LoCoMo F1 40.5 — no task, no prompt skeleton, so no arm of this lane could read it |
+| high/low separation with different half-lives (H²R) | same | does separating layers make the decay schedule more accurate? (one layer against two, same FSRS parameters) | direct-to-store score; and its +3.5pp needs 1,923 episodes against a 134-game split |
+| cortex's own baseline recomputation (LongMemEval 83.55) | same | which split, which commit, which budget — and can it be reproduced from zero? | a number this repository cannot check is a number it should not be quoting |
+
+**What stays here, and is not negotiable.** `renderPack`, `shapeFold`, the MMR ordering and the rule bank are this
+repository's, because the pack's **position in the prefix** decides whether the provider's cache holds it, and that
+is a delivery decision measured in yuan in this lane (R57 Amendment 4: a per-turn pack cost 3.7× the control's
+uncached tokens on the same sixteen calls). A substrate that rendered its own pack would move numbers reported here
+from a repository whose CI does not run this one's tests.
