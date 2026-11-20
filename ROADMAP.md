@@ -7733,3 +7733,35 @@ is that this corpus rewards tone rather than knowledge, and the product is a pre
 **What rows 5–8 still are.** They are not deleted, because the block's form being sufficient does not make it
 necessary: a gate that fires only on hard observations is worth 9.7 points *of the block's effect*, and if rows 1–3
 show that the effect needs imperative form, the gate is still the way to keep the rescue and lose the spoiling.
+
+## R171 — The queue is one contrast, it is in flight, and two of its rows can end the programme
+
+The R170 queue was written before the cross-kind bank existed. That bank arrived, cost ¥0.035, and **voided itself
+on the condition its own registration had written**: four of its five rules were the `put` → `move` workaround, the
+open-the-container note and the search order, all of which apply to the games they were meant not to apply to. A bank
+distilled from cooling and heating trajectories is a bank about placing objects, because placing is how every
+trajectory ends. The ¥2.0 sweep was therefore not bought (PROGRESS 203).
+
+What replaced it is the same question without distillation, and it is running now.
+
+| # | experiment | the question it answers | state | price |
+| --- | --- | --- | --- | --- |
+| **1** | **a hand-written filler block**: same header, same per-entry lengths (255/245/306/301 against 254/248/309/292), same imperative form, no word about the task | **does the content of the block matter at all**, or only that a block of instructions exists | **in flight**, run `44779423772`, 134 games × 2 arms | ≈ ¥2.0 |
+| 2 | a neutral **declarative** block, same length | is it relevance, or imperative grammar | not built; licensed only if row 1 lands at zero | ≈ ¥1.5 |
+| 3 | no block, task line reworded to sound procedural | can the effect be had for free | not built; needs a driver change, so it is the most expensive of the three to *build* | ≈ ¥1.5 |
+| 4 | the object-location **facts** pack | the four rules are procedures the model already knew; facts it cannot infer are the only content left that could matter | not built, still promoted | ≈ ¥1.9 |
+| 5 | the read-time **gate** (`--gate-share 0.2`) | 9.7pp of headroom: the rescue without the spoiling | built and gated on rows 1–2 | ≈ ¥1.9 |
+| 6 | `retrieved(k=1)` | whether selection helps when it is forced to choose one rule | dispatchable | ≈ ¥1.9 |
+| 7 | `floor.py` coverage | the arm every price rests on | **done**: 31% → 99%, 39 cases, one real p90 defect found (PROGRESS 202) | ¥0 |
+
+**Two of these rows end the programme rather than extend it, and that is the point of running row 1 first.** If the
+filler block clears the placebo's interval — the same +9 to +27 pp from a block of typewriter maintenance — then the
+mechanism is the existence and shape of a preamble, content and vocabulary are both inert, and no further memory
+work in this lane is warranted. The product would be a preamble, and the engineering that follows is *where and when*
+it is injected (row 5, repurposed from a rescue to a cost control). If it lands at zero while `always-in` stays where
+it was, then relevance is required, the placebo needs a second explanation, and rows 2, 4 and 6 come back to life.
+
+**What is not on the list, and the reason it is not.** The rule-bank line — new banks, better distillation, a
+retriever that selects well — stays paused. Nothing about it can be interpreted while the block's content is
+indistinguishable from a shuffle, and the last two days have produced two independent demonstrations of that
+(+17.91 pp from a permutation, and a filtered bank whose rules were the same rules).

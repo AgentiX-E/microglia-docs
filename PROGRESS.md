@@ -24439,3 +24439,116 @@ mechanism to tune while the effect is a block's form. The next contrast separate
 
 All three are cheaper than the next item on the old list (`k=1`), and all three ask a question the last two hours
 created. They can run in parallel.
+
+## 202. The arm that prices every other arm was executed on every run and validated by nothing (17:05 UTC)
+
+`floor.py` drives 134 games twice, asserts coverage, termination and replay, and prints the floor that the price
+model multiplies. It has run in the lane's job on every dispatch since the lane existed. **31% of it had ever been
+executed by a test.**
+
+| | before | after |
+| --- | --- | --- |
+| statements executed | 54 of 161 | **168 of 169** |
+| branch coverage | 29 of 32 | **31 of 32** |
+| cases | 0 | **39** |
+| assertions ever triggered by a test | 0 of 4 | **4 of 4** |
+
+**One real defect, in the number the quote is calibrated on.** The p90 of the transcript length was
+`int(0.9 * (n - 1))`, which returns index 0 at n=2 — the reported 90th percentile was the *cheapest* episode of the
+pass. On 134 games the two formulas differ by one index, which is why it survived: the only passes that reach the
+bug are the two- and three-game smoke runs. It is nearest-rank now, and a two-episode case pins it.
+
+**Three seams, none of them scaffolding.** `read_config()` is the config read and its `$ALFWORLD_DATA` substitution;
+`summarise()` is the arithmetic of one pass, including the branch a pass over zero games takes; `run()` is the
+measurement `main()` now only parses arguments for. `pass_over()` and `main()` accept the `shell_factory` parameter
+`build_env()` already had, so a test supplies an environment rather than patching the module — a patched
+`pass_over` would have tested the patch and left the four assertions unexecuted, which is the failure this entry
+is about.
+
+**The 1% that stays visible.** The unexecuted line is `sys.exit(main())` under the `__main__` guard. `DefaultShellTest`
+covers everything it calls, including the `alfworld` import, by supplying the module names through `sys.modules`.
+The line is left in the coverage report rather than closed with a pragma, and the workflow runs the new suite
+beside the other four.
+
+**Why this was worth doing before the next sweep.** The next dispatch is priced by the floor, and the floor was
+produced by code whose refusals had never been triggered. It is now triggered on purpose three times — a game driven
+twice, a published game never driven, an episode the cap cut off — plus once for a second pass that disagreed.
+Nothing in the placebo reading moves; what moves is what a reader may assume about the corpus underneath it.
+
+## 203. Three fen bought the refusal to spend two yuan (17:20 UTC)
+
+R171 registered a bank distilled from `cool` and `heat` only, on the argument that its rules would be true and
+inapplicable where they are scored. The artefact arrived for **¥0.035** (run `44774801298`, 28 won episodes, four
+critique calls, 5 entries, 16 operations: 5 ADD, 10 AGREE, 1 REMOVE).
+
+| condition the registration wrote | measured | verdict |
+| --- | --- | --- |
+| ≥ 4 entries and ≥ 80% of the registered tokens | 5 entries, 88.9% of the characters, 86.2% of the words | shape passes |
+| kind-specific rather than general rules | **4 of 5 general**: the `put` → `move` workaround twice, "open the closed receptacle first", "search the likely locations in order" | content fails |
+
+The one kind-specific rule is the cooling one. The reason is structural rather than accidental: **every trajectory
+ends by placing an object**, so a bank distilled from cooling and heating trajectories is a bank about placing. That
+is a finding about the ExpeL prompt — it abstracts kind-specific experience into general procedure — and it is not a
+control for what a block says.
+
+**So the ¥2.0 sweep was not dispatched.** It would have compared a five-entry general bank against a four-entry
+general bank at 88.9% of the length and called a length difference a vocabulary one. Both readings agree with the
+placebo and neither separates content from form. The registration exists so that this is decided before the money:
+three fen bought the fact that the next two yuan is not worth spending, and the two banks are committed so the
+decision is checkable against the artefact.
+
+### 203.1 The question is asked with a hand-written block instead
+
+The placebo permuted words and kept the vocabulary (+17.91 pp, order inert). What is left is whether the **words**
+matter, and that needs no distillation: `banks/bank-filler-4.json` is four entries on servicing a mechanical
+typewriter — 1,107 characters against 1,103, 1,316 rendered against 1,312 (100.3%), per-entry lengths 255/245/306/301
+against 254/248/309/292, same header, same imperative form, **no word of it about the task**. Cost to build: zero.
+
+| reading (`always-in` − `none`, 134 paired games) | what it means | what it licenses |
+| --- | --- | --- |
+| filler ≥ +9 pp (the placebo's interval) | form is sufficient; relevance and vocabulary are both inert | stop tuning memory in this lane: the product is a preamble, and the remaining work is *where* it is injected |
+| filler ≈ 0 while `always-in` stays +14…+18 | the block must read as **relevant**; irrelevant instructions do nothing | the neutral declarative block, ≈ ¥1.5, to separate relevance from grammar |
+| filler strictly between | form and content both contribute | a 2×2 of form × relevance, ≈ ¥8, and the only branch where the memory queue survives |
+| filler < 0 | irrelevant instructions distract | the gate, then "inject only where the bank's own words appear in the observation" |
+
+The sweep is 134 games × 2 arms ≈ **¥2.0** with its own control, because the control arm moved 6 wins between two
+dispatches of the same code (AUDIT 34.232) and a cross-run comparison would be measuring that.
+
+### 203.2 What has actually been spent, and why the two numbers that were quoted disagree
+
+Two figures had been carried forward: **¥12.67** ("the itemised bill", 201.3) and **¥16.4** ("by artefact"). They
+differ by 3.73 and neither is the sum of what the runs cost, so the account is rebuilt from the artefacts rather
+than reconciled between two paragraphs. Every number below is `summary.bill.usd` inside a slice a run uploaded, at
+the provider's off-peak band and **7.15 CNY/USD**:
+
+| run | what it paid for | USD | CNY |
+| --- | --- | --- | --- |
+| `run44685314225` | first training pass: 105 episodes over 82 distinct games (the duplicated-games defect) | $0.2156 | 1.54 |
+| `run44731175801` | second training pass: four shards of the same window (the shard-never-advances defect) | $0.2672 | 1.91 |
+| `run44738148591` | shard 3 of the repaired partition, verified disjoint for ¥0.49 before the rest was bought | $0.0684 | 0.49 |
+| `run44743739868` | the bank dispatch that crashed on the caller signature, after its slices had finished | $0.1955 | 1.40 |
+| `run44744658304` | the chain that re-drove shards 0–2, cancelled once its slices landed | $0.1795 | 1.28 |
+| `run44754440122` | sweep A: four arms over 134 games, the first complete reading, plus its bank | $0.6095 | 4.36 |
+| `run44754650978` | sweep B: the replication on the six-rule bank | $0.6381 | 4.56 |
+| `run44763220821` | the placebo: `none` and `sham` over 134 games | $0.3983 | 2.85 |
+| `run44774801298` | the cross-kind bank: 28 won episodes, four critique calls, no games driven | $0.0049 | 0.03 |
+| **total** | **nine runs, of which four bought no reading at all** | **$2.5769** | **18.42** |
+
+**Where each quoted figure went wrong.**
+
+* **¥12.67 was the sweep-and-bank bill, not the programme's.** It summed sweep A, sweep B, the placebo, the two
+  banks and the ¥0.49 verification, and left out the four training and crash runs — $0.8580, or ¥6.13. The four are
+  exactly the purchases that produced no reading, which is the reason a bill that starts from "what did the readings
+  cost" does not contain them.
+* **¥16.4 was quoted as "by artefact" and matches no sum.** It is $2.2937 at 7.15: ¥2.02 below the artefacts' own
+  total and ¥3.73 above the itemised one, so it was neither.
+* **A third error that only appears when the sum is done.** `pairs-sham.json` carries a `bill` that is the sum of its
+  inputs, so a directory-level sum double-counts the placebo's $0.3983. The table above excludes every `pairs*` and
+  `floor*` artefact for that reason, and the excluded number equals the run's slice total to five decimal places,
+  which is what confirms it is a copy rather than a charge.
+
+**The honest unit cost.** ¥18.42 bought: one replicated paired delta (+14.18 pp, then +14.93 pp), one placebo that
+retired its own attribution (+17.91 pp from a shuffled block), one bank artefact for reuse, four defects found before
+they cost a sweep, and one negative result that stopped a ¥2.0 purchase for ¥0.035. **¥3.68 per usable reading**, or
+**¥4.60 per reading including the four runs that produced none** — and both of those numbers will move when the
+filler sweep lands, which is why the table is rebuilt rather than adjusted.

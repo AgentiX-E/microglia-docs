@@ -13842,3 +13842,44 @@ length, its imperative grammar, or the fact that it looks like task instructions
 a length-matched block of neutral declarative text, and a length-matched block of filler. If filler also buys +15pp,
 the mechanism is "any preamble". If filler buys nothing and imperative text buys +17.9, the mechanism is "a block that
 reads as instructions" — which is a product feature and a completely different line of work from a rule bank.
+
+## 34.233 — The arm every price rests on was executed by CI on every run and validated by nothing
+
+`floor.py` is the lane's zero-cost arm and the origin of every quoted minimum detectable effect. It drives 134 games
+twice, asserts that the split was covered, that every episode terminated, and that the second pass replays the first,
+and prints a floor that the price model multiplies by the per-episode cost. It has run in the lane's job on every
+dispatch for weeks. Its test coverage was **31%**.
+
+That is not a documentation gap. It means the walker, the two-pass comparison, and all four assertions in the
+measurement path had never been executed by anything except a real run — and a real run is the one caller that must
+not be the only evidence, because a floor whose coverage check silently passes on one game driven 134 times reports a
+rate and a variance figure with **no defect anywhere in its own output**. The three drifts that reached CI earlier in
+this programme (a test that needed a package the job does not install, a 3.11 API on a 3.10 interpreter, a shard that
+drove the wrong games) were all of this shape: the check existed, the check passed, the check was not the check.
+
+**The single defect this found, and why it is a defect rather than a preference.** The p90 of the transcript length —
+the number a per-episode price is calibrated on — was computed as `int(0.9 * (n - 1))` indexed into the sorted lengths.
+At n=2 that index is 0, so the reported 90th percentile was the **cheapest** episode of the pass. A tail that is too
+small is a price that is too small, and a price that is too small is the one direction the user of a quote cannot
+detect. It is nearest-rank now (`ceil(0.9n)`), pinned by a two-episode case and a one-episode case; on the 134-game
+pass the two formulas differ by one index, which is exactly why the bug survived — the only runs that reach it are the
+short ones used for smoke tests.
+
+**Three seams were opened so that the assertions could be reached, and none of them is test scaffolding.** `read_config()`
+is the config read and its `$ALFWORLD_DATA` substitution; `summarise()` is the arithmetic of one pass, including the
+branch a pass over zero games takes; `run()` is the measurement that `main()` now only parses arguments for. `pass_over()`
+and `main()` accept the `shell_factory` parameter `build_env()` already had, so a test supplies an environment instead of
+patching this module — the distinction matters because a patched `pass_over` would have tested the patch against the
+payload and left the four assertions unexecuted, which is the exact failure this entry is about.
+
+**The 99% that is reported rather than rounded.** 169 statements, 168 executed, 39 cases. The one unexecuted line is
+`sys.exit(main())` under the `__main__` guard: no import reaches it. `DefaultShellTest` covers everything it calls,
+including the `import alfworld ... AlfredTWEnv` branch, by supplying the four module names the import path uses through
+`sys.modules` — the package is not installed in the job that runs these tests, and a test that installed it to assert
+`shell_factory = AlfredTWEnv` would be a test of an import statement. The line stays visible in the coverage report
+rather than being closed with a pragma, because a pragma is how a number gets to 100% without a measurement.
+
+**What this changes about the next reading.** Nothing in the placebo result moves: that reading came from a real run and
+its own arithmetic. What changes is what a reader may assume about the corpus underneath it. The floor that prices the
+next dispatch is now produced by code whose refusals have been triggered on purpose — twice for coverage, once for
+replay, and once for a game driven twice — rather than by code that has only ever succeeded.
