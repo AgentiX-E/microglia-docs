@@ -24233,3 +24233,33 @@ defect this session was fixing and once adding a dispatcher this session then ex
 rejected as "not a fast forward"; one `alfworld` run was cancelled by the race. Nothing was lost and no money was
 double-spent — the union of both sessions' commits is coherent and green — but the round's commit count is higher than
 the work in it, and a reader comparing timestamps will see two hands.
+
+### 200.9 The placebo is in flight, and the reason it went with its control rather than against the old one
+
+`--control-run` exists in `scripts/alf_dispatch.py` and not in the workflow's inputs, so a dispatch that used it would
+have looked like a ¥1.5 saving and delivered an **unpaired** artefact: the sweep would drive `sham` alone, and the
+pairing would have to be assembled from two runs. That is the class of defect this record keeps finding — a flag that
+reads as a capability and is inert.
+
+The placebo was therefore dispatched as **eight jobs** (`none` and `sham`, four slices each, run `44763220821`, ≈ ¥3.0)
+against the committed bank, which re-buys a control that is already known (80/134). That ¥1.5 is not waste: the
+control in flight is driven by the same code at the same hour, and the alternative pairs a today's treatment against a
+yesterday's control across two commits of the driver. A contrast that has to explain a driver change is not a contrast
+about memory.
+
+**The decision it answers, restated because it decides what the +14.2pp means.** `arXiv:2601.22436` finds agents
+respond to a condensed block's *shape* more than its content. `sham` carries the same header, the same four entries,
+the same token count and the same punctuation, with each rule's words permuted inside itself. If `sham − none` matches
+`always-in − none`, the effect is a block-shaped prompt, not four rules, and the next row is a different layer rather
+than a better bank.
+
+### 200.10 The defect the dispatch exposed, recorded rather than silently worked around
+
+| where | what | the risk if used |
+| --- | --- | --- |
+| `scripts/alf_dispatch.py` | accepts `--control-run` and sends it as an input | the workflow declares no such input, so the flag is dropped and the sweep runs without its control |
+| `.github/workflows/alfworld.yml` | no `control_run` input | a treatment-only sweep produces an artefact `aggregate.py` cannot pair, after the money is spent |
+
+The repair is one of two, and it is not made in this round because the round's remaining money is better spent on the
+placebo: either the workflow learns to fetch a named run's control slices, or the dispatcher refuses the flag with the
+sentence that explains why. A flag that does nothing is worse than a flag that is not there.
