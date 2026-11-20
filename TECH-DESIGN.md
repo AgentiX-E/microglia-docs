@@ -10916,3 +10916,56 @@ produces one is visible in the report rather than silently different.
 option away and is the candidate replacement, but choosing it by default would have made every comparison against
 the literature a comparison against an improvement on the literature — which is not a control, and the control is
 the entire point of building the arm this way.
+
+
+### 17.174 The boundary is a dependency rule, and the queue is checked against it
+
+**The design question.** Four competitor mechanisms were proposed as candidates without first being assigned to a
+layer, and one of them — an associative dual-layer memory reporting LoCoMo F1 — belongs to `cortex`, whose release is
+explicitly excluded from this programme. A queue that mixes the substrate's work with the library's is not a
+prioritisation problem; it is a scope leak that would have been executed before anyone noticed.
+
+**The rule, in the form the tree already has.**
+
+| layer | owner | what it decides | how a shape reaches it |
+| --- | --- | --- | --- |
+| substrate | `cortex` via `packages/node/src/store/cortex` | `MemoryValue`, bitemporal `Fact`, FSRS decay, `decideWrite`/`decideRetrieval`, `consolidate` | **projection only** — `KnowledgeItem → MemoryValue`; nothing in `core` reads it |
+| store | `packages/core/src/memory` | which items exist, their evidence, their lifecycle | write path and distillation |
+| delivery | `packages/core/src/apply` (`renderPack`, `shapeFold`, MMR) | what the model sees, in what order, under what budget | pure functions over the pack `recall()` returned |
+
+**The precedent that settles the interesting cases is `shape-fold.ts`, and it settled one already.** When this
+record needed a unit that collapses same-shape failures into one line, the decision table weighed three places:
+
+| where | what it changes |
+| --- | --- |
+| write path — supersede an item, union its evidence | the store's *contents*, so a comparison against today's store differs in two places |
+| distillation — one call per shape | the statement is written from one representative, discarding the others |
+| **delivery — collapse same-shape items in the pack** | **the unit the model sees, and nothing else** |
+
+Delivery won because it changes one thing, and every shape in the candidate registry is the same kind of object: a
+section break, a render order, a placeholder, a collapsed row. `renderPack` already owns the budget, the placeholder
+substitution and the truncation count; a two-section pack is one more field on `RenderOptions`, a graph-ordered pack
+is one more comparator over the items, and a workflow placeholder is `shapeFold` with a different fold key. **None of
+them requires a new structure in `memory/`, and a new structure there would be a second substrate** — one that would
+then owe the decay schedule, the bitemporal facts and the conformance suite that `cortex` already publishes.
+
+**Where the registry's `side` column comes from, mechanically.** A candidate is `cortex` when its authors report a
+score on a question asked of the store independently of any task — LoCoMo F1, LongMemEval — because no `RenderOptions`
+change can move that number and no paired prompt arm can measure it. Everything whose ablation is "with the block /
+without the block" is `microglia`, and the registry therefore has exactly two legal values with no third for
+"both": a mechanism that genuinely spans the two is **two candidates**, one per layer, and writing it as one row is
+how the boundary gets lost.
+
+**What the registry is checked for, and what it is not.** `scripts/check-docs.mjs` fails a push unless each row names
+a side, cites exactly one `AM.n` that resolves to a heading in `COMPETITIVE.md`, and states an episode count. The
+columns that matter for design are the last two: **`episodes needed` is where a candidate stops being a plan.** At
+134 held-out games the paired resolution is 13.3pp, and the FSM's +5.23pp needs 861 episodes while H²R's +3.5pp
+needs 1,923 — neither obtainable by repeating the split, because repetition narrows the estimate of the same 134
+games rather than adding independent ones. **A row whose episode count exceeds the corpus is a row the design cannot
+serve**, and it belongs in the registry as a stated impossibility rather than in a queue as a priced option.
+
+**Ordering consequence, stated once.** Axis, then shape, then substrate. The axis — with versus without an
+always-present block — is the only cell whose effect (ExpeL's 19.0pp) exceeds this split's resolution, so it is the
+only one that can be decided before the corpus question. The shapes follow in ascending cost, and the substrate does
+not follow at all: it is excluded by the standing instruction, and the projection stays a `MemoryValue`-shaped
+mirror with a conformance test against the real build whenever that build publishes.

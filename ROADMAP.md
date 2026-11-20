@@ -7367,6 +7367,38 @@ running a larger sample**: what it can produce, and no paper in the row produces
 model and one split with a cluster bootstrap interval, a per-arm token bill, and the trajectories. That artefact
 is the contribution, and it is publishable before any arm beats anybody.
 
+### Candidate registry — the four names from the last report, sorted by whose work they are
+
+A previous round's report listed four competitor mechanisms as R164+ candidates without first asking which side of
+the microglia/cortex boundary each one sits on. That question has a test — **the score its authors report** — and
+applying it found one of the four to be the substrate's work, one already registered and priced, one whose name had
+been attached to the wrong system, and two whose published effect this split cannot resolve at any price.
+
+| candidate | the unit it changes | side | registered | its own delta | episodes needed | cost at 2 arms |
+| --- | --- | --- | --- | --- | --- | --- |
+| `always-in` rule list (ExpeL, ported) | the prompt carries the whole list | microglia | AM.22 | 19.0pp | 65 | **¥2.99** (3 x 134) |
+| workflow abstraction (AWM) | instance values to typed slots | microglia | AM.23 | +12.0pp (WebArena) | 164 | ¥2.4 + code |
+| exemplar memory (Synapse, ICLR 2024) | which trajectories are shown | microglia | AM.23 | +12.0pp class | 164 | ¥2.4 |
+| two-section pack (H2R) | the pack's sections | microglia | AM.23 | +3.5pp | **1,923** | ¥28.5, and the sample does not exist |
+| graph-ordered pack (FSM) | the order items render in | microglia | AM.23 | +5.23pp | **861** | ¥12.7, and the sample does not exist |
+| dual-layer associative memory (Synapse, ACL 2026) | the substrate's structure; LoCoMo F1, no task score | **cortex** | AM.23 | LoCoMo F1 40.5 | not a paired task delta | not this repository's |
+
+**The row that matters is not the money.** 1,923 episodes at ¥0.0074 each is ¥28.5 for two arms — affordable. The
+problem is that **1,923 episodes do not exist**: the held-out split is 134 games, and repeating 134 games fourteen
+times reduces run noise without adding one independent sample. Fourteen passes of the same 134 games produce a
+tighter estimate of the *same* 134 games difference, not the power to see a 3.5-point one. The only two ways to
+obtain more episodes are the train split, which ExpeL consumed to write its rules, and a different benchmark, which
+is not the same measurement. **So the H2R and FSM effects are not expensive here — they are unmeasurable here**,
+and writing them into a queue as candidates with a price tag would have hidden that behind a number that looks
+purchasable.
+
+**What the registry is for.** It states that the queue is a list of *measurements* rather than a list of
+*competitors*, and it is checked by CI (`scripts/check-docs.mjs`): every row names a side, and every `AM.n`
+reference resolves to a heading in `COMPETITIVE.md`. A candidate that cannot fill in the `side` column has not been
+read yet; one that cannot fill in `episodes needed` has not been priced; and one whose side is `cortex` is not this
+repository to build, however much it looks like memory management.
+
+
 **What the four questions answer, this round.**
 
 1. **Are the field's authoritative sets and boards complete?** No, and the gap has a name now: every board in AM.16

@@ -23413,3 +23413,73 @@ what its sample can see is a registration that will be read as having seen every
 above zero to leave 13.3pp of headroom on this model. ExpeL's control is 40.0 with a different backbone; nothing
 here has run any arm with this one. **20 games, one arm, ≈ ¥0.15** answers it, and no larger purchase should
 happen before that answer exists.
+
+
+## 193. Four candidates, read properly: one was the substrate's, one was already priced, and two are unmeasurable here
+
+**The question that preceded this round.** The R162 report ended with a list of four competitor mechanisms offered
+as R164+ candidates. The user asked whether they are microglia's work at all or cortex's — and answering it meant
+reading them, which the report had not done.
+
+**What reading found, worst first.**
+
+| what the report said | what is there | consequence |
+| --- | --- | --- |
+| "Synapse's contrastive retrieval" | **two** systems named Synapse, and **neither** does this: ICLR 2024 is trajectory-as-exemplar with **embedding similarity** (MiniWoB++ 99.2%); ACL 2026 is a **dual-layer associative** memory with **spreading activation** (LoCoMo F1 40.5) | a phrase that named a mechanism that does not exist, attached to a candidate |
+| four candidates, all memory work | the ACL-2026 Synapse reports **LoCoMo F1**, a question asked of the store with no task and no prompt skeleton — **cortex's** benchmark, not this library's | one candidate belonged to a project excluded from this programme |
+| AWM's workflow abstraction, as new | already registered as **P2** in Appendix X.2: three deltas, a PRAXIS counter-argument, **~$0.70 + code** | a second copy of a row that had a price |
+| H²R and the FSM, as candidates | +3.5pp and +5.23pp published, needing **1,923** and **861** episodes against a **134-game** split | priced options that the corpus cannot supply |
+
+**The rule that should have been applied first, and now is.** A mechanism belongs to **cortex** when its authors
+report a score on a question asked of the store independently of any task, and to **microglia** when its authors
+report a **task success rate** under a fixed model and prompt skeleton. Applied to the four names it produces one
+`cortex` row and four `microglia` rows, and — this is the part that changes the queue — **three of the four
+`microglia` rows are rendering decisions, not storage decisions**. A two-section pack, a graph-ordered item list and
+a workflow placeholder are all things `renderPack()` can do to items `recall()` already returns. `shape-fold.ts`
+settled the same question in R109 by weighing three places to put a fold and choosing delivery because it changes
+one thing; every shape here is that same object.
+
+**Three of the four are also unmeasurable, and money does not fix it.** 134 games resolve 13.3pp. The FSM's 5.23pp
+needs 861 episodes and H²R's 3.5pp needs 1,923. **Repeating 134 games fourteen times narrows the estimate of the same
+134 games difference; it does not add one independent sample.** The only routes to more episodes are the train split
+(which ExpeL consumed to write its rules) and a different benchmark (which is not the same measurement). So the
+honest sentence is not "these are expensive" but "**these cannot be measured by this instrument at any price**",
+and a queue that listed them with a price tag would have made an unmeasurable hypothesis look purchasable.
+
+### 193.1 The fix is a checked table, and the first gate this repository has ever had
+
+`ROADMAP.md` now carries a `### Candidate registry` with columns `candidate`, `the unit it changes`, `side`,
+`registered`, `its own delta`, `episodes needed`, `cost at 2 arms`.
+
+`scripts/check-docs.mjs` — plain Node, no dependencies — fails a push unless every row names a side
+(`microglia` or `cortex`), cites exactly one `AM.n` that resolves to a heading in `COMPETITIVE.md`, and states an
+episode count. It also checks fence parity in every document, because three rounds have now shipped a document
+whose last third rendered as code.
+
+**The check was verified against three deliberate breaks before it was committed**, because a gate that has never
+failed has not been tested:
+
+| break | the check's answer |
+| --- | --- |
+| renumber the definition the registry cites | 5 failures, one per referring row, each naming the line |
+| a registry row with `side: both` | `side is \`both\`, which is neither microglia nor cortex` |
+| an unclosed fence appended to AUDIT | `fence opened here is never closed`, with the opening line |
+
+**The gate also fired on real content before it was committed, on this round's own prose.** Drafting 193.1, the
+verification table named a made-up entry number as the example — and the check failed on it, because that number
+identifies nothing in the registry. The wording was changed to describe the break without inventing a citation. **A gate that fails on an illustrative example is a gate reading the text rather than the intent**, which is
+the property that makes it worth having: the four unregistered candidates in 34.213 were exactly a document that
+named things that were never defined.
+
+`.github/workflows/docs.yml` runs it on every push and pull request. **This is the first CI in the docs repository**,
+and it exists because every document defect in this record so far — a reused section number, a layer table
+describing a moved tree (34.212), four unregistered candidates — was a claim in prose that nothing checked.
+
+**What the gate cannot do.** It cannot tell whether a delta is the competitor's real number, and it cannot tell
+whether `microglia` is the right side for a mechanism nobody has read. It enforces that the columns are filled —
+the difference between a queue and a list of things that sound important, not the difference between right and wrong.
+
+### 193.2 Cost
+
+`¥0`. No dispatch, no model call, no runner minutes beyond a five-minute docs job. The expensive version of this
+mistake is the one where the queue is executed first and the reading happens when the result is null.

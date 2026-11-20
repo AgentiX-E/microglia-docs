@@ -1,0 +1,50 @@
+name: docs
+
+# The first gate in this repository, and it exists because three separate rounds shipped a defect
+# into these documents that no reviewer caught and no test could see: a section number reused after
+# an edit, a layer table that described a tree that had moved, and a candidate queue naming four
+# competitor mechanisms that had never been registered. Each was a claim in prose that nothing
+# checked. The three checks in `scripts/check-docs.mjs` are the ones that need no model and no
+# network, so they run on every push rather than on a dispatch.
+#
+# No dependencies are installed: the script is plain Node with no imports outside `node:*`.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '*.md'
+      - 'scripts/**'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    paths:
+      - '*.md'
+      - 'scripts/**'
+      - '.github/workflows/docs.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    name: the documents hold their own claims
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Fences close, registrations resolve, every candidate names a side
+        run: node scripts/check-docs.mjs
+
+      - name: Report what was checked
+        if: always()
+        run: |
+          echo 'checked: fence parity in every .md'
+          echo 'checked: every AM.n reference resolves to a heading in COMPETITIVE.md'
+          echo 'checked: every candidate-registry row names a side, a registration and an episode count'
+          echo 'model calls made by this job = 0'

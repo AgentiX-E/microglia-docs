@@ -12861,3 +12861,62 @@ already spent three red builds on gates.
 the table. The section's headline — 1,766 lines and seven modules — is true of `sql` at the snapshot's own count of
 1,956 only in the sense that `sql` is still seven modules; the line count moved by 190 and nothing in the repository
 noticed.
+
+
+## 34.213 — A candidate queue that named four mechanisms nobody had read, and the phrase that replaced the reading
+
+The R162 report ended its third answer with four competitor mechanisms offered as R164+ candidates: H²R's high/low
+memory separation, an FSM graph memory, AWM's workflow abstraction, and **"Synapse's contrastive retrieval"**. The
+user asked the question that should have come first — *are these microglia's, or are they cortex's?* — and answering
+it required actually reading them, which had not been done.
+
+**What reading them found, in order of how bad it is.**
+
+*First, "Synapse's contrastive retrieval" describes a system that does not exist.* There are two systems called
+Synapse and neither does this. **Synapse (ICLR 2024, Zheng et al.)** is state abstraction + trajectory-as-exemplar
+prompting + exemplar memory retrieved by **embedding similarity** — MiniWoB++ 99.2% across 64 tasks using
+demonstrations from 48, and a 56% relative step-success improvement on Mind2Web. **Synapse (ACL 2026, Jiang et al.,
+UGA)** is a **dual-layer associative** memory with **spreading activation** that refuses when evidence is thin —
+LoCoMo **F1 40.5**, +7.2 over the next best agentic system, at **95% fewer tokens** than full-context methods.
+"Contrastive retrieval" is neither. It is a phrase that sounds like a mechanism, was never checked against a
+source, and would have been written into a queue as though it named one.
+
+*Second, the same word sits on both sides of the boundary.* The ICLR system reports **task success rates**; the ACL
+system reports **LoCoMo F1**, on questions asked across months of conversation with no task and no prompt skeleton —
+the same family as the LongMemEval number cortex reports. One name, two benchmarks, two projects. Any rule phrased
+as "is it about memory" puts them in the same bucket; only a rule phrased against **the score the authors report**
+separates them.
+
+*Third, AWM was already registered and priced.* Appendix X.2 carries its three deltas (WebArena 23.5 → 35.5,
+Mind2Web 36.2 → 45.1), the three-column comparison against ExpeL and this lane's store at R92, PRAXIS's
+counter-argument, and a price: **P2, roughly $0.70 + code**, for values replaced by typed slots at write. Offering it
+as a new candidate is not a plan; it is a second copy of a row that already had a price and a failure mode.
+
+**Why none of the three was caught by anything.** `COMPETITIVE.md` has a registration discipline that every
+mechanism it documents satisfies: unit, baseline, published delta, whether the competitor ablates it, and where it
+is injected. AWM passed through it in R92 and Appendix AA. H²R, the FSM and both Synapses never did — they were
+named in a *report*, which is prose that no gate reads. **The registry is a gate, and a candidate that reaches the
+queue through the report rather than through the registry bypasses it entirely.** Four names entered the queue and
+one of them had no referent.
+
+**The fix is a checked table rather than a resolution to be careful.** `ROADMAP.md` now carries a
+`### Candidate registry` whose columns are `candidate`, `the unit it changes`, `side`, `registered`, `its own
+delta`, `episodes needed`, `cost at 2 arms`. `scripts/check-docs.mjs` fails the push unless every row names a side
+(`microglia` or `cortex`), cites exactly one `AM.n` that resolves to a heading in `COMPETITIVE.md`, and states an
+episode count. The check was verified against three deliberate breaks — a renamed definition, a row with
+`side: both`, an unclosed fence — before it was committed, because a gate that has never failed has not been tested.
+
+**What the check cannot do, stated so it is not mistaken for more.** It cannot tell whether a row's delta is the
+competitor's real number, and it cannot tell whether `microglia` is the right side for a mechanism nobody has read.
+It enforces that the columns are filled, which is the difference between a queue and a list of things that sound
+important — not the difference between a right answer and a wrong one.
+
+**The finding that outlives the table.** Two of the four names carry published effects *smaller than this split can
+resolve at any price*: the FSM's +5.23pp needs **861 episodes** and H²R's +3.5pp needs **1,923**, against a
+held-out set of **134**. Repeating 134 games fourteen times narrows the estimate of the same 134 games' difference;
+it does not add one independent sample. So those two are not expensive here, they are **unmeasurable here**, and a
+queue that listed them with a price tag would have made an unmeasurable hypothesis look purchasable — which is the
+same failure mode as AM.22's 16.4-point spread, arrived at from the other end.
+
+**Cost of the correction.** Reading, and nothing else: no dispatch, no model call, `¥0`. The expensive version of
+this mistake is the one where the queue is executed first and the reading happens when the result is null.

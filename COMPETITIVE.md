@@ -8001,3 +8001,71 @@ numbers support.
 unstated ±8-point spread, a paired delta with a cluster bootstrap interval, a per-arm token bill, and the full
 trajectories is not a marginal improvement — it is the only artefact of its kind in the line. That is the thing to
 publish, and it is publishable before any arm beats anybody.
+
+
+**AM.23 — Two systems named Synapse sit on opposite sides of the boundary, and the name is what made the queue wrong**
+
+A previous round listed four competitor mechanisms as candidates for R164+: H²R's two-level memory, an
+FSM/procedural-graph memory, AWM's workflow abstraction, and "Synapse's contrastive retrieval". The question
+that should have been asked first is whose work they are. It was not, and the answer is not uniform — because
+**there are two systems called Synapse, and they are on opposite sides of the microglia/cortex boundary.**
+
+| what a reader finds under the name | venue | what it reports | which score that is |
+| --- | --- | --- | --- |
+| **Synapse** — state abstraction, trajectory-as-exemplar prompting, exemplar memory over embeddings | ICLR 2024 (Zheng et al.) | MiniWoB++ **99.2%**, Mind2Web **+56% relative step SR** | a **task success rate** |
+| **Synapse** — dual-layer associative memory, spreading activation, refuses when evidence is thin | ACL 2026 (Jiang et al., UGA) | **LoCoMo F1 40.5**, tokens **−95%** | a **long-conversation QA score** |
+
+Neither is "contrastive retrieval", which is what the queue said. The ICLR system retrieves exemplars by
+embedding similarity; the ACL system spreads activation across a dual-layer associative structure. Two
+mechanisms, two benchmarks, two far ends of one word.
+
+**The boundary, stated as a test rather than a taxonomy.** `cortex` is a cognitive memory substrate —
+`MemoryValue` with confidence, trust and FSRS state; bitemporal `Fact`; `decideWrite`/`decideRetrieval` value
+gates; `consolidate` over Hebbian and FSRS schedules — and its published evaluation is **LongMemEval**. So the
+test is:
+
+> A mechanism belongs to **cortex** when its authors report a score on a question asked *of the store
+> independently of any task*, and to **microglia** when its authors report a *task success rate* under a fixed
+> model and prompt skeleton.
+
+| mechanism | its own reported delta | episodes needed at disc 0.30 | × the 134-game split | side |
+| --- | --- | --- | --- | --- |
+| ExpeL vs ReAct | 19.0pp | 65 | 0.5× | microglia (already ported, R162) |
+| **AWM**, WebArena | +12.0pp | 164 | 1.2× | microglia — already registered as the P2 `abstraction` row at ~$0.70 + code |
+| **FSM / procedural graph**, ALFWorld | +5.23pp | 861 | 6.4× | microglia, but only as a **rendering order** |
+| **H²R**, ALFWorld | +3.5pp | 1,923 | 14.3× | microglia — a `pack` with two sections |
+| **Synapse** (ICLR 2024) | +12.0pp WebArena-class | 164 | 1.2× | microglia — near what the `retrieved` arm already does |
+| **Synapse** (ACL 2026) | LoCoMo F1, not a task score | — | — | **cortex** |
+
+**Three things this table changes, and none of them is "drop the candidates".**
+
+*First, one of the four was never a candidate because it was already a row.* AWM's abstraction — replacing
+instance values with typed slots — is registered in Appendix X.2 and priced as **P2, ~$0.70 + code**, with its
+three published deltas and PRAXIS's counter-argument (state-indexed local procedures beat abstracted workflows
+where the instance *is* the task, which is τ² retail). Listing it again as a new R164 candidate is not a plan;
+it is a second copy of a row that already has a price.
+
+*Second, the shapes are mostly smaller than this split can see.* 134 ALFWorld games resolve **13.3pp**. FSM's
+5.23pp needs **6.4×** the split and H²R's 3.5pp needs **14.3×**. Only AWM's 12.0pp and ExpeL's 19.0pp sit at or
+below what 134 games can resolve, and AWM's was measured on WebArena, which is a different environment rather
+than a smaller effect. **A mechanism whose published delta is below your resolution is not a candidate; it is a
+hypothesis you cannot afford to test** — and the cost of finding that out is the 861 episodes, not the reading.
+
+*Third, three of the four are rendering decisions, not storage decisions.* A two-section pack, a workflow
+placeholder, a graph-ordered item list — `renderPack()` can produce all three from the items `recall()` already
+returns. Building a graph store or an abstraction hierarchy in `memory/` to obtain them would make this
+repository a second brain, and the second brain would then need the decay schedule, the bitemporal facts and
+the conformance suite that the substrate already publishes.
+
+**The one that is genuinely cortex's, and why it is the useful case.** The ACL-2026 Synapse improves LoCoMo, a
+benchmark of questions asked across months of conversation with no task and no prompt skeleton — the same
+family as the LongMemEval number cortex reports at 83.55%. Nothing about it is measurable by a paired
+difference between two prompt arms. Had the queue been executed as written, a substantial amount of work would
+have been spent building substrate features inside a library whose entire published claim is that it is *not*
+the substrate. The name collision is what hid it: "Synapse's contrastive retrieval" reads like one thing, and
+it was two.
+
+**What this costs to have learned.** Nothing but the reading. The correction is a table, a test, and the
+deletion of one false candidate — and the queue now has an order that can be defended: **axis first** (with
+versus without a block, at ExpeL's effect size, on the split that exists), **then shape** (at 0.5× to 14× the
+sample, in ascending order of cost), **then substrate** (not this repository's to build).
