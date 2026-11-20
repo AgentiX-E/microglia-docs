@@ -7595,3 +7595,30 @@ is a **search over the pack's own knobs** (k, the gate, entry order, header word
 sits), scored on the bank's own 134 paired games. That is a campaign of ≈ ¥1.9 per configuration, seven or eight
 configurations, ≈ **¥15** — and it is the only row in this document that is a *design* gap rather than a mechanism
 gap. It is not scheduled this round because it needs a bank and a delta to search around, which is row 1.
+
+### R168 — The queue after a repair, and the two rows the repair created
+
+The chain did not produce a delta: it produced four defects, one of which (a shard that was a sample) invalidated
+every sliced reading the lane had. The queue is therefore re-based on a re-dispatch rather than on a readback.
+
+| # | step | state | price |
+| --- | --- | --- | --- |
+| 1 | re-dispatch the chain: four sorted training slices, one bank, twelve sweep jobs | **dispatched once CI is green on `1b3b36c5`** | ≈ ¥7.69 |
+| 2 | the decomposition of that reading (engagement, harm share, hard/easy, six kinds) | **built**, ¥0 from row 1's artefacts | ¥0 |
+| 3 | the placebo arm, iff `\|delta\| > mde` | **built, gated** (R165 amendment 1) | ≈ ¥1.9 |
+| 4 | `retrieved(k=1) − retrieved(k=3)` | **dispatchable**; AMD's optimum, untested here | ≈ ¥3.8 |
+| 5 | the overlap gate (MemTrim's read-time rule) | **not built**; the one repair whose mechanism is named in a paper | ≈ ¥1.9 per arm |
+| 6 | the pack-knob search (ALMA's analogue) | **not built**; needs row 1's bank and delta | ≈ ¥15 |
+| 7 | `floor.py`'s unit coverage, 31% → ≥95% | **registered gap** (199.6); its real-run gate is the `floor` job at ¥0 | ¥0, one round |
+| 8 | a tiling assertion over *training* artefacts in `aggregate.py`, not only in `distill.py` | **built in `distill.py`**; the same check on the sweep's side is `tile()`, which already refuses | ¥0 |
+| 9 | the object-location pack | **demoted** (R166): 138 of 149 refusals are instance identity inside one house | ≈ ¥1.9 |
+
+**Row 7 is new and is a debt, not a plan.** A file whose correctness rests on a real run is not covered by a unit
+test, and this record has already been burned once by a check that was satisfied by the thing that was wrong. The
+`floor` job is a genuine gate — 134 games, two policies, ¥0, every push — but it is a gate on the *corpus*, not on
+`floor.py`'s own branches, and the difference should be written down rather than assumed away.
+
+**What row 1 no longer has to prove.** R167 recorded that this lane cannot defend an absolute score against Board B.
+Row 1 does not try: it produces a paired delta, the games both arms drove, and the number of retries each arm needed.
+The first two are the conditions under which a delta means anything; the third is the condition under which it will
+reproduce.

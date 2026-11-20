@@ -23885,3 +23885,74 @@ a step in the critical path, not housekeeping.
 
 **Cost of this addition.** ¥0 — no dispatch. The two arms it makes dispatchable are ¥1.9 each, both gated on the
 reading that is still in flight.
+
+## 199. The readback that never happened, and the defect it was hiding (2026-11-20, 11:40 UTC)
+
+**State: the chain failed, and the failure was worth more than the number would have been.** Run `44685314225`
+completed three of four training shards, then shard 1 died at game 20 of 35 on a connection closed before its
+response. The bank job was skipped and twelve sweep jobs failed on a missing artefact. There is no delta to report
+this round; there is a repair and a re-dispatch.
+
+### 199.1 What the failed run cost and what it bought
+
+| item | number |
+| --- | --- |
+| training episodes paid for | 105 (three slices of 35) |
+| distinct games those episodes cover | **82** |
+| calls | 3,915 |
+| bill, by the provider's own `usage` | **$0.2156** ≈ ¥1.54 |
+| bank | none produced |
+| sweep | none ran |
+
+The 105 episodes were 82 distinct games because `--shard i/n` was not a partition. That is 34.226's finding, and it
+retires every sliced reading this lane has produced.
+
+### 199.2 Four defects, three of them the same mistake
+
+`chat()` caught `URLError` and missed `RemoteDisconnected`, which is not a `URLError` — a handler that read as
+coverage and protected nothing. `--out` was written at the end, so a four-hour pass could not be resumed and its
+artefact was 330 bytes. The bank job was skipped rather than run, so the diagnosis sat four layers from the red X.
+And `--shard i/n` sliced an order the filesystem chose, so two jobs in one dispatch drove two different splits.
+
+### 199.3 The repair, and the two mechanisms that make a resumed dispatch different from a resumed process
+
+| mechanism | what it continues | what refuses it |
+| --- | --- | --- |
+| `--resume` on a checkpointed `--out` | a **process** that stopped | header mismatch field by field, a repeat game before the write, a seed policy |
+| workflow input `train_run_ids` | a **dispatch** that stopped | `--expect-games`: the union must cover the slice |
+
+Both exist because the failure mode here was the second, not the first: nothing was resumable at the level of the
+data, so recovering one slice meant re-buying four.
+
+### 199.4 The re-dispatch, and why the four shards are driven again rather than joined
+
+The plan entering the round was to join the three surviving shards to a re-driven fourth — ¥6.30 instead of ¥7.69.
+`--expect-games` refused the join at 82 of 140, which is exactly what it was built for and the first thing it did.
+The 82 games are not a partition and cannot be made into one, so the three surviving slices are sunk cost:
+
+| step | games | cost |
+| --- | --- | --- |
+| four training slices of 35, sorted and therefore tiling `val_seen` | 140 | ≈ ¥1.96 |
+| one bank, 8 successes per critique, cap 20 | — | ≈ ¥0.10 |
+| three arms × four slices of 34/34/34/32 over `val_unseen` | 402 | ≈ ¥5.63 |
+| **re-dispatch** | | **≈ ¥7.69** |
+| already spent on the failed attempt | 105 | ¥1.54 (sunk) |
+
+### 199.5 What the readback must print, in the order it must print it
+
+1. `retries` per artefact. **Zero retries over four hours is a claim, not a default**, and it is now checkable.
+2. `games_driven == 35` for each training artefact and `--expect-games 140` passing on the union.
+3. `rules_in_bank`, `applied` / `rejected` / `culled`, `peak` — the bank first, because a bank of 4 and a bank of 20
+   are two treatments with one name.
+4. `always-in − none` pooled, then `diverged`, then `harm_share`, then `hard` / `easy`, then the six kinds.
+5. `retrieved − none`, and whether it diverged on fewer games than `always-in` (R165's second prediction).
+6. The bill per arm, and whether it landed off-peak.
+
+### 199.6 A gap recorded rather than closed
+
+`floor.py`'s unit coverage is 31%, and it is the one file in the lane whose correctness is established by a **real
+run** rather than a unit test: the `floor` job drives the whole 134-game split with the seed policy, asserts that the
+split is covered and terminates, replays it, and compares the two policies field by field — at ¥0. Its pure
+functions (`Draw`, `digest_of`, `game_key`, `wilson`, `shard_bounds`) *are* unit-tested through `test_agent.py`. The
+gap is the driver's own I/O, and closing it means either a textworld install in the unit job or a fake that would
+test the fake. Recorded here so that the 31% is a decision with a reason rather than a number nobody looked at.

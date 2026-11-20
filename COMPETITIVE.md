@@ -8219,3 +8219,38 @@ so is cheaper than discovering it in a review.
 games with a harm share and an engagement rate beside it, because nothing else in Board B reports either. It cannot
 defend an absolute score against Board B's rows, because the two tasks subsets, the two outer-step budgets and the
 two definitions of "run" are different, and the 40-point spread inside one method's own reports is the proof.
+
+## R168 — The 40-point spread and the 58-game gap are the same defect class (2026-11-20)
+
+R167 recorded that one method scores **87.1** in its own paper and **67.16** when a competitor re-runs it on the same
+corpus with the same step cap, and treated the difference as a reason never to quote an absolute number. This round
+produced the same class of error locally, at a smaller scale and with the mechanism visible: **105 training episodes
+covering 82 distinct games**, because `--shard i/n` sliced an ordering the filesystem chose rather than an ordering
+the split fixed.
+
+The parallel is not rhetorical. Both are cases where the *harness* decided the number and nobody could recover the
+harness from the number:
+
+| what differs | the published case (R167) | the local case (34.226) |
+| --- | --- | --- |
+| which items were run | 67 tasks in one report, 134 in another | 82 distinct games where 105 episodes were paid for |
+| what the denominator means | "per run" vs "per task" vs "per episode" | 35 episodes per shard, 0–35 distinct games per shard |
+| whether the split is fixed | step cap 30 vs 50, temperature 0 both | contiguous window of `os.walk` order vs of a sorted list |
+| recoverable from the artefact | no — the papers do not publish item lists | no — the artefact records what ran, not what should have |
+
+**What this buys the record, and it is a column rather than a claim.** Every artefact in this lane now carries
+`games_driven` and `retries`, and every bank is refused unless its union tiles the slice. No published ALFWorld row
+reports either — not the 100.0 of the trained board, not ALMA's 87.1, not MemScope's 71.64. A reader of those rows
+cannot tell whether two of them ran the same games, which is the first question a paired comparison has to answer.
+
+**The honest limit of the parallel.** The local defect was found and can be fixed by sorting one list; the published
+spread is a *design* difference (task subset, outer-step budget, what counts as a run) and no sort repairs it. So the
+record claims a method and not a correction: **publish the items, not only the rate.** That is cheap for anyone who
+already has the artefacts, and it is the difference between a number that can be joined to another and a number that
+can only be quoted.
+
+**Where this lane now stands on the two boards, unchanged in position and changed in what it can defend.** R167's
+Board B still has no absolute score for this lane, because the sweep has not completed; what changed is that when it
+does complete, the artefact will say how many distinct games each arm drove and whether any call needed retrying. The
+first is what makes `aggregate.py`'s paired delta checkable by a reader who does not trust this repository; the second
+is what makes a 4-hour run's score reproducible rather than lucky.

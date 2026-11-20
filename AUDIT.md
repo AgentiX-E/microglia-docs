@@ -13334,3 +13334,84 @@ cost was ¥0 and its value is that the reading cannot be reinterpreted after the
 diverges on 2 of 134 games and reports +1.5pp has said nothing about memory and everything about two games; a pack
 that diverges on 90 games and reports +0.7pp has said the mechanism engaged and was worth almost nothing per
 engagement. Both are now readable in one line of output, and neither can be quoted as "the memory helped".
+
+## 34.226 — The shard arithmetic was a sample, and a completeness check built for something else found it
+
+Run `44685314225` was dispatched at 05:59 UTC, held by `wait-for-window.sh` until 10:00, and at 10:19:49 shard 1
+died: **722 successful calls, then one connection closed before its response**, at game 20 of 35. Three shards
+finished. The bank job was skipped because a need had failed, and twelve sweep jobs failed forty seconds later on
+`Unable to download artifact(s)`. The run's red X pointed at twelve jobs that never ran.
+
+Four defects, in the order they were found rather than the order they matter.
+
+### The three that were visible in the log
+
+`chat()` caught `urllib.error.URLError` and `urllib.error.HTTPError`. It did not catch the exception that actually
+happened: `http.client.RemoteDisconnected` derives from `ConnectionResetError`, which derives from `OSError`, and
+`URLError` is a *different* `OSError` subclass. So the handler written to turn a network failure into a `LaneError`
+was bypassed entirely, the traceback escaped, and a four-hour job ended. **A `try` that names the wrong exception is
+worse than no `try`, because it reads as coverage.**
+
+`--out` was written once, at the end of `main`. Twenty games, 1,078 calls, and the artefact that reached GitHub was
+330 bytes — the log file, not the record. The money was spent and the evidence did not exist.
+
+The bank job was `needs: distill-train` without `always()`, so a failed slice turned it grey. Twelve jobs then failed
+on the absence, each reporting the same missing artefact. The diagnosis — *which* slice died and what it cost — was
+four layers away from the red X.
+
+### The one that mattered, and how it was found
+
+The repair for the third defect included `--expect-games`, which reads every episode file and counts distinct games
+before distilling. It was written to refuse a *union of two runs* that does not cover the split, because the plan was
+to join the three surviving shards to a re-driven fourth. Its first act was to refuse the three surviving shards:
+
+```
+FAIL the artefacts cover 82 games but the slice is 140
+```
+
+105 episodes, **82 distinct games**, 11 shared between shard 0 and shard 2, 4 between 0 and 3, 10 between 2 and 3.
+`AlfredTWEnv.collect_game_files` walks the split with `os.walk(data_path, topdown=False)`, so `game_files` is in the
+**filesystem's** order — and `--shard i/n` was taking a contiguous window of an order that two runners did not
+agree on. Three quarters of a split, sampled three times from three orderings.
+
+**Why nothing had seen it.** A single-shard pass is unaffected: the `floor` job drives the whole split in one process,
+covers it, and its determinism check replays in that same process, so every assertion it makes is true. A sweep would
+have refused — `aggregate.py` raises when two arms' games do not coincide — but only *after* 402 games had been paid
+for on twelve different orderings, and the refusal would have read as a data-joining bug rather than as a partition
+that was never a partition.
+
+**The general shape, since it will recur.** Three of the four defects are the same mistake in three places: *a check
+that is satisfied by the thing that is wrong*. A retry that names the wrong exception, an artefact written where the
+pass cannot be resumed from, a job that is skipped where it should have spoken, a partition that is a sample. Each
+looked like protection. Each was found by asking a question the check did not ask — and the fourth was found by a
+check written for a different question, which is the only reason it was found at ¥0 instead of at ¥7.7.
+
+### What is retired, and what is not
+
+| reading | affected | why |
+| --- | --- | --- |
+| the 20-game calibration, 55.0% [34.2, 74.2] | **no** | single shard, one process, one ordering |
+| `floor.py`'s coverage and determinism assertions | **no** | whole split in one process; the order varies, the *set* does not |
+| every sliced training or sweep reading before this commit | **retired** | the slice was a window of an unknown ordering; which games it drove cannot be recovered |
+| the 4.4-point "headroom" arithmetic in 34.220 | **no** | it is a difference of two single-process readings |
+
+Retired rather than repaired, because a slice's identity is not recoverable from its artefact: the episodes record the
+games they drove, and the games the slice *should* have driven are exactly what the ordering determined.
+
+### The repair, as three properties rather than three edits
+
+1. **A failure is classified, not merely caught.** `transient()` is a table with a test per row, and the retry loop is
+   built on it: five attempts at 1+2+4+8 seconds — 15 seconds out of four hours, which is the trade a run this long
+   wants, because the alternative was not "no waiting", it was "no result". `400/401/403/404` still fail on the first
+   attempt, since retrying them spends four attempts on a fact that will not change.
+2. **A paid game is on disk before the next one starts.** Written after every episode through a temporary file and a
+   rename, so a killed job leaves a whole file or none, and `--resume` continues it. The header is compared field by
+   field; a repeat is refused *before* the write rather than after the bill; a seed pass cannot be resumed because its
+   draw stream is a whole-pass stream.
+3. **A short union is refused by name.** `--expect-games` refuses rather than distils, and the refusal names both
+   numbers. That is the difference between a job that fails and a job that diagnoses.
+
+**Cost of the round so far: ¥1.54** — 105 episodes, 3,915 calls, $0.2156 by the provider's own `usage` object — of
+which the 82 distinct games are unusable. **What it bought: a defect that would have invalidated every paired delta
+this lane was about to pay ¥5.63 for**, and that would have arrived as twelve arms disagreeing about which games they
+drove rather than as a partition that was never one.
