@@ -12824,3 +12824,40 @@ means a green local `pnpm eval:coupling-check` is not evidence about the push.
 test: the registration schema, the coupling snapshot, and the first one in this series (the `reset`-on-a-shell
 `AttributeError`, which the smoke pass caught at 42 seconds). No test was weakened to get green, and no count was
 pinned to make a number stop moving.
+
+## 34.212 — The table that says it is recomputed on every push, and has never been
+
+Found while regenerating the coupling snapshot for 34.211, and not fixed in that round because the fix needs a
+decision the round had no basis for making.
+
+`README.md` carries a layer table under the heading "Where the scenario actually is: 1,766 lines, seven modules,
+and a gate for the rest", introduced with the sentence *"`pnpm eval:coupling` recomputes it from the source tree on
+every push"*. The committed snapshot says something else:
+
+| layer | README | `eval/results/poc-coupling.json` |
+| --- | --- | --- |
+| `core` | 37 modules, 6,821 lines | **47 modules, 10,588 lines** |
+| `protocol` | 2 modules, 1,215 lines | **3 modules, 1,922 lines** |
+| `sql` | 7 modules, 1,766 lines | 7 modules, **1,956 lines** |
+| `eval` | 76 modules, 24,799 lines | **192 modules, 57,598 lines** |
+| `browser` | 2 modules, 280 lines | 2 modules, 280 lines |
+| `node` | 6 modules, 1,282 lines | 6 modules, **1,291 lines** |
+
+Four of six rows disagree, `sql` agrees on modules and not on lines, and `browser` agrees on both. That pattern is
+the diagnosis: the table was written once, by hand, at a point when `sql` was 1,766 lines, and has been edited only
+where a module was added to the sentence rather than to the table. **A number described as recomputed, and
+maintained by hand, is worse than a number described as hand-written** — the first one stops a reader from
+checking.
+
+**Why it is not fixed here.** The README says *production modules*, and the snapshot counts everything the walk
+scans, including `bin/` entrypoints and `__tests__`. Replacing the table with the snapshot's numbers would answer a
+question nobody asked (how many lines of test code name a database) and would silently change the claim the section
+exists to make — *"the scenario is a fifth of the production tree and none of it is in the library"*. The right fix
+is a `productionModules` count in `coupling.ts` so the table and the gate read the same walk, and that is a
+modification to a gate rather than an edit to a table, which is not a thing to do at the end of a round that has
+already spent three red builds on gates.
+
+**What is recorded instead.** The numbers above, so the next round starts from the disagreement rather than from
+the table. The section's headline — 1,766 lines and seven modules — is true of `sql` at the snapshot's own count of
+1,956 only in the sense that `sql` is still seven modules; the line count moved by 190 and nothing in the repository
+noticed.
