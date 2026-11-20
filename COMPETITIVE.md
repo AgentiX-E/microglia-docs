@@ -8472,3 +8472,40 @@ entertain, and the next three arms are what would settle it.
 | harm share | 7.1–9.9% | 52% for the τ² family | directionally |
 | tokens injected | 328 | 1,319 (ALMA) | yes |
 | cost per episode | $0.0014 | $0.09 per run (ALMA) | different denominators |
+
+## R171 — The distillation result that explains why the field's rule-bank numbers cannot be attributed (2026-11-20, 17:30 UTC)
+
+A bank distilled from `cool` and `heat` trajectories only — 28 won episodes of 140, four critique calls, ¥0.035 —
+produced five rules of which **four are about the whole task**: the `put` → `move <object> to <receptacle>` workaround
+(twice), "open the closed receptacle first", and "search the likely locations in order". One rule is about cooling.
+
+That is not a quirk of the filter. It is what the ExpeL-style prompt does: it asks for rules over a trajectory, and
+every ALFWorld trajectory ends by placing an object, so a bank distilled from any subset of task kinds converges on
+the same procedural advice. **The rule bank is a set of general procedures, not task knowledge** — which is exactly
+what the placebo measured (+17.91 pp from a block whose words were permuted into other words).
+
+**Why this matters for the board rather than for this lane.** Every published rule-bank number on this corpus —
+ExpeL's own +19, AWM's workflow abstractions, Synapse's contrastive retrieval, H2R's two-tier memory — reports a step
+from a prompt that contains task-shaped imperative text. None of them reports a form-matched control. If the
+procedures are general, then the step they measure is **not separable from "the model was reminded, in instruction
+shape, that this is a careful task"**, and the same confound sits under every row:
+
+| family | what the method adds | what the reported step could be | is a form control published |
+| --- | --- | --- | --- |
+| rule banks (ExpeL, this lane) | distilled procedures | procedures, or instruction shape | **no**, and this lane's placebo says shape |
+| workflow abstraction (AWM) | reusable action sequences | task structure, or a plan-shaped preamble | no |
+| two-tier memory (H2R) | high/low-level separation | retrieval quality, or length | no |
+| contrastive retrieval (Synapse) | selection among memories | selection, or which block got injected | partially: ablates retrieval, not form |
+| parametric/cheap baselines (DynamicCheatsheet) | a growing note | accumulation, or prompt length | no |
+
+**What this lane can now say that the others cannot.** Not "we are better" — the levels are not comparable across
+harnesses (67 versus 134 games, 50.75 versus 67.16 for the same method). What is comparable, because nobody else
+publishes it, is the *decomposition*: a paired delta with its own control (+14.2 to +17.9 pp), a permutation placebo
+that lands above the intact bank, and now a hand-written irrelevant block with the same header, the same per-entry
+lengths and the same imperative form. The third is running (run `44779423772`, ≈ ¥2.0).
+
+**The row that would change the board if it lands at zero.** A filler block that scores like no block, while
+`always-in` holds at +14 pp, would put *relevance* back into the mechanism and make the field's unpublished form
+controls the most valuable missing column in this literature. A filler block that scores like the placebo collapses
+the whole family into prompt engineering and makes this lane's contribution a negative one: the measurement that
+shows the field's rule-bank numbers are not about rules.
