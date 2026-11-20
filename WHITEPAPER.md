@@ -4608,3 +4608,50 @@ Two rules follow, and they are mechanical enough to be enforced rather than reme
 one dispatch.** **Nothing is compared across arms until I² is under 50%.** Both would have caught the two errors
 this project actually made: a ranking built from one dispatch per system, and a 27pp difference read across two
 intervals that each spanned more than half of it.
+
+## A price is a model of a run until the run has been measured
+
+Every quote this project has issued for an experiment it had not yet run shared one shape: three factors
+multiplied, of which at most one had been read from the data. The number of turns a task takes, the size of the
+prompt a turn sends, and the price per token were assumptions wearing the clothes of a budget. One of them was
+right — the provider publishes its rate card — and that is what made the other two invisible.
+
+The correction is not a better estimate. It is a zero-cost instrument. On ALFWorld's 134 held-out games a walker
+that chooses uniformly among the environment's own admissible commands, and calls no model, produces four
+readings in thirty minutes of runner time:
+
+| reading | what it replaces |
+| --- | --- |
+| **0 wins of 134**, Wilson 95% [0.0%, 2.8%] | an assumption that the floor was near zero |
+| **134 of 134 replaying identically** under one seed | an assumption that an arm is a function of its seed, which every paired interval here depends on |
+| **5,367 characters** of transcript per 50-turn episode | an assumption about how long a conversation gets |
+| **25.05** admissible commands at reset | an assumption about the size of the action space |
+
+The floor reading is the one that decided something. Had the walker scored five percent, part of the task family
+would be reachable without understanding it, and every headroom figure in this record would have been too generous
+by that much. It scored zero, which means the whole board is above chance — the best news available for a treatment
+whose effect is supposed to come from reuse, and unavailable without the measurement.
+
+The replay reading is the one that protects the arithmetic. A paired minimum detectable effect treats the
+between-arm difference as the only noise; if the environment carried any run-to-run variance, that variance would
+enter `b + c` and the quoted resolution would be optimistic, which is the direction that spends money on a
+difference the sample cannot see.
+
+**And the last assumption fell too.** The fixed prompt prefix had been estimated at 8,000 characters. Reading the
+competitor's own prompt file — two complete ReAct trajectories per task type, shipped in `prompts/alfworld.py` —
+puts it at **1,839 to 4,286**, mean 3,574. That single correction halved the quote.
+
+| layout | per episode | 134 games × 3 arms |
+| --- | --- | --- |
+| no prompt cache | ¥0.091 | ¥36.7 |
+| prefix held by the cache | ¥0.0074 | **¥2.99** |
+
+The twelve-fold gap is not an optimisation. It is a structural property of the arm: a transcript that is
+**appended to** keeps a stable prefix and hits the cache on every turn, while a pack **re-injected per turn** moves
+the prefix and misses on every turn. This project has already paid for that lesson once, on τ², where the memory
+arm was billed 3.7× the control's uncached tokens across the same sixteen calls — and the lesson is worth stating
+as a design rule rather than a discount: **a memory that changes the front of the prompt on every turn pays for its
+own content twice, once in tokens and once in cache misses.**
+
+None of this makes the experiment cheaper than it is. It makes the number true, which is a different and more
+useful thing: ¥2.99 is a figure that can be spent without a conversation about whether it is right.

@@ -7348,7 +7348,7 @@ and has never been converted into a public number.
 
 **What R162 changed, in one paragraph.** The lane stopped being an estimate. Two numbers were assumptions and are
 now measurements: a floor of exactly zero over 134 games, and a split that replays 134 of 134 with the same seed.
-The third — the price — became arithmetic over a measured transcript and moved by a factor of fifteen, from ¥36.7
+The third — the price — became arithmetic over a measured transcript and moved by a factor of twelve, from ¥36.7
 to ¥2.99 for three arms, for a reason that is a property of the arm rather than of the provider: a transcript
 appended to keeps a stable prompt prefix and hits the cache, while a pack re-injected on every turn moves the
 prefix and misses. The axis also moved. Twelve rounds asked whether a store is *about* this case; ExpeL, the
