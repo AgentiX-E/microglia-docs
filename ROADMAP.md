@@ -7681,3 +7681,24 @@ how to think rather than about the world, and the one rule with the most votes (
 If the placebo comes back at +10 pp, the finding is not "experience reuse works" but "a longer prompt of any
 kind works", and the row that would then lead the queue is a length-matched *content* control — the same bank with
 its rules replaced by other rules from the same corpus that the control never lost on.
+
+### The placebo came back, and the queue is now one experiment deep (2026-11-20, 16:00 UTC)
+
+The row above said: *"if the placebo comes back near +10 pp the finding is not 'experience reuse works' but 'a longer
+prompt of any kind works'."* It came back at **+17.9 pp** — higher than the intact bank — so the finding is the
+second one, and the queue collapses to a single question:
+
+> **Does any of the 15–18 points depend on what the block says?**
+
+| rank | experiment | why it is the only one that matters now | price |
+| --- | --- | --- | --- |
+| **1** | **a bank distilled from `cool`+`heat` only, scored on all 134 held-out games** | same shape, same header, same length, different vocabulary, rules true but inapplicable where they are scored. If the `put`/`clean` games move, the block is the mechanism and this lane is measuring prompt engineering | ≈ ¥2.0 |
+| 2 | `--gate-share 0.2` on the six-rule bank | the one arm that can decline to inject; explains the −7.5 | ≈ ¥1.9 |
+| 3 | `retrieved(k=1)` on the six-rule bank | whether selection helps when it is forced to choose one | ≈ ¥1.9 |
+| 4 | a knob sweep over header, position and count | how much of the 15–18 is knob choice, which is what ALMA's meta-agent searched | ≈ ¥15 |
+| 5 | `floor.py` coverage (31%) | unchanged, ¥0, and it is the gate on everything above | ¥0 |
+
+**Rank 1 needs one thing that does not exist yet**: a way to distil from a *subset* of the training artefacts by task
+kind. `distill.py` reads every episode it is given and `agent.py` already classifies each game into one of the six
+kinds, so the feature is a filter and a test, not a new mechanism. Until it exists, rank 1 cannot be dispatched — and
+every other row is tuning a mechanism whose contribution is currently indistinguishable from a shuffle.
