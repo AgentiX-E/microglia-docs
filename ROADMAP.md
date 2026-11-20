@@ -7584,3 +7584,14 @@ from a design this lane does not implement is a number it should not quote.
 file, and a k=1 arm can be dispatched against it independently); row 5 needs the bank and a read-time rule; row 6
 and 7 are blocked on arguments rather than on data. So the critical path is row 1 → row 2 → row 3, and row 4 can
 run beside row 3 on separate runners at ≈ ¥1.9 each.
+
+**And the row the field's strongest prompt-only competitor implies, which is not in the table above.** ALMA
+(*Learning to Continually Learn via Meta-learning Agentic Memory Designs*, ICLR 2026 RSI) does not add a mechanism:
+it **searches over memory designs expressed as code**, and reports 87.1% on ALFWorld against 80.0% for the best
+hand-written baseline, at $0.09 of construction per run and 1,319 tokens injected per task. Everything this
+repository has built is hand-written — `renderPack`, `shapeFold`, the MMR ordering, the bank — and every knob in it
+was chosen by argument rather than by search. The cheapest analogue of ALMA available here is not a meta-agent: it
+is a **search over the pack's own knobs** (k, the gate, entry order, header wording, where in the prefix the block
+sits), scored on the bank's own 134 paired games. That is a campaign of ≈ ¥1.9 per configuration, seven or eight
+configurations, ≈ **¥15** — and it is the only row in this document that is a *design* gap rather than a mechanism
+gap. It is not scheduled this round because it needs a bank and a delta to search around, which is row 1.
