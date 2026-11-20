@@ -7317,7 +7317,7 @@ forced — **row 7 (BIRD dev 6,600 paired) before row 1 can be read**, and row 1
    6,600-pair lane (≈1pp resolution, the only lane that can see a 0.9pp effect), then **$0.95** for the distillation
    arm, then **¥150–400** for one memory board row once the store is worth ranking.
 
-## Where the flywheel stands, 2026-11-20 (R162: the floor is zero, the price is ¥2.99, and the axis is form rather than presence)
+## Where the flywheel stands, 2026-11-20 (R163: the queue is a list of measurements, and one of the four candidates was never this repository's)
 
 **What R160 established, and what R162 would not use before checking.** Twelve content axes have been null, and R160 stopped looking for a thirteenth
 and tested why they were all null. A lesson can only transfer to a question whose answer already shares something
@@ -7398,6 +7398,28 @@ reference resolves to a heading in `COMPETITIVE.md`. A candidate that cannot fil
 read yet; one that cannot fill in `episodes needed` has not been priced; and one whose side is `cortex` is not this
 repository to build, however much it looks like memory management.
 
+**What R163 corrected, and what it cost.** The R162 report ended with four competitor mechanisms offered as
+R164+ candidates. Reading them — which the report had not done — found three things. **"Synapse's contrastive
+retrieval" names a mechanism that does not exist**: there are two systems called Synapse, one reporting MiniWoB++
+99.2% from trajectory-as-exemplar retrieval by embedding similarity (ICLR 2024), the other reporting LoCoMo F1 40.5
+from a dual-layer associative memory with spreading activation (ACL 2026). **That second one is cortex's**, and it
+would have been built here. **AWM was already registered and priced** as P2 in Appendix X.2. And **two of the four
+carry published effects smaller than this split can resolve at any price** — the FSM's +5.23pp needs 861 episodes and
+H²R's +3.5pp needs 1,923, against 134 games, and repeating 134 games does not add one independent sample.
+
+The rule that prevents a repeat is a test rather than a taxonomy: a mechanism is **cortex's** when its authors report
+a score on a question asked of the store independently of any task, and **microglia's** when they report a task
+success rate under a fixed model and prompt skeleton. Applied, it leaves four microglia rows, **three of which are
+rendering decisions** — a two-section pack, a graph-ordered list, a workflow placeholder are all `renderPack()` work
+over items `recall()` already returns, and `shape-fold.ts` settled the same question in R109 by choosing delivery
+because it changes one thing.
+
+**And the queue is now checked.** `ROADMAP.md` carries a `### Candidate registry` and `scripts/check-docs.mjs` fails
+the push unless every row names a side, cites exactly one resolvable `AM.n`, and states an episode count — three
+deliberate breaks were used to verify it, and it then failed on this round's own prose before passing.
+`.github/workflows/docs.yml` runs it; its first run is `44656232936`, success. **That is the first workflow this
+repository has had since 2026-10-20**, when the docs/product split removed `ci.yml` — so every round's "CI is green"
+in between was a statement about one repository and vacuous about this one (AUDIT 34.214). Cost of R163: **¥0**.
 
 **What the four questions answer, this round.**
 

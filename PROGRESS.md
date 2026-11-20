@@ -23479,7 +23479,30 @@ describing a moved tree (34.212), four unregistered candidates — was a claim i
 whether `microglia` is the right side for a mechanism nobody has read. It enforces that the columns are filled —
 the difference between a queue and a list of things that sound important, not the difference between right and wrong.
 
-### 193.2 Cost
+### 193.2 The gate this round added was the first one, and that is a finding rather than a milestone
+
+Checking whether `docs.yml` was the first workflow here turned up why it was needed and why nobody had noticed.
+
+| when (UTC) | `.github/workflows/ci.yml` |
+| --- | --- |
+| 2026-10-20 02:47 | created in `287f074c` |
+| 2026-10-20 03:23 | ran once, `success` |
+| 2026-10-20 04:57 | **removed** in `a63d350a`, *"docs: split the internal documents from the product repository"* |
+| since then | **no workflow file in this repository** |
+
+Removing it was defensible — five markdown files cannot usefully run `tsc` or `vitest`, and a copied workflow would
+have been neutered with `continue-on-error`, which this programme forbids. **The defect is that every round since then
+reported "CI is green"**, and each of those statements was true of `AgentiX-E/microglia` and vacuous about this
+repository, which had nothing that could be red.
+
+Two reasons nothing corrected it, both structural. **The local copy is not a git repository** — `git status` returns
+`fatal: not a git repository` — because this tree is pushed through the GitHub Data API rather than cloned, so a
+deletion made by an earlier round is invisible to every later one. And **every status check in this programme names
+`AgentiX-E/microglia`**: the run listings, the job listings, the failure-log fetches. A repository never queried
+cannot report a problem. Recorded as AUDIT 34.214, with the corrected sentence: **CI is green in both repositories,
+and where one has no workflow that is a fact to report rather than a colour to assume.**
+
+### 193.3 Cost
 
 `¥0`. No dispatch, no model call, no runner minutes beyond a five-minute docs job. The expensive version of this
 mistake is the one where the queue is executed first and the reading happens when the result is null.

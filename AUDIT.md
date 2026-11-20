@@ -12920,3 +12920,51 @@ same failure mode as AM.22's 16.4-point spread, arrived at from the other end.
 
 **Cost of the correction.** Reading, and nothing else: no dispatch, no model call, `¥0`. The expensive version of
 this mistake is the one where the queue is executed first and the reading happens when the result is null.
+
+
+## 34.214 — "CI is green" was true of one repository, and this one had no gate at all for a month
+
+Found while checking whether the workflow this round added was the first one. It was — and the reason is not that
+nobody thought of it.
+
+| when (UTC) | what happened to `.github/workflows/ci.yml` in this repository |
+| --- | --- |
+| 2026-10-20 02:47 | created, in `287f074c` — *"feat: microglia design, monorepo POC, and live API evidence"* |
+| 2026-10-20 03:23 | ran once, conclusion `success` (run 39364021246) |
+| 2026-10-20 04:57 | **removed**, in `a63d350a` — *"docs: split the internal documents from the product repository"* |
+| 2026-10-20 → 2026-11-20 | **no workflow file exists in this repository at all** |
+
+**Removing it was defensible and the split probably should have removed it.** A repository of five markdown files
+cannot usefully run `tsc`, `vitest` or a benchmark build, and carrying a copy of the product's CI into the docs
+repository would have produced a workflow that either failed for the wrong reason or was neutered with
+`continue-on-error`. That is not the defect.
+
+**The defect is what every round since then reported.** Each round's summary says the CI is green. Each of those
+statements was true of `AgentiX-E/microglia` and **silently vacuous about this repository**, which had no gate, no
+workflow and therefore nothing that could be red. Thirty-odd rounds of "all workflows green" while one of the two
+repositories in scope had no workflows. The phrase was not a lie; it was an unquantified claim, and the quantifier it
+was missing is *which repositories*.
+
+**Why nothing corrected it, stated exactly.**
+
+*The local working copy is not a git repository.* `cd microglia-docs && git status` returns `fatal: not a git
+repository`, because the directory is a set of files pushed through the GitHub Data API rather than a clone. So
+`git log`, `git status` and every habit that notices "a file is gone" are unavailable in this tree — a deletion made
+by an earlier round is invisible to every later one.
+
+*Every status check this programme runs queries `AgentiX-E/microglia`.* The run listings, the job step listings and
+the failure log fetches all name the product repository. A repository that is never queried cannot report a problem,
+and the check that would have caught it — *does each repository in scope have at least one workflow whose latest run
+is green* — was never written because the question was never phrased as a set.
+
+**What now exists, and what it cost.** `.github/workflows/docs.yml` runs three checks in `scripts/check-docs.mjs`:
+fence parity in every document, every `AM.n` reference resolving to a heading in `COMPETITIVE.md`, and every
+candidate-registry row naming a side, a registration and an episode count. The check was broken deliberately three
+ways before it was committed, and it then failed on this round's own prose before passing — all three recorded in
+PROGRESS 193.1. Its first run, `44656232936`, is `success`, and it is the first green run in this repository whose
+green means something ran.
+
+**The sentence that should have been written every round, and now is.** *CI is green in both repositories* — and
+where a repository has no workflow, that is a fact to report rather than a colour to assume. A gate that does not
+exist cannot fail, which is the cheapest possible way to have a perfect record and the most expensive way to discover
+one.
