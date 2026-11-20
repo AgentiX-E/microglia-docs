@@ -23710,3 +23710,60 @@ smaller than the last report implied rather than larger.
 
 **¥0.** Reading, one table, and four sections of a prompt. The expensive version of this round is the one where the
 queue is executed first and the question *whose work is this* is asked when the numbers come back null.
+
+## 197. The treatment was not the competitor's prompt, and the bank now has a producer
+
+**R164.** Two changes and no measurement: the `always-in` block is rendered in the competitor's words and at the
+competitor's position, and the rule bank the two treatment arms carry is built by a ported extractor instead of
+being described. Records in `AUDIT.md` 34.222 and 34.223, the prediction in `REGISTRATION.md` §R164.
+
+### 197.1 What was wrong with the arm, in one line
+
+Its header was `Rules from earlier attempts:` — a sentence from this repository — and its position was above the
+instruction rather than after the examples. `RULE_TEMPLATE['alfworld']` and `insert_before_task_prompt` disagreed with
+both. An arm offered as *the competitor's mechanism* was this repository's prompt with the competitor's name on it.
+
+**And the repair cost nothing, for a structural reason worth naming:** `none` carries no pack, so the control's
+prompt did not change by a byte, and a test now asserts it (the first observation the control sends equals the
+environment's string). The 20-game calibration still describes the arm it measured; the two treatment arms had
+never run, so there was nothing else to invalidate.
+
+### 197.2 What the bank is, and what it cannot be
+
+| decision | what was chosen | why |
+| --- | --- | --- |
+| the extraction prompt | `all_success_existing_rules`, verbatim | the competitor's mechanism, not an impression of it |
+| chunk size / cap | 8 / 20, the competitor's own config values | a bank of 4 rules and a bank of 20 are different treatments with the same arm name |
+| the arithmetic | `rule-bank.ts`'s, ported to Python | the lane runs where `node` is not guaranteed; the ports are checked against one shared vector file |
+| the training split | `valid_seen` (140), named explicitly in the workflow | a bank distilled from the held-out games would look exactly like a result |
+| the contrast pass | **absent** | it needs repeated trials of one task; the split gives one (AM.24) |
+
+The absence is the honest limit: this bank is the competitor's extraction minus its contrast, and the score that
+comes back is a score for *that* treatment.
+
+### 197.3 The six expectations the shared contract corrected
+
+Nineteen hand-written cases, six of them wrong, and both ports agreed against their author each time. The one that
+matters scientifically is that **ExpeL's identity test fires almost only on near-verbatim restatement**, because
+every rule ends in a full stop and a real extension puts a word between the period and the rest. A bank maintained
+by that arithmetic is close to append-only in practice — falsifiable on the first real bank by the ratio of applied
+operations that were additions to those that were edits, and that ratio is now a reported reading rather than an
+assumption.
+
+### 197.4 The price of the bank, before it is bought
+
+| item | quantity | unit | total |
+| --- | --- | --- | --- |
+| the training pass | 140 `valid_seen` games | ¥0.014 measured | **¥1.96** |
+| the critique calls | 10 (77 wins / 8 per chunk) | ~12k input tokens each | **¥0.10** |
+| the three arms | 402 episodes (3 × 134) | ¥0.0142 measured | **¥5.71** |
+| **total** | | | **≈ ¥7.8** |
+
+Both numbers come from the same measured unit rate, which is the point of having measured it: the estimate this
+replaces was ¥5.4 and the measurement is the number that will be quoted.
+
+### 197.5 Cost
+
+**¥0**, no dispatch and no model call. The round's own gates were run instead: 96 Python cases over `agent.py` at
+99% statement coverage (the one uncovered line is `sys.exit(main())`), 28 over `distill.py` at 99%, 19 shared
+vectors read from both languages, and the two workflows' structural checks.

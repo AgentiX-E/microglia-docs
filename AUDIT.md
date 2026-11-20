@@ -13180,3 +13180,84 @@ score is not a task score. Nothing else crosses.
 
 **Cost of the boundary.** `¥0`. No dispatch, no model call: the work was reading three papers' reported metrics
 against one rule and writing the four sections above into a prompt.
+
+## 34.222 — The `always-in` arm was rendered in this repository's voice, and the control was never at risk
+
+The arm whose job is to reproduce the competitor's mechanism carried a block headed **`Rules from earlier
+attempts:`** — a sentence written here — placed above the instruction and the examples. The competitor's header is
+`RULE_TEMPLATE['alfworld']` in `prompts/templates/human.py@LeapLabTHU/ExpeL`:
+
+> The following are some experience you gather on a similar task of completing a household task by interacting in a
+> household environment. Use these as references to help you perform this task:
+
+and its placement is `insert_before_task_prompt`: the rule message is appended **after** the few-shot block and
+**before** the task line, not at the top of the prompt. So the arm that the registration describes as *"the
+competitor's mechanism"* was this repository's prompt with the competitor's name on it, in two places at once.
+
+**Why it is a defect rather than a wording preference.** The registered prediction is `always-in − none` compared
+against a published 19pp, and an arm is a treatment only if the treatment is the one whose effect was published. A
+paraphrase changes the text the model reads; a different position changes what the text sits next to. Either is
+enough to make "we reproduced their mechanism and did not get their effect" an unfalsifiable sentence, which is the
+sentence the standard of evidence here exists to prevent.
+
+**Why it was free to repair.** `none` carries no pack. Its prompt is a function of the task, the examples and
+`max_steps`, and none of those changed — so the **byte-identical** control the 20-game calibration measured is still
+the control, and a test now asserts it directly: the first observation the `none` arm sends equals the environment's
+own string, character for character. The two treatment arms have never been run, so moving their block cannot
+invalidate a reading that does not exist. **This is the rare case where fidelity cost nothing**, and the reason is
+the arm's shape rather than the round's skill: the thing being moved was never in the control's prompt.
+
+**What was not repaired, and why the difference is stated instead.**
+
+| difference | effect on the paired delta | effect on a comparison with a published row |
+| --- | --- | --- |
+| the two example transcripts are split into alternating turns; the competitor sends one human block | none — identical in all three arms | a different rendering of the same examples |
+| the task line sits at the top of the first human turn; the competitor writes `Now it's your turn!` after the rules | none — identical in all three arms | same |
+| `max_steps` counts model turns here and environment steps there, at 20 | none — identical in all three arms | 50 turns at the measured 35.3% thought rate is about 32 actions against the competitor's 20 |
+
+Every row is a reason the claim is a **paired** delta and not an absolute number against a published one. Rebuilding
+the skeleton to close them would change the control's prompt, which would mean re-measuring the control before
+anything could be said — so the limitation is registered beside the prediction rather than argued away in a
+paragraph after the result.
+
+**Cost of the correction.** `¥0`, and one test that would fail if the control's prompt ever acquired a prefix.
+
+## 34.223 — Two ports of one arithmetic, and the six expectations the ports corrected
+
+The rule bank needs ExpeL's vote arithmetic in Python, because the ALFWorld lane runs on a runner that has
+`textworld` and no `node` guarantee, and it already existed in TypeScript (`packages/eval/src/rule-bank.ts`, ported
+in R162 from `agent/expel.py@LeapLabTHU/ExpeL`). Two implementations of one algorithm have exactly one interesting
+failure mode — they agree with themselves and diverge from each other — so the pair is checked against **a file
+neither of them generates**: `eval/drivers/alfworld/rule-op-vectors.json`, read by `test_distill.py` and by
+`rule-bank-vectors.test.ts`. A drift now fails two builds instead of producing a bank the Python lane would build
+and the TypeScript package says it would not.
+
+**The contract corrected its author six times out of nineteen cases, and this is the finding.** The first version of
+the vectors expected the substring identity to see an extension:
+
+| case as first written | what both ports did | why |
+| --- | --- | --- |
+| bank `Always check the lamp.`, `ADD Always check the lamp before leaving.` → expected rejected | **applied** | the existing text ends in a **period**, so it is not a substring of a sentence that continues after `lamp` |
+| bank `Always check the lamp.`, `REMOVE` leaving two votes → expected culled | **survived at one vote** | a removal costs one vote, not two; culling needs a rule already at one |
+| `AGREE 9` on a bank that holds no rule 9 → expected the first entry edited | **rejected** | `AGREE`/`REMOVE` resolve by text, never by number; only `EDIT` uses the number |
+| tokens identity over two phrases differing in a word | **not the same rule** | normalisation removes order, case and repetition — not content |
+
+The first row is the one worth keeping. **ExpeL's identity test fires almost only on near-verbatim restatement**,
+because every rule ends in a full stop and any real extension puts a word between the period and the rest. A bank
+maintained by that arithmetic is therefore close to append-only in practice, whatever the prompt says about
+`AGREE` and `EDIT` — and the effect is measurable on the first real bank, as the ratio of `applied` operations that
+were additions to those that were edits. The vectors now record the behaviour rather than the intent, and the six
+corrections are the reason the contract is written by hand from the competitor's source instead of generated from
+either port.
+
+**One deliberate divergence stays.** ExpeL checks `rule_num > len(rules)` but not `rule_num < 1`, so `EDIT 0`
+reaches `rules[-1]` — Python's negative index — and edits the last rule. The port rejects it and counts the
+rejection: reproducing an out-of-bounds access that happens to be legal in one language is not fidelity, and an
+operation the model got wrong should appear in the report rather than in a silently different bank.
+
+**What the bank cannot contain, stated where the number will be read.** ExpeL's first criticism compares a
+successful trial against *failed trials of the same task*, and both ALFWorld splits give one attempt per task
+(AM.24). Only the `all_success_existing_rules` path is available, so the bank this lane distils is the competitor's
+extraction **minus its contrast**.
+
+**Cost.** `¥0` to write: the vectors, the Python port and one TypeScript test that reads them.

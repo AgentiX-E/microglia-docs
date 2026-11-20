@@ -7527,3 +7527,21 @@ repository's, because the pack's **position in the prefix** decides whether the 
 is a delivery decision measured in yuan in this lane (R57 Amendment 4: a per-turn pack cost 3.7× the control's
 uncached tokens on the same sixteen calls). A substrate that rendered its own pack would move numbers reported here
 from a repository whose CI does not run this one's tests.
+
+### R164 — what the queue looks like now that the bank has a producer
+
+The registry above is unchanged in its rows and the prices in it are the ones this round measured. What changed is
+that row 2 is no longer a plan:
+
+| # | step | the number it needs | state |
+|---|---|---|---|
+| 2 | distil a rule bank from `valid_seen` | a bank of ≤20 rules with the competitor's maintenance arithmetic | **built, not yet run**: `distill.py`, 19 shared vectors, 99% coverage, four-slice training job + merge job in `alfworld.yml`. ≈ **¥2.1** |
+| 3 | three arms x 134, twelve jobs | `always-in - none` | **waiting on 2**, **¥5.71** measured |
+| 4 | the object-location pack | 20.5% of actions are refused; a third of them is worth ~6 points of turn budget | **registered, not built** (34.220) |
+| 5 | the reflection arm | — | **unavailable** (AM.24) |
+
+**And one row is now honest about its own weakness.** The bank is ExpeL's `all_success_existing_rules` path only:
+its first criticism — a successful trial against failed attempts at the same task — needs repeated trials that this
+split does not have, so the treatment being measured is the competitor's extraction **minus its contrast**. That is
+noted in `REGISTRATION.md` where the prediction is made, which is the only place a limit can be noted before a
+number arrives rather than after.
