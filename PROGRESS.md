@@ -24321,3 +24321,56 @@ bank. Cumulative, artefacts only: **¥13.7 spent, 0 retries across 23,854 calls*
 ≈ ¥1.9) is the one contrast that can separate *content* from *shape*: three of the six rules are advice about how
 to think, so an arm that wins 14 pp with them may be winning by being told to plan. `sham` carries the same bank
 with its tokens permuted — same length, same position, no content — and its delta is the null of this design.
+
+### 199.13 The placebo earns the bank's delta, which means the delta was never about the rules (15:55 UTC)
+
+Run `44763220821` drove the two arms the lane needed and had not yet bought: `none` again, and `sham` — the same
+four-rule bank with **every rule's tokens permuted inside itself**, seeded by the rule's own text, so the entry
+count, the token count, the punctuation and the header are exactly the bank's and only the order carries no
+information. `agent.py`'s own docstring states the stake: *"If this arm earns the bank's delta, the delta is about
+format."*
+
+It earned it.
+
+| arm | what it carries | `valid_unseen` | paired delta vs its own control |
+| --- | --- | --- | --- |
+| `none` (this run) | nothing | 81/134 = **60.4%** [52.0, 68.3] | — |
+| `sham` | 4 rules, word-permuted | 105/134 = **78.4%** [70.7, 84.5] | **+17.91 pp** [+8.96, +26.87], p<0.001 |
+| `always-in` (A) | 4 rules, intact | 99/134 = 73.9% | +14.18 pp (p=0.0044) |
+| `always-in` (B) | 6 rules, intact | 108/134 = 80.6% | +14.93 pp (p=0.0003) |
+
+**The three treatments are indistinguishable and the control is 15–18 points below all of them.** A block of the
+same shape whose words have been shuffled beats no block by more than the intact bank does — 1.4 to 3.7 pp more,
+which is inside the ±6 pp run-to-run swing this lane measured in 34.232 and 199.12.
+
+**So the mechanism claim is falsified in the form it was made.** "Experience distilled from 82 won episodes and
+carried into the prompt" is not what produces the gain; *a block of that size and shape in that position* is. The
+`sham`'s own strata repeat the intact bank's shape: 33 of the 53 games the control lost were rescued (62.3%),
+`cool` +38.1 and `clean` +25.8, `examine` −5.6 — the same profile, from word salad.
+
+**Three readings this forces, and one caveat that has to be stated with them.**
+
+1. **The registered hypothesis is now the null and the placebo is the treatment.** Nothing in this lane's design can
+   attribute a delta to rule *content* until an arm exists that carries content the control cannot use — a bank from
+   a different corpus, or from task kinds the scored games are disjoint from. That arm is cheap (a re-distillation
+   over a subset of the same transcripts, ¥0.10, plus one ¥1.9 sweep) and it is now the head of the queue.
+2. **The word-permutation control is a word-*order* control, not a vocabulary-free one.** The permutation preserves
+   the bag of words, so `inventory`, `fridge`, `cabinet` and `open` all survive into the sham. The +17.9 therefore
+   does not separate *format* from *lexicon*; it only proves the gain does not need the rules' syntax or their
+   pairing. A reader who takes "placebo" to mean "content-free" will over-read this, so the record says it first.
+3. **The lane's cheapest lever is now obvious and embarrassing.** If shape buys 15–18 points on 134 games, the
+   question "how many rules, in what order, under what header" is worth more than any distillation improvement — and
+   it is the same question ALMA searches over with a meta-agent. `ROADMAP` row 5 moves up on price, not on taste.
+
+**What it cost, and the running total from artefacts.**
+
+| | USD | CNY |
+| --- | --- | --- |
+| four slice sets (two of them from the duplicate dispatch) | $0.6590 | ¥4.68 |
+| two banks | $0.0275 | ¥0.20 |
+| sweep A | $0.5961 | ¥4.23 |
+| sweep B | $0.6240 | ¥4.43 |
+| the placebo sweep | $0.3983 | ¥2.83 |
+| **total** | **$2.305** | **¥16.4** |
+
+23,854 + 7,928 = **31,782 model calls, 0 retries refused, 3 banks, 22 arm-slices, 6 complete sweeps' worth of games.**

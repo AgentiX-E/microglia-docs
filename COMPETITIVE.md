@@ -8377,3 +8377,50 @@ injects*, the one cost column every prompt-only system could fill and almost non
 | `retrieved(k=1)` on the 6-rule bank | whether one rule beats three when the bank must be selected from | ≈ ¥1.9 | ready |
 | a larger bank (cap 40, `critique_num` 12) | whether the saturation at 4–6 rules is the distiller or the corpus | ≈ ¥1.9 | ready |
 | the knob search (ALMA's analogue) | every knob here was chosen by argument; ALMA's were searched | ≈ ¥15 | not started |
+
+## R171 — The placebo row goes on the board, and it changes what every other row means (2026-11-20)
+
+The `sham` arm scored **78.4% (105/134)** against its own control's 60.4%: **+17.9 pp, p<0.001**. It carries the same
+four-rule bank with every rule's tokens permuted inside itself — same entry count, same token count, same header,
+same position, no syntax, no pairing. The intact bank scored 73.9 (4 rules) and 80.6 (6 rules).
+
+| row | `valid_unseen` | paired delta vs its own control | what it injects |
+| --- | --- | --- | --- |
+| ALMA (own paper) | 87.1 | not reported | 1,319 tokens of a **searched** memory design |
+| microglia `always-in` | 80.6 / 73.9 | +14.9 (p=0.0003) / +14.2 | 366 tokens of distilled rules |
+| **microglia `sham`** | **78.4** | **+17.9 (p<0.001)** | **366 tokens of the same rules, shuffled** |
+| MemScope | 71.64 | not reported | — |
+| ALMA (MemScope harness) | 67.16 | not reported | — |
+| microglia `none` | 65.7 / 60.4 / 59.7 | — | 0 |
+| microglia `retrieved@k3` | 58.2 / 73.9 | −7.5 / +14.2 | 198 tokens, 3 of the bank |
+| DynamicCheatsheet | 50.75 | not reported | — |
+| ExpeL | 46.3 | not reported | — |
+| Mem0 | 33.6 | not reported | — |
+| ReAct | 31.2 | not reported | 0 |
+
+**Three consequences for reading this board.**
+
+1. **Every memory row on it injects a block, and none of them controls for the block.** `arXiv:2601.22436` reports
+   that agents respond to a condensed block's existence and shape more than to its content, and this lane has now
+   reproduced that on its own corpus with its own bank. The published numbers are therefore upper bounds on *memory*;
+   they are measurements of "a condensed block of this size" until an author shows a shuffled or foreign-content
+   control. ALMA is the strongest row on the board and the one where this matters most, because a *searched* design
+   that wins by shape would mean the meta-agent searched the wrong space.
+2. **This lane no longer has a claim above its control.** Its treatments sit 15–18 pp above its own control and
+   inside each other's intervals, so the honest row is: `none` 65.7, `+block` ≈ 78, `+block with this corpus's rules`
+   ≈ 78. The third column is empty until a cross-corpus bank exists, and that is the only experiment on this board
+   that nobody else has run either.
+3. **The cost axis survives the finding intact, and becomes the lane's only clean claim.** 366 tokens per task and
+   $0.0012 per episode against ALMA's 1,319 tokens and $0.09 per run is a 3.6× token and 75× money advantage for the
+   same order of score — and unlike the score, it does not depend on which explanation of the delta is true.
+
+**What would put a content column on the board next.**
+
+| experiment | what it separates | price | state |
+| --- | --- | --- | --- |
+| a bank distilled from the `cool`/`heat` games, scored on all 134 | format from lexicon: same shape, different vocabulary, rules true but inapplicable | ≈ ¥2.0 | not built |
+| `--gate-share 0.2` on the six-rule bank | whether retrieval's −7.5 is the anchor admitting unrelated rules | ≈ ¥1.9 | ready |
+| a knob sweep over header, position and count (ALMA's analogue, without the meta-agent) | how much of the 15–18 pp is knob choice | ≈ ¥15 | not built |
+
+The first row is the one this record would buy next: it is the only one that can turn `+17.9 from word salad` into a
+statement about *what kind* of text an agent reads.
