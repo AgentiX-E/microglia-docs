@@ -8315,3 +8315,65 @@ is worth **9.7 points** of measured headroom.
 | `retrieved(k=1)` | retrieval currently cannot select (2.9 of 4 rules admitted); k=1 forces a choice | ≈ ¥1.9 |
 | a bigger bank | the loop saturated at 4 rules, so the *distillation* is the binding constraint, not retrieval | ≈ ¥1.9 per re-distillation |
 | the pack-knob search (ALMA's analogue) | every knob in this lane was chosen by argument; ALMA's were searched | ≈ ¥15 |
+
+## R170 — The board position after a second distillation: the delta replicates, the level does not, and `retrieved@k3` turns out to be a ratio rather than an arm (2026-11-20)
+
+R169 placed this lane on the board from one sweep. A second chain then reached the sweep with the same code over the
+same 140-game corpus but distilled from a different draw of won episodes, so there are now **two independent
+distillations and two complete sweeps**. Both are artefact-backed and both pass the tiling check.
+
+| | replicate A | replicate B |
+| --- | --- | --- |
+| bank | 4 rules (76 won episodes) | 6 rules (82 won episodes) |
+| `none` | 80/134 = 59.7% | 88/134 = 65.7% |
+| `always-in` | 99/134 = 73.9% | 108/134 = 80.6% |
+| `retrieved@k3` | 99/134 = 73.9% | 78/134 = 58.2% |
+| `always-in − none` | **+14.18 pp** (p=0.0044) | **+14.93 pp** (p=0.0003) |
+| `retrieved − none` | +14.18 pp (p=0.002) | **−7.46 pp** (p=0.11) |
+
+**Against the published rows, with the caveats that make the comparison honest.**
+
+| system | ALFWorld `valid_unseen` | backbone | what it injects | what it costs |
+| --- | --- | --- | --- | --- |
+| ALMA (own paper) | **87.1** | GPT-5-mini | 1,319 tokens/task | $0.09 per run |
+| **microglia, `always-in`** | **80.6 / 73.9** | DeepSeek-V3.2-flash (open weights) | 366 tokens/task | **$0.0012/episode**, ¥0.10 bank |
+| MemScope | 71.64 | not reported | not reported | not reported |
+| ALMA (MemScope harness) | 67.16 | DeepSeek V3.2 | not reported | not reported |
+| DynamicCheatsheet | 50.75 | GPT-4o | not reported | not reported |
+| ExpeL | 46.3 | GPT-3.5/4 | not reported | not reported |
+| Mem0 | 33.6 | not reported | not reported | not reported |
+| ReAct | 31.2 | PaLM/GPT-3 | 0 | not reported |
+| **microglia, `none`** | **65.7 / 59.7** | DeepSeek-V3.2-flash | 0 | $0.0016/episode |
+
+Three things this table says that R169 could not.
+
+1. **This lane's *control* is already above four published systems**, and its treatment is above all but ALMA. The
+   comparison is not apples-to-apples and the record says so in the same breath: this lane's `none` carries a
+   few-shot prompt, transcripts of the task's own observations and 50 steps, so part of the 65.7 is scaffold, not
+   memory. What is comparable is the **delta**, because the control is the same scaffold with the block removed.
+2. **An unpaired comparison across runs would have been wrong by 6 pp.** The control scored 59.7% in one run and
+   65.7% in the other on the identical 134 games. The paired delta moved 0.8 pp across the same two runs. Any
+   board that compares two systems from two papers is making that 6 pp error, twice.
+3. **`retrieved@k3` is not a fixed arm.** With four rules in the bank it packs three of four and scores exactly what
+   `always-in` scores; with six it packs half and scores 7.5 pp *below* the control. Retrieval's sign depends on
+   how much there is to choose from, which means AMD's "`k=1` is optimal" is a statement about a bank this lane has
+   not yet built (six rules is the largest it has held). The gate at `--gate-share 0.2` is now the sharpest
+   available test of *why*: it is the only arm that can decline to inject anything.
+
+**Open or closed.** Every row above that reports an ALFWorld number releases code — ALMA's is at
+`github.com/zksha/alma` (Apache-2.0, verified today), ExpeL's at `LeapLabTHU/ExpeL` (this lane distils from the
+commit `e41ec9a2`), Mem0's and ReAct's at their own repositories. The distinction that separates the rows is not
+licence but **backbone**: five of the eight rows are closed-weight models, and this lane is the only one that runs on
+open weights and reports a per-episode bill. No closed-source memory product appears on the board at all, because
+none of them publishes an ALFWorld number in its own materials — which is why the axis of the figure is *what a pass
+injects*, the one cost column every prompt-only system could fill and almost none does.
+
+**What is still owed, in the order it should be bought.**
+
+| step | the number it settles | price | state |
+| --- | --- | --- | --- |
+| the placebo (`sham` × 4 vs `none` × 4) | is +14 pp the *content* of the rules or the *shape* of a block | ≈ ¥1.9 | **in flight**, run `44763220821` |
+| the gate (`--gate-share 0.2`) | whether retrieval's loss is the anchor admitting unrelated rules | ≈ ¥1.9 | ready |
+| `retrieved(k=1)` on the 6-rule bank | whether one rule beats three when the bank must be selected from | ≈ ¥1.9 | ready |
+| a larger bank (cap 40, `critique_num` 12) | whether the saturation at 4–6 rules is the distiller or the corpus | ≈ ¥1.9 | ready |
+| the knob search (ALMA's analogue) | every knob here was chosen by argument; ALMA's were searched | ≈ ¥15 | not started |

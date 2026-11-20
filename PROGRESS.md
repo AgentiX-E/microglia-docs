@@ -24263,3 +24263,61 @@ than a better bank.
 The repair is one of two, and it is not made in this round because the round's remaining money is better spent on the
 placebo: either the workflow learns to fetch a named run's control slices, or the dispatcher refuses the flag with the
 sentence that explains why. A flag that does nothing is worse than a flag that is not there.
+
+### 199.12 Two independent distillations, one stable delta, and a retrieval arm that depends on how much there is to choose from (15:35 UTC)
+
+Two chains reached the sweep with the same code and the same 140-game corpus, but distilled from different draws
+of won episodes (`76` and `82` of 140). That produced two banks and two complete sweeps — a replicate nobody
+planned, and the most informative reading this lane has.
+
+| | replicate A (`44754440122`) | replicate B (`44754650978`) |
+| --- | --- | --- |
+| bank | **4 rules** from 76 won episodes, 40 operations | **6 rules** from 82 won, 44 operations |
+| critiques | 10 | 11 |
+| `none` | 80/134 = **59.7%** [51.3, 67.7] | 88/134 = **65.7%** [57.3, 73.2] |
+| `always-in` | 99/134 = **73.9%** [66.0, 80.6] | 108/134 = **80.6%** [73.1, 86.4] |
+| `retrieved@k3` | 99/134 = **73.9%** | 78/134 = **58.2%** [49.7, 66.2] |
+| `always-in − none` | **+14.18 pp** [4.48, 23.88], p=0.0044 | **+14.93 pp** [7.46, 22.39], p=0.0003 |
+| `retrieved − none` | **+14.18 pp** [5.22, 23.13], p=0.002 | **−7.46 pp** [−15.67, 0.75], p=0.11 |
+| engagement | 132/134 (98.5%) | 126/134 (94.0%) |
+| harm / helped | 9.9% / 24.2% | 4.0% / 19.8% |
+| refusals per call | 0.113 vs 0.185 (`none`) | 0.096 vs 0.189 (`none`) |
+
+**Three readings, in order of how much they change.**
+
+1. **The level moves and the delta does not.** The control arm scored 59.7% in one run and 65.7% in the other —
+   6.0 pp on the identical 134 games — and the treatment moved with it (73.9% to 80.6%). The paired delta stayed
+   at **+14.2 / +14.9**, a spread of 0.8 pp. This is the strongest argument the lane has for its own design: an
+   unpaired comparison across runs would have reported a 6 pp difference that is not there, while the paired
+   reading is stable to under a point.
+2. **`retrieved@k3` is not one arm, it is a ratio.** With four rules in the bank, `k=3` packs three of four and the
+   arm is *nearly* `always-in` — it duly scored exactly the same 99/134. With six rules, `k=3` packs half the bank
+   and has to choose, and the score fell to 58.2%, **7.5 pp below the control** with 17.6% of engaged games harmed.
+   The two replicates are not in conflict: they are a dose-response on how much selection the annotation has to do.
+   It also means AMD's "`k=1` is the optimum" cannot be tested by this lane until the bank is larger than `k`.
+3. **The bank is not a fixed object across draws.** The same distiller over the same 140 games produced four rules
+   in one pass and six in the other, and `AGREE` again dominated (`28` and `32` against `4` and `6` `ADD`s). The
+   distillation loop saturates where the sample says it saturates, which is a property of the 8-episode chunks, not
+   of the corpus.
+
+**The stratified reading, which both replicates agree on.** The control never wins a hard game by construction (the
+stratum is defined by its own outcome), so the informative column is how many of those it recovers:
+
+| stratum | replicate A | replicate B |
+| --- | --- | --- |
+| games the control lost | 54 | 46 |
+| of those, won with the bank | **32 (59.3%)** | **25 (54.3%)** |
+| games the control won | 80 | 88 |
+| of those, lost with the bank | 13 (16.3%) | 5 (5.7%) |
+
+`cool` remains the largest gain in both (`+38.1` and `+33.3`), `examine` the only kind that loses in both
+(`−16.7` and `−5.6`), and `put` is the kind the bank cannot move (`0.0` and `+4.2`) — the rules say how to recover
+from a failed `put`, and the games are lost before that.
+
+**Bill.** ¥4.43 for sweep B ($0.624 over 12,255 calls) and ¥4.23 for sweep A ($0.596 over 11,599 calls), ¥0.10 per
+bank. Cumulative, artefacts only: **¥13.7 spent, 0 retries across 23,854 calls**.
+
+**What is in flight and what it settles.** The placebo (`sham` × 4 shards against `none` × 4, run `44763220821`,
+≈ ¥1.9) is the one contrast that can separate *content* from *shape*: three of the six rules are advice about how
+to think, so an arm that wins 14 pp with them may be winning by being told to plan. `sham` carries the same bank
+with its tokens permuted — same length, same position, no content — and its delta is the null of this design.
