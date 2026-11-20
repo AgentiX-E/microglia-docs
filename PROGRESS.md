@@ -24093,3 +24093,42 @@ produces, in order of what it settles:
 2. the first paired delta of this lane that is not a stub,
 3. `harm_share` and `engagement` per arm — how many games changed course, and in which direction,
 4. the six task kinds, split by whether the delta lands on `put`/`clean`/`heat`/`cool`/`look`/`pick_two`.
+
+### 199.11 The first bank this lane has ever held: six rules, forty-four operations, thirty-two agreements (14:50 UTC)
+
+`44754650978`'s bank job distilled from **82 won episodes of 140** in eleven critiques of up to eight, and produced
+a bank of **six rules at ¥0.10** ($0.0142, off-peak). The operation census is the reading R164 registered a
+prediction about:
+
+| operation | count | what it means |
+| --- | --- | --- |
+| `ADD` | 6 | the rules the bank ended with |
+| `AGREE` | 32 | critiques that voted for a rule already present |
+| `EDIT` | 5 | rules rewritten in place |
+| `REMOVE` | 0 | nothing was ever deleted |
+| rejected | 1 | an `EDIT` at an index the bank did not have |
+| parsed | 44 | over 11 replies, so 4.0 operations per critique |
+
+**The prediction held and the shape is worth naming.** Forty-four operations against a final bank of six means the
+list converged early and the remaining nine critiques mostly agreed with it: the extraction is additive in its
+first two chunks and then confirmatory. `REMOVE` never fired, which is ExpeL's own behaviour — its `REMOVE` needs a
+rule that a later failure contradicts, and only successes are available to this lane.
+
+**What the six rules actually say**, which the census cannot:
+
+| # | votes | kind | reading |
+| --- | --- | --- | --- |
+| 1 | 12 | meta | "use the think step to plan the next subgoal after each action" |
+| 2 | 11 | instance-specific | "if you find a distractor object (e.g., a desklamp) …" |
+| 3 | 11 | task knowledge | check `inventory` when a put fails; re-take the object |
+| 4 | 10 | task knowledge | when `put X in Y` fails, try `move X to Y`, after `go to Y` |
+| 5 | 3 | task knowledge | for the desklamp task, take the object then turn the lamp on |
+| 6 | 2 | task knowledge | open a container before searching inside it |
+
+**Three of the six are about how to think rather than about the world** (1 is pure meta-instruction, 4 is a repair
+recipe, 2 is an instance that generalised badly). That is not a defect of the distiller — it is what the critique
+prompt asks for — but it decides how the sweep must be read: an arm carrying "plan after each action" may beat
+`none` by making the model deliberate longer, with no task knowledge transferred at all. The `sham` arm is
+length-matched and content-free, so it separates those two explanations; `none` versus `always-in` cannot.
+
+**Bill so far**: ¥4.68 of slices + ¥0.10 of bank = **¥4.78**, against ¥5.63 committed for the sweep now running.
