@@ -23797,7 +23797,7 @@ session that dispatched it being alive**: the runner holds the clock.
 
 Added while the chain waits: `AUDIT.md` 34.224, and the executable-bit repair it records.
 
-## 198 — The instrument that makes ¥7.77 readable, built while the run waits (2026-11-20, 08:30 UTC)
+## 198. The instrument that makes ¥7.77 readable, built while the run waits (2026-11-20, 07:15 UTC)
 
 **State: the chain is asleep.** Run `44685314225` is dispatched and holding four training shards until 10:00 UTC
 (`wait-for-window.sh`), which is where DeepSeek's peak window ends. Nothing has been spent since the dispatch; the
@@ -23863,7 +23863,7 @@ a registered contrast rather than a knob: `retrieved(k=3) − retrieved(k=1)` at
 3. `retrieved − none`, and whether it diverged on fewer games than `always-in` (prediction 2 of R165).
 4. The bill per arm, and whether it landed off-peak.
 
-### 198.7 The placebo is now built rather than described (09:25 UTC)
+### 198.7 The placebo is now built rather than described (07:39 UTC)
 
 `--arm sham` exists: each rule's words permuted within itself, seeded by the rule's own text, applied **once in
 `main`** after the cap. Entry count, token count, punctuation and header are the bank's exactly, so `sham` and
