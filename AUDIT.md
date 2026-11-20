@@ -13986,3 +13986,111 @@ its invalid-action rate rose from 28.4% to 32.7%, and its off-space actions from
 would move none of those counters. This is the first arm in the lane whose *mechanism of action* is visible in the
 refusal counters rather than in the score: it made the model try more, and more of what it tried was not in the
 action space.
+
+## 34.237 — The dose point read at the filler's value, and the registration's own condition fired before the claim could be made
+
+Run `44789662558` scored the two-real-two-filler block over all 134 held-out games against its own control: 8,804
+calls, $0.4495 (¥3.21). Rendered 1,318 characters against the registered block's 1,312, 218 words against 218, the
+real rules in the positions they occupy in the registered bank.
+
+| reading | value | what it may be used for |
+| --- | --- | --- |
+| control `none` | **90/134 (67.16%)** | above the registration's verbatim 85/134 threshold |
+| dose block | 80/134 (59.70%) | — |
+| pooled paired delta | −7.46 pp [−15.67, +1.49], p 0.105 | **not quoted as the reading**; the threshold fired |
+| hard stratum (control lost) | 13/44 vs 0/44, **+29.55 pp** | the stratum the condition asks for |
+| easy stratum (control won) | 67/90 vs 90/90, **−25.56 pp** | the stratum the condition asks for |
+| engagement | 129/134 (96.3%), harm 17.8%, help 10.1% | the block was read; the voiding counters did not fire |
+| by kind | `clean` −12.9, `put` −12.5, `heat` −8.7, `examine` −5.6, `cool` 0.0, `puttwo` 0.0 | — |
+
+**This is the first time a registration's own voiding condition fired, and it worked.** R172 wrote, before the arm
+existed: *if this dispatch's control lands above 85/134, the easy stratum is a ceiling and the reading is reported by
+stratum only, with no pooled number quoted*. The control landed at 90. The instrument therefore produced a table
+instead of a claim, and the claim that the point estimate invites — "half a block about the task is no better than
+none" — is not what the record says. What the record says is that on the 44 games the control lost the block recovered
+13, and on the 90 it won the block broke 23. Both are larger than the pooled number suggests and neither is a dose
+response, because there is nothing to compare them against: the filler arm's strata were +24.44 and −22.47, and the
+difference between the two blocks is inside the swing.
+
+**The estimate landed on the row whose interpretation the artefact does not support.** R172 named four readings; the
+point estimate is at the filler's value, which is row 3, whose text attributes the result to *how much* of the block
+was about the task. The dose kept entries 1–2 (the desklamp note, the search order) and dropped entries 3–4 (verify
+the object is in the inventory before placing; if `put` fails, try `move <object> to <receptacle>`). Entries 3–4 are
+the only entries in the block that name the operation this corpus fails, and the arm's two largest losses are on
+`clean` and `put` — the two kinds whose failures are placement failures. A registration can name a confound it did not
+foresee; it cannot name one its own artefact reveals after the fact, and that is what 34.239 is about.
+
+## 34.238 — The noise is in the arm that has no block, and the instrument that stops depending on it
+
+Four dispatches have now scored a block on the same 134 games through the same model and harness. Their absolute wins:
+
+| block | entries about the task | wins / 134 | dispatch |
+| --- | --- | --- | --- |
+| four distilled rules | 4 of 4 | **99** (73.9%) | `44754440122` |
+| the same four, order permuted | 4 of 4 | **105** (78.4%) | `44763220821` |
+| four typewriter entries | 0 of 4 | **80** (59.7%) | `44782732761` |
+| two distilled rules + two typewriter entries | 2 of 4 | **80** (59.7%) | `44789662558` |
+| `none` | — | **80, 81, 89, 90** (59.7–67.2%) | all four |
+
+**The blocks repeat and the control does not.** Two independent dispatches of a block without the task in it produced
+exactly 80 wins; the two dispatches of blocks with the task in them produced 99 and 105. The arm with no block
+produced four readings spanning ten wins. That is not a property of the blocks — it is a property of the arm that has
+no block in it, and it means every delta this lane has quoted against a single `none` carries a floor of about seven
+points that buying more treatments cannot lower.
+
+**What that changes is the comparison, not the corpus.** Two treatments on the same games are paired against each
+other: both drove every game, both carry the block, and the difference between them is the difference between two
+blocks. `aggregate.py --relabel` now performs that pairing, and refuses the one thing that would make it wrong — a
+rename that lands on a group already present, which is two arms' episodes under one name and a doubled denominator
+printing one rate. The rename is printed in the report, because a cross-dispatch reading whose provenance is silent
+reads exactly like a within-run one.
+
+**The cost of that instrument is zero and the cost of not having it was already paid.** Three of this lane's last five
+registrations quoted a delta against a control whose own reading moved by more than the effect being tested, and each
+time the honest response was to widen the interval rather than to buy anything. The interval was never the problem.
+
+## 34.239 — Two explanations wearing one arm: "half the content" and "the half that does not name the failing operation"
+
+The dose point is 2 of 4 entries about the task, and it scored what 0 of 4 scored. Two readings fit that number, and
+they are different products:
+
+1. **linear priming with a floor** — the effect scales with the share of the block that is about the task, and 50%
+   sits below the resolution of 134 games;
+2. **content that has to name the failing operation** — the two entries that were kept are a desklamp note and a search
+   order, and the two that were dropped are the inventory check and the `put`→`move` workaround, which are the only
+   entries addressed to the operation the corpus actually fails (put-family games: 3, 3 and 4 wins out of 24 across
+   three controls).
+
+**The second reading is testable at the price already quoted for the first.** The complementary block — the filler
+entries at positions 1–2, entries 3–4 at positions 3–4, rendered to 1,312 characters against 1,312 — differs from the
+R172 dose point in exactly one thing: *which* half is about the task. If it scores near 99, the share of the block was
+never the variable; if it scores near 80, neither half suffices alone and the effect needs both a general and a
+specific entry, which is the first claim this lane would have that a competitor's bank could fail.
+
+**What the lane keeps getting wrong, stated as a rule.** Every block built so far has varied two things at once and
+named one of them. The filler varied vocabulary and form together. The sham varied order and kept vocabulary. The dose
+varied *which* content and named *how much* content. A registration that varies two things must say which two, and the
+report must refuse the attribution the second one would have supported — which is what R173's voiding list now does.
+
+## 34.240 — The literature already has a name for a block that is read and hurts, and one line of it says abstraction is the cause
+
+This lane's own reading — 96% of games change course, 17.8–18.5% of those get worse — is not an anomaly in the recent
+literature; it is the mechanism several papers name and one paper measures as the cost of the step this lane performs.
+
+| source | what it measures | how it bears on this lane |
+| --- | --- | --- |
+| Zhang, Lin, Wu, Sun, Li, Li & Peng (2025), *Useful Memories Become Faulty When Continuously Updated by LLMs*, arXiv:2605.12978 | consolidation and repeated abstraction **degrade** memories that were useful when stored; raw trajectories stay competitive as in-context demonstrations | this lane's pipeline distils 76 trajectories into 4 procedures. The placebo says the procedures' ordering is inert; this paper says the distillation step itself is the risky one. It predicts that a raw retrieved trajectory should beat a rule abstracted from it |
+| Xiong et al. (2025), experience-following | the closer a new task is to a retrieved memory, the more the output imitates that memory's output; benefit and harm come from **one** mechanism | the 96% divergence and the 17.8% harm share are one mechanism seen from two sides, not a delivery failure plus a quality failure |
+| Chroma (2025), "context rot" over 18 frontier models | accuracy degrades monotonically with input length, before the window limit | this lane holds length fixed at 1,312 characters across blocks, so its contrasts are not length contrasts — and its one length-varying arm (R173.2, 802 characters) is registered as uninterpretable alone for exactly this reason |
+| *Context Length Alone Hurts* (2025 preprint); NoLiMa (ICML 2025) | 13.9–85% degradation with length even when retrieval is perfect; lexical overlap removed, 10 of 12 models fall below half their short-context baseline at 32k | a longer pack is not a neutral change even when its content is identical, which is why every block in this lane is length-matched to the registered bank |
+| SWE-ContextBench, arXiv:2602.08316 | unfiltered or incorrectly selected context gives "limited or negative" benefit; a gatekeeper between history and model is the requirement | the read-time gate (R168 amendment 1) is that gatekeeper, and this lane's hard/easy asymmetry is its specification: fire where the control loses, stay silent where it wins |
+| MemoryGraft, arXiv:2512.16962 | a handful of poisoned records dominate retrieval because of the semantic-imitation heuristic | an admission rule that scores a memory by its own success rate is not enough; the same imitation that makes a good memory work makes a poisoned one work |
+| MemEvoBench (Xie et al., 2026) | memory "misevolution": behaviour drifts under repeated exposure to misleading stored content, and prompt-level defences do not stop it | the gate has to be structural — a share-of-overlap test on the observation — rather than an instruction telling the model to distrust the block |
+
+**What this changes about the next step, and what it does not.** It does not change the current queue: R173 is a
+two-arm test of *which* half of the block carries the effect, and no paper can read that for us. It does change what
+comes after it. If the placement rules carry the effect, the next pack form is not a better-distilled rule set — the
+literature says abstraction is where the loss happens — but the **retrieved raw trajectory** for the nearest failing
+game, admitted by the same overlap gate. That is a pack form, not a memory architecture: tiering, graph memory,
+workflow abstraction and contrastive retrieval stay out of this lane, because those are the components under test
+elsewhere and this lane's job is to say what a *pass* is worth.

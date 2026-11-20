@@ -77,6 +77,12 @@ its own control inside its own dispatch, 134 held-out games, temperature 0:
 | four entries about servicing a typewriter | **−6.72pp** | [−14.93, +1.49] | the existence of a block |
 | four distilled ALFWorld rules | **+14.18pp** | [+4.48, +23.88] | the block being *about the task* |
 | the same four rules, word order permuted | **+17.91pp** | [+8.96, +26.87] | the *order* of those words |
+| two distilled rules + two typewriter entries, same length | **−7.46pp**, by stratum only | [−15.67, +1.49] | how *much* of the block is about the task |
+
+The fourth row is the dose point, and its control landed at 90/134 — above the ceiling its registration had named in
+advance — so only the strata are quoted: **+29.55pp on the 44 games the control lost, −25.56pp on the 90 it won**.
+Half a block about the task scored what a block with nothing about the task scored, and the half that was dropped is
+the half that names the operation this corpus fails.
 
 The largest contrast the programme has measured is **vocabulary against no vocabulary: +24.6pp**. The contrast the
 field's ablations usually report — retrieval, selection, tiers — moves a layer that is worth −3.7pp with overlapping
@@ -93,6 +99,30 @@ Three consequences, and the third is the product one:
    which is why destroying their order costs nothing. The one block that could still beat +18 is a pack of *facts the
    model cannot infer* — where objects live in these house families — and that is now the only open memory question
    in this lane.
+
+### 1.2.2 Four blocks, one corpus, and a control that will not sit still
+
+Every block above was scored on the same 134 games by the same model through the same harness, so the blocks can be
+compared to each other even when their controls cannot. In absolute wins:
+
+| block | entries about the task | wins / 134 |
+|---|---|---|
+| four distilled rules | 4 of 4 | **99** (73.9%) |
+| the same four, order permuted | 4 of 4 | **105** (78.4%) |
+| four typewriter entries | 0 of 4 | **80** (59.7%) |
+| two distilled rules + two typewriter entries | 2 of 4 | **80** (59.7%) |
+| `none` | — | 80, 81, 89, 90 (59.7–67.2%) |
+
+**The blocks repeat; the control does not.** Two dispatches of a block without the task in it produced exactly 80
+wins, and two dispatches of blocks with the task in them produced 99 and 105. The arm with no block produced four
+readings spanning ten wins. Whatever produces that spread is a property of the arm that carries no block, so a delta
+quoted against any single control inherits a floor of about seven points — larger than most effects this programme has
+tried to measure. Two treatments paired against each other do not inherit it, and that pairing is now a command
+(`aggregate.py --relabel`) rather than a spreadsheet.
+
+The four blocks also give the paper the one column no published row on this corpus has: a block whose words are the
+task's words, a block of the same shape whose words are not, and a block whose words are the right ones in the wrong
+order — all at the same length, all against their own controls, two of them scored twice.
 
 ### 1.3 The measurement that ends the ambiguity
 

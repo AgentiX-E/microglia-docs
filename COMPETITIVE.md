@@ -8553,3 +8553,56 @@ filler text, length held constant, is one arm and one contrast (≈ ¥2–3). A 
 step at the first real rule would mean any mention of the task suffices; landing back at the filler's value would mean
 that what matters is not the vocabulary but the specific factual advice, which would resurrect the memory claim the
 placebo retired.
+
+## R173 — The dose point read as a filler, and the board's next column is a control-free one (2026-11-20, 23:25 UTC)
+
+Run `44789662558` scored two distilled rules beside two typewriter entries at the registered block's length. Against
+its own control it read −7.46 pp [−15.67, +1.49], p 0.105; the control itself landed at 90/134, above the 85/134 that
+the registration named in advance, so the reading is by stratum (hard +29.55 pp, easy −25.56 pp) and the pooled number
+is not quoted as a finding.
+
+**What changes on the board is not a level but the axis.** Four dispatches have now scored a block on the same 134
+games, and the blocks repeat while the control does not:
+
+| row | about the task | wins / 134 | what it does to the field's rule-bank rows |
+| --- | --- | --- | --- |
+| microglia, four distilled rules | 4 of 4 | 99 (73.9%) | the level to beat for a *distilled* pack at this length |
+| microglia, the same four permuted | 4 of 4 | 105 (78.4%) | no published rule bank separates vocabulary from form, so none of their deltas is attributable |
+| microglia, four typewriter entries | 0 of 4 | 80 (59.7%) | a form-matched control, and it costs what the bank costs |
+| microglia, two rules + two filler | 2 of 4 | 80 (59.7%) | the dose point: half a block about the task scores what none does |
+| microglia, `none` | — | 80, 81, 89, 90 | a control with a ten-win spread across four dispatches |
+
+| the field's row | what its ablation removes | does it separate vocabulary from form | published tokens injected |
+| --- | --- | --- | --- |
+| ALMA (own paper, 87.1) | modules of a searched agent | no | 1,319 |
+| ALMA on the MemScope harness (67.2) | — | no | not reported |
+| MemScope (71.6) | — | no | not reported |
+| DynamicCheatsheet (50.8) | — | no | not reported |
+| ExpeL (46.3) | retrieval and critique budget | no | not reported |
+| Mem0 (33.6) | — | no | not reported |
+| ReAct (31.2) | — | no | not reported |
+| **microglia, this lane** | **the vocabulary, at fixed length, fixed header, fixed position** | **yes: 105 / 99 / 80 / 80 / 80–90** | **328 (measured, 1,312 characters)** |
+
+**The seven points of control spread are now the lane's biggest number, and no purchase can shrink them.** The
+instrument is treatment-to-treatment pairing: two blocks on the same games, both through the same model, differ by the
+block and nothing else. `aggregate.py --relabel` performs that pairing and prints the rename. It is the column this
+lane can publish that no row above has, because none of them has ever scored two *different* blocks on the same corpus.
+
+**The literature this board should be read against, added this round.**
+
+| work | the number or claim | where it sits on this board |
+| --- | --- | --- |
+| Zhang et al., *Useful Memories Become Faulty When Continuously Updated by LLMs* (arXiv:2605.12978) | repeated abstraction degrades useful memories; raw trajectories stay competitive | puts every distilled-bank row, including this lane's, under a cost the board does not show: abstraction itself |
+| Xiong et al. (2025), experience-following | similarity ⇒ imitation, benefit and harm from one mechanism | explains this lane's 96% engagement and 17.8% harm share as one quantity |
+| Chroma (2025), "context rot" | monotone degradation with length across 18 frontier models | makes every length-varying arm uninterpretable, including the 802-character arm bought at R173 |
+| *Context Length Alone Hurts* (2025); NoLiMa (ICML 2025) | 13.9–85% degradation with length, with retrieval perfect | why this lane length-matches every block to the character |
+| SWE-ContextBench (arXiv:2602.08316) | unfiltered context gives limited or negative benefit; a gatekeeper is the requirement | the read-time gate is that gatekeeper; its specification here is the hard/easy asymmetry |
+| MemoryGraft (arXiv:2512.16962) | a few poisoned records dominate retrieval via the imitation heuristic | admission cannot be scored by an item's own success rate |
+
+**Position, stated without a ranking this lane cannot support.** On ALFWorld valid_unseen, prompt-only category, this
+lane's best block reads 78.4% (permuted) and 73.9% (intact) over 134 games, against published rows of 87.1% (ALMA, own
+paper), 71.6% (MemScope), 67.2% (ALMA on MemScope's harness), 50.8% (DynamicCheatsheet), 46.3% (ExpeL), 33.6% (Mem0)
+and 31.2% (ReAct). Those levels are **not comparable across harnesses** — 67 against 134 games, different prompts,
+different action-space parsers, different step caps — and this lane does not claim a rank from them. What it claims is
+the only column with a control for what the block *says*: four blocks, three of them form-matched, two of them scored
+twice.

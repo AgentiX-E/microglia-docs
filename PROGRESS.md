@@ -24648,3 +24648,96 @@ verbatim condition.
 The estimate was ¥2.0 and the bill was ¥3.28: the filler arm spent 4,492 calls against the placebo's 3,964 for the
 same games, because a block that confuses the model produces more turns. Third time this lane has under-quoted by
 pricing a treatment that changes the number of turns at the control's per-episode cost.
+
+## 205. The dose point landed on the filler's value, the control crossed its own ceiling, and the other half was bought at the same price (23:20 UTC)
+
+Run `44789662558` — two distilled rules and two typewriter entries, total length 1,318 against the registered block's
+1,312, real rules in their registered positions — over all 134 held-out games with its own control. 8,804 calls,
+**$0.4495 (¥3.21)**, 268 episodes, four shards per arm.
+
+| arm | wins | rate | paired delta | 95% interval | p |
+| --- | --- | --- | --- | --- | --- |
+| `none` | 90/134 | 67.16% | — | — | — |
+| `always-in` (dose 2 of 4) | 80/134 | 59.70% | −7.46 pp | [−15.67, +1.49] | 0.105 |
+
+**The registration's threshold fired and the pooled number is therefore not the reading.** R172 wrote, before the arm
+existed, that a control above 85/134 makes the easy stratum a ceiling and the reading is reported by stratum only. The
+control landed at 90. So:
+
+| stratum | dose block | `none` | delta |
+| --- | --- | --- | --- |
+| hard (the control lost) | 13/44 | 0/44 | **+29.55 pp** |
+| easy (the control won) | 67/90 | 90/90 | **−25.56 pp** |
+
+Engagement 129/134 (96.3%), harm 23/129 (17.8%), help 13/129 (10.1%) — the block was read, so the counters that void a
+reading did not fire. By kind: `clean` −12.9, `put` −12.5, `heat` −8.7, `examine` −5.6, `cool` 0.0, `puttwo` 0.0.
+
+### 205.1 The row it lands on is row 3, and row 3's interpretation is not available
+
+The point estimate is at the filler's value (−7.46 against −6.72), which is R172's third row: "the gain needs the
+specific procedural advice in all four entries". That sentence attributes the result to *how much* of the block was
+about the task. The artefact does not licence the attribution. The dose kept entries 1–2 — a desklamp note and a search
+order — and dropped entries 3–4 — verify the object is in the inventory before placing, and if `put` fails try
+`move <object> to <receptacle>`. Those are the only entries addressed to the operation the corpus fails, and the two
+kinds the arm lost most on are `clean` and `put`, whose failures are placement failures.
+
+So two explanations are wearing one arm:
+
+1. **share of the block** — 50% is below the resolution of 134 games and the effect scales with the share;
+2. **advice that names the failing operation** — the kept half said nothing about placing, and placing is what every
+   one of these tasks ends with.
+
+### 205.2 Four controls, four blocks: the noise lives in the arm that has no block
+
+The same 134 games, four dispatches, absolute wins:
+
+| block | about the task | wins / 134 | dispatch |
+| --- | --- | --- | --- |
+| four distilled rules | 4 of 4 | **99** (73.9%) | `44754440122` |
+| the same four, permuted | 4 of 4 | **105** (78.4%) | `44763220821` |
+| four typewriter entries | 0 of 4 | **80** (59.7%) | `44782732761` |
+| two rules + two typewriter entries | 2 of 4 | **80** (59.7%) | `44789662558` |
+| `none` | — | 80, 81, 89, 90 | all four |
+
+The blocks repeat and the control does not. Every delta this lane has quoted against a single `none` therefore carries
+a floor of about seven points — larger than most of the effects it has tried to measure — and buying more treatments
+cannot lower it. Two treatments paired against each other do not carry it: both drove every game through the same
+model, so the difference between them is the difference between two blocks.
+
+`aggregate.py --relabel old=new` is the instrument, tested in `test_aggregate.py` (six cases, 241 statements, 99% with
+only the `__main__` guard uncovered). It refuses the failure that would make the pairing wrong — a rename landing on a
+group already present is two arms' episodes under one name, a doubled denominator printing one rate — and prints the
+rename, because a cross-dispatch reading whose provenance is silent reads like a within-run one.
+
+### 205.3 What was bought, in parallel, and what each buys
+
+| dispatch | block | rendered | the question | price |
+| --- | --- | --- | --- | --- |
+| `44833933349` | `banks/bank-dose-complement-2of4.json` — the filler entries at positions 1–2, entries 3–4 of the registered bank at 3–4 | **1,312 chars (100.0%)**, 219 words against 218 | does the half that was dropped carry the effect, at the same length and the same positions | ≈ ¥3.2 |
+| `44833963032` | `banks/bank-putpair-2.json` — entries 3–4 alone | **802 chars (61.1%)** | is the padding inert, or is it cancelling what it is padded with | ≈ ¥3.2 |
+
+R173's four readings are registered with the dispatch, not after it: complement and pair both near 99 means the
+placement rules are the whole effect and 802 characters buy what 1,312 buy; complement near 99 with pair near 80 means
+length is a factor after all; both near 80 means neither half suffices and the effect needs a general and a specific
+entry together; pair near 80 with complement in between means the filler is actively cancelling a real effect.
+
+### 205.4 The literature this lane should have read before spending two days on priming
+
+The pattern this lane measured — a block that is read on 96% of games, helps the hard ones and hurts the easy ones —
+is the mechanism a 2025–2026 line of work names, and one paper in it identifies the step this lane performs as the
+lossy one. Zhang et al., *Useful Memories Become Faulty When Continuously Updated by LLMs* (arXiv:2605.12978), finds
+that repeated abstraction degrades memories that were useful when stored and that raw trajectories remain competitive
+as in-context demonstrations. Xiong et al.'s experience-following result explains both halves of this lane's readings
+with one mechanism: the closer the task, the more the output imitates the retrieved memory, which is why the same block
+that rescues a failing game can spoil a passing one. Chroma's 2025 "context rot" and *Context Length Alone Hurts* put a
+monotone price on length even when the content is right, which is why every block here is length-matched and why the
+802-character arm is registered as uninterpretable alone. SWE-ContextBench (arXiv:2602.08316) reports that unfiltered or
+incorrectly selected context gives "limited or negative" benefit and concludes that a gatekeeper layer is the
+requirement — which is the read-time gate this lane has built and not yet scored. MemoryGraft (arXiv:2512.16962) shows
+that the same imitation heuristic makes a handful of poisoned records dominate retrieval, so admission by an item's own
+success rate is not a defence.
+
+The four entries in AUDIT 34.240 carry the citations and what each one predicts. The immediate queue does not change:
+R173 is in flight. What changes is the step after it — if the placement rules carry the effect, the next pack form is
+the retrieved raw trajectory rather than a better-distilled rule set, because the literature says abstraction is where
+the loss happens and this lane's own placebo says the abstractions' ordering is inert.

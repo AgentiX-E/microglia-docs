@@ -7799,3 +7799,49 @@ tuning the layer that `sham − always-in` = −3.7 pp says is not resolvable at
 control's wins, so a run whose control scores unusually well has a ceiling the treatment can only fall from. Row 1's
 registration states the control's rate as a verbatim condition, and if the control lands above 85/134 the reading is
 reported by stratum only.
+
+## R173 — Two arms decide which half of the block carries the effect, and the queue behind them is one gate wide
+
+The dose point (PROGRESS 205) read at the filler's value: a block half about the task scored 80/134, the same as a
+block with nothing about the task in it, against a control that landed at 90/134 — above the 85 the registration had
+named as its own ceiling condition, so the reading is by stratum and the pooled number is not a finding.
+
+The row the estimate lands on attributes that to *how much* of the block was about the task. The artefact does not
+support the attribution: the half that was kept is a desklamp note and a search order, the half that was dropped is the
+inventory check and the `put`→`move` workaround, and those two are the only entries addressed to the operation this
+corpus fails. Two explanations, one arm. R173 buys the other half.
+
+| # | experiment | the question | state | price |
+| --- | --- | --- | --- | --- |
+| **1** | **the complementary block**: filler at positions 1–2, entries 3–4 of the registered bank at 3–4, 1,312 characters (100.0%) | does the **half that names the failing operation** carry the effect, at the same length and the same positions | **in flight**, `44833933349`, 134 × 2 | ≈ ¥3.2 |
+| **2** | **the same two rules alone**: 802 characters (61.1%) | is the padding inert, or is it cancelling what it is padded with — the dose read exactly what four filler entries read | **in flight**, `44833963032`, 134 × 2 | ≈ ¥3.2 |
+| 3 | three more `none` arms | the control's own spread is now ten wins across four dispatches; every stratified claim inherits it | dispatchable, and it is the last measurement that can lower the floor | ≈ ¥2.4 each |
+| 4 | the read-time **gate** (`--gate-share 0.2`) | the hard-stratum rescue without the easy-stratum damage, as a cost control rather than a rescue | built, gated on rows 1–2 | ≈ ¥3.2 |
+| 5 | a **`put`-family** block, written for the one kind the corpus fails (3, 3, 4 of 24 across three controls) | if row 1 lands near 99, is the effect *advice for the failing kind*, which is the product | licensed only by row 1 | ≈ ¥3.2 |
+| 6 | a **retrieved raw trajectory** pack, nearest failing game, one entry, admitted by the overlap gate | the literature says abstraction is where the memory loses its value (arXiv:2605.12978); a raw trajectory is the form that keeps it | needs a second bank schema in `agent.py`; ~3 h engineering, tests first | ≈ ¥3.2 + 3 h |
+| 7 | 3-of-4 dose (entries 1, 3, 4) | only if rows 1 and 2 both land near 80: is the effect a pair (one general, one specific) or the whole set | licensed only by that reading | ≈ ¥3.2 |
+
+**What rows 1 and 2 mean together, and why neither is interpretable alone.** Row 2 differs from the registered bank
+in both content and length, so it can say "the padding is not inert" or "it is", and it cannot say why. Row 1 holds
+length, header, positions and count fixed and changes only which half is about the task, so it can say "the half
+matters" and cannot say whether the block needs the other half too. Read together they separate the four possibilities
+the dose point left: placement rules carry everything (1 ≈ 99, 2 ≈ 99), length is a second factor (1 ≈ 99, 2 ≈ 80),
+the effect needs both halves (1 ≈ 80, 2 ≈ 80), or the filler is cancelling a real effect (1 between, 2 ≈ 80).
+
+**The one cross-lane observation this changes.** The BIRD lane measured accuracy falling about **1.7 pp per rule
+injected** (W8) and found that pruning at random was as good as pruning by checkability. This lane measures a four-rule
+block at +19 wins over a four-filler block and a two-rule block at zero. The two are consistent under one variable, and
+it is not token count: **what a pack is worth tracks how many of its items apply to the task in hand.** BIRD's rules
+were mostly inapplicable and each additional one cost; ALFWorld's two applicable entries in a block of four were
+drowned by two that were not. The gate in row 4 is the mechanism that makes that variable operational, which is why it
+is now the only structural item in the queue.
+
+**What stays paused, and it is not this lane's to unpause.** Tiered memory (H²R), graph memory (FSM), workflow
+abstraction (AWM) and contrastive retrieval (Synapse) are memory-architecture components. They are under test in the
+cortex programme, and this lane's job is to say what a *pass* is worth — a decomposition a competitor's ablation
+cannot produce, because none of them has ever scored two different blocks on the same corpus.
+
+**Price and time to the end of the lane, stated before it is spent.** Rows 1–2 in flight: ¥6.4. If they land as row 1
+predicts, rows 3–5 are ¥10 and one dispatch cycle; row 6 is ¥3.2 and three hours of engineering; row 7 is contingent
+and is not counted. **≈ ¥20 and one working day** from here to the last measurement this lane needs before it either
+has a product statement or has to say that a pack is a preamble.
