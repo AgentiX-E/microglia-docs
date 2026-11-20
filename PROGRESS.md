@@ -24054,3 +24054,42 @@ are the only place the games are recorded. The three rows above it are the ones 
 They are not dispatched yet, and the reason is the same one that produced the two-phase dispatch: each of them is a
 statement about a bank that has not been read yet. A placebo against a bank that turns out to carry nothing is a
 placebo of nothing.
+
+### 199.10 What the failed bank cost, what the repeat measured, and the run now in flight (14:35 UTC)
+
+**The bank failed for a code reason, not a data one.** It read 140 games out of the union of two runs — the tiling
+check passed — and then died on the first critique call with `ValueError: too many values to unpack (expected 2)`.
+`agent.chat` had grown a retry count and `distill.py`'s caller had not. Fixed in `f3167189`, pinned by a test that
+passes the driver instead of a scripted stand-in (AUDIT 34.230).
+
+**The first `bank_only` dispatch then failed one step earlier**, on a directory that only the skipped step created
+(AUDIT 34.231). Fixed in `b9ad8f11`.
+
+**Money, measured from the artefacts rather than from the estimate.**
+
+| run | what it was | distinct games | USD | CNY |
+| --- | --- | --- | --- | --- |
+| `44685314225` | the first chain, three slices, shards sampled the same window | 82 of 105 | $0.2156 | ¥1.53 |
+| `44738148591` | the repair verified on one slice | 35 | $0.0684 | ¥0.49 |
+| `44743739868` | the chain that lost its bank at the seam | 105 | $0.1955 | ¥1.39 |
+| `44744658304` | the duplicate chain, cancelled after its slices finished | 105 | $0.1795 | ¥1.27 |
+| | **spent** | | **$0.659** | **¥4.68** |
+
+Two of those rows exist because two chains with identical inputs were dispatched three minutes apart. The duplicate
+was cancelled, but not before it had bought a full set of slices — which turns out to be the most useful purchase
+of the day (AUDIT 34.232): the same control arm over the same 35 games gave **16 wins in one run and 22 in the
+other**, with ten of the thirty-five games decided differently. Two of the three shards agreed exactly.
+
+**So the lane's noise floor is measured, not assumed**, and the placebo arm moves from "a contrast we owe" to "the
+first contrast that must run": `sham` carries the same bank with its tokens permuted, so its delta against `none`
+is the null distribution of this design. A treatment effect smaller than ±17 pp on a shard is not separable from
+the control's own swing by four separate jobs.
+
+**In flight: run `44754650978`** — `bank_only` over `44744658304,44738148591` (140 games, zero overlap), then the
+registered sweep: three arms × four shards over `val_unseen`'s 134 games. ≈ ¥5.73 committed, off-peak. What it
+produces, in order of what it settles:
+
+1. a bank of up to 20 rules with the operation census (`by_kind`) that R164 predicted,
+2. the first paired delta of this lane that is not a stub,
+3. `harm_share` and `engagement` per arm — how many games changed course, and in which direction,
+4. the six task kinds, split by whether the delta lands on `put`/`clean`/`heat`/`cool`/`look`/`pick_two`.

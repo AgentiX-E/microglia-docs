@@ -13560,3 +13560,120 @@ that the reuse is licensed by a human naming a run, and that the readback is the
 
 **The rule.** A guard outside the tree is a guard nobody runs, and a guard written to refuse must be tested in the
 state where it refuses — not only in the state where it passes and says nothing.
+
+## 34.230 — The scripted caller stood in for the provider and not for the signature
+
+Run `44743739868` drove 140 training games, joined two runs to tile them, and lost the bank to
+
+```
+ValueError: too many values to unpack (expected 2)
+  at  reply, reported = caller(messages, model, api_key, timeout)
+```
+
+`agent.chat` returns three values since the retry table was added. The caller in `distill.py` was not updated with
+it, so the one function that spends money on distillation could not run at all: the three slices it had already
+paid for, and the twelve sweep jobs behind them, went with it. **¥1.39 and four hours of wall clock.**
+
+**Why thirty-four tests did not see it.** Every test in `test_distill.py` passes a scripted chat function:
+
+```python
+def chat(messages, model, api_key, timeout):
+    return remaining.pop(0), usage          # two values, because the test wrote both sides
+```
+
+The scripted caller is a stand-in for a *provider* — it answers with what a provider would return, and the code
+under test treats it exactly as it treats the provider. It cannot stand in for a *signature*: it keeps answering
+with the shape of a driver that no longer exists, because the test writes both sides of the seam. A seam with the
+same author on both sides is not a seam that is being checked.
+
+| what the suite exercised | what it could not |
+| --- | --- |
+| the prompt the critique is given | the arity of what comes back |
+| the parser, the merge, the cap, the cull | whether the driver this module calls still returns that shape |
+| the bill arithmetic, from a usage dict | whether a real reply produces that usage dict |
+| the tiling check on the artefacts | whether the job that builds the artefacts could reach this code |
+
+**The repair** is one line, and the test that pins it is the point. `CallerContractTest` passes **the driver
+itself** and replaces only the socket — `agent.attempt_once`, which the driver already treats as data:
+
+```python
+caller = self.with_socket([self.completion("ADD 1: Open the fridge before taking the lettuce.")])
+result = distill.build_bank(self.chunks(1), 20, "deepseek-flash", "k", 1.0, chat_fn=caller)
+```
+
+Reverting the one-line fix makes both new cases fail with the production error, verbatim. That is the property a
+seam test has to have: it must fail in the same words the run failed in.
+
+**The retry count is now summed into `stats.retries`**, printed beside the bill, and carried in the artefact. A
+bank distilled across a provider incident is a bank whose cost has a caveat, and the distillation is the only place
+that knows it happened — the same argument that put the column on the arm's summary in `34.226`.
+
+**The rule.** A scripted collaborator is a fixture for the *behaviour* of a dependency. Where the dependency's
+*shape* is what changed, the test has to call the dependency.
+
+## 34.231 — `bank_only` was disabled by a directory nothing had created
+
+The mode added for exactly this failure — the slices are bought, the bank dies — was itself disabled on its first
+use, at ¥0 and one step before the money:
+
+```
+cp: cannot create regular file '/home/runner/work/_temp/slices/': Not a directory
+ls: cannot access '/home/runner/work/_temp/slices': No such file or directory
+##[error]Process completed with exit code 2.
+```
+
+`$RUNNER_TEMP/slices` is created by the step that downloads *this dispatch's* slices, and `bank_only` is the mode
+that skips that step. The `find -exec cp` then failed once per artefact, and each failure named the copy rather than
+the missing directory — four sentences, none of them the cause.
+
+| gate | how it failed | cost |
+| --- | --- | --- |
+| the new mode's own precondition | nothing created the directory it wrote into | ¥0 |
+| the step's error | `cp` reported per artefact, `ls` reported last | a reader sent to the wrong place |
+| `distill.py`'s tiling check | never reached | — |
+
+`mkdir -p` is the repair. The guard beside it is the more useful half: a step whose whole job is to join a named
+run's artefacts now counts what it carried and says so in one sentence when the count is zero, instead of handing
+`distill.py` an empty union to refuse against a slice of 140 — a refusal that is correct and that points at the
+driver, which is where the reader would then look for an hour.
+
+**The rule.** A new mode is a new path through a workflow, and the steps it *skips* are part of its interface. The
+step that was skipped here was the one holding the precondition.
+
+## 34.232 — Two dispatches of the same control arm over the same games disagreed by six wins, and that number is the lane's noise floor
+
+This one was bought by accident. Two chains with the same inputs were dispatched three minutes apart (a duplicate
+caused by a session that resumed without knowing the first had gone out); the second was cancelled, but its three
+training slices had already finished, so both runs' artefacts exist. That is a **repeat of the control arm** with
+nothing changed:
+
+| | run `44743739868` | run `44744658304` | difference |
+| --- | --- | --- | --- |
+| commit | `13a05cae` | `13a05cae` | — |
+| arm / policy / split | `none` / model / `eval_in_distribution` | same | — |
+| seed | 20261120 | 20261120 | — |
+| shard 0 games | 35 | **identical 35** | — |
+| shard 0 wins | 16 (45.7%) | 22 (62.9%) | **+6 games, +17.1 pp** |
+| shard 0 calls | 1,351 | 1,194 | −157 |
+| shard 0 thoughts | 622 | 570 | −52 |
+| shard 1 wins | 24 | 24 | 0 |
+| shard 2 wins | 19 | 19 | 0 |
+| whole pass | 59/105 (56.2%) | 65/105 (61.9%) | +5.7 pp |
+
+**Ten of shard 0's thirty-five games were decided differently** by the same model, on the same prompt, over the
+same environment, with the same seed. Two of the three shards agreed exactly, which is the more interesting half of
+the reading: the sampler is not uniformly noisy across the corpus, and a shard whose games sit near the model's
+decision boundary flips.
+
+**What this does to every number this lane intends to report.**
+
+1. **The mde computed from the binomial alone is too optimistic.** `aggregate.py` reports an mde from the paired
+   discordance, which is the right arithmetic *if* the two arms are drawn from one distribution of runs. They are
+   not: the control varies by up to 17 pp between runs of itself, so a treatment effect smaller than that swing is
+   not separable from it by a design that puts control and treatment in different jobs.
+2. **The placebo arm is not a nicety.** `sham` carries the same bank with its tokens permuted, so it is exactly as
+   long, exactly as present, and about nothing. Its delta against `none` is the null distribution of *this* design,
+   measured rather than assumed — and it is now the first contrast to run after the sweep, not the last.
+3. **The accident was the cheapest useful purchase so far.** ¥1.27 for a repeat measurement that no planned
+   dispatch included. It should have been planned: a control arm driven twice is the first thing a lane that reports
+   deltas owes its readers, and this one only got it because two sessions raced.
