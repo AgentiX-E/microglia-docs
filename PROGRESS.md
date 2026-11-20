@@ -23986,3 +23986,31 @@ nobody asked for.
 bought first and its episode list compared with the previous run's slice 0: if the two sets are disjoint, the advance
 works and the remaining three slices plus the bank plus the sweep are dispatched as a chain joined to the first by
 `train_run_ids`. If they are not disjoint, ¥0.49 buys that fact instead of ¥1.96.
+
+### 199.8 The repair, verified for ¥0.49 (13:15 UTC)
+
+One slice, 35 games, dispatched alone. It shares **none** of its games with any of the four shards the previous run
+paid for, which is what a partition looks like next to a sample:
+
+| | shard 3, run `44738148591` | the previous run's four shards |
+| --- | --- | --- |
+| distinct games | 35 of 35 | 35 of 35, and 35 shared with each other |
+| shared with the new shard | — | **0** |
+| calls / retries | 1,305 / **0** | 5,166 / — |
+| wins | 17 (48.6%) | 18 (51.4%) — different games, not a different arm |
+
+The bank refused again at ¥0 (`35 of 140`), which is the second time the completeness check has stopped a paid step
+in one afternoon.
+
+**The remaining dispatch, exactly.**
+
+| step | what | price |
+| --- | --- | --- |
+| 1 | `train_shards: ["0","1","2"]` joined to run `44738148591` by `train_run_ids` | ≈ ¥1.47 |
+| 2 | the bank, `--expect-games 140` over the union of two runs | ≈ ¥0.10 |
+| 3 | the sweep, three arms × 34/34/34/32 over `val_unseen` | ≈ ¥5.63 |
+| | **total** | **≈ ¥7.20** |
+
+`retries: 0` over 1,305 calls is the first production reading of the column that was added because a pass died
+without it. It is one slice and thirty minutes, so it is a dimension rather than a result — but it exists now on
+every artefact, and the next reading will be over 402 games.

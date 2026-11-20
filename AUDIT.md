@@ -13472,3 +13472,42 @@ last one is the useful one to remember, because it was introduced by the repair.
 **What is not retired this time.** The sort is still correct and still necessary: without it two runs would disagree
 about which game index 106 names, and no advance could fix that. The two changes are independent, and the second
 one's failure mode was invisible while the first one was missing.
+
+## 34.228 — The repair verified for ¥0.49 instead of believed for ¥1.96
+
+The advance was dispatched against **one** slice — `train_shards: ["3"]`, 35 games, ¥0.49 — on the argument that a
+four-shard dispatch would have bought three quarters of an unverified repair. The check was a set comparison against
+the previous run's artefacts, which cost nothing because they were already on disk.
+
+| | shard 3, run `44738148591` | shard 0, run `44731175801` (no advance) |
+| --- | --- | --- |
+| episodes | 35 | 35 |
+| distinct games | **35** | 35 |
+| games shared with any of the four previous shards | **0** | 35 with each other |
+| calls | 1,305 | 1,267 |
+| retries | **0** | — |
+| wins | 17 (48.6%) | 18 (51.4%) |
+
+The two shards share nothing, which is what a partition of a 140-game split looks like when you check two of its
+quarters. The previous run's four shards shared *everything* with each other, which is what a sample looks like.
+
+**Three things this bought beyond the answer.**
+
+1. **`retries: 0` over 1,305 calls is the first reading the retry table has produced in production.** It is a weak
+   reading — one slice, thirty minutes, off-peak — but it is the column that was added *because* a pass died without
+   it, and it now exists on every artefact.
+2. **The off-peak window was not needed.** The dispatch went out at 11:52 UTC, which is outside DeepSeek's peak
+   bands, so `wait-for-window.sh` started immediately and the four-hour hold that cost the first run nothing was not
+   paid again in wall-clock time.
+3. **The bank still refused, correctly, at ¥0.** It read 35 games against a slice of 140 and stopped. A refusal that
+   keeps working when the thing it refuses is *expected* is a refusal that will be believed when it is not.
+
+**What the two-phase dispatch costs.** ¥0.49 for the verification, then ¥1.47 for the remaining three slices plus
+¥0.10 for the bank plus ¥5.63 for the sweep: **¥7.69**, against ¥7.69 for a single four-shard dispatch. The
+verification was free in money and cost thirty minutes of wall clock. That is the trade this record should have made
+before the first dispatch of the day, and did not.
+
+**The one number that moved the wrong way.** Wins fell from 51.4% to 48.6% between the runs, which is a different
+35 games rather than a different arm: shard 3's games begin with `look_at_obj_in_light` tasks, and the split's six
+task kinds do not score alike. It is recorded here so that nobody reads a four-point move between two slices of one
+split as a change in the system.
