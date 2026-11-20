@@ -23767,3 +23767,32 @@ replaces was ¥5.4 and the measurement is the number that will be quoted.
 **¥0**, no dispatch and no model call. The round's own gates were run instead: 96 Python cases over `agent.py` at
 99% statement coverage (the one uncovered line is `sys.exit(main())`), 28 over `distill.py` at 99%, 19 shared
 vectors read from both languages, and the two workflows' structural checks.
+
+### 197.6 The chain is dispatched, and it waits for the off-peak window instead of paying double
+
+Run **`44685314225`** on `b1d0c268`, dispatched 05:59 UTC, held until **10:00 UTC** by
+`wait-for-window.sh`. One dispatch runs the whole chain — four training slices on `valid_seen`, the bank, then
+twelve sweep jobs — because the bank is an artefact of the run that builds it and a human standing between the two
+is a step that can commit the wrong file.
+
+| stage | jobs | episodes | what it buys |
+| --- | --- | --- | --- |
+| the training pass | 4 slices of 35 | 140 `valid_seen` | the trajectories a bank is extracted from |
+| the bank | 1 | 0 | ≤20 rules, ten critique calls |
+| the sweep | 3 arms × 4 slices | 402 held-out | `always-in − none`, `always-in − retrieved` |
+
+**Why the wait rather than the money.** DeepSeek's card is exactly double inside 01:00–04:00 and 06:00–10:00 UTC
+weekdays, and the bill is computed when a run ends — so a job starting at 06:00 pays peak for every token it spends.
+Runner minutes are free in this repository. The quote below is therefore the off-peak quote and not the peak one:
+
+| item | off-peak | peak |
+| --- | --- | --- |
+| the training pass | ¥1.96 | ¥3.92 |
+| the bank | ¥0.10 | ¥0.20 |
+| the sweep | ¥5.71 | ¥11.42 |
+| **total** | **¥7.77** | ¥15.54 |
+
+Four hours of wall clock is the price of not paying ¥7.77 for nothing. **Nothing in the design depends on the
+session that dispatched it being alive**: the runner holds the clock.
+
+Added while the chain waits: `AUDIT.md` 34.224, and the executable-bit repair it records.

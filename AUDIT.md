@@ -13261,3 +13261,29 @@ successful trial against *failed trials of the same task*, and both ALFWorld spl
 extraction **minus its contrast**.
 
 **Cost.** `¥0` to write: the vectors, the Python port and one TypeScript test that reads them.
+
+## 34.224 — The executable bit does not travel through this transport, and the test asserted the checkout
+
+A test asserted that `wait-for-window.sh` was executable. It passed in the sandbox, where `chmod +x` had been run
+minutes earlier, and failed on the runner with `0 is not true` — the classic local-pass/CI-fail pair, and the reason
+every gate in this record is required to run where the code is actually executed.
+
+**The cause is this repository's transport.** Pushes go through the GitHub Git Data API rather than `git push`,
+because the sandbox reaches `api.github.com` and nothing else. The helper that does it wrote **every** blob with mode
+`100644`:
+
+```python
+entries.append({"path": relative, "mode": "100644", "type": "blob", "sha": blob["sha"]})
+```
+
+so a file that was executable locally arrived readable and not executable. Nothing noticed until a test asked.
+
+**The repair is two-sided and small.** The helper now writes `100755` for a path the sandbox can execute. The test no
+longer asserts the bit at all — the workflow invokes the script as `bash eval/drivers/alfworld/wait-for-window.sh`,
+which needs no bit — and a test records *why* the assertion was deleted rather than leaving a silent hole where one
+used to be. Deleting an assertion without saying so is how a suite loses the ability to fail.
+
+**What this says about the suite, stated because it is the reusable part.** A test that reads a file's mode is a test
+about the checkout, not about the script. The properties that matter here are the ones the script *does*: start now
+when the target has passed, never wait more than a day, refuse a target that is not a time, and never detach itself.
+Those are five process-level cases now, and none of them depends on how the file arrived.

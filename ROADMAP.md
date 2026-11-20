@@ -7545,3 +7545,9 @@ its first criticism — a successful trial against failed attempts at the same t
 split does not have, so the treatment being measured is the competitor's extraction **minus its contrast**. That is
 noted in `REGISTRATION.md` where the prediction is made, which is the only place a limit can be noted before a
 number arrives rather than after.
+
+### The chain is in flight
+
+Run `44685314225` holds until 10:00 UTC and then runs the training pass, the bank and the sweep in one dispatch, so
+the three-arm reading arrives without a human between the bank and the arms. Prices and the off-peak reasoning are
+in `PROGRESS.md` 197.6; the off-peak total is **¥7.77** against **¥15.54** at peak, which is why the runner waits.
