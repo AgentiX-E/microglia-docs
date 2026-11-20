@@ -7563,8 +7563,8 @@ the arithmetic that demotes it rather than deleted.
 |---|---|---|---|---|
 | 1 | the three-arm chain in flight | `always-in − none`, `retrieved − none` at 134 paired games | **in flight**, run `44685314225`, holding until 10:00 UTC | **¥7.77** committed |
 | 2 | the same reading decomposed | engagement, harm share, hard/easy strata, six kinds | **built**, 41 tests, 99% branch; computed by `aggregate.py` at ¥0 from row 1's artefacts | ¥0 |
-| 3 | the placebo arm | does the bank's *content* do anything, or its shape | **registered as a decision** (R165): dispatch iff `|delta| > mde` | ≈ ¥1.9 |
-| 4 | `retrieved(k=3) − retrieved(k=1)` | AMD's k=1 optimum, never tested on this corpus | **registered contrast**; cheapest published question still open | ≈ ¥1.9 |
+| 3 | the placebo arm | does the bank's *content* do anything, or its shape | **built** (`--arm sham`, 11 tests), **dispatch gated**: run iff `|delta| > mde`, because a sham has nothing to imitate when there is no effect | ≈ ¥1.9 |
+| 4 | `retrieved(k=3) − retrieved(k=1)` | AMD's k=1 optimum, never tested on this corpus | **dispatchable**: `arms: ["retrieved"]` with `top_k: 1`, both now workflow inputs | ≈ ¥1.9 |
 | 5 | the overlap gate (MemTrim's read-time rule) | `arXiv:2610.07311`: harm peaks at intermediate query-memory overlap, and removing repeated or conflicting evidence at read time recovers most of it | **not built.** It is a *selection* rule, which is this repository's layer, and it is the one repair whose mechanism is named in the paper rather than inferred | ≈ ¥1.9 per arm after row 1 |
 | 6 | the object-location pack | 20.5% of actions are refused | **demoted, not deleted.** 138 of the 149 refusals were well-formed commands for a world the model was not in — instance identity inside one house, which no cross-house memory can carry. A prior over object kinds changes *search order*, not *which instance exists*, so its ceiling is the share of refusals caused by order rather than by identity, and that share is unmeasured | ≈ ¥1.9 |
 | 7 | the reflection arm (ExpeL's ALFWorld branch) | — | **unavailable** (AM.24): needs repeated trials of one task; the split gives one | — |

@@ -23862,3 +23862,26 @@ a registered contrast rather than a knob: `retrieved(k=3) − retrieved(k=1)` at
 2. `always-in − none` pooled, then `diverged`, then `harm_share`, then `hard` / `easy`, then the six kinds.
 3. `retrieved − none`, and whether it diverged on fewer games than `always-in` (prediction 2 of R165).
 4. The bill per arm, and whether it landed off-peak.
+
+### 198.7 The placebo is now built rather than described (09:25 UTC)
+
+`--arm sham` exists: each rule's words permuted within itself, seeded by the rule's own text, applied **once in
+`main`** after the cap. Entry count, token count, punctuation and header are the bank's exactly, so `sham` and
+`always-in` carry prefixes of the same length and differ only in the order of words inside each rule. Eleven tests
+pin that, including the one that would silently destroy the control — a permutation applied per episode would make
+the block moving and the two arms would stop sharing a cache behaviour.
+
+**It is one-sided and the registration says so before it runs.** A permutation destroys meaning *and* syntax, so a
+sham below the bank means "word order carries information", not "these twenty rules are right". What it can
+establish is the failure that matters: sham ≈ bank means this lane has been measuring formatting for four rounds,
+and the next row is a different layer rather than a better bank.
+
+**Two knobs became inputs instead of edits.** The sweep's arms are now `inputs.arms` (a JSON list, default the
+three-arm comparison) and the retrieval budget is `inputs.top_k` (default 3). So the placebo is one dispatch
+(`arms: ["sham"]`) and AMD's k=1 optimum is another (`arms: ["retrieved"]`, `top_k: 1`) — no second copy of the
+workflow to drift from the first. Both still need the bank committed, because a standalone sweep that names no bank
+downloads this run's artefact and a later run does not have it. Committing the bank after the readback is therefore
+a step in the critical path, not housekeeping.
+
+**Cost of this addition.** ¥0 — no dispatch. The two arms it makes dispatchable are ¥1.9 each, both gated on the
+reading that is still in flight.
