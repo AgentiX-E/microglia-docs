@@ -7845,3 +7845,31 @@ cannot produce, because none of them has ever scored two different blocks on the
 predicts, rows 3–5 are ¥10 and one dispatch cycle; row 6 is ¥3.2 and three hours of engineering; row 7 is contingent
 and is not counted. **≈ ¥20 and one working day** from here to the last measurement this lane needs before it either
 has a product statement or has to say that a pack is a preamble.
+
+### R173, amendment 1 — the placement half carries the effect, and the queue behind it re-ranks
+
+R173.1 (`44833933349`, $0.3974) scored the complementary half of the registered block at the registered length and
+positions: **100/134** against the four-rule block's 99, and **+14.93 pp [+5.97, +23.88], p 0.002** against the other
+half, with no control in that comparison. R173's first row is confirmed: the effect is the sentences that name the
+failing operation, not the share of the block about the task.
+
+| # | experiment | the question | state | price |
+| --- | --- | --- | --- | --- |
+| ~~1~~ | ~~the complementary block~~ | ~~which half carries it~~ | **read: the placement half, +14.9 pp over the other half** | paid, ¥2.84 |
+| **2** | **the same two rules alone**, 802 characters | is the padding inert — is a two-sentence pack worth what a four-entry pack is worth | **in flight**, `44833963032` | ≈ ¥3.2 |
+| **3** | the read-time **gate** (`--gate-share 0.2`) on the placement half | the hard stratum moved +52.2 pp and the easy one fell −13.6: a gate that fires on the observation's own words would keep the first and drop the second | built; **promoted to first** because it is now a measured trade rather than a hope | ≈ ¥3.2 |
+| 4 | a **`put`-family** block: three sentences about inferring the right receptacle, the one kind nothing has moved (3, 3, 4 of 24) | does advice have to name the *specific* failing operation, or only the failing *step* | licensed by row 1 | ≈ ¥3.2 |
+| 5 | a **retrieved raw trajectory**, nearest failing game, one entry, admitted by the overlap gate | the literature says abstraction is where a memory loses its value (arXiv:2605.12978) | needs a second bank schema; ~3 h engineering, tests first | ≈ ¥3.2 + 3 h |
+| 6 | three more `none` arms | the control's spread is ten wins; a cross-treatment reading no longer needs it, a *level* claim still does | now lower priority than 2–5 | ≈ ¥2.4 each |
+| 7 | 3-of-4 dose (entries 1, 3, 4) | only if row 2 lands near 80: is the effect a pair or the whole set | contingent | ≈ ¥3.2 |
+
+**What the re-ranking is based on, stated as a sentence.** The lane now knows *what* to put in a pack and does not yet
+know *how little* of it is enough (row 2) or *where* to put it so that it stops spoiling the games it was not written
+for (row 3). Those are the two questions a product has to answer, and they cost ¥6.4 together, which is less than one
+more sweep of the block that produced the finding.
+
+**What is now excluded, and can be deleted rather than paused.** Every design in this lane that treats the pack as a
+dosage — larger banks, more rules per kind, a budget of characters — is excluded by two arms at one length differing
+by 15 points. So is the reading of the filler result that called the effect "domain priming": the search half is
+domain-primed and worth nothing. What survives is the narrow statement the by-kind column supports, and it is the one
+the product needs: **a pack is worth what its sentences say about the step the games fail at.**

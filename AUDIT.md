@@ -14094,3 +14094,47 @@ literature says abstraction is where the loss happens — but the **retrieved ra
 game, admitted by the same overlap gate. That is a pack form, not a memory architecture: tiering, graph memory,
 workflow abstraction and contrastive retrieval stay out of this lane, because those are the components under test
 elsewhere and this lane's job is to say what a *pass* is worth.
+
+## 34.241 — Two halves of one block differ by +14.9pp, and the comparison contains no control
+
+The dose point (34.237) left one confound standing: "half the block was about the task" and "the half that does not
+name the failing operation" were the same half, so the reading could not say which of the two explained it. R173 bought
+the other half — the same length (1,312 characters, 100.0%), the same positions, the same header — and it scored
+**100/134** against the registered block's **99**.
+
+| block | rendered | wins / 134 | its own control |
+| --- | --- | --- | --- |
+| four distilled rules | 1,312 | 99 | 80 |
+| **placement half** (inventory check + `put`→`move`) | 1,312 | **100** | 88 |
+| **search half** (search order + desklamp note) | 1,318 | 80 | 90 |
+| four typewriter entries | 1,316 | 80 | 89 |
+
+**The two halves differ by +14.93 pp [+5.97, +23.88], p = 0.002**, discordance 30 + 10 = 40, mde 13.22 pp,
+engagement 130/134 (97.0%), harm 7.7%, help 23.1%. That comparison contains no `none` arm: both sides are treatments
+on the same 134 games through the same model, so the control's own ten-win spread is not in the interval. It is the
+first reading in this lane whose uncertainty is not dominated by the arm that has no block.
+
+**The three things it settles, in the order they matter.**
+
+1. **The share of the block about the task is not the variable.** Half of it, chosen well, is worth all of it; the
+   other half, chosen equally well and padded to the same length, is worth nothing. Any account of this effect as
+   "priming" or "a preamble sized to a budget" is now excluded by two arms at one length.
+2. **The variable is whether the sentences name the failing operation.** The four kinds that end in a placement
+   (`puttwo` +29.4, `cool` +19.1, `heat` +8.7, `clean` +6.5 against the arm's own control) are the four that move, and
+   `examine` — the one kind whose advice was in the dropped half — is the only one that falls (−11.1, and −5.6 against
+   the other half).
+3. **A block that is about the task in general can still be worth nothing.** The search half is *about* ALFWorld:
+   its sentences name objects, rooms and receptacles. It scored what four typewriter entries scored. Relevance to the
+   corpus is not the quantity the field's ablations control for; relevance to the failing step is.
+
+**What it does not settle, and the arm that would.** Length. R173.2 runs the same two rules unpadded at 802 characters
+(61.1%), so the pair separates "two sentences are enough" from "the block has to look like a block". Until it is read,
+the honest sentence is the one above and not "therefore shorter is better".
+
+**The instrument was used for the first time and refused its operator.** The two halves were scored in different
+dispatches under one arm label, so `aggregate.py` could not join them at all until the rename became path-keyed. The
+first command named the shards by basename; both dispatches contain a shard of that name; the rename would have moved
+one run's shard and left the other's under the old label — a join of one block and three quarters of another, printing
+a delta. The refusal that caught it was written an hour earlier for a hypothetical: *an ambiguous name is refused
+rather than resolved by iteration order*. A guard that fires on its author's first real command is the only kind worth
+writing.

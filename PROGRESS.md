@@ -24741,3 +24741,75 @@ The four entries in AUDIT 34.240 carry the citations and what each one predicts.
 R173 is in flight. What changes is the step after it — if the placement rules carry the effect, the next pack form is
 the retrieved raw trajectory rather than a better-distilled rule set, because the literature says abstraction is where
 the loss happens and this lane's own placebo says the abstractions' ordering is inert.
+
+## 206. The other half of the block scored 100/134, and the two halves differ by +14.9pp with no control in the comparison (00:05 UTC)
+
+Run `44833933349` scored the **complementary** block — the two typewriter entries at positions 1–2, entries 3–4 of
+the registered bank at 3–4, rendered to 1,312 characters against 1,312 (100.0%), 219 words against 218 — over all 134
+held-out games with its own control: 7,899 calls, **$0.3974 (¥2.84)**.
+
+| arm | wins | rate | paired delta | 95% interval | p |
+| --- | --- | --- | --- | --- | --- |
+| `none` | 88/134 | 65.67% | — | — | — |
+| the placement half | **100/134** | 74.63% | **+8.96 pp** | [+0.75, +17.91] | 0.048 |
+
+Strata: hard **24/46 vs 0/46 (+52.17 pp)**, easy 76/88 vs 88/88 (−13.64 pp). Engagement 125/134 (93.3%), harm
+12/125 (9.6%), help 24/125 (19.2%). By kind: `puttwo` +29.4, `cool` +19.1, `heat` +8.7, `clean` +6.5, `put` +4.2,
+`examine` **−11.1**.
+
+### 206.1 The question the dose point could not answer, answered by the other half of the same block
+
+R172's dose kept the desklamp note and the search order and dropped the inventory check and the `put`→`move`
+workaround; it scored 80/134, the same as four typewriter entries. R173.1 kept the two that were dropped, in the
+positions they occupy in the registered bank, at the same total length, and scored **100/134** against the registered
+block's **99/134**.
+
+| block | what is in it | rendered | wins |
+| --- | --- | --- | --- |
+| four distilled rules | search order + desklamp note + inventory check + `put`→`move` | 1,312 | **99** |
+| the placement half | inventory check + `put`→`move`, padded with two typewriter entries | 1,312 | **100** |
+| the search half (R172 dose) | search order + desklamp note, padded with two typewriter entries | 1,318 | **80** |
+| four typewriter entries | nothing about the task | 1,316 | **80** |
+
+So the effect is not a function of how much of the block is about the task. Half of it, chosen well, is worth all of
+it, and half of it chosen badly is worth nothing. **What the block is worth is whether its sentences name the
+operation the games fail at**, and the by-kind column says which operation: the four kinds that end in a placement
+(`puttwo`, `cool`, `heat`, `clean`) are the four that move, and `examine` — the one kind whose advice was in the half
+that was dropped — is the only one that falls.
+
+### 206.2 The first use of the control-free pairing, and it is what the instrument was built for
+
+The two halves were scored in different dispatches, both labelled `always-in`, so `aggregate.py` could not load them
+together until R173 gave it a path-keyed rename. Paired against each other, on the same 134 games, with no `none` arm
+in the comparison at all:
+
+| reading | value |
+| --- | --- |
+| placement half vs search half | **100/134 vs 80/134** |
+| paired delta | **+14.93 pp** [+5.97, +23.88], **p = 0.002** |
+| discordance | 30 + 10 = 40 games |
+| mde at that discordance | 13.22 pp |
+| engagement | 130/134 (97.0%), harm 7.7%, help 23.1% |
+| by kind | `clean` +35.5, `cool` +28.6, `puttwo` +17.6, `put` +8.3, `heat` −4.4, `examine` −5.6 |
+
+This is the first reading in the lane whose interval does not contain the control's seven-point swing, because the
+control is not in it. Two blocks, one corpus, one model, one afternoon each — and the difference between them is
++14.9 pp at p = 0.002, which is larger than the 13.2 pp this split could see at that discordance.
+
+**The instrument refused the operator's first attempt, and it was right to.** The obvious command named the shards by
+basename (`arm-always-in-0.json`), and both dispatches carry a shard of that name — so the rename would have moved one
+run's shard and left the other's under the old label, producing a join whose two sides were one block and three
+quarters of another. `--relabel` refuses an ambiguous basename and says to name the directory. It then accepted the
+four full paths and printed each rename, which is the provenance a cross-dispatch reading needs.
+
+### 206.3 What this changes in the queue, and the price it cost
+
+R173's first row is confirmed: the placement rules are the whole effect. What is still open is whether the **length**
+is doing anything — R173.2 (`44833963032`) runs the same two rules with no padding at 802 characters (61.1%), so the
+pair of readings separates "802 characters are enough" from "the block has to look like a block".
+
+If it lands near 100, the product statement this lane can make is a two-sentence one: *a pack is worth what its
+sentences say about the operation that fails, and a pack of two such sentences is worth as much as a pack of four* —
+which is also the cheapest thing this programme could ship, and the only form the field's rule banks have not tried.
+
+Cost so far in R173: **$0.3974 for the complement (¥2.84)**, against the ¥3.2 quoted. The second arm is in flight.

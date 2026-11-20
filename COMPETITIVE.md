@@ -8209,9 +8209,10 @@ so is cheaper than discovering it in a review.
 
 | column | this lane | the nearest published row | comparable |
 | --- | --- | --- | --- |
-| ALFWorld success, full split | **no number yet** — the three-arm sweep is in flight | MemScope 71.64 on 67 tasks | no |
+| ALFWorld success, full split (134 games) | **74.63%** — the placement half, 100/134, read 2026-11-20 (R173); the four-rule bank 73.9%, the permuted bank 78.4%, the controls 59.7–67.2% | MemScope 71.64 on 67 tasks | **partly** — 134 against 67 games, and the harness differs; the level is inside the same band, the interval on 134 games is narrower |
 | ALFWorld control (`none`), 20 games | **55.0% [34.2, 74.2]** | DynamicCheatsheet 50.75 on 67 tasks | **yes, as a consistency check** |
-| harm share (episode) | **not yet measured** — instrument built this round | published 52% for the τ² family (Appendix AS) | **yes, and no ALFWorld row exists** |
+| harm share (episode) | **7.7% – 18.5%** across five blocks, measured per episode with engagement beside it | published 52% for the τ² family (Appendix AS) | **yes, and no ALFWorld row exists** |
+| two blocks, one corpus, no control | **+14.93 pp** [+5.97, +23.88], p 0.002 (placement half 100 vs search half 80) | none — no published row scores two different blocks on one corpus | **yes, and it is the only row of its kind** |
 | prompt tokens per episode | measured per episode from `usage` | ALMA 1,319 per task | **partly** — different granularity |
 | cost per episode | **¥0.014** = $0.0019 | ALMA $0.09 per run | no — different denominator |
 

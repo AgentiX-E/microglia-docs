@@ -84,6 +84,12 @@ advance — so only the strata are quoted: **+29.55pp on the 44 games the contro
 Half a block about the task scored what a block with nothing about the task scored, and the half that was dropped is
 the half that names the operation this corpus fails.
 
+The fifth row is the other half of that block — the two sentences about placing an object — at the same length and in
+the same positions. It scored **100/134** against the four-rule block's 99, and **+14.93pp [+5.97, +23.88], p 0.002**
+against the half it replaced, with no control arm in that comparison at all. So the block's worth is not how much of
+it is about the task: half of it, chosen for the step the games fail at, is worth all of it, and half of it chosen for
+the task in general is worth nothing.
+
 The largest contrast the programme has measured is **vocabulary against no vocabulary: +24.6pp**. The contrast the
 field's ablations usually report — retrieval, selection, tiers — moves a layer that is worth −3.7pp with overlapping
 intervals.
