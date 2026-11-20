@@ -7551,3 +7551,36 @@ number arrives rather than after.
 Run `44685314225` holds until 10:00 UTC and then runs the training pass, the bank and the sweep in one dispatch, so
 the three-arm reading arrives without a human between the bank and the arms. Prices and the off-peak reasoning are
 in `PROGRESS.md` 197.6; the off-peak total is **¥7.77** against **¥15.54** at peak, which is why the runner waits.
+
+### R166 — The queue reordered by what three 2026 papers made testable, and one row demoted with its reason
+
+The registry's rows have always been ordered by the size of the effect their authors report. Three papers published
+between May and October 2026 make claims about **where** a reused experience hurts, which is a different kind of
+row: it can be tested on games already paid for. The queue is reordered around that, and one row is demoted with
+the arithmetic that demotes it rather than deleted.
+
+| # | step | the number it needs | state | price |
+|---|---|---|---|---|
+| 1 | the three-arm chain in flight | `always-in − none`, `retrieved − none` at 134 paired games | **in flight**, run `44685314225`, holding until 10:00 UTC | **¥7.77** committed |
+| 2 | the same reading decomposed | engagement, harm share, hard/easy strata, six kinds | **built**, 41 tests, 99% branch; computed by `aggregate.py` at ¥0 from row 1's artefacts | ¥0 |
+| 3 | the placebo arm | does the bank's *content* do anything, or its shape | **registered as a decision** (R165): dispatch iff `|delta| > mde` | ≈ ¥1.9 |
+| 4 | `retrieved(k=3) − retrieved(k=1)` | AMD's k=1 optimum, never tested on this corpus | **registered contrast**; cheapest published question still open | ≈ ¥1.9 |
+| 5 | the overlap gate (MemTrim's read-time rule) | `arXiv:2610.07311`: harm peaks at intermediate query-memory overlap, and removing repeated or conflicting evidence at read time recovers most of it | **not built.** It is a *selection* rule, which is this repository's layer, and it is the one repair whose mechanism is named in the paper rather than inferred | ≈ ¥1.9 per arm after row 1 |
+| 6 | the object-location pack | 20.5% of actions are refused | **demoted, not deleted.** 138 of the 149 refusals were well-formed commands for a world the model was not in — instance identity inside one house, which no cross-house memory can carry. A prior over object kinds changes *search order*, not *which instance exists*, so its ceiling is the share of refusals caused by order rather than by identity, and that share is unmeasured | ≈ ¥1.9 |
+| 7 | the reflection arm (ExpeL's ALFWorld branch) | — | **unavailable** (AM.24): needs repeated trials of one task; the split gives one | — |
+
+**Why row 6 is demoted rather than row 3.** A placebo is a control for a mechanism this lane is already paying to
+run, and a control that arrives after the mechanism has been reported is a control nobody reruns. An
+object-location pack is a *new* mechanism whose expected effect is bounded by an unmeasured quantity (the share of
+refusals that ordering can fix) and whose failure mode — "the model already knows where mugs live" — is the most
+likely outcome. The placebo is the cheaper way to learn something that changes what row 1 means.
+
+**What the literature closes outright.** `arXiv:2604.27003`'s forgetting and retrieval-diversity results need a
+stream of tasks with memory accumulated across it; this lane distils once and evaluates once. Those rows are not
+queued, they are unavailable, and 34.213's rule applies to them the same way it applied to H²R's +3.5pp: a number
+from a design this lane does not implement is a number it should not quote.
+
+**Parallelism.** Rows 2 and 3 need row 1's artefacts; row 4 needs row 1's bank but not its delta (the bank is a
+file, and a k=1 arm can be dispatched against it independently); row 5 needs the bank and a read-time rule; row 6
+and 7 are blocked on arguments rather than on data. So the critical path is row 1 → row 2 → row 3, and row 4 can
+run beside row 3 on separate runners at ≈ ¥1.9 each.

@@ -13287,3 +13287,50 @@ used to be. Deleting an assertion without saying so is how a suite loses the abi
 about the checkout, not about the script. The properties that matter here are the ones the script *does*: start now
 when the target has passed, never wait more than a day, refuse a target that is not a time, and never detach itself.
 Those are five process-level cases now, and none of them depends on how the file arrived.
+
+## 34.225 — The delta had no denominator, and the literature is what made that a defect
+
+`aggregate.py` could report four things about a pair of arms: the two win counts, the paired difference with a
+bootstrap interval, the discordance `b + c`, and the MDE that discordance implies. It could not report **how many
+games the treatment changed at all**, and until a 2026 paper made a prediction about where the harm should be, that
+absence read as economy rather than as a missing instrument.
+
+**Why the denominator matters, in one line of arithmetic.** A paired delta is a product:
+
+> delta = (share of games the pack changed) × (its effect on the games it changed)
+
+The first factor is delivery — whether the block reached the model at all, whether the model acted on it, whether
+the game was decided before the block could matter. The second is the mechanism. A pooled delta of +2pp is
+consistent with a mechanism worth +20pp that reached a tenth of the games, and with a mechanism worth +2pp that
+reached all of them, and **the two call for opposite next steps**: the first wants a wider door, the second wants a
+better rule. Reporting only the product makes the two indistinguishable, and every decision made on it is a guess
+dressed as a measurement.
+
+**The instrument is the action digest, and the invariant is what makes it sound.** `agent.py` already records
+`digest_of(actions)` per episode, and the environment is a deterministic simulator, so two episodes with the same
+digest *must* reach the same verdict. That gives the decomposition a check that fails loudly rather than a
+correlation that might be a coincidence: if the same actions produced different outcomes, the join is wrong — two
+games under one key, or one slice written twice — and the run stops instead of reporting an effect. The
+decomposition is therefore not a new measurement bolted on; it is a property of the simulator that the file had
+been throwing away.
+
+**Three readings now sit beside the delta, and each answers a question the delta cannot.**
+
+| reading | the question | why it could not be a footnote |
+| --- | --- | --- |
+| engagement (diverged / split, delta on those) | did the pack reach the game | a treatment that never reached the model reports a null that is about delivery, not about memory |
+| harm share / help share (of the games it changed) | did it help or hurt where it reached | repeats Appendix AS's τ² quantity with the episode as the unit; it is the only column this record can compare across lanes |
+| strata (hard = the games `none` lost) | where | `arXiv:2604.27003` predicts negative transfer concentrates on the hard cases; a pooled delta cannot confirm or refute a claim about a subset |
+| kinds (six task types) | for which procedures | pooling six kinds is how a mechanism that helps three and hurts three reads as a null |
+
+**And the ordering is the part that is a defect rather than a feature.** The stratification had to be registered
+before the delta existed, because after it exists any stratification is a story that fits — six kinds and two
+strata are twelve ways to find a positive number in 134 games, and the record would have found one. That is why
+`REGISTRATION.md` R165 states both predictions, and the placebo arm's dispatch rule, at ¥0 and before the reading
+arrives. **The instrument's cost was ¥0 and its value is that it makes a spent ¥7.77 readable; the registration's
+cost was ¥0 and its value is that the reading cannot be reinterpreted after the fact.**
+
+**What the same defect would look like from the other side, so it can be recognised next time.** A pack that
+diverges on 2 of 134 games and reports +1.5pp has said nothing about memory and everything about two games; a pack
+that diverges on 90 games and reports +0.7pp has said the mechanism engaged and was worth almost nothing per
+engagement. Both are now readable in one line of output, and neither can be quoted as "the memory helped".

@@ -8108,3 +8108,46 @@ as a format demonstration is correct — but it also means the prompt shows the 
 task it is about to see once. That is a small, unavoidable contamination of the arm's premise, and it is recorded
 rather than removed: the alternative is a hand-written prompt, which would be this programme's format rather than
 the field's.
+
+## R166 — Three 2026 papers on why reused experience hurts, and the arm they say this lane is running (2026-11-20)
+
+Appendix AY ended by demoting the assumption that a store is a net positive: *"treating our store as a net positive
+on held-out tasks is no longer the default hypothesis; it is the one under test."* Three further papers, all 2026,
+say where the harm should appear and one of them says the harm may not be semantic at all. They arrive exactly as
+the ALFWorld lane finishes building a rule bank, and they change what the first delta will *mean* rather than what it
+will be.
+
+| work | its mechanism for the harm | the number it reports | the arm in this lane that would show it |
+| --- | --- | --- | --- |
+| **When Continual Learning Moves to Memory** (`arXiv:2604.27003`, 2026-05) | under a fixed context window, experience reuse is a continual-learning problem in the retrieval space: irrelevant recall, context competition, dilution. Negative transfer is **not uniform** — it concentrates on cases the agent cannot solve unaided | raw trajectories transfer badly and abstract insights transfer better; **hard cases absorb the harm**, easy cases stay robust; finer granularity is not universally better (forward transfer and forgetting trade off) | `always-in` against `none`, split by the **control's** verdict: the `hard` stratum is where this paper says any harm lives |
+| **Understanding and Mitigating Inference-Time Overreliance** (`arXiv:2610.07311`, 2026-10) | memory that is benign, correctly stored and correctly retrieved still distorts inference when only **part** of its evidence transfers; harm peaks at *intermediate* query-memory overlap | across Mem0 / A-Mem / MemGPT / Graphiti; MemTrim recovers most of the lost accuracy on task-divergent cases while task-aligned cases stay at or above | `retrieved` against `none`: if the lexical anchor admits near-misses, this arm diverges often and lands **below** `always-in`, which carries everything and therefore cannot be selectively wrong |
+| **Large Language Model Agents Are Not Always Faithful Self-Evolvers** (`arXiv:2601.22436`, 2026-01) | agents respond to the **existence and shape** of a condensed-memory block more than to its semantic content: corrupting or replacing a summary often leaves the score where it was, while emptying a raw trajectory collapses it | ExpeL on ALFWorld: removing raw experience takes ~**75% → ~0**; corrupt / irrelevant / filler summaries move the score **little** | a **placebo** arm: same header, same entry count, each rule's words permuted within itself. If it earns the same delta as the bank, the bank is a formatting effect |
+
+**What this costs the plan and what it does not.** All three are answerable from the artefacts the three-arm chain
+already pays for, plus one arm at ≈ ¥1.9 for the placebo — and the placebo is registered as a *decision* (dispatch it
+only if the primary delta clears the MDE) rather than as a dispatch, because a sham has nothing to imitate when there
+is no effect to imitate. The stratifications are computed by `aggregate.py` and registered in `REGISTRATION.md` R165
+**before** the delta exists; a stratification chosen after seeing a delta is a story that fits.
+
+**The one number in this record that the literature can already be compared against.** `harm_share` — of the uses
+that changed anything, the share that made the outcome worse — is reported for the τ² lane at **29.6% [15.9, 48.5]**
+against a published **52%** (Appendix AS), where lower is better. The ALFWorld lane can now report the same quantity
+with the **episode** as the unit: at 134 games and twenty rules, the denominator is the games whose action digest
+differs from the control's. **No published ALFWorld result reports this column**, so the position it buys is first
+rather than best — and a column nobody else reports is worth exactly as much as the argument that it should exist.
+
+**The cheap change the literature also licenses, and it is in the arm's own default.** AMD (Appendix AY) measured
+retrieval `k=1` as the **global optimum** on AppWorld, with `k=3` and `k=5` degrading monotonically (49.40% → 33.34%
+at k=5 on a 4B agent), and this lane's `retrieved` arm defaults to `--top-k 3`. That default was chosen for a
+different reason — three entries fit the prefix budget without crowding the observation — and it has never been
+tested against k=1 on this corpus. It is now a **registered contrast to buy**, not a knob to tune after a bad read:
+`retrieved(k=3) − retrieved(k=1)` at 134 paired games, ≈ ¥1.9, and it is the cheapest remaining question whose
+answer is already published on another benchmark.
+
+**Where this record can be wrong, stated in the literature's own terms.** 2604.27003's finding is about
+*sequential* task streams with memory accumulated across them; this lane distils once from `valid_seen` and evaluates
+once on `valid_unseen`, which is a single transfer, not a stream. Its "hard cases absorb the harm" prediction should
+survive that difference (it is a statement about difficulty, not about sequence), but its "retrieval diversity
+collapse" and forgetting results are **not testable here at all**, and this lane will not claim them. The 59.0 that
+Appendix R138 shows belongs to the reflection branch is likewise not the arm being run. Both limits are the same
+kind: a number from a design this lane does not implement.

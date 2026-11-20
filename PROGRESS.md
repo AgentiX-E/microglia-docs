@@ -23796,3 +23796,69 @@ Four hours of wall clock is the price of not paying ¥7.77 for nothing. **Nothin
 session that dispatched it being alive**: the runner holds the clock.
 
 Added while the chain waits: `AUDIT.md` 34.224, and the executable-bit repair it records.
+
+## 198 — The instrument that makes ¥7.77 readable, built while the run waits (2026-11-20, 08:30 UTC)
+
+**State: the chain is asleep.** Run `44685314225` is dispatched and holding four training shards until 10:00 UTC
+(`wait-for-window.sh`), which is where DeepSeek's peak window ends. Nothing has been spent since the dispatch; the
+bill arrives when the last job ends. This round bought nothing and built the reader.
+
+### 198.1 What was missing from `aggregate.py`, and why it was missing
+
+The join could report a paired delta, its bootstrap interval, the discordance and the MDE. It could not report how
+many games the treatment changed — which is the denominator of the delta. `AUDIT.md` 34.225 has the arithmetic:
+`delta = (share changed) × (effect where changed)`, and a report that carries only the product cannot tell a wide
+door with a weak rule from a narrow door with a strong one.
+
+Three readings now sit beside the delta, all computed from the artefacts the chain already uploads:
+
+| reading | output field | the prediction it tests |
+| --- | --- | --- |
+| engagement | `divergence_rate`, `delta_among_diverged` | did the pack reach the game (action digest differs from the control's); equal digests implying different verdicts is refused as a join defect |
+| harm / help share | `harm_share`, `help_share` over `diverged` | Appendix AS's τ² column, second lane to report it, episode as the unit |
+| strata | `hard` (games `none` lost) / `easy` | `arXiv:2604.27003`: negative transfer concentrates on the hard cases |
+| kinds | six task types, paired | the registration's claim that a procedural rule helps procedures and hurts searches |
+
+### 198.2 The two predictions, registered at ¥0 before the number exists
+
+`REGISTRATION.md` R165. Stated before the reading rather than after, because six kinds × two strata is twelve ways
+to find a positive number in 134 games:
+
+1. `strata.hard.delta > strata.easy.delta`, and any harm appears in `hard` first. Refuted by a harm share
+   concentrated in `easy`.
+2. `retrieved` diverges on **fewer** games than `always-in`, because it selects; if it diverges on the same games,
+   the anchor is not selecting and the arm is `always-in` with extra steps — the defect 34.219 found once already.
+
+### 198.3 The placebo, registered as a decision rather than a dispatch
+
+`arXiv:2601.22436` finds agents respond to a condensed block's **shape** more than its content (ExpeL on ALFWorld:
+~75% → ~0 when a raw trajectory is emptied; corrupt or filler summaries move the score little). The arm that tests
+this — same header, same entry count, each rule's words permuted within itself — costs ≈ **¥1.9** and is **not
+dispatched this round**. The rule, written before the number: dispatch it if `|always-in − none| > mde`. Below that
+there is no effect for a sham to imitate, and the money is better spent on the sample.
+
+### 198.4 The cheapest published question that is still open
+
+AMD's `k=1` is the global optimum on AppWorld, with k=3 and k=5 degrading monotonically (49.40% → 33.34% at k=5);
+this lane's `retrieved` arm defaults to `--top-k 3` and the default has never been tested against k=1 here. It is now
+a registered contrast rather than a knob: `retrieved(k=3) − retrieved(k=1)` at 134 paired games, ≈ **¥1.9**.
+
+### 198.5 Cost
+
+| item | cost |
+| --- | --- |
+| reading three papers, writing R165 and 34.225 | **¥0** (no dispatch, no model call) |
+| the instrument and its 41 tests | **¥0** |
+| the chain in flight | **¥7.77** committed at dispatch, billed when it ends |
+| **this round, spent** | **¥0.00** |
+| **committed, not yet billed** | **¥7.77** |
+| cumulative this programme | **¥0.45** spent + ¥7.77 in flight |
+
+### 198.6 What the next readback must print, in order
+
+1. `rules_in_bank`, `applied` / `rejected` / `culled`, `peak` — the bank first, because a bank of 4 rules and a bank
+   of 20 are different treatments with the same name, and ExpeL's vote arithmetic should make it nearly
+   add-only (a rule ends with a period, so a substring test almost only fires on a verbatim restatement).
+2. `always-in − none` pooled, then `diverged`, then `harm_share`, then `hard` / `easy`, then the six kinds.
+3. `retrieved − none`, and whether it diverged on fewer games than `always-in` (prediction 2 of R165).
+4. The bill per arm, and whether it landed off-peak.
