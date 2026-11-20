@@ -24132,3 +24132,104 @@ prompt asks for — but it decides how the sweep must be read: an arm carrying "
 length-matched and content-free, so it separates those two explanations; `none` versus `always-in` cannot.
 
 **Bill so far**: ¥4.68 of slices + ¥0.10 of bank = **¥4.78**, against ¥5.63 committed for the sweep now running.
+
+## 200. The first complete reading: +14.2pp paired, and a mixed effect that pooling would have hidden (15:10 UTC)
+
+**State: the lane has a number.** Run `44754440122` (bank-only + chain) distilled a bank from 140 paid games and
+drove 402 games over three arms. Every job green, `retries: 0` throughout, all off-peak.
+
+### 200.1 The bank first, because the treatment's size is part of the result
+
+| field | value |
+| --- | --- |
+| entries | **4** of a cap of 20 |
+| distilled from | 76 won episodes of 140, in 10 critiques of up to 8 |
+| operations | 40 parsed, 38 applied, 2 rejected, 0 culled, peak 4 |
+| by kind | ADD 4, AGREE 28, EDIT 6, REMOVE 0 |
+| bill | $0.0134, 10 calls, 0 retries |
+
+AUDIT 34.229 reads this: the loop **saturated** after four rules and spent 70% of its operations agreeing with
+itself. R164's "nearly add-only" prediction is refuted — the reverse happened.
+
+### 200.2 The paired reading
+
+| pair | treatment | control | delta | 95% CI | p | MDE |
+| --- | --- | --- | --- | --- | --- | --- |
+| `always-in − none` | 99/134 = **73.9%** | 80/134 = 59.7% | **+14.18pp** | [+4.48, +23.88] | 0.0044 | 14.03pp |
+| `retrieved − none` | 99/134 = **73.9%** | 80/134 = 59.7% | **+14.18pp** | [+5.22, +23.13] | 0.0020 | 13.39pp |
+
+Both clear their MDE, which is the pre-registered bar for taking the effect seriously. Both treatment arms land on
+**99 wins** — and they are not the same data: their action digests agree on only 45 of 134 games.
+
+### 200.3 The decomposition, which is why this reading is safe to quote
+
+| reading | `always-in` | `retrieved` |
+| --- | --- | --- |
+| engaged (digest differs from `none`) | 132/134 = 98.5% | 127/134 = 94.8% |
+| delta among engaged | +14.39pp | +14.96pp |
+| **harm share** (of engaged) | **9.85%** | **8.66%** |
+| help share (of engaged) | 24.24% | 23.62% |
+
+The pack reached 98.5% of games, so the effect is not a delivery artefact. Of the games it changed, one in ten got
+worse and one in four got better.
+
+### 200.4 The stratification that changes what the number means
+
+| stratum (defined by the **control's** verdict) | n | `always-in` | `none` | delta |
+| --- | --- | --- | --- | --- |
+| hard — `none` lost | 54 | 32 | 0 | **+59.26pp** |
+| easy — `none` won | 80 | 67 | 80 | **−16.25pp** |
+
+**The pack rescues 32 of the 54 games the control cannot solve and destroys 13 of the 80 it can.** Net +19 wins. The
+pooled +14.2pp is the difference of two much larger numbers pointing opposite ways, and a report that quoted only the
+pooled figure would be quoting a cancellation.
+
+By task kind: `cool` +38.1pp, `clean` +22.6pp, `puttwo` +17.6pp, `heat` +17.4pp, `put` 0.0pp, `examine` −16.7pp.
+
+### 200.5 What the registered predictions said, and what happened
+
+| registration | prediction | outcome |
+| --- | --- | --- |
+| R165 #1 | `hard.delta > easy.delta` | **confirmed, by 75 points** (+59.3 vs −16.3) |
+| R165 #1, second clause | harm appears in `hard` first | **refuted**: the hard stratum lost nothing; all 13 losses are in `easy` |
+| R165 #2 | `retrieved` diverges on fewer games than `always-in` | **marginally**: 127 vs 132. With four rules and `k=3` the anchor admits 2.9 of 4, so the arm is nearly `always-in` — the registered "not selecting" failure mode |
+
+R165 #1's refutation is the interesting one: the paper's mechanism (negative transfer concentrates on hard cases) is
+not what happened here, while its *direction of comparison* is. The two clauses were not the same prediction, and the
+record kept them apart.
+
+### 200.6 Cost, which came in under both estimates
+
+| arm | bill | calls | per episode |
+| --- | --- | --- | --- |
+| `none` | $0.2336 | 4,619 | $0.00174 |
+| `always-in` | $0.1870 | 3,546 | $0.00140 |
+| `retrieved` | $0.1755 | 3,434 | $0.00131 |
+| **sweep** | **$0.5961** | **11,599** | **$0.00148** ≈ ¥0.0106 |
+
+**The treatment is cheaper than the control**, by 20%: the pack shortens episodes (3,546 calls against 4,619), and at
+91.6% cache hits the prompt's length is nearly free. A memory that helps and costs 20% less is a different product
+claim from a memory that helps.
+
+### 200.7 What this round cost in total, including the two failed attempts
+
+| item | ¥ |
+| --- | --- |
+| training attempt 1 (run `44685314225`, 82 distinct games) | 1.54 |
+| training attempt 2 (run `44731175801`, four identical shards) | 1.96 |
+| verification shard (run `44738148591`) | 0.49 |
+| three slices (run `44743739868`) | 1.47 |
+| bank | 0.10 |
+| sweep (402 games) | 4.26 |
+| **round total** | **9.82** |
+
+Against a plan of ¥7.69. The overrun is the two failed training attempts, both of which bought a defect rather than a
+number — and both were caught by the completeness guard at ¥0 before a sweep was paid for.
+
+### 200.8 A note on process, because it affected the record
+
+A second process pushed to this repository concurrently (`76095a33`, `030cbc37`, `b9ad8f11`), twice fixing the same
+defect this session was fixing and once adding a dispatcher this session then extended. One `git` ref update was
+rejected as "not a fast forward"; one `alfworld` run was cancelled by the race. Nothing was lost and no money was
+double-spent — the union of both sessions' commits is coherent and green — but the round's commit count is higher than
+the work in it, and a reader comparing timestamps will see two hands.

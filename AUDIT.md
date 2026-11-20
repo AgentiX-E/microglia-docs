@@ -13720,3 +13720,59 @@ convergence worth recording: two independent routes to the same mechanism, and o
 statement is that *a four-rule pack* is null on this corpus — not that memory is. The distinction is the same one R168
 amendment 2 makes about the instrument, and it is sharper now that the treatment's size is a measured number rather
 than a cap.
+
+## 34.230 — The pack helps, hurts, and pays for itself, and the three are one reading
+
+The first complete reading is in (PROGRESS 200). It is a positive result, and the obligation that comes with one is
+to attack it in the order an adversary would.
+
+**First: is the arm different from the control at all?** Yes — action digests agree on 2 of 134 games for
+`always-in − none` and 7 of 134 for `retrieved − none`. A treatment that never changed an action would show 134
+identical digests and a delta of exactly zero; this is the opposite extreme, and `engagement: 98.5%` is why the
+decomposition was built.
+
+**Second: is the rise a rise in *wins*, or a rise in something the scorer rewards?** `won` comes from the
+environment's own task-completion flag, set by the game, not by this lane. The scorer cannot be talked into it.
+
+**Third: is the treatment cheaper because it is doing less?** This is the one that needed arithmetic. The treatment
+made **fewer** calls (3,546 against 4,619) and won **more** games. If it were achieving that by giving up early, the
+`budget_exhausted` and `truncated` counters would move; `truncated` fails the pass by construction, and the pass
+passed. So the pack is shortening episodes by making them succeed sooner, not by abandoning them.
+
+**Fourth: the pooled number is a cancellation, and this is the finding.** 
+
+| stratum | n | with pack | without | delta |
+| --- | --- | --- | --- | --- |
+| hard (`none` lost) | 54 | 32 | 0 | **+59.26pp** |
+| easy (`none` won) | 80 | 67 | 80 | **−16.25pp** |
+
+The pack rescues 32 games the control cannot solve and destroys 13 it can. **A memory that is a large gain on
+unsolvable tasks and a real loss on solvable ones is not a neutral instrument with noise** — it is a bias, and the
+bias is legible: four rules about searching and verifying are worth everything when the agent is lost and worth
+nothing-to-harmful when it already knows the answer, because the rule competes with a procedure that was working.
+
+**Fifth: the field's mechanism prediction does not survive, and the direction does.** `arXiv:2604.27003` reports that
+negative transfer concentrates on the cases the agent cannot solve unaided. Here the hard stratum lost **zero** games
+and every loss is in `easy`. The paper's *comparison* (hard delta > easy delta) holds by 75 points; its *mechanism*
+(harm where the agent is weakest) is the opposite of what this corpus shows. Both statements are now on the record
+because R165 wrote two clauses and not one, and a registration that had merged them would have been "confirmed" by a
+result that refutes half of it.
+
+**Sixth: why the two treatments are indistinguishable, and why that is a defect of the bank rather than of retrieval.**
+`retrieved` scored exactly what `always-in` scored (99/134 each) and diverged on 127 games against 132. The reason is
+arithmetic: the bank holds **four** rules and `--top-k` is **3**, so the anchor usually admits three of four. Retrieval
+had nothing to select from. R165's second prediction named this failure mode in advance — *"then the anchor is not
+selecting, and the arm is `always-in` with extra steps"* — and it is what happened. The repair is not a better
+retriever; it is a bank big enough for a retriever to matter, or a budget small enough to force a choice (`k=1`), and
+the second is one dispatch at ≈ ¥1.9.
+
+**Seventh: the number that decides the next dispatch.** The pack's ceiling is visible in the strata: if it fired only
+on the 54 hard games and were withheld from the 80 easy ones, the delta would be **+32/134 = +23.9pp** instead of
++19/134 = +14.2pp. That is **9.7 points of headroom** sitting in a gate, and it is the first time this lane has had a
+quantified target for one. The gate that could capture it does not need to know the answer — it needs to recognise the
+observation it is looking at, which is a weaker requirement and a testable one.
+
+**What is *not* claimed.** Not that 73.9% beats any published row: the harnesses differ by up to 40 points inside one
+method's own reports (COMPETITIVE R167). What is claimed is a **paired** +14.2pp on 134 games with the same backbone,
+the same skeleton, the same step cap and the same examples, with the denominator, the harm share and the engagement
+rate published beside it — a configuration no row in that table reports.

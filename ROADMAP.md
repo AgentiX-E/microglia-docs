@@ -7622,3 +7622,32 @@ test, and this record has already been burned once by a check that was satisfied
 Row 1 does not try: it produces a paired delta, the games both arms drove, and the number of retries each arm needed.
 The first two are the conditions under which a delta means anything; the third is the condition under which it will
 reproduce.
+
+### R169 — The queue after a positive result, ordered by measured headroom rather than by published effect size
+
+The queue used to be ordered by the size of the effect other people reported. It can now be ordered by the size of
+the effect this lane has *not yet* captured, which is a different and better quantity.
+
+| # | step | the number it targets | state | price |
+| --- | --- | --- | --- | --- |
+| 1 | the placebo arm (`--arm sham`) | whether +14.2pp is four rules or the shape of a block | **built**, licensed by `\|delta\| > mde` (14.18 > 14.03) | ≈ ¥1.9 |
+| 2 | the read-time overlap gate (`--gate-share`) | **9.7pp**: the strata say a gate that fires only on hard observations turns +14.2 into +23.9 | **built**, not dispatched | ≈ ¥1.9 |
+| 3 | `retrieved(k=1) − retrieved(k=3)` | retrieval admitted 2.9 of 4 rules, so it cannot select; `k=1` forces a choice | **dispatchable** | ≈ ¥1.9 |
+| 4 | a bank that is not saturated | the loop spent 28 of 40 operations agreeing; the distillation, not the retrieval, is the binding constraint | **not built**: needs a different chunking or a success criterion that resists agreement | ≈ ¥1.9 per attempt |
+| 5 | the pack-knob search | every knob (k, header, position, order) was chosen by argument | **not built** | ≈ ¥15 |
+| 6 | `floor.py`'s unit coverage | 31%, with a ¥0 real-run gate as its substitute | **registered gap** (199.6) | ¥0 |
+| 7 | the object-location pack | the model's own rule 2 is this mechanism; 138 of 149 refusals are instance identity | **demoted, corroborated** | ≈ ¥1.9 |
+
+**Rows 1–3 are all ¥1.9 and all answer a question the reading created.** They can run in parallel on separate
+runners; the only sequencing constraint is that each needs the same committed bank, which is now an artefact of run
+`44754440122` and should be committed before any of them is dispatched.
+
+**Row 4 is the one this round made unavoidable.** A four-rule bank that saturates after four critiques is not a bank
+that can be retrieved from, gated, or searched over — it is a bank whose *producer* stopped learning. Until the
+distillation loop can produce more than four non-overlapping rules from 140 trajectories, rows 2, 3 and 5 are all
+tuning a mechanism whose input is four sentences.
+
+**And the one row that is now cheaper than it was.** The gate in row 2 was justified by a paper. It is now justified
+by this lane's own strata: 32 rescued, 13 spoiled, and a measured 9.7-point gap between the pack as applied and the
+pack as it would need to be applied. That is a target rather than a hypothesis, and it is the first time this document
+has had one.

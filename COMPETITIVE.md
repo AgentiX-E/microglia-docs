@@ -8254,3 +8254,64 @@ Board B still has no absolute score for this lane, because the sweep has not com
 does complete, the artefact will say how many distinct games each arm drove and whether any call needed retrying. The
 first is what makes `aggregate.py`'s paired delta checkable by a reader who does not trust this repository; the second
 is what makes a 4-hour run's score reproducible rather than lucky.
+
+## R169 — The lane has a number, and it is a paired one, which is the column the board does not have (2026-11-20)
+
+R167 split the ALFWorld board in two and refused to quote an absolute. That refusal still holds. What changed is that
+this lane now has a reading of its own kind, and the kind is the point:
+
+| what is published | `always-in − none` | `retrieved − none` |
+| --- | --- | --- |
+| paired delta over the same 134 games | **+14.18pp** [+4.48, +23.88], p=0.0044 | **+14.18pp** [+5.22, +23.13], p=0.0020 |
+| MDE the split could resolve | 14.03pp | 13.39pp |
+| share of games the pack changed | 98.5% | 94.8% |
+| harm share, of the games it changed | **9.85%** | **8.66%** |
+| help share, of the games it changed | 24.24% | 23.62% |
+| tokens injected per task | ≈ **328** | ≈ 260 |
+| cost per episode | **$0.00140** | $0.00131 |
+| cost of the control | $0.00174 — **the treatment is 20% cheaper** | |
+
+**No row in Board B reports any of the first six columns.** ALMA reports 87.1 and a $0.09 construction cost; MemScope
+reports 71.64 on 67 tasks; DynamicCheatsheet 50.75 in that harness and 46.3 on the aggregator board; ExpeL 59.0 in its
+own paper and 46.3 on the board. Each is an absolute rate produced by a harness the reader cannot reconstruct.
+
+### Board B, restated with this lane's own arm in it
+
+| system | ALFWorld | backbone | what it is | paired delta published? | tokens injected | cost it reports |
+| --- | --- | --- | --- | --- | --- | --- |
+| ALMA (own paper) | 87.1 | GPT-5-mini | meta-learned memory designs | no | 1,319 / task | $0.09 per run |
+| **microglia `always-in`** | **73.9** (99/134) | **deepseek-flash** | **4 rules distilled by ExpeL's chain** | **yes, +14.2pp** | **≈328 / task** | **$0.0014 / episode** |
+| MemScope | 71.64 (48/67) | DeepSeek V3.2 | online memory, 50-step cap | no | not reported | not reported |
+| ALMA (MemScope harness) | 67.16 (45/67) | DeepSeek V3.2 | same method, different harness | no | not reported | not reported |
+| **microglia `none`** | **59.7** (80/134) | **deepseek-flash** | **the control** | — | 0 | $0.0017 / episode |
+| DynamicCheatsheet (MemScope harness) | 50.75 (34/67) | DeepSeek V3.2 | a cheatsheet of lessons | no | not reported | not reported |
+| ExpeL | 46.3 board / 59.0 paper | Qwen2.5-7B / GPT-3.5 | the reflection chain this lane copies | no | not reported | not reported |
+| Mem0 / ReAct | 33.6 / 31.2 | Qwen2.5-7B | — | no | not reported | not reported |
+
+**The absolute number is deliberately not the headline.** This lane's `none` is 59.7 on 134 games and
+DynamicCheatsheet is 50.75 on 67; those are different task subsets and the 8.9-point gap is not a claim about either
+system. What can be compared is the *size of the step* a memory mechanism buys on the corpus it is measured on, and
+this lane's step is +14.2pp with an interval that excludes zero — the first row in this table for which the step and
+its uncertainty are both published.
+
+**The one column where this lane is unambiguously first rather than best.** `harm share` — of the games a memory
+changed, the share it made worse — is **9.85%** here, against **52%** for the τ² family (Appendix AS) and no published
+ALFWorld figure at all. Lower is better, the units differ (episode against served item), and the comparison is
+therefore directional rather than numerical. It is still the only cross-lane column this record has, and it is now
+reported by two lanes.
+
+**What the strata say that no competing row can.** The +14.2pp is a cancellation: **+59.3pp on the 54 games the
+control cannot solve**, **−16.3pp on the 80 it can**. A board that publishes one rate per system cannot show that
+shape, and a reader of Board B would have no way to know whether ALMA's 87.1 came from rescuing hard cases or from not
+spoiling easy ones. This lane's answer is: both, in opposite directions, and the gate that would keep only the first
+is worth **9.7 points** of measured headroom.
+
+### What would move this lane up the board, in order of measured value
+
+| step | the number it targets | price |
+| --- | --- | --- |
+| the placebo arm | is +14.2pp the *content* of four rules or the *shape* of a block | ≈ ¥1.9 |
+| the overlap gate | the 9.7pp of headroom the strata expose | ≈ ¥1.9 |
+| `retrieved(k=1)` | retrieval currently cannot select (2.9 of 4 rules admitted); k=1 forces a choice | ≈ ¥1.9 |
+| a bigger bank | the loop saturated at 4 rules, so the *distillation* is the binding constraint, not retrieval | ≈ ¥1.9 per re-distillation |
+| the pack-knob search (ALMA's analogue) | every knob in this lane was chosen by argument; ALMA's were searched | ≈ ¥15 |
