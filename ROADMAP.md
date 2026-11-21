@@ -8306,3 +8306,37 @@ same 157-character head as R180 1a.
 few-shot examples teach, the product claim narrows to *content* lessons, and the parser question (execute a command the
 first line refused) becomes a separate clearly-labelled channel rather than a memory arm. If the counter falls and
 `put` does not move, the refusals were a symptom and the next round is exploration depth.
+
+## R182, read back — the format entry pays a little and does not stop the format
+
+| arm | seen | held out | pooled, 274 | bill |
+| --- | --- | --- | --- | --- |
+| operation (1) + the format operation (551 ch) | 115 | 115 | **230 (83.94%)** | ¥2.22 |
+
+| pairing | delta | 95% CI | p | mde |
+| --- | --- | --- | --- | --- |
+| vs R180 1a (same length, same entry count) | **+3.65 pp** | [−1.09, +8.39] | 0.146 | 6.78 pp |
+| vs R181 post-repair `none` | **+29.20 pp** | [+23.36, +35.04] | < 0.001 | 9.70 pp |
+| vs R181 post-repair anchor | +1.09 pp | [−3.28, +5.47] | 0.668 | 6.22 pp |
+
+`put` **24/59 (+11.86 pp, registered 21–29 of 59)** and the pooled **+3.65 pp (registered +3 to +12)** held;
+`refused_actions` **below 5** did not — it read **9.90**, so the entry cut refusals by 15% and left the format
+standing. `put`-only mde at 59 games is **19 pp**, so the +11.86 is a point estimate inside its own floor.
+**230/274 and 115/134 = 85.82% are the best numbers this lane has read**, three games above R181 at mde 6.22.
+
+**Seven arms, one number**: 212, 218, 220, 222, 223, 227, 230 — eighteen games of spread across renderings of one
+292-character sentence, no adjacent pair resolved. The entry is worth ≈ +29 pp over no entry and ≈ nothing over itself.
+
+## R183 (registered by the next iteration) — the parser channel, and the one intervention large enough to matter
+
+A lost `put` game spends **16.5 of its 50 turns** on commands that never reached the world, and two prompt-level
+interventions moved that by 0% and 15%. The remaining intervention is not a memory arm: it is executing the command
+that the first-line rule refuses, which changes every arm's harness and therefore has to be a **channel** — both arms
+re-run on it, the divergence from the reference harness stated in the same sentence as the result, and the
+reference-channel numbers kept as they are.
+
+Sketch, to be registered with its own bands before dispatch: `none` and the current best bank, 274 games each, on the
+diverging parser. Registered predictions to fix: `refused_actions` → 0 by construction; `put` **+15 to +35 pp** against
+the same arm on the reference channel; the other five kinds |Δ| ≤ 5 pp; pooled **+4 to +12 pp**. Cost ≈ ¥5.9, two
+dispatches. It is the last cheap measurement of the format lock, and if it reads as predicted the lane's product
+statement becomes a two-part sentence: *the operation the step is blocked on, and the format the harness reads.*

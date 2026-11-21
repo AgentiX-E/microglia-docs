@@ -25657,3 +25657,61 @@ the lane's product claim narrows to *content* lessons and the parser question be
 channel (execute a command the first line refused) rather than a memory arm. (3) The noise floor at 274 games is still
 unbought; the 24-game identical-prompt pair that scored 10 and 9 is the only estimate, and it cannot be extrapolated.
 (4) Conditional delivery stays unbought and unresolvable at four `examine` games.
+
+## 218. The format entry pays a little and does not stop the format — and the level is 83.9% (13:05 UTC)
+
+R182 filled the 197-character slot R180 measured dead with the operation the R181 losses point at: one command per
+turn, alone on its line. Same 551 rendered characters, same one entry, character-identical to R180's ablated arm
+except that tail.
+
+| arm | seen, 140 | held out, 134 | pooled, 274 | bill |
+| --- | --- | --- | --- | --- |
+| operation (1) + the format operation | **115** | **115** | **230 (83.94%)** | ¥2.22 |
+
+| pairing | delta | 95% CI | p | discordant | mde |
+| --- | --- | --- | --- | --- | --- |
+| vs R180 1a (same length, same entry count) | **+3.65 pp** | [−1.09, +8.39] | 0.146 | 44 | 6.78 pp |
+| vs R181's post-repair `none` | **+29.20 pp** | [+23.36, +35.04] | < 0.001 | 90 | 9.70 pp |
+| vs R181's post-repair anchor (two 551-character entries) | +1.09 pp | [−3.28, +5.47] | 0.668 | 37 | 6.22 pp |
+
+**Two predictions held and one failed, and the failure is the reading.** `put` was registered at 21–29 of 59 and read
+**24/59 (+11.86 pp)**; the pooled delta was registered at +3 to +12 and read **+3.65 pp**. But `refused_actions` was
+registered **below 5** per `put` game and read **9.90**. A model that had understood the entry would write no
+thought-and-command replies at all. It still writes 85% of them, so what moved is the marginal turn and not the shape.
+
+**So the honest status of `put` is unresolved.** 59 games at this discordance have an mde of **19 pp**; +11.86 is a
+point estimate inside its own floor. What the round does establish is a second 274-game observation of the same
+neighbourhood — **230/274 (83.94%)** and **115/134 = 85.82% held out**, three games above R181 on a different entry at
+the same length, which at mde 6.22 is nothing.
+
+### The family is now seven arms, and it says one thing
+
+| arm | rendered | pooled, 274 | the clause |
+| --- | --- | --- | --- |
+| the sentence alone | 489 | 223 | — |
+| + a neutral note, post-repair | 551 | 227 | *a reference, not an instruction* |
+| + a neutral note, pre-repair | 551 | 222 | the same |
+| **+ the format operation** | **551** | **230** | *one command per turn* |
+| operation (1) only | 551 | 220 | neutral filler |
+| + a citation of an invented run | 551 | 218 | *run 44800000000* |
+| + a citation of a real run | 551 | 212 | *run 44841962248* |
+
+Sightings through 212 to 230 — eighteen games, 6.6 pp — across seven renderings of one 292-character sentence, all at
+or near the same length, none of the adjacent pairs resolved at 274 games. **The entry is worth about +29 pp over no
+entry and about nothing over itself**, and after eleven rounds of ablation that is the product statement: the first
+operation, at the right length, in one entry, is the whole of it.
+
+| item | state |
+| --- | --- |
+| best level | **230/274 (83.94%)**, **115/134 (85.82%)** held out |
+| `put` | 24/59 = 40.7%, against 4/59 for no entry; every other kind 88–100% |
+| coverage | 98.9% lines and branches, every module ≥ 95%, 529 tests |
+| spend this round | **¥2.22** against ¥2.35 quoted |
+| commit | `c97c891` → `00362252` |
+
+**What is left, in order.** (1) The format lock is now the only thing measured between `put`'s 40.7% and the corpus's
+83.9%: the parser question — execute a command the first line refused — is a *channel* rather than a memory arm, it
+must be registered with both arms re-run, and it costs ≈ ¥5.9. (2) Conditional delivery stays unbought: four `examine`
+games is 1.5 pp against an mde of 6.0. (3) The noise floor at 274 games is still unbought; the 24-game identical-prompt
+pair that read 10 and 9 remains the only estimate. (4) Every remaining prompt-level mechanism this lane can name has now
+been measured, and the answer is that one operative sentence carries all of it.

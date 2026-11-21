@@ -8941,6 +8941,14 @@ format is what the competitor's own `react_put_0` example teaches.
 the same bank at mde 6.22, and the +28.10 pp pair drew a control of 81 inside a band that runs **80 to 93** across the
 eleven control readings this lane has paid for — so the memory effect is quoted as **+14 to +28 pp**, not as its point.
 
+**R182, the format entry, and the seven-arm family.** The 197-character slot R180 proved dead was filled with the
+format operation — one command per turn — at identical length and entry count. It read **230/274 (83.94%)**,
+**115/134 = 85.82% held out**, `put` **24/59 (+11.86 pp)** and pooled **+3.65 pp [−1.09, +8.39]** at mde 6.78, against
+R180's identical-length arm at 220. The registered `refused_actions` **below 5** did not hold (**9.90**), so the entry
+moved a behaviour the few-shot examples teach by about a turn in seven and left the format standing — and `put`'s own
+mde at 59 games is 19 pp, so its gain is a point estimate inside its floor. Seven renderings of the one sentence now
+span **212 to 230**: eighteen games across eleven rounds, no adjacent pair resolved.
+
 **Against the board.** On the prompt-only rows this lane now sits between ALMA's self-reported 87.1 and H²R's 72.4,
 with the graph-memory FSM at 75.37 below it; MemScope's re-run of ALMA at 67.2 is the standing evidence that a
 cross-harness point estimate means nothing. The per-kind law — an entry pays where its referent is the failing step —

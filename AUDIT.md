@@ -14817,3 +14817,43 @@ would have been argued into a partial success through the pooled +1.82 pp.
 **What the row does not license.** It does not license restoring `OK.` A driver that tells a model its dropped
 command succeeded is a driver whose transcripts cannot be trusted, and the +28.10 pp it produced as a matched pair is
 the number this lane will keep quoting — with the caveat that the control drew 81 of a band that runs 80 to 93.
+
+## 34.261 — A prompt-level entry moves a format by fifteen per cent, and the residual is a floor not a lever
+
+R182 registered three numbers and read one of them wrong in a way worth recording, because the wrong one is the only
+one that speaks to mechanism. The arm put the format operation — *one command per turn, alone on its line* — into the
+197-character slot R180 proved dead, at identical length and identical entry count, and predicted
+`refused_actions` **below 5** per `put` game from a base of 11.64.
+
+**It read 9.90.** The entry cut refusals by 15% and `put` gained seven games (17/59 → 24/59, +11.86 pp, inside a
+per-kind mde of 19 pp); the pooled delta is **+3.65 pp [−1.09, +8.39]** at mde 6.78. So the intervention is real in
+direction, unresolvable in size, and — the point — **it did not do what it said**. A model that had read the entry
+would not write thought-and-command replies at all. It still writes 85% of them.
+
+**Why this is the useful shape of a partial failure.** Three rounds now agree on the same structure:
+
+| round | what changed | what the mechanism predicted | what the counter read |
+| --- | --- | --- | --- |
+| R181 | the answer a refused turn gets | the model stops believing it acted | refusals 11.64 (unchanged in kind) |
+| R182 | an entry stating the format | refusals fall below 5 | refusals 9.90 (−15%) |
+| both | — | — | `put` 20/59 then 24/59, neither resolved at 59 games |
+
+A 197-character instruction inside a 551-character block moves a behaviour the few-shot examples teach by about one
+turn in seven. That is a measurement of **how much leverage a prompt-level memory has over a format**, and the answer
+is: not enough to close the gap, enough to be visible in a counter and invisible in a score.
+
+**The floor, stated as a number the plan has to respect.** `put` is 59 of 274 games. At the discordance these pairs
+produce, a `put`-only delta has an mde of **19 pp**; the pooled delta has an mde of **6.78 pp**. So the remaining
+headroom — `put` at 40.7% against 88–100% on the other five kinds — can only be attacked by something that moves it
+by more than a fifth of its range, or by an arm that increases the discordance on that kind rather than the game count.
+
+**What that rules out, and it is most of the obvious queue.** More single-clause entries: eighteen games of spread
+across seven arms, none resolved. More entries per pack: the per-entry price R174.2 measured (−3.4 to −3.7 pp) exceeds
+anything a second entry has been shown to buy. Bigger `n`: 274 games already costs ¥2.2 a round and the split has 274
+in it.
+
+**What it leaves.** One intervention is large enough to matter and has never been run: executing the command that the
+first-line rule refuses. That is not a memory arm — it changes the harness for every arm — so it has to be registered
+as a **channel**, with both arms re-run on it and the divergence from the reference stated in the same sentence as the
+result. Its expected size is the whole of the format's cost: a lost `put` game spends 16.5 of its 50 turns on commands
+that never ran, so a channel in which they run has roughly a third of the budget back on the one kind that needs it.

@@ -351,6 +351,14 @@ in one reply every time, which the competitor's own few-shot examples teach, and
 **The format is the constraint, and a format taught by the examples is not something a content entry has been shown
 to reach.**
 
+**A second intervention, a smaller move, and the same lesson.** R182 put the format operation into the 197-character
+slot R180 proved dead, at identical length and entry count. It read `put` **24/59 (+11.86 pp)** and a pooled
+**+3.65 pp [−1.09, +8.39]** — and `refused_actions` **9.90** where the registration said below 5. So the entry cut
+refusals by 15% and left the format standing: a 197-character instruction inside a 551-character block has about one
+turn in seven of leverage over a behaviour the few-shot examples teach. The lane's best reading is now **230/274
+(83.94%)**, **115/134 = 85.82%** held out, and seven renderings of the one sentence span 212 to 230 — eighteen games,
+no adjacent pair resolved. **The entry is worth about +29 pp over no entry and about nothing over itself.**
+
 **And the level moved where nothing predicted it would.** The post-repair matched pair reads **227/274 (82.85%)**
 against **150/274 (54.74%)**, **+28.10 pp [+22.26, +33.58]**, with **114/134 = 85.07%** on the held-out section — the
 best readings this programme has produced. They are +5 games on the same bank at mde 6.22, and the control drew 81 of
