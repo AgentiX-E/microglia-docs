@@ -381,6 +381,17 @@ The memory effect on this channel is **+21.90 pp**, against **+29.20 pp** on the
 `put` games still lose fifty turns each, with 17.7 thoughts and 15.0 recovered commands per game against 13.1 turns and
 1.4 thoughts for a win — the floor that is left is **exploration**, not syntax.
 
+**The turn budget was the next candidate, and it is pure budget.** R184 cut the cap from fifty to thirty on both arms
+of the same channel: `always-in` **257 → 240** and `none` **197 → 156**, against frozen-behaviour predictions of 242 and
+157 computed from the arms' own episode records. Both landed within two games, so the cap changed the budget and nothing
+else — and the memory effect read **+30.66 pp against a predicted +31.02 pp**, which means the entire widening from
++21.90 pp is the cap's arithmetic (it costs the slow arm 40 games and the fast one 15) rather than memory. The one
+reading that did move is the one that matters for the mechanism: on the nine games that still lose, thoughts per turn
+fell from **0.3533 to 0.2667** while `put` stayed at 50 of 59. **The cap suppressed narration and narration was not the
+cost.** The nine split cleanly — five issue commands the world rejects (3 to 11 invalid actions, ending on `Nothing
+happens.`) and four run out of turns mid-progress — so the residual floor is a **precondition** the model does not hold,
+and that is the entry R185 buys.
+
 **And the level moved where nothing predicted it would.** The post-repair matched pair reads **227/274 (82.85%)**
 against **150/274 (54.74%)**, **+28.10 pp [+22.26, +33.58]**, with **114/134 = 85.07%** on the held-out section — the
 best readings this programme has produced. They are +5 games on the same bank at mde 6.22, and the control drew 81 of

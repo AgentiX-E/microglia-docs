@@ -14961,3 +14961,60 @@ ALFWorld row was measured on it, so they cannot be placed on the prompt-only boa
 category error `COMPETITIVE.md` AM.22 spends a section on. What the round licenses is the *internal* comparison it was
 registered for: same bank, same games, two readers, and a memory effect that falls from +29.20 to +21.90 when the harness
 stops leaking.
+
+## 34.264 — A counterfactual over a sampled policy is a prediction, and the lane called it a floor
+
+R184's registration computed each arm's score at a cap of thirty from that arm's own cap-50 episode records, as
+`|{e : e.won and e.steps <= 30}|`, and then wrote the number down twice as **"a floor no behaviour can fall below and a
+ceiling only behaviour can raise"**. The arithmetic is exact: it is a deterministic function of records already paid
+for. The word is not.
+
+A language-model policy is **sampled**. A game that won at step 22 on the fifty-step pass may be lost outright on the
+thirty-step pass — same arm, same bank, same channel, different draw — so the counterfactual is a *prediction about a
+sampled trajectory*, with the policy's own variance around it, and not a set-inclusion argument. The round returned
+**240** and **156** against predictions of **242** and **157**: two and one games *below*, on 274 games each.
+
+**What the mislabelling cost.** Nothing in the decision — the registered bands (246–262, 162–190) were wide enough to
+fail on a 2-game shortfall, and they failed, which is the right verdict either way. What it cost is the sentence a
+reader would have quoted if the arms had landed *above*: "the excess is behaviour, because the number is a floor" is a
+claim the design cannot support. The excess would have been behaviour *plus* sampling noise, and separating them needs
+either a seed-matched re-run or a paired comparison — which is what the same round also reports and which no bound
+argument was needed for.
+
+**The general form, because this lane has now made the same class of error three times.** R183 registered a per-*game*
+rate for a quantity that was per-*turn* and caught it in the readback (34.263). R184 registered a counterfactual as a
+*bound* for a quantity that is a *prediction*. R180 registered "operation (2) is worth something" for an artefact that
+measured its absence. Each time the artefact was right and the sentence about the artefact was wrong, and each time the
+repair is the same: **name the quantity's type before naming its value** — rate, bound, prediction, or estimate — because
+the four support different verdicts from the same number.
+
+**What is now enforced instead.** The join refuses a cap span until it is declared, because a cap is a harness and its
+price is asymmetric between arms (15 games against 40 at cap 30). The readback quotes each arm against **itself** at the
+other cap, and the cross-arm delta at the new cap is printed with the frozen value beside it: **+30.66 pp observed
+against +31.02 pp predicted**, so the widening is the cap's arithmetic to within 0.36 pp and no part of it is memory.
+
+## 34.265 — The refusal that would have been silent had no test, and the seven places it now lives
+
+R184 makes `--max-steps` a variable for the first time in this lane's history. Every earlier reading ran at the
+environment's own fifty. A variable cap turns four previously harmless facts into failure modes, and each of them is
+silent unless something refuses it:
+
+| where | what it would do | what now refuses it | how it is tested |
+| --- | --- | --- | --- |
+| `scripts/alf_dispatch.py` | `--max-steps 30.0` reaches `agent.py` as `type=int` after the environment install, in eight jobs, with the money committed | a whole-number check before the API call | `test_a_step_cap_that_is_not_a_whole_number_is_refused` |
+| `scripts/alf_dispatch.py` | `--max-steps 2` succeeds and returns eight zeroes that read as a mechanism that does not work | a check against the shortest win the corpus has recorded — three steps in 6,096 episodes | `test_a_step_cap_below_the_shortest_recorded_win_is_refused` |
+| `eval/drivers/alfworld/aggregate.py` | one label driven at two caps averages into a rate nobody designed | `label_caps`, refused outright | `test_one_arm_cannot_span_two_caps` |
+| `eval/drivers/alfworld/aggregate.py` | a join across caps prints a delta that is partly arithmetic | `--expect-caps`, required to state the span | `test_a_join_that_spans_two_caps_is_refused_until_it_names_them` |
+| `eval/drivers/alfworld/aggregate.py` | a declared span the artefacts do not have | the declaration is checked against the files | `test_a_declared_span_the_slices_do_not_have_is_refused` |
+| `eval/drivers/alfworld/aggregate.py` | `summary.max_steps` arriving as a string and compared to an integer three checks later | a type check at read time | `test_a_cap_that_is_not_a_number_is_refused` |
+| `eval/drivers/alfworld/aggregate.py` | `--expect-caps 3o` raising from `int()` three frames down, which reads as a crash | a refusal in the declaration parser | `test_a_declared_cap_that_is_not_a_number_is_refused` |
+
+**The fourth row is the one that mattered before the round started.** R184's primary design compares each arm against
+*itself* at two caps, and the join will now refuse exactly that comparison unless the span is declared — which is the
+discipline the registration wanted and could not state as an intention. A guard that only exists in a document is a
+guard that the next round forgets; the seven rows above are the ones that survive an editor.
+
+**The sixth row is a lesson about JSON.** `parser` arrives from the same place and had the same hole, and nobody noticed
+because a channel name is always a string and the comparison it feeds is a set membership. `max_steps` feeds an integer
+comparison, so a malformed artefact would have been *read as a different cap* rather than as malformed — a defect with
+no symptom until somebody compares two readings and cannot reproduce the delta.

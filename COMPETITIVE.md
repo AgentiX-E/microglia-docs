@@ -9026,3 +9026,110 @@ and it is the first question on this lane's queue that a prompt is the wrong ins
 carried, and they are figures about a harness this lane built — see the table above for why they stay off the board.
 The figure the argument stands on is the difference between the two left-hand pairs: **+9.85 pp** for changing one field
 of a driver, against **≤ 3.65 pp** for eleven rounds of changing a sentence.
+
+## The board moved in 2025, and every row above 96 explores the instance it is about to be scored on
+
+Eleven rounds of this lane were run against a board whose top row was **87.1** (ALMA), and the record says so in a
+dozen places. That board is out of date. Two papers read this round put four rows above 96 on the same 134 unseen tasks,
+and one of them is a mechanism this project has never tested at all.
+
+**AutoContext (arXiv 2510.2369) reports ALFWorld success against the step budget**, DeepSeek-V3-0324 driving every row,
+134 unseen tasks:
+
+| method | 5 steps | 10 | 40 | 160 | unlimited | steps per *successful* run |
+| --- | --- | --- | --- | --- | --- | --- |
+| ReAct | 13.1 | 48.3 | 76.5 | 77.5 | 77.5 | 11.4 |
+| **ReAct + AutoContext** | 26.7 | **97.3** | **98.0** | 98.0 | 98.0 | **6.6** |
+| IGE | 10.4 | 10.6 | 54.6 | 86.9 | 94.3 | 60.6 |
+| **IGE + AutoContext** | 26.9 | 27.2 | 96.8 | 98.8 | 99.3 | 13.4 |
+| AutoManual | 3.4 | 28.8 | 94.8 | 97.9 | 97.9 | 17.4 |
+| **AutoManual + AutoContext** | 17.6 | 83.2 | **99.7** | 99.7 | 99.7 | 8.4 |
+
+Two things in that table matter more than the level. **First, the budget binds hard without instance knowledge and stops
+binding with it**: ReAct gains **+28.2 pp** between ten and forty steps, IGE **+44.0 pp**, and the same two methods with
+an instance document gain **+0.7 pp** and **+69.6 pp of a different kind** — ReAct is already at 97.3 by ten steps.
+**Second, the ablation names the mechanism**: removing the extractor costs **16.7 pp** (98.5 → 81.8), the planner
+**8.9 pp**, the TODO forest **3.8 pp**.
+
+**ReflAct (EMNLP 2025)** is a different kind of row: 93.3% on ALFWorld against **85.1%** for ReAct, both GPT-4o, by
+replacing the thought with a reflection on *state against goal* at every step. It is a backbone, not a memory, and its
++8.2 pp is the size of a published reasoning-loop redesign on this corpus.
+
+### The board, and the family each row belongs to
+
+![ALFWorld as of R184: cost against accuracy where both are reported, and the whole board split by what the memory is](figures/alfworld-frontier.png)
+
+| # | row | unseen success | family | LLM | stack | cost as reported |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | AutoManual + AutoContext | **99.7** | instance context | DeepSeek-V3-0324 | Python | 8.4 steps/success + 177.9 steps/instance |
+| 2 | IGE + AutoContext | 98.8 | instance context | DeepSeek-V3 | Python | 13.4 steps/success + 177.9 |
+| 3 | ReAct + AutoContext | 98.0 | instance context | DeepSeek-V3 | Python | 6.6 steps/success + 177.9 |
+| 4 | AutoManual | 97.9 | **experience memory** | DeepSeek-V3 | Python | 17.4 steps/success |
+| 5 | **microglia, bank, any-line** | **96.27** | **experience memory** | deepseek-flash | Python + TypeScript | 15.59 steps/success, **$0.82 per 1,000 episodes** |
+| 6 | IGE | 94.3 | search, no memory | DeepSeek-V3 | Python | 60.6 steps/success |
+| 7 | ReflAct | 93.3 | backbone | GPT-4o | Python | not reported |
+| 8 | ALMA | 87.1 | experience memory | GPT-4o-class | Python | not reported |
+| 9 | **microglia, bank, reference** | **85.82** | **experience memory** | deepseek-flash | Python + TypeScript | 17.29 steps/success |
+| 10 | ReAct | 85.1 | backbone | GPT-4o | Python | 11.4 steps (V3) |
+| 11 | ReAct | 77.5 | backbone | DeepSeek-V3 | Python | 11.4 steps/success |
+| 12 | graph-memory FSM | 75.37 | experience memory | GPT-4o-class | Python | not reported |
+| 13 | H²R | 72.4 | experience memory | GPT-4o-class | Python | 30-step cap |
+| 14 | **microglia, no pack, any-line** | **72.39** | none (control) | deepseek-flash | Python + TS | 23.37 steps/success |
+| 15 | CoEx | 64.20 | experience memory | GPT-4 | Python | not reported |
+| 16 | ExpeL | 59.0 | experience memory | GPT-4 | Python | not reported |
+| 17 | SimpleMem | 54.5 | experience memory | — | Python | not reported |
+| 18 | Mem0 | 52.0 | experience memory | GPT-4o-mini | Python | not reported |
+
+**Where microglia is.** Second in its own family (**96.27** against AutoManual's 97.9, **1.63 pp**, ≈ 2.2 games of 134),
+and fifth overall, behind four rows that all buy their points by **exploring the instance they are about to be scored
+on**. The gap to the top row is **3.43 pp** — 4.6 games — not the sixteen points the old board implied.
+
+**Why the top four are a different claim and not a better one.** AutoContext builds one document per environment
+instance by exploring it for **177.9 steps** on average, then answers tasks *in that instance* from the document. It
+learns nothing across instances: a new house is a new document. This project's bank is distilled from 2,000 training
+episodes and carried, unchanged, into houses the model has never seen. Both are legitimate; only the second is a data
+flywheel, which is the thing this project claims. **The right reading of the board is therefore: microglia is 1.63 pp
+from the best cross-task-memory row ever reported, and the rows above it are a different product.**
+
+**Three caveats that keep this from being a victory lap.** The model is not the same (`deepseek-flash` here against
+DeepSeek-V3-0324 and GPT-4o there, and a stronger model would raise both arms). The prompt skeleton is not the same (this
+lane carries the competitor's two-shot template; the AutoContext paper states no action illustrations were provided in
+its ablation). And the denominator is not the same shape (134 unseen here for the board row; the 274-game pooled figure
+this lane usually quotes is 93.80% and is **not** a board number, for the reason the section above gives).
+
+### What the board says to do next, in the order it costs
+
+1. **The extractor is the largest single component in the best published system** (16.7 pp of 98.5) and it is a
+   *memory-writing* component, not a reader: it proposes add/update/remove edits against a schema and validates each
+   against the trajectory before applying it. This lane's `distill.py` writes entries from episodes and has no
+   validation step against the trajectory, no `Unknown` marker for unobserved attributes, and no removal operation.
+2. **`Unknown` is a mechanism, not a formatting choice.** In AutoContext the document's value is partly that its gaps
+   are *visible* — a planner reading `Street: east: Unknown` knows what to explore. This lane's bank states what was
+   learned and never what was not, which is the plausible reading of the nine `put` games that spend fifty turns: the
+   model has no representation of what it does not know.
+3. **The budget is a knob that only binds for systems without instance knowledge** — which is the R184 measurement, now
+   with an external anchor rather than this lane's own arithmetic alone.
+
+## R184 as a picture — the cap is budget, and the floor splits into rejections and run-outs
+
+![R184: the four cells against their frozen predictions, the memory effect at two caps, and the nine lost put games by invalid actions](figures/alfworld-r184.png)
+
+**Left: the cap costs both arms and the ticks say why it is not an intervention.** `none` 197 → **156**, `always-in`
+257 → **240**, against frozen-behaviour predictions of 157 and 242 — both arms within two games. The control pays **2.4×**
+the treatment's price for the same twenty-turn cut, because the treatment wins in 14.4 steps and the control in 19.6.
+
+**Middle: the delta widens by arithmetic.** +21.90 pp at cap 50, **+30.66 pp** at cap 30, against a predicted +31.02.
+The dashed line is the prediction, and the gap between it and the bar is sampling noise. This is the reason the join now
+refuses a cap span until it is declared: the widening is real, is 8.76 pp, and is not memory.
+
+**Right: the floor, split.** Five of the nine lost `put` games spend the round issuing commands the world rejects — 3,
+5, 6, 7 and 11 invalid actions, ending on `Nothing happens.` — and four run out of thirty turns mid-progress with two or
+fewer. A won `put` makes 1.54. So the residual is a **precondition** the model does not hold (open the container first),
+which is the block AutoContext's schema calls `requirements` and the one its ablation prices at 16.7 pp, and R185 is
+that entry rather than the "where is the object" sketch.
+
+**The row this round would have been placed against, and is not.** With the cap at 30 the bank arm reads **87.59%**, which
+is above ReAct's 76.5% at *forty* steps on the same corpus — but the comparison that matters is cap for cap, and the
+board row stays 96.27% at fifty. What the round adds to the board is the budget axis: **the four rows above this project
+all buy their points at small step budgets (6.6–13.4 steps per success) because their instance document does the
+search for them**, and that is the mechanism this lane has now measured itself as not having.

@@ -8440,3 +8440,50 @@ is positive.
 the window). Written as `REGISTRATION.md` §R184 in `microglia` before the dispatch, together with the dispatcher guard
 that refuses a cap that is not a whole number or is below the shortest win the corpus has recorded — three steps in
 6,096 episodes.
+
+## R184, read back — the cap is pure budget, and the sentence cut narration that was not the cost
+
+| arm | cap 50 | cap 30 | Wilson | frozen prediction | paired vs own cap-50 | mde | bill |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `always-in@anyline` | 257 (93.80%) | **240 (87.59%)** | [83.2, 91.0] | **242** | −6.20 pp (9 new, 26 old) | 6.05 pp | ¥1.76 |
+| `none@anyline` | 197 (71.90%) | **156 (56.93%)** | [51.0, 62.7] | **157** | −14.96 pp (25 new, 66 old) | 9.76 pp | ¥2.35 |
+
+**The memory effect at the short cap reads +30.66 pp against a frozen-behaviour value of +31.02 pp**, so the entire
+widening from +21.90 pp is the cap's arithmetic and none of it is memory — the prediction the registration derived from
+the cap's asymmetry (15 games against 40) landed to 0.36 pp. Both arms sit 1–2 games *below* their prediction, which is
+sampling noise on a sampled policy and retires the word "floor" from the method (`AUDIT` 34.264).
+
+**Five of eight readings held.** `put` stayed at **50/59** on the bank arm (registered 48–53) and rose to **32/59** on
+the control (26–36); `budget_exhausted` 34 and 118 with `truncated` 0; 551 characters, `any-line`, `max_steps` 30 in all
+548 episodes. The two level readings failed — 240 against 246–262, 156 against 162–190 — and clause 1 fired, which is
+the round's verdict: **the sentence does not discipline narration into wins, the budget shape is closed as an
+explanation, and the residual floor is neither syntax nor budget.**
+
+**The one reading that separates the two.** Thoughts per turn on a lost `put` fell **0.3533 → 0.2667** (a quarter) while
+the nine games stayed lost: 30 turns, 8.0 thoughts, 3.67 recovered commands. The cap did what the sentence was bought to
+do; the losses did not convert. Narration is not the cost.
+
+**Spend ¥4.11 against ¥3.80 quoted** ($0.5751, 11,079 calls, off-peak in all eight summaries), nine per cent over
+because the arm that fails is the arm that bills: the control runs 24.07 turns an episode against 16.36.
+
+## R185 (next) — the precondition, which is what five of the nine lost games are actually missing
+
+The nine lost `put` games at cap 30 split in two, and the split replaces the roadmap's "where is the object" sketch:
+
+| cluster | games | invalid actions | last line | what it is |
+| --- | --- | --- | --- | --- |
+| precondition | **5** | 3, 5, 6, 7, 11 (mean 6.4) | `Nothing happens.` | a command the world rejects, repeatedly |
+| budget | 4 | 0–2, 0 stalls | mid-progress | thirty turns ran out while making progress |
+
+A won `put` makes **1.54** invalid actions in 12.8 turns. So the entry to buy is a **precondition** entry — a container
+must be opened before something is taken from it, and a surface is not a receptacle — which is the block AutoContext's
+schema calls `requirements` and the one its ablation prices at **16.7 pp** (the extractor, which is the component that
+writes them). The sketch's "where the object is" entry is dropped: the model's failures are rejections, not searches.
+
+**Design, to be registered before it is bought.** Same bank artefact, same 551 characters, one entry, `any-line`, cap 50,
+bank arm only against R183's control (`--against none`): `put` **53–59 of 59** (from 50); the five precondition games
+convert **2 to 4**; invalid actions per lost `put` fall from **6.4 to ≤ 3**; `thoughts` per game unchanged (this is a
+knowledge entry, not a narration one); the other five kinds |Δ| ≤ 5 pp; 551 characters and 1 entry in all 274 games.
+Refutation: if `put` stays at 50 with invalid actions still above 5, the entry did not reach the decision, and the next
+lever is not a prompt at all — it is `Unknown`-marked instance state, i.e. the competitor's document rather than its
+sentence. Price ≈ ¥2.40, eight jobs.

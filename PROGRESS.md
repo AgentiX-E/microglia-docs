@@ -25805,3 +25805,77 @@ question here that a prompt cannot answer by itself: the model has the budget an
 | gates before dispatch | 551 python tests, 98.7% coverage, `ci.yml` green on `717f85b9`, `alfworld.yml` green on the same commit |
 | figure | `figures/alfworld-r183.png` |
 | registration | `REGISTRATION.md` §R183 amendment 1, nine predictions with verdicts |
+
+## 221. The cap is pure budget, and the board moved two points above this lane while it was measuring (16:05 UTC)
+
+R184 asked the first question a prompt cannot answer: the nine `put` games that still lose spend fifty turns each on
+17.7 thoughts and 15 recovered commands, so is the budget the constraint? Eight jobs, 274 games an arm, `any-line`, the
+same bank, `--max-steps 30`.
+
+| arm | cap 50 | **cap 30** | Wilson | frozen-behaviour prediction | paired vs its own cap-50 run | mde |
+| --- | --- | --- | --- | --- | --- | --- |
+| `always-in@anyline` | 257 (93.80%) | **240 (87.59%)** | [83.2, 91.0] | **242** | −6.20 pp (9 new, 26 old) | 6.05 pp |
+| `none@anyline` | 197 (71.90%) | **156 (56.93%)** | [51.0, 62.7] | **157** | −14.96 pp (25 new, 66 old) | 9.76 pp |
+
+**The registered effect did not happen and the registered artefact happened to 0.36 pp.** The memory effect at cap 30
+reads **+30.66 pp**; frozen behaviour predicts **+31.02 pp**. So the widening from +21.90 pp is the cap's own arithmetic
+— a shorter budget costs the slow arm more, 40 games against 15 — and none of it is memory. Both arms landed within two
+games of their prediction, which is what "the model did the same thing" looks like once the policy is sampled: the
+registration called the counterfactual a *floor*, and a sampled policy can fall below a floor, so the word is retracted
+in `AUDIT` 34.264 and the reading stands on the paired deltas instead.
+
+**Five of eight registered readings held, three failed, and the failures are the point.**
+
+| # | registered | read | verdict |
+| --- | --- | --- | --- |
+| 1 | `always-in` above 242, band 246–262 | **240** | failed — clause 1 fires |
+| 2 | `none` above 157, band 162–190 | **156** | failed |
+| 3 | `put`, `always-in` 48–53 of 59 | **50** | held, exactly at the cap-50 level |
+| 4 | `put`, `none` 26–36 of 59 | **32** | held |
+| 5 | thoughts per turn on a lost `put` ≤ 0.30 | **0.2667** | **held** |
+| 6 | `budget_exhausted` ≥ 32 / ≥ 117, `truncated` 0 | 34 / 118 / 0 | held |
+| 7 | other kinds within the cap's price | ±3 games on `always-in`; `puttwo` −7 on the control | refuted on one kind |
+| 8 | 551 chars, `any-line`, `max_steps` 30 | held in all 548 | held |
+
+**Reading 5 next to reading 3 is the whole round.** On the nine lost `put` games, narration per turn fell from
+**0.3533 to 0.2667** — a quarter — and `put` stayed at **50 of 59**. The cap did what the sentence was bought to do and
+the losses did not convert, so **narration was not the cost**, and the floor that survived R183's parser is neither
+syntax nor budget.
+
+**What the nine are made of is the next round's design.** At cap 30 they split cleanly: **five** spend the round issuing
+commands the world rejects (3, 5, 6, 7 and 11 invalid actions, ending on `Nothing happens.`) and **four** run out of
+thirty turns mid-progress with two or fewer. A won `put` makes **1.54** invalid actions in 12.8 turns against **4.00**
+in 30. So five of nine are a *precondition* the model does not hold — a container has to be open before something is
+taken out of it — which is a knowledge entry of the shape AutoContext calls `requirements`, and four are the budget's
+genuine casualties.
+
+## 222. The board is a 94–100% board now, and this project is second in its own family (16:20 UTC)
+
+Eleven rounds of this lane were aimed at a top row of **87.1** (ALMA). Two papers read this round put four rows above
+96 on the same 134 unseen tasks — AutoContext (arXiv 2510.2369) at **99.7 / 98.8 / 98.0** for AutoManual, IGE and ReAct
+with a per-instance context document, and AutoManual alone at **97.9** — and ReflAct (EMNLP 2025) reports **93.3**
+against **85.1** for ReAct on GPT-4o.
+
+| row | unseen | family | what it costs |
+| --- | --- | --- | --- |
+| AutoManual + AutoContext | 99.7 | instance context | 8.4 steps/success + 177.9 steps/instance |
+| IGE + AutoContext | 98.8 | instance context | 13.4 + 177.9 |
+| ReAct + AutoContext | 98.0 | instance context | 6.6 + 177.9 |
+| AutoManual | 97.9 | **experience memory** | 17.4 steps/success |
+| **microglia, bank, any-line** | **96.27** | **experience memory** | **15.59 steps/success, $0.82 / 1k episodes** |
+| IGE | 94.3 | search | 60.6 |
+| ReflAct | 93.3 | backbone | not reported |
+| ALMA | 87.1 | experience memory | not reported |
+| **microglia, bank, reference** | **85.82** | **experience memory** | 17.29 |
+
+**The gap to SOTA is 3.43 pp, not sixteen.** And the four rows above are a *different claim*: AutoContext explores each
+test instance for 177.9 steps and answers tasks inside that instance, learning nothing across instances; this project's
+bank is distilled from 2,000 training episodes and carried into houses the model has never seen. Within the family this
+project actually competes in, it is **1.63 pp** behind AutoManual — 2.2 games of 134.
+
+**Two consequences for the queue.** First, the extractor is the largest component in the best published system
+(**16.7 pp** of 98.5 by ablation) and it is a *memory-writing* component with a validation step this lane's `distill.py`
+does not have. Second, `Unknown` is a mechanism: AutoContext's document marks what it has **not** observed, and this
+lane's bank states only what it learned — which is the plausible reading of five `put` games that keep issuing rejected
+commands. Both are R185's design inputs, and the second is now the registered direction rather than the sketch's
+"where is the object".
