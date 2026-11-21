@@ -14266,3 +14266,94 @@ restore or refute a count: six sentences, all task-relevant and one per kind, wi
 (`banks/bank-putpair-terse-2.json`, 508 characters, same two operations) was registered and not bought: a 3–4 pp
 effect is below this instrument's 12–14 pp minimum detectable effect, and buying an arm whose answer cannot be
 resolved is how a programme spends ¥3.2 on a tie it will then argue about.
+
+## 34.246 — A flag the control cannot obey took four shards, and the control is the whole point of a sweep
+
+**What happened.** R175 row 1 was dispatched as a two-arm sweep, `["none","always-in"]`, with `--gate-kind`. The
+treatment arm ran, four of four slices, 69/134. **The control arm failed on all four slices at its first line:**
+
+> `FAIL --gate-kind selects among rules, so it needs an arm that carries one`
+
+The cause is structural rather than clerical. The arm step in `alfworld.yml` writes **one** command line for all
+twelve jobs and appends `--rules` only inside `if [ "${ARM}" != "none" ]` — because the control is defined by not
+carrying a bank. The gate flag was added outside that branch, so every control job was started with a flag that
+selects among a bank it does not have, and the driver's guard — written to stop a treatment paying for a gate with
+nothing to gate on — fired on the arm the flag was never meant for.
+
+**Why the driver is where the defect lived.** The guard was correct about treatments and wrong about the process
+that starts them. `agent.py` reads one arm; the workflow reads a matrix. A flag whose legality depends on the arm
+cannot be an error at the arm level when the arm is one cell of a matrix that the same flag is sent to. The fix is
+three lines and the reasoning matters more than the code:
+
+* `--gate-kind` on the control is **inert, not refused**: the control carries no bank, there is nothing to select,
+  and its artefact records `gate_kind: null` — which is a true statement about what ran, where a refusal is a
+  statement about the dispatch that killed a job that would have been correct.
+* `arm_label` keeps the control's name as `none`. `gate_kind` is a knob, and a knob that selects from an empty set
+  has not been moved; `none@kind` would have been a second control family, and the one arm every reading in this
+  lane is compared against would have stopped being recognisable in `aggregate.py`.
+* the dispatcher stops refusing the flag on `--arm none` as well. It was refused there for the same reason and with
+  the same effect — and it is a real purchase: re-buying the control of a gated sweep against the same commit is
+  the only repair available once such a sweep has been bought without one.
+
+**The rule that now holds it.** `test_cli.py` reads the YAML as text and asserts that every `args+=(--gate…)` line
+appears **above** the `ARM != none` branch, that there are two of them, and that the driver's guard is still
+written as `arguments.arm != "none" and not any(rule_kinds)`. A structural rule rather than a behavioural one,
+because the failure mode is a *tidier-looking* YAML: the flag beside `--rules` reads better, and reads better is
+how it was written.
+
+**What it cost, and what it did not.** Four control jobs, about ¥0.9 of the ¥1.80. The science survived because
+this lane's only reliable comparison is treatment against treatment (AUDIT 34.232): row 1 keeps its 69 and is
+quoted against row 2's 100, both treatments, same 134 games, same commit. The control it lost was worth quoting
+once, as a level, and this split's control has read 80, 81, 88, 89, 90, 91 across eight dispatches — a band eight
+wins wide, which is why no conclusion here rests on it.
+
+## 34.247 — The same 24 prompts, bought twice, moved one game: this lane's noise floor is measured
+
+**The accident that makes the measurement.** The six-sentence bank's `put` entry is `bank-putmove-1.json`
+**verbatim** — the register required it, so that the gated arm would reproduce the winning arm byte for byte on a
+quarter of the split. It did: `prefix_chars` and the pack rendering are equal in **all 24 `put` games** between
+`always-in@one` (run `44841962248`) and `always-in@kind` (run `44850240971`). The two arms carried different banks,
+different labels and different dispatches, and for those 24 games they sent the model **the same bytes**.
+
+**The reading.** 10/24 against 9/24. One game in twenty-four, 4.2 pp, on identical input, with the whole harness
+held constant: same model, same split, same seed, same 50-step budget, same prompt.
+
+**What it licenses.** Three things this lane has been arguing about for four rounds:
+
+1. **A one- or two-game difference is nothing.** The difference between the one-sentence arm (112) and the
+   two-sentence pair (109) is three wins and was already read as a tie; this says the tie is not close.
+2. **Controls move by more than that** — 80/81/88/89/90/91 across eight dispatches, i.e. up to eleven wins — so a
+   control is a *band* and only a same-dispatch pairing is a comparison (AUDIT 34.232, 34.243).
+3. **The six-arm/one-arm gap (24 discordant games, +8.96 pp, p = 0.014) is twice this floor** — measured on the
+   same 134 games, so the comparison is like for like — and is the first length effect in the lane that clears its
+   own noise rather than living inside it.
+
+**What would be wrong to conclude.** That per-game outcomes are reproducible because the prompt is. They are not:
+the same bytes won one game more in one dispatch than the other, and nothing in the artefact says which. The
+measurement bounds the noise; it does not remove it, and the only defence is the paired design that repeats it.
+
+## 34.248 — A pack is billed per call and a wrong pack is billed for fifty steps
+
+**The reading.** R175's two arms carried 1,280 and 378 mean characters per game and cost $0.1879 and $0.2516. The
+arm that rendered **902 characters less** cost **34% more**, and its per-win price is 2.7× the winning arm's:
+
+| arm | mean pack | mean prompt | calls | bill | won | per win |
+| --- | --- | --- | --- | --- | --- | --- |
+| `always-in@one` | 489 | 4,563 | 3,004 | $0.1506 | 112 | **$0.00134** |
+| six, ungated | 1,280 | 5,354 | 3,758 | $0.1879 | 100 | $0.0019 |
+| six, gated by kind | 378 | 4,452 | 4,923 | $0.2516 | 69 | $0.0036 |
+| `none` | 0 | 4,074 | 4,513 | $0.2245 | 91 | $0.0025 |
+
+**The mechanism.** Cost is not a function of the prompt. Every call carries the pack, so length is a per-call
+multiplier — but a lost game runs all fifty steps, so *being wrong* multiplies the number of calls. The gated arm
+carried a pack 902 characters smaller and spent **2.9 M more prompt tokens** (12.66 M against 9.77 M over the same
+134 games) because it made 1,165 more calls, each costing about 2,570 tokens of state the pack did not shrink.
+**The most expensive memory in this lane is the one that is wrong in a way that costs steps**, and no length-based
+cost model sees it.
+
+**Why it belongs in the audit rather than the register.** It is the first measurement in this lane where an arm's
+cost ranks *opposite* to its length, which is what a reader who budgets by tokens would get wrong — and the
+dispatcher quotes a per-arm price before a sweep is bought (¥3.2 for two arms, i.e. ¥1.6 each). The six-sentence
+arm came in at ¥1.34 and the gated one at ¥1.80, so the quoted price is a **floor for a winning arm and 12% short
+for a losing one**. The arithmetic is not corrected here; it is bounded, and the bound is printed beside every
+quote.

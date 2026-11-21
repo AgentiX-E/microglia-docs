@@ -179,6 +179,39 @@ What replaces it is the task kind, read from the gamefile before the first call 
 sentences is filtered to the game's own kind, so a store can be as wide as the corpus and a prompt as narrow as one
 line. That is R175, and it is registered with its own ablation — the same six sentences with the gate and without it.
 
+**R175 has since been read, and the store does not scale.** The same six-sentence bank, one sentence per published
+task kind, scored **100/134 ungated** and **69/134 gated by kind** against a control of 91 and the one-sentence arm's
+112. Every contrast is same-dispatch or treatment-against-treatment, so the three sentences those numbers support are
+not hedged by this corpus's wide control band:
+
+| arm | rendered pack | won / 134 | per win |
+|---|---|---|---|
+| nothing | 0 | 91 | $0.0025 |
+| **one sentence** | **489 ch** | **112** | **$0.00134** |
+| six sentences, ungated | 1,280 ch | 100 | $0.0019 |
+| six sentences, gated by task kind | 378 ch mean | 69 | $0.0036 |
+
+1. **Selection did not make a wide store behave like a narrow pack; it made it behave worse than an empty one.**
+   The gate ties on exactly one kind — `put`, whose tagged sentence *is* the winning arm verbatim — and loses one to
+   nine games on the other five, at −23.1 pp against the same sentences ungated and −16.4 pp against nothing.
+2. **The five new sentences are not diluted, they are redundant.** The `heat` sentence says to close the microwave
+   before heating; a `heat` game already has a microwave and an observation that mentions it. The `put` sentence says
+   the failing action has a second phrasing — which no observation says, and which is why it transfers into the five
+   kinds it was not written for. **A memory pays when it names a repair the world does not name.**
+3. **The per-sentence tax is real but second-order.** Five task-relevant additions cost 8.96 pp, −1.79 pp each: the
+   same sign as the −3.4 to −3.7 pp the block ladder measured, at half the rate, and far smaller than being wrong.
+
+**And a wrong pack is the most expensive thing in the lane.** The gated arm's prompt was 902 characters shorter on
+average and its bill was 34% higher, because a lost game is billed for all fifty steps: 4,923 calls against 3,758.
+Cost is not a function of length once the arm can lose; it is a function of calls, and being wrong is what makes
+calls.
+
+**The instrument's own noise, measured on identical bytes.** The six-bank's `put` entry was required to be the
+winning sentence verbatim, so the gated arm reproduced the one-sentence arm's prompt byte for byte in all 24 `put`
+games — verified in the artefacts, not assumed — and those 24 identical prompts scored 10 and 9. One game in
+twenty-four, 4.2 pp, is this lane's sampling floor: the one-versus-six gap is twice it and clears it at p = 0.014,
+while the control's six readings span eleven wins.
+
 **And the reading would have been wrong.** The gated arm reported engagement 88%, a paired delta, six by-kind rows
 and a bill, while carrying an empty prompt in every game: an empty prompt also changes the trajectory, so a
 divergence counter cannot tell "the rules were read" from "the prompt was different". The lane's voiding conditions

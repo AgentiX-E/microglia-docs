@@ -8652,3 +8652,40 @@ scored twice.
 | "a gatekeeper is required for context to help" (SWE-ContextBench) | the lexical gatekeeper admits nothing; the task-kind one is untested | **half refuted, half open** |
 | "abstraction is where a memory loses its value" (arXiv:2605.12978) | the one-sentence arm is itself an abstraction and it is the best arm | **not yet testable here** — the raw-trajectory arm needs a second bank schema |
 | "context length degrades performance monotonically" (Chroma, NoLiMa) | 489 > 802 > 1,312 at matched content where the shorter one is also the more specific | **consistent, but confounded with specificity** |
+
+## R175 — The gatekeeper claim is now refuted in both its forms, and the abstraction claim gets its first fair test
+
+Two arms, one bank, same 134 games: the six-sentence store filtered to each game's own task kind, and the same six
+sentences unfiltered. Together with the one-sentence arm they make the position table's first **content-controlled,
+length-varying** ladder in this corpus.
+
+![R175: the ladder, the non-monotonicity in length, and the 24 identical prompts](figures/alfworld-r175.png)
+
+| arm | entries | rendered | wins / 134 | rate | per win |
+| --- | --- | --- | --- | --- | --- |
+| **one sentence (489 ch)** | 1 | 489 | **112** | **83.58%** | **$0.00134** |
+| six sentences, ungated | 6 | 1,280 | 100 | 74.63% | $0.0019 |
+| six sentences, gated by task kind | 1 | 324–489 | 69 | 51.49% | $0.0036 |
+| `none` | — | — | 91 | 67.91% | $0.0025 |
+
+| the field's claim this reading tests | the reading | verdict |
+| --- | --- | --- |
+| "a gatekeeper is required for context to help" (SWE-ContextBench), lexical form | the 0.2-share floor admits nothing on this corpus (R174.2) | **refuted** |
+| the same claim, task-kind form — the strongest gate the harness can build for free | gating by the game's own kind is −23.1 pp against the same sentences ungated and −16.4 pp against no pack at all | **refuted**, and harder than the lexical form: this gate fires and still loses |
+| "more rules, better bank" (ExpeL's cap of 20 and every derivative) | 1 > 6 ungated > 6 gated, at 489 / 1,280 / 378 characters | **refuted at both ends**: a longer bank is worse and a narrower one is worse, so the axis is neither length nor width |
+| "abstraction is where a memory loses its value" (arXiv:2605.12978) | the best arm in the lane is an abstraction of the trajectory that R176 will show verbatim at the same length (505 against 489) | **still open, and now fairly testable**: the length is matched to 3.3%, so the only difference left is stated versus shown |
+| "context length degrades performance monotonically" (Chroma, NoLiMa) | 489 > 1,280 with content held and specificity *higher* in the shorter arm; but 378 (gated) is worse than both | **not monotone in length**: the gated arm is the shortest pack in the lane and the worst arm in it |
+
+**Where this puts the position table.** Microglia's ALFWorld prompt-only row stays at **83.58%** on 134 held-out
+games and **$0.00134 per win** — the number that moved is the negative one: the cheapest memory in the field's
+published designs (a wide, gated, per-task store) is now measured to be both worse than nothing on this corpus and
+2.7× the price per win of a single sentence, because a losing arm is billed for the steps it loses. Against
+ALMA's self-reported 87.1% on 67 games under its own harness, the gap that remains is 3.5 points and 67 versus 134
+games — still not a ranking, and now with a measured noise floor of 4.2 pp on identical prompts to say so.
+
+**What the field can take from this without accepting this lane's numbers.** A memory's selection signal has to sit
+on the object the memory is *about*. Every published gatekeeper this programme could find selects on the observation,
+the repository state, or the task's label; the sentence that pays here selects on the failing action's own phrasing
+and transfers into five kinds it was not written for. That is a testable difference in design, not a threshold to
+tune, and R175 is the experiment that separates them: **the gate that fires on the task's own name lost 23 points
+against the same sentences read unfiltered.**

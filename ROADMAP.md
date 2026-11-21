@@ -7954,3 +7954,52 @@ below them is either a single sentence to be written (row 3, ¥3.2) or an engine
 outcome-shaped; the fourth — *was the treatment in the prompt* — was missing, and it is the one that caught R174.2.
 `aggregate.py` prints the pack distribution above every delta and refuses a pack arm that carried nothing and a
 control that carried anything, so a reading of an empty prompt can no longer be reported as a gate's effect.
+
+**R175 came back and the table above is now a result, not a prediction.** Read in full at PROGRESS 209 and REGISTRATION
+R175 amendment 1: six sentences **100/134**, the same six gated by kind **69/134**, its own control **91/134**, and the
+one sentence **112/134**. Three findings replace the three registered cells:
+
+| registered | measured | the finding that replaces it |
+| --- | --- | --- |
+| row 1 ≈ 112, row 2 ≈ 94 → the store scales | 69 and 100 | **it anti-scales**: selection cost 23 points against the same sentences ungated and 16 against nothing |
+| both ≈ 112 → the price is not linear | 112 and 100 | linear at −1.79 pp/sentence over five task-relevant additions: the price is in coverage nobody needs |
+| row 1 < row 2 → the gate hurts | 69 < 100, and 69 < 91 | the gate *removes* the sentence that works: it ties only on `put`, the one kind whose sentence is the winning arm verbatim |
+
+What the round did **not** answer is why the single sentence pays. It is 37.3% of the registered block's length and
+beats everything, including a store written to cover the corpus; the standing explanation is that it names a repair
+no observation contains. R176 tests that explanation against the form it arrived in.
+
+## R176 — The same evidence, shown instead of stated: is the sentence worth what it says or what it is
+
+`banks/bank-putmove-1.json` is one 489-character sentence. It was distilled from **one trajectory** — the `put` that
+failed, the thought that followed it, the `move` that worked, the observation that confirmed it — and
+`banks/bank-rawput-1.json` is that trajectory **verbatim**, rendered at **505 characters**. The two arms are
+length-matched to within 3.3% and differ in one thing: one states the rule the model should follow, the other shows
+the episode it was derived from. `arXiv:2605.12978` claims a memory's value is lost in abstraction; this is the
+lane's first length-matched test of that claim, and it costs what one arm costs.
+
+| # | experiment | the question | state | price |
+| --- | --- | --- | --- | --- |
+| **1** | `always-in` over `banks/bank-rawput-1.json` (505 ch) with its control | at the same length, does a verbatim trajectory buy what a stated rule buys — is the value in the abstraction or in the evidence | **registered, dispatch next** | ≈ ¥3.2 |
+| 2 | the `examine` sentence alone (~340 ch) | the one kind six sentences did not move (16/18 against 17/18) and the only hand-written sentence with no `put` step in it — is `examine` unwinnable by memory, or was its sentence the wrong one | licensed by R175 | ≈ ¥3.2 |
+| 3 | ~~`retrieved@kind`~~ | does the anchor help once the pool is the game's own sentence | **retired by R175**: the gate is the wrong object, and a one-entry pool is the whole answer — there is nothing left for an anchor to rank | unspent |
+| 4 | ~~the compressed pair~~ | is the per-sentence price paid in characters or in statements | **retired by R174.1 + R175**: length has now been varied from 0 to 1,280 characters with the content held, and the effect is content-shaped | unspent |
+
+**The pre-registered reading of row 1, before it is bought.** The control for R176 is bought in the same dispatch, so
+all three rows below are same-dispatch pairs.
+
+| raw trajectory | what it means |
+| --- | --- |
+| ≈ 112, and above the control by ≥ 8 pp | **the value is the evidence, not the phrasing**: a memory can be a trace, the abstraction is a compression that costs nothing, and the product is "store the trajectory" |
+| ≈ 91, not distinguishable from the control | **the value is the statement**: the same information, shown rather than stated, does not transfer — the model cannot read a repair out of an episode, and the product is one hand-written sentence per failing step |
+| between the two, overlapping both | the two forms carry part of it each, and the next contrast is a mixed pack at the same total length |
+
+**What would void the reading.** `carried` must be 1.0 in all 134 games (the bank has one entry and no gate); the
+arm's rendered prefix must exceed the control's by 505 characters and equal the one-sentence arm's within 20, which
+is checked in the artefacts before the delta is read — the whole experiment is a length match, and a length that
+moved is the experiment failing to be one.
+
+**Why this row and not another sentence.** Five hand-written sentences were just measured at −8.96 pp net, so
+another hand-written sentence is a purchase this lane has already made and lost. The raw trajectory is the only
+remaining arm that changes the *form* of the memory rather than its content, it is already built and validated
+(`test_banks.py::RawTrajectoryTest`), and it decides a product question either way it lands.

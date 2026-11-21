@@ -24990,3 +24990,103 @@ directory is a suite the CI runs** — the last of which failed on its first run
 | `44841993038` | gated retrieved (void) | 9,089 | $0.4535 | ¥3.24 |
 | **this round** | | 16,548 | **$0.8243** | **¥5.89** |
 | R175 rows 1–2, in flight | six sentences, gated and not | — | ≈ $0.90 | ≈ ¥6.4 |
+
+## 209. Six sentences cost eight wins, and the gate that was supposed to make a store scale scored below carrying nothing (03:40 UTC)
+
+R175 bought the two rows the last round registered: the tagged six-entry store under the kind gate, and the same
+store ungated. The gate is not a weak signal, it is the wrong object; the store is not too long, it is off-topic in
+five of its six sentences; and the lane's own noise floor got measured for the first time on identical bytes.
+
+![R175: four arms over the same 134 games, and the noise floor measured on identical prompts](figures/alfworld-r175.png)
+
+| arm | pack | won | $ | ¥ | per win |
+| --- | --- | --- | --- | --- | --- |
+| `none` | 0 | 91/134 | 0.2245 | 1.61 | $0.0025 |
+| `always-in@one` (R174.1) | 489 ch | **112**/134 | 0.1506 | 1.08 | **$0.00134** |
+| six, ungated | 1,280 ch | 100/134 | 0.1879 | 1.34 | $0.0019 |
+| six, gated by kind | 378 ch mean | **69**/134 | 0.2516 | 1.80 | $0.0036 |
+
+| pairing | delta | 95% CI | p |
+| --- | --- | --- | --- |
+| one − six | **+8.96 pp** | [+2.24, +16.42] | 0.014 |
+| six − none | +6.72 pp | [−2.24, +15.67] | 0.179 |
+| one − none | +15.67 pp | [+7.46, +23.88] | < 0.001 |
+| six − kind | **+23.13 pp** | [+12.69, +33.58] | < 0.001 |
+| kind − none | **−16.42 pp** | [−26.87, −5.97] | 0.0024 |
+
+### 209.1 The pre-registered table, and the cell it landed in
+
+Three readings were registered for rows 1–2 before either was bought. Row 2 was registered at ≈ 94 and read 100.
+Row 1 was registered as one of four cells and landed in the fourth — *the gate hurts* — and one cell past it: the
+gated arm is **below its own control**, sixteen points under a prompt that carries nothing at all. The registered
+sentence for that cell was "a tag that fires is not a rule that applies". The measurement says something sharper:
+a tag that fires **removes the sentence that was working**.
+
+### 209.2 Why the gate lost, in one table
+
+| kind | gated | ungated | delta | control |
+| --- | --- | --- | --- | --- |
+| `put` | 9/24 | 9/24 | 0.0000 | 2/24 |
+| `puttwo` | 13/17 | 17/17 | −0.2353 | 15/17 |
+| `clean` | 15/31 | 26/31 | −0.3548 | 22/31 |
+| `cool` | 10/21 | 16/21 | −0.2857 | 16/21 |
+| `heat` | 6/23 | 15/23 | −0.3913 | 18/23 |
+| `examine` | 16/18 | 17/18 | −0.0556 | 18/18 |
+
+The gate ties on exactly one kind: `put`, whose tagged sentence **is** the winning arm verbatim. Every other kind
+receives its own hand-written sentence and loses one to nine games against the version that carried all six. So the
+five new sentences are not diluted, they are *negative*: the `heat` entry ("close the microwave before heating")
+tells the agent something the room already says, while the `put` entry ("if `put` keeps failing, try `move`") tells
+it something no observation ever will. **A memory pays when it names a repair the world does not name.**
+
+### 209.3 The per-sentence price, at n = 6
+
+Five extra sentences, all task-relevant, one per published kind: **−8.96 pp = −1.79 pp per sentence**. Same sign as
+the −3.4 to −3.7 pp of R173, half the rate, different object (a wide store, not a padded block). What survives from
+that slope is now the only version of it that is a claim: **a sentence added to a pack that already names the
+failing step buys coverage the games do not need.**
+
+### 209.4 Identical bytes, one game apart: the noise floor
+
+The register required the six-bank's `put` entry to be `bank-putmove-1.json` verbatim, so the gated arm would
+reproduce the winning arm byte for byte on a quarter of the split. It did: `prefix_chars` and the pack are equal in
+**all 24 `put` games** across two dispatches, and those 24 identical prompts scored **10/24 and 9/24**. One game in
+twenty-four, 4.2 pp, is this lane's sampling noise — measured, not inferred. The one-sentence/six-sentence gap is
+twice that and clears it at p = 0.014; the control's six readings (80–91) are three times it, which is why a control
+is a band and only a same-dispatch pairing is a comparison.
+
+### 209.5 The defect that cost row 1 its control, and the three fixes
+
+Four of row 1's eight jobs died on their first line: `--gate-kind` was passed to **every** arm in the matrix, and
+the driver refused it on the control, which carries no bank. The treatment survived at 69/134; the control did not
+run at all (AUDIT 34.246). Fixed in three places, each of which is a rule now:
+
+| where | was | now | held by |
+| --- | --- | --- | --- |
+| `agent.py` | `--gate-kind` without a bank → exit 1 | inert on the control, `gate_kind: null` in the artefact | `test_agent.py::test_a_kind_gate_on_the_control_runs_and_records_that_it_moved_nothing` |
+| `agent.arm_label` | `none@kind` | `none` — a knob that selects from an empty set has not moved | `test_agent.py::test_the_label_never_says_kind_for_the_arm_that_carries_no_bank` |
+| `alf_dispatch.py` | `--arm none --gate-kind` refused | accepted: it is how a gated sweep's missing control gets re-bought | `test_alf_dispatch.py::test_the_control_of_a_gated_sweep_is_accepted_as_a_purchase` |
+
+And the structural rule that would have caught it before the money: `test_cli.py` reads the YAML as text and
+asserts every `args+=(--gate…)` line sits **above** the `ARM != none` branch. A flag the control cannot obey is a
+flag the matrix cannot carry.
+
+### 209.6 The suite, and what is left
+
+| dimension | before | now |
+| --- | --- | --- |
+| tests in the lane (drivers + dispatcher) | 386 + 55 = 441 | **389 + 56 = 445** |
+| coverage, lines and branches | 98.9% | **98.9%**, every module ≥ 95% |
+| structural rules in `test_cli.py` | 5 | **6** |
+
+Next, in order: **R176** — the verbatim trajectory that the winning sentence was distilled from
+(`banks/bank-rawput-1.json`, 505 rendered characters against the sentence's 489), which is the length-matched test
+of whether a memory pays because it is *stated* or because it is *evidence*; then the `examine` sentence alone,
+which is the one kind the store did not move and the only sentence written without a `put` step in it.
+
+| run | arm | USD | CNY |
+| --- | --- | --- | --- |
+| `44850240971` | six, gated (4 shards; control failed) | $0.2516 | ¥1.80 |
+| `44850377113` | six, ungated + control (8 shards) | $0.4124 | ¥2.95 |
+| **R175** | | **$0.6640** | **¥4.75** |
+| R176, quoted | verbatim trajectory + control | ≈ $0.45 | ≈ ¥3.2 |
