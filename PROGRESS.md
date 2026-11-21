@@ -24874,3 +24874,119 @@ at the same content and less length — one sentence, 489 characters — and it 
 R174 is registered with four readings and the dispatch each licenses. The gate arm is the one that matters for the
 product: if it lands near 109, a store can be large and a pack can still be small, which is the only form in which
 this mechanism scales past one hand-written sentence per task kind.
+
+## 208. One sentence scores 112/134 and the gate that was supposed to make a store scale carried nothing at all (01:15 UTC)
+
+Both R174 arms came back within thirteen minutes of each other, and they read in opposite directions: the cheaper
+one is the best arm the lane has ever had, and the one that was supposed to be the product carried an empty prompt
+in every game.
+
+### 208.1 R174.1 — one sentence, 112/134, and it is above the pair
+
+Run `44841962248` drove **entry 4 alone** — the `put`→`move` workaround, **489 rendered characters, 37.3% of the
+registered block** — over all 134 held-out games with its own control: 7,459 calls, **$0.3708 (¥2.65)**.
+
+| arm | rendered | wins / 134 | rate | its own control | delta vs its own control |
+| --- | --- | --- | --- | --- | --- |
+| **one sentence** | **489** | **112** | **83.58%** | 88 | **+17.91 pp [+8.96, +26.87], p 0.0000** |
+| the bare pair | 802 | 109 | 81.34% | 91 | +13.43 pp |
+| the placement half, padded | 1,312 | 100 | 74.63% | 88 | +8.96 pp |
+| four distilled rules | 1,312 | 99 | 73.88% | 80 | +14.18 pp |
+
+Engagement 121/134 (90.3%), help 35/121 (28.9%), harm 11/121 (9.1%). By stratum: **hard 35/46 against 0/46
+(+76.1 pp)** and easy 77/88 against 88/88 (−12.5 pp) — the sentence converts three quarters of the games the
+skeleton cannot solve unaided, and it is charged for that on the games it can.
+
+By kind the one sentence moves five of six: `clean` 28/31 (from 21), `heat` 22/23 (from 17), `cool` 20/21 (from 13),
+`put` 10/24 (from 5), `puttwo` 16/17 (from 14). `examine` is the exception, 16/18 against 18/18 — and it is the one
+kind whose task line never contains the verb the sentence is about.
+
+**The registered decision table fired on its first row**: one sentence ≈ 109 means the pack is one line and the
+product is a single sentence per failing step. It read 112, three wins above the pair. The honest statement is not
+"shorter is better" — it is that **a second sentence about the same failing step is worth nothing measurable**, and
+that the ladder is now four points over content at two lengths: **112 (489, one) ≥ 109 (802, two) > 100 (1,312, two
+padded) ≈ 99 (1,312, four)**.
+
+### 208.2 R174.2 — void, and the defect that made it look like a reading
+
+Run `44841993038` bought the read-time gate: the registered four-entry bank, retrieved at k=3, admitted only where
+the observation's own words overlap the rule's by 0.2. 9,089 calls, **$0.4535 (¥3.24)**. It scored **81/134 against
+a control of 90**, and the report had every appearance of a measurement — engagement 88.1%, six by-kind rows, a
+paired delta of −6.72 pp, a bill.
+
+**It carried zero entries in 134 of 134 games.** `pack_entries` is 0 in every episode of all four slices, while
+`rules_in_bank` is 4. The reading is an empty prompt's, not a gate's.
+
+The arithmetic, computed from the corpus rather than argued: a real first observation carries **22 content words**
+and every one of them is furniture — `cabinet 4, countertop 1, garbagecan 1, sinkbasin 2, toilet 1 …` plus the task
+line. The largest overlap any of the four rules reaches against it is **one word**, and one of the three matches is
+`task`, from the prompt's own `Your task is to:` line. The registered floor is 4.4 words against a ceiling of 1, so
+the gate could not admit anything in any game. It was not too strict; it was a filter on the wrong object. **An
+observation names the room, and the failing step is in the action.**
+
+### 208.3 The instrument was the real defect, and it is fixed before anything above is quoted
+
+Engagement was 88.1% while the pack was empty. An empty prompt changes the trajectory, so a divergence counter
+cannot tell "the rules were read" from "the prompt was different" — which means the lane's voiding conditions were
+one short, and the short one was the cheapest to check.
+
+Two changes, both landed before the readings in 208.1 were quoted:
+
+1. `aggregate.py` reports `carried` per arm — the distribution of `pack_entries` — above the delta, and **refuses a
+   pack arm that carried nothing in every game and a `none` arm that carried anything**. Run on R174.2's own
+   artefacts it says: *arm retrieved@g0.2 carried an empty pack in 134 of 134 games, so its score is the control's
+   score and its label does not describe the prompt.*
+2. `agent.py` grows `--gate-kind`: selection by the **task the game names**, read from the gamefile by
+   `task_kind_of` before the first call. That is the only signal that exists at decision time on this corpus, and it
+   costs nothing to obtain.
+
+### 208.4 What the gate's failure costs the product story, and what replaces it
+
+The claim was "a store can be broad if the gate makes the pack narrow". On this corpus the gate cannot: the room
+does not name the failing step, so there is nothing to gate on lexically. What remains is the kind, which is a
+property of the *task* rather than of the observation, and which the harness knows for free.
+
+R175 is registered around that: `banks/bank-perkind-6.json` holds six sentences, one per published kind, each
+tagged, and its `put` entry is the 112-scoring sentence **verbatim** — so the gated arm reproduces the winning
+block byte for byte on a quarter of the split. Two arms are in flight, and they are an ablation of one module
+rather than two separate questions: the same six sentences **with** the kind gate and **without** it.
+
+| # | arm | the question | price |
+| --- | --- | --- | --- |
+| 1 | `always-in@kind` over the six-entry tagged bank | can a store cover six kinds and still be worth one line per game | ≈ ¥3.2 |
+| 2 | `always-in` over the same bank, ungated | six sentences with no selection: the control for row 1, and the per-sentence price measured at n=6 | ≈ ¥3.2 |
+
+The pre-registered readings, before either is bought: row 1 ≈ 112 and row 2 ≈ 94 means **the store scales and the
+per-sentence price is paid by carrying rather than by storing**; both ≈ 112 means the price is not linear and
+R173.1's slope was about task-relevance rather than counting; both ≈ 94 means selection by kind does not help and the
+product stays one hand-written sentence until a better signal exists.
+
+### 208.5 The lane's own gate, which was measuring and not enforcing
+
+The Python lane had a coverage *number* in every report and no floor under it: `pnpm test` floors the TypeScript
+packages, and nothing floored the drivers. `scripts/check-python-coverage.py` now reads `coverage json` and fails
+per module on lines and branches together, refuses a report that measured almost nothing (a run that discovers no
+tests reports 100% of nothing), and carries a `--self-test` that breaks one property at a time. `ci.yml` runs the
+suites twice — once as processes, which is how the workflow starts them, and once under coverage, which is what the
+floor reads.
+
+| dimension | before this round | now |
+| --- | --- | --- |
+| tests in the lane | 366 | **379** |
+| modules with a floor | 0 | **6** (+ the dispatcher's guard) |
+| coverage, lines and branches | 99% measured, not enforced | **98.9% enforced per module** |
+| suites the CI runs | 6 | **8** (`test_banks`, `test_cli`) |
+
+`test_cli.py` is the other half of the same idea: it checks that every driver answers `--help` on a fresh
+interpreter, that **every flag `alfworld.yml` passes is a flag the parser advertises**, and that **every suite in the
+directory is a suite the CI runs** — the last of which failed on its first run, because `test_banks.py` and
+`test_cli.py` existed and the loop did not name them.
+
+### 208.6 The cost ledger
+
+| run | arm | calls | USD | CNY |
+| --- | --- | --- | --- | --- |
+| `44841962248` | one sentence, 489 chars | 7,459 | $0.3708 | ¥2.65 |
+| `44841993038` | gated retrieved (void) | 9,089 | $0.4535 | ¥3.24 |
+| **this round** | | 16,548 | **$0.8243** | **¥5.89** |
+| R175 rows 1–2, in flight | six sentences, gated and not | — | ≈ $0.90 | ≈ ¥6.4 |

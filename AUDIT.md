@@ -14180,3 +14180,89 @@ readings moved by more than the effects being measured, and found its largest, c
 blocks were compared to each other. The instrument for that (`--relabel`, path-keyed, with the ambiguous-basename
 refusal) was written for a hypothetical and fired on its author's first real command; the reading it produced is the
 only one in this record whose interval is not dominated by an arm that carries no pack at all.
+
+## 34.243 — Engagement is not an admission test, and the arm that carried nothing reported a gate's effect
+
+**The claim this replaces.** That a treatment arm which diverges from its control on 88% of games has been read by
+the model. It has not: an empty prompt is also a different prompt. Run `44841993038` diverged on 121 of 134 games,
+produced a computable paired delta, six by-kind rows and a bill, and carried **zero entries in every one of the 134
+games**. Every counter in the report was healthy and none of them was about the pack.
+
+**Why the counters could not see it.** `divergence_rate` measures whether the trajectory changed; `help_share` and
+`harm_share` divide by the games that changed; `by_kind` splits a delta that exists either way. The pack enters the
+artefact only as `pack_entries`, which was recorded per episode and never aggregated — a field that was being
+written and never read, which is the same failure as a field that is never written, one layer later.
+
+**What was changed.** `aggregate.py` gains `carried()` and `empty_pack_reason()`. The distribution of
+`pack_entries` is printed **above the delta**, and the join refuses two shapes: a pack arm (family `always-in`,
+`sham` or `retrieved`, taken from the label before the `@`) whose pack was empty in every game, and a `none` arm
+that carried anything. An artefact written before the field existed has no counts and is passed over rather than
+failed — the check says what it can see instead of assuming the rest.
+
+**What this class of defect costs, measured.** The void arm's −6.72 pp [−14.93, +1.49] would have been filed as
+"the gate is harmful at 0.2", and a second reading — gated 81 against the archived ungated 99, a cross-dispatch
+paired delta of −13.43 pp [−22.39, −4.48], p 0.0044 — would have been filed as "the gate costs thirteen points and
+the direction of the repair is wrong". Both are numbers a programme can be steered by, and both are the control's
+own noise: six `none` readings on these 134 games span 80 to 91.
+
+**The general form.** A voiding condition that is computed from the *outcome* (engagement, divergence) cannot
+replace one computed from the *manipulation* (what the prompt contained). The lane had three conditions and all
+three were outcome-shaped; the fourth — was the treatment in the prompt — is the only one that could have caught
+this, and it costs one counter.
+
+## 34.244 — The gate's premise is false on this corpus: an observation names the room, and the failure is in the action
+
+**The registered hypothesis.** `arXiv:2610.07311`'s repair, ported as a floor on the share of the observation's own
+content words a rule must account for. The prediction was that the floor would fire on the games whose observation
+names the failing step and stay silent on the rest, making a broad bank behave like a narrow pack.
+
+**The measurement, which needed no dispatch.** A real first observation carries 22 content words after stopwords:
+`cabinet`, `countertop`, `garbagecan`, `handtowelholder`, `sinkbasin`, `toilet`, `toiletpaperhanger`, `towelholder`,
+`room`, `middle`, `looking`, `quickly`, `see`, plus the task line's `put`, `some`, `spraybottle`, `toilet`, `task`.
+Every one of the room's nouns is furniture. The four registered rules are about operations — `inventory`, `put`,
+`move`, `receptacle`, `take`. The largest overlap available is **one word**, and one of the three matches is `task`,
+which the prompt itself supplies. The floor of 0.2 needs **4.4** words. There is no threshold between 0 and 1 that
+would have worked either: the signal is absent, not weak.
+
+**Why the unit tests did not see it.** `test_agent.py`'s gate fixtures use a four-word observation, where 0.2 is a
+single shared word and the floor is reachable by construction. The fixture was written to demonstrate the
+arithmetic, and it demonstrated it. A threshold whose reachability depends on the length of the text it is measured
+against can only be tested against the corpus's own text, and `GateTest` now carries that observation verbatim.
+
+**What replaces it.** `--gate-kind`: select entries by the task the game names, which `task_kind_of` reads from the
+gamefile's directory before the first call. It is not a proxy for overlap; it is the operand the overlap was
+standing in for. A bank that tags its entries (`"kinds": ["put", "puttwo"]`) is filtered to the game's kind, an
+untagged entry is carried everywhere, and a kinds list that does not line up with the rules is refused rather than
+zipped — because the misalignment a cap produces (`rules[:cap]` beside an uncut `kinds`) would carry the sentence
+the arm believes it dropped.
+
+**What is not claimed.** That a task-kind gate generalises past corpora where the task is a directory name. It is
+the harness's own label, and on a corpus whose tasks are not enumerated it does not exist. What generalises is the
+sentence: **a memory is selected by what the agent is doing, and a room is not that.**
+
+## 34.245 — One sentence at 489 characters is the best arm in the lane, and a per-sentence price cannot explain it
+
+**The reading.** 112/134 (83.58%) against a control of 88, +17.91 pp [+8.96, +26.87], p < 0.001 — three wins above
+the two-sentence pair (109) and thirteen above the four-rule block (99), at 37% of the block's rendered length.
+
+**What it does to the per-sentence slope of AUDIT 34.242.** The slope was −3.4 to −3.7 pp per sentence, measured
+between blocks that differed in *which* sentences they carried. R174.1 adds a point at one sentence and the ladder
+becomes 112 (1) ≥ 109 (2) > 100 (2, padded) ≈ 99 (4). Two readings follow and they are not the same claim:
+
+1. **A second sentence about the same failing step is worth nothing measurable.** 112 against 109 is three wins,
+   inside an interval thirteen wins wide. The product sentence is therefore "one sentence per failing step", not
+   "as few sentences as possible".
+2. **The slope was never about counting.** The pair and the block differ by two sentences *and* by whether the
+   sentences name the failing operation: entries 1–2 are about a desklamp and about search order, entries 3–4 are
+   about the two operations most games fail at. 112 − 99 = 13 wins over three extra sentences, of which the two
+   task-relevant ones were carried in both arms.
+
+**The claim that is now retired.** "Each sentence costs 3.4 pp of attention" was written as a mechanism and is not
+one: it fitted a line through three points whose content differed. What survives is weaker and safer — **a pack
+pays for its length and is worth its specificity** — and the next measurement (R175 row 2) is the one that could
+restore or refute a count: six sentences, all task-relevant and one per kind, with and without selection.
+
+**One thing this reading changed without being asked to.** The compressed-pair arm built for the format question
+(`banks/bank-putpair-terse-2.json`, 508 characters, same two operations) was registered and not bought: a 3–4 pp
+effect is below this instrument's 12–14 pp minimum detectable effect, and buying an arm whose answer cannot be
+resolved is how a programme spends ¥3.2 on a tie it will then argue about.

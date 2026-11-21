@@ -8608,3 +8608,47 @@ and 31.2% (ReAct). Those levels are **not comparable across harnesses** — 67 a
 different action-space parsers, different step caps — and this lane does not claim a rank from them. What it claims is
 the only column with a control for what the block *says*: four blocks, three of them form-matched, two of them scored
 twice.
+
+## R174 — The best block on this board is one sentence, and the field's plates are three to five times its length
+
+Three readings moved the top of the lane's own table, and all three were scored on the same 134 games by the same
+model through the same harness.
+
+| block | entries | rendered characters | wins / 134 | rate | its own control |
+| --- | --- | --- | --- | --- | --- |
+| **one sentence: the `put`→`move` workaround** | **1** | **489** | **112** | **83.58%** | 88 |
+| the two placement rules | 2 | 802 | 109 | 81.34% | 91 |
+| the two, padded to the registered length | 2 | 1,312 | 100 | 74.63% | 88 |
+| four distilled rules | 4 | 1,312 | 99 | 73.88% | 80 |
+| four permuted rules (the sham) | 4 | 1,312 | 105 | 78.36% | 81 |
+| two search rules, padded | 2 | 1,318 | 80 | 59.70% | 90 |
+| four typewriter entries | 4 | 1,316 | 80 | 59.70% | 89 |
+| `none` | — | — | 80–91 | 59.7–67.9% | — |
+
+**The board's lengths are now a column with a direction.** Every published prompt-only row that ships a rule bank
+ships four to twenty entries, and the shortest arm in this lane that beats the four-entry block is **one sentence of
+489 characters** — 37% of the block, 2.7 times shorter than the smallest competitor plate on record. On this corpus
+that is not a compression, it is a different quantity: the same 134 games, a gain of 13 wins over the four-rule
+block, and a gain of 3 over a pair of the same two sentences.
+
+**The read-time gatekeeper that SWE-ContextBench requires does not exist on this corpus in lexical form.** The
+0.2-share floor — the repair `arXiv:2610.07311` names — admits nothing at all: a first observation carries 22 content
+words of furniture, the rules are about operations, and the largest overlap available is one word. The arm that
+carried it scored 81 against a control of 90 while holding an **empty** prompt in 134 of 134 games, so the reading is
+not a gate's effect and is filed as void. The gatekeeper that does exist is the task kind: free, known before the
+first call, and the basis of the next dispatch.
+
+**Where this puts the position table.** Microglia's ALFWorld prompt-only row is **83.58%** on 134 held-out games with
+a one-sentence pack and **$0.3708 per 134 games** — ¥0.020 per game, or 328 tokens of pack per episode measured at the
+artefact's own `prompt_tokens`. Against the published rows it is above every prompt-only row except ALMA's self-reported
+87.1% (67 games, its own harness, its own parser). Those levels are **still not a ranking**: 67 against 134 games,
+different step caps, different action parsers. What this lane owns is the only column with a control for what the pack
+*says* and the only board on which a one-sentence arm and a four-sentence arm of the same vocabulary have both been
+scored twice.
+
+| the field's claim this reading tests | the reading | verdict |
+| --- | --- | --- |
+| "more rules, better bank" (ExpeL's cap of 20, every derivative) | 1 sentence 112 > 2 sentences 109 > 4 rules 99 | **refuted on this corpus** |
+| "a gatekeeper is required for context to help" (SWE-ContextBench) | the lexical gatekeeper admits nothing; the task-kind one is untested | **half refuted, half open** |
+| "abstraction is where a memory loses its value" (arXiv:2605.12978) | the one-sentence arm is itself an abstraction and it is the best arm | **not yet testable here** — the raw-trajectory arm needs a second bank schema |
+| "context length degrades performance monotonically" (Chroma, NoLiMa) | 489 > 802 > 1,312 at matched content where the shorter one is also the more specific | **consistent, but confounded with specificity** |

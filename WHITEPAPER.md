@@ -137,6 +137,54 @@ The four blocks also give the paper the one column no published row on this corp
 task's words, a block of the same shape whose words are not, and a block whose words are the right ones in the wrong
 order — all at the same length, all against their own controls, two of them scored twice.
 
+### 1.2.3 One sentence is the pack, and the selection signal is the task rather than the room
+
+The four blocks above were scored at 1,312 rendered characters because that is the competitor's length. The next
+three readings shortened the block and held everything else fixed, and the ladder is monotone in one direction:
+
+| block | rendered | statements | wins / 134 |
+|---|---|---|---|
+| four distilled rules | 1,312 | 4 | 99 |
+| the placement half, padded to 1,312 | 1,312 | 2 | 100 |
+| the bare pair | 802 | 2 | 109 |
+| **one sentence** | **489** | **1** | **112** |
+
+**One sentence — the `put`→`move` workaround alone — is the best arm this programme has, at 37% of the block's
+length**: 112/134 (83.6%) against its own control's 88, +17.9 pp [+9.0, +26.9], p < 0.001. It converts 35 of the 46
+games the skeleton cannot solve unaided, and it is charged for that on 11 of the 88 it can. Five of the six task
+kinds improve on it; `examine` does not, and `examine` is the one kind whose task line never names the verb the
+sentence is about.
+
+Three consequences, and the second is the one that changes the design.
+
+1. **A second sentence about the same failing step is worth nothing measurable.** 112 against 109 is three wins
+   inside an interval thirteen wide. The product statement is one sentence per failing step, not "as few as
+   possible".
+2. **The cost of a pack is paid by carrying, not by storing.** Everything the ladder measures is a change in what
+   the prompt contains. What it cannot see is a store that holds six sentences and shows one, which is the only
+   form a memory can scale in — and that is now the open measurement (ROADMAP R175).
+3. **Length is not the only variable and it is the one the field tunes.** Two extra sentences cost 6.7–7.5 pp
+   whether they are about the task or about a typewriter; two *fewer* sentences, one of which is about the failing
+   step, gain 13. A pack's value is its specificity minus the tax its length charges, and the tax has now been
+   measured in two corpora and two prompt shapes (−3.4 to −3.7 pp per sentence here, −1.7 pp per rule on BIRD).
+
+**The read-time gate the literature recommends does not work on this corpus, and the reason is structural.** A floor
+on the share of the observation's own content words a rule must account for — the repair `arXiv:2610.07311` names —
+carried **zero entries in 134 of 134 games**, because a first observation is 22 content words of furniture and the
+rules are about operations: the largest overlap available is one word, and the floor asks for five. There is no
+threshold between 0 and 1 that would have worked; the signal is absent rather than weak. **An observation names the
+room, and the failing step lives in the action.**
+
+What replaces it is the task kind, read from the gamefile before the first call and free: a bank that tags its
+sentences is filtered to the game's own kind, so a store can be as wide as the corpus and a prompt as narrow as one
+line. That is R175, and it is registered with its own ablation — the same six sentences with the gate and without it.
+
+**And the reading would have been wrong.** The gated arm reported engagement 88%, a paired delta, six by-kind rows
+and a bill, while carrying an empty prompt in every game: an empty prompt also changes the trajectory, so a
+divergence counter cannot tell "the rules were read" from "the prompt was different". The lane's voiding conditions
+were all outcome-shaped; the one that caught it — *was the treatment in the prompt* — is now a counter printed above
+every delta, and a pack arm that carried nothing in every game is refused rather than reported.
+
 ### 1.3 The measurement that ends the ambiguity
 
 R6 pointed every admitted rule at four foreign questions and recorded both what it repaired and what it

@@ -7903,3 +7903,54 @@ where the pack is otherwise ideal and the model is different. **A pack pays for 
 specificity**, and both lanes now say so with numbers of the same sign. That is the sentence the whitepaper has been
 missing, and it is a product sentence rather than a benchmark one: the smallest pack that names the failing step is
 the pack to ship.
+
+## R175 — A store of six sentences, selected by the task, and the same store without the selection
+
+R174 closed the content question and opened a different one. **One sentence scores 112/134** — the best arm in the
+lane, thirteen wins above the four-rule block and three above the two-sentence pair — so the product sentence is
+"the shortest pack that names the failing step". What that leaves is the question a store has to answer: a store is
+only useful if it can hold more than one thing, and every measurement so far says that holding more costs.
+
+**The gate that was supposed to solve it did not, and the reason is now known.** R174.2's overlap floor (0.2 of the
+observation's own content words) carried **zero entries in 134 of 134 games**: a first observation is 22 content
+words of furniture, the four rules are about operations, and the largest overlap available is one word — `task`, from
+the prompt's own task line. The floor needs 4.4. It was not a threshold that could be tuned; the signal does not
+exist. **An observation names the room; the failing step is in the action.**
+
+R175 asks the product question with the signal that does exist: the task kind, which `task_kind_of` reads out of the
+gamefile before the first call and which costs nothing. `banks/bank-perkind-6.json` holds six sentences, one per
+published kind, each tagged with the kinds it was written for. Its `put` entry is `bank-putmove-1.json` **verbatim**,
+so the gated arm reproduces the 112-scoring block byte for byte on 24 of the 134 games.
+
+| # | experiment | the question | state | price |
+| --- | --- | --- | --- | --- |
+| **1** | `always-in@kind` over the six-entry tagged bank | can a store cover six kinds and still be worth one line per game | dispatched | ≈ ¥3.2 |
+| **2** | `always-in` over the same bank, ungated | six sentences and no selection: the control for row 1 and the per-sentence price at n = 6 | dispatched | ≈ ¥3.2 |
+| 3 | the `examine` sentence alone | the one kind one sentence does not move (16/18 against 18/18), and the only sentence with no `put` step in it | licensed by row 1 | ≈ ¥3.2 |
+| 4 | `retrieved@kind` over the same bank | does the anchor still help when the pool is one entry, or is a one-entry pool already the answer | contingent | ≈ ¥3.2 |
+| 5 | a retrieved **raw trajectory**, one entry | the literature's claim that abstraction is where a memory loses its value (arXiv:2605.12978) | needs a second bank schema, ~3 h | ≈ ¥3.2 + 3 h |
+| 6 | the bare pair compressed to 508 characters | is the per-sentence price paid in characters or in statements | **built, not bought**: 112 against 109 puts a 3–4 pp compression below this instrument's 12–14 pp mde | ¥3.2, unspent |
+
+**The pre-registered reading, in one table.**
+
+| row 1 | row 2 | what it means for the product |
+| --- | --- | --- |
+| ≈ 112 | ≈ 94 | the store scales: **the per-sentence price is paid by carrying, not by storing**, and a wide bank is free as long as each game carries one line |
+| ≈ 112 | ≈ 112 | six task-relevant sentences are worth what one is worth; the price is not linear and R173.1's slope was about task-relevance rather than counting |
+| ≈ 94 | ≈ 94 | selecting by kind does not help, so the product stays one hand-written sentence until a better selection signal exists |
+| row 1 < row 2 | — | the gate hurts, and the mechanism is the one R174.2 found in another form: a tag that fires is not a rule that applies |
+
+**What would void either reading.** `aggregate.py`'s empty-pack refusal (row 1 must carry one entry in at least 90%
+of games, since every kind is tagged); engagement below 50%; and a control above 85/134 — which this split has now
+produced three times, so any *level* claim from this dispatch is quoted by stratum only. The row-1-versus-row-2
+contrast is treatment against treatment and needs no control at all.
+
+**What this round cost and what it did not.** R174's two arms were **¥5.89** against a ¥6.4 quote. R175's two arms
+are the same ¥6.4, and they are the last pair on this lane's list that can change the product sentence. Everything
+below them is either a single sentence to be written (row 3, ¥3.2) or an engineering task with a known schema
+(row 5, ~3 h + ¥3.2).
+
+**The instrument is now stricter than the register that describes it.** Three voiding conditions were
+outcome-shaped; the fourth — *was the treatment in the prompt* — was missing, and it is the one that caught R174.2.
+`aggregate.py` prints the pack distribution above every delta and refuses a pack arm that carried nothing and a
+control that carried anything, so a reading of an empty prompt can no longer be reported as a gate's effect.
