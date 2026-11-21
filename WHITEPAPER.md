@@ -201,6 +201,30 @@ not hedged by this corpus's wide control band:
 3. **The per-sentence tax is real but second-order.** Five task-relevant additions cost 8.96 pp, −1.79 pp each: the
    same sign as the −3.4 to −3.7 pp the block ladder measured, at half the rate, and far smaller than being wrong.
 
+**The abstraction claim was finally testable, and it fails on a matched length.** The winning sentence is itself an
+abstraction: 489 characters distilled from one trajectory. `arXiv:2605.12978` holds that abstraction is where a memory
+loses its value, so the trajectory was bought verbatim at **505 rendered characters** — same evidence, same corpus,
+same model, 16 characters apart — against a control in its own dispatch:
+
+| arm | pack | won / 134 | vs its control |
+|---|---|---|---|
+| the verbatim trajectory | 505 ch | 108 | **+11.19 pp [+3.73, +18.66], p = 0.0038** |
+| the distilled sentence | 489 ch | 112 | +17.91 pp [+8.96, +26.87], p < 0.001 |
+| sentence − trajectory | — | +4 games | **+2.99 pp [−3.73, +9.70], p = 0.445** |
+
+At matched length the two forms are worth the same, and the mean prefixes differ by exactly 505.0 characters, so the
+match is arithmetic rather than approximate. What the tie hides is the trade, and it is per kind: the trajectory is
+the best arm this lane has on `clean` (30/31), `heat` (23/23), `examine` (18/18) and `puttwo` (17/17), and its worst
+on `put` — **1/24 against a control of 5/24**, the only arm measured here that is worse than nothing on the games its
+evidence came from. On those games it used 49.5 of its 50 steps and 33.6 thoughts with *fewer* invalid actions than
+either other arm: it had the syntax, and it pursued a plan about a toiletpaper that was not in the room.
+
+**So the product sentence changes from "store the repair" to "store the step".** A trace is a legitimate memory at no
+measurable cost and the best format teacher in the lane (2.5 invalid actions per game against 3.4 for the sentence and
+5.6 for the control); a sentence is the better teacher of repair, because it can name a step without naming an object.
+Which one to store is a question about the user's failures — format failures want a trace, blocked steps want a
+sentence — and not a question about which form is more valuable, because at equal length they are.
+
 **And a wrong pack is the most expensive thing in the lane.** The gated arm's prompt was 902 characters shorter on
 average and its bill was 34% higher, because a lost game is billed for all fifty steps: 4,923 calls against 3,758.
 Cost is not a function of length once the arm can lose; it is a function of calls, and being wrong is what makes

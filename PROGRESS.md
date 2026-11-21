@@ -25039,6 +25039,26 @@ five new sentences are not diluted, they are *negative*: the `heat` entry ("clos
 tells the agent something the room already says, while the `put` entry ("if `put` keeps failing, try `move`") tells
 it something no observation ever will. **A memory pays when it names a repair the world does not name.**
 
+### 209.2b What the sentence repairs is the placement, and five of six kinds end with one
+
+Read the one-sentence arm against the **control** by kind and the pattern stops looking like generalisation:
+
+| kind | the corpus's own task type | one sentence | control | delta |
+| --- | --- | --- | --- | --- |
+| `put` | `pick_and_place_simple` | 10/24 | 2/24 | **+8** |
+| `clean` | `pick_clean_then_place_in_recep` | 28/31 | 22/31 | **+6** |
+| `heat` | `pick_heat_then_place_in_recep` | 22/23 | 18/23 | **+4** |
+| `cool` | `pick_cool_then_place_in_recep` | 20/21 | 16/21 | **+4** |
+| `puttwo` | `pick_two_obj_and_place` | 16/17 | 15/17 | **+1** |
+| `examine` | `look_at_obj_in_light` | 16/18 | 18/18 | **−2** |
+
+Five of the six task types the split publishes end with a placement — their names say so — and those five are
+exactly the five the sentence helps. The sixth, `look_at_obj_in_light`, has no placement in it, and the sentence
+does nothing there but charge for its length. **The sentence transfers because the step it repairs is the step every
+kind ends on, not because the model generalises a rule.** That also re-reads R175's own null: a description of a
+kind's objects is not redundant with a repair of its last step, it is about a different step — and on games where the
+repair applies, the description displaces it.
+
 ### 209.3 The per-sentence price, at n = 6
 
 Five extra sentences, all task-relevant, one per published kind: **−8.96 pp = −1.79 pp per sentence**. Same sign as
@@ -25090,3 +25110,72 @@ which is the one kind the store did not move and the only sentence written witho
 | `44850377113` | six, ungated + control (8 shards) | $0.4124 | ¥2.95 |
 | **R175** | | **$0.6640** | **¥4.75** |
 | R176, quoted | verbatim trajectory + control | ≈ $0.45 | ≈ ¥3.2 |
+
+## 210. A verbatim trajectory is worth what the sentence distilled from it is worth, and it loses the games it came from (04:10 UTC)
+
+R176 bought the length-matched pair the register asked for: the trajectory the winning sentence was distilled from,
+verbatim, at **505 characters** against the sentence's **489**, each against a control in its own dispatch. The
+verdict is not the literature's: at equal length, **shown and stated are the same value**.
+
+| arm | pack | won | rate | bill | per win |
+| --- | --- | --- | --- | --- | --- |
+| nothing (this dispatch) | 0 | 93/134 | 69.40% | $0.2162 (¥1.55) | $0.0023 |
+| verbatim trajectory | 505 ch | **108**/134 | 80.60% | $0.1576 (¥1.13) | $0.0015 |
+| the distilled sentence | 489 ch | **112**/134 | 83.58% | $0.1506 (¥1.08) | $0.0013 |
+
+| pairing | delta | 95% CI | p |
+| --- | --- | --- | --- |
+| trajectory − control | **+11.19 pp** | [+3.73, +18.66] | 0.0038 |
+| sentence − trajectory | +2.99 pp | [−3.73, +9.70] | 0.445 |
+
+The mean prefix differs by **505.0 characters** — exactly the bank's render — so the pair is length-matched to the
+byte, which was the condition that made the experiment an experiment.
+
+![R176: two forms at the same length, and the per-kind trade inside the tie](figures/alfworld-r176.png)
+
+### 210.1 The tie is two opposite trades
+
+| kind | sentence | trajectory | delta |
+| --- | --- | --- | --- |
+| `put` | 10/24 | **1/24** | +37.5 pp |
+| `cool` | 20/21 | 19/21 | +4.8 pp |
+| `heat` | 22/23 | 23/23 | −4.3 pp |
+| `puttwo` | 16/17 | 17/17 | −5.9 pp |
+| `clean` | 28/31 | **30/31** | −6.5 pp |
+| `examine` | 16/18 | **18/18** | −11.1 pp |
+
+The trajectory is the best arm this lane has on four of the six kinds and its worst on the fifth: 1/24 on `put`, a
+kind whose control reads 5/24 — **the arm is worse than nothing on the games it came from**. The counters say why
+without needing a transcript: on `put` games it spent 49.5 of 50 steps and 33.6 thoughts per game with **fewer**
+invalid actions than either the sentence arm (8.8) or the control (8.1). It did not fight the syntax; it deliberated
+about an episode whose objects are not in the room. **A trace transfers the shape of a solution and carries its
+nouns with it.**
+
+### 210.2 What this does to the abstraction claim
+
+`arXiv:2605.12978` says a memory loses its value in abstraction. On this corpus, at matched length and matched
+content, abstraction costs **2.99 pp, p = 0.445** — nothing. What abstraction buys is the thing the trace cannot
+have: it generalises across the games the trace did not come from. Five of the six task types end with a placement,
+and the sentence that repairs placement reads +8, +6, +4, +4, +1 games against control on those five kinds, while the
+trace — which *is* one placement — goes −4 on the only kind it names and +1 to +9 on the rest by teaching the shape
+of the middle of the task.
+
+**The product statement this round makes possible**: store either form, but store the *step* rather than the *story*.
+A trace is a valid memory at no measurable cost and it is the better teacher of format (fewest invalid actions of any
+arm in the lane: 2.5 per game against 3.4 and 5.6); a sentence is the better teacher of repair, because it can name
+the repair of a step without naming an object.
+
+### 210.3 The counter that had to exist before this reading was quotable
+
+The void condition was a length condition — *prefix within 505 ± 2 of the control's* — and no artefact field could
+answer it: `prefix_chars` also contains 3,965 characters of few-shot examples. The episode record now carries
+`pack_chars`, the rendered block alone, and `aggregate.py` prints it under `carried` (AUDIT 34.249). R176's own
+artefacts predate the field, so its length match is arithmetic on the two prefix means this round and mechanical
+from the next one.
+
+| dimension | before | now |
+| --- | --- | --- |
+| tests in the lane | 445 | **449** |
+| coverage, lines and branches | 98.9% | **99.0%**, every module ≥ 95% |
+| artefact fields a reading can check its own design with | `pack_entries`, `prefix_chars` | **+ `pack_chars`** |
+| dispatch quoted / spent | ¥3.2 | **¥2.67** |

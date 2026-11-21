@@ -8003,3 +8003,47 @@ moved is the experiment failing to be one.
 another hand-written sentence is a purchase this lane has already made and lost. The raw trajectory is the only
 remaining arm that changes the *form* of the memory rather than its content, it is already built and validated
 (`test_banks.py::RawTrajectoryTest`), and it decides a product question either way it lands.
+
+**R176 came back, and the literature's claim does not survive contact with a matched length.** The trajectory reads
+**108/134** (+11.19 pp [+3.73, +18.66], p = 0.0038 against its own control of 93) and the sentence **112/134**; the
+difference between them is **+2.99 pp [−3.73, +9.70], p = 0.445**, on a pair whose mean prefixes differ by exactly 505
+characters. Stated and shown are worth the same at matched length. What the tie hides is per kind: the trajectory is
+the lane's best arm on `clean` (30/31), `heat` (23/23), `examine` (18/18) and `puttwo` (17/17) and its worst on `put`
+(**1/24 against a control of 5**) — the only arm this lane has measured that is worse than nothing on the games its
+evidence came from. It spent 49.5 of 50 steps and 33.6 thoughts on those games with *fewer* invalid actions than
+either other arm, so it had the format and pursued the wrong objects. **A trace transfers the shape of a solution and
+carries its nouns with it.**
+
+## R177 — The resolution floor, and the purchase that raises it instead of adding a point to it
+
+Every remaining hypothesis on this lane is now in the 3–6 pp band, and the instrument's minimum detectable effect on
+134 games is **12–13 pp**. That is the binding constraint, not the ideas. Two candidate rows were written and
+**neither is bought**, for the same arithmetic reason:
+
+| candidate | the question | the predicted effect | why it is not bought |
+| --- | --- | --- | --- |
+| two repairs (`banks/bank-repair-2.json`, 620 ch, built and validated) | do two repair sentences compose where five descriptions did not | +1 to +3 games over the 112 arm (+0.7 to +2.2 pp) | under the mde by a factor of five; at 134 games the answer is "indistinguishable" whatever it is |
+| the sentence delivered **after the first refusal** instead of before the first call | does the memory's cost come from being read on games that did not need it — the easy stratum's 84/91 against 91/91 | +7 games at best (+5.2 pp) | same reason: seven games is six short of what this split can see |
+
+**So the next purchase is games, not arms.** The driver already accepts `--split`, the corpus publishes a second
+evaluation section (`valid_seen`, 140 games) and a training section, and two arms on 140 more games cost what one arm
+on 134 costs. Three rows, in the order they are worth buying:
+
+| # | experiment | games | mde at n | price | leak status |
+| --- | --- | --- | --- | --- | --- |
+| **1** | the three arms of R174.1/R176 (`none`, sentence, trajectory) on `valid_seen` | 140 (+134 = 274) | ≈ 9 pp | ≈ ¥3.6 | the sentence and the six-bank are hand-written; the trajectory came from **one** `valid_seen` game, which is stated in its provenance and is 1 of 140 |
+| 2 | the same on `train` for a 402-game join | 402 (+274 = 676) | ≈ 6 pp | ≈ ¥10 | only for hand-written banks: a bank distilled from a training run cannot be evaluated on it, and the guard for that is a bank-level `distilled` flag that does not exist yet |
+| 3 | the two under-powered rows above, once either split is joined | — | — | ≈ ¥3.2 each | unchanged |
+
+**What row 1 buys beyond power.** It is the first reading in this lane on a second section of the corpus: every
+number quoted above comes from `eval_out_of_distribution`, and an effect that exists in 134 held-out rooms and not in
+140 seen ones is a property of a split rather than of memory. If the sentence replicates at ≈ 112/140, the lane's
+headline becomes a 274-game estimate with a 9 pp mde and two independent sections behind it; if it does not, that is
+the most important negative result the programme could produce, and it costs ¥3.6 to find out.
+
+**The guard row 1 needs before it is dispatched.** `--split` is not an input of `alfworld.yml`: the sweep job passes
+no split at all, `GAMES` defaults to 134, and `aggregate.py --expect` tiles 134. A split input that the tiling check
+does not know about is a sweep whose twelve jobs drive one section and whose join expects the other, so the plumbing
+is: one workflow input, one dispatch flag, `--expect` taken from the split's own published size, and a refusal when a
+sweep names a split without naming its size. That is instrument work, not an arm, and it is the reason row 1 is
+"registered" rather than "in flight".

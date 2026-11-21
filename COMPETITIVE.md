@@ -8689,3 +8689,34 @@ the repository state, or the task's label; the sentence that pays here selects o
 and transfers into five kinds it was not written for. That is a testable difference in design, not a threshold to
 tune, and R175 is the experiment that separates them: **the gate that fires on the task's own name lost 23 points
 against the same sentences read unfiltered.**
+
+## R176 — The abstraction claim gets its fair test, and at matched length the trace and the sentence are worth the same
+
+`arXiv:2605.12978` says a memory loses its value in abstraction. Every row on this board that could test it was
+confounded by length — a distilled lesson is short and a trajectory is long, so "abstraction hurts" and "long blocks
+hurt" predicted the same thing. R176 removes the confound: the trajectory the winning sentence was distilled from,
+verbatim, **505 rendered characters** against the sentence's **489**, each against a control in its own dispatch.
+
+| arm | pack | won / 134 | rate | per win | vs its control |
+| --- | --- | --- | --- | --- | --- |
+| **the distilled sentence** | 489 ch | **112** | **83.58%** | $0.0013 | +17.91 pp, p < 0.001 |
+| the verbatim trajectory | 505 ch | 108 | 80.60% | $0.0015 | +11.19 pp, p = 0.0038 |
+| `none` | — | 93 | 69.40% | $0.0023 | — |
+
+| the field's claim this reading tests | the reading | verdict |
+| --- | --- | --- | --- |
+| "abstraction is where a memory loses its value" (arXiv:2605.12978) | 112 against 108 at a 16-character distance, **+2.99 pp [−3.73, +9.70], p = 0.445** | **not supported at matched length**: the compression costs nothing measurable |
+| the same claim read per kind | the trace is the best arm on four of six kinds and **worse than nothing on `put` (1/24 vs a control of 5/24)** | **supported in one direction only**: a trace costs the user the games it came from |
+| "traces teach format, lessons teach repair" (implicit in every trace-based system on this board) | fewest invalid actions per game of any arm here (2.5 against 3.4 and 5.6), and it lost the one kind it named | **supported, and sharper than the field states it**: the trace transfers the shape *and the nouns* |
+
+**Where this puts the position table.** The ALFWorld row stays at **83.58%** with a 489-character pack and
+**$0.0013 per win**; the interesting column is now the second one — a 505-character trajectory reaches **80.60%** at
+$0.0015. Both are above every published prompt-only row on this corpus except ALMA's self-reported 87.1% on 67 games
+under its own harness, and both are one to two orders of magnitude cheaper per win than the systems whose memories
+are stored as prose (ExpeL 46.3% at an unpublished cost; Mem0 33.6% as a closed service).
+
+**What the field can take from this without accepting this lane's numbers.** A memory's *form* is not where the value
+is decided; its *referent* is. The sentence wins the placement kind because it names a repair with no object in it,
+and the trace loses the same kind because every noun in it is wrong for the room the agent is in. Any system that
+retrieves whole trajectories should say which games it expects to *lose* by doing so, and this lane's answer is: the
+games the trajectory came from.

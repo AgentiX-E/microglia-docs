@@ -14304,7 +14304,7 @@ how it was written.
 **What it cost, and what it did not.** Four control jobs, about ¥0.9 of the ¥1.80. The science survived because
 this lane's only reliable comparison is treatment against treatment (AUDIT 34.232): row 1 keeps its 69 and is
 quoted against row 2's 100, both treatments, same 134 games, same commit. The control it lost was worth quoting
-once, as a level, and this split's control has read 80, 81, 88, 89, 90, 91 across eight dispatches — a band eight
+once, as a level, and this split's control has read 80, 81, 88, 89, 90, 91 across six dispatches — a band eleven
 wins wide, which is why no conclusion here rests on it.
 
 ## 34.247 — The same 24 prompts, bought twice, moved one game: this lane's noise floor is measured
@@ -14322,7 +14322,7 @@ held constant: same model, same split, same seed, same 50-step budget, same prom
 
 1. **A one- or two-game difference is nothing.** The difference between the one-sentence arm (112) and the
    two-sentence pair (109) is three wins and was already read as a tie; this says the tie is not close.
-2. **Controls move by more than that** — 80/81/88/89/90/91 across eight dispatches, i.e. up to eleven wins — so a
+2. **Controls move by more than that** — 80/81/88/89/90/91 across six dispatches, i.e. up to eleven wins — so a
    control is a *band* and only a same-dispatch pairing is a comparison (AUDIT 34.232, 34.243).
 3. **The six-arm/one-arm gap (24 discordant games, +8.96 pp, p = 0.014) is twice this floor** — measured on the
    same 134 games, so the comparison is like for like — and is the first length effect in the lane that clears its
@@ -14357,3 +14357,77 @@ dispatcher quotes a per-arm price before a sweep is bought (¥3.2 for two arms, 
 arm came in at ¥1.34 and the gated one at ¥1.80, so the quoted price is a **floor for a winning arm and 12% short
 for a losing one**. The arithmetic is not corrected here; it is bounded, and the bound is printed beside every
 quote.
+
+## 34.249 — A length-matched experiment needs a length counter, and the fixed prefix is not one
+
+**The gap.** R176 asks whether a memory pays for what it *says* or for the evidence it *shows*, by carrying a
+verbatim trajectory of **505 characters** where the one-sentence arm carried a statement of **489** — the same
+information, the same corpus, the same model, 3.3% apart in length. Its registered void condition is a length
+condition: *the arm's rendered prefix must exceed the control's by 505 characters and match the one-sentence arm's
+within 20.* Nothing in the artefact could answer that. `prefix_chars` is the whole fixed prompt — system instruction,
+few-shot examples, pack — so an arm whose pack was the wrong length still produces a plausible prefix, and the
+comparison across dispatches has to subtract two means that each contain 3,965 characters of examples.
+
+**What was added.** The episode record now carries `pack_chars`: the rendered length of the block that game was
+shown, 0 for the control. It is the field the driver already computed (`len(pack)` in `run_episode`) and did not
+keep, and `aggregate.py` prints it under `carried`:
+
+```
+  carried         always-in mean 1.0 entries over 134 games, {1: 134}
+  pack chars      always-in 505 ch x134
+```
+
+**Why it is printed above the delta rather than in the appendix.** The order is the audit lesson from 34.243 applied
+to a second question: the first thing a pack reading has to establish is that the pack was there, and the second is
+that it was the pack it was registered with. `pack_entries` answers the first; `pack_chars` answers the second. A
+gate that admitted one of the wrong six sentences has the same entry count as one that admitted the right one, and
+an arm assembled from the wrong bank has the same label.
+
+**The limits, stated.** Artefacts written before the field existed carry no `pack_chars`, and the report says
+nothing about their length rather than reporting zero — the same rule `pack_entries` follows, and for the same
+reason: a file that cannot answer is not a file that answered "no". R176's own artefacts predate the field, so its
+length match is checked by hand from `prefix_chars` means this round and mechanically from the next one.
+
+## 34.250 — A trace and a sentence are worth the same, and the aggregate tie is two opposite trades
+
+**The reading.** R176 carried, in one dispatch, the verbatim trajectory the winning sentence was distilled from
+(`banks/bank-rawput-1.json`, 505 rendered characters) and a control. Against that control the trajectory is worth
+**+11.19 pp [+3.73, +18.66], p = 0.0038**; against the sentence it is worth **−2.99 pp [−3.73, +9.70], p = 0.445**.
+The pair is length-matched to the byte: the arms' mean prefixes differ by 505.0 characters, which is the bank's
+exact render.
+
+**Why this is not the answer the literature predicts.** `arXiv:2605.12978` holds that abstraction is where a memory
+loses its value. At matched length and matched content, abstraction costs nothing measurable here — so on this corpus
+the claim is either false or about something this experiment did not vary. What is measurable is a *different*
+difference, and it is per kind rather than in the mean:
+
+| kind | sentence | trajectory | delta |
+| --- | --- | --- | --- |
+| `put` | 10/24 | 1/24 | +37.5 pp |
+| `cool` | 20/21 | 19/21 | +4.8 pp |
+| `heat` | 22/23 | 23/23 | −4.3 pp |
+| `puttwo` | 16/17 | 17/17 | −5.9 pp |
+| `clean` | 28/31 | 30/31 | −6.5 pp |
+| `examine` | 16/18 | 18/18 | −11.1 pp |
+
+**An arm that is worse than nothing on the games it came from.** The trajectory reads 1/24 on `put` against a control
+of 5/24: a loss of four games on the one kind its evidence is about. This is the first arm in the lane to score below
+its own control on a stratum while beating it on five others, and it is worth stating precisely what it means —
+generalisation is not the issue, *transfer of the wrong part is*.
+
+**The counters locate the mechanism without a transcript.** On `put` games the trajectory arm spent **49.5 of 50
+steps** and **33.6 thoughts** per game, with **fewer invalid actions than either other arm** (6.8 against 8.8 for the
+sentence and 8.1 for the control). Its failures were not syntactic: it had the format, took more deliberation and
+pursued a plan about a toiletpaper and a toiletpaperhanger that were not in the room. The trace teaches the shape of
+the solution and carries the nouns it was written about; the sentence names a repair and no object, so it can be
+applied to whichever receptacle is present.
+
+**What that changes in the product.** A store of traces is a legitimate memory at no measurable cost — and the best
+demonstrated teacher of format in this lane (2.5 invalid actions per game against 3.4 for the sentence and 5.6 for the
+control). A store of sentences is the better teacher of repair. They are complements, not rivals, and the mistake
+this round retires is choosing between them on grounds of value: **choose on grounds of what the user's failures
+are.** Format failures want a trace; blocked steps want a sentence.
+
+**The instrument gap this reading exposed is fixed.** The registered void condition was a length condition that no
+artefact field could answer (`prefix_chars` contains the few-shot examples as well). `pack_chars` is now recorded per
+episode and printed under `carried` (AUDIT 34.249); R176's own length match is arithmetic on two prefix means.
