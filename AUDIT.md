@@ -14689,3 +14689,92 @@ kind. The floor is a property of the pair, not a constant of the design, which i
 from a third direction — and it means the quoted floor for any future row has to be read off that row's own
 discordance rather than off the last round's.
 
+
+## 34.258 — Engagement is not a reading of the entry: a neutral clause moves as many trajectories as a citation does
+
+The lane has used `engagement` — the share of games whose action digest changed — as the line between "the pack did
+nothing" and "the pack was never delivered". R178 read 152/274 = 55.5% for a 62-character citation and concluded the
+clause *is read*. R180 makes that conclusion untenable, and it does so with the lane's own artefacts rather than with
+an argument.
+
+| comparison | characters | clause that differs | engagement |
+| --- | --- | --- | --- |
+| R178: a true citation − a neutral clause | 551 vs 551 | the 62-character suffix | 152/274 = 55.5% |
+| R178: the sentence − the neutral clause | 489 vs 551 | length *and* the suffix | 154/274 = 56.2% |
+| R180: operation (1) only − the neutral clause | 551 vs 551 | the second operation | 146/274 = 53.3% |
+
+**Three different single-clause edits, including one that replaces the citation with text saying the entry is not an
+instruction, land within three games of each other.** If engagement measured whether the model read the clause, the
+neutral note — which asserts that the entry is only a reference — would not be the *most* perturbing of the three.
+
+**What engagement actually measures.** These games sit close to a decision boundary: a frozen model at temperature 0
+given a 62-character suffix writes a slightly different first action, and the difference cascades through fifty turns.
+The digest is sensitive to that cascade and blind to its cause. So engagement is a measure of **how many games are
+near enough to a boundary for any perturbation to show**, which is a property of the corpus and the policy, not of the
+clause.
+
+**What this retires, and what it does not.** It retires the sentence "the citation is read, therefore a citation that
+is wrong must cost" — the premise was never measured, only assumed from a number that a neutral note also produces. It
+does not retire the *result*: the family's deltas are what they are, and the −3.65 pp for a true citation is still the
+largest in the family and still inside its own mde. R179's "the model cannot tell a false citation from a true one"
+was argued *from* the +2.19 pp gap and is unaffected; it was supported *by* the engagement reading and no longer
+needs it.
+
+**The replacement instrument, and its price.** A **same-bank re-dispatch** — the same file, the same 274 games, twice
+— makes the true delta zero by construction, so whatever delta and whatever engagement it reports *is* the noise
+floor. The lane has one such pair already, and it is too small to be the floor: the six-bank's `put` entry was the
+winning sentence verbatim, so the gated arm reproduced the one-sentence arm's prompt **byte for byte in 24 games** and
+those identical prompts scored 10 and 9 — **4.2 pp of sampling noise on 24 games**, which the whitepaper carries as
+the lane's floor. Twenty-four games cannot put a number on a 274-game spread, and the pair reports no engagement at
+all, so the quantity this section is about has never been measured. A full-size re-dispatch costs one arm (≈ ¥2.3 now
+that the control side is shared). Until it is bought, every delta smaller than the family's 4.0 pp spread has to be
+read as unresolved, which is what R178–R180 already do on their own intervals — the floor would make that a
+measurement rather than a habit.
+
+## 34.259 — 1,070 commands were dropped and the model was told `OK.`, and no field in the record could show it
+
+**The defect.** `parse_reply` is the competitor's parser, transliterated, and it anchors at the first line: a reply
+that opens with `> think:` is a thought, whatever the lines under it say. The competitor's own few-shot transcripts
+write think-then-act in one turn — `react_put_0` has `> think: Now I find a spraybottle (2). Next, I need to take it.`
+immediately followed by `> take spraybottle 2 from cabinet 2` — so the prompt teaches a format whose second line the
+driver drops. The reference implementation then steps its environment with `N/A` and hands the model back the
+environment's own `Nothing happens.`. This driver appended `OK.`, which is the examples' token for a thought that was
+*only* a thought.
+
+**The consequence.** The model read its own `> put …` followed by `OK.`, concluded the put had executed, and wrote
+"The task is complete" until the turn budget ran out. In the 245 train games on disk: **1,070 commands dropped, in 72
+of 72 `put` games** (14.9 per game), 30 of the other 173 games, and a mean trailing run of **9.7** victory claims in
+a lost `put` game — 24 of those games are pure loops. `put` is the only kind destroyed because it is the only kind
+where the model hedges before acting and the only kind that runs near the 50-turn cap (wins 31.7–35.9 turns, losses
+50).
+
+**Why four rounds could not see it.** Not because the transcripts were unavailable — they were, on every training run,
+at no extra cost — but because **no field in the episode record could hold it**. `invalid_actions` counts what the
+world refused; `stalls` counts three thoughts in a row; `steps` counts turns; a dropped command is none of the three.
+The lane therefore read a *failure of delivery* as a property of the entry, and spent R177–R180 ablating 62 characters
+inside a harness that was discarding fifteen commands per `put` game.
+
+| the two ways a turn fails to reach the world | counted before | counted now |
+| --- | --- | --- |
+| an invalid action: emitted, refused by the environment | `invalid_actions` | unchanged |
+| a refused command: written under a thought, dropped by the parser | **nowhere** | `refused_actions`, `refused_samples` |
+
+**The repair, and what it deliberately does not change.** The parser stays. Executing a command the first-line rule
+refused would raise every arm's score and make this lane's numbers incomparable with the reference harness it is
+built on — the entire value of the contrast is that the only thing differing between arms is what sits above the
+transcript. What changes is the acknowledgement: `NO_OP = "Nothing happens."`, the corpus's own string, for a turn
+whose command was refused; `OK.` stays for a thought that was only a thought. `aggregate.py` prints
+`dropped <arm> n (x per call)` and prints `not counted` for a file that predates the field, because a `0` there would
+mean "never counted" and not "never happened".
+
+**What this does to every number already published.** Nothing is retracted and nothing is comparable across the line.
+The +21.90 pp for the repair sentence was a *within-driver* contrast: both arms paid the same defect, and the
+treatment plausibly reduced it, which makes the treatment's benefit real and its mechanism partly different from the
+one registered. Its *level* (81%) and its *size* are both re-read by R181, which is the first round in this lane whose
+control is bought on the repaired driver.
+
+**The general lesson, which is the one that costs money.** A metric that cannot be recorded cannot be falsified. Three
+rounds of this lane's most careful design — matched lengths, single clauses, registered bands, 274 games — were aimed
+at a treatment effect while a delivery defect of 15 events per game sat in the same files, invisible because the
+schema had no column for it. The first thing to check before ablating a treatment is whether the harness can represent
+the way the treatment fails.

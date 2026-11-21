@@ -8845,3 +8845,52 @@ which is the structural difference between their harness and this one (R177 pre-
 the field reports as a ten-point gain and this lane reads as a 3.65-point loss. That is not a contradiction of their
 number; it is the measurement of *where* the number comes from, and no row on the 2026 board reports it.
 
+
+## R180 — Operation (2) is decoration, the family is a reshuffle, and the driver was dropping commands
+
+The lane's whole ALFWorld result rests on one hand-written 292-character sentence, and R177–R179 spent ¥9.43
+attributing it to three mechanisms: the phrasing swap, the receptacle choice and container check, and the provenance
+line. R180 bought the last arm — the sentence with its second operation removed and replaced by neutral text of
+exactly the compensating length — and then joined all five renderings on one command.
+
+| arm | rendered | seen, 140 | held out, 134 | pooled, 274 | vs the anchor |
+| --- | --- | --- | --- | --- | --- |
+| the sentence alone | 489 | 111 | 112 | **223 (81.39%)** | +0.36 pp [−4.01, +4.74] |
+| the anchor: + a neutral clause | **551** | 111 | 111 | **222 (81.02%)** | — |
+| operation (1) only | **551** | 108 | 112 | **220 (80.29%)** | −0.73 pp [−4.74, +3.28] |
+| + a citation of an invented run | **551** | 106 | 112 | 218 (79.56%) | −1.46 pp [−5.84, +2.92] |
+| + a citation of a real run | **551** | 105 | 107 | 212 (77.37%) | −3.65 pp [−8.39, +1.09] |
+
+**The registered middle band fired**: operation (2) is decoration, and the 135 characters that name the receptacle
+choice and the container check are worth less than one win in 274 at mde **5.60 pp**. The per-kind prediction was
+refuted in the direction that matters — the container kinds (`clean` +3.4, `cool` +4.3) rose when the container check
+was removed, and `put` (−6.8) and `examine` (−6.5) fell. Every cell is four games or fewer, so it is a shape.
+
+**And the family is one number.** Eleven games and 4.0 pp separate the five, every interval covers zero, and all four
+variants trade the anchor's easy wins for its hard losses at +26.9 to +36.5 pp up on 52 games and −7.2 to −11.7 pp
+down on 222 — netting between −1 and +1 games.
+
+**What the field should take from this, and it is not about memory.** The `engagement` column — the share of
+trajectories a pack changes — is the instrument this lane and the memory-failure literature both use to separate "the
+entry did nothing" from "the entry was never delivered". Here a neutral note that says the entry is only a reference
+moves **56.2%** of trajectories, a real citation **55.5%**, and an ablated clause **53.3%**: three different single-clause
+edits within three games of each other. Engagement measures how near a corpus sits to a decision boundary, not whether
+a clause was read. No published memory row reports a same-content control, so no published engagement figure can be
+read the way its authors read it (AUDIT 34.258).
+
+**The expensive part was underneath.** The driver's parser anchors at the first line, so a reply that opens with
+`> think:` drops any command under it — and the reference harness's own few-shot examples write think-then-act in one
+turn. This driver answered that turn with `OK.`, the examples' token for a thought that was only a thought, and the
+model believed its `put` had executed: **1,070 dropped commands in 72 of 72 `put` games** across the 245 training
+transcripts, with a mean trailing run of 9.7 victory claims, and `put` is the only kind near the fifty-turn cap. Every
+ALFWorld number this lane has published — 81.39%, 81.02%, 77.37%, and the +21.90 pp headline — was bought on a harness
+that charged both arms for that. The repair keeps the parser (executing the dropped command would raise every arm and
+destroy comparability with the reference) and changes only what the model is told, with the drop recorded in a field
+that did not exist before (AUDIT 34.259).
+
+**Where that leaves the comparison.** The rows this lane is measured against — ExpeL 59.0, H²R 72.4, the graph-memory
+FSM 75.37, CoEx 64.20, Mem0 52.0, SimpleMem 54.5, MemScope 71.64 — are all produced by harnesses with the same
+first-line parser and, in the reference case, the same feedback string. The lane's 81% therefore remains comparable
+as a *level*, but its *mechanism* attribution does not: part of what looked like "a repair sentence teaches the model"
+is "the model stops looping on a command that never ran". R181 re-reads both arms on the repaired driver, and its
+prediction is written per kind so that the two explanations cannot both survive.

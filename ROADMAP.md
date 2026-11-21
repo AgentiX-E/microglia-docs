@@ -8203,3 +8203,59 @@ better — Anti-Persistence's reading arriving through an ablation.
 ablated arm keeps the first operation byte for byte and contains neither "different valid receptacle" nor "ensure it
 is open"; the filler carries no digit and names no step; `by_kind` printed beside the pooled delta, because the
 prediction is per-kind and a pooled number in the middle band would hide the pattern that matters.
+
+## R180, read back — operation (2) is decoration, and the mde held at 5.60 pp
+
+| arm | rendered | seen | held out | pooled, 274 | vs the anchor | bill |
+| --- | --- | --- | --- | --- | --- | --- |
+| operation (1) only | **551** | 108 | 112 | **220 (80.29%)** | −0.73 pp [−4.74, +3.28], p = 0.800 | ¥2.31 |
+| the anchor: the sentence + a neutral clause | 551 | 111 | 111 | 222 (81.02%) | — | R178 |
+
+**The registered middle band fired**: *the phrasing swap carries it and operation (2) is decoration*. The 135
+characters that name the receptacle choice and the container check — more than a third of the sentence — are worth
+less than one win in 274, at mde **5.60 pp** on 30 discordant games.
+
+**The per-kind prediction is refuted.** `clean` +3.4, `cool` +4.3, `heat` 0.0, `puttwo` 0.0, against `put` −6.8 and
+`examine` −6.5. A container-check mechanism predicts the first three should fall; they rose. Every cell is four games
+or fewer, so it is a shape and not a finding — but it is the opposite shape.
+
+**The family, and the reason it is one number.** Five renderings, 274 games each, ¥9.43: 223, 222, 220, 218, 212. Every
+interval covers zero, and every one of the four variants moves wins from the 222 games the anchor wins to the 52 it
+loses (+26.9 to +36.5 pp up, −7.2 to −11.7 pp down). The spread is a reshuffle, not five mechanisms, and the
+`engagement` instrument that was supposed to tell them apart is confounded: a neutral note moves 56.2% of trajectories
+against a citation's 55.5% and an ablated clause's 53.3% (AUDIT 34.258).
+
+## R181 — The 62 characters were not the bug: a command under a thought was refused and the model was told `OK.`
+
+`parse_reply` anchors at the first line, so `> think: …\n> put …` is a thought and the put never reaches the world;
+the competitor's own few-shot examples write think-then-act in one turn, so the prompt teaches it. The driver then
+answered `OK.` — the examples' token for a thought that was only a thought — and the model, reading its own `> put …`
+followed by `OK.`, believed it had acted and repeated "The task is complete" until the budget ran out.
+
+On the 245 train games already on disk: **1,070 commands dropped, in 72 of 72 `put` games** (14.9 per game) and 30 of
+the other 173, with a mean trailing run of 9.7 victory claims. `put` is the only kind destroyed because it is the only
+kind where the model hedges before acting and the only kind that runs near the 50-turn cap.
+
+| # | arm | bank | rendered | games | the question | price |
+| --- | --- | --- | --- | --- | --- | --- |
+| **1a** | `none` | — | 0 | 274 | what the corpus does unaided on a driver that does not lie about a refused turn | **dispatched** ≈ ¥2.35 |
+| **1b** | `always-in` | `banks/bank-putmove-note-1.json` (sha256 `95f8c634…`) | **551** | 274 | the same for the anchor arm | **dispatched** ≈ ¥2.35 |
+
+**Registered readings on 274 games.** `refused_actions` **8–20 per `put` game** (the field has to reproduce the 14.9
+the transcripts show) and **< 1 per game** on the other five kinds; `put` wins **+6 to +22 pp** on each arm;
+the repair's pooled delta **+4 to +18 pp** for `none` and **+1 to +12 pp** for the anchor; the movement is **in `put`
+and nowhere else** (|Δ| ≤ 5 pp on the other five kinds); the memory contrast after the repair **+2 to +18 pp**, i.e.
+narrower than the +21.90 the pre-repair pair reported.
+
+**Refutation.** If `put` does not move while `refused_actions` reads 8–20, the false acknowledgement is not what kept
+`put` down and the next round is an entry about search order rather than termination. If `refused_actions` reads 0–2
+per `put` game, the detector is not seeing what the transcripts show and the round is about a defect that is still
+there. If any other kind moves by more than 5 pp, the mechanism claim is withdrawn rather than reinterpreted.
+
+**Void conditions.** `pack chars` exactly 551 in every game of 1b and 0 in every game of 1a; `carried` 1.0 in all 274
+games of 1b; `refused_actions` present in every episode of both arms; the anchor bank byte-identical to R178 1b's,
+guarded by `test_banks.py::RepairAnchorTest` against the `sha256` the registration records; both sections tiled to 274
+under `--expect 274`.
+
+**Total ¥4.70.** It is the last round that has to buy a control: every round after it is read against the post-repair
+`none`.

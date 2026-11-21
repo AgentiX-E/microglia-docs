@@ -25457,3 +25457,118 @@ WikiTrace's second half — is not implementable in a frozen-model prompt harnes
 boundary of this lane's claim: **every mechanism that only exists inside the prompt has now been measured, and the
 only one that pays is the repair sentence.**
 
+
+## 216. Operation (2) is decoration, the family is a reshuffle, and the bug was under it all along (10:10 UTC)
+
+R180 was one arm: the sentence with its second operation — the receptacle choice and the container check, 135
+characters, more than a third of it — removed and replaced by neutral text of exactly the compensating length, so the
+arm differs from `bank-putmove-note-1.json` in one clause and in nothing else. Both render **551** characters,
+`carried` is 1.0 in all 274 games of both arms, and the ablated entry keeps the first operation byte for byte.
+
+### The registered band fired: operation (2) is decoration
+
+| arm | rendered | seen, 140 | held out, 134 | pooled, 274 | bill |
+| --- | --- | --- | --- | --- | --- |
+| operation (1) only | **551** | 108 | 112 | **220 (80.29%)** | $0.3224 (¥2.31) |
+| the whole sentence + neutral clause | 551 | 111 | 111 | **222 (81.02%)** | R178 |
+
+**−0.73 pp [−4.74, +3.28], p = 0.800, mde 5.60 pp, discordant 30 (14 + 16).** The registration's middle band was
+written as *the phrasing swap carries it and operation (2) is decoration*, and that is the reading: the receptacle
+choice and the container check are worth less than one win in 274.
+
+**The per-kind prediction is refuted, in the direction that matters.** The round registered that `clean`/`cool`/`heat`
+should *fall* when the container check is removed. They rose: `clean` +3.4 pp, `cool` +4.3 pp, `heat` 0.0, `puttwo`
+0.0, while `put` fell 6.8 pp and `examine` 6.5 pp. Every cell is four games or fewer, so the shape is reported as a
+shape — but it is the opposite shape to the one a container-check mechanism predicts.
+
+### The family, on one command: 212 to 223 wins and no pair separates
+
+| arm | rendered | pooled, 274 | vs the anchor | 95% CI | p |
+| --- | --- | --- | --- | --- | --- |
+| the sentence alone | 489 | **223 (81.39%)** | +0.36 pp | [−4.01, +4.74] | 0.920 |
+| the anchor: + a neutral clause | **551** | **222 (81.02%)** | — | — | — |
+| operation (1) only | **551** | 220 (80.29%) | −0.73 pp | [−4.74, +3.28] | 0.800 |
+| a false citation | **551** | 218 (79.56%) | −1.46 pp | [−5.84, +2.92] | 0.566 |
+| a true citation | **551** | 212 (77.37%) | −3.65 pp | [−8.39, +1.09] | 0.151 |
+
+Eleven games and 4.0 pp separate the best from the worst, every interval covers zero, and the whole join — five arms,
+274 games each, 33,324 calls — came out of one command at ¥9.43 total. **At a fixed 551 characters and a fixed
+position, what the entry says beyond its first operation does not move the score.** Provenance, verification and the
+second operation are all inside that band.
+
+### Why: every variant trades the easy games for the hard ones
+
+| arm | the 52 games the anchor loses | the 222 it wins |
+| --- | --- | --- |
+| the sentence | 19 (+36.5 pp) | 204 (−8.1 pp) |
+| operation (1) only | 14 (+26.9 pp) | 206 (−7.2 pp) |
+| a false citation | 16 (+30.8 pp) | 202 (−9.0 pp) |
+| a true citation | 16 (+30.8 pp) | 196 (−11.7 pp) |
+
+Four independent one-clause swaps, the same trade, nets between −1 and +1 games. That is a reshuffle of a frozen
+model's trajectory rather than four mechanisms, and it is the second independent reason to read the family as noise
+around one number.
+
+### The instrument was confounded, and R180 is what shows it
+
+The lane has read `engagement` as the difference between a null and a delivery failure: R178 reported 152/274 = 55.5%
+of trajectories changed by the citation and concluded *the clause is read*. R180's single-clause swap at identical
+length changes **146/274 = 53.3%**, and R178's own length control changes **154/274 = 56.2%** — a neutral note that
+says the entry is only a reference moves more trajectories than the citation does. The three numbers are within three
+games of each other, so 55% is not a reading of the citation: it is what one clause costs in trajectory noise.
+AUDIT 34.258.
+
+### And then the bug, which the transcripts had all along
+
+Four rounds and ¥9.43 were spent ablating 62 characters of one entry while the driver was discarding the model's
+commands. `parse_reply` is the competitor's parser transliterated and it anchors at the first line, so a reply that
+opens with `> think:` is a thought and any command under it is dropped — and the competitor's own few-shot examples
+write think-then-act in one turn. What this driver then answered was `OK.`, the examples' token for a thought that
+was *only* a thought. The model read its own `> put …` followed by `OK.`, believed the put had executed, and wrote
+"The task is complete" until the budget ran out.
+
+Measured on the 245 train games already in this workspace — transcripts are recorded on the training pass, so this
+cost nothing:
+
+| kind | commands dropped | games affected | per game | mean trailing run of victory claims |
+| --- | --- | --- | --- | --- |
+| **`put`** | **1,070** | **72 of 72** | **14.9** | **9.7 turns** |
+| `cool` | 29 | 2 of 55 | 0.53 | 0.1 |
+| `heat` | 1 | 1 of 36 | 0.03 | 0.1 |
+| `clean`, `examine`, `puttwo` | 0 | 0 | 0 | 0.0 |
+
+`put` is the only kind destroyed because it is the only kind where the model hedges before acting, and the only kind
+that runs near the 50-turn cap: its wins take 31.7–35.9 turns and its losses take all 50.
+
+**Three changes, none of them the parser** (AUDIT 34.259): a non-action turn that carried a command is answered with
+`NO_OP = "Nothing happens."` — the corpus's own string for a command that changed nothing — instead of `OK.`; a pure
+thought still gets `OK.`, because that is what the examples show. `refused_actions` and up to three
+`refused_samples` enter the episode record, so the drop is visible in an arm file for the first time. `aggregate.py`
+prints `dropped <arm> n (x per call)` beside `refusals`, and `not counted` for a file written before the field
+existed — a zero there would mean "never counted" and not "never happened".
+
+### R181 registered before it was dispatched
+
+Two arms, `none` and `always-in` @ the anchor bank, 274 games each, ¥4.70. It is the last round that has to pay for
+a control: every round after it can be read against the post-repair `none`. The prediction is mechanism-specific
+rather than directional — `refused_actions` reads 8–20 per `put` game (the field has to reproduce the 14.9 the
+transcripts show), the movement is in `put` and nowhere else (|Δ| ≤ 5 pp on the other five kinds), and the memory
+contrast narrows from +21.90 pp because part of that number was the treatment suppressing this defect.
+
+| item | state |
+| --- | --- |
+| tests | 524 (was 506 at the last count, +13 new and 5 that the count had drifted) |
+| coverage, lines and branches | 98.8%, every module ≥ 95%, `test_banks.py` 99.3% |
+| new fields | `refused_actions`, `refused_samples`, `refused_counted`, `refused_per_call` |
+| mutations checked | the acknowledgement string, the sha256 anchor guard, and the `not counted` print each fail when reverted |
+| spend this round | **¥2.31** against ¥2.4 quoted; R178–R180 = **¥9.43** / 33,324 calls |
+| commit | `c5c19bd` |
+
+**What is left, in order.** (1) R181, dispatched: the repair read as a matched pair. (2) The `put` entry itself,
+re-measured on a driver that does not lie — the +21.90 pp was bought on a driver that cost the control the same
+turns, so the effect survives as a within-driver contrast but its *level* and its *size* both have to be re-read.
+(3) The noise floor: a same-bank re-dispatch is the only way to know whether a 3-point delta is content or chaos. The
+lane has one pair already — 24 byte-identical prompts that scored 10 and 9, which is 4.2 pp of sampling noise and is
+the whitepaper's floor — but 24 games cannot put a number on a 274-game spread, and that pair reports no engagement,
+so the quantity AUDIT 34.258 is about has never been measured. It is now cheap: the control side is shared. (4) Conditional delivery stays unbought and still unresolvable at
+four `examine` games.

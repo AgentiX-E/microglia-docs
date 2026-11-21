@@ -299,6 +299,43 @@ average and its bill was 34% higher, because a lost game is billed for all fifty
 Cost is not a function of length once the arm can lose; it is a function of calls, and being wrong is what makes
 calls.
 
+**Five renderings of one sentence, and the answer was underneath them.** The repair sentence states two operations:
+swap `put` for `move`, then try another receptacle of the same type and open it if it is a container. The ablation
+that removes the second — 135 characters, more than a third of the sentence — and pads to the same 551 rendered
+characters reads **220/274 (80.29%)** against the anchor's 222, **−0.73 pp [−4.74, +3.28]**, p = 0.80. Operation (2)
+is decoration. Set beside the provenance arms, all five renderings of that one sentence are one number:
+
+| arm | rendered | pooled, 274 | vs the anchor |
+|---|---|---|---|
+| the sentence alone | 489 ch | 223 (81.39%) | +0.36 pp |
+| the anchor: + a neutral clause | **551 ch** | 222 (81.02%) | — |
+| operation (1) only | **551 ch** | 220 (80.29%) | −0.73 pp |
+| + a citation of an invented run | **551 ch** | 218 (79.56%) | −1.46 pp |
+| + a citation of a real run | **551 ch** | 212 (77.37%) | −3.65 pp |
+
+Eleven games separate the best from the worst and every interval covers zero, so the family is one number and the
+three mechanisms it was built to separate — provenance, verifiability, the second operation — are all inside the
+band. Every one of the four variants also moves wins from the 222 games the anchor wins to the 52 it loses (+26.9 to
++36.5 pp up, −7.2 to −11.7 pp down, netting −1 to +1 games), which is what a reshuffle of a frozen model's trajectory
+looks like rather than what four mechanisms look like.
+
+**The reason is a defect in the harness, and the transcripts had it all along.** The driver's parser is the
+competitor's, transliterated, and it anchors at the first line: `> think: …\n> put …` is a thought and the put never
+reaches the world — while the competitor's own few-shot examples write think-then-act in one turn, so the prompt
+teaches the format the parser drops. What the driver then answered was `OK.`, the examples' token for a thought that
+was *only* a thought. The model read its own `> put …` followed by `OK.`, believed it had acted, and repeated "The
+task is complete" until the budget ran out. In the 245 training games on disk: **1,070 commands dropped, in 72 of 72
+`put` games** (14.9 per game) and 30 of the other 173, with a mean trailing run of **9.7** victory claims — and `put`
+is the only kind destroyed because it is the only kind where the model hedges before acting and the only kind that
+runs near the fifty-turn cap (wins 31.7–35.9 turns, losses 50).
+
+Three things changed, none of them the parser: a turn whose command was refused is answered with the corpus's own
+`Nothing happens.` instead of `OK.`; `refused_actions` and up to three `refused_samples` enter the episode record; and
+the join prints `dropped <arm> n (x per call)`, or `not counted` for a file written before the field existed. **The
+lesson is about instruments, not about memory**: a failure mode the record has no column for cannot be falsified, and
+four rounds of matched-length, single-clause, registered-band design were aimed at a treatment effect while a
+delivery defect of fifteen events per game sat in the same files.
+
 **The instrument's own noise, measured on identical bytes.** The six-bank's `put` entry was required to be the
 winning sentence verbatim, so the gated arm reproduced the one-sentence arm's prompt byte for byte in all 24 `put`
 games — verified in the artefacts, not assumed — and those 24 identical prompts scored 10 and 9. One game in
