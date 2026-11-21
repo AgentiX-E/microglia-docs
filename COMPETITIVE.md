@@ -8209,10 +8209,11 @@ so is cheaper than discovering it in a review.
 
 | column | this lane | the nearest published row | comparable |
 | --- | --- | --- | --- |
-| ALFWorld success, full split (134 games) | **74.63%** — the placement half, 100/134, read 2026-11-20 (R173); the four-rule bank 73.9%, the permuted bank 78.4%, the controls 59.7–67.2% | MemScope 71.64 on 67 tasks | **partly** — 134 against 67 games, and the harness differs; the level is inside the same band, the interval on 134 games is narrower |
+| ALFWorld success, full split (134 games) | **81.34%** — two placement rules, 802 characters, 109/134 (R173.1); then the four-rule block 73.9%, the padded half 74.6%, the permuted block 78.4%, and the controls 59.7–67.9% across six readings | MemScope 71.64 on 67 tasks; ALMA 87.1 on its own harness, 67.2 when MemScope re-runs it | **partly** — 134 against 67 games, different harness; the level is now above every prompt-only row but ALMA's self-reported 87.1, and the six-win interval on 134 games is the reason to say "above" carefully |
 | ALFWorld control (`none`), 20 games | **55.0% [34.2, 74.2]** | DynamicCheatsheet 50.75 on 67 tasks | **yes, as a consistency check** |
 | harm share (episode) | **7.7% – 18.5%** across five blocks, measured per episode with engagement beside it | published 52% for the τ² family (Appendix AS) | **yes, and no ALFWorld row exists** |
-| two blocks, one corpus, no control | **+14.93 pp** [+5.97, +23.88], p 0.002 (placement half 100 vs search half 80) | none — no published row scores two different blocks on one corpus | **yes, and it is the only row of its kind** |
+| two blocks, one corpus, no control | **+14.93 pp** [+5.97, +23.88], p 0.002 (placement half 100 vs search half 80); and **+6.72 pp**, p 0.034 for two sentences against the same two padded to length | none — no published row scores two different blocks on one corpus | **yes, and it is the only row of its kind** |
+| the price of a sentence | **−3.4 to −3.7 pp** per extra entry, measured twice (relevant padding −7.5, irrelevant −6.7) | BIRD lane's own ladder: −1.7 pp per injected rule | **yes across this project's two lanes**; no competitor publishes a per-entry slope at all |
 | prompt tokens per episode | measured per episode from `usage` | ALMA 1,319 per task | **partly** — different granularity |
 | cost per episode | **¥0.014** = $0.0019 | ALMA $0.09 per run | no — different denominator |
 

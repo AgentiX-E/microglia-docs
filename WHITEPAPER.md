@@ -84,6 +84,13 @@ advance — so only the strata are quoted: **+29.55pp on the 44 games the contro
 Half a block about the task scored what a block with nothing about the task scored, and the half that was dropped is
 the half that names the operation this corpus fails.
 
+A sixth block — the two placement sentences with nothing around them, 802 characters — scored **109/134 (81.34%)**,
+which is above the four-rule block (99) and above the same two sentences padded to the registered length (100), by
+**+6.72 pp [+0.75, +12.69], p 0.034** and **+7.46 pp, p 0.045** in comparisons that contain no control arm at all.
+Every extra sentence costs **3.4 to 3.7 points**, whether it is about the task or not, which is the same sign and the
+same order as the SQL lane's −1.7 pp per injected rule. The product implication is the smallest one: **a pack is worth
+its specificity and pays for its length**, so the pack to ship is the shortest one that names the failing step.
+
 The fifth row is the other half of that block — the two sentences about placing an object — at the same length and in
 the same positions. It scored **100/134** against the four-rule block's 99, and **+14.93pp [+5.97, +23.88], p 0.002**
 against the half it replaced, with no control arm in that comparison at all. So the block's worth is not how much of

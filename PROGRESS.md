@@ -24813,3 +24813,64 @@ sentences say about the operation that fails, and a pack of two such sentences i
 which is also the cheapest thing this programme could ship, and the only form the field's rule banks have not tried.
 
 Cost so far in R173: **$0.3974 for the complement (¥2.84)**, against the ¥3.2 quoted. The second arm is in flight.
+
+## 207. Two sentences score 109/134, and every sentence added after them costs about 3.5 points (00:20 UTC)
+
+Run `44833963032` drove entries 3–4 of the registered bank with nothing around them — **802 rendered characters,
+61.1% of the registered block's length** — over all 134 held-out games with its own control: 7,605 calls,
+**$0.3776 (¥2.70)**.
+
+| arm | rendered | wins / 134 | rate | its own control |
+| --- | --- | --- | --- | --- |
+| **the two placement rules alone** | **802** | **109** | **81.34%** | 91 |
+| the same two, padded to length | 1,312 | 100 | 74.63% | 88 |
+| four distilled rules | 1,312 | 99 | 73.88% | 80 |
+| four permuted rules | 1,312 | 105 | 78.36% | 81 |
+| two search rules, padded to length | 1,318 | 80 | 59.70% | 90 |
+| four typewriter entries | 1,316 | 80 | 59.70% | 89 |
+| `none` | — | 80, 81, 88, 89, 90, 91 | 59.7–67.9% | — |
+
+Against its own control the bare pair reads **+13.43 pp [+5.22, +21.64], p 0.002**, engagement 122/134 (91.0%), harm
+8/122 (6.6%), help 26/122 (21.3%). By kind: `puttwo` +29.4, `clean` +16.1, `heat` +13.0, `put` +12.5, `cool` +9.5,
+`examine` **0.0** — the only arm in the lane that leaves a kind unharmed, and the only one that moves plain `put`
+(6/24, against 1–3 in every longer block).
+
+### 207.1 The controls are now six readings wide, and the two halves are compared without them
+
+Six `none` readings on the same 134 games: **80, 81, 88, 89, 90, 91**. A spread of eleven wins — 8.2 pp — which is
+larger than every effect this lane measured in its first three rounds and larger than the interval of most of them.
+The blocks, in the same period, read 80, 80, 99, 100, 105, 109. So the pairing that carries information is the one
+between two blocks:
+
+| contrast, both sides treatments, no `none` in the comparison | delta | 95% interval | p | engagement |
+| --- | --- | --- | --- | --- |
+| bare pair − padded placement half | **+6.72 pp** | [+0.75, +12.69] | 0.034 | 64.9% |
+| bare pair − four distilled rules | **+7.46 pp** | [+0.75, +14.18] | 0.045 | 68.7% |
+| placement half − search half | **+14.93 pp** | [+5.97, +23.88] | 0.002 | 97.0% |
+
+### 207.2 What the three contrasts say together, and the slope they agree with another lane on
+
+Two extra entries cost **6.7 to 7.5 pp**, and they cost it twice: once when the extra entries were about the task
+(the four-rule block) and once when they were about a typewriter (the padded half). So the cost is not "poison in the
+filler" and it is not "irrelevant vocabulary": it is **the quantity of text in front of the question**.
+
+Divided by two that is **−3.4 to −3.7 pp per sentence**, which is the same sign and the same order of magnitude as the
+**−1.7 pp per injected rule** the BIRD lane measured across four pack sizes (ROADMAP W8, iteration 80). Two corpora,
+two prompt shapes, two languages of reasoning, and one slope direction: every sentence a pack adds is paid for by the
+model's attention on the question. That is the first time a number from this lane and a number from the SQL lane have
+pointed the same way, and it is worth more than either alone because neither can be explained by its own artefacts.
+
+### 207.3 What it does not separate, and the two arms that are now in flight
+
+The bare pair differs from both longer blocks in **both** content and length, so "each sentence costs attention" and
+"a longer prompt is handled worse" are both consistent with the readings. The test that separates them is a third point
+at the same content and less length — one sentence, 489 characters — and it is dispatched:
+
+| dispatch | arm | the question | price |
+| --- | --- | --- | --- |
+| `44841962248` | one placement rule alone, 489 characters (37.3%) | does one sentence do what two do | ≈ ¥3.2 |
+| `44841993038` | the four-entry bank retrieved at k=3 with `--gate-share 0.2` | can a gate make a broad bank behave like a narrow pack — fire on the games whose observation names the failing step, stay silent elsewhere | ≈ ¥3.2 |
+
+R174 is registered with four readings and the dispatch each licenses. The gate arm is the one that matters for the
+product: if it lands near 109, a store can be large and a pack can still be small, which is the only form in which
+this mechanism scales past one hand-written sentence per task kind.

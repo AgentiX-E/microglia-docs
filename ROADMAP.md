@@ -7873,3 +7873,33 @@ dosage — larger banks, more rules per kind, a budget of characters — is excl
 by 15 points. So is the reading of the filler result that called the effect "domain priming": the search half is
 domain-primed and worth nothing. What survives is the narrow statement the by-kind column supports, and it is the one
 the product needs: **a pack is worth what its sentences say about the step the games fail at.**
+
+## R174 — The two sentences are the pack, the tax is per sentence, and two arms test what that implies
+
+R173.1's bare pair (802 characters, the two placement rules, nothing else) is the best arm in the lane: **109/134,
+81.34%**, above the four-rule block (99) and above the same two rules padded to length (100) by **+6.72 pp
+[+0.75, +12.69], p 0.034**, and above the full block by **+7.46 pp, p 0.045** — both comparisons treatment against
+treatment, with no control in them.
+
+| # | experiment | the question | state | price |
+| --- | --- | --- | --- | --- |
+| **1** | **one sentence**, 489 characters | is the pair a pair, or is the first sentence the whole effect | **in flight**, `44841962248` | ≈ ¥3.2 |
+| **2** | the registered bank at **k=3 with `--gate-share 0.2`** | can a gate make a broad bank behave like a narrow pack — the only form in which a store scales past one hand-written sentence | **in flight**, `44841993038` | ≈ ¥3.2 |
+| 3 | one sentence per kind, six entries, gated | what a user would actually ship: a store wide enough to cover the corpus and a pack narrow enough to be worth it | licensed by rows 1 and 2 together | ≈ ¥3.2 |
+| 4 | a **`put`-family** sentence: inferring the right receptacle, the one kind nothing has fixed (6 of 24) | does the sentence have to name the *step*, or the *specific* failure | licensed by row 1 if one sentence suffices | ≈ ¥3.2 |
+| 5 | a **retrieved raw trajectory**, one entry, admitted by the overlap gate | the literature's claim that abstraction is where a memory loses its value (arXiv:2605.12978) | needs a second bank schema, ~3 h | ≈ ¥3.2 + 3 h |
+| 6 | three more `none` arms | the six readings now span eleven wins; a level claim still needs it, a cross-treatment claim does not | deprioritised | ≈ ¥2.4 each |
+| 7 | 3-of-4 dose | excluded by R173.1 rather than deferred: the direction of the dose is negative | **deleted** | — |
+
+**The queue is now two questions wide, and both are about shape rather than content.** The lane knows what the
+sentences must say. What it does not know is how few of them are enough (row 1) and whether a wide store can be made
+to behave like a narrow pack at read time (row 2). Rows 1–2 cost ¥6.4; rows 3–5 cost about ¥10 and a day. There is no
+remaining experiment on this lane's list that changes the product statement in the other direction.
+
+**The cross-lane statement this now licenses, and it is the reason the two lanes are worth running together.** The
+BIRD lane measured accuracy falling −1.7 pp per injected rule across four pack sizes and found that pruning by
+checkability bought nothing over pruning at random. This lane measures −3.4 to −3.7 pp per extra sentence, on a corpus
+where the pack is otherwise ideal and the model is different. **A pack pays for its length and is worth its
+specificity**, and both lanes now say so with numbers of the same sign. That is the sentence the whitepaper has been
+missing, and it is a product sentence rather than a benchmark one: the smallest pack that names the failing step is
+the pack to ship.

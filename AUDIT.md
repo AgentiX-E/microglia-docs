@@ -14138,3 +14138,45 @@ one run's shard and left the other's under the old label — a join of one block
 a delta. The refusal that caught it was written an hour earlier for a hypothetical: *an ambiguous name is refused
 rather than resolved by iteration order*. A guard that fires on its author's first real command is the only kind worth
 writing.
+
+## 34.242 — Two sentences beat four, and the mechanism both lanes were missing is the price of a sentence
+
+The bare pair — entries 3–4 of the registered bank, 802 characters, no padding — scored **109/134 (81.34%)**, the
+highest reading this lane has produced. Against the same two rules padded to 1,312 characters it is **+6.72 pp
+[+0.75, +12.69], p 0.034**; against the four-rule block it is **+7.46 pp [+0.75, +14.18], p 0.045**. Neither
+comparison contains a control arm, so neither inherits the eleven-win spread the six `none` readings now span
+(80, 81, 88, 89, 90, 91).
+
+**The direction of the dose is negative, and that is the finding.** R173's registered readings anticipated a threshold
+("the block has to be long enough") or a linear share ("the effect scales with how much is about the task"). Both are
+excluded: padding a working pair with two task-irrelevant entries costs 6.7 pp, and padding it with two *relevant*
+entries costs 7.5 pp. Two extra sentences, about the task or not, cost about seven points. Per sentence: **−3.4 to
+−3.7 pp**.
+
+**This is the same slope the SQL lane measured from the other direction.** BIRD's four-arm size ladder fell about
+**−1.7 pp per injected rule** (W8), and its pruning experiment found that removing rules at random was as good as
+removing them by checkability — the content of the removed rules did not matter, only the count. ALFWorld now says the
+same thing with a block that is otherwise ideal: the best pack is the shortest one that names the failing step, and
+every sentence after that is a tax. Two corpora, two harnesses, two prompt shapes, one direction.
+
+**What that re-explains, and what it retires.**
+
+1. **The filler result was not about relevance.** Four typewriter entries scored 80 against a control at 89; the
+   search half — four entries about the task — also scored 80 against a control at 90. Neither reading needed the
+   vocabulary explanation the previous three rounds gave it: both are what a *four-entry block of anything* does.
+2. **"Domain priming" is retired as an explanation of the field's rule-bank numbers**, and replaced by something
+   narrower and more useful: a bank's score is the value of the sentences that address the failing step minus the tax
+   its other sentences charge. A competitor's four-rule bank could be a one-rule bank with three sentences of tax.
+3. **The BIRD lane's "the pack's cost scales with how many rules are injected" (W8) is not a SQL fact.** It was
+   filed as a property of that lane's packs; it is now a property of packs, measured twice.
+
+**What it does not separate, stated before it is claimed.** The bare pair differs from both longer blocks in content
+*and* length, so "each sentence costs attention" and "a longer prompt is handled worse" both fit. The separating arm is
+one sentence at 489 characters, dispatched as R174.1. Until it is read, the product sentence is "the shortest pack that
+names the failing step", and the mechanism sentence is "sentences cost", not "attention is diluted".
+
+**One methodological note worth keeping.** The lane spent four dispatches comparing blocks to controls whose own
+readings moved by more than the effects being measured, and found its largest, cleanest contrast the first time two
+blocks were compared to each other. The instrument for that (`--relabel`, path-keyed, with the ambiguous-basename
+refusal) was written for a hypothetical and fired on its author's first real command; the reading it produced is the
+only one in this record whose interval is not dominated by an arm that carries no pack at all.
