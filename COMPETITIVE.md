@@ -8954,3 +8954,28 @@ with the graph-memory FSM at 75.37 below it; MemScope's re-run of ALMA at 67.2 i
 cross-harness point estimate means nothing. The per-kind law — an entry pays where its referent is the failing step —
 survives the repair intact (`put` +27.12 pp, `examine` −3.23 pp), and the `put` *control* at 4 of 59 is the row no
 published memory paper reports: a frozen model on this corpus loses 93% of one task kind before any memory exists.
+
+## R182 as a picture — one ladder, six kinds, and the floor under all of them
+
+![R182, three readings: every arm on one ladder of wins, the per-kind moves the format entry paid for, and the floor it left under put](figures/alfworld-r182.png)
+
+**Left: the family is one level, not a ranking.** Eight arms of the same 274 games, all carrying exactly one
+551-character entry except `none`: **150, 212, 218, 220, 222, 223, 227, 230**. The five renderings R180 bought
+(`source` 212, `ghost` 218, `phrase` 220, `note` 222, `sentence` 223) span **eleven games**, and the two repairs
+since (`note-r181` 227, `line` 230) span seven more. Every interval on the ladder contains the anchor at 222 except
+`none`, which is 72 games below it. The honest reading of the picture is a step at "any entry at all" worth about
+**+29 pp** and a flat plateau above it: eleven rounds, eighteen games of spread, no adjacent pair resolved.
+
+**Middle: the entry's +3.65 pp is four small moves, not a level shift.** Against `phrase` — the arm at identical
+length and identical entry count, so the only difference is which operation the 197 characters describe — the format
+entry takes `put` from **17 to 24 of 59 (+11.86 pp)** and `examine` from **27 to 31 of 31 (+12.90 pp)**, leaves `cool`
+at 42, and *gives back* two games on `heat` (39→37, −5.13 pp) and one on `puttwo` (40→39, −2.44 pp). The ten-game
+pooled move is those movements summed. The `put` interval alone, at 59 games, has an mde of 19 pp: the gain is a
+point estimate sitting inside its own floor, and it is quoted that way.
+
+**Right: the entry moved the format by a turn in seven and left the floor standing.** Five kinds read **91.3 to 100
+per cent** and `put` reads **40.7** — a **50-point** gap to the next worst kind on the same arm, same prompt, same
+bank. That is the shape the defect predicts: `refused_actions` falls from **11.64 to 9.90** per `put` game, so the
+prompt-level instruction reached about **15%** of the behaviour that the competitor's own `react_put_0` example
+teaches, and the registration said below **5**. A 197-character entry is not the lever for a 50-turn format; that is
+what R183 tests by moving the channel instead of the text.
