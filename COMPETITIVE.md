@@ -8894,3 +8894,24 @@ first-line parser and, in the reference case, the same feedback string. The lane
 as a *level*, but its *mechanism* attribution does not: part of what looked like "a repair sentence teaches the model"
 is "the model stops looping on a command that never ran". R181 re-reads both arms on the repaired driver, and its
 prediction is written per kind so that the two explanations cannot both survive.
+
+## The board as a picture, and the axis the board does not publish
+
+![ALFWorld, two boards: this lane's point and interval against every prompt-only row, and the cost column most rows omit](figures/alfworld-standing.png)
+
+**Left.** Every published ALFWorld row, split into the two boards R167 established. The grey bars are trained,
+evolved or policy-optimised and none of them is a target for a repository whose premise is that the weights stay
+frozen; the gold bar is this lane at **81.02% on 274 games** (112/134 = 83.58% on the held-out section, Wilson
+[76.5, 89.0]). The nearest prompt-only row is ALMA's self-reported 87.1, which MemScope's own harness re-reads at
+**67.2** for the same method — and this lane's point sits *above* that re-run, above H²R (72.4), the graph-memory FSM
+(75.37) and ExePL (59.0).
+
+**Right.** The only cost quantity the field publishes is memory tokens injected per task, and **11 of 13 rows report
+none at all**. The two that do: ALMA at 1,319 tokens for 87.1%, this lane at **138 tokens** (551 characters) for
+81.02%. On the axis that matters to a reader paying for it, this lane carries **9.6× less memory** for 6.1 pp less
+success, and it is the only row that reports a per-episode bill at all (¥0.0084 per game on the last round).
+
+**What the picture cannot show, and does not pretend to.** No row on either board reports a paired interval, so the
+vertical positions are point estimates from different harnesses; MemScope's 20-point re-read of ALMA is the standing
+evidence that a cross-harness comparison of point estimates is a category error. This lane's own interval is drawn
+because publishing one is cheap and nobody else does.
