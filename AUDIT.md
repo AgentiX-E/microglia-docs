@@ -14490,3 +14490,40 @@ fail, and the message names the key.
 to **98.9%** across a larger denominator, and every module is still at or above the 95% floor — with the new
 checker at 100% because its failure branches are reached by handing it a case whose expectation is wrong rather
 than excluded from measurement.
+
+## 34.252 — The checker that assumed the download's layout failed on the first tree that ran it
+
+**What happened.** The new guard was pushed, `ci.yml` passed — the unit step builds its own corpora, so the
+checker was exercised there and nowhere else — and the `floor` job, which runs the checker against the *fetched*
+corpus, reported all three sections missing:
+
+> `FAIL eval_out_of_distribution: no valid_unseen/ under /home/runner/.cache/alfworld/data/json_2.1.1`
+> `FAIL eval_in_distribution: no valid_seen/ under /home/runner/.cache/alfworld/data/json_2.1.1`
+> `FAIL train: no train/ under /home/runner/.cache/alfworld/data/json_2.1.1`
+
+The corpus was installed — 7,302 files extracted on that runner — and it was not where the checker looked.
+`alfworld-download` puts the sections at `<data>/data/json_2.1.1` on the path this repository's development
+corpus came from and somewhere else on the release the runner fetches, and the zip carries its own top-level
+directory besides. The path had been copied from a working directory rather than measured.
+
+**Why it is an audit entry and not a one-line fix.** It is the same class of defect as 34.246 and 34.251, in a
+new place: a constant that was true where it was written, checked by a test that built its own world. The unit
+test passed because the fixture wrote the layout the code expected — which is what a fixture always does. The
+only thing that could have caught it is the job that runs against the real corpus, and that job exists because
+the floor needs it; the checker was riding along.
+
+**The fix, and the rule it leaves.** `locate()` searches for the section directories the table names instead of
+assuming one level, and returns the shallowest match so that a fixture in a repository cannot outrank an
+installed corpus. The download's layout is the download's business; finding the sections is the checker's. The
+`--data` escape hatch stays for a corpus that is somewhere unusual, and it is what the development environment
+uses.
+
+| rule | where it now lives | what it prevents |
+| --- | --- | --- |
+| find the corpus, do not guess its root | `check_split_sizes.locate` | a guard that passes on one machine's folder tree |
+| a missing home is "unknown", not "empty" | `locate` returns `None`, `main` exits 1 with a sentence | a zero that reads as a measurement |
+| a fixture's layout is not evidence about the real one | the guard runs in the job that fetches the corpus | the green unit test that hid this for one push |
+
+**What it cost.** One push, one red `floor` job, about four minutes of runner time, and no money — the job makes
+no model calls. It is the cheapest possible version of this failure, and it was found before any dispatch read a
+green tree as a licence to spend.

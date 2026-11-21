@@ -25180,7 +25180,7 @@ from the next one.
 | artefact fields a reading can check its own design with | `pack_entries`, `prefix_chars` | **+ `pack_chars`** |
 | dispatch quoted / spent | ¥3.2 | **¥2.67** |
 
-## 211. The second section is plumbed, and the guard that refused it was rewritten by the experiment it served (05:05 UTC)
+## 212. The second section is plumbed, and the guard that refused it was rewritten by the experiment it served (05:05 UTC)
 
 No arms were bought this round. R177 is a purchase of **games**, and games are only a reading if the instrument
 can say which section they came from, pool two sections without pretending they are one, and refuse a bank
@@ -25195,7 +25195,7 @@ the lane's first dispatch.
 | nothing recorded where a bank came from | a bank distilled on `valid_seen` could be scored on it, and the rate would look like every other rate | `source.train_split` written by `distill.py`, refused by the dispatcher when it equals the scored section |
 | a payload key the YAML does not declare is dropped | the 34.232 failure: a dispatch that says it has a control and does not | `test_cli.py` asserts payload keys ⊆ declared inputs, from two command lines |
 
-### 211.1 The rule that was too strict, and why it changed
+### 212.1 The rule that was too strict, and why it changed
 
 The first version of the join guard refused **any** mixture of sections, because a pooled rate over two
 populations is not a rate over either. Correct, and unusable: R177's whole purchase is a 274-game join over the
@@ -25205,7 +25205,7 @@ episode carries the one its parent recorded, and the reading prints each section
 number. That is the pre-registered question rather than a nicety — **an effect that exists in 134 held-out rooms
 and not in 140 seen ones is a property of a split, not of memory.**
 
-### 211.2 The arm that was registered and has been left out
+### 212.2 The arm that was registered and has been left out
 
 R177 row 1 was written as three arms on `valid_seen`. One of them cannot be run there honestly: the verbatim
 trajectory in `banks/bank-rawput-1.json` is a won `valid_seen` game, so scoring it on `valid_seen` includes the
@@ -25220,7 +25220,16 @@ never be noticed. It is left out of the section rather than caveated, and the ro
 
 **≈ ¥2.8** against the ¥3.6 the three-arm version was quoted at, for the same 274-game join.
 
-### 211.3 The suite, and what is left
+### 212.3 The first green tree found the checker's own defect
+
+`ci.yml` passed and the `floor` job failed: the new checker hard-coded `<data>/data/json_2.1.1` and the runner's
+download put the sections elsewhere, so all three were reported missing on a corpus that had just been extracted.
+The unit fixture wrote the layout the code expected — which is what a fixture does — and the only job that could
+have caught it is the one that fetches the real corpus. `locate()` now searches for the section directories and
+takes the shallowest match; `--data` stays as the escape hatch. AUDIT 34.252, and the cost was four minutes of a
+job that makes no model calls.
+
+### 212.4 The suite, and what is left
 
 | dimension | before | now |
 | --- | --- | --- |
