@@ -14431,3 +14431,62 @@ are.** Format failures want a trace; blocked steps want a sentence.
 **The instrument gap this reading exposed is fixed.** The registered void condition was a length condition that no
 artefact field could answer (`prefix_chars` contains the few-shot examples as well). `pack_chars` is now recorded per
 episode and printed under `carried` (AUDIT 34.249); R176's own length match is arithmetic on two prefix means.
+
+## 34.251 — The second corpus section cost three guards, and the first one was a silent `min`
+
+**The defect that had never fired.** `agent.py` computed its pass size as
+`min(arguments.games, num_games)`. Every dispatch this lane has ever bought passed `--games 134` for a 134-game
+section, so the `min` was the identity and nothing looked wrong. A dispatch that passed `--games 140` against the
+same section would have driven **134** games, written `134/134` into the artefact, and printed a full-looking
+rate for a budget the caller never received — the one place in the driver where a wrong number was silently made
+smaller rather than refused. Both ceilings are now refusals (the table's, and the installed corpus's), and a
+refused pass leaves no artefact behind.
+
+**The table is now a measurement.** `SPLIT_SIZES` says `eval_out_of_distribution` 134, `eval_in_distribution` 140,
+`train` 3,553 — counted with `find <section> -name game.tw-pddl | wc -l` rather than quoted. Two things read it:
+`agent.py` refuses a `--games` beyond its section, and `aggregate.py` holds a join's tiling check to it. A table
+that agrees with the corpus on the day it was typed and disagrees a release later is the worst kind of wrong
+here, because every dispatch still runs and only the denominator moves. `scripts/check_split_sizes.py` is the
+check: it counts the installed corpus and names every section that disagrees, with its own self-test on corpora
+it builds (a short section, a matching one, a missing one) and 100% coverage under the same 95% floor as the
+drivers. It runs twice — on the built corpora in `ci.yml` and against the fetched corpus in the `floor` job.
+
+**The join rule was written too strictly and corrected by the experiment it was meant to serve.** The first
+version of the guard refused any join that spanned two sections, on the grounds that a rate over two populations
+is not a rate over either. That is true and it is not the whole truth: R177's entire purchase is a 274-game join
+over two sections, because a second section is the only place this lane can buy resolution it does not already
+own. A guard that refuses the design it was written for is a guard that gets deleted. The rule is now:
+**a mixture is refused until it is declared, and once declared it is graded.** `--expect-splits` names the
+sections; every episode carries the section its parent recorded; and `by_section` prints the paired delta of each
+section beside the pooled one. That grading is not a diagnostic — it is R177's pre-registered question, since an
+effect that exists in 134 held-out rooms and not in 140 seen ones is a property of a split rather than of memory.
+
+**The leak guard turns on provenance, and provenance had to be written down.** A bank distilled from
+`eval_in_distribution` and scored on it is the one leak this lane can commit while every number still looks
+right. Nothing recorded which section a bank came from, so `distill.py` now writes `source.train_split` (read
+from the artefacts' own `summary.split`, refused when a union mixes two), and the dispatcher refuses a
+`--split` that equals a distilled bank's `train_split`. The guard is deliberately narrower than "any bank on any
+section": a hand-written bank is a function of no section — one verbatim trajectory, one sentence — and refusing
+it on `valid_seen` would refuse the arm R177 needs. The distinction is the presence of distill.py's own fields:
+`episodes` says a bank was distilled from a set, and a distilled bank whose provenance is missing is refused
+rather than trusted, because "cannot prove" is not "did not".
+
+**The structural rule that would have caught 34.232 without paying for it.** The dispatcher's payload is a dict
+and the workflow's inputs are text, so a key the YAML does not declare is dropped between them — which is exactly
+how `--control-run` bought a treatment with no control while the command line said otherwise. `test_cli.py` now
+builds the payload from two command lines that between them name every input, reads the declared keys out of
+`alfworld.yml`, and asserts the difference is empty. Verified by deleting `split_games` from the YAML: two rules
+fail, and the message names the key.
+
+| what was added | the failure it makes impossible | held by |
+| --- | --- | --- |
+| `--games` beyond the section → refusal | a shortened pass reported as a full one | `test_agent.py::test_games_beyond_the_split_are_refused_rather_than_shortened` |
+| `SPLIT_SIZES` + `check_split_sizes.py` | a table that drifts from the corpus | `test_check_split_sizes.py` (15 cases, 100% of the checker) |
+| `--expect-splits` declaration + `by_section` | a pooled rate over two populations, quoted as one | `test_aggregate.py::test_an_undeclared_join_across_two_sections_is_refused` |
+| `source.train_split` + the dispatch guard | a bank scored on the section that produced it | `test_distill.py::test_the_bank_records_the_section_it_read`, `test_alf_dispatch.py::SplitTest` |
+| payload keys ⊆ workflow inputs | an input dropped between the dispatcher and the YAML | `test_cli.py::test_every_input_the_dispatcher_sends_is_one_the_workflow_declares` |
+
+**Cost.** Nothing was bought: this round is instrument. The suite grew from 449 to 488 tests, coverage from 99.0%
+to **98.9%** across a larger denominator, and every module is still at or above the 95% floor — with the new
+checker at 100% because its failure branches are reached by handing it a case whose expectation is wrong rather
+than excluded from measurement.

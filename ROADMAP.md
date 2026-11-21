@@ -8031,9 +8031,10 @@ on 134 costs. Three rows, in the order they are worth buying:
 
 | # | experiment | games | mde at n | price | leak status |
 | --- | --- | --- | --- | --- | --- |
-| **1** | the three arms of R174.1/R176 (`none`, sentence, trajectory) on `valid_seen` | 140 (+134 = 274) | ≈ 9 pp | ≈ ¥3.6 | the sentence and the six-bank are hand-written; the trajectory came from **one** `valid_seen` game, which is stated in its provenance and is 1 of 140 |
-| 2 | the same on `train` for a 402-game join | 402 (+274 = 676) | ≈ 6 pp | ≈ ¥10 | only for hand-written banks: a bank distilled from a training run cannot be evaluated on it, and the guard for that is a bank-level `distilled` flag that does not exist yet |
-| 3 | the two under-powered rows above, once either split is joined | — | — | ≈ ¥3.2 each | unchanged |
+| **1** | `none` and the 489-character sentence on `valid_seen`, joined to the held-out 134 | 140 (+134 = 274) | ≈ 9 pp | **≈ ¥2.8** | both arms are hand-written: a sentence is a function of no section, so nothing here can be scored on its own source |
+| 1b | the verbatim trajectory, **held-out section only** | 134 | 12–13 pp | already bought (R176) | its evidence is one `valid_seen` game, so it may be run there only where the scored section is not that one |
+| 2 | the same on `train`, which holds **3,553** games — this row said 402, which is the three-arm sweep's *game count* on the held-out split and not a section's size; the counts are now measured rather than quoted (AUDIT 34.251) | 3,553 (+274) | ≈ 4 pp | ≈ ¥50 | only for hand-written banks: a bank distilled from a training run cannot be evaluated on it, and the guard for that now exists (`source.train_split`, AUDIT 34.251) |
+| 3 | the two under-powered rows above, once row 1 is joined | — | — | ≈ ¥3.2 each | unchanged |
 
 **What row 1 buys beyond power.** It is the first reading in this lane on a second section of the corpus: every
 number quoted above comes from `eval_out_of_distribution`, and an effect that exists in 134 held-out rooms and not in
@@ -8041,9 +8042,24 @@ number quoted above comes from `eval_out_of_distribution`, and an effect that ex
 headline becomes a 274-game estimate with a 9 pp mde and two independent sections behind it; if it does not, that is
 the most important negative result the programme could produce, and it costs ¥3.6 to find out.
 
-**The guard row 1 needs before it is dispatched.** `--split` is not an input of `alfworld.yml`: the sweep job passes
-no split at all, `GAMES` defaults to 134, and `aggregate.py --expect` tiles 134. A split input that the tiling check
-does not know about is a sweep whose twelve jobs drive one section and whose join expects the other, so the plumbing
-is: one workflow input, one dispatch flag, `--expect` taken from the split's own published size, and a refusal when a
-sweep names a split without naming its size. That is instrument work, not an arm, and it is the reason row 1 is
-"registered" rather than "in flight".
+**The plumbing row 1 needed is built and green** (PROGRESS 211, AUDIT 34.251). `split` and `split_games` are inputs,
+`--split` is passed to every arm in the matrix, `SPLIT_SIZES` is counted from the corpus and held to it by
+`check_split_sizes.py`, `--expect-splits` declares a cross-section join and `by_section` grades it, and a bank whose
+recorded `train_split` equals the section it would be scored on is refused before the dispatch is bought. Two rules
+that had been assumptions are now refusals: a `--games` beyond the section (it was silently `min`'d, so a request
+for 140 on 134 drove 134 and printed `134/134`), and a join that mixes sections without naming them.
+
+**Row 1 is now in flight** after one arm was deliberately left out: the trajectory's evidence is **one `valid_seen`
+game**, so scoring it on `valid_seen` would include its own source — 1 of 140, inside the 4.2 pp noise floor, which is
+exactly why it would never be noticed. Row 1b keeps it on the held-out section instead, where it has already been
+read (R176: 108/134).
+
+**What row 1 buys beyond power.** It is the first reading in this lane on a second section of the corpus: every
+number quoted above comes from `eval_out_of_distribution`, and an effect that exists in 134 held-out rooms and not in
+140 seen ones is a property of a split rather than of memory. If the sentence replicates at ≈ 112/140, the lane's
+headline becomes a 274-game estimate with a 9 pp mde and two independent sections behind it; if it does not, that is
+the most important negative result the programme could produce, and it costs ¥2.8 to find out.
+
+**The registered reading, for the record, before the money.** The sentence read +17.91 pp on the held-out section.
+On 274 games the mde is ≈ 9 pp, so a seen-section gain below +8 pp is the negative result; a pooled gain of +12 pp
+or more would mean the held-out estimate was low rather than typical.

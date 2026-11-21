@@ -25179,3 +25179,56 @@ from the next one.
 | coverage, lines and branches | 98.9% | **99.0%**, every module ≥ 95% |
 | artefact fields a reading can check its own design with | `pack_entries`, `prefix_chars` | **+ `pack_chars`** |
 | dispatch quoted / spent | ¥3.2 | **¥2.67** |
+
+## 211. The second section is plumbed, and the guard that refused it was rewritten by the experiment it served (05:05 UTC)
+
+No arms were bought this round. R177 is a purchase of **games**, and games are only a reading if the instrument
+can say which section they came from, pool two sections without pretending they are one, and refuse a bank
+scored on the section that distilled it. All three were missing, and one of them had been silently wrong since
+the lane's first dispatch.
+
+| what was wrong | what it would have cost | now |
+| --- | --- | --- |
+| `total = min(games, num_games)` | a `--games 140` on the 134-game split reported `134/134` as a full pass | both ceilings are refusals; a refused pass writes no artefact |
+| no table of section sizes | every `--expect` and tiling check read a number nobody had counted | `SPLIT_SIZES` 134 / 140 / 3,553, counted, and `check_split_sizes.py` holds it to the installed corpus |
+| a join could not span two sections | R177's 274-game design had no command | `--expect-splits` declares; `by_section` grades; an undeclared mixture is refused |
+| nothing recorded where a bank came from | a bank distilled on `valid_seen` could be scored on it, and the rate would look like every other rate | `source.train_split` written by `distill.py`, refused by the dispatcher when it equals the scored section |
+| a payload key the YAML does not declare is dropped | the 34.232 failure: a dispatch that says it has a control and does not | `test_cli.py` asserts payload keys ⊆ declared inputs, from two command lines |
+
+### 211.1 The rule that was too strict, and why it changed
+
+The first version of the join guard refused **any** mixture of sections, because a pooled rate over two
+populations is not a rate over either. Correct, and unusable: R177's whole purchase is a 274-game join over the
+held-out 134 and the seen 140, and a guard that refuses the design it was written for is a guard that gets
+deleted. The rule is now *refuse until declared, grade once declared*: `--expect-splits` names the sections, every
+episode carries the one its parent recorded, and the reading prints each section's paired delta beside the pooled
+number. That is the pre-registered question rather than a nicety — **an effect that exists in 134 held-out rooms
+and not in 140 seen ones is a property of a split, not of memory.**
+
+### 211.2 The arm that was registered and has been left out
+
+R177 row 1 was written as three arms on `valid_seen`. One of them cannot be run there honestly: the verbatim
+trajectory in `banks/bank-rawput-1.json` is a won `valid_seen` game, so scoring it on `valid_seen` includes the
+game it came from — 1 of 140, about 0.7 pp, well inside the 4.2 pp noise floor, which is precisely why it would
+never be noticed. It is left out of the section rather than caveated, and the row becomes two arms:
+
+| arm | section | games | price |
+| --- | --- | --- | --- |
+| `none` | `eval_in_distribution` | 140 | ≈ ¥1.4 |
+| `always-in` over the 489-character sentence | `eval_in_distribution` | 140 | ≈ ¥1.4 |
+| ~~the verbatim trajectory~~ | — | — | **not bought**: its evidence is 1 of these 140 games |
+
+**≈ ¥2.8** against the ¥3.6 the three-arm version was quoted at, for the same 274-game join.
+
+### 211.3 The suite, and what is left
+
+| dimension | before | now |
+| --- | --- | --- |
+| tests | 449 | **488** (408 drivers + 65 dispatcher + 15 checker) |
+| coverage, lines and branches | 99.0% | **98.9%** over a larger denominator, every module ≥ 95% |
+| the new checker | — | **100%**, its failure branches reached by a wrong expectation rather than excluded |
+| structural rules in `test_cli.py` | 6 | **8** |
+
+Next, in order: **R177-1** — the two arms on `valid_seen` (≈ ¥2.8), joined to the held-out 134 for a 274-game
+estimate at an mde of ≈ 9 pp; then, if the sentence replicates on the seen section, the same join for the
+trajectory **on the held-out section only** (where its provenance is a training game and therefore not a leak).
