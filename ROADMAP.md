@@ -8393,3 +8393,50 @@ comparison is the same bank on the same channel at two caps. The registration ha
 *reference* channel too, because a shorter cap is the one knob that can lower an arm's score for a reason that has
 nothing to do with memory — which is why it is registered as a channel-level question and read on `any-line`, where the
 turns are spent on actions rather than on commands that never ran.
+
+## R184 (registered) — the cap is a knob, and the counterfactual is exact
+
+The floor after R183 is nine `put` games that spend all fifty turns and end no closer: **17.67 thoughts** and **15.0
+recovered commands** each, at `0.3533` thoughts per turn, while a won `put` is **13.1 turns** and **1.38 thoughts**. The
+syntax stopped swallowing the command, so what remains is *narration that has already executed*, and the cheapest thing
+that could change it is the number already in the prompt: `HUMAN_TEMPLATE` formats `max_steps` into *"You may take
+maximum of N steps."* and the loop stops at `steps < max_steps`. No new code, no new bank, no new arm.
+
+**The round is not free to interpret, and the registration is mostly about that.** Every episode records the step at
+which it won, so the score an arm would read at a cap of thirty **if the model did exactly what it did at fifty** is
+`won and steps <= 30` — a floor no behaviour can fall below and a ceiling only behaviour can raise, **exact rather than
+sampled**, because it is recomputed from the same records.
+
+| channel | arm | at cap 50 | **same behaviour, cap 30** | price |
+| --- | --- | --- | --- | --- |
+| `any-line` | `always-in` | 257 (93.80%) | **242 (88.32%)** | −15 games |
+| `any-line` | `none` | 197 (71.90%) | **157 (57.30%)** | −40 games |
+| `reference` | `always-in` | 230 (83.94%) | **209 (76.28%)** | −21 games |
+| `reference` | `none` | 150 (54.74%) | **116 (42.34%)** | −34 games |
+
+The cap costs the control **2.7× more than the bank arm** on the channel under test, because the bank wins at 15.6 steps
+on `clean` and 13.1 on `put` while the control wins at 28.0 and 21.8. The memory effect at cap thirty would therefore
+read **+31.02 pp instead of +21.90 pp with no behavioural change at all** (+33.94 against +29.20 on the reference
+channel): a shrunk cap is a treatment whose size is correlated with the arm, and it flatters memory by 4.7 to 9.1 pp by
+arithmetic alone. So the **absolute scores are the readings**, each arm against itself at fifty, and the within-cap
+memory delta is not registered as a reading — its null value is +31.02.
+
+**What the cap costs per kind, if behaviour does not change:** `clean` 58→56 and **39→26**; `cool` 43→40 and 36→32;
+`examine` 28→25 and 31→30; `heat` 38→37 and **31→22**; `put` **50→49** and 35→28; `puttwo` 40→35 and 25→19. `put` is the
+least sensitive kind on the bank arm — **one game in fifty** — which is the premise restated as a number: the nine that
+still lose cannot be rescued by budget, only by acting inside it.
+
+**Registered:** `always-in@anyline` **above 242**, band 246–262; `none@anyline` above 157, band 162–190; `put` 48–53 of 59
+on the bank arm and 26–36 on the control; **thoughts per turn on a lost `put` ≤ 0.30** against 0.3533 (per turn, for
+R183's reason); `budget_exhausted` rising to at least 32 and 117 with `truncated` zero; `pack chars` 551 and `parser`
+`any-line` in all 548 episodes. **Refutation:** at or below 242 the sentence does not discipline narration and the
+budget shape is closed as an explanation, which makes R185 the belief entry rather than a smaller cap; inside the band
+with `none` below 157 turns the round into a null with a measured inflation; `put` above 53 retracts R183's closing
+floor sentence. **The confound** — the loop stops at thirty *and* the sentence says thirty — is separated only by a
+fourth cell (short cap, long sentence) priced at ≈ ¥1.9 and registered as a follow-up that is bought only if reading 1
+is positive.
+
+**Price ≈ ¥3.80**, eight jobs, off-peak band (the peak band is ≈ ¥7.6, which is why the dispatch holds its paid step for
+the window). Written as `REGISTRATION.md` §R184 in `microglia` before the dispatch, together with the dispatcher guard
+that refuses a cap that is not a whole number or is below the shortest win the corpus has recorded — three steps in
+6,096 episodes.
