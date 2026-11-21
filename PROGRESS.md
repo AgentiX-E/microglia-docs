@@ -25759,3 +25759,49 @@ workaround reading is refuted and the bank carries procedure rather than syntax.
 | registration | `REGISTRATION.md` §R183, bands and refutation clauses written before dispatch |
 | dispatch | **next**, after CI is green on this commit |
 | price | ≈ ¥5.90 for both arms, both sections |
+
+## 220. The parser channel: +9.85 pp on the arm, +17.15 pp on the control, and the memory's lead narrows to +21.90 pp (14:00 UTC)
+
+Two dispatches (`44908014576` held-out, `44908126791` seen), two arms each, 274 games an arm, **¥4.64** against ¥5.90
+quoted. `parser: any-line` in the header and in all 548 episodes; `refused_actions` **0** everywhere; `pack chars` 551
+on the bank arm, 0 on the control.
+
+| arm | seen, 140 | held out, 134 | pooled, 274 | Wilson |
+| --- | --- | --- | --- | --- |
+| `always-in@anyline` | **128** | **129** | **257 (93.80%)** | [90.3, 96.1] |
+| `none@anyline` | **100** | **97** | **197 (71.90%)** | [66.3, 76.9] |
+
+| pairing | delta | 95% CI | p | mde |
+| --- | --- | --- | --- | --- |
+| same bank, two readers | **+9.85 pp** | [+5.47, +14.23] | < 0.001 | 6.55 pp |
+| same empty pack, two readers | **+17.15 pp** | [+10.22, +24.09] | < 0.001 | 10.18 pp |
+| **the memory effect on the second reader** | **+21.90 pp** | [+16.06, +27.74] | < 0.001 | 9.03 pp |
+
+**`put` was a property of the harness.** 24/59 → **50/59** on the bank arm (+44.07 pp) and 4/59 → **35/59** on the
+control (+52.54 pp). The control's `put` is the row `COMPETITIVE.md` has been quoting since R180 as the one no published
+memory paper reports — a frozen model losing 93% of one task kind before any memory exists — and on this reader it is
+59%. The task was never the problem.
+
+**The registered refutation clause fired, and the denominator is why.** `recovered_actions` reads **4.17** per `put`
+game on the bank arm where 8 to 15 was registered, so clause 1 ("the two channels met different model behaviour") fires
+as written. Per **model turn** the two arms recover 0.0554 and 0.0740 — 25% apart, not 2.5× — and the difference is
+episode length: a won `put` is 13.1 turns on the bank arm against 21.8 on the control. The per-game rate measures the
+format *and* the number of chances to write it. So the cross-channel rows are quoted as descriptive, the within-channel
++21.90 pp is the surviving registered reading, and the per-turn column is recorded as a post-hoc correction rather than a
+prediction that held.
+
+**What it settles.** The workaround reading is directionally confirmed and smaller than its band's midpoint: a quarter of
+the entry's +29.20 pp was a way of writing around a reader that dropped its command; three quarters was not. Eleven
+prompt rounds moved the level by ≤ 3.65 pp and this changed one field of a driver for +9.85 pp.
+
+**What is left.** Nine `put` games still spend 50 turns each — 17.7 thoughts and 15.0 recovered commands per game — while
+a won `put` is 13.1 turns and 1.4 thoughts. The residual is **exploration depth**, not syntax, and it is the first
+question here that a prompt cannot answer by itself: the model has the budget and spends a third of it narrating.
+
+| item | state |
+| --- | --- |
+| run ids | `44908014576` (held out), `44908126791` (seen) |
+| spend | $0.6490 = **¥4.64**, 13,311 calls, four jobs an arm |
+| gates before dispatch | 551 python tests, 98.7% coverage, `ci.yml` green on `717f85b9`, `alfworld.yml` green on the same commit |
+| figure | `figures/alfworld-r183.png` |
+| registration | `REGISTRATION.md` §R183 amendment 1, nine predictions with verdicts |

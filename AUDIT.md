@@ -14915,3 +14915,49 @@ could be a workaround: an entry that tells the model how to write around a reade
 entry's value falls on the second channel and the registered band is **+10 to +25 pp**. If the effect holds at +29, the
 workaround reading is refuted and what the bank carries is procedure rather than syntax. Either way the round answers a
 question eleven renderings could not, because the eleven were all inside the harness.
+
+## 34.263 — One field of a driver is worth more than eleven prompt rounds, and the residual is exploration
+
+R183 executed the command the first-line rule refuses. The result is the largest effect this lane has measured since it
+started measuring anything: **+9.85 pp** on the bank arm (230 → 257 of 274) and **+17.15 pp** on the control (150 → 197),
+both at p < 0.001, against a family of eleven prompt renderings that never resolved a pair inside ±3.65 pp.
+
+**The three readings, and what each one is a claim about.**
+
+| reading | delta | what it is about |
+| --- | --- | --- |
+| bank arm, two readers | **+9.85 pp** [+5.47, +14.23] | the cost of the format to a model that carries an entry |
+| control, two readers | **+17.15 pp** [+10.22, +24.09] | the cost of the format to a model that carries nothing |
+| the memory effect on the second reader | **+21.90 pp** [+16.06, +27.74] | what the entry is worth when the format costs a third less |
+
+The third row is the one the round was registered for. The effect on the reference channel is **+29.20 pp**; on a reader
+where the dropped command executes it is **+21.90 pp**. So a quarter of the entry's apparent value was a workaround — an
+instruction that taught the model to write around a parser that was throwing its command away — and three quarters was
+not. The registered band was **+10 to +25 pp** and it held; a reading at the top of it would have refuted the workaround
+reading, and this one does not.
+
+**The registry's own refutation clause fired, and the denominator is the reason.** `recovered_actions` reads **4.17** per
+`put` game on the bank arm where 8 to 15 was registered. The clause said that would mean the two channels met different
+model behaviour. Per **model turn** the arms recover 0.0554 and 0.0740 — 25% apart — and the per-game rate is 2.5× apart
+because a won `put` is **13.1 turns** on the bank arm against **21.8** on the control. The per-game rate was measuring the
+format and the number of chances to write it in one number, which is the same error as quoting tokens per document when
+the documents differ in length. Recorded as a post-hoc correction, not as a prediction that held: the clause fires, the
+cross-channel rows are descriptive, and +21.90 pp is the surviving registered quantity.
+
+**`put` was never the task.** 24/59 → **50/59** on the bank arm, 4/59 → **35/59** on the control. The control's `put` has
+been on the board since R180 as the row no published memory paper reports: a frozen model at **6.8%** on one of six task
+kinds. On this reader it is **59.3%**. A deficit that four rounds of prompt text could not move was, to two thirds of its
+size, the reader rather than the task or the memory.
+
+**And the floor that is left is a different floor.** Nine `put` games still lose all 50 turns: **17.7 thoughts** and
+**15.0 recovered commands** per game, against a won `put` of 13.1 turns and 1.4 thoughts. The commands now execute, so
+they are not lost to the format any more; the games still do not finish because the model spends a third of its budget
+narrating and does not adapt. That is **exploration depth**, and it is the first question in this lane's queue that a
+prompt-level entry is the wrong instrument for: R180 and R182 spent ¥4.5 proving an entry can move a format by 15%, and
+the remaining 9 games are a model that keeps talking after it has been told what happened.
+
+**What cannot be claimed.** The 93.80% and 96.27% are this lane's numbers on a reader this lane built. No published
+ALFWorld row was measured on it, so they cannot be placed on the prompt-only board — and placing them there would be the
+category error `COMPETITIVE.md` AM.22 spends a section on. What the round licenses is the *internal* comparison it was
+registered for: same bank, same games, two readers, and a memory effect that falls from +29.20 to +21.90 when the harness
+stops leaking.

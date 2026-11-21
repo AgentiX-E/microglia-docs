@@ -370,6 +370,17 @@ ask is the one eleven prompt rounds could not: **is the entry worth +29.20 pp be
 teaches the model to write around a reader that drops its command?** The registered band on the second channel is
 **+10 to +25 pp**, and a reading at the top of it refutes the workaround reading in the same stroke.
 
+**And then the reader itself was changed, and it was worth more than every sentence put together.** R183 bought both
+arms on a second parser channel that executes the command the first-line rule refuses, and re-bought the control to do
+it: **+9.85 pp** on the bank arm (230 → **257/274, 93.80%**) and **+17.15 pp** on the control (150 → **197/274, 71.90%**),
+both at p < 0.001. `put` went **24/59 → 50/59** on the bank arm and **4/59 → 35/59** on the control — so the deficit
+that four rounds of prompt text could not move, and that has been on this record since R180 as the one row no published
+memory paper reports, was to two thirds of its size a property of the **harness** rather than of the task or of memory.
+The memory effect on this channel is **+21.90 pp**, against **+29.20 pp** on the reference one: a quarter of what a
+551-character entry was worth was a workaround for a reader that dropped its command, and three quarters was not. Nine
+`put` games still lose fifty turns each, with 17.7 thoughts and 15.0 recovered commands per game against 13.1 turns and
+1.4 thoughts for a win — the floor that is left is **exploration**, not syntax.
+
 **And the level moved where nothing predicted it would.** The post-repair matched pair reads **227/274 (82.85%)**
 against **150/274 (54.74%)**, **+28.10 pp [+22.26, +33.58]**, with **114/134 = 85.07%** on the held-out section — the
 best readings this programme has produced. They are +5 games on the same bank at mde 6.22, and the control drew 81 of

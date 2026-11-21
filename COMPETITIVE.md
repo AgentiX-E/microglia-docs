@@ -8949,6 +8949,27 @@ moved a behaviour the few-shot examples teach by about a turn in seven and left 
 mde at 59 games is 19 pp, so its gain is a point estimate inside its floor. Seven renderings of the one sentence now
 span **212 to 230**: eighteen games across eleven rounds, no adjacent pair resolved.
 
+**R183, the reader, and the number that cannot go on the board.** The lane then changed its own harness: a second
+parser channel executes the command the first-line rule refuses, and both arms were re-bought on it for **¥4.64**. The
+bank arm reads **257/274 (93.80%)**, 129/134 = 96.27% held out, and the control **197/274 (71.90%)** — the memory effect
+is **+21.90 pp** there against **+29.20 pp** on the reference channel, so a quarter of the entry's value was a workaround
+for the reader and three quarters was not. `put` went **24/59 → 50/59** on the bank arm and **4/59 → 35/59** on the
+control.
+
+| row | `valid_unseen` | what it is |
+| --- | --- | --- |
+| this lane, `always-in@anyline` | **96.27** (129/134) | a reader this lane built; **not** a board row |
+| this lane, `always-in` (reference channel) | 85.82 (115/134) | comparable in level to the prompt-only rows, with the same first-line parser |
+| ALMA (own paper) | 87.1 | 1,319 tokens of a searched design; MemScope re-reads it at 67.16 |
+| graph-memory FSM | 75.37 | mean over six ALFWorld task types |
+| H²R | 72.4 | Qwen3-235B, 30-step cap |
+| CoEx / ExpeL / Mem0 / SimpleMem | 64.20 / 59.0 / 52.0 / 54.5 | frozen model, prompt-only |
+
+**The 93.80% does not go on the board, and saying so is the point of the second row.** No published ALFWorld row was
+measured on this lane's second reader, so placing it beside ALMA's 87.1 would be the category error AM.22 spends a
+section on — the harness would be doing the work and the table would call it memory. What the round licenses is the
+internal comparison it was registered for, and what the second row licenses is the level it has always claimed.
+
 **Against the board.** On the prompt-only rows this lane now sits between ALMA's self-reported 87.1 and H²R's 72.4,
 with the graph-memory FSM at 75.37 below it; MemScope's re-run of ALMA at 67.2 is the standing evidence that a
 cross-harness point estimate means nothing. The per-kind law — an entry pays where its referent is the failing step —
@@ -8979,3 +9000,29 @@ bank. That is the shape the defect predicts: `refused_actions` falls from **11.6
 prompt-level instruction reached about **15%** of the behaviour that the competitor's own `react_put_0` example
 teaches, and the registration said below **5**. A 197-character entry is not the lever for a 50-turn format; that is
 what R183 tests by moving the channel instead of the text.
+
+## R183 as a picture — both arms up, the lead narrower, and a floor that is no longer syntax
+
+![R183, three readings: the four levels across two readers, the per-kind move the reader bought, and the nine put games that still lose](figures/alfworld-r183.png)
+
+**Left: the four levels.** `none` 150 → **197**, `always-in` 230 → **257**. Both arms gain from a second reader, and
+they gain unevenly — which is the reading the round was registered for: the gap narrows from **+29.20 pp** to
+**+21.90 pp**, so **a quarter of what the entry was worth was a workaround** for a reader that dropped its command, and
+three quarters was the entry. The registered band was +10 to +25 pp and it held; a reading at the top of it would have
+refuted the workaround reading outright.
+
+**Middle: where the +9.85 pp is.** `put` takes **26 games** (24 → 50 of 59, **+44.07 pp**) and `examine` gives back
+**three** (31 → 28, −9.68 pp); `clean`, `cool`, `heat` and `puttwo` move by at most **2.56 pp** between them. A harness
+change lands almost entirely on the one kind whose losses were made of dropped commands, which is what the per-kind law
+has predicted in every round since R177 — the entry pays where its referent is the failing step, and here the *harness*
+pays there too.
+
+**Right: the nine games that still lose.** 50 turns, **17.7 thoughts**, **15.0 recovered commands** — against **13.1
+turns** and 1.4 thoughts for a win. The commands execute now, so nothing is lost to the format; the games do not finish
+because a third of the budget goes on narrating a plan the model has already carried out. That is **exploration depth**,
+and it is the first question on this lane's queue that a prompt is the wrong instrument for.
+
+**The number to keep in view and the number not to publish.** 93.80% and 96.27% are the best figures this record has
+carried, and they are figures about a harness this lane built — see the table above for why they stay off the board.
+The figure the argument stands on is the difference between the two left-hand pairs: **+9.85 pp** for changing one field
+of a driver, against **≤ 3.65 pp** for eleven rounds of changing a sentence.

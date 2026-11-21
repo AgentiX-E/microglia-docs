@@ -8351,3 +8351,45 @@ on the bank arm and +20 to +50 pp on the control, pooled +3 to +8 pp and +8 to +
 Cost ≈ ¥5.90, four jobs. It is the last cheap measurement of the format lock, and whichever way it reads the lane's
 product statement becomes a two-part sentence: *the operation the step is blocked on, and the format the harness reads*
 — or it becomes one part, and the format was never the entry's job.
+
+## R183, read back — the reader was worth more than the sentence, and the floor is now exploration
+
+| arm | seen | held out | pooled, 274 | Wilson | bill |
+| --- | --- | --- | --- | --- | --- |
+| `always-in@anyline` | 128 | 129 | **257 (93.80%)** | [90.3, 96.1] | ¥1.61 |
+| `none@anyline` | 100 | 97 | **197 (71.90%)** | [66.3, 76.9] | ¥3.03 |
+
+| pairing | delta | 95% CI | p | mde |
+| --- | --- | --- | --- | --- |
+| same bank, two readers | **+9.85 pp** | [+5.47, +14.23] | < 0.001 | 6.55 pp |
+| same empty pack, two readers | **+17.15 pp** | [+10.22, +24.09] | < 0.001 | 10.18 pp |
+| the memory effect on the second reader | **+21.90 pp** | [+16.06, +27.74] | < 0.001 | 9.03 pp |
+
+`put` **50/59** on the bank arm (+44.07 pp) and **35/59** on the control (+52.54 pp), against 24/59 and 4/59 on the
+reference channel: the control's `put` was a property of the harness. The memory effect falls from **+29.20 pp** to
+**+21.90 pp**, so a quarter of the entry's value was a workaround for the reader and three quarters was not — the
+registered band (+10 to +25) held. The `recovered_actions` clause fired (4.17 per `put` game against 8–15 registered)
+and is recorded with its denominator: **0.0554 against 0.0740 per model turn**, 2.5× apart per game only because a won
+`put` is 13.1 turns here and 21.8 there.
+
+**Spend ¥4.64 against ¥5.90 quoted**, 13,311 calls. The bank arm is the cheaper of the two, because a model that wins in
+13 turns bills 13 turns.
+
+## R184 (next) — exploration depth, which is the first question a prompt cannot answer
+
+Nine `put` games still lose 50 turns each with **17.7 thoughts** and **15.0 recovered commands** per game, while a won
+`put` is 13.1 turns and 1.4 thoughts. The commands execute now, so the format is no longer what stops them: the model has
+the budget and spends a third of it narrating a plan it has already executed. Three candidate interventions, in the order
+of what they cost to test:
+
+| # | the intervention | what it assumes | the reading it must produce | price |
+| --- | --- | --- | --- | --- |
+| 1 | a step cap of **30** on both arms | the losses are a budget shape, not a knowledge gap: H²R's own board is capped at 30 | the nine games either finish or they do not, and `put` moves | ≈ ¥3.0, no model change |
+| 2 | an entry about **where the object is** after a failed `take` | the model re-narrates because it has no belief about the world | `put` +5 to +20 pp, and a fall in `thoughts` per game | ≈ ¥2.4 |
+| 3 | a **second attempt** of a failed `put` in the same turn | the last action is right and the answer is not read | under 3 pp, by R182's format result | ≈ ¥2.4 |
+
+The first is the cheapest and the most falsifiable, and it needs no new code: `--max-steps 30` already exists, and the
+comparison is the same bank on the same channel at two caps. The registration has to say what a cap does to the
+*reference* channel too, because a shorter cap is the one knob that can lower an arm's score for a reason that has
+nothing to do with memory — which is why it is registered as a channel-level question and read on `any-line`, where the
+turns are spent on actions rather than on commands that never ran.
