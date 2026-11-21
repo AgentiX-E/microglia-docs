@@ -25715,3 +25715,47 @@ must be registered with both arms re-run, and it costs ≈ ¥5.9. (2) Conditiona
 games is 1.5 pp against an mde of 6.0. (3) The noise floor at 274 games is still unbought; the 24-game identical-prompt
 pair that read 10 and 9 remains the only estimate. (4) Every remaining prompt-level mechanism this lane can name has now
 been measured, and the answer is that one operative sentence carries all of it.
+
+## 219. The parser channel is built, tested and registered — the last cheap measurement of the format lock (12:55 UTC)
+
+R182 closed with `put` at **24/59** and every other kind between 88 and 100 per cent, and with the only remaining
+intervention named: execute the command the first-line rule refuses. It cannot be an arm — it changes the harness under
+both arms — so this iteration built it as a **channel** and registered it before buying it.
+
+**What was built, in the order it was built (tests first).** Nine tests in `test_agent.py` and nine in
+`test_aggregate.py` were written against a design that did not exist yet and failed with
+`TypeError: run_episode() got an unexpected keyword argument 'parser'`; the implementation followed.
+
+| file | change | why it is a refusal and not a feature |
+| --- | --- | --- |
+| `agent.py` | `REFERENCE_PARSER` / `ANY_LINE_PARSER` / `PARSERS`, `--parser`, `recovered_actions` + `recovered_samples`, `parser` in every episode and in the header | the channel is a fact about every game, not a note in a summary |
+| `agent.py` | `arm_label(..., parser)` → `always-in@anyline`, `none@anyline` | two channels of one arm are two harnesses; the label is what stops `aggregate.py` grouping them |
+| `aggregate.py` | `parsers()`, `--expect-parsers`, a span refused until named, and **one label spanning two channels refused with no override** | a pooled rate over two readers is a rate about the harness |
+| `aggregate.py` | `recovered_actions` / `recovered_per_call` / `recovered_counted` printed under `dropped` | one event, two sides: a channel that executes what the rule refused is not a cure for the format |
+| `scripts/alf_dispatch.py` | `--parser`, refused if not exactly one of the two, carried in the workflow payload | a misspelling would reach twelve jobs after the environment install, with the money committed |
+| `alfworld.yml` | `parser` input, `PARSER` in both jobs, `--parser` on both `args` arrays | a harness that has to be edited into a file is a channel nobody buys twice |
+
+**The design decision worth recording.** The command the rule refuses is *already parsed* — `refused_command` has
+returned it since R181 — so the channel executes an argument the driver already had rather than reading the reply a
+second time. Four lines in the main loop, and `parse_reply` is not touched: the reference channel stays the default
+forever, and every artefact written before the field existed is read as the reference channel rather than as unknown.
+
+**Gates.** 551 Python tests (up from 533) and 175 subtests, all green; per-module coverage `agent.py` **99.4%**,
+`aggregate.py` **96.7%**, `scripts/alf_dispatch.py` **98.3%**, total **98.7%** — the floor is 95 and no dimension is
+below it. `test_cli.py` re-checks that every flag the workflow passes is a flag the parser advertises, which is what
+makes the two new `args+=` lines a tested claim rather than a hope.
+
+**Registered, not yet bought.** R183: `always-in@anyline` and `none@anyline`, 274 games each, **≈ ¥5.90**. The
+mechanism prediction is the third row of its table and it can fail in both directions — the memory effect on the second
+channel is registered at **+10 to +25 pp**, *below* the +29.20 pp the same pair reads on the reference channel, because
+part of what the entry is worth could be a workaround for a reader that drops its command. If it holds at +29, the
+workaround reading is refuted and the bank carries procedure rather than syntax.
+
+| item | state |
+| --- | --- |
+| channel implemented | `agent.py`, `aggregate.py`, `scripts/alf_dispatch.py`, `alfworld.yml` |
+| tests | 18 new, written before the implementation |
+| coverage | 98.7% total, every module ≥ 95% |
+| registration | `REGISTRATION.md` §R183, bands and refutation clauses written before dispatch |
+| dispatch | **next**, after CI is green on this commit |
+| price | ≈ ¥5.90 for both arms, both sections |

@@ -14857,3 +14857,61 @@ first-line rule refuses. That is not a memory arm — it changes the harness for
 as a **channel**, with both arms re-run on it and the divergence from the reference stated in the same sentence as the
 result. Its expected size is the whole of the format's cost: a lost `put` game spends 16.5 of its 50 turns on commands
 that never ran, so a channel in which they run has roughly a third of the budget back on the one kind that needs it.
+
+## 34.262 — The channel: what changes when the reader changes, and what has to be refused so it cannot be missed
+
+34.261 left one intervention standing — execute the command the first-line rule refuses — and one requirement with
+it: because it changes the harness under **both** arms, it cannot be registered as an arm. This entry records the
+design that makes that distinction mechanical rather than editorial.
+
+**The code path, and how small it is.** `parse_reply` is untouched. `refused_command` is untouched — it already
+returned the command, which is what made R181 and R182 readable. The only change is in `run_episode`, at the point
+where a thought reply was answered with `Nothing happens.`:
+
+```python
+refused_here = refused_command(reply)
+if refused_here is not None and parser == ANY_LINE_PARSER:
+    recovered += 1
+    if len(recovered_samples) < REFUSED_SAMPLES:
+        recovered_samples.append(refused_here)
+    action = refused_here
+    break
+```
+
+The command leaves by the same door an action leaves by — `env.step` — so the turn is counted as an action turn, the
+model is answered with an observation rather than a no-op, and `steps`, `actions`, `invalid_actions` and `digest` all
+keep their meanings. Nothing is re-read and nothing is invented: the parser found this command and refused it, and this
+channel is the one where the refusal is not the end of the turn.
+
+**Two counters, because one event has two sides.** `refused_actions` counts a command the rule *dropped*;
+`recovered_actions` counts one it *would have* dropped and the channel executed. One reply is one event, counted on
+whichever side of the parser it fell. That is the instrument the round is read with: if the second channel recovers
+roughly what the first dropped (11.64 and 10.53 per `put` game), the two channels drove the same model behaviour and
+the difference between them is the harness. If it does not, they drove different behaviour and the cross-channel rows
+are descriptive rather than causal — a distinction the round registers before it buys.
+
+**Four refusals, each closing a way of pooling two harnesses without noticing.**
+
+1. **A channel in every episode**, not only in the summary. A join that pooled two readers is otherwise undetectable
+   below the file level, and the artefact is what a later round reads.
+2. **A channel in every label** (`always-in@anyline`, `none@anyline`). Two channels of one arm are two harnesses; a
+   label that did not move would leave `aggregate.py` grouping them, and its doubled-games refusal arrives after both
+   were paid for. The channel moves the control's label too, unlike a pack knob: it does not select from the pack, it
+   changes what the environment does with a reply.
+3. **`aggregate.py` refuses a span it was not told about** (`--expect-parsers`), the same rule `--expect-splits`
+   applies to a pooled rate over two corpus sections: legal, sometimes the point, never silent.
+4. **`aggregate.py` refuses one label spanning two channels at all**, with no override. A section mixture is a
+   population claim; a channel mixture under one label is an arm that is two harnesses, which is not a claim.
+
+**What the round can and cannot be compared to.** The reference channel stays the default forever, and every artefact
+written before this entry is read as the reference channel rather than as unknown — the only reader that existed is
+written down in the code, so reading the absence as a guess would be inventing ambiguity. What the round cannot do is
+put a second-channel number beside a published row: no published ALFWorld row was measured on a reader this lane built,
+and the comparison the round is actually for is *its own arms, both channels* — which is why it buys the control again
+rather than reusing R181's.
+
+**The prediction this is built to test.** The memory effect on the reference channel is **+29.20 pp**. Part of that
+could be a workaround: an entry that tells the model how to write around a reader that drops its command. If it is, the
+entry's value falls on the second channel and the registered band is **+10 to +25 pp**. If the effect holds at +29, the
+workaround reading is refuted and what the bank carries is procedure rather than syntax. Either way the round answers a
+question eleven renderings could not, because the eleven were all inside the harness.

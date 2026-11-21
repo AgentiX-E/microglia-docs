@@ -359,6 +359,17 @@ turn in seven of leverage over a behaviour the few-shot examples teach. The lane
 (83.94%)**, **115/134 = 85.82%** held out, and seven renderings of the one sentence span 212 to 230 — eighteen games,
 no adjacent pair resolved. **The entry is worth about +29 pp over no entry and about nothing over itself.**
 
+**A third intervention that is not a sentence at all, and the question it can finally ask.** Eleven renderings of one
+operation span **212 to 230** games with no adjacent pair resolved, and `put` is still **24 of 59** against 91 to 100
+per cent on the other five kinds. The remaining lever is not text: the command under a thought **is in the reply**, the
+reference parser finds it and drops it, and 618 of them were counted in one 274-game pass. R183 therefore executes it —
+and because that changes the harness under both arms, it is registered as a **channel** rather than an arm: both arms
+are re-bought on the second reader, `refused_actions` and `recovered_actions` count the same event on opposite sides of
+the parser, and the join refuses to pool the two channels until it is told it is comparing them. The question it can
+ask is the one eleven prompt rounds could not: **is the entry worth +29.20 pp because of what it says, or because it
+teaches the model to write around a reader that drops its command?** The registered band on the second channel is
+**+10 to +25 pp**, and a reading at the top of it refutes the workaround reading in the same stroke.
+
 **And the level moved where nothing predicted it would.** The post-repair matched pair reads **227/274 (82.85%)**
 against **150/274 (54.74%)**, **+28.10 pp [+22.26, +33.58]**, with **114/134 = 85.07%** on the held-out section — the
 best readings this programme has produced. They are +5 games on the same bank at mde 6.22, and the control drew 81 of

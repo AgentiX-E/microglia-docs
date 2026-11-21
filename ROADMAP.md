@@ -8327,7 +8327,7 @@ standing. `put`-only mde at 59 games is **19 pp**, so the +11.86 is a point esti
 **Seven arms, one number**: 212, 218, 220, 222, 223, 227, 230 — eighteen games of spread across renderings of one
 292-character sentence, no adjacent pair resolved. The entry is worth ≈ +29 pp over no entry and ≈ nothing over itself.
 
-## R183 (registered by the next iteration) — the parser channel, and the one intervention large enough to matter
+## R183 (registered) — the parser channel, and the one intervention large enough to matter
 
 A lost `put` game spends **16.5 of its 50 turns** on commands that never reached the world, and two prompt-level
 interventions moved that by 0% and 15%. The remaining intervention is not a memory arm: it is executing the command
@@ -8335,8 +8335,19 @@ that the first-line rule refuses, which changes every arm's harness and therefor
 re-run on it, the divergence from the reference harness stated in the same sentence as the result, and the
 reference-channel numbers kept as they are.
 
-Sketch, to be registered with its own bands before dispatch: `none` and the current best bank, 274 games each, on the
-diverging parser. Registered predictions to fix: `refused_actions` → 0 by construction; `put` **+15 to +35 pp** against
-the same arm on the reference channel; the other five kinds |Δ| ≤ 5 pp; pooled **+4 to +12 pp**. Cost ≈ ¥5.9, two
-dispatches. It is the last cheap measurement of the format lock, and if it reads as predicted the lane's product
-statement becomes a two-part sentence: *the operation the step is blocked on, and the format the harness reads.*
+`none` and the current best bank, 274 games each, on the diverging parser. The sketch said `refused_actions` → 0 by
+construction, `put` +15 to +35 pp, |Δ| ≤ 5 pp on the other five kinds and pooled **+4 to +12 pp**; the arithmetic from
+`put`'s 59 games gives **+3 to +8 pp** pooled rather than +4 to +12, so +3 to +8 is what was registered.
+
+**Registered as `REGISTRATION.md` §R183**, with one quantity the sketch did not have and the round is actually for: the
+**memory effect on the second channel**, `always-in@anyline` − `none@anyline`, predicted at **+10 to +25 pp** — below the
+**+29.20 pp** the same pair reads on the reference channel. The reading behind that band is that part of what a
+551-character entry is worth could be a workaround for a reader that drops the command under a thought; if the effect
+holds at +29 on a channel where the format costs nothing, the workaround reading is refuted and the bank carries
+procedure rather than syntax. The other registered counters: `refused_actions` 0 on both arms by construction,
+`recovered_actions` per `put` game within ±30% of what the reference channel dropped (11.64 / 10.53), `put` +15 to +35 pp
+on the bank arm and +20 to +50 pp on the control, pooled +3 to +8 pp and +8 to +25 pp.
+
+Cost ≈ ¥5.90, four jobs. It is the last cheap measurement of the format lock, and whichever way it reads the lane's
+product statement becomes a two-part sentence: *the operation the step is blocked on, and the format the harness reads*
+— or it becomes one part, and the format was never the entry's job.
