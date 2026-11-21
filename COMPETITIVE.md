@@ -8915,3 +8915,34 @@ success, and it is the only row that reports a per-episode bill at all (¥0.0084
 vertical positions are point estimates from different harnesses; MemScope's 20-point re-read of ALMA is the standing
 evidence that a cross-harness comparison of point estimates is a category error. This lane's own interval is drawn
 because publishing one is cheap and nobody else does.
+
+## R181 — The repair that refuted its own mechanism, and the best level the lane has read
+
+The defect R180 found was repaired in one string and registered with a mechanism: the model believed a dropped `put`
+had executed, so answering it with `Nothing happens.` should recover `put`. The round bought its own control for the
+last time — `none` and the anchor bank, 274 games each, ¥8.20.
+
+| reading | delta | 95% CI | p | mde |
+| --- | --- | --- | --- | --- |
+| the anchor − `none`, both post-repair (matched pair) | **+28.10 pp** | [+22.26, +33.58] | < 0.001 | 9.43 pp |
+| the anchor post − the anchor pre (the repair, same bank) | **+1.82 pp** | [−2.55, +6.20] | 0.453 | 6.22 pp |
+
+**The mechanism is refuted and the counter is vindicated.** `refused_actions` reads **11.64 per `put` game** in the
+treatment and **10.53** in the control, against **0.00–0.07** on the other five kinds — the field reproduces the
+training transcripts at the rate they implied — and `put` read **−1.69 pp** where +6 to +22 was registered. The
+pre-registered refutation clause fired as written: the false acknowledgement was not what kept `put` down.
+
+**The turn arithmetic names the real constraint.** A winning `put` costs 26.6 turns (7.2 thoughts, 2.2 refusals); a
+losing one costs all 50 with **32.0 thoughts and 16.5 refused commands**. The model writes a thought and a command in
+one reply on every turn and does not adapt to the answer, so the answer was never binding — **the format is**, and the
+format is what the competitor's own `react_put_0` example teaches.
+
+**And the level is the best this lane has read**: 227/274 = 82.85%, 114/134 = 85.07% held out. Both are +5 games on
+the same bank at mde 6.22, and the +28.10 pp pair drew a control of 81 inside a band that runs **80 to 93** across the
+eleven control readings this lane has paid for — so the memory effect is quoted as **+14 to +28 pp**, not as its point.
+
+**Against the board.** On the prompt-only rows this lane now sits between ALMA's self-reported 87.1 and H²R's 72.4,
+with the graph-memory FSM at 75.37 below it; MemScope's re-run of ALMA at 67.2 is the standing evidence that a
+cross-harness point estimate means nothing. The per-kind law — an entry pays where its referent is the failing step —
+survives the repair intact (`put` +27.12 pp, `examine` −3.23 pp), and the `put` *control* at 4 of 59 is the row no
+published memory paper reports: a frozen model on this corpus loses 93% of one task kind before any memory exists.

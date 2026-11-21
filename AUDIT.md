@@ -14778,3 +14778,42 @@ rounds of this lane's most careful design — matched lengths, single clauses, r
 at a treatment effect while a delivery defect of 15 events per game sat in the same files, invisible because the
 schema had no column for it. The first thing to check before ablating a treatment is whether the harness can represent
 the way the treatment fails.
+
+## 34.260 — Repairing the lie did not repair the behaviour, and the counter is what says so
+
+R181 was registered as a repair with a mechanism: a command written under a thought was refused, the driver answered
+`OK.`, the model believed it had acted, and `put` paid for it. The repair answered `Nothing happens.` instead. The
+prediction was `put` up 6–22 pp.
+
+**It read −1.69 pp** (20/59 against 21/59), and the same bank across the repair read **+1.82 pp [−2.55, +6.20]**,
+p = 0.453, mde 6.22 — a null on the treatment's own pre-to-post comparison. The pre-registered refutation clause fired
+exactly as written.
+
+**What makes this a result rather than a failed round is the counter.** `refused_actions`, which did not exist before
+this round, reads **11.64 per `put` game** in the treatment and **10.53** in the control — inside the 8–20 band the
+registration named from the training transcripts — and **0.00 to 0.07** on the other five kinds. So the field measures
+the defect it was built to measure, the defect is still there at the predicted rate, and the behaviour did not move.
+Without the field, this round would have been indistinguishable from a repair that worked and a treatment that did not.
+
+**The turn arithmetic names the real constraint.** A winning `put` costs 26.6 turns with 7.2 thoughts and 2.2
+refusals; a losing one costs all 50, of which **32.0 are thoughts** and **16.5 are refused commands**. So a loss is
+thirty turns of *thought, refused command, `Nothing happens.`* — and the shape repeats. The model does not adapt its
+format to the answer it receives, which means the answer was never the binding constraint. The binding constraint is
+that it writes a thought and a command in one reply on every turn, which the competitor's own few-shot examples teach
+in `react_put_0`.
+
+**Two general lessons, and the second one is about registration.**
+
+*First*: a repair is not verified by the mechanism that motivated it, it is verified by the field that measures the
+defect. The lane had no field for this defect for four rounds and spent ¥9.43 attributing a clause; it now has one,
+and the field immediately falsified the causal story that motivated the repair. That is the instrument doing its job
+in the same round it was built.
+
+*Second*: a refutation clause written in advance is the only thing that made this round readable. "If `put` does not
+move while `refused_actions` reads 8–20 per game, the false acknowledgement is not what kept `put` down" is a
+sentence that cost one line at registration and now carries the whole interpretation. Without it, a null on `put`
+would have been argued into a partial success through the pooled +1.82 pp.
+
+**What the row does not license.** It does not license restoring `OK.` A driver that tells a model its dropped
+command succeeded is a driver whose transcripts cannot be trusted, and the +28.10 pp it produced as a matched pair is
+the number this lane will keep quoting — with the caveat that the control drew 81 of a band that runs 80 to 93.

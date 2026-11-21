@@ -25572,3 +25572,85 @@ lane has one pair already — 24 byte-identical prompts that scored 10 and 9, wh
 the whitepaper's floor — but 24 games cannot put a number on a 274-game spread, and that pair reports no engagement,
 so the quantity AUDIT 34.258 is about has never been measured. It is now cheap: the control side is shared. (4) Conditional delivery stays unbought and still unresolvable at
 four `examine` games.
+
+## 217. The false acknowledgement was not the bug, the format is — and a new high nobody predicted (12:20 UTC)
+
+R181 bought the repair as a matched pair: `none` and `always-in` @ the anchor bank, 274 games each, on a driver that
+answers a refused command with `Nothing happens.` instead of `OK.` All void conditions hold — `pack chars` exactly 551
+in every treatment game and 0 in every control game, `carried` 1.0 against 0.0, `refused_actions` present in all 548
+episodes, and the anchor bank byte-identical to R178 1b's under `sha256 95f8c634…`.
+
+### Two readings, and they answer different questions
+
+| reading | delta | 95% CI | p | discordant | mde |
+| --- | --- | --- | --- | --- | --- |
+| the anchor − `none`, both post-repair (matched pair) | **+28.10 pp** | [+22.26, +33.58] | < 0.001 | 85 | 9.43 pp |
+| the anchor post − the anchor pre (the repair, same bank) | **+1.82 pp** | [−2.55, +6.20] | 0.453 | 37 | 6.22 pp |
+
+| arm | seen, 140 | held out, 134 | pooled, 274 | bill |
+| --- | --- | --- | --- | --- |
+| `always-in` @ the anchor | 113 | **114** | **227 (82.85%)** | ¥4.35 |
+| `none` | 69 | 81 | 150 (54.74%) | ¥3.85 |
+
+**227/274 is the best 274-game number this lane has ever read** (previous best 223) and **114/134 = 85.07% is its best
+held-out reading** (previous best 112). It is +5 games on the same bank and +1.82 pp, which is inside the null band at
+mde 6.22 — so it is reported as the sample moving, not as the repair paying.
+
+**The +28.10 pp is a matched pair and also a driven draw.** The control's own band is the eleven held-out control
+readings this lane has paid for — 80 to 93 wins on the same 134 games — and this round drew **81**, the second lowest;
+the treatment drew **114**, the highest of the seven treatment readings. A pair inside one dispatch is a comparison,
+but its *magnitude* sits at the top of what that pair can produce, and the honest range for the memory effect is
+**+14 to +28 pp**, not the point estimate.
+
+### The registered reading: two of six held, and the refutation clause fired as written
+
+| registered | read | verdict |
+| --- | --- | --- |
+| `refused_actions` **8–20 per `put` game** | **11.64** (treatment), **10.53** (control) | held |
+| `< 1 per game` on the other five kinds | 0.00–0.07 | held |
+| `put` wins **+6 to +22 pp** | **−1.69 pp** (20/59 against 21/59) | **refuted** |
+| repair's pooled delta, `none` **+4 to +18 pp** | **−13 games** (163 → 150) | **refuted** |
+| repair's pooled delta, the anchor **+1 to +12 pp** | +5 games, +1.82 pp | held, at the floor |
+| movement **in `put` and nowhere else** | `put` −1.69, `cool` +8.70 (four games), rest within 5 pp | refuted as written |
+
+The clause R181 registered in advance said: *if `put` does not move while `refused_actions` reads 8–20 per game, the
+false acknowledgement is not what kept `put` down.* That is the reading. The counter confirms the drop happens at the
+rate the training transcripts showed, `put` does not move, and the same-bank delta across the repair is inside the
+null band.
+
+### Why: the turn arithmetic, which no transcript was needed for
+
+| `put`, post-repair | turns | thoughts | actions | refused | stalls |
+| --- | --- | --- | --- | --- | --- |
+| a win (20 of 59) | **26.6** | 7.2 | 19.5 | 2.2 | 0.1 |
+| a loss (39 of 59) | **50.0** | **32.0** | 18.0 | **16.5** | 1.6 |
+
+A loss is not a long search. It is thirty turns of *thought, refused command, `Nothing happens.`* repeated with the
+same shape every time — the model writes a thought and a command in one reply on every turn, and the answer it gets
+does not change the shape. So the belief the repair removed was never the binding constraint, **the format is**. That
+is a sharper result than the one the repair was registered to produce, and it is only visible because the counter
+exists: before R181 the 16.5 refusals per lost game were invisible in every field of the record.
+
+### What it costs a product
+
+The `put` kind is 59 of 274 games and the memory arm wins 20 of them against the control's 4 — **+27.12 pp** on the
+kind the entry names, while `examine` reads −3.23 pp on 31 games. The per-kind law this programme has carried since
+R173 survives the repair intact: **an entry pays where its referent is the failing step and nowhere else.** What the
+repair changed is the absolute level: the control's `put` reads 6.8%, so 46 of the corpus's 59 `put` games are lost by
+a frozen model before any memory is involved.
+
+| item | state |
+| --- | --- |
+| tests | 529 (+5 for R182's arm) |
+| coverage | 98.9% lines and branches, every module ≥ 95% |
+| new high | 227/274 pooled, 114/134 held out |
+| R182 registered | the dead operation's 197-character slot, filled with the format operation, same 551 |
+| spend this round | **¥8.20** against ¥4.70 quoted (a two-arm sweep runs eight shards, not four) |
+| commit | `c5c19bd` → `c97c891` |
+
+**What is left, in order.** (1) R182, dispatched: the format operation in the dead slot — the prediction is
+`refused_actions` below 5 per `put` game and `put` at 21–29 of 59. (2) If a prompt-level entry cannot move the format,
+the lane's product claim narrows to *content* lessons and the parser question becomes a separate, clearly-labelled
+channel (execute a command the first line refused) rather than a memory arm. (3) The noise floor at 274 games is still
+unbought; the 24-game identical-prompt pair that scored 10 and 9 is the only estimate, and it cannot be extrapolated.
+(4) Conditional delivery stays unbought and unresolvable at four `examine` games.

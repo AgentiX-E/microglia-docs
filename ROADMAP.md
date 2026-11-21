@@ -8259,3 +8259,50 @@ under `--expect 274`.
 
 **Total ¥4.70.** It is the last round that has to buy a control: every round after it is read against the post-repair
 `none`.
+
+## R181, read back — the counter worked and the mechanism did not
+
+| arm | seen | held out | pooled, 274 | bill |
+| --- | --- | --- | --- | --- |
+| `always-in` @ the anchor | 113 | **114** | **227 (82.85%)** | ¥4.35 |
+| `none` | 69 | 81 | 150 (54.74%) | ¥3.85 |
+
+| reading | delta | 95% CI | p | mde |
+| --- | --- | --- | --- | --- |
+| the anchor − `none`, both post-repair (matched pair) | **+28.10 pp** | [+22.26, +33.58] | < 0.001 | 9.43 pp |
+| the anchor post − the anchor pre (the repair, same bank) | **+1.82 pp** | [−2.55, +6.20] | 0.453 | 6.22 pp |
+
+**The registered refutation clause fired.** `refused_actions` reads **11.64 per `put` game** (control 10.53) and
+0.00–0.07 elsewhere — the counter reproduces the training transcripts exactly — and `put` read **−1.69 pp** (20/59
+against 21/59) where +6 to +22 was registered. The same bank across the repair is +1.82 pp, inside the null band. **The
+false acknowledgement was not what kept `put` down.**
+
+**Why, from the turn arithmetic.** A winning `put` costs 26.6 turns with 7.2 thoughts and 2.2 refusals; a losing one
+costs all 50 with **32.0 thoughts** and **16.5 refused commands**. A loss is thirty turns of *thought, refused command,
+`Nothing happens.`* in the same shape every time — the model does not adapt its format, so the answer was never the
+binding constraint.
+
+**A new high, reported as the sample.** 227/274 (82.85%) and **114/134 = 85.07% held out** are the best readings this
+lane has produced, but they are +5 games on the same bank at mde 6.22, and the +28.10 pp matched pair drew a control
+of 81 inside a band that runs 80 to 93. The honest range for the memory effect is **+14 to +28 pp**.
+
+## R182 — The dead operation's slot, filled with the live one
+
+R180 measured operation (2) as −0.73 pp at an identical 551 characters; R181 measured 16.5 refused commands per lost
+`put` game with `put` unmoved. So the 197-character tail that R180 proved dead now carries the operation the losses
+point at: **one command per turn, alone on its line**, because a command under a thought is read as part of the thought
+and never reaches the world.
+
+| # | arm | bank | rendered | games | the question | price |
+| --- | --- | --- | --- | --- | --- | --- |
+| **1a** | `always-in` | `banks/bank-putmove-line-1.json` | **551** | 274 | does an entry that names the format stop the refusal | **dispatched** ≈ ¥2.35 |
+| 1b | *(spent)* operation (1) only, neutral tail | `bank-putmove-phrase-1.json` | 551 | 274 | R180 1a, the mechanism comparison | spent |
+
+**Registered readings.** `refused_actions` per `put` game **below 5** (from 11.64); `put` wins **21–29 of 59** (+6 to
++20 pp); pooled **+3 to +12 pp** against 220/274; |Δ| ≤ 5 pp on the other five kinds; `pack chars` exactly 551 with the
+same 157-character head as R180 1a.
+
+**Refutation.** If `refused_actions` stays above 8 per `put` game, a prompt-level entry cannot change the format the
+few-shot examples teach, the product claim narrows to *content* lessons, and the parser question (execute a command the
+first line refused) becomes a separate clearly-labelled channel rather than a memory arm. If the counter falls and
+`put` does not move, the refusals were a symptom and the next round is exploration depth.

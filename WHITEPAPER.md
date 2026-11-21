@@ -336,6 +336,28 @@ lesson is about instruments, not about memory**: a failure mode the record has n
 four rounds of matched-length, single-clause, registered-band design were aimed at a treatment effect while a
 delivery defect of fifteen events per game sat in the same files.
 
+**The repair did not repair the behaviour, and that is the sharper result.** R181 was registered on the mechanism the
+defect implied — the model believed a dropped `put` had executed — with `put` predicted up 6 to 22 points. It read
+**−1.69 pp** (20/59 against 21/59), and the anchor bank across the repair read **+1.82 pp [−2.55, +6.20]**, a null at
+mde 6.22. What the round did establish is that the counter measures the defect: **11.64 refused commands per `put`
+game** against 0.00–0.07 on the other five kinds, exactly the rate the training transcripts implied. So the defect is
+still there at the predicted rate and the behaviour did not move, which means the belief was never the binding
+constraint.
+
+The turn arithmetic says what is. A winning `put` game costs **26.6 turns** with 7.2 thoughts and 2.2 refusals; a
+losing one costs all 50, of which **32.0 are thoughts** and **16.5 are refused commands**. A loss is thirty turns of
+*thought, refused command, `Nothing happens.`* in the same shape every turn — the model writes a thought and a command
+in one reply every time, which the competitor's own few-shot examples teach, and no answer it receives changes that.
+**The format is the constraint, and a format taught by the examples is not something a content entry has been shown
+to reach.**
+
+**And the level moved where nothing predicted it would.** The post-repair matched pair reads **227/274 (82.85%)**
+against **150/274 (54.74%)**, **+28.10 pp [+22.26, +33.58]**, with **114/134 = 85.07%** on the held-out section — the
+best readings this programme has produced. They are +5 games on the same bank at mde 6.22, and the control drew 81 of
+a band that runs 80 to 93 across eleven readings, so the memory effect is quoted as **+14 to +28 pp** rather than at
+its point estimate. The per-kind law survives intact: `put` +27.12 pp against `examine` −3.23 pp, the entry paying
+where its referent is the failing step and nowhere else.
+
 **The instrument's own noise, measured on identical bytes.** The six-bank's `put` entry was required to be the
 winning sentence verbatim, so the gated arm reproduced the one-sentence arm's prompt byte for byte in all 24 `put`
 games — verified in the artefacts, not assumed — and those 24 identical prompts scored 10 and 9. One game in
