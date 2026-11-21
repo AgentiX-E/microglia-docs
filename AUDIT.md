@@ -15018,3 +15018,49 @@ guard that the next round forgets; the seven rows above are the ones that surviv
 because a channel name is always a string and the comparison it feeds is a set membership. `max_steps` feeds an integer
 comparison, so a malformed artefact would have been *read as a different cap* rather than as malformed — a defect with
 no symptom until somebody compares two readings and cannot reproduce the delta.
+
+## 34.266 — A guard that would have refused the round it was built for
+
+R185 added `bank_digest` because two banks of 551 characters under one label were indistinguishable in every field the
+join read. The first implementation put the field in the **episodes** and refused any label whose episodes carried more
+than one value. That is correct for R185, which swapped one bank for another.
+
+It is wrong for R186, which the same afternoon registered: a bank with two 354-character entries tagged to disjoint sets
+of kinds, selected by `--gate-kind`, so that every game still reads 551 characters but `put` reads a different one. Under
+the guard as written, that round's own artefact would carry two `bank_digest` values inside one label and the join would
+refuse to load it — **the guard would have refused the round it exists for**, and the failure would have appeared as a
+dispatch that ran, billed and could not be read.
+
+**The repair is a distinction the first version collapsed.** A pass is handed **one bank** and a game reads **one pack**.
+`bank_digest` is now a summary field (one per run, which is what a label groups on) and `pack_digest` a per-episode field
+(which under a gate changes with the kind, and is the only record that says so). Five tests cover it, one of them the
+gated shape: several `pack_digest` values, one `bank_digest`, no refusal.
+
+**The general form.** A guard is a claim about what may vary inside a unit, and the unit has to be the one the experiment
+varies. R183's channel guard was right because a channel cannot vary inside a pass. R184's cap guard was right for the
+same reason. The bank guard was wrong because the bank is the thing that *can* vary inside a pass, and a gate is the
+mechanism for making it vary. **The test that would have caught it is the next round's shape, written before the next
+round's design is final** — which is what this audit entry is, one round late.
+
+## 34.267 — Three registration errors in three rounds, and the template defect behind them
+
+R184 registered a counterfactual as a **bound** for a quantity that is a **prediction** over a sampled policy. R185
+registered a **per-lost-game** mean for a treatment whose purpose is to shrink the number of lost games — nine became
+three, and the mean rose while the count of bad games fell from eight to three. And R185 also registered a follow-up
+cell — *both tails at 551 characters* — that **cannot be built**: 157 + 197 + 197 is 551 characters of entry in a
+354-character slot.
+
+Three rounds, three errors, and none of them in the code. The class is: **a registration is prose, and nothing executes
+it.** The readings are checked against artefacts; the *design* is not checked against arithmetic or against the shape of
+the quantity it names. Two rules follow, and both are now part of how a registration is written rather than how it is
+reviewed:
+
+1. **Every registered cell must be computable, before it is bought, from an artefact that exists** — a script, a stored
+   run, or the bank file itself. R185's impossible cell would have failed at the first `len()`.
+2. **A rate's denominator must be fixed by the design.** If the treatment changes how many units exist — lost games,
+   refused replies, replays — the reading is a **count** (eight bad games became three) or a rate over a denominator the
+   treatment cannot move (turns, not lost games), and never a mean over the survivors.
+
+The first rule already exists in this lane in two places and was not generalised: the price of a round is quoted before
+the dispatch, and the pack's rendered length is asserted in `test_banks.py` before the arm is bought. Both are
+*computable-before-buying* checks. The registration template now carries the third.

@@ -25879,3 +25879,66 @@ does not have. Second, `Unknown` is a mechanism: AutoContext's document marks wh
 lane's bank states only what it learned — which is the plausible reading of five `put` games that keep issuing rejected
 commands. Both are R185's design inputs, and the second is now the registered direction rather than the sketch's
 "where is the object".
+
+## 223. The entry is not kind-local: +10.2 pp on `put`, −22.4 pp on `clean`, −12 games net (17:35 UTC)
+
+R185 swapped 197 of a 551-character pack's characters — the format instruction out, the open-the-container precondition
+in — and held the label, the length, the reader and the cap still. Two dispatches, one arm, 274 games.
+
+| arm | wins | Wilson | held out | seen | paired against R183's bank arm | mde |
+| --- | --- | --- | --- | --- | --- | --- |
+| `precond` | **245/274 (89.42%)** | [85.2, 92.5] | 123/134 | 122/140 | **−4.38 pp** (10 gained, 22 lost) | 5.78 pp |
+| `line` (R183) | 257/274 (93.80%) | [90.3, 96.1] | 129/134 | 128/140 | — | — |
+
+**The mechanism worked and the level did not.** `put` went **50 → 56 of 59** (+10.2 pp, eight games gained, two lost) and
+`clean` went **58 → 45 of 58** (−22.4 pp, thirteen lost, none gained), with `heat` −7.7 and `examine` −6.5 behind it.
+
+| kind | precond | line | Δ | transfers |
+| --- | --- | --- | --- | --- |
+| `put` | **56/59** | 50/59 | **+10.2 pp** | 8 gained, 2 lost |
+| `clean` | **45/58** | 58/58 | **−22.4 pp** | 0 gained, 13 lost |
+| `heat` | 35/39 | 38/39 | −7.7 pp | 0 / 3 |
+| `examine` | 26/31 | 28/31 | −6.5 pp | 0 / 2 |
+| `cool`, `puttwo` | 43/46, 40/41 | same | 0 | 1/1, 1/1 |
+
+**And `clean` did not act less — it thrashed.** Thoughts per game **4.4 → 10.8**, steps **15.6 → 23.8**, invalid actions
+**1.1 → 3.3**, `recovered` **5 → 0**; every seen loss ends at step 50 on `Nothing happens.` with up to twenty rejected
+commands. Across the pool `recovered` halved (**269 → 137**), which is the one measurement saying the format clause was
+doing work after all: without it the model composes replies differently, and the change is not local to `put`.
+
+**Verdicts: three of six held, three failed, and one failed in an instructive way.** `put` 56 (band 53–58) held;
+`recovered` 137 against 200–340 failed; `clean`/`heat`/`examine` failed the `|Δ| ≤ 5 pp` row; the pack fields held — and
+the `bank_digest` guard's first live use is in this round's own artefacts (one digest across 274 episodes). The
+registered invalid-actions-per-lost-`put` reading **failed as written** (14.33 against ≤ 6.0) while its second half held
+(>2-invalid games **8 → 3**): the treatment shrank the denominator from nine lost games to three, so the mean is taken
+over the three hardest survivors. **A per-lost-game mean moves with the treatment**, which is R183's denominator lesson
+in its third form.
+
+**The finding is the scope.** A 197-character entry is read by every task, so an entry written for `put` is a treatment
+on all six kinds — and on this corpus the five it was not written for lost more than the one gained. That is the
+sharpest statement this project has of the thing it was asked to quantify: **the negative effect of a memory is not in
+what it says being false, but in its scope being wider than its subject.**
+
+**Spend ¥1.92 against ¥2.40 quoted** ($0.2678, 5,569 calls, off-peak in all eight summaries).
+
+## 224. The board moved twice more, and the new rows name the mechanism this round just measured (18:05 UTC)
+
+Two sources read while this round was running, both 2026, both with numbers the project can be placed against.
+
+**M\* (NeurIPS 2026, arXiv 2604.11811)** writes the memory system as an executable Python program and searches for it per
+task with reflective code evolution: ALFWorld unseen **88.1%** against a best baseline of **73.8%**, GPT-5.4 Mini as the
+task agent and GPT-5.3-Codex as the reflector, search cost **$12–90 per run** and up to **101 hours**. Its ALFWorld memory
+is a SQLite action cache with fixed fields — target object, destination, required state change, action hints and
+**failure modes** — which is the block R185 spent its 197 characters on.
+
+**A 2026 harness report (blog, not peer-reviewed)** gives the board's ceiling and its slope: frontier actor
+(claude-sonnet-5) **95.9%** without memory and **97.3%** with a bank; a local 35B **60.3% → 64.5%**; its own trained 7B
+**85.9%** out of distribution. Its ablation is the sentence this project has now reproduced from the other side: memory
+gains **4.2 pp on the weak actor and 1.4 pp on the frontier one**, and *the category the weak actor fails by looping is
+unmoved to three decimals*.
+
+**One units correction that makes the placement legitimate.** That table is **macro** success (averaged over the six task
+categories) and this lane reports per-game rates. On the 134 unseen games the bank arm reads **96.27% micro and 96.27%
+macro** — identical to two decimals, because its six per-kind rates are 100.0, 100.0, 94.4, 95.7, 87.5 and 100.0 — so the
+row can sit on a macro table without a conversion. The control is the case where it matters: **72.39% micro against
+73.71% macro**.

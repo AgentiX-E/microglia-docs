@@ -392,6 +392,15 @@ cost.** The nine split cleanly — five issue commands the world rejects (3 to 1
 happens.`) and four run out of turns mid-progress — so the residual floor is a **precondition** the model does not hold,
 and that is the entry R185 buys.
 
+**The next entry was written for one kind and read by six, and that is the finding.** R185 replaced the pack's last 197
+characters — the format instruction — with a precondition (open a closed container before taking from it), holding the
+length at 551, the reader, the cap and the label. `put` went **50 to 56 of 59** (+10.2 pp) and `clean` went **58 to 45 of
+58** (−22.4 pp), with `heat` −7.7 and `examine` −6.5 behind it: net **−12 games**. The damaged kind does not act less, it
+**thinks 4.4 → 10.8 thoughts a game and takes eight more turns**, with three times the invalid actions, and every loss
+ends at step 50 on `Nothing happens.` A memory entry is a treatment on every task that reads it, so **the harm in a memory
+is not in what it says being false but in its scope being wider than its subject** — and the repair is not a better
+sentence but a narrower one: two entries tagged to disjoint kinds, one per game, still 551 characters (R186).
+
 **And the level moved where nothing predicted it would.** The post-repair matched pair reads **227/274 (82.85%)**
 against **150/274 (54.74%)**, **+28.10 pp [+22.26, +33.58]**, with **114/134 = 85.07%** on the held-out section — the
 best readings this programme has produced. They are +5 games on the same bank at mde 6.22, and the control drew 81 of

@@ -8487,3 +8487,43 @@ knowledge entry, not a narration one); the other five kinds |Δ| ≤ 5 pp; 551 c
 Refutation: if `put` stays at 50 with invalid actions still above 5, the entry did not reach the decision, and the next
 lever is not a prompt at all — it is `Unknown`-marked instance state, i.e. the competitor's document rather than its
 sentence. Price ≈ ¥2.40, eight jobs.
+
+## R185, read back — the entry is not kind-local, and the scope is the variable
+
+| arm | wins | Wilson | held out | seen | paired vs R183's bank arm | mde |
+| --- | --- | --- | --- | --- | --- | --- |
+| `precond` | **245/274 (89.42%)** | [85.2, 92.5] | 123/134 | 122/140 | **−4.38 pp** (10 gained, 22 lost) | 5.78 pp |
+| `line` | 257 (93.80%) | [90.3, 96.1] | 129/134 | 128/140 | — | — |
+
+`put` **50 → 56 of 59**; `clean` **58 → 45 of 58**; `heat` −7.7 pp; `examine` −6.5 pp; `cool` and `puttwo` unmoved. Net
+**−12 games**. `recovered` **269 → 137** (the format clause was doing work), and `clean` thinks **4.4 → 10.8** thoughts a
+game with three times the invalid actions — it is not under-thinking, it is thrashing on a task the sentence was not
+about. Spend **¥1.92** ($0.2678, 5,569 calls).
+
+**Verdict:** the registered mechanism is real (+10.2 pp on the kind it names) and the registered level failed by 15 games
+because the other five kinds read it too. The round is a **negative transfer measured from both sides**, and it is the
+sharpest evidence this project has for the question it was built around: the harm in a memory is in its **scope**, not in
+its truth.
+
+**Two registration errors are recorded rather than excused.** The invalid-per-lost-`put` reading has a denominator the
+treatment moves (nine lost games became three), and the follow-up cell (*both* tails at 551) is arithmetically impossible
+— 157 + 197 + 197 does not fit in 354 characters. Both are in `AUDIT` 34.267 with the template rules that prevent them.
+
+## R186 (registered) — scope the entry instead of rewriting it: one pack per kind, 551 characters everywhere
+
+The repair is not a better sentence but a narrower one, and the lane owns the mechanism: entries carry `kinds` tags and
+`--gate-kind` selects among them. `banks/bank-putscope-2.json` holds **two 354-character entries tagged to disjoint
+kinds** — R183's sentence, byte for byte, for the five kinds the precondition was not written for, and R185's sentence
+for `put`. Every game carries **one entry and 551 characters**, so this is a scope test and not a length test, and the
+five kinds are held still *by construction* rather than by hope.
+
+**Registered:** `put` 54–58 of 59; `clean` ≥ 57 of 58, `heat` ≥ 37 of 39, `examine` ≥ 27 of 31, `cool` ≥ 42 of 46,
+`puttwo` ≥ 40 of 41; overall 256–266; `recovered` 250–320; 551 characters and one entry in all 274 games, one
+`bank_digest` per section and two `pack_digest` values. **Refutation:** `put` ≤ 53 retires the precondition as a
+prompt-level entry and makes R187 the instance-state document; `clean` ≤ 56 with byte-identical text says the R185 loss
+was variance or a channel effect rather than scope; `recovered` < 250 while `clean` recovers says `recovered` was
+measuring the precondition's brevity all along. **Price ≈ ¥2.10**, four jobs.
+
+**What this buys the product.** A store that tags what each entry is about, and a pack that carries only the entries a
+game's kind claims, is the shape the roadmap called "as wide as the corpus, as narrow as one line" (R174.2). R186 is the
+first round where an entry's *scope* is a measured variable rather than a design intention.

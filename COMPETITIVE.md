@@ -9133,3 +9133,58 @@ is above ReAct's 76.5% at *forty* steps on the same corpus — but the compariso
 board row stays 96.27% at fifty. What the round adds to the board is the budget axis: **the four rows above this project
 all buy their points at small step budgets (6.6–13.4 steps per success) because their instance document does the
 search for them**, and that is the mechanism this lane has now measured itself as not having.
+
+## R185 as a picture, and two 2026 rows that name the mechanism it measured
+
+![R185: per-kind delta, the same reading as transfers, and the deliberation each kind spent](figures/alfworld-r185.png)
+
+**Left: the pool hides the treatment.** +10.2 pp on `put`, −22.4 pp on `clean`, −7.7 on `heat`, −6.5 on `examine`, and a
+net of −4.4 pp on the pool. **Middle: the same reading as transfers** — eight `put` games changed hands for the better,
+thirteen `clean` games for the worse. **Right: who paid** — `clean` does not act less, it thinks **4.4 → 10.8** thoughts a
+game and spends eight more turns doing it, with three times the invalid actions. The entry did not make the model
+under-think; it made it **thrash on tasks it was not about**.
+
+### The 2026 board, and where the two new rows put this project
+
+| # | row | unseen | family | LLM | stack | cost as reported |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | AutoManual + AutoContext | **99.7** | instance context | DeepSeek-V3-0324 | Python | 8.4 steps/success + 177.9/instance |
+| 2 | IGE + AutoContext | 98.8 | instance context | DeepSeek-V3 | Python | 13.4 + 177.9 |
+| 3 | ReAct + AutoContext | 98.0 | instance context | DeepSeek-V3 | Python | 6.6 + 177.9 |
+| 4 | AutoManual | **97.9** | **cross-task memory** | DeepSeek-V3 | Python | 17.4 steps/success |
+| 5 | frontier actor + bank (2026 report) | **97.3** | cross-task memory | claude-sonnet-5 | not stated | not stated |
+| 6 | **microglia, bank, any-line** | **96.27** | **cross-task memory** | deepseek-flash | Python + TypeScript | **15.6 steps/success, $0.82/1k episodes** |
+| 7 | frontier actor, no memory | 95.9 | none | claude-sonnet-5 | not stated | not stated |
+| 8 | IGE | 94.3 | search | DeepSeek-V3 | Python | 60.6 |
+| 9 | ReflAct | 93.3 | backbone | GPT-4o | Python | not reported |
+| 10 | **M\* (NeurIPS 2026)** | **88.1** | cross-task memory | GPT-5.4 Mini + GPT-5.3-Codex | Python + SQLite | $12–90 per search; 101 h |
+| 11 | ASCENT (9B, weight-level) | 88.8 | weight distillation | 9B open model | Python | not reported |
+| 12 | ALMA | 87.1 | cross-task memory | GPT-4o-class | Python | $0.09/run, 1,319 tokens |
+| 13 | **microglia, bank, reference** | **85.82** | cross-task memory | deepseek-flash | Python + TS | 17.3 steps/success |
+| 14 | MemHarness (7B, trained) | 85.9 | cross-task memory | 7B + GRPO | Python | GPU training |
+| 15 | ReAct | 77.5 | backbone | DeepSeek-V3 | Python | 11.4 |
+| 16 | H²R / graph-memory / CoEx / ExpeL | 72.4 / 75.4 / 64.2 / 59.0 | cross-task memory | GPT-4 class | Python | not reported |
+| 17 | **microglia, no pack, any-line** | **72.39** | none (control) | deepseek-flash | Python + TS | 23.4 steps/success |
+
+**Three placements, each with its caveat.**
+
+1. **Within cross-task memory this project is second (96.27 against AutoManual's 97.9) behind one row it has not
+   reproduced**, and above M\*'s 88.1 by 8.2 pp. M\* is the only row on the board whose memory is *searched* rather than
+   designed, and its ALFWorld store carries a field called **failure modes** — which is what R185's 197 characters are.
+2. **The frontier row (95.9 no memory → 97.3 with a bank) says the benchmark saturates around 96–97 for a strong actor
+   plus scaffolding.** A 1.4 pp memory effect at that actor strength is what a *solved* benchmark looks like; this
+   project's +21.90 pp is a weaker actor's gain, and the two numbers are not comparable as method quality.
+3. **The 2026 report's ablation reproduces from the other side**: 4.2 pp for the weak actor, 1.4 for the frontier one, and
+   *"the category the weak actor fails by looping is unmoved to three decimals."* R185 measured the same thing with a
+   sign: `clean` is the kind that fails by looping, and one 197-character entry moved it from 100% to 77.6%.
+
+**One units correction, because the table mixes two.** The 2026 report's ALFWorld numbers are **macro** success over the
+six task categories; this lane reports per-game rates. On the 134 unseen games the bank arm reads **96.27% micro and
+96.27% macro** — the same value to two decimals, from per-kind rates of 100.0, 100.0, 94.4, 95.7, 87.5 and 100.0 — so the
+row is placeable on a macro table without conversion. The control is where the distinction bites: **72.39% micro against
+73.71% macro**.
+
+**What R185 says about the ranking this project is chasing.** A memory that raises the pool while damaging a kind is not a
+SOTA claim, it is a **transfer** — and the only competitor row that reports per-category movement (the 2026 report) shows
+the same asymmetry. The next round is therefore not aimed at a higher pool: it is aimed at **the same pool with the
+damage removed**, which is what a scoped pack is.
