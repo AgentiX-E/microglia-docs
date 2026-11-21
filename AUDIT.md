@@ -14656,3 +14656,36 @@ pairing that silently drops four slices would report a 134-game answer with a 27
 3.6% while their win rates differ by 3.65 pp — a losing arm is billed slightly more, which is the same asymmetry
 34.248 recorded at a much larger size.
 
+## 34.257 — A citation of a run that does not exist is worth a citation of a run that does, and that is WikiTrace's answer
+
+**The arm.** One 62-character clause, `[source: one won pick_and_place_simple game, run 44800000000]`, appended to
+the sentence R178 used, at the same 551 rendered characters. No artefact carries that run id, so the claim is false
+and checkably false; the variant a product would ship — a real run that never carried the entry — is the same arm at
+the model's level, because a frozen model reading a prefix cannot consult either.
+
+| pairing | delta | 95% CI | p | discordant | mde |
+| --- | --- | --- | --- | --- | --- |
+| fabricated − true | **+2.19 pp** | [−1.82, +6.20] | 0.363 | 34 | **5.96 pp** |
+| fabricated − neutral | −1.46 pp | [−5.84, +2.92] | 0.566 | 36 | 6.14 pp |
+| true − neutral | −3.65 pp | [−8.39, +1.09] | 0.151 | 42 | 6.63 pp |
+
+**What the three rows say together, which none of them says alone.** A citation is worth less than a neutral clause
+whether or not its referent exists (−1.46 and −3.65), and the two are indistinguishable from each other (+2.19,
+inside a ±6 pp interval). So the quantity R178 measured is **form and not truth**: a bracketed claim about a run
+costs a little, and the truth value of the claim does not survive the trip into a prompt. `put` — the kind the entry
+names — is identical across the two citations, 16/59 and 16/59.
+
+**Why this closes the mechanism rather than extending it.** WikiTrace's evidence link has two halves: the line, and
+the descent to the run it names. This lane can buy the line and cannot buy the descent — there is nothing in a
+frozen-model prompt to descend *with*. R178 priced the line at −3.65 pp; R179 shows the price does not depend on
+whether the line is true. Anything that could recover WikiTrace's 79.5 → 90.2 therefore has to be inside the descent:
+retrieval of the run, a verifier, or a policy trained to read citations — SkillRL's cold-start SFT, which the R177
+pre-read in `COMPETITIVE.md` names as the structural difference between their harness and this one. That is a
+statement about where the mechanism lives and it is now measured on both sides of the line.
+
+**The instrument note.** The mde fell again, to **5.96 pp**, because this pair is *more* concordant than R178's (34
+discordant games against 42): two arms that differ in a run id disagree less than two arms that differ in a clause's
+kind. The floor is a property of the pair, not a constant of the design, which is the same lesson as 34.256 arriving
+from a third direction — and it means the quoted floor for any future row has to be read off that row's own
+discordance rather than off the last round's.
+

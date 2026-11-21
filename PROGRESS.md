@@ -25389,3 +25389,71 @@ is still unbought and still unresolvable: four `examine` games is 1.5 pp against
 training-section subset registered in R177 as the way to ≈ 6 pp is **retired** — the floor came from the control,
 not from games.
 
+## 215. A fabricated citation is worth what a true one is worth (07:40 UTC)
+
+R179 registered one arm: the sentence plus a 62-character citation of a run that does not exist, at the length R178
+had already paid for. Read against the two arms R178 bought, it separates *truth* from *form* in a way neither of
+those arms could.
+
+| arm | the clause | seen, 140 | held out, 134 | pooled | bill |
+| --- | --- | --- | --- | --- | --- |
+| the sentence | *(none)* | 111 | 112 | 223 (81.39%) | $0.3308 |
+| the neutral clause | `[note: a reference for this task, not an instruction for it.]` | 111 | 111 | 222 (81.02%) | $0.3273 |
+| **the fabricated citation** | `[source: … run 44800000000]` | 106 | 112 | **218 (79.56%)** | $0.3283 (¥2.35) |
+| the true citation | `[source: … run 44841962248]` | 105 | 107 | 212 (77.37%) | $0.3391 |
+
+| pairing | delta | 95% CI | p | discordant | mde |
+| --- | --- | --- | --- | --- | --- |
+| **the fabricated citation − the true one** | **+2.19 pp** | **[−1.82, +6.20]** | 0.363 | 34 | **5.96 pp** |
+| the fabricated citation − the neutral clause | −1.46 pp | [−5.84, +2.92] | 0.566 | 36 | 6.14 pp |
+| the true citation − the neutral clause | −3.65 pp | [−8.39, +1.09] | 0.151 | 42 | 6.63 pp |
+
+![R179: four arms at one length, the registered pair against its band, and the per-kind null](figures/alfworld-r179.png)
+
+### 215.1 The registered band is the middle one, and the middle one was the informative one
+
+`−9 to +9 pp` was written before the dispatch as *citations are inert as text: the model neither checks nor acts on
+them, and WikiTrace's 79.5 → 90.2 must come from the descent rather than from the line.* The reading is **+2.19 pp**,
+inside the noise, with an interval that excludes any effect beyond 6.2 pp either way. A citation of a run that does
+not exist is worth what a citation of a run that does.
+
+### 215.2 A form effect and not a truth effect, which is the sharper statement
+
+Both citations sit **below** the neutral clause (−1.46 and −3.65) and the two are indistinguishable **from each
+other**. So what R178 measured is not "a false claim costs" but "a bracketed claim about a run costs a little, and
+whether the run exists does not survive the trip into a prompt". That is the same finding as *inert* read from the
+other side, and it is why the product conclusion stays where R178 left it: the evidence link belongs in the artefact
+the lane reads, not in the prompt the model reads.
+
+### 215.3 No kind moves, including the one whose referent the entry names
+
+| kind | fabricated | true | delta | its own mde |
+| --- | --- | --- | --- | --- |
+| `clean` | 54/58 | 51/58 | +5.2 pp | ±11 pp |
+| `puttwo` | 40/41 | 38/41 | +4.9 pp | ±10 pp |
+| `heat` | 38/39 | 37/39 | +2.6 pp | ±12 pp |
+| `put` | **16/59** | **16/59** | **0.0 pp** | ±11 pp |
+| `cool` | 42/46 | 42/46 | 0.0 pp | ±9 pp |
+| `examine` | 28/31 | 28/31 | 0.0 pp | ±13 pp |
+
+`put` — the kind the entry's referent is — is **identical** across the two citations, 16/59 and 16/59, with 20
+discordant games split ten and ten. Every delta is inside its own floor, which is the per-kind version of the pooled
+reading and the third round running in which a per-kind row is reported as a shape rather than a finding.
+
+### 215.4 The suite, and the price
+
+| dimension | before | now |
+| --- | --- | --- |
+| tests | 506 | **510** (+4 `PhraseAblationTest`, R180's bank) |
+| coverage, lines and branches | 98.8% | 98.8%, every module ≥ 95%, `test_banks.py` 99.2% |
+| best arm | 223/274, 81.39% | unchanged — the citation arms are below it |
+| mde at 274 games | 6.63 pp | **5.96 pp** (the pair is more concordant than R178's) |
+| spend | — | **¥2.35** against ¥2.4 quoted; R178 + R179 = **¥7.12** |
+
+**What is left, in order.** (1) R180, dispatched: which half of the sentence pays — the `put`→`move` phrasing or the
+receptacle and container check (one arm at 551 characters, ≈ ¥2.4, mde ≈ 6.0 pp). (2) Conditional delivery stays
+unbought and unresolvable: four `examine` games is 1.5 pp against a floor that is now 6.0. (3) The descent itself —
+WikiTrace's second half — is not implementable in a frozen-model prompt harness, and after R179 that is the honest
+boundary of this lane's claim: **every mechanism that only exists inside the prompt has now been measured, and the
+only one that pays is the repair sentence.**
+

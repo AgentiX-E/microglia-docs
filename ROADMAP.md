@@ -8153,7 +8153,7 @@ wrong *referent* (R175) and never a wrong *citation*.
 
 | # | arm | bank | rendered | games | the question | price |
 | --- | --- | --- | --- | --- | --- | --- |
-| **1a** | the sentence + a citation of a run that does not exist | `banks/bank-putmove-ghost-1.json` | **551** | 274 (both sections) | does a claim the model cannot check still move it | ≈ ¥2.4 |
+| **1a** | the sentence + a citation of a run that does not exist | `banks/bank-putmove-ghost-1.json` | **551** | 274 (both sections) | does a claim the model cannot check still move it | **bought and read: 218/274, +2.19 pp against 1b** — ¥2.35 |
 | 1b | *(spent)* the sentence + a citation of a run in which it won | `bank-putmove-source-1.json` | 551 | 274 | R178 1a | ¥2.43 |
 | 1c | *(spent)* the sentence + a neutral clause | `bank-putmove-note-1.json` | 551 | 274 | R178 1b | ¥2.34 |
 
@@ -8171,3 +8171,35 @@ mechanism predicts it, and it would invalidate R178's interpretation rather than
 and 1c; `by_kind` and `by_section` printed beside the pooled delta; and the bank declares
 `source.false_by_construction` with a `FALSE BY CONSTRUCTION` note, because a bank that looks like a typo is a bank
 somebody eventually fixes (34.254).
+
+**Read: the middle band, and it closes the mechanism.** `1a − 1b` is **+2.19 pp [−1.82, +6.20]**, p = 0.363, at an mde
+of **5.96 pp** — *citations are inert as text*. A citation of a run that does not exist is worth what a citation of a
+run that does. With R178's two rows beside it the picture is sharper than the band: both citations sit **below** the
+neutral clause (−1.46 and −3.65) and cannot be told apart, so what the lane measured is a **form** effect and not a
+truth effect — a bracketed claim about a run costs a little, and its truth value does not survive the trip into a
+prompt. `put`, the kind the entry names, is identical across the two citations (16/59 and 16/59).
+
+WikiTrace's link therefore lives entirely in the half this harness cannot buy: **the descent**. R178 priced the line,
+R179 showed the price is independent of whether the line is true, and everything left of their 79.5 → 90.2 is
+retrieval, verification or a policy trained to read citations.
+
+## R180 — Which half of the sentence pays: the phrasing swap, or the receptacle and the container check
+
+The sentence this lane has measured four times states two operations, and the per-kind rows say the second one is the
+plausible carrier (the kinds it helps most end in a container; the kind it cannot help has no placement step). It is
+exactly one arm away.
+
+| # | arm | bank | rendered | games | the question | price |
+| --- | --- | --- | --- | --- | --- | --- |
+| **1a** | the sentence with its second operation ablated | `banks/bank-putmove-phrase-1.json` | **551** | 274 (both sections) | is the +21.90 the phrasing swap or the receptacle knowledge | **dispatched** ≈ ¥2.4 |
+| 1b | *(spent)* the full sentence + a neutral clause | `bank-putmove-note-1.json` | 551 | 274 | R178 1b | ¥2.34 |
+
+**Registered on 274 games (mde ≈ 6.0 pp).** ≤ −9 pp: the receptacle choice and the container check are the mechanism,
+the phrasing swap is not, and the product statement becomes "store the operation the step is blocked on". −9 to
++9 pp: the phrasing swap carries it and operation (2) is decoration. ≥ +9 pp: removing instruction makes the entry
+better — Anti-Persistence's reading arriving through an ablation.
+
+**Void conditions.** `carried` 1.0 in all 274 games; `pack chars` exactly **551** in every game of both arms; the
+ablated arm keeps the first operation byte for byte and contains neither "different valid receptacle" nor "ensure it
+is open"; the filler carries no digit and names no step; `by_kind` printed beside the pooled delta, because the
+prediction is per-kind and a pooled number in the middle band would hide the pattern that matters.

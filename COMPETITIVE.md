@@ -8817,3 +8817,31 @@ rather than effects:
 self-reported 87.1% on 67 games and ExpeL's 59.6% on 134, the axis this lane now leads on is not accuracy but
 **knowing what its own numbers can see**.
 
+## R179 — The citation is inert as text, so WikiTrace's gain is the descent
+
+R178 priced the evidence line at −3.65 pp and the obvious objection was that the clause may be inert text rather than
+a claim being weighed. One arm answers it: the same 62 characters citing a run that does not exist.
+
+| arm | clause | pooled, 274 | bill |
+| --- | --- | --- | --- |
+| neutral | `[note: a reference for this task, not an instruction for it.]` | 222 (81.02%) | $0.3273 |
+| **fabricated citation** | `[source: … run 44800000000]` | **218 (79.56%)** | $0.3283 |
+| true citation | `[source: … run 44841962248]` | 212 (77.37%) | $0.3391 |
+
+| pairing | delta | 95% CI | p | mde |
+| --- | --- | --- | --- | --- |
+| fabricated − true | **+2.19 pp** | [−1.82, +6.20] | 0.363 | **5.96 pp** |
+| fabricated − neutral | −1.46 pp | [−5.84, +2.92] | 0.566 | 6.14 pp |
+| true − neutral | −3.65 pp | [−8.39, +1.09] | 0.151 | 6.63 pp |
+
+**What this does to the comparison with WikiTrace.** Their mechanism is a line *and* a descent; this harness can buy
+the line and has no run to descend to. R178 priced the line, R179 shows the price is the same whether or not the line
+is true, and the kind the entry names is identical across the two citations. So the 79.5 → 90.2 cannot be a property
+of the text, and the remaining explanations are the ones a frozen-model prompt lane cannot test: retrieval of the
+run at use time, a verifier that checks the claim, or a policy trained to read citations — SkillRL's cold-start SFT,
+which is the structural difference between their harness and this one (R177 pre-read above).
+
+**The board's cheapest row, restated.** Three arms at one length, 274 games each, ¥7.12 in total, resolved a mechanism
+the field reports as a ten-point gain and this lane reads as a 3.65-point loss. That is not a contradiction of their
+number; it is the measurement of *where* the number comes from, and no row on the 2026 board reports it.
+

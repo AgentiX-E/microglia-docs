@@ -262,6 +262,23 @@ the point estimate negative in each section separately (−4.29 seen, −2.99 he
 The failure is therefore not delivery — a frozen model responds to a citation and the response is net negative, which
 is the strongest form the negative result could take.
 
+**A citation whose run does not exist is worth a citation whose run does.** The obvious objection to that reading is
+that the clause may be inert text rather than a claim being weighed, and it costs one arm to answer: the same 62
+characters citing a run no artefact carries. It reads **218/274**, against 212 for the true citation and 222 for the
+neutral clause:
+
+| pairing | delta | 95% CI | p | mde |
+| --- | --- | --- | --- | --- |
+| fabricated − true | **+2.19 pp** | [−1.82, +6.20] | 0.363 | 5.96 pp |
+| fabricated − neutral | −1.46 pp | [−5.84, +2.92] | 0.566 | 6.14 pp |
+| true − neutral | −3.65 pp | [−8.39, +1.09] | 0.151 | 6.63 pp |
+
+Both citations sit below the neutral clause and the two cannot be told apart, so the effect is **form and not truth**:
+a bracketed claim about a run costs a little, and whether the run exists does not survive the trip into a prompt. The
+kind the entry names is identical across the two (`put`, 16/59 and 16/59). WikiTrace's link therefore lives entirely in
+the half this harness cannot buy — **the descent** — which is a statement about where their mechanism is rather than
+about how strong it is.
+
 **The floor moved, and it moved for ¥2.4 rather than ¥10–50.** Pairing two *treatments* instead of a treatment and a
 control halved the discordant game count (90 → 42) and took the minimum detectable effect from **9.70 pp to 6.63 pp at
 the same 274 games**. The reason is the one this programme has documented since its first paired reading: the control
