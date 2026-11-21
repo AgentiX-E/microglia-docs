@@ -25589,8 +25589,8 @@ episodes, and the anchor bank byte-identical to R178 1b's under `sha256 95f8c634
 
 | arm | seen, 140 | held out, 134 | pooled, 274 | bill |
 | --- | --- | --- | --- | --- |
-| `always-in` @ the anchor | 113 | **114** | **227 (82.85%)** | ¥4.35 |
-| `none` | 69 | 81 | 150 (54.74%) | ¥3.85 |
+| `always-in` @ the anchor | 113 | **114** | **227 (82.85%)** | ¥2.24 |
+| `none` | 69 | 81 | 150 (54.74%) | ¥3.62 |
 
 **227/274 is the best 274-game number this lane has ever read** (previous best 223) and **114/134 = 85.07% is its best
 held-out reading** (previous best 112). It is +5 games on the same bank and +1.82 pp, which is inside the null band at
@@ -25639,13 +25639,16 @@ R173 survives the repair intact: **an entry pays where its referent is the faili
 repair changed is the absolute level: the control's `put` reads 6.8%, so 46 of the corpus's 59 `put` games are lost by
 a frozen model before any memory is involved.
 
+**The control is the dearer arm**, $0.5061 against $0.3139 — a lost game bills all fifty turns, so being wrong is
+what makes calls, the same law the gated arm taught at 34% more spend for a shorter prompt.
+
 | item | state |
 | --- | --- |
 | tests | 529 (+5 for R182's arm) |
 | coverage | 98.9% lines and branches, every module ≥ 95% |
 | new high | 227/274 pooled, 114/134 held out |
 | R182 registered | the dead operation's 197-character slot, filled with the format operation, same 551 |
-| spend this round | **¥8.20** against ¥4.70 quoted (a two-arm sweep runs eight shards, not four) |
+| spend this round | **¥5.86** against ¥4.70 quoted (eight shards a section, not four; the join's bill line includes R178's ¥2.34 for the pre-repair anchor) |
 | commit | `c5c19bd` → `c97c891` |
 
 **What is left, in order.** (1) R182, dispatched: the format operation in the dead slot — the prediction is

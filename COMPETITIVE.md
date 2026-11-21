@@ -8920,7 +8920,7 @@ because publishing one is cheap and nobody else does.
 
 The defect R180 found was repaired in one string and registered with a mechanism: the model believed a dropped `put`
 had executed, so answering it with `Nothing happens.` should recover `put`. The round bought its own control for the
-last time — `none` and the anchor bank, 274 games each, ¥8.20.
+last time — `none` and the anchor bank, 274 games each, ¥5.86.
 
 | reading | delta | 95% CI | p | mde |
 | --- | --- | --- | --- | --- |
