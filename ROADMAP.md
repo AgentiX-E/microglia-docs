@@ -8096,34 +8096,39 @@ score from 79.5 to 90.2. This lane has already shown the *content* half of that 
 entry); what it has never tested is the *provenance* half — whether an entry that says where it came from is
 worth more than the same entry without it.
 
-The bank is one sentence of 489 characters. The arm appends **one line** to it:
+The bank is one sentence of 489 characters. Appending a source clause makes the pack **62 characters longer**
+(489 → 551, 12.7%) — and this lane has already measured that length is not free (−3.4 to −3.7 pp per sentence in
+a padded block, −1.79 pp/sentence at n = 6). So the round buys **two arms of exactly equal rendered length**,
+differing in one clause:
 
-```
-[source: run 44841962248, game pick_and_place_simple-…, won]
-```
+| arm | bank | rendered | the clause |
+| --- | --- | --- | --- |
+| **1a** | `banks/bank-putmove-source-1.json` | **551** | `[source: one won pick_and_place_simple game, run 44841962248]` |
+| **1b** | `banks/bank-putmove-note-1.json` | **551** | `[note: a reference for this task, not an instruction for it.]` |
 
-That is **≈ 45 characters, 9.2% of the pack**, and it changes nothing about what the sentence says. It changes
-what the model can do with it: treat it as a claim with a provenance rather than as an instruction, which is the
-mechanism WikiTrace attributes its 10.7 points to.
+1b is a **length control**, not a placebo: it says something true and neutral about the entry's status, so the
+difference between the arms is provenance and nothing else — not length, not position, not register.
 
 | # | experiment | the question | state | price |
 | --- | --- | --- | --- | --- |
-| **1** | the sentence + its source line (≈ 534 ch) on **both sections**, 274 games | does an entry that names its evidence beat the same entry without it | **registered, dispatch next** | ≈ ¥4.4 |
+| **1a** | the sentence + its source clause, 551 ch, on **both sections**, 274 games | does an entry that names its evidence beat the same entry with a neutral clause | **registered, dispatch next** | ≈ ¥2.4 |
+| **1b** | the sentence + a neutral clause of the same 551 ch | the control 1a is read against | **registered, dispatch next** | ≈ ¥2.4 |
 | 2 | conditional delivery: `examine` receives nothing | the one kind the sentence costs (31/31 against 27/31) — is a memory that knows when to be absent worth more than one that is always present | **registered, not buyable at this design**: 4 games of 274 is 1.5 pp against an mde of 9.7 | ≈ ¥3.1 |
 | 3 | a training-section subset for a ≈ 6 pp mde | resolves the 3–6 pp band the lane still holds | **registered**, hand-written banks only | ≈ ¥10–50 |
 | 4 | ~~mode selection by task kind~~ | Anti-Persistence's mode choice, keyed on the label this lane already has | **refused by measurement**: R175 bought it, −23.13 pp | unspent |
 
-**Why row 1 is read against the sentence arm and not against a control.** Two treatments are the comparison this
-lane trusts (AUDIT 34.232): the control moves eight to eleven wins between dispatches, the treatments repeat. The
-arm therefore needs **one** arm over 274 games, not two arms and a control, and the comparison is
-`sentence+source − sentence` on the same 274 games with the same model and the same harness.
+**Why the rows are read against each other and not against a control.** Two treatments are the comparison this
+lane trusts (AUDIT 34.232): the control moves eight to eleven wins between dispatches, the treatments repeat. So
+each dispatch buys **one** arm over one section, four shards, and the reading pairs the two arms game for game on
+274 games with the same model and the same harness. `alf_dispatch.py --against` is what makes that legal: a sweep
+with a treatment and no control is refused unless it names the arm it is half of.
 
 **The registered reading, before it is bought.** The mechanism predicts a gain, not a tie: if provenance is what
-WikiTrace says it is, +9 pp or more on 274 games. Three outcomes are registered — ≥ +9 pp (the provenance half is
+WikiTrace says it is, **1a − 1b** is +9 pp or more on 274 games (mde 9.70). Three outcomes are registered — ≥ +9 pp (the provenance half is
 real and the product statement becomes "store the repair and its evidence"), −9 to +9 pp (provenance is not the
 mechanism on this corpus, and the lane's law stays referent-only), ≤ −9 pp (naming a source makes the model
 discount the entry, which would be a finding about how a frozen model reads citations).
 
-**Void conditions.** `carried` 1.0 in all 274 games and `pack chars` 534 ± 2 in every one of them; the arm's
+**Void conditions.** `carried` 1.0 in all 274 games and `pack chars` exactly **551** in every game of both arms; the arm's
 `by_kind` and `by_section` readings must be printed beside the pooled delta, because a provenance line that helps
 `put` and hurts `examine` would be the same trade the last three rounds have found.
