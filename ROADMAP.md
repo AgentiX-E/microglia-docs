@@ -8111,8 +8111,8 @@ difference between the arms is provenance and nothing else — not length, not p
 
 | # | experiment | the question | state | price |
 | --- | --- | --- | --- | --- |
-| **1a** | the sentence + its source clause, 551 ch, on **both sections**, 274 games | does an entry that names its evidence beat the same entry with a neutral clause | **registered, dispatch next** | ≈ ¥2.4 |
-| **1b** | the sentence + a neutral clause of the same 551 ch | the control 1a is read against | **registered, dispatch next** | ≈ ¥2.4 |
+| **1a** | the sentence + its source clause, 551 ch, on **both sections**, 274 games | does an entry that names its evidence beat the same entry with a neutral clause | **bought and read: 212/274, −3.65 pp against 1b** | ¥2.43 |
+| **1b** | the sentence + a neutral clause of the same 551 ch | the control 1a is read against | **bought and read: 222/274, and the length is free** | ¥2.34 |
 | 2 | conditional delivery: `examine` receives nothing | the one kind the sentence costs (31/31 against 27/31) — is a memory that knows when to be absent worth more than one that is always present | **registered, not buyable at this design**: 4 games of 274 is 1.5 pp against an mde of 9.7 | ≈ ¥3.1 |
 | 3 | a training-section subset for a ≈ 6 pp mde | resolves the 3–6 pp band the lane still holds | **registered**, hand-written banks only | ≈ ¥10–50 |
 | 4 | ~~mode selection by task kind~~ | Anti-Persistence's mode choice, keyed on the label this lane already has | **refused by measurement**: R175 bought it, −23.13 pp | unspent |
@@ -8132,3 +8132,42 @@ discount the entry, which would be a finding about how a frozen model reads cita
 **Void conditions.** `carried` 1.0 in all 274 games and `pack chars` exactly **551** in every game of both arms; the arm's
 `by_kind` and `by_section` readings must be printed beside the pooled delta, because a provenance line that helps
 `put` and hurts `examine` would be the same trade the last three rounds have found.
+
+**Read: the second band, and the length half came back free.** `1a − 1b` is **−3.65 pp [−8.39, +1.09]**, p = 0.151, on
+274 games at an mde of **6.63 pp** — the registered band for *provenance does not transfer on this corpus*. The sign
+is the same in each section alone (−4.29 seen, −2.99 held out), and the clause is demonstrably **read**: 55.5% of
+games changed their action trajectory under it, 26 hurt against 16 helped. What the round also bought, and did not
+predict, is the **length null**: +62 characters inside one entry cost −0.36 pp [−4.74, +4.01], which retires the
+per-character reading of this lane's tax — it is per entry.
+
+**And the floor moved by a third for one arm's price.** The mde fell from 9.70 pp to **6.63 pp** on the same 274
+games because the pair is two *treatments*: discordance 90 → 42. The training-section subset registered above at
+**¥10–50** to reach ≈ 6 pp is **retired** — resolution is a property of the control, not of the sample size.
+
+## R179 — What a citation that cannot be checked is worth, at the same 551 characters
+
+R178 leaves one question that its own two arms cannot answer. A citation that names a true run is read and costs
+3.65 pp; **is a citation a claim the model evaluates, or text it merely reacts to?** WikiTrace's other half is the
+failure mode — 20% of memory-induced failures trace to entries that are simply wrong — and this lane has tested a
+wrong *referent* (R175) and never a wrong *citation*.
+
+| # | arm | bank | rendered | games | the question | price |
+| --- | --- | --- | --- | --- | --- | --- |
+| **1a** | the sentence + a citation of a run that does not exist | `banks/bank-putmove-ghost-1.json` | **551** | 274 (both sections) | does a claim the model cannot check still move it | ≈ ¥2.4 |
+| 1b | *(spent)* the sentence + a citation of a run in which it won | `bank-putmove-source-1.json` | 551 | 274 | R178 1a | ¥2.43 |
+| 1c | *(spent)* the sentence + a neutral clause | `bank-putmove-note-1.json` | 551 | 274 | R178 1b | ¥2.34 |
+
+The clause is `[source: one won pick_and_place_simple game, run 44800000000]` — same 62 characters, same position, and
+an eleven-digit run id no artefact carries. The variant a product would ship, *a real run that never carried this
+entry*, is the same arm at the model's level: a frozen model reading a prefix cannot tell them apart, so one arm
+covers both.
+
+**Registered on 274 games (mde ≈ 6.6 pp).** ≤ −9 pp: a false citation is read *and penalised*, which makes a pack's
+text falsifiable for the first time in this lane. −9 to +9 pp: **citations are inert as text**, and WikiTrace's
+79.5 → 90.2 must come from the *descent* — their agent can open the run — rather than from the line. ≥ +9 pp: no
+mechanism predicts it, and it would invalidate R178's interpretation rather than extend it.
+
+**Void conditions.** `carried` 1.0 in all 274 games; `pack chars` exactly **551** in every game; read only against 1b
+and 1c; `by_kind` and `by_section` printed beside the pooled delta; and the bank declares
+`source.false_by_construction` with a `FALSE BY CONSTRUCTION` note, because a bank that looks like a typo is a bank
+somebody eventually fixes (34.254).

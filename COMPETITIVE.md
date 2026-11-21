@@ -8748,7 +8748,7 @@ about forty characters rather than a second arm:
 
 | mechanism | what it costs in this lane | what it would have to beat | verdict |
 | --- | --- | --- | --- |
-| **evidence-linked entry** (WikiTrace) | `source: run …, game …, won` appended to the pack: ≈ +45 characters on 489 | the 489-character arm, which is the best in the lane | **registered, not bought**: the predicted effect is inside the mde at 274 games |
+| **evidence-linked entry** (WikiTrace) | `source: run …, game …, won` appended to the pack: **+62 characters on 489**, measured | the 489-character arm, which is the best in the lane | **bought, R178: −3.65 pp [−8.39, +1.09]** — the predicted "inside the mde" was right, and the sign is negative |
 | mode selection by outcome history (Anti-Persistence) | a per-kind win tally in the runner, and a rule that picks none/imitating/corrective | R175 already measured the *task-kind* version of this: −23.13 pp | **refused**: the signal it selects on is the task label, and the label is not the referent |
 | discard-after-use (Anti-Persistence's winning arm) | deliver the sentence **after** the first refusal instead of at the first call | +7 games at best, which is the easy stratum's 84/91 against 91/91 | **registered** (ROADMAP R177 row 3), needs 274 games to resolve |
 | skill hierarchy (SkillRL) | two tiers, general + per-kind | measured and inverted: the per-kind tier is the harm | **refused by measurement**, and it is a publishable negative: a hierarchy is only worth its 13 points to a policy trained to read it |
@@ -8773,3 +8773,47 @@ same sign in two dispatches on two sections. It is the only kind with no placeme
 `put`→`move` repair. Against the field's framing this is the useful half: a memory entry is not validated by being
 correct (WikiTrace's 20% of wrong entries) but by **having the failing step as its referent**, and this lane can
 now point at the kind where the referent is missing and show the sign flip in two independent sections.
+
+## R178 — WikiTrace's evidence link does not reproduce as text, and the length it costs is free
+
+WikiTrace's mechanism has two halves: every lesson carries the run it came from, and the agent may **descend** to
+that run. This lane can buy the first half for 62 characters and cannot buy the second — a frozen model reading a
+prompt has nothing to descend to. R178 bought the first half at exact length parity, with a control clause that says
+something true and neutral in the same number of characters:
+
+| arm | pack | won / 274 | vs the sentence |
+| --- | --- | --- | --- |
+| the sentence | 489 ch | 223 (81.39%) | — |
+| + a neutral clause of 62 characters | **551 ch** | 222 (81.02%) | **−0.36 pp [−4.74, +4.01]**, p = 0.92 |
+| + a citation of a run in which it won | **551 ch** | 212 (77.37%) | **−4.01 pp [−9.12, +0.73]**, p = 0.13 |
+| **citation − neutral clause** | — | −10 games | **−3.65 pp [−8.39, +1.09]**, p = 0.15, mde 6.63 pp |
+
+**What that says about their result and about this one.** A 9–11 point gain from linking lessons to runs, on a suite
+whose average is 79.5 without links, is not a gain a prompt suffix produces in this harness: the same suffix is worth
+−3.65 pp here, and it is **read** — 55.5% of games changed trajectory under it, 26 hurt against 16 helped. The
+honest reading is the one that costs this lane nothing and credits theirs: **the link pays where the agent can follow
+it**, and where it cannot, a citation is a claim about a run the model has no way to consult, which is at best inert
+and at worst a reason to discount the entry. Their 52%-of-failures / 20%-of-entries-wrong decomposition is the half
+this lane has *not* tested as text, and it is R179's single arm.
+
+**What this lane can still claim that no row on this board reports.** Four things, and all four are instruments
+rather than effects:
+
+1. **A length-matched clause experiment.** The 62 characters are paid by both arms, so the difference is the clause
+   and not the prefix — and the length half came back as a **null** (−0.36 pp), which is what retires this lane's own
+   per-character reading of its tax: the cost is per entry (34.255).
+2. **A per-kind decomposition with each kind's floor printed beside it.** `put` carries 19 of the 42 discordant
+   pairs and its own mde is 20.8 pp, so the kind where the referent lives is the kind that cannot be claimed alone.
+3. **Two corpus sections in the same reading**, which is what makes 81.39% a 274-game number rather than a split's
+   number (R177).
+4. **A floor that fell by a third for one arm's price.** Pairing two treatments instead of a treatment and a control
+   took the mde from 9.70 pp to **6.63 pp** at the same 274 games and ¥2.4 instead of the ¥10–50 a training-section
+   subset was quoted at (34.256). Nothing on the 2026 board reports its own minimum detectable effect at all, which
+   is why their 3–5 point gaps and this lane's 3–6 point hypotheses are not comparable quantities.
+
+**Where this puts the position table.** Unchanged as a headline — the best arm is still the 489-character sentence at
+**81.39% on 274 games, $0.0016 per win** — and one row is added rather than moved: the evidence-linked entry at
+77.37%, which is the first measured *cost* of a mechanism the field reports as a 10-point gain. Against ALMA's
+self-reported 87.1% on 67 games and ExpeL's 59.6% on 134, the axis this lane now leads on is not accuracy but
+**knowing what its own numbers can see**.
+

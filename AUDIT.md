@@ -14573,3 +14573,86 @@ $0.2574 for 140 games at 53.57% against $0.1801 for the same 140 at 79.29%, beca
 all fifty steps of every game it loses (34.248). The instrument itself was unchanged this round — the section
 plumbing from 34.251 was used exactly as written, including the graded join, and the `by section` lines are what
 makes the composition finding visible at all.
+
+## 34.254 — The bank said the clause named the run the entry came from, and it named the run the entry won in
+
+**The defect.** R178's treatment arm appends 62 characters to the winning sentence. The sentence is entry 4 of
+`banks/bank-44754440122.json`, distilled from run **44754440122**. The clause cites run **44841962248**, which is the
+R174.1 held-out dispatch — the run in which *this entry* won 10 of its 24 `pick_and_place_simple` games. The bank's
+`source.kind` read *"the winning sentence plus the run it came from"*. Both facts are true and they are not the same
+fact.
+
+**Why it is a defect and not a wording preference.** The whole round is about provenance, and the bank's own
+provenance was the one place in the tree where a reader could be misled without any number moving. A citation of the
+run the entry *came from* and a citation of a run it *won in* are different mechanisms — one points at the evidence,
+the other at a validation — and WikiTrace's claim is about the first. Left as written, the document could have
+quoted the reading as "an entry that carries its source" and been wrong about which source.
+
+**What changed, and what did not.** `source.cited_run` and `source.distilled_from_run` are now both in the file, the
+`kind` says *won*, the `note` names 44754440122 and says why the clause does not. Nothing in the prompt changed, so
+nothing in the reading changed. Two tests hold the file: `test_the_citation_is_the_run_the_metadata_names` fails if
+the clause and `cited_run` disagree or if the two run ids collapse into one, and
+`test_the_treatment_names_a_run_and_the_control_names_no_number` fails if the length control gains a digit — a
+"neutral" clause containing a number is a clause a reader can mistake for evidence.
+
+**The general form.** A bank's `source` block was documentation when banks were pools of advice. It is now data about
+claims the prompt makes, and the two fields that matter (`cited_run`, `false_by_construction`) are read by tests
+rather than by `distill.validate_bank`, which must stay ignorant of them: a validator that refused an unfamiliar key
+would make every new provenance field a code change, and the file-level claims of this lane have always been checked
+in `test_banks.py`.
+
+## 34.255 — A clause of 62 characters moves 55% of trajectories and 3.65 points of outcome, and the length it adds is free
+
+**The reading.** Two arms of exactly 551 rendered characters, differing in one clause, on both sections:
+
+| pairing | delta | 95% CI | p | discordant | mde |
+| --- | --- | --- | --- | --- | --- |
+| a neutral clause − the sentence | −0.36 pp | [−4.74, +4.01] | 0.920 | 37 | 6.22 pp |
+| the citation − the sentence | −4.01 pp | [−9.12, +0.73] | 0.127 | 47 | 7.01 pp |
+| **the citation − the neutral clause** | **−3.65 pp** | **[−8.39, +1.09]** | 0.151 | 42 | **6.63 pp** |
+
+**The length half is a null that retires a reading.** R174.2 established a per-entry tax (−3.4 to −3.7 pp per
+sentence in a padded block) and this lane has since quoted its prices as if the tax were per character. It is not:
++62 characters inside one entry is 12.7% more prefix and **−0.36 pp**, with an interval that excludes any loss worse
+than 4.7. The padding arms paid because they added **entries**. That distinction is what makes a citation affordable
+at all — the clause is free and the citation is what costs — and it is why a length control for a clause experiment
+must be a clause rather than a block.
+
+**The citation half is negative, and it is not a delivery failure.** Engagement was **152/274 = 55.5%**: a
+62-character suffix changed the action trajectory in more than half the corpus, hurting 26 games and helping 16. A
+frozen model therefore does respond to a citation, and the response is net negative — which is the strongest form
+this negative could take. A null attributable to the pack never arriving would have been uninterpretable; this one is
+not.
+
+**Where it sits, with its own floors.** On the games the neutral arm wins: **196/222 against 222/222** (−11.71 pp).
+On the 52 it loses, the citation arm wins 16. `put` carries 19 of the 42 discordant pairs, net −5 games on 59, and
+`put`'s own mde is **20.8 pp** — so the kind where the entry's referent lives is reported as a shape rather than a
+finding. This is the third round in which a per-kind row would have been quotable and was not, and the reason is
+arithmetic rather than caution.
+
+## 34.256 — The floor is a property of the control, and this round halved it for one arm's price
+
+**The measurement.** Two designs on the same 274 games:
+
+| design | discordant games | mde |
+| --- | --- | --- |
+| treatment against the `none` arm of its own dispatch (R177) | 90 | 9.70 pp |
+| treatment against another treatment (R178) | **42** | **6.63 pp** |
+
+**Why this is the round's transferable result.** The lane had one lever for resolution: more games. R177 registered a
+training-section subset at **¥10–50** for ≈ 6 pp. R178 reached 6.63 pp for **¥2.4**, because the quantity in the mde
+is the *discordance* and a control contributes most of it. The `none` arm has read 80, 81, 88, 89, 90 and 91 wins on
+the same 134 games across six dispatches — eleven wins of swing on identical inputs — while treatments repeat. A
+delta against it is a band; a delta between two treatments is a comparison.
+
+**The three consequences, in the order they bind.** (1) Every future row whose question is "which of two packs" should
+be bought as one arm against an existing arm, not as two arms against two controls: it is half the price and a third
+smaller floor. (2) The training-section row is retired, and with it the assumption that this lane's next problem is
+sample size. (3) `aggregate.py --relabel` is now load-bearing rather than convenient: the pairing needs one rename per
+slice keyed on the full path, because `arm-always-in-0.json` exists in every run directory the workspace holds, and a
+pairing that silently drops four slices would report a 134-game answer with a 274-game label.
+
+**The cost of the evidence.** $0.6664 (¥4.77) for 13,512 calls against ¥4.8 quoted, and the two arms' bills differ by
+3.6% while their win rates differ by 3.65 pp — a losing arm is billed slightly more, which is the same asymmetry
+34.248 recorded at a much larger size.
+

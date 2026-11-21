@@ -25311,3 +25311,81 @@ is tens of characters: one arm on both sections, ≈ ¥4.4, read against the sen
 control, because two treatments are the comparison this lane trusts. (2) A training-section subset would take the
 mde to ≈ 6 pp for hand-written banks only, at ≈ ¥10–50. (3) The conditional-delivery row stays registered and
 unbought until either of those raises the resolution.
+
+## 214. The citation is read and does not pay, and the length it costs is free (06:30 UTC)
+
+R178 was registered as two arms of exactly equal rendered length differing in one 62-character clause: the winning
+sentence plus `[source: one won pick_and_place_simple game, run 44841962248]`, against the same sentence plus
+`[note: a reference for this task, not an instruction for it.]`. Both render **551** characters. Two dispatches per
+section, one arm each, no control in either — the reading is the pair, because a control bought in a third dispatch
+is a band (34.232).
+
+| arm | bank | rendered | seen, 140 | held out, 134 | pooled | bill |
+| --- | --- | --- | --- | --- | --- | --- |
+| the sentence | `bank-putmove-1.json` | 489 | 111 | 112 | 223 (81.39%) | $0.3308 (¥2.37) |
+| **1b** the neutral clause | `bank-putmove-note-1.json` | **551** | 111 | 111 | 222 (81.02%) | $0.3273 (¥2.34) |
+| **1a** the citation | `bank-putmove-source-1.json` | **551** | 105 | 107 | 212 (77.37%) | $0.3391 (¥2.43) |
+
+| pairing | delta | 95% CI | p | discordant | mde |
+| --- | --- | --- | --- | --- | --- |
+| 1b − the sentence (length) | −0.36 pp | [−4.74, +4.01] | 0.920 | 37 | 6.22 pp |
+| 1a − the sentence (length + citation) | −4.01 pp | [−9.12, +0.73] | 0.127 | 47 | 7.01 pp |
+| **1a − 1b (citation alone)** | **−3.65 pp** | **[−8.39, +1.09]** | 0.151 | 42 | **6.63 pp** |
+
+![R178: the length half is free and the citation half is not; the floor the matched arm bought; and the per-kind split](figures/alfworld-r178.png)
+
+### 214.1 The registered reading landed in the second band, which is the band that ends a mechanism
+
+`−9 to +9 pp` was written before the dispatch as *provenance does not transfer on this corpus, and the lane's law
+stays referent-only*. The reading is **−3.65 pp**: an entry that names a run in which it won is worth less than the
+same entry with a neutral clause, and the sign is the same in each section read alone (−4.29 seen, −2.99 held out).
+WikiTrace's 79.5 → 90.2 does not reproduce as text in a frozen model's prompt.
+
+### 214.2 The length half is free, and that retires a reading three rounds old
+
++62 characters inside one entry, a 12.7% longer prefix, cost **−0.36 pp [−4.74, +4.01]**. R174.2 measured the tax
+per *entry* (−3.4 to −3.7 pp per sentence in a padded block) and this lane has quoted every subsequent purchase as
+if the tax were per character. It is not, and the difference is what makes a citation affordable at all: the clause
+is free, the citation is what costs. It also explains why 1b is the correct control and a padding block is not — the
+padding arms paid because they added entries, which is a different quantity wearing the same name.
+
+### 214.3 The clause is read, so this is not a delivery failure
+
+**152/274 = 55.5%** of games changed their action trajectory under a 62-character suffix, and the suffix hurt 26 of
+those against 16 helped. A null that cannot be attributed to the pack never arriving is a much stronger result than
+the band's wording asks for: a frozen model does respond to a citation, and the response is net negative. The strata
+say where: **196/222 against 222/222** on the games the control wins (−11.71 pp), while on the 52 the control loses
+the citation arm wins 16. `put` carries 19 of the 42 discordant pairs (net −5 games on 59) and that kind's own mde is
+**20.8 pp**, so it is reported as a shape: the entry's referent is `put`, and `put` is where the citation costs most,
+but 59 games cannot carry the claim.
+
+### 214.4 The bank's own metadata was wrong, and the arm was not
+
+The sentence is entry 4 of `banks/bank-44754440122.json`, distilled from run **44754440122**. The clause cites run
+**44841962248** — the dispatch in which the entry won 10 of 24 `pick_and_place_simple` games, which is its `votes`.
+Both statements are true and they are not the same statement; the file said "the run it came from", which was false.
+The file now carries `cited_run` and `distilled_from_run`, the `kind` says *won*, and two tests hold it:
+`test_the_citation_is_the_run_the_metadata_names` and `test_the_treatment_names_a_run_and_the_control_names_no_number`
+(a control with a digit in it can be read as evidence). Nothing about the reading changed; what changed is that a
+document can no longer quote the bank's metadata and be wrong (34.254).
+
+### 214.5 The floor fell by a third for the price of one arm, and the suite
+
+| dimension | before | now |
+| --- | --- | --- |
+| tests | 499 | **506** (+5 `ProvenancePairTest`, +2 `GhostCitationTest`) |
+| coverage, lines and branches | 98.8% | **98.8%**, every module ≥ 95%, `test_banks.py` 99.2% |
+| mde on 274 games, treatment against a control | 9.70 pp | 9.70 pp |
+| **mde on 274 games, treatment against a treatment** | — | **6.63 pp** |
+| spend | — | **¥4.77** against ¥4.8 quoted |
+
+Every new guard was mutation-checked before it was trusted: a control one character longer, a control carrying a
+digit, a citation drifting from `cited_run`, a ghost clause of the wrong length, and a `false_by_construction` that
+stops being `True` each turn their test red and nothing else does.
+
+**What is left, in order.** (1) The wrong citation — R179, one arm at 551 characters citing a run that does not
+exist (≈ ¥2.4), which decides whether a citation is *read and evaluated* or *inert text*. (2) Conditional delivery
+is still unbought and still unresolvable: four `examine` games is 1.5 pp against the new floor of 6.63. (3) The
+training-section subset registered in R177 as the way to ≈ 6 pp is **retired** — the floor came from the control,
+not from games.
+

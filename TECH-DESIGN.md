@@ -11088,14 +11088,42 @@ carried by data rather than by intent: distill.py's `episodes` field says a bank
 distilled bank whose provenance is missing is refused rather than trusted, because "cannot prove" is not "did
 not".
 
-**What it costs to hold.** 488 tests, 98.8% of lines and branches, every module at or above the 95% floor, and
+**What it costs to hold.** 506 tests, 98.8% of lines and branches, every module at or above the 95% floor, and
 five structural rules in `test_cli.py` that read the YAML rather than the code — including one that compares the
 dispatcher's payload keys against the declared workflow inputs from two command lines between them naming every
 input. That rule exists because `--control-run` once bought a treatment with no control while the command line
 said otherwise.
 
-**Registered, not built.** The evidence-linked entry (WikiTrace): every packed entry carries the run and game it
-came from, about 45 characters on a 489-character pack, so the agent can treat a lesson as a claim with a source
-rather than as an instruction. It is not bought because its predicted effect sits inside the mde at 274 games;
-it is recorded here because it is the only mechanism on the 2026 board whose cost in this lane is tens of
-characters rather than a second arm.
+## 17.179 — `banks/`: a citation is data about a claim, so it gets fields and an equality guard
+
+The evidence-linked entry (WikiTrace) was registered in 17.178 as not buyable at this design's resolution. R178
+bought it anyway, because the resolution was bought first: pairing two treatments took the mde from 9.70 pp to
+6.63 pp for one arm's price (34.256). What it cost the tree is two fields and two test classes.
+
+**The arm is two banks that differ by one clause.** `bank-putmove-source-1.json` and `bank-putmove-note-1.json` both
+render **551** characters: the same 292-character sentence with 62 characters appended, one of them
+`[source: one won pick_and_place_simple game, run 44841962248]` and the other a true, neutral note containing no
+digit. A *length control* rather than a placebo: it says something true about the entry's status, so a difference
+between the arms is the clause and nothing else.
+
+**Two fields, because a citation can be about two different runs.** `source.cited_run` is the run the clause names;
+`source.distilled_from_run` is the run the entry was distilled from. In R178 they are different runs — the sentence
+came from 44754440122 and the clause cites 44841962248, where the entry won 10 of 24 `pick_and_place_simple` games —
+and the bank's `kind` said "the run it came from", which was false (34.254). `source.false_by_construction` marks
+R179's arm, whose citation names a run that does not exist and must not be "fixed".
+
+**The guards live in `test_banks.py`, not in `validate_bank`.**
+
+| class | holds | fails when |
+| --- | --- | --- |
+| `ProvenancePairTest` | both arms carry the sentence byte for byte, the clauses are **exactly** equal in length and in position, the control carries no digit, the clause's run id is `cited_run` | a control one character longer, a digit in the control, a citation that drifts from the field |
+| `GhostCitationTest` | R179's arm is 551 characters, differs from the true citation only in the eleven-digit run id, and declares itself false | a ghost of a different length, a ghost that silently cites the real run, a flag that stops being `True` |
+
+**Why equality and not the 5% tolerance.** Every earlier length claim in this lane compared *different artefacts* —
+a trace against a sentence, a compressed pair against a verbose one — where 5% of 489 is 24 characters and the claim
+is "about the same length". R178's claim is one clause, where 5% is 27 characters and the clause is 62. A pair held
+to a tolerance can only be read as "length plus something"; a pair held to equality can be read as "the clause".
+
+**What the round read.** `1a − 1b = −3.65 pp [−8.39, +1.09]`, p = 0.151, with 55.5% of trajectories changed and 26
+games hurt against 16 helped: the clause is read and does not pay. The length half was a **null** (−0.36 pp
+[−4.74, +4.01]) that retires this lane's per-character reading of its own tax — the cost is per entry (34.255).

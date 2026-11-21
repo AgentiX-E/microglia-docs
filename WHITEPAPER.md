@@ -241,11 +241,41 @@ sentence — which is also why the reading is graded by section rather than pool
 names a `put`→`move` repair. Three independent designs now say one thing: **an entry pays where its referent is
 the failing step, costs its length everywhere else, and costs more than its length where it cannot be that step.**
 
+**The provenance half of the field's finding does not transfer, and the length half is free.** `WikiTrace`
+(Nov 2026) reports that linking each lesson to the run it came from lifts an average score from 79.5 to 90.2, and that
+52% of memory-induced failures trace to one entry. The link costs 62 characters here, so the round bought **two arms of
+exactly equal rendered length** — the same 292-character sentence, one appended 62-character clause — and read them
+against each other and against the sentence they extend:
+
+| arm | pack | won / 274 | vs the sentence |
+|---|---|---|---|
+| the sentence | 489 ch | 223 (81.39%) | — |
+| + a neutral clause of 62 characters | **551 ch** | 222 (81.02%) | **−0.36 pp [−4.74, +4.01]**, p = 0.92 |
+| + a citation of a run in which it won | **551 ch** | 212 (77.37%) | **−4.01 pp [−9.12, +0.73]**, p = 0.13 |
+| citation − neutral clause | — | −10 games | **−3.65 pp [−8.39, +1.09]**, p = 0.15, mde 6.63 pp |
+
+Three things follow. **The length half is free**: +62 characters inside one entry cost nothing, which retires the
+reading that this lane's tax is per character — it is per entry, and a padded block pays it because it adds entries.
+**Provenance is not a gain**: the registered band for "does not transfer" was −9 to +9 pp and the reading is −3.65, with
+the point estimate negative in each section separately (−4.29 seen, −2.99 held out). **And the clause is read**: a
+62-character suffix moved the action trajectory on **152/274 = 55.5%** of games, hurting 26 of them against 16 helped.
+The failure is therefore not delivery — a frozen model responds to a citation and the response is net negative, which
+is the strongest form the negative result could take.
+
+**The floor moved, and it moved for ¥2.4 rather than ¥10–50.** Pairing two *treatments* instead of a treatment and a
+control halved the discordant game count (90 → 42) and took the minimum detectable effect from **9.70 pp to 6.63 pp at
+the same 274 games**. The reason is the one this programme has documented since its first paired reading: the control
+arm has read 80, 81, 88, 89, 90 and 91 wins on the same 134 games, while treatments repeat — so a delta against a
+control is a band, and a delta between two treatments is a comparison. A training-section subset had been registered at
+¥10–50 to buy the same resolution. It is retired.
+
 **So the product sentence changes from "store the repair" to "store the step".** A trace is a legitimate memory at no
 measurable cost and the best format teacher in the lane (2.5 invalid actions per game against 3.4 for the sentence and
 5.6 for the control); a sentence is the better teacher of repair, because it can name a step without naming an object.
 Which one to store is a question about the user's failures — format failures want a trace, blocked steps want a
-sentence — and not a question about which form is more valuable, because at equal length they are.
+sentence — and not a question about which form is more valuable, because at equal length they are. It does not
+change again for a citation: an entry that names the run it won in was measured at **−3.65 pp**, so the evidence link
+belongs in the artefact the lane reads, not in the prompt the model reads.
 
 **And a wrong pack is the most expensive thing in the lane.** The gated arm's prompt was 902 characters shorter on
 average and its bill was 34% higher, because a lost game is billed for all fifty steps: 4,923 calls against 3,758.
