@@ -14527,3 +14527,49 @@ uses.
 **What it cost.** One push, one red `floor` job, about four minutes of runner time, and no money — the job makes
 no model calls. It is the cheapest possible version of this failure, and it was found before any dispatch read a
 green tree as a licence to spend.
+
+## 34.253 — The second section changed the denominator and not the conclusion, which is the result a replication is for
+
+**The reading.** The one sentence, bought on `eval_in_distribution` in its own dispatch with its own control, and
+joined to the held-out pair:
+
+| reading | delta | 95% CI | p | mde |
+| --- | --- | --- | --- | --- |
+| seen, 140 | **+25.71 pp** | [+17.86, +34.29] | < 0.001 | 13.28 pp |
+| held-out, 134 | +17.91 pp | [+8.96, +26.87] | < 0.001 | 14.18 pp |
+| pooled, 274 | **+21.90 pp** | [+15.69, +28.10] | < 0.001 | **9.70 pp** |
+| seen − held-out | +7.80 pp | [−4.63, +20.27] | 0.226 | — |
+
+**Why this is worth an entry rather than a line.** Three things were registered as possible and only one of them
+happened:
+
+1. *"≥ +12 pp on 274 games → the effect is larger than the held-out estimate and is a property of memory."* It
+   read +21.90, and the seen section alone read +25.71 — larger than the held-out estimate, in the direction the
+   registration called a finding rather than a failure.
+2. *"< +5 pp, or a seen gain under +8 pp → the effect is a property of the held-out section."* Did not happen. This
+   was the outcome the programme most needed to be able to see, and the design saw it clearly enough to exclude
+   it: a seen-section gain of +25.71 is not a null.
+3. *"the two sections differ"* — **not supported**: +7.80 pp, [−4.63, +20.27], p = 0.226. A 274-game design
+   cannot separate 25.7 from 17.9, and the honest statement is that both carry the effect at a magnitude this
+   design cannot distinguish.
+
+**The composition finding, which was not registered and matters more than it looks.** `none` reads 53.57% on the
+seen section and 65.67% held out. The entire difference is the mix of task kinds: `put` is 35/140 of the seen
+games and 24/134 held out, and `put` is the one kind that no arm wins without the sentence (3/35, 2/24). Every
+other kind agrees within a point across sections. So a pooled *rate* is an average over two mixtures while a
+paired *delta* is not — which is exactly why `aggregate.py` grades by section instead of pooling silently, and it
+is the second independent reason the guard from 34.251 was rewritten rather than kept as a refusal.
+
+**The `examine` result, and why it is the strongest evidence the referent law has.** The control wins **all 31**
+`examine` games in both sections; the sentence wins 27. That is −12.9 pp on the one kind with no placement step,
+in two dispatches, on two sections, with the same sign. R175 read the same law from the other side (a
+kind-description entry hurt the kinds it was written for); R176 read it from a third (a verbatim trace lost the
+one kind whose nouns it carried). Three designs, one sentence of theory: **an entry pays where its referent is the
+step that is failing, and costs its length everywhere else — and where it cannot be the failing step, it costs
+more than its length.**
+
+**What it cost, and what it did not.** ¥3.13 for the two arms against ¥2.8 quoted. The overrun is the control's:
+$0.2574 for 140 games at 53.57% against $0.1801 for the same 140 at 79.29%, because a losing arm is billed for
+all fifty steps of every game it loses (34.248). The instrument itself was unchanged this round — the section
+plumbing from 34.251 was used exactly as written, including the graded join, and the `by section` lines are what
+makes the composition finding visible at all.

@@ -8063,3 +8063,67 @@ the most important negative result the programme could produce, and it costs ¥2
 **The registered reading, for the record, before the money.** The sentence read +17.91 pp on the held-out section.
 On 274 games the mde is ≈ 9 pp, so a seen-section gain below +8 pp is the negative result; a pooled gain of +12 pp
 or more would mean the held-out estimate was low rather than typical.
+
+**R177 came back, and the negative result the round was built to detect did not happen.** The sentence read
+**+25.71 pp** on the seen section (111/140 against 75/140) and **+17.91 pp** held out; pooled over 274 games it is
+**+21.90 pp [+15.69, +28.10]** at an mde of **9.70 pp** — resolution bought, conclusion unchanged. The two sections
+are *not* distinguishable (+7.80 pp, [−4.63, +20.27], p = 0.226), and the seen section's lower control (53.6% vs
+65.7%) is composition rather than difficulty: `put` is 25% of the seen games and 18% of the held-out ones, and
+`put` is the kind nothing wins without the sentence. Read in full at PROGRESS 213, REGISTRATION R177 amendment 2,
+AUDIT 34.253.
+
+The by-kind table is now the lane's strongest single result, and it is negative in exactly one place:
+
+| kind | sentence | control | delta |
+| --- | --- | --- | --- |
+| `cool` | 43/46 | 29/46 | **+30.4 pp** |
+| `heat` | 38/39 | 27/39 | +28.2 pp |
+| `put` | 24/59 | 8/59 | +27.1 pp |
+| `puttwo` | 38/41 | 28/41 | +24.4 pp |
+| `clean` | 53/58 | 40/58 | +22.4 pp |
+| `examine` | 27/31 | **31/31** | **−12.9 pp** |
+
+The control wins all 31 `examine` games across both sections. That is the third independent sighting of one law:
+**an entry pays where its referent is the failing step** — R175 saw it from a kind-description that hurt its own
+kinds, R176 from a trace that lost the kind whose nouns it carried, R177 from a repair that is noise on the one
+kind with no placement in it.
+
+## R178 — The memory as a claim with a source, which is the last mechanism on the board that costs tens of characters
+
+`WikiTrace` (`arXiv`, Nov 2026) reports that **52% of memory-induced failures trace to a specific entry**, that
+20% of those entries are simply wrong, and that linking every lesson to the run it came from lifts an average
+score from 79.5 to 90.2. This lane has already shown the *content* half of that (a wrong referent is worse than no
+entry); what it has never tested is the *provenance* half — whether an entry that says where it came from is
+worth more than the same entry without it.
+
+The bank is one sentence of 489 characters. The arm appends **one line** to it:
+
+```
+[source: run 44841962248, game pick_and_place_simple-…, won]
+```
+
+That is **≈ 45 characters, 9.2% of the pack**, and it changes nothing about what the sentence says. It changes
+what the model can do with it: treat it as a claim with a provenance rather than as an instruction, which is the
+mechanism WikiTrace attributes its 10.7 points to.
+
+| # | experiment | the question | state | price |
+| --- | --- | --- | --- | --- |
+| **1** | the sentence + its source line (≈ 534 ch) on **both sections**, 274 games | does an entry that names its evidence beat the same entry without it | **registered, dispatch next** | ≈ ¥4.4 |
+| 2 | conditional delivery: `examine` receives nothing | the one kind the sentence costs (31/31 against 27/31) — is a memory that knows when to be absent worth more than one that is always present | **registered, not buyable at this design**: 4 games of 274 is 1.5 pp against an mde of 9.7 | ≈ ¥3.1 |
+| 3 | a training-section subset for a ≈ 6 pp mde | resolves the 3–6 pp band the lane still holds | **registered**, hand-written banks only | ≈ ¥10–50 |
+| 4 | ~~mode selection by task kind~~ | Anti-Persistence's mode choice, keyed on the label this lane already has | **refused by measurement**: R175 bought it, −23.13 pp | unspent |
+
+**Why row 1 is read against the sentence arm and not against a control.** Two treatments are the comparison this
+lane trusts (AUDIT 34.232): the control moves eight to eleven wins between dispatches, the treatments repeat. The
+arm therefore needs **one** arm over 274 games, not two arms and a control, and the comparison is
+`sentence+source − sentence` on the same 274 games with the same model and the same harness.
+
+**The registered reading, before it is bought.** The mechanism predicts a gain, not a tie: if provenance is what
+WikiTrace says it is, +9 pp or more on 274 games. Three outcomes are registered — ≥ +9 pp (the provenance half is
+real and the product statement becomes "store the repair and its evidence"), −9 to +9 pp (provenance is not the
+mechanism on this corpus, and the lane's law stays referent-only), ≤ −9 pp (naming a source makes the model
+discount the entry, which would be a finding about how a frozen model reads citations).
+
+**Void conditions.** `carried` 1.0 in all 274 games and `pack chars` 534 ± 2 in every one of them; the arm's
+`by_kind` and `by_section` readings must be printed beside the pooled delta, because a provenance line that helps
+`put` and hurts `examine` would be the same trade the last three rounds have found.

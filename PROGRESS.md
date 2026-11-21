@@ -25241,3 +25241,73 @@ job that makes no model calls.
 Next, in order: **R177-1** — the two arms on `valid_seen` (≈ ¥2.8), joined to the held-out 134 for a 274-game
 estimate at an mde of ≈ 9 pp; then, if the sentence replicates on the seen section, the same join for the
 trajectory **on the held-out section only** (where its provenance is a training game and therefore not a leak).
+
+## 213. The sentence wins on the seen section too, and 274 games cannot tell the two sections apart (05:55 UTC)
+
+R177 bought 140 games of the second section, two arms, one control in the same dispatch, and joined them to the
+held-out pair for the estimate the round was registered on. **The pre-registered negative result did not
+happen**: the effect is not a property of the held-out section.
+
+| arm | section | won | rate | bill |
+| --- | --- | --- | --- | --- |
+| `none` | seen, 140 | 75 | 53.57% | $0.2574 (¥1.84) |
+| **the sentence, 489 ch** | seen, 140 | **111** | **79.29%** | $0.1801 (¥1.29) |
+| `none` | held-out, 134 | 88 | 65.67% | $0.2201 (¥1.57) |
+| the sentence, 489 ch | held-out, 134 | 112 | 83.58% | $0.1506 (¥1.08) |
+
+| reading | delta | 95% CI | p | mde |
+| --- | --- | --- | --- | --- |
+| seen section | **+25.71 pp** | [+17.86, +34.29] | < 0.001 | 13.28 pp |
+| held-out section | +17.91 pp | [+8.96, +26.87] | < 0.001 | 14.18 pp |
+| **pooled, 274 games** | **+21.90 pp** | [+15.69, +28.10] | < 0.001 | **9.70 pp** |
+| seen − held-out | +7.80 pp | [−4.63, +20.27] | 0.226 | — |
+
+![R177: the effect on each section, what the second section bought in resolution, and the one kind that loses](figures/alfworld-r177.png)
+
+### 213.1 What the second section bought
+
+Resolution, and it is the only thing it bought: the minimum detectable effect fell from **12–13 pp to 9.70 pp**,
+against an effect of 21.90 — a ratio of 2.26. Every hypothesis this lane still holds is 3–6 pp, so the next
+purchase is a third section (or a training-section subset) rather than another arm.
+
+### 213.2 Why the seen control reads nine points lower, and why nothing is wrong
+
+`none` scores 53.57% on the seen section and 65.67% held out, and the difference is composition rather than
+difficulty: `put` is 35 of 140 seen games and 24 of 134 held-out ones, and `put` is the kind nothing wins without
+the sentence (3/35 and 2/24). Every other kind agrees within a point. That is also why the reading is graded —
+a pooled *rate* over two sections is an average over two mixtures.
+
+### 213.3 The one kind that loses, on both sections
+
+| kind | sentence | control | delta |
+| --- | --- | --- | --- |
+| `cool` | 43/46 | 29/46 | **+30.4 pp** |
+| `heat` | 38/39 | 27/39 | +28.2 pp |
+| `put` | 24/59 | 8/59 | +27.1 pp |
+| `puttwo` | 38/41 | 28/41 | +24.4 pp |
+| `clean` | 53/58 | 40/58 | +22.4 pp |
+| `examine` | 27/31 | **31/31** | **−12.9 pp** |
+
+The control wins **all 31 `examine` games** across both sections and the sentence costs four of them. Same sign
+in two dispatches, two sections: not dilution, not variance. `examine` is the one kind with no placement step, and
+the sentence names a `put`→`move` repair — on a `look_at_obj_in_light` game that can only be noise. **The sentence
+is negative exactly where it has no referent**, which is the same law R175 read from the other direction: a repair
+of a step every kind ends on transfers, and a description of a kind's own objects does not.
+
+The conditional-delivery hypothesis this licenses — `examine` should receive nothing — is **not testable at this
+design**: four games out of 274 is 1.5 pp against an mde of 9.7. It is recorded rather than bought.
+
+### 213.4 The suite, and the price
+
+| dimension | before | now |
+| --- | --- | --- |
+| tests | 488 | **488** (no instrument changed this round) |
+| coverage, lines and branches | 98.8% | 98.8%, every module ≥ 95% |
+| the lane's headline | 112/134, +17.91 pp | **223/274, +21.90 pp, mde 9.70** |
+| spend | — | **¥3.13** against ¥2.8 quoted; the overrun is the control's |
+
+**What is left, in order.** (1) The evidence-linked entry (WikiTrace) is the only untested mechanism whose cost
+is tens of characters: one arm on both sections, ≈ ¥4.4, read against the sentence arm rather than against a
+control, because two treatments are the comparison this lane trusts. (2) A training-section subset would take the
+mde to ≈ 6 pp for hand-written banks only, at ≈ ¥10–50. (3) The conditional-delivery row stays registered and
+unbought until either of those raises the resolution.

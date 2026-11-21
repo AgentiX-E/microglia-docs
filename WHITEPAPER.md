@@ -219,6 +219,28 @@ on `put` — **1/24 against a control of 5/24**, the only arm measured here that
 evidence came from. On those games it used 49.5 of its 50 steps and 33.6 thoughts with *fewer* invalid actions than
 either other arm: it had the syntax, and it pursued a plan about a toiletpaper that was not in the room.
 
+**The sentence replicates on a second corpus section, and the two sections cannot be told apart.** R177 bought
+140 `valid_seen` games with their own control and joined them to the held-out pair:
+
+| reading | games | delta | 95% CI | p | mde |
+|---|---|---|---|---|---|
+| seen section | 140 | **+25.71 pp** (111 vs 75) | [+17.86, +34.29] | < 0.001 | 13.28 pp |
+| held-out section | 134 | +17.91 pp (112 vs 88) | [+8.96, +26.87] | < 0.001 | 14.18 pp |
+| **pooled** | **274** | **+21.90 pp** (223 vs 163) | [+15.69, +28.10] | < 0.001 | **9.70 pp** |
+| seen − held out | — | +7.80 pp | [−4.63, +20.27] | 0.226 | — |
+
+The programme's most valuable negative result — *the effect is a property of the held-out section* — was
+pre-registered, tested and **excluded**: the seen section's gain is the larger of the two. What the two sections
+cannot do is be distinguished from each other at this size, and that is reported as such rather than resolved by
+choosing the friendlier number. The seen section's control reads nine points lower (53.6% against 65.7%) for a
+compositional reason — `put` is 25% of its games against 18%, and `put` is the kind nothing wins without the
+sentence — which is also why the reading is graded by section rather than pooled into a single rate.
+
+**And one kind is negative on both sections.** `examine` reads 27/31 against a control that wins **all 31**:
+−12.9 pp, in two dispatches, with the same sign. It is the only kind with no placement step, and the sentence
+names a `put`→`move` repair. Three independent designs now say one thing: **an entry pays where its referent is
+the failing step, costs its length everywhere else, and costs more than its length where it cannot be that step.**
+
 **So the product sentence changes from "store the repair" to "store the step".** A trace is a legitimate memory at no
 measurable cost and the best format teacher in the lane (2.5 invalid actions per game against 3.4 for the sentence and
 5.6 for the control); a sentence is the better teacher of repair, because it can name a step without naming an object.

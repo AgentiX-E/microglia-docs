@@ -8709,7 +8709,8 @@ verbatim, **505 rendered characters** against the sentence's **489**, each again
 | the same claim read per kind | the trace is the best arm on four of six kinds and **worse than nothing on `put` (1/24 vs a control of 5/24)** | **supported in one direction only**: a trace costs the user the games it came from |
 | "traces teach format, lessons teach repair" (implicit in every trace-based system on this board) | fewest invalid actions per game of any arm here (2.5 against 3.4 and 5.6), and it lost the one kind it named | **supported, and sharper than the field states it**: the trace transfers the shape *and the nouns* |
 
-**Where this puts the position table.** The ALFWorld row stays at **83.58%** with a 489-character pack and
+**Where this puts the position table.** The ALFWorld row is now **81.39% on 274 games** (83.58% on the 134
+held-out games, 79.29% on the 140 seen ones) with a 489-character pack and
 **$0.0013 per win**; the interesting column is now the second one — a 505-character trajectory reaches **80.60%** at
 $0.0015. Both are above every published prompt-only row on this corpus except ALMA's self-reported 87.1% on 67 games
 under its own harness, and both are one to two orders of magnitude cheaper per win than the systems whose memories
@@ -8720,3 +8721,55 @@ is decided; its *referent* is. The sentence wins the placement kind because it n
 and the trace loses the same kind because every noun in it is wrong for the room the agent is in. Any system that
 retrieves whole trajectories should say which games it expects to *lose* by doing so, and this lane's answer is: the
 games the trajectory came from.
+
+## R177 pre-read — Three 2026 results that agree with this lane's negatives, and the one mechanism this lane can still test
+
+Read before R177's arms were bought, because the literature had moved since R176 was registered. The three
+papers below are the strongest published statements on the question this lane has been answering empirically for
+four rounds — *which form of memory pays, and where does it hurt* — and each of them predicts one of this lane's
+measurements. None of them predicts the thing this lane can now measure that they cannot: the **per-kind** split
+of a length-matched comparison.
+
+| paper | its claim | this lane's independent measurement | agreement |
+| --- | --- | --- | --- |
+| **Anti-Persistence** (`arXiv:2610.27406`) | keeping synthesized guidance is worse than discarding it after use: **54.7% vs 26.7%** held-out success on ALFWorld/Llama-4-Scout, discarding better in all four settings | five hand-written description sentences cost **−8.96 pp** against the repair they were added to, and a gated store of them scored **below an empty prompt** (−16.42 pp, R175) | **same sign, same mechanism**: persisting guidance is the harm, and the evidence (trajectory) is not |
+| **WikiTrace / "Don't Just Trust Your Memory"** (`arXiv` Nov 2026) | 52% of memory-induced failures trace to a specific entry; **20% of those entries are simply wrong**, and linking each lesson to its source run lifts the average from 79.5 to 90.2 | the `heat` entry ("close the microwave before heating") names something the room already says; the `put` entry names a phrasing no observation contains — and only the second transfers, into **five** kinds it was not written for (R175) | **same diagnosis**, sharper instance: this lane can name *which* property of an entry makes it wrong, and it is not correctness but **referent** |
+| **SkillRL** (`arXiv:2602.08234`) | a general/task-specific skill hierarchy is worth **13.1 points** on ALFWorld; swapping the distilled skill library for raw trajectories costs up to 25 | this lane's hierarchy **inverted**: the general (untagged) repair pays and the task-specific entries are the negative ones. Its trajectory arm tied the sentence (+2.99 pp, p = 0.445) and was **worse than nothing on the kind it came from** (1/24 vs 5/24, R176) | **disagreement, and it is structural**: SkillRL trains the policy to read skills (cold-start SFT + GRPO); this lane hands a prompt to a frozen model. A hierarchy is worth 13 points *to a model taught to use it* and is negative to a model that is not |
+
+**What the disagreement licenses.** Two of the three papers are about *what to store*; this lane's readings say
+the variable is *what an entry is about* — a repair of a failing step transfers, a description of a room or an
+object does not, and a trace carries the nouns of the room it came from. That is a different axis from
+"abstraction vs raw", which is why a length-matched test (R176) found the two forms equal: at equal length, the
+axis that was supposed to matter did nothing, and the axis that did matter (referent) was held constant.
+
+**The one mechanism this lane can still test, and its price.** WikiTrace's evidence link — every lesson carries
+the run it came from, and the agent may descend to it — is the only mechanism on that board whose cost here is
+about forty characters rather than a second arm:
+
+| mechanism | what it costs in this lane | what it would have to beat | verdict |
+| --- | --- | --- | --- |
+| **evidence-linked entry** (WikiTrace) | `source: run …, game …, won` appended to the pack: ≈ +45 characters on 489 | the 489-character arm, which is the best in the lane | **registered, not bought**: the predicted effect is inside the mde at 274 games |
+| mode selection by outcome history (Anti-Persistence) | a per-kind win tally in the runner, and a rule that picks none/imitating/corrective | R175 already measured the *task-kind* version of this: −23.13 pp | **refused**: the signal it selects on is the task label, and the label is not the referent |
+| discard-after-use (Anti-Persistence's winning arm) | deliver the sentence **after** the first refusal instead of at the first call | +7 games at best, which is the easy stratum's 84/91 against 91/91 | **registered** (ROADMAP R177 row 3), needs 274 games to resolve |
+| skill hierarchy (SkillRL) | two tiers, general + per-kind | measured and inverted: the per-kind tier is the harm | **refused by measurement**, and it is a publishable negative: a hierarchy is only worth its 13 points to a policy trained to read it |
+
+**Where this puts the position table, once R177 read.** Microglia at **81.39% on 274 games** and $0.0016 per win,
+against ALMA's self-reported 87.1% on 67 games — see the section that follows. What changed this round is the claim
+this programme can make: the three newest papers on memory form each reproduce, in their own harness, a direction
+this lane measured independently — and this lane adds the only per-kind, length-matched decomposition of it.
+
+## R177 — the row replicated on a second section, which is the first replication on this board
+
+The same 489-character sentence on 140 `valid_seen` games with its own control read **+25.71 pp** (111/140 against 75/140),
+against **+17.91 pp** held out; pooled over 274 games it is **+21.90 pp [+15.69, +28.10]** at an mde of 9.70. The
+two sections are not distinguishable from each other (+7.80 pp, [−4.63, +20.27], p = 0.226), so the honest
+statement is a 274-game estimate at 81.39% with a 59.49% control, not two ranks. **No published row on this board
+reports a second-section replication**, which is the one axis where this lane is ahead of the field rather than
+behind it — and it is the axis the field's own papers say they lack (WikiTrace's authors note their lessons are
+validated on one split).
+
+**And one kind loses on both sections.** `examine` reads 27/31 against a control that wins **all 31** — −12.9 pp,
+same sign in two dispatches on two sections. It is the only kind with no placement step, and the sentence names a
+`put`→`move` repair. Against the field's framing this is the useful half: a memory entry is not validated by being
+correct (WikiTrace's 20% of wrong entries) but by **having the failing step as its referent**, and this lane can
+now point at the kind where the referent is missing and show the sign flip in two independent sections.

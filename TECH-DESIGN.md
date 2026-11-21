@@ -11052,3 +11052,50 @@ a different mechanism. Printing the MDE makes the difference between them visibl
 **Reproducibility is inherited rather than re-invented.** The bootstrap draws from the same splitmix64 `floor.py`
 uses, so an interval can be reproduced from its seed alone by anyone who has the episode list — which is the property
 that makes a resampled interval checkable at all.
+
+## 17.178 — `eval/drivers/alfworld`: the corpus section as an axis, and the three guards a second section needs
+
+**The change.** Three modules learned that a corpus section exists. `agent.py` refuses a `--games` beyond the
+section's published size (it used to answer with `min(games, num_games)`, which turned a request for 140 games on
+the 134-game split into 134 games and a `134/134` artefact) and records `split` and `split_size` in its header;
+`aggregate.py` refuses a join that spans sections until `--expect-splits` names them, then attaches each
+episode's section at join time and prints `by_section` beside the pooled delta; `distill.py` writes
+`source.train_split`, read from the artefacts' own headers, and the dispatcher refuses a `--split` equal to it.
+
+**The table.** `SPLIT_SIZES = {eval_out_of_distribution: 134, eval_in_distribution: 140, train: 3,553}` and
+`SPLIT_DIRS` mapping each environment name to the corpus directory it lives in (`valid_unseen`, `valid_seen`,
+`train`). Both are measured by `scripts/check_split_sizes.py`, which counts `game.tw-pddl` files, locates the
+corpus rather than assuming the download's layout, and distinguishes "missing" (unknown, exit 1) from "empty"
+(a section of size zero). It runs on built corpora in `ci.yml` and on the fetched corpus in the `floor` job.
+
+**Why a section is an axis rather than a flag.** At 134 paired games the minimum detectable effect is 12–13 pp,
+and every remaining hypothesis on this lane is 3–6 pp. A second section is the only way to buy resolution without
+buying a new mechanism, and the resolution is not the only thing it buys: an effect present in held-out rooms and
+absent in seen ones is a property of the split, which is the negative result this programme most needs to be able
+to detect. That is why `by_section` exists and why the 274-game join is graded rather than pooled silently.
+
+**The two rules this replaces, and the one it declines to make.**
+
+| was | now | why |
+| --- | --- | --- |
+| `total = min(games, num_games)` | refusal on either ceiling | a silent `min` reports a full-looking rate for a budget never received |
+| any join across sections refused | refused until declared, graded once declared | the rule refused the only purchase this lane has left; a guard that refuses its own design gets deleted |
+| (no leak rule) | `source.train_split` ≠ scored section | a bank scored on the section that produced it reports a real number about the wrong population |
+
+The leak rule is deliberately **not** "no bank on its own section": a hand-written bank is a function of no
+section — one sentence, one verbatim trajectory — and refusing it would refuse R177 itself. The distinction is
+carried by data rather than by intent: distill.py's `episodes` field says a bank was distilled from a set, and a
+distilled bank whose provenance is missing is refused rather than trusted, because "cannot prove" is not "did
+not".
+
+**What it costs to hold.** 488 tests, 98.8% of lines and branches, every module at or above the 95% floor, and
+five structural rules in `test_cli.py` that read the YAML rather than the code — including one that compares the
+dispatcher's payload keys against the declared workflow inputs from two command lines between them naming every
+input. That rule exists because `--control-run` once bought a treatment with no control while the command line
+said otherwise.
+
+**Registered, not built.** The evidence-linked entry (WikiTrace): every packed entry carries the run and game it
+came from, about 45 characters on a 489-character pack, so the agent can treat a lesson as a claim with a source
+rather than as an instruction. It is not bought because its predicted effect sits inside the mde at 274 games;
+it is recorded here because it is the only mechanism on the 2026 board whose cost in this lane is tens of
+characters rather than a second arm.
