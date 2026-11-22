@@ -5208,3 +5208,75 @@ episode, at ¥2.69 — and has measured where it breaks: **a line that repeats i
 lifetime.** R193 is registered to test the fix (a repeat count instead of a repeat, and a line only when the history
 changed), behind R192's distribution, because a release number that is one of five draws (265, 264, 264, 258, 267, spread
 seven games) has to be an interval before another arm is compared against it.
+
+## The number was a draw: five passes of one arm, and what that does to a leaderboard
+
+Every pool figure this project published before R192 was **one pass of one arm** on one 274-game pool. R192 drew the
+published arm five times on purpose — same bank, same pack, same channel, same cap, same guard state, only the sampling
+moving — and the five draws landed on **267, 268, 265, 268 and 270**.
+
+| | value |
+| --- | --- |
+| range across five draws | **5 games = 1.82 pp** |
+| mean, s.d. | 267.6, **1.82 games (0.66 pp)** |
+| pooled over 1,370 games | **1,338/1,370 = 97.66%, Wilson [96.72, 98.34]** |
+| unseen 134, five draws | 134, 133, 133, 134, 134 — **moves 1 game**, pooled 99.70% |
+| seen 140, five draws | 133, 135, 132, 134, 136 — **moves 4 games**, pooled 95.71% |
+
+**The variance lives in the seen section, and the board quotes the unseen one.** That is the sharpest thing the round
+found. The unseen split is nearly a constant *and* it is saturated at 134 of 134, so the section this project publishes is
+the section that is mathematically unable to show a treatment effect in either direction. The half that can move — 132 to
+136 of 140 — is the half no row on the board reports.
+
+**What a comparison can see, in one column of percentage points.**
+
+| quantity | pp |
+| --- | --- |
+| one draw to the next (range of five) | 1.82 |
+| two independent draws of 274 games, 80% power | **3.74** |
+| R191's paired effect | **0.73** |
+| five draws pooled, 95% half-width | 0.81 |
+
+The claim is smaller than the ruler. A cross-draw comparison on this pool cannot resolve the effects this project has been
+reporting, which is not a reason to stop reporting them — it is the reason they are reported from **paired joins inside
+one dispatch** and read as "not worse" unless a named set of games moved.
+
+**And it reframes the leaderboard.** No row on the competitive table reports a second draw. This lane's own second draw
+moves a row by 0.75 pp on the unseen column. Apply that unit to the table: the difference between the first row (99.7) and
+this project's row (134/134 unseen, 100.00) is **0.30 pp, less than one game of 134** — inside the band. **The top of the
+table is a tie, and it is now a measured tie rather than a suspected one.** What separates this project is the cost
+column: 14.19 steps per success and $0.68 per 1,000 episodes against 177.9 steps per instance for the instance-context
+family, a separation two orders of magnitude outside any draw band.
+
+## The counted line, and the loop that is a cycle rather than a fixed point
+
+R191's own failure mode was a line that repeats: one game received forty lines and still ended at the cap. R193 built the
+obvious repair — a repeat count instead of a repeat (`take apple 1 (4 times)`), plus a gate that silences a line whose
+three-command window is the one the previous line named — and it **did not work**:
+
+| | R191's list | the count |
+| --- | --- | --- |
+| pooled | 267/274 | **263/274** |
+| the four named games | **4 of 4 won** | **2 of 4**, both back at the 50-step cap |
+| worst game | 40 lines | **42 lines** |
+| characters added | 42,845 | **48,179** |
+| gate silences | no gate | **2 of 479 fires** |
+| cost | ¥1.34 | ¥1.36 |
+
+**The gate's two-in-479 is the finding, not the footnote.** The condition it tests is "the last three commands are the ones
+the previous line named". A counted line changes its text on every fire without changing those commands, so counting
+cannot reduce the number of windows; and a *fixed-point* loop — one command issued until the cap — would meet the condition
+on every fire after the first. Two in 479 says the loops this driver actually meets are **cycles over several commands**,
+and a predicate of "the state did not change" is blind to a cycle by construction.
+
+That is a claim about the mechanism rather than about the pool, and it is the one the round was worth buying. The state
+family closes at R191's version, with its mechanism cell intact — **four named games, four wins, ¥2.69** — and its tail
+known and priced. The counted renderer stays in the driver as a measured negative, so that the ablation table can say what
+the state is worth: **the list, not its length.**
+
+**What this costs and what it buys.** R192 spent ¥5.35 against a registered ¥5.4 and turned every level in this record
+into a band. R193 spent ¥1.36 against a registered ¥2.70 and closed a family with two named games rather than an argument.
+The registration discipline is the part that made both possible: each round names its readings, its refutation and its
+price **before** the dispatch, and this record now contains several rounds whose own registered refutation fired — R188's
+entry went inert, R190's reach variant was refuted by a table already paid for, R193's counted line cost two named games —
+which is the only evidence that the refutations are real.

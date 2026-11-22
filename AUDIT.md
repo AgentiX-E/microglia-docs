@@ -15489,3 +15489,70 @@ possible sample: games where the treatment literally did not exist.
 3. **The instrument that would isolate it does not exist in this lane yet.** The seed policy is deterministic and proves
    the *driver*; the model cannot be pinned. The only affordable estimator is more draws — which is exactly what R192
    buys, and it is why the release number has to be an interval rather than a level.
+
+## 34.281 — A registered reading whose condition the arm cannot reach
+
+R193's registration named five readings. One of them was: **"`ledger_suppressed` is non-zero (a gate that never fired cannot
+have closed the tail), and the arm's `ledger_fires` is below R191's 413."** The gate silences a fire whose three-command
+window is the one the previous line named. The arm produced **2 silences in 479 fires** — 0.4% — and 479 is 16.0% *above*
+the 413 the same reading required it to be under.
+
+Both clauses are wrong in kind, not in degree, and the diagnosis is mechanical:
+
+- **The first clause is one-sided.** "Non-zero" is satisfied by a single event out of 479. It was written as a
+  presence check ("a gate that never fired cannot have closed the tail") but a gate that fired twice cannot have closed a
+  tail either. The threshold that would have carried the claim is **a share** — silences as a fraction of the fires that
+  met the trigger — and a share was never named. A presence check on a rare condition is a reading that passes for free.
+- **The condition is not reachable by the treatment's own definition.** A counted line changes its text on every fire
+  (`(2 times)`, `(3 times)`), while the window the gate compares is a function of the **commands**, not of the rendering.
+  Counting therefore cannot reduce the number of windows; it can only change which commands are issued. A fixed-point
+  loop — one command until the cap — would meet the condition on every fire after the first. **2 in 479 says the loops
+  this driver meets are cycles over several commands**, and a gate whose predicate is "the state did not change" is blind
+  to a cycle by construction.
+
+**The general rule, and it is the fourth member of a family this record keeps producing.** A registered reading must
+name (a) the **unit** of its threshold, (b) the **denominator** the unit is a share of, and (c) whether the treatment can
+reach the condition at all. R191's fires band failed (a) and (b) — 20 to 200 "per arm" against a paragraph that
+multiplied to 274 to 822 (AUDIT 34.278). R193's reading 5 failed (c). A reading that can be satisfied without the
+treatment working is worse than a reading that fails: it spends a purchase and returns a green cell.
+
+## 34.282 — The estimate that was not a written-down multiplication, three rounds running
+
+R193 was priced at **¥2.70** in its registration and cost **¥1.36**. The estimate was not a guess: it took R191's
+measured **$0.3735 ≈ ¥2.69** and applied it to the next round — but R191's figure was for **two arms, 548 games**, and R193
+ran **one arm, 274 games** against a control that was already paid for. The price per game was right; the multiplication
+was never performed, so the round was registered at twice its cost.
+
+The same failure has now appeared three times in five rounds, and each time in a different place:
+
+| round | quantity | registered | actual | the missing operation |
+| --- | --- | --- | --- | --- |
+| R191 | `ledger_fires` | 20–200 per arm | 413 | 274 × 1–3 a game |
+| R192 | dispatches per draw | "four dispatches" | eight | 4 draws × 2 splits |
+| R193 | spend | ¥2.70 | ¥1.36 | 1 arm, not 2 |
+
+R192 was the one that was caught **before** the money, by writing the arithmetic into the paragraph (`4 × 2 × $0.187`), and
+it came in at ¥5.35 against ¥5.4. **Writing the multiplication down is the whole fix**, and it costs one line per reading.
+
+## 34.283 — The number this record published was a draw, and the record knew it
+
+Before R192, every pool number in this record was one pass of one arm on one 274-game pool. The record had already seen
+the same bank produce 265, 264, 264 and 258 — a seven-game spread — and quoted each of them as a level at the time it
+was produced, with a footnote at most.
+
+R192 drew the published arm five times on purpose: **267, 268, 265, 268, 270**, range **5 games = 1.82 pp**, s.d. 1.82
+games, pooled **1,338/1,370 = 97.66% [96.72, 98.34]**. The range is larger than R191's paired effect (+0.73 pp) and
+larger than three of the four mechanism deltas the record has reported since R180. Two independent draws of 274 games can
+only resolve **3.74 pp** at 80% power.
+
+**Three habits follow, and they are now policy rather than advice.**
+
+1. **A level is quoted with its draw count.** "267/274, one draw of five" is a different sentence from "267/274".
+2. **A cross-draw difference is not an effect.** The registered comparison for any arm is a **paired join inside one
+   dispatch**; anything else is two samples and the mde says so.
+3. **The pooled interval is the publication unit.** Five draws buy 0.81 pp of half-width around 97.66%, and that is the
+   number a competitor table may cite.
+
+The uncomfortable part: the same 274 games, the same bank, the same code, and a 1.82 pp swing. Every mechanism claim this
+record made stands on **named games that carried the treatment**, which is why each round named them before it began — and
+every pool claim is properly read as "not worse", which is what the intervals have said all along.

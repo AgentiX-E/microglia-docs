@@ -8882,3 +8882,76 @@ R191's tiling.
 
 **Price ≈ ¥3.0** (four dispatches, in parallel with R192's draw), and it is registered **behind** R192 because the pool
 number has to be an interval before another arm is compared to it.
+
+## R192, read back — the release distribution: 1.82 pp of spread with no treatment applied, and the pooled number is 97.66% [96.72, 98.34]
+
+Four draws bought, one inherited, **five passes of one arm on one 274-game pool**, eight dispatches at `7c8f6497` plus
+R191's at `43ac25b0`, one `bank_digest`, one pack, one channel, one cap, one guard state, off-peak in every summary.
+Spend **$0.742 ≈ ¥5.35** against the registered **¥5.4**.
+
+| draw | pooled | unseen 134 | seen 140 | lines sent |
+| --- | --- | --- | --- | --- |
+| 1 (R191) | 267/274 | 134 | 133 | 413 |
+| 2 | 268/274 | 133 | 135 | 392 |
+| 3 | 265/274 | 133 | 132 | 441 |
+| 4 | 268/274 | 134 | 134 | 410 |
+| 5 | 270/274 | 134 | 136 | 391 |
+
+**min 265, max 270, range 1.82 pp, s.d. 1.82 games; pooled 1,338/1,370 = 97.66% [96.72, 98.34].**
+
+**The finding is where the variance lives.** The unseen section moves by **one game** in five draws (pooled 99.70%) and
+the seen section by **four** (pooled 95.71%). The board quotes the unseen split, which is both the stable half and the
+**saturated** half — 134 of 134 cannot show an effect in either direction, so the section the board publishes is the one
+that is mathematically unable to move.
+
+**What a comparison can and cannot see.** Range between two draws **1.82 pp**; two independent draws of 274 at 80% power
+**3.74 pp**; R191's paired effect **0.73 pp**; pooled five-draw half-width **0.81 pp**. A cross-draw comparison cannot
+resolve the effect this project reports, which is the arithmetic behind the paired-design rule rather than a preference.
+
+**What it changes about the plan.** Every prior level becomes a band, the release figure becomes **97.66% [96.72, 98.34]**
+over five draws, and R192's four same-commit draws become the control set for the arm dispatched next (used in R193's read
+back below).
+
+## R193, read back — the counted line is refuted on three of five readings, and the state family closes at R191's version
+
+Two dispatches, **274 games, one arm** at `248031f6`, against R191's registered control and against R192's four
+commit-matched draws. Spend **$0.1895 ≈ ¥1.36**, half the registered ¥2.70.
+
+| arm | pooled | unseen | seen | lines | chars |
+| --- | --- | --- | --- | --- | --- |
+| `guard+ledger-counts` | **263/274 (95.99%)** | 133/134 | 130/140 | **479** | **48,179** |
+| `guard+ledger` (R191) | 267/274 (97.45%) | 134/134 | 133/140 | 413 | 42,845 |
+
+Paired **−1.46 pp** [−3.28, +0.00], 1 + 5 discordant, p = 0.129, mde 2.50 pp.
+
+| # | registered | read | verdict |
+| --- | --- | --- | --- |
+| 1 | no game more than 8 lines | **42**; six past eight against three | **failed** |
+| 2 | all four named games win | **two lost**, both at the cap | **failed** |
+| 3 | paired delta ≥ −2.0 pp | **−1.46 pp** | **held at its bound** |
+| 4 | `ledger_chars` below 42,845 | **48,179** | **failed** |
+| 5 | gate non-zero, fires below 413 | **2 of 479**, **479 fires** | **failed** |
+| 6 | spend ≤ ¥3.4 | **¥1.36** | **held** |
+
+**The refutation clause fired on both of its clauses**, so the family closes at R191's version: the state's value is in
+the **list**, not in its length. Counting changed *which* games loop (`AlarmClock-323` 40 → 0 and won; `Statue-216` 0 → 35
+and lost) without reducing the looping.
+
+**Placement, not harm.** 263 is below all five draws of R191's arm; against R192's four commit-matched draws (mean 267.75,
+s.d. 2.06) it is 2.3 s.d. down, t-test **p = 0.131** against the paired test's **p = 0.129**. Two designs, one answer.
+
+**What it changes about the plan.** No arm is adopted and no arm is withdrawn; the counted renderer stays in the driver as
+a **measured negative** for the ablation table. The next artefact is not another knob — it is the **mechanism table**:
+every knob this lane has measured (reader, cap, guard, ledger, counted ledger, pack placement, task-kind gate) with its
+paired delta, its interval, its price and the games it was registered for. That table is what a competitor comparison can
+cite, and it is the only thing between this record and a release.
+
+**Queued behind it: the cycle, not the repeat.** AUDIT 34.281 names the open question precisely — the loops this driver
+meets are cycles over several commands, so a state renderer that offers "you have tried this" without naming the *cycle*
+is addressing a fixed point that does not occur. The first step is **an instrument, not a dispatch**: the episode record
+keeps `ledger_fires` and `observe_chars` per turn but **not the commands**, so a cycle cannot be counted from the
+artefacts already paid for. One driver change — record each fire's window and the episode's command list — costs ¥0.00
+and makes the offline test possible on the next pass: re-render a recorded arm with a cycle-aware line (the repeated
+*pair*, or a k-gram overlap of the last six commands) and count how many games would carry a line the plain list did not.
+Only if that count is material does a dispatch follow, and the arm label, the counters and the join refusals have to be
+extended before it is dispatched rather than after.

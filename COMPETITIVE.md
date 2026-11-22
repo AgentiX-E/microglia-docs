@@ -9461,3 +9461,63 @@ inside one split. **The cost column is where this project leads without ambiguit
 deepseek-flash actor, and a memory that is 551 characters and one entry, against an instance-context family that spends
 177.9 steps per instance to reach 99.7. The honest sentence is therefore: **parity at the top of the accuracy column at
 the lowest published cost in it, with the only ablation on the board that names which games a memory entry moved.**
+
+## R192 and R193 — the board's top is a tie, and now it is a measured tie; and the counted line loses
+
+![R192: five draws of one arm, where the variance lives, and what a comparison can resolve](figures/alfworld-r192.png)
+
+**Left: five draws of the published arm on the same 274 games** — 267, 268, 265, 268, 270, a **1.82 pp** range with no
+treatment applied. **Middle: where the variance lives** — the unseen section moves by **one game** in five draws, the seen
+section by **four**, so the stable half of a two-section claim is also the saturated half. **Right: four quantities on one
+axis** — the draw-to-draw range (1.82 pp), the smallest effect two independent draws of 274 can resolve (3.74 pp), the
+paired effect R191 reported (0.73 pp), and the pooled five-draw half-width (0.81 pp). The claim is smaller than the ruler.
+
+![R193: the counted line — two named games back to the cap, the tail widened, and a gate that met its condition twice](figures/alfworld-r193.png)
+
+**R193 is a measured negative and it is on the record as one**: 263/274 against the plain list's 267, the worst game 42
+lines against 40, characters added 48,179 against 42,845, and the change gate silencing **2 of 479** fires. The mechanism
+reading is the one that closed the family — **two of the four games the state line was adopted for went back to the
+50-step cap.**
+
+### What a second draw does to a leaderboard
+
+No row on this table reports a second draw. This lane's own second draw moves a row by **0.75 pp on the unseen column**
+(133 or 134 of 134) and **1.82 pp pooled**. Apply that unit to the table above:
+
+| separation the table claims | value | this lane's own draw band | identifiable? |
+| --- | --- | --- | --- |
+| row 1 (99.7) vs row 2 (**100.00**) | **0.30 pp** | **0.75 pp** | **no — the top of the table is a tie** |
+| row 1 (99.7) vs row 6 (Anti-Persistence, 97.3) | 2.40 pp | 0.75–1.82 pp | **weakly** — one draw of the arm would not flip it, two would |
+| row 1 (99.7) vs row 9 (frontier actor, 95.9) | 3.80 pp | 0.75–1.82 pp | yes |
+| row 2 vs row 19 (control, 72.39) | 27.6 pp | 1.82 pp | yes, by an order of magnitude |
+
+**Row 1 and row 2 are separated by 0.30 pp on 134 games — less than one game — while this lane's own arm moves by one game
+on that column between draws.** The claim that this project holds the top of the unseen column is therefore a claim about
+a **tie**, and the honest competitive statement is the one this record has been making in its own footnotes: **parity at
+the top, decided by the cost column, where the separation (14.19 against 177.9 steps per instance for the instance-context
+family) is two orders of magnitude outside any draw band.**
+
+That reframing is not modesty, it is arithmetic, and it is the strongest position available: a competitor cannot take the
+top spot by re-running, and this project cannot lose it by re-running either.
+
+### Against the four memory papers, after R193
+
+R191's table said this lane implements Anti-Persistence's *cure* (per-episode synthesis, discarded) at ¥2.69. R193 tests
+the cure's own failure mode and answers it: **the counted line does not work**, and the reason is in the mechanism column
+rather than the pool column — a fixed point is not the loop the model is in. That is a claim none of the four papers
+makes, and it is measurable only because the gate was instrumented:
+
+| paper | what R193 says to it |
+| --- | --- |
+| Anti-Persistence (`arXiv:2610.27406`) | **the per-episode render survives; the compacted render does not.** Counting is the paper's own compression move applied to the line, and it cost two of four named games and widened the tail (42 lines against 40) |
+| STRATA (`arXiv:2610.19386`) | *contrast* edges remain untested here, and R193 sharpens why: the repair has to name the **relation between two failed commands**, not the count of one, which is structurally a contrast edge |
+| Continual Learning Moves to Memory (`arXiv:2604.27003`) | the hard-case concentration replicates again: R193's harm is 5 games against 1 helped, and both named losses are `examine`/`cool` — the two kinds R189 already flagged as search failures |
+| MemHarness (`arXiv:2607.28272`) | the critique-reframe step is still unaffordable here, and R193 is evidence *for* it: a renderer that cannot critique its own repeated action is a renderer without a reframe |
+
+### The board after R192 and R193
+
+**No row moves.** The state family's published row stays at **267/274, unseen 134/134**, and from now on it is quoted as a
+**band**: pooled **97.66% [96.72, 98.34]** over five draws (1,370 games), unseen **134/134 with one draw at 133**. The
+counted arm is not a row; it is a footnote on row 2 — *the same state, rendered with a count, is 1.46 pp worse and loses
+the games the state was adopted for*, which is the cleanest ablation the table can carry and the one a reader should use
+to price the state line's contribution as **four named games rather than a pool delta**.
