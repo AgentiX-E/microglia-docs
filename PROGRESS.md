@@ -26306,3 +26306,39 @@ band. `--state-ledger-counts` stays in the driver as a **measured negative** for
 counted ledger, pack placement) and three of them are on by default; what is missing is one table that lists each knob's
 paired delta with its interval and price, which is the artefact a competitor comparison has to cite. The state family's
 open question — **can a cycle be named** rather than a repeat — is a different mechanism and is registered separately.
+
+## 233. The state family was an admissibility repair all along, and the instrument that prices its successor is built (10:48 UTC)
+
+Reading R191 and R193 together, game by game, produced a correction neither round could see alone: **`ledger_fires` equals
+`invalid_actions` in every armed game** — 413/413 in R191's arm, 479/479 in R193's, 247 of 247 and 247 of 249 firing games.
+Every line either renderer ever sent answered a command the world had **refused**. The two triggers the driver documents
+(`Nothing happens.` from an admitted command, and a command outside the admissible set) are nested in this corpus, because
+`admissible_commands` is exactly the set of commands that do something, and the second has fired and the first never has.
+
+| game (R193) | `ledger_fires` | `invalid_actions` | longest run of 16-character no-ops | verdict |
+| --- | --- | --- | --- | --- |
+| `look_at_obj_in_light-Laptop-None-DeskLamp-328` | **42** | **42** | **42** | lost at the cap |
+| `look_at_obj_in_light-Statue-None-DeskLamp-216` | **35** | **35** | 8 | lost at the cap |
+| `look_at_obj_in_light-Bowl-None-DeskLamp-308` | **27** | **27** | 7 | lost at the cap |
+
+**Three consequences, recorded as AUDIT 34.284.** The family is an **admissibility repair** rather than a search repair;
+AUDIT 34.279's "a repeated line is a constant" was about the **world's** repetition (a 16-character no-op, forty-two turns
+in a row) and not the renderer's, which changes at every fire because the commands change; and the hint that matches the
+failure — **the set the world admits** — had never been rendered.
+
+**R194 is registered, and its first step is built at ¥0.00.** `--state-admissible` renders `Admissible here: 7 commands,
+e.g. `take apple 1 from countertop 1`.` on the ledger's own trigger, with the deterministic selection rule (shortest
+command sharing the refused verb, else the world's first), the label token `@ledger-admissible`, the shared
+`ledger_fires`/`ledger_chars`, and three instrument fields per episode: `admissible_mean`, `admissible_max`,
+`admissible_sample`. The instrument exists because the line's price is a function of a number this lane had never recorded,
+and because an estimate that is not a written-down multiplication has now been wrong twice (AUDIT 34.282).
+
+**The read side refuses the three ways a slice can lie about it**: an armed episode with no instrument, a header that
+claims the renderer while its episodes say otherwise, and a header whose flag is not a flag. The dispatch script and the
+workflow carry the input, and both refuse it without a pass to change.
+
+**Gate.** **736 Python tests** (718 before this round), 99.1% of all measured lines and branches, `agent.py` and
+`aggregate.py` at 99.8%, `pnpm audit:repo` clean, `check-workflows` clean, CI green before the push.
+
+**Next: the R194 dispatch**, priced by the instrument rather than by an estimate — 274 games, one arm, ≈ ¥1.4 — judged
+against R192's five-draw **band** (265 to 270) rather than against a draw, which is what the band was bought for.

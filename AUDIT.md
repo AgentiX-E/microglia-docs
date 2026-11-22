@@ -15556,3 +15556,42 @@ only resolve **3.74 pp** at 80% power.
 The uncomfortable part: the same 274 games, the same bank, the same code, and a 1.82 pp swing. Every mechanism claim this
 record made stands on **named games that carried the treatment**, which is why each round named them before it began — and
 every pool claim is properly read as "not worse", which is what the intervals have said all along.
+
+## 34.284 — The treatment documented for two events has only ever seen one of them, and it is the one the design did not name
+
+The state ledger's trigger is written in three places as **two** ways a turn can move nothing: "the world answered
+`Nothing happens.`, or the action was not in that turn's admissible set". R191 and R193 together are 822 games with the
+treatment armed, and the two counters say the second way is the only one that has ever happened:
+
+| arm | fires | `invalid_actions` | fires − invalid | games where the two are equal |
+| --- | --- | --- | --- | --- |
+| `guard+ledger` (R191) | 413 | **413** | **0** | **247 of 247** firing games |
+| `guard+ledger-counts` (R193) | 479 | 481 | −2 (two silences, one last-turn gate) | 247 of 249 |
+
+**Every line either arm ever rendered answered a command the world had already refused.** In this corpus the admissible
+set is the set of commands that *do* something, so `refused_by_world` implies `moved_nothing(last)` and the two triggers
+are nested rather than disjoint. A command that the world admits and then answers with `Nothing happens.` did not occur in
+822 games.
+
+**What that reframes, in three places on the record.**
+
+1. **The state family is an admissibility repair, not a search repair.** R191 was registered as an answer to four
+   cap-losses and read as "search failures with the narration removed" (R189's diagnosis). The mechanism it actually
+   exercised is smaller and more specific: *the model was proposing commands that do not exist in this world* — 42 in a
+   row on `Laptop-328`, 35 on `Statue-216`, 27 on `Bowl-308`, each of the three losing at the cap with
+   `invalid_actions == ledger_fires`. The list helped because `take apple 3; take apple 4` is evidence that apple 3 and 4
+   are not there.
+2. **AUDIT 34.279's "a repeated line is a constant" was about the wrong repetition.** What repeats in the worst games is
+   the **world's** answer — a 16-character no-op, up to 42 turns in a row — while the rendered line changes every fire,
+   because the commands change. The constant is in the observation the environment has always sent, and the ledger's own
+   audit attributed it to the ledger.
+3. **The hint that matches the failure is the admissible set, and it has never been rendered.** "You have tried these"
+   is one remove from "here is one thing you can do", and the second is strictly closer to the failure for a model that is
+   inventing objects. That is the next registration (R194), and its first step is an instrument rather than a dispatch:
+   the admissible set's **size** was never recorded, so the price of naming one command — or all of them — cannot be
+   computed from the artefacts already paid for.
+
+**The reusable rule.** When a treatment has two triggers and a counter for each, the counter has to be **per trigger**,
+not per treatment. `ledger_fires` was one number for two conditions, and it took three rounds and 822 games to discover
+that one of the two conditions had never occurred. A pair of counters costs one field and would have said so on the first
+read.

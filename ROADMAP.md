@@ -8955,3 +8955,38 @@ and makes the offline test possible on the next pass: re-render a recorded arm w
 *pair*, or a k-gram overlap of the last six commands) and count how many games would carry a line the plain list did not.
 Only if that count is material does a dispatch follow, and the arm label, the counters and the join refusals have to be
 extended before it is dispatched rather than after.
+
+## R194 (registered) — the hint that names what is admissible, and a band to judge it against
+
+**The measurement that reorders the family.** AUDIT 34.284: across the 822 armed games of R191 and R193,
+`ledger_fires` equals `invalid_actions` **exactly** (413/413, 479/479). Every line either renderer sent answered a command
+the world had already refused; the "admitted but moved nothing" trigger never fired, because in this corpus the
+admissible set is the set of commands that do something. The tail games show the shape of the failure — **42, 35 and 27
+consecutive inadmissible commands**, each ending at the cap — and the list of what has been tried is one remove from what
+would have helped: **one command that is admissible right now.**
+
+**Treatment, one arm.** On a refused turn, one line: `Admissible here: 7 commands, e.g. "take apple 1 from countertop".`
+The count is the world's own set size; the example is deterministic (shortest command sharing a verb, else first in the
+world's order). Label token `@ledger-admissible`, own counters, conditional on a refusal.
+
+**Step 1 is an instrument and costs ¥0.00 — built.** The admissible set's *size* was never recorded, so the price of the line
+cannot be computed from artefacts already paid for. The driver gains `admissible_mean`, `admissible_max` and one
+`admissible_sample` per episode, which is enough to decide between the count-only form (if the set is large) and the
+count-plus-example form (if it is small).
+
+**Registered readings**, against **R192's five-draw band** rather than against a draw — that is what the band was bought
+for:
+
+1. no game more than **8** lines, and the three named tail games are no longer cap-losses;
+2. **at least 2 of those 3** win, and their `invalid_actions` fall by **half or more**;
+3. pooled rate **≥ 96.6%** (the band's lower bound minus 1.0 pp); differences inside the band are not claimed;
+4. `ledger_chars` ≤ **2× 42,845**, spend ≤ **¥1.6**;
+5. instrument present in every episode, label token, and every other knob unchanged.
+
+**Refutation.** The three named games still lose → the admissibility hypothesis is wrong and the search-and-state family
+closes entirely, three renderers of one state having been bought and none having moved a cap-loss.
+
+**Price ≈ ¥1.4** (two dispatches, one arm) plus ¥0.00 for the instrument, which is already in the driver:
+`--state-admissible`, the token `@ledger-admissible`, `admissible_mean`/`admissible_max`/`admissible_sample` per episode,
+three join refusals, and the dispatch input. **Next: the dispatch**, priced by the instrument rather than by an estimate —
+which is the whole reason the instrument came first (AUDIT 34.282).
