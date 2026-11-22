@@ -11171,3 +11171,48 @@ five constants is worth testing only when the test is what fails the day someone
 cases are a refusal table plus the committed record, so the artefact is read by the suite as well as by the CLI. The
 node case compares pack **hashes** between the product and a host built from the same profile, which asserts the
 bytes rather than the options.
+
+## 17.181 — `eval/arm-bill.ts` and `eval/arm-serve.ts`: the arm as the product plus a named delta, and what it cost
+
+**Why two modules rather than two patches.** R197 and R197a each closed one seam and left the next one visible: the
+product spread its profile but the arm did not, and the arm wrote a bill that the pair read from a different field.
+Both defects are the same shape — a quantity with two writers and no comparison — so both are repaired the same way,
+with one reader and one derivation that a test can call.
+
+**`arm-bill.ts`.** Input: a `Tau2PhaseUsage` (from a document at the root or under `tau2.usage`, or from the
+driver's own record) and/or a recorded call count. Output: `{ calls, source, promptTokens?, completionTokens?,
+uncachedTokens? }` with `source ∈ {census, count, absent}`. Two decisions are worth stating because both are
+refusals to coerce:
+
+- a recorded `calls: 0` is `absent`, not a measured zero. Nothing in the lane has measured a provable zero, and the
+  literal is exactly what R198 exists to stop quoting;
+- a negative or non-finite value falls through to the next channel rather than being clamped, and a census whose
+  numeric fields are not numbers is refused at the parser (`bad-usage`), because a `NaN` that reaches the estimator
+  becomes a number somebody divides by.
+
+`armBillMetrics()` writes the state as the pair `usage_absent` / `usage_counted` — `0/0` census, `0/1` count, `1/0`
+silence — because one flag cannot carry three states, and `armBillLine()` spells the same state in words, because
+`0` printed twice is the ambiguity the flags exist to remove.
+
+**`arm-serve.ts`.** `armServeOf(overrides, profile?)` starts from `serveOptions(profile)` and overlays only the named
+fields, returning `{ options, moved, unmoved }`. The driver spreads `options`, so the mechanism is total: a knob the
+profile owns cannot be set at the call site. Each override carries a `reason` (a variable or a registration); the
+same field twice is refused; a field named at the shipped value is kept as `unmoved` rather than dropped. `moved` is
+sorted by the profile's own field order so two arms read down the same column.
+
+**Placement.** Both live in `eval`, not `core`: the bill is about a harness's provider account and the arm derivation
+is about a benchmark's dispatch. `arm-serve.ts` imports `serve-profile` from core (eval → core, never the reverse),
+which is what makes "the arm is the product plus a delta" a compile-time statement rather than a convention.
+
+**Test strategy.** Three layers, each catching a different failure:
+
+1. **unit** — the three bill states and their flags, the two refusals, the sort order, the four renderings
+   (`null`, boolean, string, number);
+2. **parser** — a census at the root, under `tau2`, both at once, absent, `null` fields, and four malformed
+   values including `1e999` (legal JSON that parses to `Infinity`);
+3. **process** — the lane writes two artefacts from one document and the pair is run over them, so the acceptance is
+   a number in three files; and the driver is imported twice to show that the baseline arm moves nothing and a named
+   arm moves exactly what it names.
+
+The process layer is not decoration: the unit tests would all pass if `bin/l4.ts` forgot to call the reader, which is
+precisely the defect being repaired.

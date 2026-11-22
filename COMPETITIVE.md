@@ -9586,3 +9586,24 @@ the reader before it buys a run.
 parameter-free family (**$0.0007 per game, 15.3 calls**), and the parameter-free gap stays at **+24.6 pp** against the
 graph-memory FSM's 75.37. The comparison that would answer the family question — accuracy *and* price on τ² and BIRD —
 needs one reader and one priced pass, in that order.
+
+### R198 and R199: the comparison can now carry a price column, and a treatment can no longer be a different program
+
+**The reader exists, so the axis exists.** `calls: 0` was a literal in the single-arm writer; the pair writer read the
+census. One run had two answers, and every τ² row on this board carried "—" in the price column. `arm-bill.ts` now
+reads a bill into `census` / `count` / `absent` and the artefact writes which one it is in, and `l4-pair` publishes
+`first.calls` / `second.calls` beside each arm's `pass4`. Nothing about the ranking changed this round — no dispatch
+was bought — but the *shape* of the comparison did: a τ² row can now be plotted on the same two axes as an ALFWorld
+row without a hand-joined log line, which is the precondition for the family question this document keeps naming.
+
+**The arm is the product plus a named delta.** For a comparison document the relevant fact is not that the driver was
+refactored; it is that the number a competitor table quotes and the configuration a deployment serves are now one
+record. A treatment that moves two knobs can no longer be filed as a one-knob arm, and the baseline arm is the
+product by construction rather than by resemblance. When this board next puts microglia beside a competitor whose
+paper reports a tuned configuration, the delta is printed with the run
+(`[tau2] serve: arm = profile + speakMargin 0.05 (TAU_SPEAK_MARGIN (R123))`) instead of being reconstructed from a
+methods section.
+
+**What is still missing for a like-for-like row.** A priced τ² pass (R198 step 2, ≈ ¥2–3, registered and unbought) and
+a priced BIRD row. Both are now one dispatch each rather than a reader plus a dispatch, which is a difference in kind:
+the remaining work on this axis is spending, not construction.

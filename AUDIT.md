@@ -15792,3 +15792,54 @@ written, and is not the measurement its name promises.
 
 **The reusable rule.** A quantity that two writers produce must be compared by a test, not by an author. `calls` was
 "obviously" the same field in both artefacts until one of them was read.
+
+## 34.291 — The bill had three states and the field had one, so `0` meant both
+
+**What was claimed.** That an arm artefact says what the arm cost. `PocResult.calls` is in every artefact, the τ²
+driver counts provider calls on every call, and `bin/l4-pair.ts` reads the census. Three files, one quantity.
+
+**What was true.** `bin/l4.ts` wrote `calls: 0` as a **literal**. The census reached the artefact only inside
+`tau2.usage` (via `instrumentation`), and the field a reader opens first said zero. So the committed τ² arms say
+`"calls": 0` beside a driver that reported 2,667 calls for the same run, and the pair step — which reads
+`tau2.usage.calls` — would have disagreed with the arm step if anyone had put the two side by side. Nobody had,
+because both are plausible: an arm with no memory makes no *distillation* calls, and zero is what a run with no
+distillation looks like.
+
+**The class.** Not "a wrong number". A field whose domain has **three** states — measured, counted-without-tokens,
+and nothing-measured — written as one integer that cannot express two of them. The mirror of AUDIT 34.290 (two
+writers of one quantity): here one writer wrote a constant that a reader could not distinguish from a measurement.
+
+**The repair.** `arm-bill.ts` reads the bill into `census | count | absent` and the artefact writes the state as
+the flag pair `usage_absent` / `usage_counted` — `0/0`, `0/1`, `1/0`. Two flags because one cannot carry three
+states, and a single `usage_absent` would have made a count and a census identical. A recorded `calls: 0` is read as
+`absent`, deliberately: it is the literal this audit is about, and no artefact in the lane has measured a zero it
+could prove.
+
+**The reusable rule.** A quantity with three ways of being known needs three ways of being written, and the encoding
+must be total — the pair of flags, not one of them. The test that keeps it: one document, written into two arm
+artefacts, paired, and the three call counts compared.
+
+## 34.292 — Two arms of one dispatch were not the same program, and nothing compared them
+
+**What was claimed.** That a treatment arm is the shipped configuration plus the treatment. R197a bound the product
+(`createServer`) and an ablation control to `serveOptions()`, and left the drivers building their own
+`openMicroglia({...})` argument lists.
+
+**What was true.** `tau2-driver.ts` wrote `budget`, `note`, `budgetBasis` and `speakMargin` by hand. Two of the four
+are set on every dispatch, so the arm and the product agreed only by convention; a treatment that moved a third was
+indistinguishable, in the artefact, from one that did not. That is the same split AUDIT 34.289 recorded between the
+product and the record — one layer down, between the product and the arm that is supposed to measure it.
+
+**The repair.** `armServeOf()` derives the arm from `serveOptions()` plus the fields the dispatch named, each with
+the variable or registration that named it; the driver spreads it, so no profile-owned knob can be set outside the
+mechanism; the run prints the delta before its first model call. Two refusals (a field named twice, a moved field
+with no reason) and one preserved distinction (a field named at the shipped value is kept as *named and unmoved*,
+because "asked for the default" and "never mentioned it" are different dispatches).
+
+**The acceptance is a type, not a paragraph.** The driver is imported twice — once with no variables (zero fields
+moved: the baseline arm *is* the product) and once with three (exactly those three, in profile order). A hand-written
+argument list cannot pass that test, which is the point.
+
+**The reusable rule.** When a configuration is "the same as X plus a delta", the delta must be a value the code
+computes, not a convention the author remembers — and the baseline must be *derivable* with an empty delta, or the
+two sides drift the first time somebody adds a knob.

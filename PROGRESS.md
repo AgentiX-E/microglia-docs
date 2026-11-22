@@ -26582,3 +26582,85 @@ is widened at the assignment. The bundle gate refused the new module at **53,788
 reads the profile, so it is product surface — with 212 and 111 bytes of headroom. And the same run found the README
 quoting **43,330 raw / 14,684 gzip** for the core, which was the size two budgets ago: a ceiling nobody re-reads and a
 document nobody re-measures drift in the same direction, and only the gate was still telling the truth.
+
+### 239 — R198's reader and R199's type: the lane can now price an arm, and an arm can no longer be a different program (16:10 UTC)
+
+**Two defects, both found by asking what a file would have to say to be trusted.** R197 was cancelled because the
+τ² lane could not be priced; R197a closed the product side of the same split. This round closed the two halves that
+were left: the *arm* was still a hand-written argument list, and the *bill* was still a literal.
+
+**Defect 1 — `calls: 0`.** `bin/l4.ts` wrote `calls: 0` as a constant on every arm. The driver had been counting
+provider calls since R103 (`run_split.py`'s litellm callback, `usage_stats()`), the arm record carried the census
+under `tau2.usage`, and `bin/l4-pair.ts` read it correctly — so one run had **two answers in two files** and the
+committed τ² artefact says `calls: 0` beside a driver that reported 2,667. Every cost claim about this lane had to
+be assembled by hand from a workflow log, which is exactly what R197's fourth reading needed and could not get.
+
+The repair is one reader, `packages/eval/src/arm-bill.ts`, with **three states that are never spelled the same way**:
+
+| state | measured | artefact flags | what `calls` means |
+| --- | --- | --- | --- |
+| `census` | calls + tokens | `usage_absent: 0, usage_counted: 0` + token columns | the provider's count |
+| `count` | calls only (pre-R198) | `usage_absent: 0, usage_counted: 1` | the provider's count; tokens **unmeasured** |
+| `absent` | nothing | `usage_absent: 1, usage_counted: 0` | "nobody counted", never "no calls" |
+
+Two flags rather than one because one cannot carry three states. A recorded `calls: 0` is read as **absent**: that
+is the literal the module exists to stop quoting, and no artefact in the lane has ever measured a zero it could
+prove. `measureFromResults` reads a document's census at the root or under `tau2.usage`; `measureFromDriver` reads
+the block out of the record the driver already returns, so the arm's bill and the arm's store cannot come from two
+processes. `usageOf()` refuses a census whose numbers are not numbers (`bad-usage`), because `calls: "12"` would
+reach the estimator as `NaN` and be stored as a number somebody could divide by.
+
+**Defect 2 — the arm was not the product.** R197a made the product spread `serveOptions()`; the drivers still made
+their own `openMicroglia` call with `budget`, `note`, `budgetBasis` and `speakMargin` written by hand. A treatment
+could move two knobs, be read as a one-knob arm, and the artefact would carry the result without naming the second.
+`packages/eval/src/arm-serve.ts` now derives the arm: `serveOptions()` first, then only the fields the dispatch
+named, each with a `reason` — the variable or the registration that named it. The driver **spreads** the result, so
+there is no place left to set a profile-owned knob outside the mechanism, and it prints the delta before its first
+model call:
+
+```text
+[tau2] serve: arm = the product's profile
+[tau2] serve: arm = profile + budget 1500 (TAU_PACK_BUDGET) + speakMargin 0.05 (TAU_SPEAK_MARGIN (R123))
+```
+
+Three refusals, and one preserved distinction:
+
+| shape | verdict |
+| --- | --- |
+| the same field named twice | refused — one arm has one value, two reasons for one value is an arm that cannot say what it is |
+| a moved field with no reason | refused — a knob that moved and cannot say what moved it is the drift this exists to catch |
+| a field named at the shipped value | **kept as named and unmoved** — "asked for the default" and "never mentioned it" are different dispatches |
+| the baseline dispatch (no variables) | zero fields moved, and the printed line says so: the baseline arm **is** the product |
+
+![R198: three states a bill can be in, and the one number the round requires in three files](figures/arm-bill-198.png)
+
+**Acceptance, counted.**
+
+| claim | how it is checked |
+| --- | --- |
+| one document, one call count, two files | a fixture is written into two arm artefacts, the pair is run, and arm `calls` = pair `first.calls` = `12` |
+| absence is not a zero | the same lane over a document with no census writes `calls: 0` **and** `usage_absent: 1`, with no token column at all |
+| a broken census is refused | `bad-usage` for a string, a negative, and a `1e999` (legal JSON, parses to `Infinity`) |
+| the driver carries the census | a stub driver exporting `instrument()` with `usage.calls: 5` produces an arm artefact with `calls: 5` |
+| the baseline arm is the product | the driver is imported with nothing set: `serveArm().moved` is empty |
+| a named arm moves only what it names | imported with `TAU_PACK_BUDGET=1500 TAU_SPEAK_MARGIN=0.05 TAU_INJECTION_NOTE=hardened`: exactly those three, in profile order |
+
+**Numbers.** **6,167 tests over 298 files** (+39: 18 for the bill, 12 for the parser's census block, 4 end-to-end
+through the lane and the pair, 8 for the arm's derivation, 2 for the driver's own arm), coverage **100 / 99.91 / 100
+/ 100**, and both new modules **100 / 100 / 100 / 100**. `pnpm typecheck`, `typecheck:lanes`, `audit:repo` and every
+lane in `pnpm check` clean; the coupling ledger recomputed to **261 modules / 74,427 lines** (+2 modules, +362
+lines). README's layer table recomputed to `eval` **195 modules / 58,226 lines**. Round cost **¥0.00**.
+
+**Two gates that caught this round's own work, again.** The lane typecheck refused `ServeOverride['value']` as
+`ServeOptionValues[ServeField]`, which includes `undefined` — "unset" is the profile, not an override, so the type is
+now a mapped `NonNullable`. And `audit:repo` refused a reason string that said `TAU_NOTE` while the variable the
+driver reads is `TAU_INJECTION_NOTE`: the audit's rule is that every `TAU_*` the code names must be one a workflow
+can set, and a reason string that misspells a variable is a knob nobody can reach. Both were repairs to the
+mechanism, not to the check.
+
+**What is still not bought.** R198's second step — two arms, four trials, the cost axis and the `serveYield` census
+on τ² retail, ≈ ¥2–3 — remains registered and unbought, and its precondition is now met: the fixture reproduces a
+known call count, so a dispatch would return a price rather than a second accuracy reading. The reason to wait is
+unchanged and arithmetic: the four published τ² rows have half-widths of ±9 to ±11 pp at 40 held-out tasks × 4
+trials, so a fifth draw of the same size cannot move the pooled −4.64 pp off zero. It buys the *cost* axis and the
+delivery census, not a resolution.

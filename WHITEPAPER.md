@@ -5372,8 +5372,21 @@ its default is a *decorative reading* — real evidence, ignored by the deployme
 inflate a number whose whole purpose is to say how much of the product is measured. The refusal is the mechanism; the
 debt line (`0 measured of 5`) is the finding.
 
-**Third, the price column's blanks on τ² are a missing reader, not a policy.** The committed τ² arm artefacts report
-`calls: 0` because the single-arm writer never reads the usage block the Python driver records, while the pair writer
-does. Every τ² row therefore has accuracy and no cost, which is exactly why R197 — the τ² transfer measurement — was
-cancelled before it was bought: its registered reading was the price, and the price cannot be read from the artefact
-until that reader exists. The next round buys the reader first.
+**Third, the price column's blanks on τ² were a missing reader, not a policy.** The committed τ² arm artefacts
+reported `calls: 0` because the single-arm writer never read the usage block the Python driver records, while the
+pair writer did. Every τ² row therefore had accuracy and no cost, which is why R197 — the τ² transfer measurement —
+was cancelled before it was bought: its registered reading was the price, and the price could not be read from the
+artefact until a reader existed. The reader exists now (R198's first step): a bill is read into three states —
+`census` (calls and tokens), `count` (calls only), `absent` (nothing) — and the artefact writes which one it is in,
+because `0` printed once cannot distinguish an arm that made no calls from one nobody counted. The pair artefact now
+carries `first.calls` and `second.calls` beside each arm's `pass4`, so one file holds both axes of the plane this
+paper is about.
+
+**Fourth, a treatment arm is the shipped configuration plus a named delta.** The same round closed the corresponding
+seam on the eval side: the driver no longer writes its own `openMicroglia` argument list but spreads
+`serveOptions()` overlaid by the fields the dispatch named, each with the variable or registration that named it, and
+prints the delta before its first model call. The baseline arm therefore *is* the product — a property a test
+asserts by importing the driver with nothing set — and a treatment that moves two knobs can no longer be read as a
+treatment that moved one. That closes the loop this chapter opened: the configuration a deployment serves, the
+configuration an arm measures, and the reading behind each field are now one record, read by both sides, with the
+difference between them named and priced.

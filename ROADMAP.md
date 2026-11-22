@@ -9120,24 +9120,40 @@ host built from the same profile over the same store.
 **Price ¥0.00.** **Refutation.** If a field's justification cannot be stated as a reading or a sentence, the field
 does not belong in the profile — it belongs in a comment, and the audit would be decoration.
 
-## R198 (registered) — the τ² price, and the reader that has to exist before it is bought
+## R198 (step 1 built) — the τ² price, and the reader that had to exist before it was bought
 
-**Step 1, code, ¥0.** Carry `usage` through `bin/l4.ts` (`measureFromResults` and `measureFromDriver`), write `calls`
-from it, and make absence explicit (`usage_absent: 1`) rather than zero. Acceptance: a fixture results document with a
-usage block writes the arm's `calls` and tokens; a document without one writes `calls: 0` **and** `usage_absent: 1`;
-the pair artefact and the arm artefact report the same `calls` for the same document. No dispatch, no model call.
+**Step 1, code, ¥0 — done.** `packages/eval/src/arm-bill.ts` reads a bill into three states that are never spelled
+the same way — `census` (calls and tokens), `count` (calls only), `absent` (nothing) — and the artefact writes the
+state as the flag pair `usage_absent` / `usage_counted`, because one flag cannot carry three. `bin/l4.ts` writes
+`calls` from the reader and carries the census at the root; `measureFromResults` reads a document's block at the
+root or under `tau2.usage`, `measureFromDriver` reads the driver's own record; `l4-pair` publishes `first.calls` /
+`second.calls` beside each arm's `pass4`.
 
-**Step 2, dispatch, ¥2–3.** Two arms × four trials on τ² retail, read on the **cost** axis and on the delivery census
-(`serveYield`: renders, opportunity, repairs, breaks, inert), which is the lane's version of the question the ALFWorld
-side answered with `cycles.py`: is the pack used where it can help, or rendered where nothing can be repaired? The
-accuracy delta is a by-product; the registered readings are the bill and the census.
+Acceptance, all three met: a fixture with a census writes `calls: 12` and its token columns; a document without one
+writes `calls: 0` **and** `usage_absent: 1`; the arm artefact and the pair artefact report the same `calls` for the
+same document, asserted end to end (PROGRESS 239). A census whose numbers are not numbers is refused (`bad-usage`
+for a string, a negative, and `1e999`).
 
-**Price ≈ ¥2–3**, refused if step 1's fixture does not reproduce a known `calls` count.
+**Step 2, dispatch, ¥2–3 — registered, not bought.** Two arms × four trials on τ² retail, read on the **cost** axis
+and on the delivery census (`serveYield`: renders, opportunity, repairs, breaks, inert), which is the lane's version
+of the question the ALFWorld side answered with `cycles.py`: is the pack used where it can help, or rendered where
+nothing can be repaired? The accuracy delta is a by-product; the registered readings are the bill and the census.
+Its precondition is now met — the fixture reproduces a known `calls` count — and the reason to wait is unchanged:
+the four published τ² rows have half-widths of ±9 to ±11 pp, so a fifth draw of the same size cannot move the pooled
+−4.64 pp off zero. It buys the price, not a resolution.
 
-## R199 (candidate) — binding a lane's treatment arm to the profile
+## R199 (built this round) — binding a lane's treatment arm to the profile
 
-**Question.** Can an arm be `profile + Δ` by construction rather than by convention? The three drivers still set
-their own knobs, so a treatment can differ from the profile in two fields and be read as one. The acceptance is a
-type: the arm's options are `serveOptions()` plus a single named override, and the diff printed with the reading.
-**Price ¥0.00.** Not registered until R198's step 1 lands, because a contract over knobs whose cost is unknown would
-freeze the wrong defaults.
+**Question.** Can an arm be `profile + Δ` by construction rather than by convention? The driver still set its own
+knobs, so a treatment could differ from the profile in two fields and be read as one.
+
+**Mechanism.** `packages/eval/src/arm-serve.ts` derives the arm: `serveOptions()` first, then only the fields the
+dispatch named, each with the `reason` that named it. The driver spreads the result, so no profile-owned knob can be
+set outside the mechanism, and prints the delta before its first model call
+(`[tau2] serve: arm = profile + budget 1500 (TAU_PACK_BUDGET) + …`). Two refusals — a field named twice, a moved
+field with no reason — and one preserved distinction: a field named at the shipped value is kept as *named and
+unmoved*, because "asked for the default" and "never mentioned it" are different dispatches.
+
+**Acceptance.** A type plus a diff: the driver imported with nothing set moves zero fields (the baseline arm *is*
+the product); imported with `TAU_PACK_BUDGET=1500 TAU_SPEAK_MARGIN=0.05 TAU_INJECTION_NOTE=hardened` it moves exactly
+those three, in profile order, with the reasons the table records. **Price ¥0.00.**
