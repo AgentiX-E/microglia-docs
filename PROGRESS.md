@@ -26406,7 +26406,8 @@ fallback **plus** a rule that lets the example be a command when one exists.
 
 **Gate.** 756 Python tests (745 before the renderer's rule changed), **99.1%** of all measured lines and branches,
 `agent.py` at **99.9% of lines and 98.5% of branches**, `aggregate.py` at 99.5% / 98.1%, `pnpm audit:repo` and
-`check-workflows` clean, CI green on `920bcd0e`.
+`check-workflows` clean, CI green on `920bcd0e` and on `d60ba627` (the wording pass that made the 88.7% a share of games
+rather than of fires). Both dispatches are `success`, including the lane's floor job on each.
 
 **Board: nothing moves.** The published row stays at R191's 267/274 with the five-draw band; the admissible renderer joins
 the counted one as a **measured negative** in the ablation table.
