@@ -5050,3 +5050,30 @@ fifty-turn budget with the grammar and the precondition both correct, two of the
 corpus's simplest task, where the failure is finding the object. That is the failure mode a sentence about a *kind*
 cannot reach and a document about an *instance* can — which is what the instance-context rows at the top of the board
 (99.7) are, and what the next round buys.
+
+## Three kinds of memory, and a board that is measured inside its own noise floor
+
+The project has spent most of its rounds asking whether a bank of extracted lessons raises success. It now has the
+vocabulary to say something more useful: a memory is **helpful through reach** (R186: the container precondition, scoped
+to `put`, +10.2 pp on its kind and replicated at identical transitions), **harmful through reach** (R185 and R187: the
+same sentence read by five and by three foreign kinds, −18 and −10 games), or **inert** (R188: 259 characters about the
+turn budget, and the same 259 characters permuted, at 264 and 266 of 274 against the bank's own 264). The three are
+distinguishable only if the round carries its own length control — a permutation of the treatment — and the third
+category is the one the literature's optimism has no room for.
+
+The last round added a fourth observation that changes how the rest should be read. R186 lost ten games, five of them to
+rumination (24 to 46 thoughts, 4 to 26 environment steps). R188 wrote the sentence aimed at those five and re-ran them:
+**four of five won under the instruction and five of five under its permutation**, at 1 to 10 thoughts, and the other
+five losses reversed too — ten losses became eight and ten, and **three of twenty game-slots stayed lost**. The pool,
+meanwhile, read **264, 264, 266** across three different packs.
+
+Two consequences. **The pool is the stable quantity and the identity of the losses is not**, so any plan aimed at "the
+ten losses" is a plan aimed at one afternoon; only rates survive, and the rate here is 11 thought-heavy losses per 822
+game-draws, 1.34%. And **the board this project is ranked on is 134 games**: the difference between this system at 99.25
+and the top row at 99.7 is 0.6 games, and the difference between two draws of one prompt is larger than that. So the
+claim the evidence supports is not a point estimate but a position with a resolution: first in the cross-task-memory
+family, within one game of the instance-context row, at 15 steps per success and $0.69 per 1,000 episodes.
+
+What follows is not more entries. A memory that is inert costs context and buys nothing; one that helps does so through
+its reach; and the losses that remain are a **state** — a loop the model enters on a draw — which no sentence about a
+task can address and a conditional intervention can. That is the shape the next round tests.

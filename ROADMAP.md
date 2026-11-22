@@ -8634,3 +8634,52 @@ variable and scope is the lever.
 **Why it is not registered yet.** Rule 1 of AUDIT 34.267 forbids buying a cell that cannot be computed from an artefact
 that exists, and the bank does not exist until the distillation runs. The cells, the refutation and the price are written
 when the bank is, in the round that builds it. Price estimate **≈ ¥2.10** for one untagged arm at 274 games.
+
+## R188, read back — the entry is inert, and the class it targeted was a draw
+
+![R188: the five thought-heavy games re-run under an instruction and under its permutation, three packs at 264 to 266, and the same-prompt band that made the rumination cell unreadable](figures/alfworld-r188.png)
+
+| arm | pack | pooled | unseen | seen | heavy | paired vs placebo |
+| --- | --- | --- | --- | --- | --- | --- |
+| `turn` | 814 ch, 2 entries | 264/274 (96.35%) | 131/134 | 133/140 | 4 | **−0.73 pp** [−3.28, +1.82], p = 0.66 |
+| `turnplacebo` | 814 ch, 2 entries | **266/274 (97.08%)** | 131/134 | 135/140 | 2 | — |
+| R186 | 551 ch, 1 entry | 264/274 | **133/134** | 131/140 | 5 | — |
+
+Four of five readings failed; the shape clause held exactly (814 chars, 2 entries, `pack_digest` 215:59 in both arms).
+The round's value is three findings that outlive it:
+
+1. **The five thought-heavy games won on a redraw** — 4/5 under the instruction, 5/5 under its permutation, at 1 to 10
+   thoughts. The loop is a state the model enters on a draw, not a property of a game, and R186's "the pack failed to
+   reach them" was a statement about one draw.
+2. **The loss set is not stable and the pool is.** Ten losses became eight and ten; three of twenty game-slots stayed
+   lost; the pool read 264, 264, 266 across three packs. Only rates are plannable — 11 thought-heavy losses per 822
+   draws, 1.34%.
+3. **The rumination cell had no band.** Same-prompt band on 148 frozen-pack games: 3.68 vs 4.80 = **1.12**, against a
+   registered threshold of 0.5 (AUDIT 34.272).
+
+**Retired with its premise:** the "8 of 10 losses are search" reading, and with it the location prior as R189.
+
+## R189 (registered) — the guard at the state: one changed answer for the turn that carried no command
+
+The driver answers a commandless reply with `OK.`, the competitor's own no-op. The guard changes **that string and
+nothing else**:
+
+| | without | with |
+| --- | --- | --- |
+| reply carries no command | `OK.` | `OK. Reply with one command only.` |
+| reply carries a command | unaffected | unaffected |
+
+**Registered readings** (two arms on `bank-putscope-2`, `any-line`, cap 50, 274 games each, ¥3.00):
+
+1. Guarded arm's `thought_heavy` **at most 1 of 274** (unguarded draws read 5, 4, 2).
+2. Pool **at or above 266** of 274, paired — stated as a floor because the round's power is 3.5 pp.
+3. `guard_fires` **20 to 120** over 274 games, each followed by a reply carrying a command within one turn.
+4. The pack is unchanged: 551 chars, 1 entry, R186's `bank_digest`, sections 134 + 140.
+5. The guard's prompt cost under **2%** of the arm's prompt.
+
+**Refutation.** Fewer than 20 fires, or `thought_heavy` ≥ 3 in the guarded arm → the state is not interruptible, and the
+remaining work is the **utility score** of the admission family (predicting which entries hurt) rather than more entries.
+
+**Why this and not the location prior.** The prior needed a stable search class; R188 says the class is a draw. A guard
+does not need to know which game will loop — it fires on the state — which is the only form of intervention whose target
+survived this round.

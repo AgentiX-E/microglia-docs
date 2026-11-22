@@ -26015,3 +26015,40 @@ line-and-branch, every module ≥ 95%, docs gates 8/8. CI green on `c9d69578` (m
 
 **Next: R188 is the location prior.** Eight of the ten remaining losses exhaust the fifty-turn budget on a take that
 never finds its object — no sentence about a kind reaches that.
+
+## 227. R188 read back: the entry is inert, and the ten losses it was written for were a draw rather than ten games (04:05 UTC)
+
+Four dispatches, **548 games, two arms**, `any-line`, cap 50, **¥3.03 against ¥3.00 quoted** ($0.4209, 8,983 calls).
+
+| arm | pack | pooled | unseen | seen | thoughts/game | heavy |
+| --- | --- | --- | --- | --- | --- | --- |
+| `turn` (the instruction) | 814 ch, 2 entries | 264/274 (96.35%) | 131/134 | 133/140 | 3.54 | 4 |
+| `turnplacebo` (same words permuted) | 814 ch, 2 entries | **266/274 (97.08%)** | 131/134 | 135/140 | 3.65 | 2 |
+| R186 (published bank) | 551 ch, 1 entry | 264/274 (96.35%) | **133/134** | 131/140 | 4.20 | 5 |
+
+**Instruction and permutation are one arm.** Paired −0.73 pp [−3.28, +1.82], p = 0.66, mde 3.54 pp; against R186 the two
+arms are 7 gained / 7 lost and 7 / 5. Four of five registered readings failed, the fifth (shape: 814 chars, 2 entries,
+215:59 pack split in both arms) held.
+
+**The finding is what happened to the five games the entry was written for.** They re-ran and **won 4 of 5 under the
+instruction and 5 of 5 under the permutation**, at 1 to 10 thoughts where R186 had 24 to 46. R186's five search losses
+went 3/5 and 2/5 as well, so **ten losses became eight and ten and only three of twenty game-slots stayed lost** while
+the pool stayed at 264–266. The loop is a **state the model enters on a draw**, not a property of a game — and that
+retires both the "coverage gap" reading of R186 and the "8 of 10 are search" premise the registered refutation of R188
+was built on.
+
+**A cell that could not have been read.** The registration asked for thoughts a game to fall by 0.5. On the 148 games
+whose packs were byte-identical between R186 and R187 the same prompt read **3.68** and **4.80** — a band of **1.12**.
+The observed difference was 0.11. AUDIT 34.272 records it as R187's lesson one level down: a cell needs a band, and a
+mean over a heavy-tailed event has a wide one.
+
+**Instrument and docs.** `aggregate.py` prints `rumination` (mean and heavy count, `not counted` when a file predates the
+field); `bank-turnbudget-1` and its placebo stay in the tree as a measured inert control. Gate: **613 Python tests**,
+99.0% line-and-branch, every module ≥ 95%, docs 8/8. CI green on `d082d724`.
+
+**Board.** Unchanged at 99.25% unseen (R186's arm), with the published bank's pooled reading now a **distribution**:
+264, 264, 266 of 274 across three packs. The quotable sentence is the band, not the point.
+
+**Next: R189, the guard at the state.** The driver answers a commandless reply with `OK.`; the guard changes that one
+string to `OK. Reply with one command only.` It cannot fire in a game that never enters the loop, needs no knowledge
+about tasks, and targets the measured 1.34% of games that are lost to rumination. Registered with five readings; ≈ ¥3.00.

@@ -15145,3 +15145,100 @@ had moved **+1 over 215** against R183. Two draws of the same quantity, five gam
 harness is **±5 games over 274**, not the ±1 that R186's own draw suggested, and every claim in this record below that
 width on a single pass is a claim about one afternoon. The R186 headline survives (it is +67 against a control and +7
 with a replicated per-kind mechanism); the "not worse by two games" phrasing does not.
+
+## 34.270 — Ten losses, two families, and a report that called all of them "lost"
+
+Every reading this lane has printed since R171 has reduced an episode to a boolean. That is right for a win count and
+wrong for a diagnosis, and R186 is where the bill arrived: ten losses, reported as ten, of which **five never acted**.
+
+The two families, read off the recorded per-episode fields:
+
+| family | games | environment steps | thoughts | invalid actions | last line |
+| --- | --- | --- | --- | --- | --- |
+| never acted | 5 | 4, 6, 16, 23, 26 | 46, 44, 34, 27, 24 | 4, 1, 1, 17, 20 | `Nothing happens.` in four |
+| acted every turn | 5 | 49, 49, 49, 50, 50 | 1, 0, 1, 0, 1 | 2, 14, 2, 6, 0 | a room description in three |
+
+The separation is not a mean with a wide spread; the two groups do not overlap on either coordinate. And the winning
+side fixes the boundary: **no won game in 264 carries twenty thoughts**, and none carries ten invalid actions. So a
+single threshold (`THOUGHT_HEAVY = 20`) separates the class, and `aggregate.py` now prints it beside the win count.
+
+**Why this is an instrument defect and not a report-writing preference.** The lane has spent three rounds on the *harm*
+of a memory — R185's −18 games, R187's −10 — and every one of those conclusions was computed over "lost" games. If half
+the losses in an arm are games where the model never touched the world, then any statistic conditioned on losses is a
+statistic over two populations, and the harm attributed to a pack can be the pack failing to suppress a rumination loop
+that the control also has. The counter is the cheapest way to keep that from happening again: it is computed from two
+integers already in every episode record, and it costs one line.
+
+**What it says about the project's own question, which is the part that generalises.** Memory does not make this agent
+verbose; it makes it concise. 9.23 thoughts a game in the control become **4.2** with the scoped bank, and the heavy
+count falls 19 → 5. So the surviving thought-heavy games are the ones the pack **failed to reach**, which is a statement
+about coverage and not about harm — the opposite of the framing every previous round would have produced from the same
+ten numbers.
+
+**The discipline repeated for the third time.** `not counted` is printed when an arm file predates the field, exactly as
+`dropped` (34.259) and `recovered` (34.262) do. Three counters, one rule, and the rule is worth stating once: a zero
+from a file that never recorded the field is not a measurement of quiet.
+
+## 34.271 — Four dispatches that bought nothing, because the bank was not on master yet
+
+R188's first four dispatches (`44972734686`, `44972752117`, `44972768133`, `44972780849`) all failed inside twenty
+seconds, on `no bank at eval/drivers/alfworld/banks/bank-turnbudget-1.json`, because the bank file had been written,
+tested and registered **locally** and the workflow checks out `master`. The four runs cost **¥0**: the guard is the
+first step of the job and no job reached a model.
+
+Two things follow, one procedural and one structural:
+
+1. **The order is push, green, dispatch, and it is enforced by the dispatcher.** `alf_dispatch.py` refuses unless
+   `ci.yml` on the head of `master` has completed successfully, which is what makes the sequence impossible to invert —
+   the commit that carries a bank must be green before the bank can be bought. What it cannot check is whether the
+   *bank* is in that commit; that is what the workflow's own existence check does, at zero cost, in twenty seconds.
+2. **A zero-cost failure is only zero-cost because the failure is early.** The same mistake one step later — a bank that
+   parses but whose tags do not line up — would have failed after the environment install, and a mistake two steps later
+   would have spent the round's budget on an arm carrying the wrong sentence. The lane's habit of putting a check before
+   the first paid call is what makes four failed dispatches a footnote rather than a ¥6 loss, and it is worth naming as
+   a property rather than relying on as a habit.
+
+## 34.272 — A class defined by one draw, and four ways the round could have been wrong before it was bought
+
+R188 was registered against a class R186 had defined: five of ten losses were "thought-heavy" — 24 to 46 thoughts over 4
+to 26 environment steps — and the round's hypothesis was that an instruction about the turn budget would reach them. The
+instruction was written, length-matched against its own permutation, and bought at 548 games. It is **inert**
+(264 vs 266, paired −0.73 pp, p = 0.66), and the reason is better than the hypothesis:
+
+**The five games won on a redraw.** Under the instruction, four of five won at 1 to 10 thoughts; under the permutation,
+five of five. The same happened to the other family — R186's five search-heavy losses went 3/5 and 2/5 — so of the
+twenty game-slots that were lost in R186, **three stayed lost**. The pool read 264, 264, 266 across three packs.
+
+That makes the class **transient**, and it is the fourth member of one class of defect in this record, each time with a
+different denominator:
+
+| round | the number | the population nobody named |
+| --- | --- | --- |
+| R183 | a mean over **lost** games | nine losses became three, so the mean was over the survivors |
+| R184 | a counterfactual over a **sampled** policy | a prediction read as a floor |
+| R186 | a band over a **pool** that is 91% one kind | a stratum read as a population |
+| **R188** | a class of losses over **one draw** | a draw read as a property of five games |
+
+The generalisation is now sharp enough to be a rule: **an observation conditioned on an outcome is a statement about the
+draw that produced the outcome.** Wins are not conditioned — they are the outcome — which is why the pool is the only
+statistic in this record that has survived every round unchanged.
+
+Three defects were caught in the design rather than in the readback, and they are worth recording because they were
+caught *because* of this file:
+
+1. **The rumination cell had no band.** Registered as "thoughts a game fall by at least 0.5 against the placebo". On the
+   148 games with byte-identical packs between R186 and R187, the same prompt read **3.68** and **4.80** — a band of
+   **1.12**, more than twice the registered threshold. The cell could not have been read in either direction, and the
+   band was computable from artefacts that already existed (rule 1 of 34.267, applied one level down: a cell needs a
+   band, not just a value).
+2. **The first four dispatches bought nothing** (34.271): the bank was not on `master`. ¥0, twenty seconds, one guard.
+3. **The placebo was mandatory and would have been skipped by a lane in a hurry.** Without it the round reports an
+   instruction that "reduced rumination by 0.66 a game" — a number inside the band, in the direction the hypothesis
+   predicted, from an arm indistinguishable from its own permutation. The placebo is the difference between a finding
+   and a story.
+
+**What it costs the project's plan.** The registered refutation named the location prior as R189, on the premise that
+eight of ten losses are search. That premise is a one-draw statement like the one this audit retires, so it is retired
+with its parent: a plan aimed at "those eight" would aim at a draw. What is left is a **state** — 1.34% of games enter a
+rumination loop and each one costs the game — and a state is reachable with a conditional intervention (R189's guard)
+rather than with knowledge about particular tasks.

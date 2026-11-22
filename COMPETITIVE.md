@@ -9258,3 +9258,58 @@ So the next round's target is the only unsatisfied requirement left on this boar
 offline from the training corpus (free, no model call), untagged so that all six kinds read it, and see whether the eight
 budget-exhausted losses move. If they do, this project holds first place in its family *and* the mechanism that the
 instance-context rows buy with 177.9 steps of exploration — at 15.3 steps per success and $0.69 per 1,000 episodes.
+
+### The family this project now competes in is not "memory" but "memory admission", and it has three published members
+
+R185 to R187 turned the lane's question from *does a bank help* into *which entries hurt, and can that be known before
+the round is bought*. The literature answered the second half in the last quarter, and the answers are comparable
+because all three are execution-free:
+
+| work | mechanism | what it decides | LLM | stack | cost |
+| --- | --- | --- | --- | --- | --- |
+| **Break It Down, Pass It On** (arXiv 2608.20274) | **skill utility score** = specificity × abstractness, from skill and task embeddings only | admits or rejects a stored skill **before** any task runs | any of 11 tested (Gemini-3.1-Pro to open MoE) | Python | no rollout: embeddings only |
+| **PATH-Bench / SEU** (Lacuna) | *Selective Experience Use*: evaluate each retrieved memory against the task and **preserve, abstract, or ignore** it | read-time suppression of interfering memories | DeepSeek-V4-Flash, GPT-5.4-mini, GLM-5.0 in its transfer matrix | Python | one judgement per retrieval |
+| **Negative Knowledge** (arXiv 2606.21024) | a curator writes **bounded, typed failure records** (layer, scope, degree, action, risk); the agent must adopt or reject each | whether a failure becomes reusable knowledge, at 296 tokens a record | Claude Sonnet 4.6 | Python | 296 tokens a record; −73.3% against self-debug |
+| **microglia, scope tags** (R186–R188) | an entry carries the kinds it was written for; a read-time gate carries only those | which kinds a sentence reaches | deepseek-flash | Python + TypeScript | **zero**: a field in the bank file |
+
+**The project's position in that list is now specific and honest.** Its `kinds` tag is the *cheapest possible* member of
+the family: no embeddings, no judgement call, no curator — one list in a JSON file, and it was worth **+3.6 games per
+foreign kind avoided** (R185 −18 with five, R187 −10 with three, R186 +1 with none). What it does **not** have is the
+one thing the first three all have: a score that says what an entry will do **before it is bought**.
+
+**What the three published mechanisms predict about this lane's own results.** *Break It Down* reports that task-level
+skills lower success below the no-memory baseline while subtask-level skills raise it, and attributes the difference to
+the product of specificity and abstractness — an entry that is close to one task and spread over none is precisely the
+entry that will hurt. That is the scope law of §8.48 stated as a predictor instead of as a measurement: R185's
+precondition is **high specificity, zero abstractness** (written for `put`, relevant to `put` alone) and it cost 18 games
+when given to six kinds; R186 gave it to one kind and it paid. The lane has the *outcome* side of that curve measured
+three times and the *predictor* side not at all, which is the gap the next round closes: 274 task descriptions plus
+every entry the lane has ever banked is enough to compute the score for all of them and check it against eight rounds of
+measured deltas.
+
+**Why this matters for the SOTA claim rather than for the bibliography.** The board's leaders are at 99.7 (an
+instance-context system that explores each task) and this project is at 99.25 on the unseen split with a bank that is
+written once and read 274 times. The next point is not another entry — it is knowing which entries to write. A
+calibrated utility score turns the lane's central finding from a report into a **gate**: an entry that scores below the
+threshold never reaches a round, and the −18-game class becomes unreachable by construction.
+
+### R188 moves the board not at all, and settles what the board's last two games are
+
+The published row is unchanged — **99.25% on the unseen section**, pooled **264/274** — and the round's contribution is a
+**distribution** where the record used to have a point: three packs (551 chars, 814 with an instruction, 814 with that
+instruction permuted) read **264, 264, 266** of 274, with the unseen section at 131 to 133 of 134. Instruction and
+permutation are indistinguishable (p = 0.66), so the pack's marginal entry is inert at this scale.
+
+**What that means against the rows above.** The board's top is AutoManual + AutoContext at **99.7** (instance context),
+then this project at **99.25**, then AutoManual at 97.9. The gap to the top row is **0.45 pp = 0.6 games of 134**; the
+gap to the next cross-task-memory row is **1.8 games in this project's favour**. Both are smaller than the movement this
+harness shows between two draws of one prompt — 264 to 266 of 274, and in R187's same-prompt check ±5 games — so the
+honest ranking statement is:
+
+> microglia is first in the cross-task-memory family and within one game of the instance-context row, on 134 held-out
+> games, at a tenth of that row's per-instance scaffolding and $0.69 per 1,000 episodes. The remaining difference is
+> inside the resolution of the split.
+
+That is a stronger claim than a point estimate and a weaker one than "SOTA overall", and it is the one the evidence
+supports. What would move it is not another entry — R188 bought that answer — but a mechanism that reduces the *rate* at
+which games are lost to a state rather than to a task, which is what R189's read-time guard tests.
