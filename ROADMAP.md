@@ -8811,8 +8811,14 @@ and the search family is closed rather than queued.
 ## R192 (queued) — the release distribution: four draws of the published arm, so the number quoted is a band
 
 265, 264, 264, 258: the published bank's pool has been drawn four times on the same 274 games and the spread is **seven
-games**. A release that quotes one of them is quoting a draw. Four dispatches (≈ ¥6.0) buy the distribution, and what is
-published afterwards is the interval rather than the point.
+games**. A release that quotes one of them is quoting a draw. **Eight dispatches (≈ ¥5.4)** buy the distribution, and what
+is published afterwards is the interval rather than the point.
+
+**The arithmetic of the price, corrected before the purchase.** One *draw* is one pass of 274 games, and a pass is two
+dispatches — the two corpus sections are two `--split` values and the driver loads one at a time. R191 priced a pass at
+**$0.187 ≈ ¥1.35** (two arms, 548 games, $0.3735), so four draws are eight dispatches and **≈ ¥5.4**, not the four
+dispatches the first draft of this paragraph named. The price was right for four draws and the count was not: the same
+kind of uncalculated number as the fires band in R191's reading 1 (AUDIT 34.278), caught this time before the money.
 
 ## R191, read back — four named games, four wins, ¥2.69; and the pool is a draw, not a measurement
 
