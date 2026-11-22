@@ -5077,3 +5077,37 @@ family, within one game of the instance-context row, at 15 steps per success and
 What follows is not more entries. A memory that is inert costs context and buys nothing; one that helps does so through
 its reach; and the losses that remain are a **state** — a loop the model enters on a draw — which no sentence about a
 task can address and a conditional intervention can. That is the shape the next round tests.
+
+## A fifth kind of intervention: the state, and the line that is not a memory
+
+R189 answers the question the last section left open. The loop is a state, and a state is reachable at the turn: the
+driver answered every reply that carried no command with `OK.`, and the round changed that one string to
+`OK. Reply with one command only.` Nothing else moved — same 551-character bank, same reader, same cap, same call
+pattern.
+
+**Eight of the ten games the control lost to narration won at one to four thoughts**, where the control had spent 24 to
+49. The pooled reading is **265 of 274 against 258** (paired +2.55 pp, p = 0.080, 11 + 4 discordant), the held-out
+section is **134 of 134**, and the arm costs **$0.1946 against the control's $0.2152** because it makes 204 fewer calls.
+The ledger is the mechanism: **826 fires, 825 answered, none relapsed** — the model does what the line asks, every time.
+
+Three things about this round belong in a whitepaper rather than in a log.
+
+**First, it is not memory, and the board row has to say so.** The bank's own level is R186's 99.25 on the unseen section;
+the guard adds the game that closes the gap to the instance-context leader. A reader who quotes one number for the
+system is quoting a system with two mechanisms, and the honest decomposition is: **memory contributes the reach, the
+turn rule contributes the economy.** Any harness can adopt the second, which is why the first is the thing this project
+is *about* and the second is the thing that made the board move.
+
+**Second, a conditional intervention can be conditional on the wrong condition and still work.** The registration
+expected the guard to fire on about 1.34% of turns — the rate at which games are lost to the loop — and it fires on
+20% of turns, once per thought. It works anyway, because the mechanism is not "interrupt the loop" but "make narration
+cost a turn and pay nothing": the arm's thoughts fell 4.96 → 3.01 a game, and eight of the ten heavy games were not
+loops being broken but loops never forming. That is a different causal story from the one the round was registered
+with, and it is the one the data supports (AUDIT 34.275).
+
+**Third, the remaining losses changed family.** All four games the guard lost ended at the environment's 50-step cap
+with *fewer* thoughts than the control: they are search failures with the narration removed. The format channel
+(`any-line`) took the parser's refusals, the guard took the loop, and what is left is finding the object — the same
+place R186's `put` stratum pointed, and the one place a cross-task bank of sentences has never reached. An instance
+model reaches it by exploring (99.7 at 177.9 scaffolding steps an instance); this project has to reach it with a
+read-time state instead, which is the round after the next.

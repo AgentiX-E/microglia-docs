@@ -15242,3 +15242,99 @@ eight of ten losses are search. That premise is a one-draw statement like the on
 with its parent: a plan aimed at "those eight" would aim at a draw. What is left is a **state** — 1.34% of games enter a
 rumination loop and each one costs the game — and a state is reachable with a conditional intervention (R189's guard)
 rather than with knowledge about particular tasks.
+
+## 34.273 — A guard's ledger needs a denominator, and a reply that carried a command under a thought is not a relapse
+
+R189 changes one string: a reply that carried no command is answered `OK. Reply with one command only.` instead of `OK.`
+That is a conditional intervention, and the condition is the point — it cannot fire in a game that never enters the loop,
+so the round's first reading is not a score but an **engagement** count. The driver therefore records three numbers per
+episode, and the first draft had two.
+
+**The near-miss.** The natural ledger is `fires` and `relapsed`: how often the line was sent, and how often the model
+answered it with another commandless reply. Written that way, the relapse test is one line — `kind_of_reply != "action"` —
+and on the reference channel it is correct. On the **any-line** channel it is not: a reply whose first line is a thought
+and whose second line is a command is parsed as a `thought` and *executed* by the channel (AUDIT 34.262), so a recovery
+would be counted as a relapse. The guarded arm would then report a 100% relapse rate on exactly the replies the harness
+had just repaired, and the round's mechanism cell would read as a mechanism that does not work on the channel R184 to R188
+were all measured on.
+
+The repair is one line and it is in the record rather than in the diff: **the command is looked for before the branch**,
+so "did this reply carry a command" is `kind_of_reply == "action" or refused_command(reply) is not None`. Two tests pin
+it — one on the reference channel that a refused command is answered `Nothing happens.` and does not count a fire, one on
+the any-line channel that a recovered turn does not count as a relapse.
+
+**Why three counters and not two.** A fire on the last turn of a pass has no later reply to read. Counting it as checked
+invents an outcome; counting it as relapsed invents a worse one. So the ledger separates the denominator (`checked`) from
+the numerator (`relapsed`), and the difference between `fires` and `checked` is the number of fires the budget ended on —
+which is a fact about the pass, printed, and zero in every game that did not hit the cap. The registered reading is then
+a rate with its own denominator: `relapsed / checked`, not `relapsed / fires`.
+
+**And the control carries the field too.** `guard: false` with three zeros, rather than an absent key. An absent key is
+what `refused_actions` looked like for two rounds, and reading it required knowing which artefacts predated the field;
+a control that says `off` cannot be mistaken for an old file, and an old file that says nothing is reported `not counted`
+rather than `0 fires`.
+
+## 34.274 — The fourth harness knob, and the two ways a conditional intervention can be pooled into nothing
+
+Four rounds have now moved something that is not the prompt and is invisible in the arm's name:
+
+| round | the knob | what the label carries | what a join refuses |
+| --- | --- | --- | --- |
+| R183 | the reader (`reference`, `any-line`) | `@anyline` | a span over two channels |
+| R184 | the step cap | `@c30` | a span over two caps |
+| R185 | the bank, at an unchanged length | `@b<digest>` in the header | one label over two banks |
+| **R189** | **the answer to a commandless turn** | **`@guard`** | **a span over two guard states** |
+
+R189's two arms are one family, one bank, one channel and one cap — **the guard is the entire difference** — so every
+mechanism in this file is the only thing standing between the round and a report that averages an armed arm with an
+unarmed one. Three were added with the flag:
+
+1. **The label.** `always-in@kind+anyline+guard` against `always-in@kind+anyline`. Without it both dispatches land in one
+   group and `tile` refuses the doubled games only after both are paid for — the failure R183, R184 and R185 each paid
+   to learn.
+2. **The join's declaration.** `--expect-guard on,off`, with `absent` normalised to `off` for the span check and printed
+   as `absent` in the counter. An R186 artefact and an R189 unguarded arm *are* the same driver for this knob, so they do
+   not need a declaration; an R186 artefact and a guarded arm are two drivers and do.
+3. **The header held to the episodes.** `summary.guard_commandless` is a claim; `episode.guard` is the fact. A file where
+   they disagree is a file that was merged, resumed across a change, or edited, and it is refused rather than joined —
+   the same shape as R185's bank swapped under an unchanged label, one field further out. Found while writing this round's
+   own tests, not in a readback: the two are written by one flag in one process, which is exactly why a disagreement is
+   evidence of a third process.
+
+## 34.275 — A band of 20 to 120 fires, for an arm that can only fire once every time the model thinks
+
+R189's third reading was written as "`guard_fires` is between 20 and 120 over 274 games, and every firing is followed by
+a reply that carries a command within one turn". The second clause is the mechanism and it held at **825 of 825 checked,
+0 relapsed**. The first clause was arithmetically impossible, and the arm proved it by firing **826** times.
+
+**Where the band came from.** The round before had measured **11 thought-heavy games over 822 game-draws, 1.34%** — a
+rate over *games*. The registration multiplied it by turns a game (≈15) and got ≈55 fires, then wrote a band of 20 to
+120 around it. But a fire is not a rare event: it happens on **every** reply that carries no command, and a model writes
+4.96 of those a game. The band therefore described an arm that thinks 0.07 to 0.44 times a game — a model that never
+narrates, which is the arm this lane would love and has never seen.
+
+**What the band was actually guarding against** was written in the same paragraph: "a guard that fires on 90% of turns is
+a different treatment (it would be a permanent instruction, which R188 measured as inert)". That is a **ratio**, not a
+count, and the ratio is what should have been registered: 826 fires over ≈4,100 turns is **20%**. A count over this arm
+cannot distinguish "fires on every thought" (which is the design) from "fires on every turn" (which would be a permanent
+instruction) — the two differ by what the denominator is, and the denominator was the thing left out.
+
+**The family, one row each.** This is the fifth member and the first where the wrong denominator was a *rate* rather
+than a population:
+
+| round | the number | what it was over |
+| --- | --- | --- |
+| R183 (34.268) | a mean over lost games | the survivors of a filter |
+| R186 (34.270) | ten losses, two families | one draw, read as a class |
+| R187 (34.272) | a cell with no band | no variance estimate at all |
+| R188 (34.274 family) | a class of losses | one draw, five games |
+| **R189** | **fires 20 to 120** | **a game rate applied to turns** |
+
+**What it costs when it is caught.** Nothing, this time: the band failed and the mechanism clause carried the round, so
+the reading is reported as a band failure rather than as a null. That is the difference between a registration that
+fails *informatively* and one that fails *silently* — and it is only informative because the driver recorded `checked`
+beside `fires`, so the miss could be attributed to the band rather than to the treatment.
+
+**The rule, restated.** A registered cell needs three things and R189 is the first round where all three were written
+down: a **value**, a **band**, and a **denominator**. The value was right (engagement), the denominator was implicit and
+wrong (turns), and the band inherited the error.

@@ -26052,3 +26052,41 @@ field); `bank-turnbudget-1` and its placebo stay in the tree as a measured inert
 **Next: R189, the guard at the state.** The driver answers a commandless reply with `OK.`; the guard changes that one
 string to `OK. Reply with one command only.` It cannot fire in a game that never enters the loop, needs no knowledge
 about tasks, and targets the measured 1.34% of games that are lost to rumination. Registered with five readings; ≈ ¥3.00.
+
+## 228. R189 read back: the guard recovers 8 of the 10 games narration was costing, and the held-out split goes 134/134 (04:54 UTC)
+
+Four dispatches, **548 games, two arms on the published bank**, `any-line`, cap 50, **$0.4098 ≈ ¥2.95 against ¥3.00
+quoted**: guard `44984243200` (134) + `44984376250` (140), plain `44984214371` + `44984351342`.
+
+| arm | pooled | unseen 134 | seen 140 | thoughts/game | heavy | steps/game | calls |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **guard `OK. Reply with one command only.`** | **265/274 (96.72%)** | **134/134 (100.00%)** | 131/140 | **3.01** | **2** | **15.87** | 4,348 |
+| plain `OK.` | 258/274 (94.16%) | 131/134 | 127/140 | 4.96 | 10 | 17.28 | 4,736 |
+
+Paired **+2.55 pp** [+0.00, +5.47], p = 0.080, 11 + 4 discordant, mde 3.96 pp. **The first clean sweep of the held-out
+split in this lane**, and the guard arm is **cheaper** than its control ($0.1946 vs $0.2152) because it makes 204 fewer
+calls.
+
+**The mechanism cell is the round's result.** The control lost ten games to a rumination loop at 24 to 49 thoughts; under
+the guard **eight of the ten won at one to four thoughts**, and the two exceptions are exactly the informative ones — one
+kept narrating (38 → 23, lost) and one crossed the line (33 → 39, a plain win). The four games the guard lost were all
+lost at the world's 50-step cap with **fewer** thoughts than the control: the arm narrates less, it does not do more.
+
+**Two readings missed by one game each, and one band was impossible as drawn.** `thought_heavy` 2 against a registered
+≤1; pool 265 against a registered ≥266. Both misses are inside the ±5 games R188 measured for draw-to-draw movement.
+Reading 3 asked for 20–120 fires and got **826** — the band applied a *game* rate (1.34%) to *turns*, which would have
+described a model that thinks 0.07 times a game; AUDIT 34.275 records it as the fifth wrong-denominator defect in this
+record. The clause that mattered — "every firing is followed by a command" — held at **825 of 825, zero relapses**. Not
+refuted: the registered refutation needed fewer than 20 fires or 3 heavy games.
+
+**Instrument and docs.** `--guard-commandless` in the driver and the workflow, `guard`/`guard_fires`/`guard_checked`/
+`guard_relapsed` in every episode, `@guard` in the label, `--expect-guard on,off` and a `guard` line in `aggregate.py`,
+plus the header held to its episodes (AUDIT 34.274). Gate: **637 Python tests**, 99.1% line-and-branch, `agent.py` 99.8%,
+`aggregate.py` 99.8%, `alf_dispatch.py` 99.5%, every module ≥ 95%, docs 8/8.
+
+**Board.** Memory family first, and now first outright on the held-out split: **100.00% unseen** against AutoManual
+97.9% and the previous best 99.25% (R186). Pooled 96.72%, which is the number to quote against full-board agents.
+
+**Next: R190, the utility score, offline.** No purchase: the four banks this lane has already measured (551 ch with 10
+losses and 5 heavy, 814 ch inert, 659 ch, 197 ch) are enough to ask *which entry hurts*, which is the half of the
+admission family R189 did not touch.

@@ -9313,3 +9313,42 @@ honest ranking statement is:
 That is a stronger claim than a point estimate and a weaker one than "SOTA overall", and it is the one the evidence
 supports. What would move it is not another entry — R188 bought that answer — but a mechanism that reduces the *rate* at
 which games are lost to a state rather than to a task, which is what R189's read-time guard tests.
+
+![R189: the ten rumination losses and what the guard did to them, the pool with its draw band, and a ledger of 826 fires with zero relapses against a registered band of 20 to 120](figures/alfworld-r189.png)
+
+### R189 puts the held-out section at 134/134, and the row that does it carries no task knowledge in the guard
+
+The guard arm reads **134 of 134 on the unseen section** — a clean sweep, and **0.3 pp above AutoManual + AutoContext's
+99.7**, the row that led this board. Pooled it is **265/274 (96.72%)**, against a control drawn in the same four
+dispatches at 258/274. The paired delta is **+2.55 pp** [+0.00, +5.47], p = 0.080, 11 + 4 discordant.
+
+| # | row | unseen | family | what does the work | steps/success | cost |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | **microglia, scoped bank + turn guard (R189)** | **100.00** | **cross-task memory + turn economy** | one 551-character entry per game + one line on a commandless turn | **15.87** | **$0.71/1k episodes** |
+| 2 | AutoManual + AutoContext | 99.7 | instance context | a per-instance world model built by exploring | 8.4 + 177.9/instance | cloud tokens per instance |
+| 3 | microglia, scoped bank (R186) | 99.25 | cross-task memory | the bank alone | 15.29 | $0.69/1k |
+| 4 | AutoManual | 97.9 | cross-task memory | LLM-generated manual from curated examples | — | — |
+| 5 | ExpeL | 83.7 | cross-task memory | distilled insights, BM25 retrieval | — | — |
+
+**How to read the number honestly.** Two things moved, and only one of them is memory.
+
+1. **The bank's contribution is R186's**: 99.25 on the unseen section, measured across three packs at 264–266 of 274.
+   R189's guard does not change the pack by a single character — same 551-character entry, same `bank_digest`,
+   134 + 140 tiling — so it cannot be credited with a level that inheres in the bank.
+2. **The guard's contribution is turn economy, not knowledge.** It fires on every reply that carries no command, asks
+   for one line, and is answered 825 of 825 times. It recovered **8 of the 10 games** the control lost to a narration
+   loop, at one to four thoughts where the control spent 33 to 49. That is a mechanism any harness can adopt, and a row
+   that includes it is a row about an *agent loop*, not only about a memory.
+
+So the board statement is now:
+
+> microglia holds **100.00% on the 134-game held-out split** (265/274 pooled) with a 551-character bank and a one-line
+> turn rule, at **$0.71 per 1,000 episodes** and 15.9 steps a success. The bank alone is 99.25, which is second in the
+> cross-task-memory family and 0.45 pp behind the instance-context leader; the guard adds the game that closes it, and
+> it is measured as a *state* intervention rather than as a lesson.
+
+**What the leader still does that this row does not.** AutoManual + AutoContext builds a model of each instance by
+exploring it — 177.9 steps of scaffolding per instance — and pays 8.4 steps a success for it. microglia reaches the same
+134/134 **without a per-instance model** and without an exploration phase, but at **15.9 steps** a success: it is
+cheaper per episode and dearer per step. That is the trade the board's cost axis has to show, and it is why the next
+round is a *utility score* (R190, ¥0) rather than more entries.

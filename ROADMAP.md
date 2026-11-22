@@ -8683,3 +8683,66 @@ remaining work is the **utility score** of the admission family (predicting whic
 **Why this and not the location prior.** The prior needed a stable search class; R188 says the class is a draw. A guard
 does not need to know which game will loop — it fires on the state — which is the only form of intervention whose target
 survived this round.
+
+## R189, read back — the guard is the lane's largest single mechanism, and it hands the board a clean held-out split
+
+| arm | pooled | unseen | seen | thoughts/game | heavy | steps/game |
+| --- | --- | --- | --- | --- | --- | --- |
+| **guard** | **265/274 (96.72%)** | **134/134 (100.00%)** | 131/140 | **3.01** | **2** | **15.87** |
+| plain | 258/274 | 131/134 | 127/140 | 4.96 | 10 | 17.28 |
+
+Paired +2.55 pp [+0.00, +5.47], p = 0.080, 11 + 4, mde 3.96 pp. **Eight of the control's ten rumination losses won at one
+to four thoughts**; the four games the guard lost were lost at the world's 50-step cap with fewer thoughts than the
+control. Cost: $0.4098 ≈ ¥2.95, and the guarded arm is **cheaper** than its control.
+
+**Two readings missed by one and one band was impossible.** `thought_heavy` 2 (registered ≤1), pool 265 (registered
+≥266), fires 826 (registered 20–120, a game rate applied to turns — AUDIT 34.275). **Not refuted**: 826 fires ≥ 20 and
+2 heavy < 3, and 825 of 825 checked fires were answered, 0 relapsed.
+
+**What it changes about the plan.** The loop is closed as a question. The remaining gap is the **seen** section (131/140)
+and the search family, which the guard cannot reach: 4 of the 9 guard losses ended at the 50-step cap. So the next
+purchase is about *finding things*, not about narration — and the admission family's other half (which entry hurts) is
+still free to ask offline.
+
+## R190 (registered) — the utility score, offline: which entry hurts, on four banks already paid for
+
+No dispatch, no tokens. The literature's admission family scores an entry by **specificity × abstractness without a
+rollout** (`arXiv:2608.20274`); this lane has four measured banks to score retrospectively, and the round asks whether the
+score orders them the way the **paired deltas** did:
+
+| bank | rendered | measured effect vs its own control |
+| --- | --- | --- |
+| `bank-putscope-2` | 551 ch, 1 entry | +24.45 pp (R186), `put` 56/59 |
+| `bank-turnbudget-1` + placebo | 814 ch, 2 entries | −0.73 pp, p = 0.66 (inert, R188) |
+| `bank-crosskind` | 659 ch | measured at R177 |
+| `bank-putmove-*` 197 ch family | 197 ch | measured at R181–R182 |
+
+**Registered readings** (all offline, `scripts/score-bank.py`, no model call):
+
+1. **Rank correlation** between the utility score of a bank's entries and the sign of its measured effect: ρ ≥ 0.6 over
+   the four banks, with the score computed blind to which bank is which.
+2. **The 551-character bank scores above the 814-character one on specificity**, since the latter is a general
+   instruction with no task-naming content.
+3. **A perturbation test**: permuting an entry's words leaves specificity unchanged (it is lexical) and lowers
+   abstractness, so the score of `bank-turnbudget-1` and its placebo must differ by ≤ 0.05 — the same distinction R188
+   bought for ¥3.03, reproduced at ¥0.
+
+**Refutation.** ρ < 0.3, or a permutation that moves the score by more than 0.05 → the score is a lexical artefact and the
+admission family has nothing to offer this corpus that the paired deltas do not already say.
+
+**Void.** Any bank in the table without a measured paired delta in this record; any score computed with the entry's
+measured effect in view.
+
+**Price ¥0.00**, and the whole round is a script plus its tests.
+
+## R191 (queued) — the release distribution: four draws of the published arm, so the number quoted is a band
+
+265, 264, 264, 258: the published bank's pool has now been drawn four times on the same 274 games, and the spread is
+**seven games**. A release that quotes one of them is quoting a draw. Four dispatches (¥6.0) buy the distribution, and
+what is published afterwards is the interval rather than the point.
+
+## R192 (queued) — instance state, the only family the pack cannot reach
+
+The four guard losses all ended at the 50-step cap: they are search failures with the loop already removed. The
+literature's answer is a per-episode **state** (what has been tried, where, and what it returned) rather than a corpus
+prior, and the driver already records the trajectory. ¥4.2, registered after R190 reports.
