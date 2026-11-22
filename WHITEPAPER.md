@@ -5320,5 +5320,5 @@ ablation table is a measurement that has not been made, and it is left blank rat
 would read like one.
 
 **The negative rows are the asset.** `putscope3` (−3.65 pp, p = 0.022), the counted list (−1.46 pp) and the admissible set
-(−0.73 pp, and its example was `help` in 88.7% of fires) are three ideas that looked right in the literature, were built,
+(−0.73 pp, and its first line named `help` in 88.7% of the games that fired) are three ideas that looked right in the literature, were built,
 paid for and read. A record that only publishes the arms that worked cannot be compared against one that has not run them.

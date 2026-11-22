@@ -9522,7 +9522,7 @@ counted arm is not a row; it is a footnote on row 2 — *the same state, rendere
 the games the state was adopted for*, which is the cleanest ablation the table can carry and the one a reader should use
 to price the state line's contribution as **four named games rather than a pool delta**.
 
-![R194: the cheapest line in the family, the example that was `help` in 88.7% of its fires, and the two named games that went worse](figures/alfworld-r194.png)
+![R194: the cheapest line in the family, the example that was `help` in 88.7% of the games it fired on, and the two named games that went worse](figures/alfworld-r194.png)
 
 The figure is the round in one page, and the middle panel is the part that changes what a competitor comparison can say.
 A system that reports only its rate cannot distinguish "the mechanism was refuted" from "the mechanism was never

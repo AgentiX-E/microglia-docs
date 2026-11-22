@@ -8995,7 +8995,7 @@ which is the whole reason the instrument came first (AUDIT 34.282).
 
 265/274 (96.72%), unseen 133/134, **−0.73 pp** [−2.55, +1.09] against R191's list, at the floor of R192's band.
 Readings 1 and 2 failed, 3 held by **0.12 pp**, 4 held at **−51.2% characters**, 5 held. The arm is a measured negative:
-**`help` in 220 of 248 fires.** The registered treatment was never rendered, so the admissibility hypothesis is untested
+**`help` in 220 of the 248 firing games.** The registered treatment was never rendered, so the admissibility hypothesis is untested
 rather than refuted (AUDIT 34.286). The instrument that found it — `admissible_sample` — cost nothing and was added to
 price the line, which it did: **¥1.36 against ¥1.4 predicted, a 3% error**, the first estimate in four rounds that held.
 
