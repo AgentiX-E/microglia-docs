@@ -9057,7 +9057,10 @@ replacing the thought with a reflection on *state against goal* at every step. I
 
 ### The board, and the family each row belongs to
 
-![ALFWorld as of R184: cost against accuracy where both are reported, and the whole board split by what the memory is](figures/alfworld-frontier.png)
+![ALFWorld as of R189: cost against accuracy where both are reported, and the whole board split by what the memory is](figures/alfworld-frontier.png)
+
+*The table below is the R183 snapshot every later round is measured against — it is left as it was so the movement is
+readable; the current rows are in the R186 and R189 sections at the end of this appendix.*
 
 | # | row | unseen success | family | LLM | stack | cost as reported |
 | --- | --- | --- | --- | --- | --- | --- |
