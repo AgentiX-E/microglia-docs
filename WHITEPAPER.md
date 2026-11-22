@@ -5009,3 +5009,44 @@ own content twice, once in tokens and once in cache misses.**
 
 None of this makes the experiment cheaper than it is. It makes the number true, which is a different and more
 useful thing: ¥2.99 is a figure that can be spent without a conversation about whether it is right.
+
+## A memory's negative effect is its reach, not its content — and reach is a field
+
+The project's question is whether extracted experience raises task success. It asked it 186 times, and the round that
+answers the *negative* half of it is the one where a single entry was written for one task kind and read by six
+(R185): 197 characters about opening a closed container moved `put` **+10.2 pp** and `clean` **−22.4 pp** — thirteen
+games lost against six gained, net **−12**, from a sentence that is not false about any of the tasks that read it.
+
+The repair was not a better sentence. It was the same two sentences with a `kinds` tag on each and a gate at read time,
+so that every game still carried **one entry and 551 characters** (`scope, R186`). The result is the cleanest statement
+this project has of its own thesis:
+
+| | R185, one entry read by six | R186, one entry read by its own kind |
+| --- | --- | --- |
+| `put` | 56/59 | **56/59** — the gain, replicated |
+| `clean` | 45/58 (**−13 games**) | **58/58** |
+| the other four kinds | −3, −2, 0, 0 | **+1 game, net, over 215 games** |
+| pool | 245/274 (89.42%) | **264/274 (96.35%)** |
+| unseen section | 123/134 (91.79%) | **133/134 (99.25%)** |
+
+Two facts make this a mechanism and not a tuning result. **The five kinds whose packs are byte-identical to the earlier
+round's moved one game**, which is the run-to-run variance the design promised to measure rather than assume; and the
+`put` gain **replicated at identical transitions** — 8 games gained and 2 lost, in both rounds, on two independent
+59-game samples (pooled 16 against 4, p = 0.0118). A gain that survives being scoped and a cost that vanishes when the
+scope is restored are two halves of one statement: **an entry is a treatment on everything that reads it, and the
+negative effect of a memory is the width of its audience.**
+
+There is a corollary about instruments, and it cost this project two rounds. The counter `recovered` — replies shaped
+*thought, then command* — fell 269 → 137 when the format clause left the pack, and was read as proof that the clause
+was doing work for every kind. It is **91% `put`**: 269 = 246 + 23 and 168 = 133 + 35. The five kinds that kept the
+clause went **up**; the pool fell entirely inside the one kind whose clause the design had removed. So the join now
+prints the counter per kind, against that kind's own calls, and prints nothing when the file predates the field. The
+general rule joins the two this project already learned the hard way — R183's mean over *lost* games and R184's
+counterfactual over a *sampled* policy — in one sentence: **a denominator fixed by the outcome is a number about the
+treatment you applied, not the thing you measured, and a pool is a denominator.**
+
+What is left after 186 rounds is ten lost games, and eight of them are not about wording at all: they exhaust the
+fifty-turn budget with the grammar and the precondition both correct, two of them on `pick_and_place_simple`, the
+corpus's simplest task, where the failure is finding the object. That is the failure mode a sentence about a *kind*
+cannot reach and a document about an *instance* can — which is what the instance-context rows at the top of the board
+(99.7) are, and what the next round buys.

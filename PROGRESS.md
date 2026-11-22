@@ -25942,3 +25942,40 @@ categories) and this lane reports per-game rates. On the 134 unseen games the ba
 macro** — identical to two decimals, because its six per-kind rates are 100.0, 100.0, 94.4, 95.7, 87.5 and 100.0 — so the
 row can sit on a macro table without a conversion. The control is the case where it matters: **72.39% micro against
 73.71% macro**.
+
+## 225. R186 read back: scope was the whole mechanism — 264/274, the unseen section at 133/134, and the `put` gain intact (07:35 UTC)
+
+Two dispatches (`44959956920` held out 134, `44959974666` seen 140), one gated arm, `any-line`, cap 50, off-peak in all
+eight summaries, **¥1.50 against ¥2.10 quoted** ($0.2085, 4,605 calls).
+
+| arm | pooled | unseen 134 | seen 140 | paired vs control |
+| --- | --- | --- | --- | --- |
+| **`scope@kind+anyline` (R186)** | **264/274 (96.35%)** | **133/134 (99.25%)** | 131/140 (93.57%) | **+24.45 pp** (72 gained, 5 lost) |
+| `line@anyline` (R183) | 257/274 (93.80%) | 129/134 (96.27%) | 128/140 (91.43%) | +21.90 pp |
+| `none@anyline` (R183) | 197/274 (71.90%) | 97/134 (72.39%) | 100/140 (71.43%) | — |
+
+**The registration held on four of five readings and the fifth failed for a reason worth more than the four.** `put`
+**56/59** (band 54–58) with the gain repeated at exactly R185's transitions — 8 gained, 2 lost, twice, on two independent
+samples, pooled **16 against 4, p = 0.0118**. `clean` back to **58/58** from 45. `heat` 37, `examine` 29, `cool` 43,
+`puttwo` 41 — every one at or above its registered floor. Pool **264** inside 256–266. And `recovered` **168** against a
+band of 250–320, which is AUDIT 34.268: the counter is 91% `put`, the five kinds that kept the clause went **23 → 35**,
+and the pool fell entirely inside the one kind whose clause the design removed.
+
+**The five kinds were held still by construction and moved one game.** 215 of 274 games carried a pack byte-identical to
+R183's and went **207 → 208**; per kind the largest movement is one game. That is the run-to-run variance the registration
+promised to measure instead of assume, and it makes R185's damage unambiguous: `clean` under the precondition thought
+**10.8** times a game and spent **23.8** turns; under the R183 sentence it thinks **4.4** and spends **15.1**, with its
+thirteen budget-exhausted games at **zero**. The entry was the treatment; the kind was not the cause.
+
+**The honest limit.** Against the bank it was built from the round is +2.55 pp with mde 3.96 pp — 274 games cannot
+separate two banks that differ by one game in six. What is claimed is compositional (scope costs nothing, the gain
+survives), not comparative. Resolving the comparison is what R190's full 548-game re-check is for.
+
+**Instrument repaired in the same round rather than the next.** `aggregate.py` prints `recovered` on each kind's line
+against that kind's own calls, and nothing at all when an arm file predates the field: seven tests, `RecoveredScopeTest`.
+Gate: **599 Python tests**, 99.0% line-and-branch, every module ≥ 95%, docs gates 8/8.
+
+**The board position this produces.** 96.35% pooled and 99.25% on the unseen section, measured on this lane's own
+`any-line` reader with a published bank and a published price, against AutoManual's **97.9%** — nominal first place on the
+unseen split by **1.8 games out of 134**, which is inside one split's noise, so the defensible claim is parity at the top
+of the family plus the cheapest published round in it. The mechanism is now named: **scope, not content**.

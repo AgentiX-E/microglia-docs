@@ -8527,3 +8527,63 @@ measuring the precondition's brevity all along. **Price ≈ ¥2.10**, four jobs.
 **What this buys the product.** A store that tags what each entry is about, and a pack that carries only the entries a
 game's kind claims, is the shape the roadmap called "as wide as the corpus, as narrow as one line" (R174.2). R186 is the
 first round where an entry's *scope* is a measured variable rather than a design intention.
+
+## R186, read back — scope is the mechanism: 264/274, unseen 99.25%, `put` intact and five kinds unmoved
+
+| arm | pooled | unseen 134 | seen 140 | paired vs control | mde |
+| --- | --- | --- | --- | --- | --- |
+| **`scope@kind+anyline`** | **264/274 (96.35%)** | **133/134 (99.25%)** | 131/140 (93.57%) | **+24.45 pp** (72/5) | 8.97 pp |
+| `line@anyline` (R183) | 257/274 (93.80%) | 129/134 (96.27%) | 128/140 (91.43%) | +21.90 pp | 9.03 pp |
+| `none@anyline` (R183) | 197/274 (71.90%) | 97/134 (72.39%) | 100/140 (71.43%) | — | — |
+
+Four of five readings held, and the fifth — `recovered` 168 against a band of 250–320 — is AUDIT 34.268 rather than a
+result: the counter is **91% `put`**, the five kinds that kept the clause went **23 → 35**, and a pool band below 250 is
+what this design *is*. The substantive findings:
+
+1. **The `put` gain replicates at identical transitions.** 8 gained and 2 lost in R185, 8 and 2 again in R186, on two
+   independent 59-game samples; pooled **16 against 4, p = 0.0118**. Replication at the transition level is stronger
+   evidence than a second p-value on a bigger pool.
+2. **Scope costs nothing measurable.** 215 games carried a pack byte-identical to R183's and moved **207 → 208**; the
+   largest per-kind movement is one game. R185's −18 games were the entry reaching five kinds, and removing it from those
+   five restored `clean` to **58/58** with thoughts **10.8 → 4.4** and budget exhaustions **13 → 0**.
+3. **The comparison is underpowered and is reported as such.** +2.55 pp over R183's bank, interval [+0.00, +5.47],
+   **mde 3.96 pp**. R190's 548-game re-check is the round that resolves it; this round does not claim it.
+
+**Instrument repaired in-round:** `aggregate.py` now prints `recovered` per kind with that kind's calls as the
+denominator, and prints nothing when an arm file predates the field (`RecoveredScopeTest`, seven tests). 599 Python
+tests, 99.0% coverage, every module ≥ 95%.
+
+**What is left in the ten lost games is search, not phrasing.** Eight of the ten exhaust the fifty-turn budget with the
+grammar and the precondition both correct — two `cool`, two `heat`, two `examine`, two `put` — and the two `put` losses
+are `pick_and_place_simple`, the corpus's simplest task, lost to locating an object in an unseen house. That is the
+failure mode a sentence about a *kind* cannot reach.
+
+## R187 (registered) — the same entry where it is also true: does the precondition generalise past `put`?
+
+The precondition — *open a closed container before taking from it* — is written about `put`, and three of the six kinds are
+also `then_place_in_receptacle` tasks: `cool` puts an object in a fridge after changing its temperature, `heat` in a
+microwave, `puttwo` two objects in one receptacle. Two `cool` and two `heat` games are among the eight that exhaust the
+budget. `clean` and `examine` are not: `clean` washes in a sink, `examine` only looks.
+
+`banks/bank-putscope-3.json` keeps **one entry per game and 551 rendered characters** and moves the boundary by one kind
+group:
+
+| kinds | entry | rendered |
+| --- | --- | --- |
+| `put`, `cool`, `heat`, `puttwo` | R185's precondition sentence | 551 |
+| `clean`, `examine` | R183's sentence, byte for byte | 551 |
+
+**Registered readings.** One gated arm, `any-line`, cap 50, 274 games, four jobs, read against R186's own arm:
+
+1. `put` **54 to 58 of 59** — the entry's own kind must be unmoved by its neighbours carrying the same sentence.
+2. `cool` ≥ 45 of 46 and `heat` ≥ 38 of 39: the two kinds that carry the precondition must gain, because the failure they
+   lose to is the same closed container (`Nothing happens.` on a take, then up to twenty invalid actions).
+3. `puttwo` ≥ 41 of 41, `clean` ≥ 57 of 58, `examine` ≥ 28 of 31 — the two kinds still on R183's sentence are held still
+   by construction, so a movement here is variance and is read as such.
+4. Overall **264 to 272** of 274.
+5. 551 chars and one entry in all 274 games, one `bank_digest`, two `pack_digest` values, `any-line`, cap 50.
+
+**Refutation.** Any of `cool`, `heat`, `puttwo` **below R186 by two games or more** says the precondition is `put`-specific
+— the sentence is not about containers but about the one kind it was written for — and the entry format stops being the
+variable: R188 becomes the **location prior**, a corpus-wide entry about where object classes live, because eight of ten
+remaining losses are search and not wording. **Price ≈ ¥2.10**, four jobs.

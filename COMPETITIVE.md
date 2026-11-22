@@ -9188,3 +9188,54 @@ row is placeable on a macro table without conversion. The control is where the d
 SOTA claim, it is a **transfer** — and the only competitor row that reports per-category movement (the 2026 report) shows
 the same asymmetry. The next round is therefore not aimed at a higher pool: it is aimed at **the same pool with the
 damage removed**, which is what a scoped pack is.
+
+### R186: the scoped bank reads 99.25 on the unseen split, which is the first row in this record above AutoManual
+
+![R186: four banks on one split, what the recovered counter was counting by kind, and the one-game movement of the five frozen packs](figures/alfworld-r186.png)
+
+| # | row | unseen | family | LLM | stack | cost as reported |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | AutoManual + AutoContext | **99.7** | instance context | DeepSeek-V3-0324 | Python | 8.4 steps/success + 177.9/instance |
+| 2 | **microglia, scoped bank, any-line (R186)** | **99.25** | **cross-task memory** | deepseek-flash | Python + TypeScript | **15.29 steps/success, $0.69/1k episodes** |
+| 3 | IGE + AutoContext | 98.8 | instance context | DeepSeek-V3 | Python | 13.4 + 177.9 |
+| 4 | ReAct + AutoContext | 98.0 | instance context | DeepSeek-V3 | Python | 6.6 + 177.9 |
+| 5 | AutoManual | **97.9** | **cross-task memory** | DeepSeek-V3 | Python | 17.4 steps/success |
+| 6 | frontier actor + bank (2026 report) | 97.3 | cross-task memory | claude-sonnet-5 | not stated | not stated |
+| 7 | microglia, single-entry bank, any-line (R183) | 96.27 | cross-task memory | deepseek-flash | Python + TS | 15.6 steps/success |
+| 8 | frontier actor, no memory | 95.9 | none | claude-sonnet-5 | not stated | not stated |
+| 9 | IGE | 94.3 | search | DeepSeek-V3 | Python | 60.6 |
+| 10 | ReflAct | 93.3 | backbone | GPT-4o | Python | not reported |
+| 11 | M\* (NeurIPS 2026) | 88.1 | cross-task memory | GPT-5.4 Mini + GPT-5.3-Codex | Python + SQLite | $12–90 per search; 101 h |
+| 12 | ASCENT (9B, weight-level) | 88.8 | weight distillation | 9B open model | Python | not reported |
+| 13 | ALMA | 87.1 | cross-task memory | GPT-4o-class | Python | $0.09/run, 1,319 tokens |
+| 14 | microglia, bank, reference reader | 85.82 | cross-task memory | deepseek-flash | Python + TS | 17.3 steps/success |
+| 15 | MemHarness (7B, trained) | 85.9 | cross-task memory | 7B + GRPO | Python | GPU training |
+| 16 | ReAct | 77.5 | backbone | DeepSeek-V3 | Python | 11.4 |
+| 17 | H²R / graph-memory / CoEx / ExpeL | 72.4 / 75.4 / 64.2 / 59.0 | cross-task memory | GPT-4 class | Python | not reported |
+| 18 | microglia, no pack, any-line | 72.39 | none (control) | deepseek-flash | Python + TS | 23.4 steps/success |
+
+**Four placements, each with its caveat.**
+
+1. **First in the cross-task-memory family: 99.25 against AutoManual's 97.9.** The gap is **1.35 pp, which is 1.8 games
+   of 134** — under two games, i.e. a nominal lead inside one split's sampling noise, so the defensible sentence is
+   *parity at the top of the family with the lowest published cost in it*. R190's 548-game re-check is what turns the
+   lead into a claim.
+2. **Second on the board overall, behind one row of a different family.** AutoManual + AutoContext's 99.7 is an
+   **instance-context** system: a per-task document, 177.9 steps of scaffolding per instance, 8.4 steps/success. That is
+   not a bank of reusable lessons and this project has never claimed it; it is the mechanism R187 and R188 test next.
+3. **The memory effect is now +24.45 pp on the pool** (264 vs 197, 72 gained against 5 lost): the largest measured
+   transfer in this record, and the one the round was built to keep attached to a *scoped* entry.
+4. **Cost is the axis this row wins outright.** $0.69 per 1,000 episodes at 15.29 steps/success against M\*'s $12–90 per
+   search and 101 hours of reflective evolution, and against ALMA's $0.09/run at 87.1.
+
+**The one units check the table needs, again.** The 2026 harness report's numbers are **macro** success over six
+categories. On the 274-game pooled split R186 reads **96.35% micro**; on the 134 unseen it reads
+**99.25% micro and 99.28% macro** — the same to one decimal, from per-kind unseen rates of 100.0, 100.0, 100.0, 100.0,
+100.0 and 95.65 — so the row places on a macro table without conversion. The control remains the case where the two
+differ (72.39 micro against 73.71 macro).
+
+**What the round changed about the *kind* of claim this project can make.** Before R186 the record could say "a bank
+raises the pool by 21.9 pp and one entry written for one kind costs eighteen games elsewhere". After it, the record says
+the second half is a **scope** defect with a price of nothing: the five kinds whose packs are byte-identical moved **one
+game** and the `put` gain replicated at identical transitions. A memory's negative effect, on this corpus, is its reach
+and not its content — and reach is a field in the bank file.

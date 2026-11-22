@@ -15064,3 +15064,49 @@ reviewed:
 The first rule already exists in this lane in two places and was not generalised: the price of a round is quoted before
 the dispatch, and the pack's rendered length is asserted in `test_banks.py` before the arm is bought. Both are
 *computable-before-buying* checks. The registration template now carries the third.
+
+## 34.268 — A pool that is nine-tenths one stratum, read three times as if it were a population
+
+`recovered` — the count of replies shaped *thought, then command* — was introduced in R183 as the second reader's
+counterpart to `dropped`, and read in R185 as evidence that the pack's format clause was doing work: 269 → 137, "the
+change is not local to `put`". R186's registration then wrote its third refutation clause on the same counter: a band of
+250 to 320, with the inference that a value below it would mean the clause was never the cause.
+
+The band was met by nothing and could not have been. The decomposition R186 bought:
+
+| | `put` | other five | pool |
+| --- | --- | --- | --- |
+| R183 (clause on every pack) | 246 | 23 | 269 |
+| R185 (clause replaced everywhere) | 132 | 5 | 137 |
+| R186 (clause on five packs, precondition on `put`) | 133 | 35 | 168 |
+
+**The pool is 91% `put` in R183 and 79% in R186**, so it is not a population at all. 168 = 133 + 35, and the 101-game
+fall against R183 is 113 games *inside* `put` offset by 12 outside it. In a round whose design deliberately removes the
+clause from `put` and from nowhere else, a pool band below 250 is not a refutation — it is the design, restated.
+
+Three defects, in the order they did damage:
+
+1. **The reading.** "The change is not local to `put`" was 86% wrong: 114 of the 132-game fall was `put`.
+2. **The registration.** A band over a pool is a band over one kind whenever one kind holds the events. The cell is
+   computable before buying — run the decomposition on the previous round's artefact — and under rule 1 of 34.267 it
+   should have been.
+3. **The instrument.** `aggregate.py` printed the pool number and only the pool number, so two consecutive rounds read
+   it as a statement about the pack. It now prints each kind's own count beside that kind's own calls, and prints nothing
+   when a file predates the field. Seven tests (`RecoveredScopeTest`), one of them the "eight-times-different denominator"
+   case that a shared call count would have hidden.
+
+**What the counter actually measures, now that it has been read correctly.** On the `any-line` channel the shape the
+clause forbids is executed anyway, so the clause's 197 characters buy **no wins** (R185 `put` 56 with the precondition,
+R186 `put` 56 with it, R183 `put` 50 — the difference is the precondition, not the clause). On the reference channel the
+same shape is **dropped**, which is the +9.85 pp of R183. And a control with no pack produces **615** of the events,
+because it flails for 23.8 turns a game. `recovered` meters the **reader**, and the memory only through it.
+
+This is the third member of the class named in 34.267 — a mean over lost games, a counterfactual over a sampled policy, a
+band over a pool — and the class has one sentence: **a denominator fixed by the outcome is a number about the treatment
+you applied, not the thing you measured.**
+
+**The round's own power is reported as what it is.** The scoped bank reads +2.55 pp over R183's single-entry bank with a
+95% interval of [+0.00, +5.47], bootstrap p = 0.081 and **mde 3.96 pp**: 274 games cannot separate them. The claim this
+audit will defend is the compositional one — the five byte-identical kinds moved **one game**, and the `put` gain
+replicated at identical transitions on an independent sample (16 against 4 pooled, p = 0.0118) — and not "the scoped bank
+is better than the bank it came from", which needs the 274 games R190 already plans to buy.
