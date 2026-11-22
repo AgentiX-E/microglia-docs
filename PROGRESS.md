@@ -26417,3 +26417,94 @@ is cheap, and the read says the example is the whole difference between the two 
 structurally, prefer the refused verb, and fall back to the count alone rather than to the world's first line. The
 command record (`commands`, `fire_turns`) that makes the cycle question answerable is already in the driver at ¥0.00
 (AUDIT 34.285), so the same dispatch can be read twice.
+
+## 235. R195 read back: the example became a command, the prompt halved, and the pool still did not move (13:40 UTC)
+
+Two dispatches, **274 games, one arm**, `--state-admissible` with R195's example rule, `any-line`, cap 50, `guard` on,
+off-peak: `45023848248` (unseen, 134) + `45023872479` (seen, 140) at `d60ba627`. Control: R191's `guard+ledger` arm
+(`44998336698` + `44998433515`), unchanged. Spend **$0.1857 ≈ ¥1.34** against the ¥1.4 predicted — a **4.3% error**, the
+second written-down multiplication in a row that held.
+
+| arm | pooled | unseen 134 | seen 140 | lines sent | chars added | chars/line | calls |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `always-in@kind+anyline+guard+ledger-admissible-task` | **266/274 (97.08%)** | **134/134** | 132/140 | **383** | **20,346** | 53.1 | 4,192 |
+| `always-in@kind+anyline+guard+ledger-admissible` (R194) | 265/274 (96.72%) | 133/134 | 132/140 | 465 | 20,913 | 45.0 | 4,245 |
+| `always-in@kind+anyline+guard+ledger` (control) | 267/274 (97.45%) | 134/134 | 133/140 | 413 | 42,845 | 103.7 | 4,140 |
+
+Paired against the control: **−0.36 pp** [−2.19, +1.09], 2 + 3 = **5** discordant, p = 0.845, mde **2.29 pp**; engagement
+**106/274 (38.7%)**, delta on the engaged −0.94 pp, harm 3 of 106 (2.83%) against helped 2 of 106 (1.89%). Strata: hard
+2/7 vs 0/7, easy 264/267 vs 267/267. By kind, one cell moves outside a point: `cool` 42/46 vs 44/46 (−4.35 pp), and
+`examine` +3.23 pp; the other four kinds are identical.
+
+**Every registered reading held, for the first time in this family.**
+
+| # | registered | read | verdict |
+| --- | --- | --- | --- |
+| 1 | **≥ 80%** of fires carry a task-verb example, **0** meta | **361/383 = 94.3%**, 0 meta, 22 count-only | **held** |
+| 2 | of the 3 named games, **≥ 2 win** *or* **≥ 2 halve their refusals** | **3 of 3 won** — and one of them never fired | **held, and it purchased nothing** |
+| 3 | pooled **≥ 96.6%** | **97.08%** | **held** |
+| 4 | `ledger_chars` ≤ **31,370**; `calls` ≤ **4,457** | **20,346** (−52.5%); **4,192** | **held** |
+| 5 | every other knob unchanged; three counters sum to `ledger_fires` | pack 551 ch ×274, bank `349213e8`, `any-line`, cap 50, guard on; 361 + 0 + 22 = 383 | **held** |
+
+**Reading 2 is the one that has to be read carefully, because it was satisfied without the treatment.** `Laptop-328` — the
+game R194 lost at the cap after **44** refused commands — was won by this arm in **3 steps with 16 → 0 refusals and zero
+fires**. The line never reached it. `Statue-216` and `Bowl-308` won in both arms. So the criterion "at least two of three
+win" was met by a draw in which the intervention was absent, which makes it a **criterion that cannot tell a treatment
+from a trajectory** (AUDIT 34.288). The rule that follows: a per-game reading must require `ledger_fires > 0` on that
+game to count, and the lane's registrations carry the requirement from here.
+
+**What the content fix did do, measured against the control's own five draws.** The control arm has been bought five times
+on identical code (R192's band), so its own refusal count is a distribution rather than a number:
+
+| draw | wins | `ledger_fires` | `ledger_chars` |
+| --- | --- | --- | --- |
+| `45002745603` + `45002776635` | 268 | 392 | 36,617 |
+| `45002800354` + `45002824780` | 265 | 441 | 43,380 |
+| `45002924115` + `45002949307` | 268 | 410 | 39,601 |
+| `45002970589` + `45002989631` | 270 | 391 | 36,552 |
+| `44998336698` + `44998433515` (R191) | 267 | 413 | 42,845 |
+| **R194** (`help` example) | 265 | **465** | 20,913 |
+| **R195** (task-verb example) | 266 | **383** | 20,346 |
+
+The same code's refusals span **391 to 441** (mean 409.4, sd 20.6). R194 sits **24 above the band's ceiling** (2.7 sd) and
+R195 **8 below its floor** (1.3 sd): the two renderers of one trigger moved the corpus's refusal count **outside the
+band in opposite directions**, which is the first content-level effect this family has measured. It is also the mechanism
+the negative-effect literature describes at the item level — a memory line that names `help` when the model is inventing
+objects makes it try more inadmissible things, and one that names an executable command makes it try fewer. What neither
+does is win games: the refusal count is not the loss mechanism at this end of the corpus, because 5 of the 8 remaining
+losses contain **no refusal at all** (below).
+
+**The ¥0 read that closed the family.** `cycles.py` reads `commands` and `fire_turns` from the same artefacts and answers
+the question R196 was going to be bought to ask: is there a turn on which the model re-issued a command the world had
+**accepted**, which a refusal trigger cannot see?
+
+| quantity | read over 274 games |
+| --- | --- |
+| commands attempted | 3,511 |
+| refusals (= fires, exactly) | 383 |
+| accepted repeats | **195 (5.55%)**, in **146 games (53.3%)** |
+| losses carrying one | **3 of 8 (37.5%)** — 4, 1, 1 repeats |
+| price if rendered | 7,288 characters over 195 lines, 37.4 chars/line |
+| longest chain | 1 turn repeating two back, 2 three back; one command issued 4 times |
+
+Five of the eight losses never repeat a command at all: they end at **49–50** commands with no loop, no stall and no
+refusal — the model searched and did not find. The other three are worth **at most three games**, which is **1.09 pp** on
+a split whose resolution is **2.29 pp**. **R196 is therefore not bought**: a treatment whose ceiling is half the split's
+mde cannot produce a falsifiable reading, and buying it would spend ¥1.4 to learn that the interval contains zero by
+construction (AUDIT 34.288). The arithmetic is the deliverable, and it cost ¥0.
+
+![R195: the example became a command, the prompt halved, and the cycle family's ceiling is below the split's resolution](figures/alfworld-r195.png)
+
+**Gate.** **794 Python tests** (39 new: `test_cycles.py`), **99.1%** of all measured lines and branches, `cycles.py` at
+**99.1% of lines and 97.7% of branches**, `agent.py` 99.9%/98.5%, `aggregate.py` 99.5%/98.1%, `pnpm audit:repo` and
+`check-workflows` clean, both dispatches `success` including the lane's floor job on each.
+
+**Board: unseen stays at the ceiling.** 134/134 again, which is the split's top and cannot be improved; the pooled row
+stays at 266–267/274 inside R192's band. Cost per game **15.3 calls** (4,192 over 274) against the control's 15.1, and
+**20,346 characters against 42,845** — the cheapest renderer the family has produced, now carrying a command that does
+something in 94.3% of its fires.
+
+**Next: the search-and-state family closes, with three renderers and one trigger read.** The guard (+2.55 pp) is the only
+harness knob that ever moved the pool; the list, the count, the admissible set with `help` and the admissible set with a
+command are +0.73, −1.46, −0.73 and −0.36 pp. The remaining 8 losses are capability-bound, so the next measurement has to
+be on a corpus with headroom: **τ² retail on the same accuracy–cost chart**, registered before it is bought.

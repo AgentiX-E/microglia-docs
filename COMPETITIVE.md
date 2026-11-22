@@ -9529,3 +9529,38 @@ A system that reports only its rate cannot distinguish "the mechanism was refute
 rendered"; R194's three named games (`Laptop-328` 16 → 44 refused commands, `Bowl-308` 2 → 14 and lost) look exactly like
 a refutation, and the content panel shows they are the signature of a renderer that answered *29 commands, e.g. `help`*.
 That distinction is the difference between closing a family and repairing a rule, and it cost one field.
+
+### The board after R195: 100% of the held-out split, 15.3 calls a game, and a cost column nobody else has
+
+**No row moves, and one of them cannot.** The published row stays at **267/274 with unseen 134/134**, quoted as R192's
+five-draw band **97.66% [96.72, 98.34]**; R195's own row is **266/274, unseen 134/134** — the split's ceiling, reached by
+two of the last three arms. What changes is the **cost** column, which this lane can now fill with a counted number
+rather than an estimate.
+
+| system | method | ALFWorld unseen | weights | cost per episode | what it reports |
+| --- | --- | --- | --- | --- | --- |
+| **microglia (R195)** | distilled rule bank, kind gate, `any-line` reader, guard, admissible-set line | **134/134 (100%)** | untouched | **15.3 model calls, ≈ $0.0007**, 20,346 chars of line over 274 games | every reading, its interval, its price and its bill |
+| TSBPO | RL with a Qwen2.5-1.5B actor | 96.64 | **trained** | not reported | success rate |
+| Embodied Planner-R1 | RL / distillation | 96.27 | **trained** | not reported | success rate |
+| RoboAgent | VLM + training | 94 | **trained** | not reported | success rate |
+| **MemHarness** (2026) | retrieve → critique → reconstruct, GRPO | 85.2 | **trained** | not reported | success rate |
+| graph-memory FSM | graph memory, frozen model | 75.37 | untouched | not reported | success rate |
+| H²R | hindsight relabelling into memory | 72.4 | untouched | not reported | success rate |
+| CoEx | coexistent memory | 64.20 | untouched | not reported | success rate |
+| ExpeL | insight extraction | 59.0 | untouched | not reported | success rate |
+| Mem0 / SimpleMem | flat memory | 52.0 / 54.5 | untouched | not reported | success rate, below the 76.4 no-memory control |
+
+**Where that puts the comparison, stated plainly.** In the **parameter-free memory family** — the only family this
+project competes in, because everything above it changes the weights — microglia is **first on the held-out split by 14.8
+pp** (100% against 85.2% for MemHarness, which trains with GRPO) and is the only row with a **counted cost**. In the
+all-methods table it is first outright, and that claim is weaker rather than stronger: the rows it beats by 3.4 pp are
+training methods, and a table that mixes training with prompting measures the difference between them.
+
+**What R195 adds to the comparison, and it is the honest part.** The strongest external claim in this literature is that
+memory *hurts* — Mem0 and SimpleMem land **below their own no-memory control**, and `More Memory, Worse Agents` finds an
+agent getting worse on the very problems its memory was built from. This lane now has that effect under a paired
+contrast: the same trigger, the same 274 games, two renderers of the same state, one of which named `help` — and it moved
+the corpus's refusal count from **465 to 383** (a control band of 391–441 on five identical-code draws) while moving the
+pool by **+0.36 pp** [−1.09, +1.82]. **A memory line's content is worth a 17.6% refusal rate and 0.0 pp of success here.**
+That is the negative-effect thesis reproduced with a price, and it is also why the remaining 8 losses are not a memory
+problem: five of them contain no repeat and no refusal at all.

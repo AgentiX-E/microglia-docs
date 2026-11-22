@@ -5302,17 +5302,27 @@ means the contrast was read from artefacts bought for another purpose, so no pri
 | **the tried-commands list** | `@guard` → `@guard+ledger` | 265 → 267 | +0.73 | [−1.09, +2.92] | 0.597 | ¥2.69 |
 | **the counted list** | `@ledger` → `@ledger-counts` | 267 → 263 | −1.46 | [−3.28, +0.00] | 0.129 | ¥1.36 |
 | **the admissible set** | `@ledger` → `@ledger-admissible` | 267 → 265 | −0.73 | [−2.55, +1.09] | 0.551 | ¥1.36 |
+| **the admissible set, with a command** | `@ledger` → `@ledger-admissible-task` | 267 → 266 | −0.36 | [−2.19, +1.09] | 0.845 | ¥1.34 |
+| **the example rule alone** | `@ledger-admissible` → `@ledger-admissible-task` | 265 → 266 | +0.36 | [−1.09, +1.82] | 0.842 | — |
 | **reader / format family** (6 contrasts) | `@note` ↔ `@sentence` ↔ `@source` ↔ `@phrase` ↔ `@line` ↔ `@ghost` | 218–230 | **−4.01 to +3.65** | all straddle 0 | ≥0.13 | — |
 | **the turn placebo** | `@turnplacebo` → `@turn` | 266 → 264 | −0.73 | [−3.28, +1.82] | 0.655 | — |
 
 **Three things this table says that no single round could.** First, the **memory effect dwarfs every harness knob**: +24 to
-+28 pp for having a bank at all, against +2.55 pp for the best harness knob and −3.65 pp for the worst. Second, **three of
-the last four knobs are negative and none is significant**, which is what a saturated harness looks like — the driver, the
++28 pp for having a bank at all, against +2.55 pp for the best harness knob and −3.65 pp for the worst. Second, **five of
+the last six knobs are negative and none is significant**, which is what a saturated harness looks like — the driver, the
 reader and the cap have been moved far enough that the residual noise (1.82 pp between draws, 2.5 pp mde) is larger than
 anything left to win there. Third, the **price is uncorrelated with the effect**: the cheapest priced
 contrast (¥1.34, the first memory reading) bought +14.18 pp, the most expensive (¥2.95, the guard) bought +2.55 pp, and the
 reader family — eight arms that cost nothing extra because they rode passes bought for other questions — bought nothing at
 all.
+
+**The example rule is the cleanest single knob in the table, and it bought a null with a mechanism inside it.** Two
+renderers of one trigger, one of which named `help` in 220 of its 248 firing games (R194) and one of which cannot name a
+meta command at all (R195, 94.3% task-verb examples, 0 meta): **+0.36 pp** [−1.09, +1.82], p = 0.842, on 35.4% engagement.
+What moved outside the interval is the *refusal rate*: the same 274 games carried **465** refusals under the `help`
+renderer and **383** under the command renderer, against a control band of **391–441** measured on five identical-code
+draws. So the content of a memory line is worth a **−17.6% refusal rate** and **0.0 pp of success** — the negative-effect
+literature's item-level finding, reproduced as a paired contrast with a price.
 
 **What the table does not contain, and why.** The retrieval budget `k` and the read-time gate have arms but no paired
 reading at this resolution; the cap moved in R184 as a corpus assertion rather than as a treatment. A blank cell in an
@@ -5322,3 +5332,11 @@ would read like one.
 **The negative rows are the asset.** `putscope3` (−3.65 pp, p = 0.022), the counted list (−1.46 pp) and the admissible set
 (−0.73 pp, and its first line named `help` in 88.7% of the games that fired) are three ideas that looked right in the literature, were built,
 paid for and read. A record that only publishes the arms that worked cannot be compared against one that has not run them.
+
+**And the table now has a ceiling column, which is what stops the family.** The last candidate — a line that fires when the
+model re-issues a command the world *accepted*, which a refusal trigger is blind to — was read at **¥0** from the command
+record rather than bought: 195 such turns over the same 274 games, but in only **3 of the 8 losses**, and five of the
+eight losses contain no repeat at all (49–50 commands that never looped). Its **ceiling is +3 games = 1.09 pp on a split
+whose paired mde is 2.29 pp**, so the dispatch was cancelled by arithmetic. Every future registration in this lane states
+its ceiling before its price, because a mechanism that can reach less of the corpus than the split can resolve is a null
+by construction.

@@ -9036,3 +9036,51 @@ registered verdicts, and a single-arm result inside R192's band is not a win how
 
 **Price ≈ ¥1.4** (two dispatches, one arm), plus ¥0.00 for the counters, which are in the driver before the dispatch.
 **Next: the dispatch**, after CI is green on the instrument and the corrected renderer.
+
+## R195, read back — every reading held, and the pool did not move
+
+266/274 (97.08%), unseen **134/134**, against the control's 267/274: **−0.36 pp** [−2.19, +1.09], p = 0.845, mde 2.29 pp.
+Readings 1, 3, 4 and 5 held exactly as registered (94.3% of fires carried a task-verb example with 0 meta, 97.08% ≥ 96.6%,
+20,346 characters ≤ 31,370 and 4,192 calls ≤ 4,457, every knob and counter unchanged); reading 2 held **without
+engagement** — the game R194 lost at the cap was won in 3 steps with zero fires (AUDIT 34.288). Spend ¥1.34 against ¥1.4
+predicted.
+
+**What the content fix moved, and what it did not.** Against the control's five identical-code draws the refusal count's
+band is **391–441**; R194's `help` renderer sits at **465** (24 above the ceiling, 2.7 sd) and R195's command renderer at
+**383** (8 below the floor). The line's *content* moves how often the model needs a line; it does not move the pool,
+because the pool's residual is not refusal-bound.
+
+## R196 (not bought) — the cycle trigger's ceiling is below the split's resolution
+
+The ¥0 read (`cycles.py`, `9276300`) over the same 274 artefacts: **195** accepted repeats in **146** games, but in
+**3 of the 8 losses** — and five of the eight losses contain **no repeat at all**, ending at 49–50 commands without a
+loop. Three games is **+1.09 pp** on a split that resolves **2.29 pp**, so the treatment cannot produce a falsifiable
+reading at this n. **Not dispatched**, and the family closes with five readings of two mechanisms and one trigger.
+
+**What this leaves, and it is not a taste.** The unseen split is at **134/134** — its ceiling — and the eight remaining
+losses are capability-bound. Any further memory measurement has to happen where the corpus has headroom, which is why the
+next registration is **τ² retail on the same accuracy–cost chart**: the lane already drives it, the harness knobs are
+already read on ALFWorld, and τ²'s four-trial protocol has a pool that is not saturated.
+
+## R197 (registered) — τ² on the same two axes, priced before it is bought
+
+**Question.** Where does microglia sit on τ²'s accuracy–cost plane, and does the pack that pays +14 to +28 pp on ALFWorld
+pay anything there? The board is the one this project has no row on.
+
+**Why now, with arithmetic rather than by preference.** ALFWorld's held-out split is at 134/134 and its eight remaining
+losses have no admissibility signal (AUDIT 34.288), so no further harness arm can be resolved there: the ceiling of every
+candidate is below the mde. τ²'s pool is not saturated, and its episodes are longer, so both axes have room.
+
+**Treatment.** The harness as it stands (`kind` gate, `any-line` reader, cap 50, guard on, bank `349213e8`) against the
+same harness without the pack. No new renderer: the round is a **transfer measurement**, not a mechanism, and a mechanism
+added here would be a second change in one contrast.
+
+**Registered readings.** (1) the paired delta with its interval and mde, at the lane's own n; (2) the bill, counted
+rather than estimated, in the same column as every ALFWorld row; (3) the two axes on one chart with the published τ² rows
+and their types (open self-hosted against closed API); (4) the per-call prompt and completion tokens, because the cost
+axis is the one the comparison turns on.
+
+**Refutation.** If the pack's τ² delta is inside its own interval and the bill exceeds the ALFWorld pass by more than 3×,
+the transfer claim is withdrawn rather than reinterpreted — the ALFWorld number stays as a single-board result.
+
+**Price ≈ ¥2–3** (two arms, four trials), plus ¥0.00 for the chart, which is a plot of artefacts already paid for.

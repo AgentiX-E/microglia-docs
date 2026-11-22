@@ -15669,3 +15669,60 @@ the two **tile** the space: `k ≥ 2` accept, `k ≤ 1` reject, nothing between.
 **The reusable rule.** A deterministic rule is not an informative one. Any renderer whose content is *selected* — an
 example, a sentence, a snippet — needs a registered reading of the selection itself (a distribution over what was sent),
 not only of its length and its effect. One field, `admissible_sample`, cost nothing and found it.
+
+## 34.287 — The reader that decides whether the next dispatch is bought must refuse the slices that would answer wrongly
+
+**What was built.** `cycles.py`, at ¥0.00, reads the command record (`commands`, `fire_turns`) that R194's driver started
+writing and answers the question R196 was to be bought for: on how many turns did the model re-issue a command the world
+had **accepted** — the one event a refusal-triggered line cannot see? It reports accepted repeats, the share of losses
+that carried one, the characters a line naming them would cost, and chains (a command repeating two or three turns
+back).
+
+**Why it is a module with a suite rather than a script with a print.** It decides a purchase, in both directions: a count
+too high buys a treatment with no purchase on the corpus, a count too low closes a mechanism that was never tried. So it
+carries four structural refusals, each of which would otherwise produce a **number** instead of an error:
+
+| refusal | the failure it prevents |
+| --- | --- |
+| an episode without `commands` | an artefact that predates the field read as a game with no repeats |
+| `len(fire_turns) != ledger_fires` | a record that disagrees with the counter written beside it |
+| `len(fire_turns) != invalid_actions` | a fire that is not a refusal, which makes "accepted" unknown for every turn |
+| a game in two slices | one game's repeats counted once per shard |
+
+**The identity it stands on, and why a refusal is the right response to its failure.** A turn counts as *accepted* when
+no fire answered it, so the reader needs the fires to be exactly the refusals. That is a measured fact rather than an
+assumption — 413/413 in R191's arm and 479/479 in R193's across 822 games (AUDIT 34.284), and **465/465 and 383/383 on
+the two rounds since** — and where it fails the honest answer is to stop: a slice in which one refusal went unanswered is
+a slice where one turn's verdict is unknown, and any repeat count over it would be a guess with a decimal point.
+
+**What its first read bought.** 195 accepted repeats in 146 of 274 games, but only **3 of the 8 losses**, and five losses
+with no repeat at all. The mechanism's ceiling is therefore **+1.09 pp** on a split that resolves **2.29 pp**, which
+cancelled a ¥1.4 dispatch before it was sent (AUDIT 34.288). The reusable rule: **a mechanism whose ceiling is below the
+split's mde is not an experiment, and the arithmetic that shows it costs nothing.**
+
+## 34.288 — A criterion satisfied without the treatment, and a family whose ceiling is below the split's resolution
+
+**Two defects, one round, and both were in the plan rather than in the code.**
+
+**The per-game criterion could be satisfied by a draw in which the treatment did not fire.** R195's reading 2 required at
+least two of three named games to win, and it read 3 of 3. But `Laptop-328` — R194's cap-loss at 44 refused commands —
+was won in **3 steps with 0 fires and 0 refusals** by the R195 arm: the line never reached the game, and the game was won
+anyway. R194's 44 refusals were a trajectory, not a property of the game, and the criterion could not tell the two apart.
+Every per-game reading in this lane now has to carry `ledger_fires > 0` on that game to count as engagement; a win
+without a fire is a datum about the model's draw and is reported as one.
+
+**A mechanism whose ceiling is below the mde cannot be falsified.** R196 was to be the cycle-aware line: fire when the
+model re-issues a command the world accepted. The ¥0 read (`cycles.py`) found 195 such turns, in 146 games, but in only
+**3 of the 8 losses**, and five of the eight contain **no repeat at all** — 49 to 50 commands that never looped. So the
+treatment's best possible outcome on this split is +3 games = **1.09 pp**, against a paired mde of **2.29 pp** at 5
+discordant games. Whatever it did, the reading would straddle zero. **Not bought**, and the reason is arithmetic rather
+than taste.
+
+**What replaces it.** The family closes with four readings of two mechanisms (refusal and state) and one trigger: the
+guard +2.55 pp, the list +0.73, the count −1.46, the admissible set −0.73, the admissible set with a command −0.36. The
+residual is capability-bound, so the next measurement has to be a corpus with headroom — which is a statement about where
+the next ¥2–3 goes, not about what the mechanism is worth.
+
+**The reusable rule.** Before registering a treatment, compute its **ceiling** — the fraction of the population the
+mechanism can even reach — and compare it with the split's mde. A ceiling below the mde is a null by construction, and the
+¥0 instrument that finds it is cheaper than the dispatch that would have reported it as "no effect".
