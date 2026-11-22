@@ -9551,10 +9551,11 @@ rather than an estimate.
 | Mem0 / SimpleMem | flat memory | 52.0 / 54.5 | untouched | not reported | success rate, below the 76.4 no-memory control |
 
 **Where that puts the comparison, stated plainly.** In the **parameter-free memory family** — the only family this
-project competes in, because everything above it changes the weights — microglia is **first on the held-out split by 14.8
-pp** (100% against 85.2% for MemHarness, which trains with GRPO) and is the only row with a **counted cost**. In the
-all-methods table it is first outright, and that claim is weaker rather than stronger: the rows it beats by 3.4 pp are
-training methods, and a table that mixes training with prompting measures the difference between them.
+project competes in, because everything above it changes the weights — microglia is **first on the held-out split by 24.6
+pp** (100% against 75.37% for the graph-memory FSM, and 24.8 pp against ExpeL's 59.0), and is the only row with a
+**counted cost**. Against the trained rows its lead is narrower and its claim weaker: **+14.8 pp** over MemHarness (85.2,
+GRPO) and **+3.4 pp** over TSBPO (96.64, RL), and a table that mixes training with prompting measures the difference
+between them.
 
 **What R195 adds to the comparison, and it is the honest part.** The strongest external claim in this literature is that
 memory *hurts* — Mem0 and SimpleMem land **below their own no-memory control**, and `More Memory, Worse Agents` finds an
