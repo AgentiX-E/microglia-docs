@@ -26402,6 +26402,8 @@ and the median **29**, so the clause fired — but the round shows the line was 
 the list's 103.7). The clause named the right direction for the wrong reason, and R195 is registered as the count-only
 fallback **plus** a rule that lets the example be a command when one exists.
 
+![R194: the cheapest line in the family, what it carried, and the two named games that went worse](figures/alfworld-r194.png)
+
 **Gate.** 756 Python tests (745 before the renderer's rule changed), **99.1%** of all measured lines and branches,
 `agent.py` at **99.9% of lines and 98.5% of branches**, `aggregate.py` at 99.5% / 98.1%, `pnpm audit:repo` and
 `check-workflows` clean, CI green on `920bcd0e`.
