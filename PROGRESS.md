@@ -26342,3 +26342,75 @@ workflow carry the input, and both refuse it without a pass to change.
 
 **Next: the R194 dispatch**, priced by the instrument rather than by an estimate — 274 games, one arm, ≈ ¥1.4 — judged
 against R192's five-draw **band** (265 to 270) rather than against a draw, which is what the band was bought for.
+
+## 234. R194 read back: half the characters, the same pool, and an example that was `help` in 89% of its fires (11:40 UTC)
+
+Two dispatches, **274 games, one arm**, `--state-admissible`, `any-line`, cap 50, `guard` on, off-peak in all eight
+summaries: `45015969012` (unseen, 134) + `45016086652` (seen, 140) at `5e22a136`. Control: R191's `guard+ledger` arm
+(`44998336698` + `44998433515`), as registered. Spend **$0.1890 ≈ ¥1.36** against the ¥1.4 the instrument predicted — a
+**3% error**, the first estimate in four rounds that was a written-down multiplication and the first that held
+(AUDIT 34.282).
+
+| arm | pooled | unseen 134 | seen 140 | lines sent | chars added | chars/line | calls |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `always-in@kind+anyline+guard+ledger-admissible` | **265/274 (96.72%)** | 133/134 | 132/140 | **465** | **20,913** | **45.0** | 4,245 |
+| `always-in@kind+anyline+guard+ledger` | 267/274 (97.45%) | 134/134 | 133/140 | 413 | 42,845 | 103.7 | 4,140 |
+
+Paired **−0.73 pp** [−2.55, +1.09] for the admissible arm, 2 + 4 discordant (4 games only the list won, 2 only the
+admissible set did), p = 0.551, mde 2.50 pp; engagement 38.7%. Against **R192's five-draw band** (265 to 270) the arm sits
+**at the floor**, 2.6 games under the band's mean.
+
+| # | registered | read | verdict |
+| --- | --- | --- | --- |
+| 1 | no game more than **8** lines | **44** on `Laptop-328`; five games past eight | **failed** |
+| 2 | **at least 2 of those 3** win, `invalid_actions` halved | **one of three** won; the other two went **16 → 44** and **2 → 14** invalid | **failed** |
+| 3 | pooled rate **≥ 96.6%** | **96.72%** | **held, by 0.12 pp** |
+| 4 | `ledger_chars` ≤ **2× 42,845** | **20,913** (−51.2%) | **held** |
+| 5 | instrument present, label token, every other knob unchanged | **274/274**, `@ledger-admissible`, pack 551 ch ×274, bank `349213e8` | **held** |
+
+**What the instrument bought.** The admissible set is **large**: over the 248 firing games its size has median **29**,
+mean 26.4, max **61**, and only **26 of 274** games ever saw a set of three or fewer — so the count-only form was never the
+cheap option it looked like, and the set is not a shortlist a model can read. The line cost **45 characters** against the
+list's **103.7**, which is the one thing the arm did well: the same trigger, **half the prompt**, 2.5% more calls.
+
+**The finding the readings could not see: the example was `help`.** The renderer's deterministic rule — the shortest
+command sharing the refused verb, else the world's first — resolved to **`help` in 220 of 248 firing games (88.7%)**,
+to another meta command in 89.1%, and to a task-verb command in **one game out of 248 (0.4%)**. The model was told
+`Admissible here: 29 commands, e.g. \`help\`` on the turns it was inventing objects. `help` is four characters and
+textworld lists it first, so **both** branches of the rule point at it whenever the refused verb is absent from the set —
+which is exactly the case the treatment was built for.
+
+| game | control | admissible | the set it was shown |
+| --- | --- | --- | --- |
+| `look_at_obj_in_light-Laptop-None-DeskLamp-328` | 16 invalid, lost at 50 | **44 invalid, lost at 50** | mean 20, sample `look` |
+| `look_at_obj_in_light-Statue-None-DeskLamp-216` | 0 invalid, won in 15 | 0 invalid, won in 15 | never fired |
+| `look_at_obj_in_light-Bowl-None-DeskLamp-308` | 2 invalid, won in 17 | **14 invalid, lost at 50** | mean 27, sample `go to bed 1` |
+
+**The registered arm never rendered the registered treatment.** The hypothesis was "name the set the world admits"; what
+was sent, nine times in ten, was the size of the set and a meta command. The two games that got worse are the two that
+received it most often. That is not evidence against the admissibility hypothesis — it is evidence that the *example
+rule* was wrong, chosen for determinism and never checked for informativeness (AUDIT 34.286).
+
+**The refutation clause did not fire, and that is a defect of the registration, not a rescue.** The clause read "the three
+named games still lose → the hypothesis is wrong and the family closes"; reading 2 required two of three to *win*. One of
+three won, so the outcome sits in a region **neither clause decides** — a registration whose acceptance and rejection
+conditions do not tile the outcome space. Recorded as AUDIT 34.286 and repaired in R195's registration below.
+
+**The registration's own fallback fired, and its premise did not.** R194's last clause read: *if the mean admissible set is
+larger than 20 commands, the line is unaffordable as written and the count-only form is the fallback.* The mean is **26.4**
+and the median **29**, so the clause fired — but the round shows the line was **not** unaffordable (45 characters against
+the list's 103.7). The clause named the right direction for the wrong reason, and R195 is registered as the count-only
+fallback **plus** a rule that lets the example be a command when one exists.
+
+**Gate.** 756 Python tests (745 before the renderer's rule changed), **99.1%** of all measured lines and branches,
+`agent.py` at **99.9% of lines and 98.5% of branches**, `aggregate.py` at 99.5% / 98.1%, `pnpm audit:repo` and
+`check-workflows` clean, CI green on `920bcd0e`.
+
+**Board: nothing moves.** The published row stays at R191's 267/274 with the five-draw band; the admissible renderer joins
+the counted one as a **measured negative** in the ablation table.
+
+**Next: R195, the same trigger with an example that can be a command.** The instrument says the set is large and the count
+is cheap, and the read says the example is the whole difference between the two arms: exclude the meta commands
+structurally, prefer the refused verb, and fall back to the count alone rather than to the world's first line. The
+command record (`commands`, `fire_turns`) that makes the cycle question answerable is already in the driver at ¥0.00
+(AUDIT 34.285), so the same dispatch can be read twice.

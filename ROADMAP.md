@@ -8990,3 +8990,49 @@ closes entirely, three renderers of one state having been bought and none having
 `--state-admissible`, the token `@ledger-admissible`, `admissible_mean`/`admissible_max`/`admissible_sample` per episode,
 three join refusals, and the dispatch input. **Next: the dispatch**, priced by the instrument rather than by an estimate —
 which is the whole reason the instrument came first (AUDIT 34.282).
+
+## R194, read back — the line got cheaper and the tail did not move
+
+265/274 (96.72%), unseen 133/134, **−0.73 pp** [−2.55, +1.09] against R191's list, at the floor of R192's band.
+Readings 1 and 2 failed, 3 held by **0.12 pp**, 4 held at **−51.2% characters**, 5 held. The arm is a measured negative:
+**`help` in 220 of 248 fires.** The registered treatment was never rendered, so the admissibility hypothesis is untested
+rather than refuted (AUDIT 34.286). The instrument that found it — `admissible_sample` — cost nothing and was added to
+price the line, which it did: **¥1.36 against ¥1.4 predicted, a 3% error**, the first estimate in four rounds that held.
+
+## R195 (registered) — the example has to be a command, or there is no example
+
+**What the read says to change, and only that.** The trigger, the label, the counters and the trigger's economics are
+R194's and stay. One thing moves: **the example**. R194's rule was "shortest command sharing the refused verb, else the
+world's first", and the fallback is what 99% of its fires took, because `help` is four characters and textworld lists it
+first. R195's rule: **an example is a command that carries a task verb (`take`, `put`, `clean`, `heat`, `cool`,
+`examine`), preferring one that shares the refused verb; if no such command is in the set, the line carries the count
+alone.** No meta command can be selected by construction rather than by a blacklist that has to be maintained.
+
+**Three counters, because the last round could not read its own renderer.** Per episode: `admissible_task_fires`,
+`admissible_meta_fires`, `admissible_exampleless_fires`, summing to `ledger_fires`. A content reading that is summed at
+the counter cannot be discovered after the fact to have been about something else (AUDIT 34.286), and a distribution
+that does not sum to the fires is a counter nobody can use as a denominator.
+
+**Registered readings, tiling accept and reject for the first time in this family.**
+
+1. **≥ 80% of fires carry a task-verb example** (`admissible_task_fires / ledger_fires`), and 0 fires carry a meta
+   command. R194 read 88.7% meta; the reading is the one it lacked.
+2. Of the three named games (`Laptop-328`, `Statue-216`, `Bowl-308`), **at least 2 win** *or* **at least 2 halve their
+   `invalid_actions`**. Accept is `≥ 2`; reject is `≤ 0`; **1 of 3 is reported as undecided and closes nothing** — the
+   region R194's registration left undefined.
+3. pooled rate **≥ 96.6%** (R192's band floor minus 1.0 pp, unchanged from R194 so the two readings are comparable).
+4. `ledger_chars` ≤ **31,370** (1.5× R194's 20,913), and `calls` ≤ R194's 4,245 × 1.05.
+5. every other knob unchanged: pack 551 ch ×274, bank `349213e8`, `any-line`, cap 50, `guard` on; the three counters
+   present in every episode and summing to `ledger_fires`.
+
+**The label carries the version, because the content rule is part of the treatment.** R195's arm is
+`@ledger-admissible-task`; the flag stays `--state-admissible` because the family, the trigger and the counters are
+R194's. R194's artefacts carry `@ledger-admissible` at `5e22a136`, and a join told nothing will not pool the two — the
+same rule that keeps the list and the count apart (AUDIT 34.269).
+
+**Refutation.** At most **0 of 3** named games improve *and* pooled below **96.6%** → the family closes entirely: three
+renderers of one state, one trigger, and the search-and-state family is done. Otherwise the outcome is one of the two
+registered verdicts, and a single-arm result inside R192's band is not a win however the counters read.
+
+**Price ≈ ¥1.4** (two dispatches, one arm), plus ¥0.00 for the counters, which are in the driver before the dispatch.
+**Next: the dispatch**, after CI is green on the instrument and the corrected renderer.

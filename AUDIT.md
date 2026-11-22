@@ -15595,3 +15595,77 @@ are nested rather than disjoint. A command that the world admits and then answer
 not per treatment. `ledger_fires` was one number for two conditions, and it took three rounds and 822 games to discover
 that one of the two conditions had never occurred. A pair of counters costs one field and would have said so on the first
 read.
+
+## 34.285 — The one field the cycle question needed was the one the artefacts never kept
+
+**The question.** R193's fifth reading was `ledger_suppressed` non-zero — the change gate firing, which is the only
+evidence that a line's *content* can be a constant the model has already seen. It fired **2 times in 479 chances**. The
+reading was written as a one-sided test that passes on a single event, and it passed on two, so the round could not
+distinguish "the gate is inert because the loops are not fixed points" from "the gate is inert because its condition is
+narrower than the loop". AUDIT 34.281 names the same defect from the other side.
+
+**The defect.** The condition is a repeated three-command window, and **no artefact has ever contained a command**. The
+episode record keeps `ledger_fires` and `ledger_chars` per pass, `observe_chars` per turn, and `actions` as a **count**.
+`attempted` — the history every renderer reads — lives only inside `run_episode` and is dropped when the record is built.
+The consequence is not that the gate was wrong; it is that **the gate's mechanism could not be audited at all** from 822
+paid games, and the next step had to be an instrument rather than a dispatch (the rule AUDIT 34.282 already paid for once).
+
+**What the instrument is.** Two fields on every episode, on every arm: `commands` — the ordered history the renderers read,
+including the commands the world refused and the ones the parser dropped — and `fire_turns` — the index of the command
+each line answered, so `len(fire_turns) == ledger_fires` is a checkable invariant. Both cost no call, no prompt character
+and no change to any rendering; the tests assert exactly that, including that the message the model reads at a fire is
+byte-identical with and without the record.
+
+**Why an index and not the window.** A renderer already recomputes its window from `attempted` at the moment it fires. If
+the record kept only the commands, a reader asking "would a cycle-aware line have fired *here*" would have to guess which
+turns carried a line — from `observe_chars`, an observation about a different thing. The index is the one integer that
+turns the question into arithmetic: the window at a fire is `commands[:index + 1]`, and the turns without a line are the
+complement.
+
+**The reusable rule.** An instrument that records a *consequence* of a history (a count of fires, a character total) cannot
+be used to ask a question about the history. The cheap field is the one that keeps the history.
+
+## 34.286 — The deterministic fallback was `help`, and the registered arm never rendered the treatment
+
+**What was registered.** R194: on a turn whose command the world refuses, one line naming the set the world *admits* —
+`Admissible here: 7 commands, e.g. \`take apple 1 from countertop 1\`.` The example rule was written for reproducibility
+rather than for content: **the shortest command sharing the refused verb, else the first command in the world's order.**
+
+**What was sent.** Over 248 firing games of a 274-game pass:
+
+| the example shown | games | share |
+| --- | --- | --- |
+| `help` | **220** | **88.7%** |
+| another meta command (`look`) | 1 | 0.4% |
+| a movement command (`go to bed 1`, …) | 26 | 10.5% |
+| **a command carrying a task verb** (`take`, `put`, `clean`, `heat`, `cool`, `examine`) | **1** | **0.4%** |
+
+The model was told `Admissible here: 29 commands, e.g. \`help\`` on the turns it was inventing objects that do not exist.
+
+**Why both branches point at `help`.** `help` is admitted in every room, it is the shortest command textworld publishes
+(four characters), and it is first in the world's own ordering. So:
+
+* when the refused verb appears nowhere in the admissible set — which is the failure this treatment was built for, a
+  `take apple 3` for an apple that is not in the room — the fallback selects the shortest command, and that is `help`;
+* when the verb does appear, the verb branch selects correctly, and it did: **one** fire in 248.
+
+A rule chosen for determinism was never checked for informativeness, and no registered reading could catch it. The five
+readings measured the number of lines, the pooled rate, the characters and the named games; **none of them read the
+line.** A renderer's content needs a reading of its own — the instrument that recorded `admissible_sample` was the only
+reason this defect is visible at all, and it was added for a different purpose (pricing the line).
+
+**The consequence for the experiment.** The hypothesis — *naming the admissible set repairs the tail* — was not tested.
+What was tested is *naming its size and a meta command*. The two games that got worse are the two that received it most
+often (`Laptop-328` 16 → 44 invalid commands, `Bowl-308` 2 → 14 and lost), which is consistent with a hint that consumes
+a turn and points at `help`. Reporting the round as "the admissibility hypothesis is refuted" would be reporting the
+wrong experiment as the wrong idea.
+
+**A second defect, in the registration itself.** Reading 2 required **at least 2 of 3** named games to win; the
+refutation clause read "the three named games still lose" — i.e. **3 of 3**. One of three won. The outcome therefore sits
+in a region that **neither the acceptance nor the rejection condition covers**, and the round's verdict had to be argued
+rather than read. Every registration in this lane that names a per-game condition and a per-game refutation has to make
+the two **tile** the space: `k ≥ 2` accept, `k ≤ 1` reject, nothing between.
+
+**The reusable rule.** A deterministic rule is not an informative one. Any renderer whose content is *selected* — an
+example, a sentence, a snippet — needs a registered reading of the selection itself (a distribution over what was sent),
+not only of its length and its effect. One field, `admissible_sample`, cost nothing and found it.

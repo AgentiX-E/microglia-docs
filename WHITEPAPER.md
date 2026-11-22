@@ -5280,3 +5280,45 @@ The registration discipline is the part that made both possible: each round name
 price **before** the dispatch, and this record now contains several rounds whose own registered refutation fired — R188's
 entry went inert, R190's reach variant was refuted by a table already paid for, R193's counted line cost two named games —
 which is the only evidence that the refutations are real.
+
+## The ablation table: what each knob is worth, with its interval and its price
+
+Every round in this lane buys one contrast: two arms, one knob, 274 games, read as a **paired** difference on the games
+both arms drove. The table below is the whole of it, taken from the readings' own artefacts rather than from the prose
+(`mech-table.py` re-derives every row), and it is what a comparison against another system should cite — not the pooled
+rate of one arm, which moves by up to 1.82 pp between draws with no treatment applied.
+
+The **price** column is the dispatch that bought the contrast (both arms, off-peak, from the run's own bill), and a dash
+means the contrast was read from artefacts bought for another purpose, so no price is attributable to it.
+
+| what moved | arm pair | pooled | Δ pp | 95% CI | p | price |
+| --- | --- | --- | --- | --- | --- | --- |
+| **memory at all** | `none` → `always-in` (134 games) | 80 → 99 | **+14.18** | [+4.48, +23.88] | 0.004 | ¥1.34 |
+| **memory at all**, R181's bank | `none` → `always-in@note` | 150 → 227 | **+28.10** | [+22.26, +33.58] | <0.001 | — |
+| **memory at all**, R186's bank | `none@anyline` → `always-in@kind+anyline` | 197 → 264 | **+24.45** | [+18.98, +29.93] | <0.001 | ¥1.50 |
+| **the task-kind gate** | `always-in@anyline` → `@kind+anyline` | 257 → 264 | +2.55 | [+0.00, +5.47] | 0.081 | ¥1.50 |
+| **scope widened to three kinds** | `@kind` → `@putscope3` | 264 → 254 | **−3.65** | [−6.93, −0.73] | 0.022 | — |
+| **the guard at the state** | `always-in` → `@guard` | 258 → 265 | +2.55 | [+0.00, +5.47] | 0.080 | ¥2.95 |
+| **the tried-commands list** | `@guard` → `@guard+ledger` | 265 → 267 | +0.73 | [−1.09, +2.92] | 0.597 | ¥2.69 |
+| **the counted list** | `@ledger` → `@ledger-counts` | 267 → 263 | −1.46 | [−3.28, +0.00] | 0.129 | ¥1.36 |
+| **the admissible set** | `@ledger` → `@ledger-admissible` | 267 → 265 | −0.73 | [−2.55, +1.09] | 0.551 | ¥1.36 |
+| **reader / format family** (6 contrasts) | `@note` ↔ `@sentence` ↔ `@source` ↔ `@phrase` ↔ `@line` ↔ `@ghost` | 218–230 | **−4.01 to +3.65** | all straddle 0 | ≥0.13 | — |
+| **the turn placebo** | `@turnplacebo` → `@turn` | 266 → 264 | −0.73 | [−3.28, +1.82] | 0.655 | — |
+
+**Three things this table says that no single round could.** First, the **memory effect dwarfs every harness knob**: +24 to
++28 pp for having a bank at all, against +2.55 pp for the best harness knob and −3.65 pp for the worst. Second, **three of
+the last four knobs are negative and none is significant**, which is what a saturated harness looks like — the driver, the
+reader and the cap have been moved far enough that the residual noise (1.82 pp between draws, 2.5 pp mde) is larger than
+anything left to win there. Third, the **price is uncorrelated with the effect**: the cheapest priced
+contrast (¥1.34, the first memory reading) bought +14.18 pp, the most expensive (¥2.95, the guard) bought +2.55 pp, and the
+reader family — eight arms that cost nothing extra because they rode passes bought for other questions — bought nothing at
+all.
+
+**What the table does not contain, and why.** The retrieval budget `k` and the read-time gate have arms but no paired
+reading at this resolution; the cap moved in R184 as a corpus assertion rather than as a treatment. A blank cell in an
+ablation table is a measurement that has not been made, and it is left blank rather than filled with a pooled rate that
+would read like one.
+
+**The negative rows are the asset.** `putscope3` (−3.65 pp, p = 0.022), the counted list (−1.46 pp) and the admissible set
+(−0.73 pp, and its example was `help` in 88.7% of fires) are three ideas that looked right in the literature, were built,
+paid for and read. A record that only publishes the arms that worked cannot be compared against one that has not run them.
