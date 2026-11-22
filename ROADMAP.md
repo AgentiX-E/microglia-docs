@@ -8746,3 +8746,73 @@ what is published afterwards is the interval rather than the point.
 The four guard losses all ended at the 50-step cap: they are search failures with the loop already removed. The
 literature's answer is a per-episode **state** (what has been tried, where, and what it returned) rather than a corpus
 prior, and the driver already records the trajectory. ¥4.2, registered after R190 reports.
+
+## R190, read back — the admission score is undetermined at this resolution, and its reach variant is refuted for ¥0.00
+
+Twenty-one banks scored offline, **0 model calls, ¥0.00**. `scripts/score_bank.py` implements the literature's admission
+score (`arXiv:2608.20274`) over the pack the driver renders, and `measured-effects.json` holds every measured delta with
+the comparison it is.
+
+| # | registered | read | verdict |
+| --- | --- | --- | --- |
+| 1 | rho >= 0.6 over four banks | **+0.500 over three** (the fourth row was an artefact of a run that drove no games) | **failed** |
+| 2 | 551 beats 814 on specificity | **0.0708 against 0.0479** | **held** |
+| 3 | a word permutation moves the score <= 0.05 | **0.000** | **held** |
+
+**Why rho cannot be bought up.** The score's range on this corpus is **1.62x** (0.00544 to 0.00881 among single-entry
+551-character banks) against an mde of **9.7 pp**. The inverted pair differs by 2.55 pp. Four more banks would take the
+sample from 3 to 6 points and would not move the resolution. **The instrument is not refuted; it is unfalsifiable at the
+price this lane pays for a reading**, and a gate that cannot be validated is not shippable (AUDIT 34.277).
+
+**The reach variant is refuted by a table already paid for.** A lexical "does the entry name this kind's operation" test
+reproduces the sign on **3 of 6** of R177's cells: `heat` (+28.2) and `clean` (+22.4) are gains the entry never names,
+because its mechanism is *open the container before taking* and not a word it uses.
+
+**What it changes about the plan.** The admission family is closed as a *shipping* option and stays open as a *research*
+one, with its price written down: it would need a corpus whose score range is wider than 2x or a resolution below 2 pp,
+and neither is worth buying while the mechanism family is still producing 8-of-10 cells for ¥2.95. `bank-putscope-2` and
+`bank-putscope-3` are the pair to cite: identical entries, pack means 28.0% apart because the tags select, measured
+3.65 pp the other way.
+
+## R191 (registered) — instance state, aimed at the four games the guard could not reach
+
+R189's guard lost four games its own control won, and **all four ended at the environment's 50-step cap with fewer
+thoughts than the control**: `cool` (3 thoughts), `examine` (5), `puttwo` (11 → 20), `clean` (5). They are search
+failures with the narration already removed, and no sentence about a task can help them — the model is *at* the
+environment and not finding the object.
+
+The literature's answer is a per-episode **state** rather than a corpus prior: what has been tried, where, and what it
+returned. The driver already records every trajectory, so the treatment is a renderer, not a new component.
+
+**Treatment.** `--state-ledger`: when an action returns `Nothing happens.` or is refused, the observation for that turn
+gains one line naming the commands already tried this episode (the last three) and nothing else. Conditional by
+construction — a game with no failed action carries no extra character — which is what keeps it inside the cost of a
+pass rather than paying on every turn.
+
+**Two arms, one dispatch, 274 games each, ≈ ¥3.0**: `guard+ledger` against `guard`. The guard is the current best arm,
+so this isolates the ledger and needs no third arm.
+
+**Registered readings.**
+
+1. **Engagement**: `ledger_fires` is **20 to 200 per arm**, and non-zero in **at least 3 of the 4 named cap-loss games**
+   (`cool`/3 thoughts, `examine`/5, `puttwo`/11, `clean`/5 — named here by the fields R189 recorded, before the round,
+   not selected after it).
+2. **The cell**: **at least 2 of those 4 games win** under the ledger.
+3. **No harm**: the paired pooled delta is **>= -2.0 pp**, i.e. the ledger does not cost the games it was not built for.
+4. **Instrument**: pack 551 characters and 1 entry in all 548 games, `guard: true` on both arms, `max_steps` 50,
+   `any-line`, one `bank_digest`, and `@ledger` in the treatment's label.
+5. **Cost**: total spend **<= ¥3.4**, and the treatment's total prompt is **<= 6% above** the control's — a conditional
+   line on failed actions only, which the trajectory says is 1 to 3 turns a game.
+
+**Refutation.** Fewer than 20 fires in total, or non-zero in fewer than 2 of the 4 named games, → the state never reached
+the model and the round says nothing about search. A pooled delta **< -2.0 pp with a CI excluding 0** → the ledger hurts,
+and the search family is closed rather than queued.
+
+**Void.** Any arm whose episodes carry no `ledger_fires`; any pass whose `pack_chars`, `max_steps`, `parser` or
+`bank_digest` differs from the tiling above; any game outside the 274.
+
+## R192 (queued) — the release distribution: four draws of the published arm, so the number quoted is a band
+
+265, 264, 264, 258: the published bank's pool has been drawn four times on the same 274 games and the spread is **seven
+games**. A release that quotes one of them is quoting a draw. Four dispatches (≈ ¥6.0) buy the distribution, and what is
+published afterwards is the interval rather than the point.

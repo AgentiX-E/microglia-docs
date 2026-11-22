@@ -5111,3 +5111,56 @@ with *fewer* thoughts than the control: they are search failures with the narrat
 place R186's `put` stratum pointed, and the one place a cross-task bank of sentences has never reached. An instance
 model reaches it by exploring (99.7 at 177.9 scaffolding steps an instance); this project has to reach it with a
 read-time state instead, which is the round after the next.
+
+## The admission question, asked properly and answered with a price
+
+Every memory system has to decide what to keep. The field's most useful recent answer is to decide it **before any
+rollout**: score a candidate entry by how specifically it names a situation and how abstractly it states a rule, and
+admit it if the product clears a bar (`arXiv:2608.20274`). The appeal is obvious — an admission rule that costs nothing
+is the only kind a data flywheel can afford, because the flywheel's whole promise is that each episode makes the next one
+cheaper.
+
+This project implemented that score and tested it against four banks it had already paid for. The test cost **¥0.00**,
+and what it produced is a statement about *testability* rather than about the score.
+
+**The instrument was built to the record's own units.** It scores the **pack a game reads** — the entries whose tags
+admit that game's task type, rendered by the driver's own function — not the bank, because a bank nobody rendered is a
+bank nobody was treated with. It reproduces every rendered length this record has published, from 324 characters to
+1,318, which is the check that makes the rest of it readable.
+
+**Then the corpus refused to decide.** Over the three rows that are the same quantity (a bank against no bank, one
+dispatch each) the rank correlation is **+0.500**, one inversion, where the registration asked for 0.6. The inversion is
+informative: `bank-putmove-1` scores 36% higher than `bank-putscope-2` and measured 2.55 pp lower. But the more important
+number is the one nobody registers: **the score's entire range on this corpus is 1.62x** — 0.00544 to 0.00881 among
+single-entry, equal-length banks — while this lane's minimum detectable effect on one dispatch is **9.7 pp**. The
+hypothesis is being tested by an instrument whose signal is smaller than the ruler's smallest division.
+
+So the verdict is not "the score is wrong". It is that **the admission question, as the field poses it, cannot be
+answered on a corpus where every entry is well-formed.** Every plausible bank here names a command and states a
+condition, which is exactly what the score rewards; the variation the score can see is the variation between two good
+recipes, and the difference in what they are worth is below the resolution of the experiment that would compare them.
+Four more banks — ¥4.4 — would take the sample from three points to six and would not move the resolution by a single
+percentage point.
+
+**What the corpus does decide is reach, and it decides it twice.** The score's lexical cousin — does the entry name this
+task type's own operation? — reproduces the sign of R177's six per-kind cells on **three of six**. It correctly predicts
+that a `put` repair does nothing for `examine` (−12.9 pp) and correctly credits the two kinds whose failing step it
+names. It fails on `heat` (+28.2) and `clean` (+22.4), and it fails for a reason worth stating in a product document:
+the entry's mechanism is *open the container before taking anything out of it*, a precondition those games need, and its
+vocabulary never mentions heating or cleaning. **An entry pays where its mechanism reaches, not where its words point** —
+which this record first learned by paying ¥2.24 for a repair that did not move the kind it was written for, and has now
+re-measured offline, from a table it had already bought.
+
+**And the pair that should stop anyone shipping a content score.** Two banks in this record hold the same two sentences
+**byte for byte** and differ only in which task types each sentence is tagged to. Their entry scores are identical to the
+digit. Their pack means are **28.0% apart**, because a pack is a selection and the tags select. Nothing in the text
+changed, so nothing in a content score should have moved — and yet it moved by more than a quarter, in the interval where
+the record's own readings of those two banks differ by less than the noise band. A number that moves for a reason its
+author cannot name is a number that will one day move for that reason at the wrong moment.
+
+**What this project therefore claims about admission, and what it does not.** It does not claim a better score. It claims
+that the question "which entry should we keep" is *downstream* of the question "which task does this entry reach", and
+that the second one is measurable per kind, in the record, for the price of the games it was already running. The
+admission family stays open as research, with its price written down: it needs a corpus whose entries vary in quality
+rather than in form, or a resolution below two percentage points. Neither is worth buying while the mechanism family is
+still producing eight recovered games out of ten for ¥2.95.

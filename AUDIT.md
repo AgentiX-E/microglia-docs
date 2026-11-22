@@ -15338,3 +15338,71 @@ beside `fires`, so the miss could be attributed to the band rather than to the t
 **The rule, restated.** A registered cell needs three things and R189 is the first round where all three were written
 down: a **value**, a **band**, and a **denominator**. The value was right (engagement), the denominator was implicit and
 wrong (turns), and the band inherited the error.
+
+## 34.276 — A four-row table that was one artefact and three quantities
+
+R190's first reading was written as "a rank correlation between the utility score of a bank's entries and the sign of its
+measured effect: rho >= 0.6 over four banks". The round could not compute it, and the reason was in the table rather than
+in the score.
+
+**One row had no effect.** `bank-crosskind-44774801298` is not a treatment. It is the artefact a **run that drove no
+games** writes: `calls: 4`, `elapsed_s: 7.0`, a bill of $0.0049 for the call that built it, and no episodes. It was
+committed at R177 as a fixture and the registration picked it up as a bank with a measured delta. It also renders
+**1,166** characters, not the 659 the registration quotes — so the row was wrong twice, and the second wrongness is the
+one that matters: a number copied from memory rather than from the file.
+
+**Three rows were three quantities.** `bank-putscope-2`'s +24.45 pp is a bank against `none`; `bank-turnbudget-1`'s
+-0.73 pp is a bank against **its own word-permuted placebo**. Those are not points on one axis — the first asks "is
+carrying this better than carrying nothing", the second asks "is this sentence better than its own words shuffled". A
+rank correlation over both is a correlation between two experiments that were designed to answer different questions,
+and it would have produced a number that looked like a validity coefficient.
+
+**The repair is in the file rather than in the prose.** `measured-effects.json` now carries, per row, the `quantity` it
+is an instance of and the sentence that names the comparison, and `score_bank.py` refuses a row without either. The
+correlation is then computed **inside one quantity**, and the reader sees how many points that quantity has before
+seeing a coefficient.
+
+| quantity | rows | what the round could do |
+| --- | --- | --- |
+| bank vs no bank, one dispatch | 3 | rho = +0.500, one inversion |
+| bank vs its word-permuted placebo | 1 | reported, not correlated: one point is not a population |
+
+**What this is a third example of.** The record has a family of defects where a number was computed over a population
+that does not exist: a mean over the survivors of a filter (34.268), ten losses read as a class (34.270), a cell with no
+variance estimate (34.272), a game rate applied to turns (34.275). This one is the same defect one level up — not a
+statistic over the wrong population but a **table** that was never a population — and it was caught by a script refusing
+to load it, before any money was spent.
+
+## 34.277 — An instrument whose range is narrower than the resolution it would be read at
+
+R190's reading 1 failed at **rho = +0.500** against a registered 0.6, with one inversion. The tempting next move is to buy
+more points. The arithmetic says not to, and the arithmetic is the finding.
+
+**The score's range on this corpus is 1.62x.** Among single-entry 551-character banks, `bank-putmove-line-1` reads
+0.00544 and `bank-putprecond-1` reads 0.00881. Nothing plausible sits outside that, because every plausible bank in this
+record names a command and states a condition — which is what the score rewards — so the corpus cannot produce a pair
+that differs by more than about 1.6.
+
+**The lane's resolution is 9.7 pp on one dispatch.** The inverted pair differs by 2.55 pp. So the hypothesis "the score
+orders these two correctly" is answered by a measurement whose noise floor is four times the difference it would have to
+detect. Buying four more banks (≈ ¥4.4) would move the sample from 3 to 6 points and would not move the resolution: each
+new point would be an independently drawn ±10 pp.
+
+**So the honest verdict is not "the score is wrong".** It is that the score is **unfalsifiable at the price this lane
+pays for a reading**, and the three things that follow are all operational:
+
+1. **A gate that cannot be validated is not shippable.** The admission family in the literature is not adopted, not
+   because it failed a test, but because no test this project can afford would distinguish it from a coin.
+2. **The regression that would have been invisible.** Had the round reported rho = +0.500 as "positive, approaching the
+   threshold", the next round would have shipped a score that separates two content-identical banks by **+28% on the
+   strength of their tags alone**, with the record's own readings of them pointing 3.65 pp the other way — inside the
+   five-game band, so not a contradiction, but not corroboration either. A number that moves for a reason its author
+   cannot name is a number that will one day move for that reason at the wrong moment.
+3. **What a valid instrument would need.** Either a corpus with a wider score range (banks that *do not* name commands,
+   which is the filler family, and whose effect is known to be zero), or a resolution below 2 pp (which costs 25x the
+   games per arm). Neither is worth buying while the mechanism family is still producing 8-of-10 cells for ¥2.95.
+
+**The rule, restated for the fourth time in this record and for the first time about an instrument rather than a
+statistic.** A registered cell needs a value, a band and a denominator (34.275). An *instrument* needs a fourth thing: a
+range wider than the resolution it will be read at. R190 is the first round in this record to measure an instrument's
+range before spending anything on it, and the answer was that it has none to spare.

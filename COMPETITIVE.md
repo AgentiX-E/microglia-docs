@@ -9355,3 +9355,42 @@ exploring it — 177.9 steps of scaffolding per instance — and pays 8.4 steps 
 134/134 **without a per-instance model** and without an exploration phase, but at **15.9 steps** a success: it is
 cheaper per episode and dearer per step. That is the trade the board's cost axis has to show, and it is why the next
 round is a *utility score* (R190, ¥0) rather than more entries.
+
+![R190: the utility score against the measured delta for four banks already paid for, and the six per-kind cells a vocabulary test gets three of](figures/alfworld-r190.png)
+
+### The admission family, read, implemented and not adopted — and the board does not move
+
+The literature's answer to *which entry should be admitted* is a score computed before any rollout
+(`arXiv:2608.20274`: utility = specificity x abstractness; `arXiv:2606.21024`: negative knowledge that must be
+subtracted; PATH-Bench/SEU: preserve / abstract / ignore at read time). This project has now implemented the first of
+those and tested it against four banks it has already paid for, at **¥0.00**.
+
+| what the family claims | what this corpus measures | |
+| --- | --- | --- |
+| a score orders entries by utility without a rollout | rho = **+0.500** over the 3 comparable rows, registered at >= 0.6, with one inversion | **undetermined** |
+| specificity separates a task-naming entry from a general instruction | **0.0708 against 0.0479** on the 551- and 814-character packs | **holds** |
+| the score is lexical, so a word shuffle must not move it | **0.000**, on a verified permutation of the same bag | **holds** (and R188 bought the same null for ¥3.03) |
+| reach can be read off the vocabulary | **3 of 6** kinds: `heat` +28.2 and `clean` +22.4 are gains the entry never names | **refuted** |
+
+**Why it is not adopted, stated the way a buyer would state it.** The score's whole range on this corpus is **1.62x** and
+this lane's mde is **9.7 pp**, so the hypothesis "the score orders these two banks" is answered by a measurement whose
+noise floor is four times the difference it would have to detect. Four more banks (≈ ¥4.4) would take the sample from
+three points to six and would not move the resolution. **An admission rule that cannot be validated is a rule that has
+to be bought every time it is used** — which is exactly what this lane already does, at ¥2.95 for 548 games.
+
+**What is kept from the family.** Two things, and both are cheap. The *read-time* half (`SEU`'s preserve/abstract/ignore)
+maps onto this lane's kind gate and is already sharded in the record: an entry pays where its referent is the failing
+step, and `examine` is the cell where a `put` repair loses 12.9 pp. The *negative-knowledge* half (`arXiv:2606.21024`)
+is the question R185–R187 opened from the other end: a bank whose tags reach too far is a treatment on kinds it was not
+written for, and this lane has the measurements to say so per kind.
+
+**What the board says, unchanged.** The published row is still **134/134 on the 134 held-out games** and 265/274 pooled,
+at $0.71 per 1,000 episodes and 15.87 steps a success (R189). An offline scorer moves no games, so it moves no rank:
+microglia is first on the held-out split, and the cross-task-memory family's number without the turn guard is still
+R186's 99.25, 0.45 pp behind AutoManual + AutoContext's 99.7 on instance context.
+
+**The one sentence a competitor cannot copy from this appendix.** A content score puts `bank-putscope-3` **28.0% above**
+`bank-putscope-2` although the two hold the same two sentences byte for byte, because their tag sets route different
+kinds to each — and the record's two readings of those banks differ by 3.65 pp in the opposite direction, which is inside
+the five-game band this lane has measured between draws. So the score's only variation between two content-identical
+treatments is tag-driven and uncorroborated: **reach is a property of the treatment, not of the text.**

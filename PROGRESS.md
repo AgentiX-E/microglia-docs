@@ -26090,3 +26090,56 @@ plus the header held to its episodes (AUDIT 34.274). Gate: **637 Python tests**,
 **Next: R190, the utility score, offline.** No purchase: the four banks this lane has already measured (551 ch with 10
 losses and 5 heavy, 814 ch inert, 659 ch, 197 ch) are enough to ask *which entry hurts*, which is the half of the
 admission family R189 did not touch.
+
+## 229. R190 read back: the admission score is undetermined at this resolution and its reach variant is refuted, for ¥0.00 (06:21 UTC)
+
+No dispatch. **Twenty-one banks scored offline, 0 model calls, ¥0.00.** `scripts/score_bank.py` implements the
+literature's admission score (`arXiv:2608.20274`, utility = specificity x abstractness, no rollout) over the pack the
+driver actually renders — it imports `applicable` and `render_pack` rather than re-deriving them — and
+`eval/drivers/alfworld/measured-effects.json` holds every measured delta with the comparison it is.
+
+| # | registered | read | verdict |
+| --- | --- | --- | --- |
+| 1 | rho >= 0.6 over four banks, blind | **+0.500 over three**; the fourth row had no measured delta | **failed**, on a table that was not four rows |
+| 2 | 551 scores above 814 on specificity | **0.0708 against 0.0479** (gap 32.4% vs the extra sentence's 31.8%) | **held** |
+| 3 | a word permutation moves the score <= 0.05 | **0.000** to nine decimals, on a verified permutation | **held** |
+
+**Instrument first.** The scorer reproduces the record's own rendered lengths before it is used: 551 on all six kinds for
+`bank-putscope-2`, 814 for `bank-turnbudget-1`, 489 for `bank-putmove-1`, 1,312–1,318 for the four-entry banks.
+
+**Reading 1's table was one artefact and three quantities.** `bank-crosskind-44774801298` is the artefact of a run that
+drove **no games** (`calls: 4`, no episodes) and renders 1,166 characters against the 659 the registration quotes. The
+other three rows are two quantities: bank-vs-`none` (+24.45, +21.90, +6.72) and bank-vs-**its own placebo** (-0.73). The
+correlation therefore runs over three points, and the fourth is reported beside it as one experiment rather than folded
+into a coefficient. AUDIT 34.276.
+
+**rho = +0.500, and the inversion is one adjacent pair**: `bank-putmove-1` scores 0.00818 and measured +21.90;
+`bank-putscope-2` scores 0.00601 and measured +24.45 — 36% higher score, 2.55 pp lower. It cannot be bought up: the
+score's whole range on this corpus is **1.62x** (0.00544 to 0.00881) against a **9.7 pp** mde, so the hypothesis is
+answered by a measurement whose noise floor is four times the difference. The instrument is not refuted, it is
+**unfalsifiable at the price this lane pays for a reading** — and a gate that cannot be validated is not shippable.
+AUDIT 34.277.
+
+**The reach variant is refuted by R177's own table.** A lexical "does the entry name this kind's operation" test
+reproduces the sign on **3 of 6** kinds: it gets `put`, `puttwo` and `examine`, and misses `cool` (+30.4), `heat` (+28.2)
+and `clean` (+22.4), because the entry's mechanism is *open the container before taking* — a precondition `heat` and
+`clean` games need and its vocabulary never mentions. Reach is a mechanism, not a word list, which is what R181 paid
+¥2.24 to learn and this round re-measured at ¥0.
+
+**The counterexample the round found for free.** `bank-putscope-2` and `bank-putscope-3` hold the same two sentences byte
+for byte: entry scores identical (0.01271, 0.02141), pack means **0.00601 against 0.00769 (+28.0%)** — because the tags
+select, and nothing else does — while the record's two readings of those banks differ by 3.65 pp the other way, which is
+inside the five-game band measured between draws. So the score's only variation between two content-identical treatments
+is tag-driven and uncorroborated: a number that moves for a reason its author cannot name.
+
+**Instrument and docs.** `scripts/score_bank.py` (100% line and branch), 41 tests, `measured-effects.json` as the
+effect table with a `quantity` per row, both suites in the CI gate and under the coverage floor. Gate: **678 Python
+tests**, 99.1% line and branch, `agent.py` and `aggregate.py` 99.8%, `score_bank.py` 100%, docs 8/8. Spend this round
+**¥0.00**.
+
+**Board: unchanged.** The published row is still R189's 134/134 unseen and 265/274 pooled. This round bought no games,
+so it moves nothing on the board and settles a question the board does not ask: whether a memory can be *admitted* by
+inspection rather than by purchase.
+
+**Next: R191, instance state** — the four games R189's guard lost all ended at the 50-step cap with fewer thoughts than
+the control: search failures with the loop already removed. ¥4.2.
