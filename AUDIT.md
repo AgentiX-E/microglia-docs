@@ -15695,8 +15695,9 @@ assumption — 413/413 in R191's arm and 479/479 in R193's across 822 games (AUD
 the two rounds since** — and where it fails the honest answer is to stop: a slice in which one refusal went unanswered is
 a slice where one turn's verdict is unknown, and any repeat count over it would be a guess with a decimal point.
 
-**What its first read bought.** 195 accepted repeats in 146 of 274 games, but only **3 of the 8 losses**, and five losses
-with no repeat at all. The mechanism's ceiling is therefore **+1.09 pp** on a split that resolves **2.29 pp**, which
+**What its first read bought.** 195 accepted repeats in 274 games, of which **177 are loops** — a repeat of a command the
+world had already accepted — and 18 are retries, where a command refused at a distance was accepted after walking over.
+Loops appear in 136 games but in only **3 of the 8 losses**, and five losses contain no loop at all. The mechanism's ceiling is therefore **+1.09 pp** on a split that resolves **2.29 pp**, which
 cancelled a ¥1.4 dispatch before it was sent (AUDIT 34.288). The reusable rule: **a mechanism whose ceiling is below the
 split's mde is not an experiment, and the arithmetic that shows it costs nothing.**
 
@@ -15712,8 +15713,8 @@ Every per-game reading in this lane now has to carry `ledger_fires > 0` on that 
 without a fire is a datum about the model's draw and is reported as one.
 
 **A mechanism whose ceiling is below the mde cannot be falsified.** R196 was to be the cycle-aware line: fire when the
-model re-issues a command the world accepted. The ¥0 read (`cycles.py`) found 195 such turns, in 146 games, but in only
-**3 of the 8 losses**, and five of the eight contain **no repeat at all** — 49 to 50 commands that never looped. So the
+model re-issues a command the world accepted. The ¥0 read (`cycles.py`) found **177 loops** in 136 games, but in only
+**3 of the 8 losses**, and five of the eight contain **no loop at all** — 49 to 50 commands that never repeated. So the
 treatment's best possible outcome on this split is +3 games = **1.09 pp**, against a paired mde of **2.29 pp** at 5
 discordant games. Whatever it did, the reading would straddle zero. **Not bought**, and the reason is arithmetic rather
 than taste.

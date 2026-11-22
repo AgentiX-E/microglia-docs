@@ -26482,20 +26482,23 @@ the question R196 was going to be bought to ask: is there a turn on which the mo
 | --- | --- |
 | commands attempted | 3,511 |
 | refusals (= fires, exactly) | 383 |
-| accepted repeats | **195 (5.55%)**, in **146 games (53.3%)** |
-| losses carrying one | **3 of 8 (37.5%)** — 4, 1, 1 repeats |
-| price if rendered | 7,288 characters over 195 lines, 37.4 chars/line |
+| accepted repeats | **195 (5.55%)** — **177 loops** in **136 games (49.6%)** and 18 retries |
+| losses carrying a loop | **3 of 8 (37.5%)** — 2, 1, 1 loops |
+| price if rendered | 6,619 characters over 177 lines, 37.4 chars/line |
 | longest chain | 1 turn repeating two back, 2 three back; one command issued 4 times |
 
-Five of the eight losses never repeat a command at all: they end at **49–50** commands with no loop, no stall and no
-refusal — the model searched and did not find. The other three are worth **at most three games**, which is **1.09 pp** on
+A loop is a repeat of a command the world had **already accepted**; the 18 retries are turns where a command refused at
+a distance was finally accepted after walking over, which is progress rather than a cycle — the admissibility of a command
+is state-dependent, and a reader that called a retry a repetition would be wrong about the one thing it names. Five of the
+eight losses contain no loop at all: they end at **49–50** commands with no repetition, no stall and no refusal — the model
+searched and did not find. The other three are worth **at most three games**, which is **1.09 pp** on
 a split whose resolution is **2.29 pp**. **R196 is therefore not bought**: a treatment whose ceiling is half the split's
 mde cannot produce a falsifiable reading, and buying it would spend ¥1.4 to learn that the interval contains zero by
 construction (AUDIT 34.288). The arithmetic is the deliverable, and it cost ¥0.
 
 ![R195: the example became a command, the prompt halved, and the cycle family's ceiling is below the split's resolution](figures/alfworld-r195.png)
 
-**Gate.** **794 Python tests** (39 new: `test_cycles.py`), **99.1%** of all measured lines and branches, `cycles.py` at
+**Gate.** **798 Python tests** (42 new: `test_cycles.py`), **99.1%** of all measured lines and branches, `cycles.py` at
 **99.1% of lines and 97.7% of branches**, `agent.py` 99.9%/98.5%, `aggregate.py` 99.5%/98.1%, `pnpm audit:repo` and
 `check-workflows` clean, both dispatches `success` including the lane's floor job on each.
 

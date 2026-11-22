@@ -9052,9 +9052,10 @@ because the pool's residual is not refusal-bound.
 
 ## R196 (not bought) — the cycle trigger's ceiling is below the split's resolution
 
-The ¥0 read (`cycles.py`, `9276300`) over the same 274 artefacts: **195** accepted repeats in **146** games, but in
-**3 of the 8 losses** — and five of the eight losses contain **no repeat at all**, ending at 49–50 commands without a
-loop. Three games is **+1.09 pp** on a split that resolves **2.29 pp**, so the treatment cannot produce a falsifiable
+The ¥0 read (`cycles.py`, `9276300`) over the same 274 artefacts: **195** accepted repeats, of which **177** are loops
+(a repeat of an already-accepted command) in **136** games and 18 are retries (a command refused at a distance, accepted
+after walking over) — but only **3 of the 8 losses** carry a loop, and five of the eight contain **no loop at all**,
+ending at 49–50 commands without a repetition. Three games is **+1.09 pp** on a split that resolves **2.29 pp**, so the treatment cannot produce a falsifiable
 reading at this n. **Not dispatched**, and the family closes with five readings of two mechanisms and one trigger.
 
 **What this leaves, and it is not a taste.** The unseen split is at **134/134** — its ceiling — and the eight remaining
