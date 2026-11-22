@@ -5164,3 +5164,47 @@ that the second one is measurable per kind, in the record, for the price of the 
 admission family stays open as research, with its price written down: it needs a corpus whose entries vary in quality
 rather than in form, or a resolution below two percentage points. Neither is worth buying while the mechanism family is
 still producing eight recovered games out of ten for ¥2.95.
+
+## The state, bought: four named games, four wins, and the reason the pool cannot say so
+
+R191 is the first round in this record that named its games **before** buying them. R189's guard lost four games its own
+control won, and all four ended at the environment's 50-step cap with *fewer* thoughts than the control: they are search
+failures, not narration failures, and no sentence about a task can reach a model that is at the environment and not
+finding the object. The round's treatment was one line, rendered only on the turns whose command moved nothing:
+
+> `Already tried this episode: take apple 1; go to cabinet 1; open fridge 1.`
+
+The last three commands tried, in order, repeats collapsed. It fires on both sides of the parser — an action the world
+refuses, and an admitted `look` that moves nothing — and it never fires after the episode's last answer, because a line no
+later turn reads is not engagement.
+
+**All four named games carried the line and all four won.** Three of them had been the control's own cap-losses on this
+draw and finished in 11, 36 and 40 steps instead of 50. The pooled reading is **267 of 274 against 265** — paired
+**+0.73 pp** [−1.09, +2.92], p = 0.597, on a split whose resolution is 2.89 pp — and the held-out section is 134 of 134
+on both arms. The line is 42,845 characters, **2.28%** of the arm's prompt, for **¥2.69** across 548 games, and the
+treatment makes **76 fewer calls** than the control it beat.
+
+**The round's claim is therefore the mechanism cell and not the pool, and the reason is measurable.** Twenty-seven games
+never fired the line, so their prompts are the control's byte for byte — and **fourteen of them still took a different
+path**. Only 15 of 274 games have identical prompt totals across the arms: the model re-samples the prompt it has already
+answered. A pool difference of two games over 274 is one draw against another draw, which is why the record reports it as
+"not worse" and refuses to report it as a gain.
+
+**Two failure modes came out of the round, and both are the literature's own disease in miniature.** First, the line can
+**license the loop it was built to break**: two `examine` games received 16 and 40 lines and both lost at the cap, because
+by the third repetition the line *is* the constant that R188 measured as inert. Second, the registered band for the
+treatment's engagement (20 to 200 fires) contradicted the sentence that justified it (one to three failed actions a game,
+which over 274 games is 274 to 822); the measurement, 413, is inside the justification and outside the band. Both are
+recorded as audits rather than repaired after the fact (34.278, 34.279, 34.280).
+
+**Where this sits against the 2026 literature.** Four papers agree that *persistence* is the problem and *point-of-use
+synthesis* is the cure: Anti-Persistence keeps trajectories and discards the guidance it synthesizes from them
+(`arXiv:2610.27406`, ALFWorld 97.3 at the lowest LLM-call cost of four memory designs); STRATA attributes catastrophic
+negative transfer to single-level concrete memory and repairs it with typed and contrast edges (`arXiv:2610.19386`); the
+continual-learning study shows abstraction is the safer carrier and that negative transfer concentrates on the hard cases
+(`arXiv:2604.27003`); MemHarness inserts an explicit critique-and-reframe step and learns it with GRPO (`arXiv:2607.28272`).
+This project has now implemented the cheapest half of that consensus — synthesis at the point of use, discarded with the
+episode, at ¥2.69 — and has measured where it breaks: **a line that repeats is a stored abstraction with a shorter
+lifetime.** R193 is registered to test the fix (a repeat count instead of a repeat, and a line only when the history
+changed), behind R192's distribution, because a release number that is one of five draws (265, 264, 264, 258, 267, spread
+seven games) has to be an interval before another arm is compared against it.

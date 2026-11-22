@@ -26143,3 +26143,56 @@ inspection rather than by purchase.
 
 **Next: R191, instance state** — the four games R189's guard lost all ended at the 50-step cap with fewer thoughts than
 the control: search failures with the loop already removed. ¥4.2.
+
+## 230. R191 read back: the line reaches all four games it was built for, and the pool stays where it was (07:55 UTC)
+
+Four dispatches, **548 games, two arms on one bank**, `--gate-kind true`, `any-line`, cap 50, `guard` on both arms,
+off-peak in all sixteen summaries: `44998336698` + `44998433515` (ledger) and `44998455032` + `44998557297` (control).
+Total spend **$0.3735 ≈ ¥2.69**, 8,356 calls.
+
+| arm | pooled | unseen 134 | seen 140 | thoughts a game | calls |
+| --- | --- | --- | --- | --- | --- |
+| **`always-in@kind+anyline+guard+ledger`** | **267/274 (97.45%)** | **134/134** | **133/140 (95.00%)** | **2.65** | **4,140** |
+| `always-in@kind+anyline+guard` | 265/274 (96.72%) | 134/134 | 131/140 (93.57%) | 2.99 | 4,216 |
+
+**The round is read from the four games it named, not from the pool.** Paired **+0.73 pp** [−1.09, +2.92], 5 + 3
+discordant, p = 0.597, mde **2.89 pp** — a "not worse" reading. The mechanism cell is the result: all four games R189's
+guard lost and the plain arm won were named before the round, all four carried the line, and **all four won** (three of
+them from the control's own cap-losses on this draw).
+
+| # | registered | read | verdict |
+| --- | --- | --- | --- |
+| 1 | `ledger_fires` 20 to 200 per arm | **413**; non-zero in **4 of 4** named games | **band failed**, cell held |
+| 2 | ≥ 2 of the 4 named games win | **4 of 4** | **held** |
+| 3 | paired delta ≥ −2.0 pp | **+0.73 pp** [−1.09, +2.92] | **held** |
+| 4 | one pack, channel, cap, guard, bank; `ledger` in the label | 551 ch / 1 entry in 548 games, one `bank_digest`, `always-in@kind+anyline+guard+ledger` | **held** |
+| 5 | ≤ ¥3.4; prompt ≤ +6% | **¥2.69**; **+2.11%** | **held** |
+
+**Reading 1's band contradicted the paragraph that justified it.** The band was 20 to 200 fires over 274 games (0.07 to
+0.73 a game); the justification said the trajectory is "one to three turns a game", which is 274 to 822. The measurement,
+413, is inside the justification and outside the band. That is the sixth member of the wrong-denominator family and the
+second consecutive round to produce one. AUDIT 34.278.
+
+**The line can license the loop it was built to break.** Two `examine` games received **16** and **40** lines and both
+lost at the cap: by the third repetition the line is the constant R188 already measured as inert. The shape is a tail, not
+the distribution — 182 games carry one line, 44 two, 27 none — but it is the failure mode that decides the next
+registration. AUDIT 34.279.
+
+**Twenty-seven games carried no line at all, and fourteen of them still took a different path.** Their prompts are the
+control's byte for byte, so the difference is the model re-sampling what it has already answered: only **15 of 274**
+games have identical prompt totals across the arms. The lane's cross-dispatch control drift (AUDIT 34.232) is now
+measured inside one round, and it is why reading 2 rather than reading 3 is this round's claim. AUDIT 34.280.
+
+**Cost.** The line is 42,845 characters, **2.28%** of the arm's prompt, 103.7 per fire; the treatment makes **76 fewer
+calls** than the control it beat.
+
+**Gate.** 705 Python tests, 99.1% line and branch, `agent.py` and `aggregate.py` 99.5%, `score_bank.py` 100%, CI green on
+`43ac25b0` before the dispatch, `pnpm audit:repo` and `check-workflows` clean.
+
+**Board: first on the held-out split, and the pool is now 267/274.** The published row moves from 265 to 267 with the same
+134/134 unseen. R186's cross-task-memory number without the guard remains 99.25, 0.45 pp behind AutoManual + AutoContext.
+
+**Next: R192, the release distribution.** 265, 264, 264, 258, 267: five draws of one bank on one 274-game pool, and the
+number a release quotes is one of them. Four dispatches (≈ ¥6.0) buy the interval instead of the point, after which the
+board row can be a band rather than a level.
+

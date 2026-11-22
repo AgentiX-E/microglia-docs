@@ -8735,17 +8735,14 @@ measured effect in view.
 
 **Price ¥0.00**, and the whole round is a script plus its tests.
 
-## R191 (queued) — the release distribution: four draws of the published arm, so the number quoted is a band
+## R192 (queued) — the release distribution: four draws of the published arm, so the number quoted is a band
 
 265, 264, 264, 258: the published bank's pool has now been drawn four times on the same 274 games, and the spread is
 **seven games**. A release that quotes one of them is quoting a draw. Four dispatches (¥6.0) buy the distribution, and
-what is published afterwards is the interval rather than the point.
-
-## R192 (queued) — instance state, the only family the pack cannot reach
-
-The four guard losses all ended at the 50-step cap: they are search failures with the loop already removed. The
-literature's answer is a per-episode **state** (what has been tried, where, and what it returned) rather than a corpus
-prior, and the driver already records the trajectory. ¥4.2, registered after R190 reports.
+what is published afterwards is the interval rather than the point. **Now five draws** (265, 264, 264, 258, 267), and
+R191 measured *why* the draws differ: on 27 games where the treatment never fired, 14 still took a different path
+(AUDIT 34.280). The round is unchanged in price and sharper in purpose — it converts "the model re-samples" from an
+explanation into a distribution.
 
 ## R190, read back — the admission score is undetermined at this resolution, and its reach variant is refuted for ¥0.00
 
@@ -8816,3 +8813,66 @@ and the search family is closed rather than queued.
 265, 264, 264, 258: the published bank's pool has been drawn four times on the same 274 games and the spread is **seven
 games**. A release that quotes one of them is quoting a draw. Four dispatches (≈ ¥6.0) buy the distribution, and what is
 published afterwards is the interval rather than the point.
+
+## R191, read back — four named games, four wins, ¥2.69; and the pool is a draw, not a measurement
+
+Four dispatches, **548 games, two arms on one bank**, `--gate-kind true`, `any-line`, cap 50, `guard` on both arms,
+off-peak in all sixteen summaries: `44998336698` + `44998433515` (ledger) and `44998455032` + `44998557297` (control).
+Spend **$0.3735 ≈ ¥2.69**, 8,356 calls.
+
+| arm | pooled | unseen 134 | seen 140 | thoughts a game | calls |
+| --- | --- | --- | --- | --- | --- |
+| **`always-in@kind+anyline+guard+ledger`** | **267/274 (97.45%)** | **134/134** | **133/140** | **2.65** | **4,140** |
+| `always-in@kind+anyline+guard` | 265/274 (96.72%) | 134/134 | 131/140 | 2.99 | 4,216 |
+
+Paired **+0.73 pp** [−1.09, +2.92], 5 + 3 discordant, p = 0.597, mde 2.89 pp. Engagement 35.0%.
+
+**The round's result is the mechanism cell, not the pool.** The registration named four games from R189's record before
+the round; all four carried the line and **all four won** — three of them from the control's own cap-losses on this draw:
+
+| game | kind | control (the guard) | ledger | lines |
+| --- | --- | --- | --- | --- |
+| `pick_cool_then_place_in_recep-Plate-None-CounterTop-1` | `cool` | lost, 50 steps | **won, 11** | 1 |
+| `look_at_obj_in_light-Bowl-None-DeskLamp-301` | `examine` | lost, 50 steps | **won, 36** | 3 |
+| `pick_two_obj_and_place-Box-None-CoffeeTable-213` | `puttwo` | lost, 50 steps | **won, 40** | 2 |
+| `pick_clean_then_place_in_recep-Spatula-None-DiningTable-4` | `clean` | won, 12 steps | **won, 11** | 1 |
+
+**Three findings that outlive the round.**
+
+1. **The band in reading 1 contradicted its own justification** (20–200 fires registered, 274–822 justified, 413
+   measured). AUDIT 34.278: a band must be derived in the same paragraph, with the multiplication written down.
+2. **A repeated line licenses the loop.** Two `examine` games took 16 and 40 lines and both lost at the cap; by the third
+   repetition the line is a constant, and a constant is what R188 measured as inert. AUDIT 34.279.
+3. **The arm with no treatment changed its own trajectory in 14 of 27 games.** Identical prompts, different paths; only
+   15 of 274 games have identical prompt totals across the arms. Cross-dispatch control drift, measured inside one round
+   per game. AUDIT 34.280.
+
+**What it changes about the plan.** The state family is **adopted at the mechanism level and not at the pool level**. The
+next purchase is the distribution (R192, ≈ ¥6.0), because the release number is now one of five draws (265, 264, 264,
+258, 267) and its spread is seven games — larger than the effect any of the last three rounds was able to resolve.
+
+## R193 (queued) — the line that stops repeating itself: a repeat count instead of a repeat
+
+R191's tail is the treatment's own failure mode (AUDIT 34.279): 40 lines on one game, 16 on another, both lost at the cap.
+The fix is a renderer change, not a new component, and it has two halves:
+
+1. **A count instead of a copy.** `Already tried this episode: take apple 1 (4 times)` is shorter than four copies and
+   says something the fourth copy does not.
+2. **A line only when the history changed.** A fire whose command list is the same as the last fire's is a no-op rather
+   than a constant, which caps a game's spend at the number of *distinct* failures it has.
+
+**Registered readings.**
+
+1. **Engagement preserved**: the four R191 named games still carry at least one line, and all four still win.
+2. **The tail is closed**: no game receives more than **8** lines, against R191's maximum of 40.
+3. **No harm**: paired pooled delta against R191's arm ≥ −2.0 pp over 274 games.
+4. **Cost**: total spend ≤ ¥3.4; the treatment's `ledger_chars` is **below** R191's 42,845.
+
+**Refutation.** A game still receiving more than 8 lines, or any of the four named games losing → the repetition is not
+the mechanism and the family closes at R191's version.
+
+**Void.** Any arm whose episodes carry no `ledger_fires`; any pass whose pack, channel, cap, guard or bank differs from
+R191's tiling.
+
+**Price ≈ ¥3.0** (four dispatches, in parallel with R192's draw), and it is registered **behind** R192 because the pool
+number has to be an interval before another arm is compared to it.

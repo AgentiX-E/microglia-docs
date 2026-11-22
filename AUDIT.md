@@ -15406,3 +15406,86 @@ pays for a reading**, and the three things that follow are all operational:
 statistic.** A registered cell needs a value, a band and a denominator (34.275). An *instrument* needs a fourth thing: a
 range wider than the resolution it will be read at. R190 is the first round in this record to measure an instrument's
 range before spending anything on it, and the answer was that it has none to spare.
+
+## 34.278 — A registered band that contradicts the sentence justifying it
+
+R191's reading 1 registered `ledger_fires` at **20 to 200 per arm** over 274 games. The paragraph three lines below it
+justified the treatment's price with "the trajectory says that is **one to three turns a game**". One to three turns a
+game, over 274 games, is **274 to 822**. The band and its own justification differ by a factor of four, and nothing in the
+registration noticed, because the band was written as a plausible-looking interval and the justification was written as
+prose.
+
+The measurement is **413 per arm**. That is inside the justification and outside the registered band, which makes this the
+sixth member of the record's wrong-denominator family — and the second consecutive round to produce one:
+
+| entry | the number | what it was a number about |
+| --- | --- | --- |
+| 34.268 | a mean over the survivors of a filter | the games that survived, not the games |
+| 34.270 | ten losses read as a class | ten games, not a rate |
+| 34.272 | a cell with no variance estimate | one dispatch's two arms |
+| 34.275 | 20 to 120 guard fires | a *game* rate applied to *turns* |
+| 34.276 | a four-row table | one artefact with no games and three quantities |
+| **34.278** | **20 to 200 ledger fires** | **a band that contradicted its own arithmetic** |
+
+**The rule this entry adds, and it is a rule about writing rather than about reading.** A band has to be **derived** from
+the sentence that justifies it, in the same paragraph, with the multiplication written down: "one to three failed actions
+a game times 274 games is 274 to 822 fires, so the band is 250 to 850." The 20–200 band was not a miscalculation, it was
+an **uncalculated** number — a shape copied from R189's registration, whose own band was wrong for the same reason.
+
+**What it cost.** Nothing. The reading it was attached to was the engagement cell, and the cell's real content — "the line
+reached all four named games" — is a count, not a band. The verdict on reading 1 is therefore *failed on the band, held on
+the cell*, and the failure is reported rather than repaired after the fact.
+
+## 34.279 — The state line licenses the loop it was written to break
+
+R191's treatment lost three games the control won, and two of them are the same kind with the same shape:
+
+| game | lines received | ledger | control |
+| --- | --- | --- | --- |
+| `look_at_obj_in_light-AlarmClock-None-DeskLamp-323` | **40** | lost, 50 steps, 6 thoughts | won, 5 steps |
+| `look_at_obj_in_light-Laptop-None-DeskLamp-328` | **16** | lost, 50 steps, 22 thoughts | won, 5 steps |
+
+Forty lines on one 50-step game means the model issued a refused command on forty consecutive turns while being told,
+every time, which commands it had already tried. **By the third repetition the line is a constant**, and a constant in
+front of every turn is precisely what R188 measured as inert for ¥3.03.
+
+This is the same phenomenon the negative-transfer literature names from the other side: a state that is re-rendered
+without change is not a state, it is a prior with a timestamp. The literature's term for the fixed-up version is
+*contrast* — flagging the confusable, direction-opposite experience rather than repeating the same list (`arXiv:2610.19386`);
+its term for the discipline the ledger already follows is *anti-persistence* — guidance synthesized at the point of use
+and discarded with the episode (`arXiv:2610.27406`).
+
+**The mechanism that would fix it is cheap and is not registered yet.** A line that carries a **repeat count** rather
+than a repeat — `Already tried this episode: take apple 1 (4 times)` — is shorter than four copies and says something the
+fourth copy does not. The condition "only when the command changed since the last fire" turns the tail into a no-op
+instead of a constant. Both are one-line changes to `ledger_line`, and neither is bought until the distribution round
+(R192) has put the pool claim on an interval.
+
+**What it means for the verdict.** The mechanism cell (4 of 4 named games) stands, and the pool (+0.73 pp, p = 0.597) is
+"not worse". What this entry adds is the reason the pool is not better: the repair pays on the games where one failed
+action is a fact, and it costs on the games where the failure is the loop — and the loop is exactly the state R191 was
+chosen for. A state renderer that is cheaper on the tail is the next generation of this treatment, not a bug in this one.
+
+## 34.280 — The arm that received no treatment changed its own trajectory in half its games
+
+R191 renders its line **only** on turns whose command moved nothing. Twenty-seven of 274 games never had such a turn, so
+their message list is the control's, byte for byte — the prompts are identical by construction.
+
+**Fourteen of those twenty-seven took a different path.** One of them, `look_at_obj_in_light-Pillow-None-DeskLamp-323`,
+lost at the 50-step cap under the control and won in 9 steps under the ledger without a single line. Across the whole
+pool only **15 of 274** games have identical prompt totals between the arms.
+
+**So the model re-samples the prompt it has already answered.** The lane has known this as *cross-dispatch control
+drift* since AUDIT 34.232 — the control moved six wins between two dispatches of identical code — and until now it has
+been treated as an accounting fact about dispatches. R191 measures it **inside one round, per game**, on the cleanest
+possible sample: games where the treatment literally did not exist.
+
+**Three consequences, all of which change how a round is read.**
+
+1. **The pool claim is bounded by this, not by the split.** 2.89 pp mde over 274 games already said the pool could not
+   resolve a two-game effect. This says *why*: the two arms are two samples, not one sample measured twice.
+2. **A mechanism claim has to be made on the games where the treatment fired.** Four named games, four fires, four wins
+   is a claim about a state; "267 against 265" is a claim about two draws of one pool.
+3. **The instrument that would isolate it does not exist in this lane yet.** The seed policy is deterministic and proves
+   the *driver*; the model cannot be pinned. The only affordable estimator is more draws — which is exactly what R192
+   buys, and it is why the release number has to be an interval rather than a level.

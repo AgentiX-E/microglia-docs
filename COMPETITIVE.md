@@ -9394,3 +9394,70 @@ R186's 99.25, 0.45 pp behind AutoManual + AutoContext's 99.7 on instance context
 kinds to each — and the record's two readings of those banks differ by 3.65 pp in the opposite direction, which is inside
 the five-game band this lane has measured between draws. So the score's only variation between two content-identical
 treatments is tag-driven and uncorroborated: **reach is a property of the treatment, not of the text.**
+
+## R191 — the state line, and the four 2026 papers that say where its tail comes from
+
+![R191: the four named cap-losses, the pool, and where the line landed](figures/alfworld-r191.png)
+
+**Left: the mechanism cell.** The four games R189's guard lost and the plain arm won were named before the round. All four
+carried the line and all four won; three of them had sat at the 50-step cap under the guard and finished in 11, 36 and 40
+steps. **Middle: the pool.** 265 → 267, paired +0.73 pp [−1.09, +2.92], p = 0.597, mde 2.89 pp — five of the control's
+nine losses came back and three of its 265 wins went the other way. **Right: where the line landed.** 182 games carry one
+line, 44 two, 27 none; the tail is 16 and 40 lines on two `examine` games, both lost at the cap.
+
+### Four papers, and what this lane's measurements say to each
+
+| paper | its claim | this lane's measurement |
+| --- | --- | --- |
+| **Anti-Persistence** (`arXiv:2610.27406`) | stored abstractions reproduce their own errors; keep trajectories, synthesize guidance per task, **discard it**; ALFWorld **97.3**, lowest LLM-call cost of four memory designs over 9 backbone x benchmark settings | **adopted in kind, at the episode level.** R191's line is synthesized from the running trajectory and dies with it — nothing about the task is written back. The measurement agrees with the paper's ordering: *stored* abstractions have been inert (R188, −0.73 pp) or harmful (R187, −12 games) on this corpus, while the per-episode render pays on the games it was built for |
+| **STRATA** (`arXiv:2610.19386`) | single-level concrete memory suffers **catastrophic negative transfer**; typed edges plus **contrast edges** repair it; ScienceWorld 78.7 → 96.7 inside one system | **the negative transfer replicates; the repair is untested here.** One 197-character entry read by six kinds cost **−12 games**, and `clean` fell 100% → 77.6% (R185). The scoped bank (R186) is a *typed* edge by task kind and it removed the harm; a *contrast* edge — an entry that names the opposite direction — has never been bought |
+| **When Continual Learning Moves to Memory** (`arXiv:2604.27003`) | abstraction is a safety net across a task shift; negative transfer concentrates on **hard cases**; finer granularity can *reduce* stability | **half replicates.** The hard-case concentration is exact: R191's ledger recovered **5 of the control's 9 losses** and cost **3 of its 265 wins**. The abstraction half does not: at matched length a raw trace and a distilled sentence were worth the same (R176), and provenance on top of a sentence was **−3.65 pp** (R178) |
+| **MemHarness** (`arXiv:2607.28272`) | insert an explicit **critique + reframe** step between retrieval and action, learned end-to-end with GRPO, no extra labels; reduces negative transfer | **not reproducible at this lane's budget** (it needs policy training). R191 is the untrained approximation: reframe at the point of use, render, discard. Its 85.9 row already sits on the board below this project's 96.27 |
+
+**The one sentence the four share, and the one this round refutes.** All four treat *persistence* as the problem and
+*point-of-use synthesis* as the cure. R191 is that cure implemented at ¥2.69 — and its tail (40 lines on one game) shows
+the cure failing in the same way the disease does: **a line that repeats is a stored abstraction with a shorter lifetime.**
+That is the sentence R193 is registered to test.
+
+### The board after R191
+
+| # | row | unseen 134 | family | LLM | stack | cost as reported |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | AutoManual + AutoContext | **99.7** | instance context | DeepSeek-V3-0324 | Python | 8.4 steps/success + 177.9/instance |
+| 2 | **microglia, scoped bank + guard + ledger (R191)** | **100.00** | **cross-task memory** | deepseek-flash | Python + TypeScript | **14.19 steps/success, $0.68/1k episodes** |
+| 3 | IGE + AutoContext | 98.8 | instance context | DeepSeek-V3 | Python | 13.4 + 177.9 |
+| 4 | ReAct + AutoContext | 98.0 | instance context | DeepSeek-V3 | Python | 6.6 + 177.9 |
+| 5 | AutoManual | 97.9 | cross-task memory | DeepSeek-V3 | Python | 17.4 steps/success |
+| 6 | Anti-Persistence (2026) | 97.3 | cross-task memory, **no stored abstraction** | Gemma-4-31B-it | Python | lowest LLM-call cost of four designs |
+| 7 | frontier actor + bank (2026 report) | 97.3 | cross-task memory | claude-sonnet-5 | not stated | not stated |
+| 8 | microglia, scoped bank + guard (R189) | 100.00 | cross-task memory | deepseek-flash | Python + TS | 15.87 steps/success |
+| 9 | frontier actor, no memory | 95.9 | none | claude-sonnet-5 | not stated | not stated |
+| 10 | IGE | 94.3 | search | DeepSeek-V3 | Python | 60.6 |
+| 11 | ReflAct | 93.3 | backbone | GPT-4o | Python | not reported |
+| 12 | M\* (NeurIPS 2026) | 88.1 | cross-task memory | GPT-5.4 Mini + GPT-5.3-Codex | Python + SQLite | $12–90 per search; 101 h |
+| 13 | ASCENT (9B, weight-level) | 88.8 | weight distillation | 9B open model | Python | not reported |
+| 14 | ALMA | 87.1 | cross-task memory | GPT-4o-class | Python | $0.09/run, 1,319 tokens |
+| 15 | microglia, bank, reference reader | 85.82 | cross-task memory | deepseek-flash | Python + TS | 17.3 steps/success |
+| 16 | MemHarness (7B, trained) | 85.9 | cross-task memory | 7B + GRPO | Python | GPU training |
+| 17 | ReAct | 77.5 | backbone | DeepSeek-V3 | Python | 11.4 |
+| 18 | H²R / graph-memory / CoEx / ExpeL | 72.4 / 75.4 / 64.2 / 59.0 | cross-task memory | GPT-4 class | Python | not reported |
+| 19 | **microglia, no pack, any-line** | **72.39** | none (control) | deepseek-flash | Python + TS | 23.4 steps/success |
+
+**Row 2 and row 8 are the same 134 games and both read 100.00.** The ledger did not add a game on the unseen section
+(134 → 134) and added two on the seen one (131 → 133). So the *level* column cannot separate R189 from R191; the
+**mechanism** column can — four named cap-losses, four wins — and that is why the figure's left panel exists.
+
+**Aggregator rows, reported and not adopted.** The public boards carry a 2026 layer this record has not reproduced and
+cannot verify: Procedural Graph (Gemini 3.1 Pro) 100, Kintsugi 100, AutoAgent (gemini-3-pro-thinking) 99.3, SkillZip
+99.1, RSIPO 98.6, GEPA-Curator 98.4, DeepAgent 97.8, TTExplore 97.76, DAPO+AEM 96.6, CoPE 95.5, PI-OPSD 95.1, WALL-EVE
+95.0, AgentDecision-4B 95.0, Dual Memory 94.78. Every one of them reports a **level on the benchmark's own test split**,
+not a paired delta against a control on the same games, and none reports a per-game cost this lane could price. They are
+listed because a reader will find them; they are not on the table because a number this record cannot reproduce is not a
+row it can rank against.
+
+**Where that leaves the claim.** Two things are true and only one of them is a ranking. **The held-out level is saturated
+at the top** — five rows within 2.4 pp of 100, three of them frontier-actor systems — so "first" on that column is a tie
+inside one split. **The cost column is where this project leads without ambiguity**: $0.68 per 1,000 episodes (14.19 steps per success), a
+deepseek-flash actor, and a memory that is 551 characters and one entry, against an instance-context family that spends
+177.9 steps per instance to reach 99.7. The honest sentence is therefore: **parity at the top of the accuracy column at
+the lowest published cost in it, with the only ablation on the board that names which games a memory entry moved.**
