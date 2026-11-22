@@ -26560,6 +26560,8 @@ pre-registered and never dispatched; `credit` has a mechanism check (`creditAbla
 `budgetBasis` have never been varied alone. That line is now on every push, which is the difference between "we
 should measure these" and a number a reader can act on.
 
+![R197: five shipped knobs, one interval that straddles zero, and four reasons](figures/serve-profile-197.png)
+
 **What the gate does not bind, stated rather than implied.** A lane's treatment arm is `profile + Δ` by design and
 still sets its own knobs inside the driver. Binding those literally is the next step and it will be a record change,
 not an inference from a diff.
@@ -26572,3 +26574,11 @@ the same store, so the assertion is on the bytes a deployment serves). Coverage 
 `serve-profile.ts` and `serve-profile-record.ts` are **100 / 100 / 100 / 100**. `pnpm typecheck`, `audit:repo`,
 `check-workflows` clean; coupling ledger **259 modules** (+2), `core coupled=0`, and the README's layer table
 recomputed to `core` **48 modules / 10,749 lines**, adapter share **2.6%**. Round cost **$0.00**.
+
+**Two gates that caught the change, and one document they caught with it.** The lane typecheck refused a self-test
+whose drifted fixture had `budget: null` as a literal, which is the case the audit exists for and the reason the clone
+is widened at the assignment. The bundle gate refused the new module at **53,788 raw / 18,389 gzip** against a 53,000 /
+18,300 ceiling: the raise to **54,000 / 18,500** is argued in `scripts/bundle-size.mjs` as a mechanism — the product
+reads the profile, so it is product surface — with 212 and 111 bytes of headroom. And the same run found the README
+quoting **43,330 raw / 14,684 gzip** for the core, which was the size two budgets ago: a ceiling nobody re-reads and a
+document nobody re-measures drift in the same direction, and only the gate was still telling the truth.
