@@ -11127,3 +11127,47 @@ to a tolerance can only be read as "length plus something"; a pair held to equal
 **What the round read.** `1a − 1b = −3.65 pp [−8.39, +1.09]`, p = 0.151, with 55.5% of trajectories changed and 26
 games hurt against 16 helped: the clause is read and does not pay. The length half was a **null** (−0.36 pp
 [−4.74, +4.01]) that retires this lane's per-character reading of its own tax — the cost is per entry (34.255).
+
+## 17.180 — `core/kernel/serve-profile.ts`: the shipped configuration as a record, and what the audit refuses
+
+**The split this module closes.** The knobs a deployment can move are read in `capture/microglia.ts` from
+`MicrogliaOptions`, and the values that won are decided in `packages/eval`'s arms. Until R197 those two facts lived in
+two packages with no artefact between them, so "the product ships what we measured" was a convention — which is the
+kind of convention that survives exactly until someone adds an arm.
+
+**The data type.** Five fields, `null` meaning *the library's own default*:
+
+| field | type | `null` means | why the distinction is load-bearing |
+| --- | --- | --- | --- |
+| `budget` | `number \| null` | `policy.defaultBudget` (1,200) | the only absence with a name, so the audit can print it |
+| `note` | `'standard' \| 'hardened' \| 'none' \| null` | the renderer's own sentence | R53's arm varies one sentence; a default that moved would move every pack |
+| `budgetBasis` | `'note-included' \| 'note-excluded' \| null` | `note-included` | the accounting every published number was produced under |
+| `speakMargin` | `number \| null` | speak always | `0` attaches `pack.decision`; `null` does not. Filling it in would change the bytes |
+| `credit` | `boolean` | — (stated) | the one knob whose library default is a decision |
+
+`serveOptions(profile)` returns the subset with absent fields **omitted**, so a caller spreading it cannot receive a
+defaulted value it did not ask for. `diffServeProfile(recorded, shipped)` returns `unknown`, `missing` and `differing`
+with strict inequality (`1200` against `"1200"` is a divergence), and `sameServeProfile` is the single predicate the
+gate and the tests share.
+
+**The record and its four refusals.** `eval/results/serve-profile.json` carries `profile` and `fields`, where each
+field is either `{kind: 'reading', id, artefact, deltaPp, ciLowPp, ciHighPp, alpha}` or
+`{kind: 'unmeasured', reason}`. `auditServeProfileRecord` collects rather than throws, so one run reports every
+problem, and refuses:
+
+1. a field the record states and the product does not ship (or the reverse);
+2. a reading whose interval does not contain its own delta, is not finite, or has an alpha outside `(0, 0.5]`;
+3. a reading whose interval contains zero — *a justification that is a sentence wearing an interval*;
+4. a reading on a field the product ships at its default — *the decorative reading*, evidence collected for a report
+   rather than for a release, which is the one refusal that would otherwise inflate the coverage number.
+
+**Placement.** `serve-profile.ts` lives in `kernel` because it is a pure record over `RecallQuery`'s note vocabulary
+and imports nothing from `apply` or `capture`; `serve-profile-record.ts` lives in `eval` because the readings do. The
+dependency runs eval → core, never the reverse, which is why the product can be audited without depending on the
+benchmark.
+
+**Test strategy.** The profile's own cases pin every key and the frozen object, and this is deliberate: a table of
+five constants is worth testing only when the test is what fails the day someone edits one in passing. The audit's
+cases are a refusal table plus the committed record, so the artefact is read by the suite as well as by the CLI. The
+node case compares pack **hashes** between the product and a host built from the same profile, which asserts the
+bytes rather than the options.

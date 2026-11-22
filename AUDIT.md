@@ -15727,3 +15727,68 @@ the next ¥2–3 goes, not about what the mechanism is worth.
 **The reusable rule.** Before registering a treatment, compute its **ceiling** — the fraction of the population the
 mechanism can even reach — and compare it with the split's mde. A ceiling below the mde is a null by construction, and the
 ¥0 instrument that finds it is cheaper than the dispatch that would have reported it as "no effect".
+
+## 34.289 — The product shipped five knobs and the record could not name the reading behind any of them
+
+**What was there.** `packages/core/src/capture/microglia.ts` reads `budget`, `note`, `budgetBasis`, `speakMargin`
+and `credit` from `MicrogliaOptions`, defaulting four of them to absence. `packages/eval` varies the same five in
+registered arms. `createServer` passed none of them. There was no artefact, comment or test that said which of the
+two programs a deployment was running, and the failure it enables is silent in both halves: an arm can win a knob
+and a deployment never learn it.
+
+**What the record has to be able to say, and could not.** Not "what is the value" — a constant already said that —
+but *which reading chose it*. A record of values without provenance is a second copy of the defaults, and it drifts
+the same way. So the artefact is per field: a `reading` (id, artefact, delta, both bounds, alpha) or an
+`unmeasured` reason, and the audit refuses a `reading` that does not resolve **and** a resolving reading on a field
+the product ships at its default. The second refusal is the one that generalises: evidence about a knob nobody
+shipped is the exact shape a benchmark result takes when it is collected for a report rather than for a release,
+and a record that counted it would report coverage it does not have.
+
+**The state, on the first run.** Five fields, **zero measured**. Each reason is a measurement rather than a shrug:
+
+| field | shipped | why it is not measured |
+| --- | --- | --- |
+| `speakMargin` | absent (always speak) | R123 dispatched the 0.05 rung: episode −2.50 pp [−22.50, +17.50], p = 1.0000, n = 160, while the rung withheld a third of the packs |
+| `note` | absent (renderer default) | R53's three levels over one store were built, pre-registered, never dispatched |
+| `credit` | `true` | the ablation shows the module binds; no lane has run it off against on at the same n |
+| `budget` | absent (`policy.defaultBudget`) | no arm has varied the character budget alone; the arms that changed a pack changed content |
+| `budgetBasis` | absent (`note-included`) | an accounting declaration, not a treatment — only the note arms need it |
+
+**The binding, and what makes it more than a comment.** `serveOptions()` is spread by `createServer` and by the
+ablation control, so both read one constant; the node test compares the product's pack **hash** against a host built
+from the same profile over the same store, which is an assertion about the bytes a deployment serves rather than about
+an options object. `null` stays expressible because `speakMargin: 0` attaches `pack.decision` where an absent margin
+does not: a helper that filled absences with defaults would change what a host receives and reprice every number
+produced without one.
+
+**The boundary, stated.** The gate binds the shipped defaults and the one host that is a control by construction. A
+lane's treatment arm is `profile + Δ` by design and still sets its own knobs in the driver; making those literal is
+the next step. A gate that claimed to bind them today would be the same defect it was built to catch.
+
+## 34.290 — Two writers of one quantity, and the cheaper one wrote the committed arms
+
+**The claim R197 was registered to test.** Where microglia sits on τ²'s **accuracy–cost** plane. The accuracy half has
+four readouts; the cost half has never had one.
+
+**Why not.** The committed τ² arm artefact reads `"calls": 0` (`eval/results/poc-l4.json`, and the two history arms
+beside it), while the Python driver records usage on every call — `run_split.py` appends a litellm success callback,
+adds `usage_stats()` into the results document, and `selfcheck_usage.py` grades the callback against fixtures. The
+loss happens on the TypeScript side: `bin/l4.ts` contains **no reference to `usage`** and writes the constant `calls:
+0` at the arm record, while `bin/l4-pair.ts` reads `firstUsage.calls` and `secondUsage.calls` and publishes them.
+
+So the repository has two readers of one quantity: the pair artefact says what the arms spent, the single-arm
+artefact says zero, and a projection that consumed the single-arm form would treat a paid arm as free. This is the
+same shape as AUDIT 34.286 (a renderer whose content was never inspected) one layer down — a field that exists, is
+written, and is not the measurement its name promises.
+
+**Consequences, both of them bookkeeping and both of them blocking.**
+
+1. Every τ² row on the board carries "—" in the price column while every ALFWorld row carries a counted bill. The
+   asymmetry is not a policy about disclosure; it is a missing reader.
+2. R197's reading (4) cannot be produced from the artefact, and adding a second dispatch would reproduce the defect
+   at a higher price. **The dispatch is cancelled** and the reader is R198's first step: carry `usage` through
+   `measureFromResults` and `measureFromDriver`, write `calls` from it, and make absence explicit (`usage_absent: 1`)
+   rather than zero — the convention the cache census already follows.
+
+**The reusable rule.** A quantity that two writers produce must be compared by a test, not by an author. `calls` was
+"obviously" the same field in both artefacts until one of them was read.

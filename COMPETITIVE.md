@@ -9565,3 +9565,24 @@ the corpus's refusal count from **465 to 383** (a control band of 391–441 on f
 pool by **+0.36 pp** [−1.09, +1.82]. **A memory line's content is worth a 17.6% refusal rate and 0.0 pp of success here.**
 That is the negative-effect thesis reproduced with a price, and it is also why the remaining 8 losses are not a memory
 problem: five of them contain no repeat and no refusal at all.
+
+### R197: the board does not move, and the reason is a missing field rather than a missing win
+
+This round bought no dispatch and added no row, which is a result a comparison document has to state rather than
+omit. Two facts decided it, both computable from artefacts already paid for.
+
+**τ² cannot be moved by another draw of the size this lane can afford.** Its pooled retail census is 18 repaired
+against 27 broken over 194 pairs and 114 clusters: **−4.64 pp [−11.45, +1.60]**, unresolved. The four published draws
+have half-widths of ±9 to ±11 pp at 40 held-out tasks × 4 trials, so a fifth of the same size lands inside the same
+interval. A competitor table that put microglia's τ² row next to the published rows would be ordering two systems by
+an interval that contains both.
+
+**The axis the comparison turns on is not recorded on that lane.** Every ALFWorld row carries a counted bill; every
+τ² row carries "—", and the reason is that `bin/l4.ts` writes `calls: 0` without ever reading the usage block the
+Python driver records. That is a defect rather than a disclosure policy, and it is why the next registered round buys
+the reader before it buys a run.
+
+**What that leaves on the board.** ALFWorld unseen stays at **134/134** with the only counted cost in the
+parameter-free family (**$0.0007 per game, 15.3 calls**), and the parameter-free gap stays at **+24.6 pp** against the
+graph-memory FSM's 75.37. The comparison that would answer the family question — accuracy *and* price on τ² and BIRD —
+needs one reader and one priced pass, in that order.

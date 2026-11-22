@@ -26511,3 +26511,64 @@ something in 94.3% of its fires.
 harness knob that ever moved the pool; the list, the count, the admissible set with `help` and the admissible set with a
 command are +0.73, −1.46, −0.73 and −0.36 pp. The remaining 8 losses are capability-bound, so the next measurement has to
 be on a corpus with headroom: **τ² retail on the same accuracy–cost chart**, registered before it is bought.
+
+### 238 — R197 was not bought: the τ² price it was registered to measure does not exist in the artefact
+
+**The registration, and the two facts that cancelled it.** R197 asked for a two-arm, four-trial τ² retail pass on the
+same accuracy–cost axes as the ALFWorld rows. Before buying it, the ceiling arithmetic that closed R196 was applied to
+R197 itself, and it failed twice.
+
+- **Resolution.** The pooled τ² retail census is **18 repaired against 27 broken over 194 pairs / 114 clusters**,
+  net **−4.64 pp [−11.45, +1.60]**, `unresolved` (AUDIT 34.186). A fresh draw is 40 held-out tasks × 4 trials, whose
+  own interval half-width on the τ² rows already published is **±9 to ±11 pp**. It cannot resolve −4.64. Buying it
+  would produce a third interval containing zero, at ¥2–3, and the pool would not move.
+- **The axis the registration actually needed.** Reading (4) of R197 was *per-call prompt and completion tokens* —
+  the cost axis. The committed τ² arm artefact carries **`calls: 0`**, and the pair artefact carries no `usage` block
+  at all, although the Python driver records one (`run_split.py`'s litellm callback plus `usage_stats()`, and
+  `selfcheck_usage.py` grades it). `bin/l4.ts` has **no reference to `usage` anywhere** and writes `calls: 0` at the
+  record; `bin/l4-pair.ts` reads it correctly. So the lane has two writers that disagree about the same quantity and
+  the cheaper one wrote the committed arms. A dispatch today would buy accuracy again and still no price (AUDIT
+  34.290). The fix is a one-field reader with a fixture, not a run, and it is R198's first step.
+
+**What the round built instead, at ¥0: the shipping contract.** The measurement side is saturated on ALFWorld
+(134/134) and unresolved on τ²/BIRD, but the product side had a defect that no benchmark could have shown: five knobs
+(`budget`, `note`, `budgetBasis`, `speakMargin`, `credit`) are varied by arms in `packages/eval` while
+`packages/core` ships its own defaults, and **nothing compared the two**. An arm could win a knob and a deployment
+never learn it, with no line moving in any file that looks like configuration.
+
+`packages/core/src/kernel/serve-profile.ts` now holds the shipped values as data and one function, `serveOptions()`,
+that turns them into `openMicroglia` options. `createServer` spreads it; the ablation control spreads it;
+`eval/results/serve-profile.json` carries, per field, either a reading — id, artefact, delta, both bounds, alpha — or
+a written reason there is none. `pnpm eval:serve-profile` recomputes the record against the constant and refuses four
+things:
+
+| refusal | the defect it names |
+| --- | --- |
+| `the record states 800, the product ships null` | the two halves disagree |
+| `the reading [-2, 4] does not resolve` | a justification wearing an interval |
+| `claims the reading R197 while the product ships the default` | a **decorative reading**: real evidence, ignored by the product |
+| `an unmeasured field needs a reason` | a placeholder where a debt used to be invisible |
+
+**`null` is a value, and that is the design.** `speakMargin: 0` attaches `pack.decision` where an absent margin does
+not, so the profile keeps absence expressible and `serveOptions()` *omits* absent fields rather than filling in their
+defaults — a helper that defaulted would change the bytes a host receives and silently reprice every number produced
+without one. `budget` is the one field whose absence has a name: `policy.defaultBudget`.
+
+**The debt, printed.** Five fields, **zero measured**, five reasons: R123 dispatched the `speakMargin` rung and read
+−2.50 pp [−22.50, +17.50] at n = 160 while withholding a third of the packs; R53's three note levels were built,
+pre-registered and never dispatched; `credit` has a mechanism check (`creditAblation`) and no rate; `budget` and
+`budgetBasis` have never been varied alone. That line is now on every push, which is the difference between "we
+should measure these" and a number a reader can act on.
+
+**What the gate does not bind, stated rather than implied.** A lane's treatment arm is `profile + Δ` by design and
+still sets its own knobs inside the driver. Binding those literally is the next step and it will be a record change,
+not an inference from a diff.
+
+**Acceptance.** **6,128 tests over 295 files** (+48: 16 for the profile — every key accounted for, frozen, `null`
+distinguishable from its default, a zero margin kept distinct from an absent one; 31 for the audit — the four
+refusals, the interval arithmetic, the parse table, the rendered table, and the committed record read as the gate it
+is; 1 for the node wiring, which compares the product's pack **hash** against a host built from the same profile over
+the same store, so the assertion is on the bytes a deployment serves). Coverage **100 / 99.91 / 100 / 100**;
+`serve-profile.ts` and `serve-profile-record.ts` are **100 / 100 / 100 / 100**. `pnpm typecheck`, `audit:repo`,
+`check-workflows` clean; coupling ledger **259 modules** (+2), `core coupled=0`, and the README's layer table
+recomputed to `core` **48 modules / 10,749 lines**, adapter share **2.6%**. Round cost **$0.00**.

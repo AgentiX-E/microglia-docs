@@ -9063,7 +9063,7 @@ losses are capability-bound. Any further memory measurement has to happen where 
 next registration is **τ² retail on the same accuracy–cost chart**: the lane already drives it, the harness knobs are
 already read on ALFWorld, and τ²'s four-trial protocol has a pool that is not saturated.
 
-## R197 (registered) — τ² on the same two axes, priced before it is bought
+## R197 (registered, **not bought**) — τ² on the same two axes, priced before it is bought
 
 **Question.** Where does microglia sit on τ²'s accuracy–cost plane, and does the pack that pays +14 to +28 pp on ALFWorld
 pay anything there? The board is the one this project has no row on.
@@ -9085,3 +9085,59 @@ axis is the one the comparison turns on.
 the transfer claim is withdrawn rather than reinterpreted — the ALFWorld number stays as a single-board result.
 
 **Price ≈ ¥2–3** (two arms, four trials), plus ¥0.00 for the chart, which is a plot of artefacts already paid for.
+
+### The decision, taken before the spend (AUDIT 34.289–34.290)
+
+Two facts cancelled the dispatch, and both are arithmetic rather than opinion.
+
+1. **Its interval cannot resolve the effect it would measure.** The pooled τ² retail census is 18 repaired against 27
+   broken over **194 pairs / 114 clusters**, net **−4.64 pp [−11.45, +1.60]**, `unresolved`. The four published τ² rows
+   have half-widths of ±9 to ±11 pp at 40 held-out tasks × 4 trials, so a fifth draw of the same size cannot move the
+   pool off zero. A treatment whose ceiling is below the split's mde is a null by construction (the rule R196 bought
+   with ¥0 rather than ¥1.4).
+2. **The axis it existed for cannot be read from the artefact.** Reading (4) was per-call prompt and completion
+   tokens. The committed arm record says `calls: 0` and the pair artefact carries no `usage` block, because
+   `bin/l4.ts` never reads the usage the Python driver writes — while `bin/l4-pair.ts` does. Dispatching again would
+   buy accuracy for the third time and still no price.
+
+**What the round did instead, at ¥0:** the shipping contract (R197a below), which found the product side had no
+record of the reading behind any of its five knobs.
+
+## R197a (built this round) — the shipping contract: five fields, and the reading behind each
+
+**Question.** Which configuration does a deployment actually serve, and which reading chose each part of it?
+
+**Mechanism.** `packages/core/src/kernel/serve-profile.ts` holds `budget`, `note`, `budgetBasis`, `speakMargin`,
+`credit` as data plus `serveOptions()`; `createServer` and the ablation control both spread it;
+`eval/results/serve-profile.json` carries a justification per field; `pnpm eval:serve-profile` refuses drift, a
+placeholder reason, an interval containing zero, and a resolving reading on a field shipped at its default.
+
+**Readings, all of them counted.** (1) fields accounted for: **5 of 5**; (2) measured: **0 of 5**, each with its
+reason (R123's rung at −2.50 pp [−22.50, +17.50] n = 160; R53 never dispatched; `credit` mechanism-only; `budget` and
+`budgetBasis` never varied alone); (3) drift: **0**; (4) product ≡ record: asserted on the pack **hash** against a
+host built from the same profile over the same store.
+
+**Price ¥0.00.** **Refutation.** If a field's justification cannot be stated as a reading or a sentence, the field
+does not belong in the profile — it belongs in a comment, and the audit would be decoration.
+
+## R198 (registered) — the τ² price, and the reader that has to exist before it is bought
+
+**Step 1, code, ¥0.** Carry `usage` through `bin/l4.ts` (`measureFromResults` and `measureFromDriver`), write `calls`
+from it, and make absence explicit (`usage_absent: 1`) rather than zero. Acceptance: a fixture results document with a
+usage block writes the arm's `calls` and tokens; a document without one writes `calls: 0` **and** `usage_absent: 1`;
+the pair artefact and the arm artefact report the same `calls` for the same document. No dispatch, no model call.
+
+**Step 2, dispatch, ¥2–3.** Two arms × four trials on τ² retail, read on the **cost** axis and on the delivery census
+(`serveYield`: renders, opportunity, repairs, breaks, inert), which is the lane's version of the question the ALFWorld
+side answered with `cycles.py`: is the pack used where it can help, or rendered where nothing can be repaired? The
+accuracy delta is a by-product; the registered readings are the bill and the census.
+
+**Price ≈ ¥2–3**, refused if step 1's fixture does not reproduce a known `calls` count.
+
+## R199 (candidate) — binding a lane's treatment arm to the profile
+
+**Question.** Can an arm be `profile + Δ` by construction rather than by convention? The three drivers still set
+their own knobs, so a treatment can differ from the profile in two fields and be read as one. The acceptance is a
+type: the arm's options are `serveOptions()` plus a single named override, and the diff printed with the reading.
+**Price ¥0.00.** Not registered until R198's step 1 lands, because a contract over knobs whose cost is unknown would
+freeze the wrong defaults.

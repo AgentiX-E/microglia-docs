@@ -5335,8 +5335,45 @@ paid for and read. A record that only publishes the arms that worked cannot be c
 
 **And the table now has a ceiling column, which is what stops the family.** The last candidate — a line that fires when the
 model re-issues a command the world *accepted*, which a refusal trigger is blind to — was read at **¥0** from the command
-record rather than bought: 195 such turns over the same 274 games, but in only **3 of the 8 losses**, and five of the
-eight losses contain no repeat at all (49–50 commands that never looped). Its **ceiling is +3 games = 1.09 pp on a split
+record rather than bought: 195 accepted repeats over the same 274 games, of which **177 are loops** (a repeat of a
+command the world had already accepted) and 18 are retries (a command refused at a distance, accepted after the agent
+moved — progress, not a cycle), but in only **3 of the 8 losses**, and five of the eight contain no loop at all (49–50
+commands that never repeated). Its **ceiling is +3 games = 1.09 pp on a split
 whose paired mde is 2.29 pp**, so the dispatch was cancelled by arithmetic. Every future registration in this lane states
 its ceiling before its price, because a mechanism that can reach less of the corpus than the split can resolve is a null
 by construction.
+
+## What a deployment ships: the contract between the numbers and the product
+
+Every figure in this paper is a property of **a configuration**: a character budget, a note level, a margin below
+which the pack stays silent, a credit rule. The paper states the numbers and the arms state the configuration, but
+until R197 nothing stated the configuration the *product* serves — so "the library ships what we measured" was a
+convention with no artefact behind it, and an arm could win a knob that `createServer` would never learn.
+
+The fix is a record of five fields, read by both sides. Its first run is the honest part: **five fields, zero
+measured**, each with a reason rather than a shrug.
+
+| field | shipped | the reading, or why there is none |
+| --- | --- | --- |
+| `speakMargin` | absent (speak always) | R123 dispatched the 0.05 rung: **−2.50 pp [−22.50, +17.50]**, p = 1.0000, n = 160 — while the rung withheld a third of the packs |
+| `note` | absent (renderer default) | R53's three levels were built, pre-registered, never dispatched |
+| `credit` | `true` | the ablation shows the module binds; no lane has run it off against on at the same n |
+| `budget` | absent (`policy.defaultBudget`) | never varied alone: the arms that changed a pack changed its content |
+| `budgetBasis` | absent (`note-included`) | an accounting declaration, not a treatment |
+
+Three consequences for how this paper should be read.
+
+**First, a number without a shipped configuration is a number about a program nobody deployed.** The ALFWorld rows
+above carry their configuration in the arm's label, and the label is now checkable against the record: a reader can
+see which fields the winning arm and the product share and which it does not.
+
+**Second, the audit refuses evidence that cannot be acted on.** A resolving interval about a knob the product ships at
+its default is a *decorative reading* — real evidence, ignored by the deployment — and counting it as coverage would
+inflate a number whose whole purpose is to say how much of the product is measured. The refusal is the mechanism; the
+debt line (`0 measured of 5`) is the finding.
+
+**Third, the price column's blanks on τ² are a missing reader, not a policy.** The committed τ² arm artefacts report
+`calls: 0` because the single-arm writer never reads the usage block the Python driver records, while the pair writer
+does. Every τ² row therefore has accuracy and no cost, which is exactly why R197 — the τ² transfer measurement — was
+cancelled before it was bought: its registered reading was the price, and the price cannot be read from the artefact
+until that reader exists. The next round buys the reader first.
