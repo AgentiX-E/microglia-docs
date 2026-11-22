@@ -25979,3 +25979,39 @@ Gate: **599 Python tests**, 99.0% line-and-branch, every module ≥ 95%, docs ga
 `any-line` reader with a published bank and a published price, against AutoManual's **97.9%** — nominal first place on the
 unseen split by **1.8 games out of 134**, which is inside one split's noise, so the defensible claim is parity at the top
 of the family plus the cheapest published round in it. The mechanism is now named: **scope, not content**.
+
+## 226. R187 read back: the precondition does not travel — −10 games when three more kinds read it, and a provenance hash that could not see the tags (03:20 UTC)
+
+Two dispatches (`44967271658` held out 134, `44967290361` seen 140), one gated arm, `any-line`, cap 50, **¥1.70 against
+¥2.10 quoted** ($0.2364, 5,130 calls).
+
+| arm | pooled | unseen | seen | paired vs R186 |
+| --- | --- | --- | --- | --- |
+| **R187, four kinds carry the precondition** | **254/274 (92.70%)** | 125/134 (93.28%) | 129/140 (92.14%) | **−3.65 pp** (4 gained, 14 lost, p = 0.022) |
+| R186, `put` alone | 264/274 (96.35%) | 133/134 (99.25%) | 131/140 (93.57%) | — |
+
+**The registered refutation fired**: `puttwo` 41 → **37** and `heat` 37 → **35**, both at the two-game threshold, `cool`
+unchanged at 43. Three of the six kinds place into a receptacle and the sentence helps only the one it was written
+about. Three rounds now bracket one quantity — **five foreign kinds −18 lost** (R185), **three −6** (R187), **zero +1**
+(R186) — a slope of −3.6 and −2.0 games per foreign kind, measured twice.
+
+**The round's more useful half is the control nobody had to buy.** `put`, `clean` and `examine` carried **byte-identical
+packs** at 551 characters and moved **−3, −2, +1**: **−4 games over 117**. R186's five frozen packs had moved **+1 over
+215**. Two draws of the same quantity five games apart, so the same-prompt band of this harness is **±5 games over 274**,
+not the ±1 R186's own draw suggested — and every claim below that width in this record is a claim about one afternoon.
+
+**Two instrument defects, both found by the round rather than by a review.** First, `bank_digest` hashed the entry
+**texts**, and both banks hold the same two sentences: eight summaries of R187 recorded `eed9bea6…`, the value R186's
+eight summaries carry, for a bank whose tags differ and whose packs differ for three kinds. The field that exists to tell
+two banks apart could not see the round's only variable, and the guard built on it could not fire. Fixed as
+`bank_digest_of(rules, kinds)` — sorted tag set with text, `349213e8…` and `4efb1eba…` now — with three tests. Second,
+reading 5 registered a pack-count proportion of 164:110 where the corpus sizes give **185:89**; the cell was arithmetic
+and was not done, which is rule 1 of 34.267 violated one round after it was written. AUDIT 34.269 carries both, and the
+rule is amended to name the check: a registered count of kind membership is **copied** from the previous round's
+per-kind table.
+
+**Published bank restored** to `bank-putscope-2.json` (264/274, 99.25% unseen). Gate: **602 Python tests**, 99.0%
+line-and-branch, every module ≥ 95%, docs gates 8/8. CI green on `c9d69578` (microglia) and `24437f11` (docs).
+
+**Next: R188 is the location prior.** Eight of the ten remaining losses exhaust the fifty-turn budget on a take that
+never finds its object — no sentence about a kind reaches that.

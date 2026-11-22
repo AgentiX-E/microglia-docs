@@ -15110,3 +15110,38 @@ you applied, not the thing you measured.**
 audit will defend is the compositional one — the five byte-identical kinds moved **one game**, and the `put` gain
 replicated at identical transitions on an independent sample (16 against 4 pooled, p = 0.0118) — and not "the scoped bank
 is better than the bank it came from", which needs the 274 games R190 already plans to buy.
+
+## 34.269 — A provenance hash that hashed the wrong thing, and a registration cell nobody multiplied
+
+R187 moved one variable: the tags. `bank-putscope-2` gives the precondition to `put`; `bank-putscope-3` gives it to
+`put`, `cool`, `heat` and `puttwo`. Both banks hold **the same two 354-character sentences**, so `digest_of(rules)` —
+which hashed the texts — returned **the same `bank_digest`** for both, `eed9bea6…`, in all eight summaries of both rounds.
+
+Three consequences, in the order they matter:
+
+1. **The field could not see the only variable the round moved.** A reader comparing the two rounds' headers would
+   conclude the second re-ran the first.
+2. **The guard built on that field could not fire.** R185's join refuses a label spanning two banks; two banks with the
+   same text are one digest, so a real bank swap passes it silently.
+3. **The pack digests *were* different** — `90c0688f` for `clean`/`examine`, `5fb4c464` for the other four — which is
+   what made the defect detectable at all: the pack field is per game and the bank field is per run, and only one of them
+   was telling the truth.
+
+The repair is `bank_digest_of(rules, kinds)`: each entry's **sorted tag set** with its text, so the two banks now read
+`349213e8…` and `4efb1eba…`, and a re-ordered `kinds` list is still one bank because a tag list is a set. Three tests.
+Every `bank_digest` recorded before this round identifies a **text** and not a bank, and the tables that quote one say so.
+
+**The second defect is the one 34.267 predicted and did not prevent.** Reading 5 of R187 registered "two `pack_digest`
+values in the 164:110 proportion the tags imply". The four targeted kinds are 59 + 46 + 39 + 41 = **185** games and the two
+frozen ones are 58 + 31 = **89**. The cell was arithmetic, it was wrong by 21 games, and the artefact recorded the right
+numbers. Rule 1 of 34.267 — *every registered cell must be computable before it is bought from an artefact that exists* —
+would have caught it: **`aggregate.py` prints the per-kind game counts on every reading, and R186's own reading prints
+them**. The rule is therefore amended to name the check rather than the principle: *a registered cell that is a count of
+kind membership is copied from the previous round's per-kind table, not estimated.*
+
+**What the round incidentally measured, and the reason it belongs in an audit.** R187's `put`, `clean` and `examine`
+carried byte-identical packs to R186's and moved **−3, −2, +1** — **−4 games over 117** — while R186's five frozen packs
+had moved **+1 over 215** against R183. Two draws of the same quantity, five games apart. So the same-prompt band of this
+harness is **±5 games over 274**, not the ±1 that R186's own draw suggested, and every claim in this record below that
+width on a single pass is a claim about one afternoon. The R186 headline survives (it is +67 against a control and +7
+with a replicated per-kind mechanism); the "not worse by two games" phrasing does not.

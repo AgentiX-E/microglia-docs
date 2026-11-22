@@ -9239,3 +9239,22 @@ raises the pool by 21.9 pp and one entry written for one kind costs eighteen gam
 the second half is a **scope** defect with a price of nothing: the five kinds whose packs are byte-identical moved **one
 game** and the `put` gain replicated at identical transitions. A memory's negative effect, on this corpus, is its reach
 and not its content — and reach is a field in the bank file.
+
+### R187 does not move the board, and the reason is the useful part
+
+The published row stays **99.25 on the unseen split** (264/274 pooled, `bank-putscope-2`). R187 gave the container
+precondition to three more kinds and lost **10 games** — `puttwo` −4, `heat` −2, `cool` 0 — which is the scope law
+measured a second time and at a second slope. For a project competing on *how memory is addressed*, that is the round's
+value: an entry that is true about four kinds is worth something on one and costs on three, and the board's leaders are
+not doing that at all.
+
+**What the rows above this project actually do, restated with R186–R187 in hand.** The 98.0–99.7% rows are
+instance-context systems: they explore the test instance and hold a per-task document (177.9 steps of scaffolding each).
+That is exactly the knowledge R186's ten losses are missing — where the object is, in *this* house — and it is the one
+thing a cross-task bank cannot supply, because a bank is a statement about kinds and the missing statement is about
+instances. R187 tested whether a *kind*-level sentence could stand in for it and the answer was no, twice.
+
+So the next round's target is the only unsatisfied requirement left on this board: carry a **location prior** distilled
+offline from the training corpus (free, no model call), untagged so that all six kinds read it, and see whether the eight
+budget-exhausted losses move. If they do, this project holds first place in its family *and* the mechanism that the
+instance-context rows buy with 177.9 steps of exploration — at 15.3 steps per success and $0.69 per 1,000 episodes.

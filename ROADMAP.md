@@ -8587,3 +8587,50 @@ group:
 — the sentence is not about containers but about the one kind it was written for — and the entry format stops being the
 variable: R188 becomes the **location prior**, a corpus-wide entry about where object classes live, because eight of ten
 remaining losses are search and not wording. **Price ≈ ¥2.10**, four jobs.
+
+## R187, read back — the precondition does not travel, and the noise band is five games, not one
+
+![R187: three banks on one split, who paid by kind and whether their pack had changed, and the same-prompt movement drawn twice](figures/alfworld-r187.png)
+
+| arm | pooled | unseen | seen | paired vs R186 |
+| --- | --- | --- | --- | --- |
+| R187, `put`+`cool`+`heat`+`puttwo` carry the precondition | 254/274 (92.70%) | 125/134 | 129/140 | **−3.65 pp** (4 gained, 14 lost) |
+| R186, `put` alone | **264/274 (96.35%)** | **133/134 (99.25%)** | 131/140 | — |
+
+`puttwo` 41 → 37 and `heat` 37 → 35 fired the registered refutation at its two-game threshold; `cool` did not move. The
+sentence is `put`-specific, and the scope law now has two slopes: **−3.6** (R185, five foreign kinds) and **−2.0** (R187,
+three) games per foreign kind, against **+1 game** when nothing foreign reads it.
+
+**The unplanned control.** `put`, `clean` and `examine` carried byte-identical packs and moved −3, −2, +1 — **−4 over
+117** — against R186's **+1 over 215** on the same kind of frozen pack. Two draws of one quantity, five games apart, so
+the same-prompt band is **±5 games over 274**. Every claim in this record narrower than that on a single pass is a claim
+about one afternoon; the comparisons that survive are the ones with a replicated per-kind mechanism or a delta of tens of
+games.
+
+**Two instrument defects found by the round, both fixed in it.** `bank_digest` hashed texts and therefore could not see
+the tags — the one variable R187 moved — so both rounds recorded `eed9bea6…`; it now hashes each entry's sorted tag set
+with its text (`349213e8…`, `4efb1eba…`), three tests. And reading 5's pack-count proportion was registered as 164:110
+where the corpus sizes give **185:89**: arithmetic, not done, one round after rule 1 of 34.267 named exactly that failure
+(AUDIT 34.269).
+
+## R188 (planned, not yet registered) — the location prior, because eight of ten losses are search
+
+R186 and R187 both end at the same wall. Of the ten games R186 loses, **eight exhaust the fifty-turn budget** with the
+grammar and the precondition both correct — two `pick_and_place_simple`, two `heat`, two `cool`, two `examine` — and the
+two `put` losses are the corpus's simplest task, lost to locating an object in a house the agent has never seen. No
+sentence about a *kind* reaches that; the knowledge is about *where things are*.
+
+**The design.** Distil a **location prior** offline from the training transcripts — for each object class, the receptacle
+types it was found in and the count of times — and render it as one entry at the length the lane has been holding fixed
+(354 characters, 551 rendered). Zero API cost to build: it is a count over artefacts that already exist.
+
+**Why it is untagged, and what that makes it a test of.** The scope law was measured on sentences about a *failure mode
+of one kind*, which are foreign to the other five by content. A location prior is about objects and is therefore
+relevant to every kind, so it is carried untagged. That turns the round into a test of *which* explanation of the scope
+law is right: if an entry whose content is not foreign still costs games when six kinds read it, the mechanism is
+perturbation and length rather than relevance; if it costs nothing and pays on the eight search losses, relevance is the
+variable and scope is the lever.
+
+**Why it is not registered yet.** Rule 1 of AUDIT 34.267 forbids buying a cell that cannot be computed from an artefact
+that exists, and the bank does not exist until the distillation runs. The cells, the refutation and the price are written
+when the bank is, in the round that builds it. Price estimate **≈ ¥2.10** for one untagged arm at 274 games.
