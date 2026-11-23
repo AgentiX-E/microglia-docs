@@ -9607,3 +9607,28 @@ methods section.
 **What is still missing for a like-for-like row.** A priced τ² pass (R198 step 2, ≈ ¥2–3, registered and unbought) and
 a priced BIRD row. Both are now one dispatch each rather than a reader plus a dispatch, which is a difference in kind:
 the remaining work on this axis is spending, not construction.
+
+### R200: the comparison axis competitors do not report — how much of the served memory is inert
+
+**The row this board was missing.** Every entry on it reports accuracy, and some report tokens; none reports *what
+fraction of the served memory could have acted*. On τ² that fraction is now measured: **78.1% [72.6, 82.8]** of 251
+served packs left the episode's verdict unchanged (`inert = served − repaired − broke`, so it is a count). The same
+instrument reads **88%** on BIRD's injected rules and **38.7%** engagement on ALFWorld's games.
+
+**Why it belongs in a competitive document.** A leaderboard row of the form "87.1% at 1,319 injected tokens per task"
+prices *delivery*, not *use*. Two systems can serve the same token count with 20% and 80% inert shares and be
+plotted at the same x; the one with the lower inert share has the better mechanism, and the axis says so where the
+token axis cannot. It also re-prices the obvious competitor strategy — serve more, retrieve more — because every
+additional inert pack is pure tax, and the census is what makes that statement quantitative rather than rhetorical.
+
+**What it does not do.** It does not move microglia's rank. The ALFWorld row stays at 81.02% (prompt-only family,
+third behind ALMA's 87.1% and MemHarness's 85.2%) and the τ² row stays unresolved at −4.38 pp pooled, −3.90 pp for
+the key that declares no rotation. What changes is the *interpretation* available to a reader comparing rows: microglia's gap to
+the leader is not a shortage of memory, since three quarters of what it serves is already inert — it is a shortage
+of **engagement**, and that is a mechanism problem with a countable target (**12 of 33 breaks**, or a higher
+repair rate on the 22 that landed).
+
+**Against the closed-source cloud services on this board** the comparison is unchanged in kind: they report a score
+and a price, not a mechanism, so the inert share cannot be computed for them from published material. That is not a
+gap in the instrument; it is the part of the comparison their disclosure does not support, and it is stated here
+rather than filled with an estimate.

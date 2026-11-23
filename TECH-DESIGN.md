@@ -11216,3 +11216,53 @@ which is what makes "the arm is the product plus a delta" a compile-time stateme
 
 The process layer is not decoration: the unit tests would all pass if `bin/l4.ts` forgot to call the reader, which is
 precisely the defect being repaired.
+
+## 17.182 — `eval/pack-ledgers.ts`: an identity as the instrument, and pooling as the correction
+
+**Why an identity.** The lane's artefact already contained three blocks describing one experiment, and no reader
+compared them. `serveYield` counts renders, opportunity, repairs, breaks and inert; `degradation` counts broke,
+repaired, blankRight and measured; `comparison` counts paired, lost and gained. The relation
+
+```text
+inert = renders - repaired - broke
+```
+
+holds because a pack is inert exactly when the episode's verdict did not change — so `inert` is not a residual to
+be estimated, it is the count of unchanged verdicts. Making that explicit does three things a "delta plus a census"
+paragraph cannot: it turns the share into a measurement, it makes six contradictions detectable, and it gives the
+gate a denominator that does not inherit the contrast's variance.
+
+**The six refusals, and what each protects.**
+
+| refusal | protected claim |
+| --- | --- |
+| `no serveYield / degradation / comparison block` | the reading exists at all |
+| `inert does not close` | `inert` is a count, not a typo |
+| `census disagrees` | the two blocks describe one population |
+| `comparison disagrees` | the delta and the ledger describe one run |
+| `degradation is impossible` | a repair needs a control failure; a break needs a control success |
+| `net does not close` | the printed percentage is the ledger's own division |
+
+**Pooling by treatment.** `treatmentKeyOf` canonicalises `unit/form/scope/model/traceClaims/knobs/rotation` in a
+fixed order. `rotation` is included because it is a *serving* policy: R152c's bounded arm travelled at most 3–4
+packs, and averaging it with unbounded folds is what the published −4.64 pp did. The gate reports every key
+separately and recomputes the published figure from the four post-R152 artefacts, so an arithmetic error and a
+mixed population produce different outputs: the first moves the number, the second leaves it and moves the
+population. The key is nevertheless **not total**: a field omitted when absent cannot serve as one, and
+`poc-l4-pair-r152` declares no rotation while its registration pins `serveRotation: fair-share`. R202 writes `none`
+explicitly so that absence stops meaning two things; until then the gate quotes keys as what the artefact declares.
+
+**Wilson rather than a point.** `inertShare` is a proportion over served packs, so it carries `wilsonInterval` — the
+same function the reproduction module uses, and for the same reason: at 88% with n = 40 a Wald interval understates
+the upper edge, and an interval that excludes 100% would be a claim rather than a measurement.
+
+**The price, and the three ways it is absent.** `inertPriceOf` takes two `ArmBill`s (R198's type) and returns
+`priced: false` with both *states* named when either is not a census — a count carries no token vector — when a
+census has no prompt-token column, or when the subtraction is negative. The record stores the price **per fold**,
+because a bill belongs to a dispatch; a corpus price would average two runs' bills into a number no artefact
+supports.
+
+**Test strategy.** Three layers: the identity and each refusal (12 cases), the pooling arithmetic and the Wilson
+interval (4), and a **process** layer that reads the five committed artefacts, recomputes the published −4.64 pp and
+the five-fold −4.38 pp, and asserts that every treatment key is negative. The third layer is what makes the module a
+gate rather than a library: the numbers in the paper are recomputed from the files a reader can open.

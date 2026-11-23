@@ -15843,3 +15843,53 @@ argument list cannot pass that test, which is the point.
 **The reusable rule.** When a configuration is "the same as X plus a delta", the delta must be a value the code
 computes, not a convention the author remembers — and the baseline must be *derivable* with an empty delta, or the
 two sides drift the first time somebody adds a knob.
+
+## 34.293 — The pool was two populations, and the only replicating number had never been computed
+
+**What was claimed.** That the τ² memory arm costs **−4.64 pp [−11.45, +1.60]** over **194 pairs / 114 clusters**,
+and that this is the pooled census of the transfer experiment.
+
+**What was true.** The 194 pairs are four folds: `official` (40), `r152` (40), `r152c` (40), `swapped` (74). Three of
+them carry the treatment key `unit=correction/form=lesson/scope=all/model=…/traceClaims=6`; `r152c` carries the same
+key **plus `rotation=fair-share`**, which is a *serving* policy — the bounded arm caps how many packs travel. So the
+published number averaged two mechanisms, one of which had been registered as a separate experiment (R152) precisely
+because it was expected to move the outcome.
+
+**The class.** Not "a wrong number". A **claim about a population that was itself a mixture**: the arithmetic was
+right (−4.64 pp is exactly `(18 − 27) / 194`), the artefacts were right, and the sentence was still not a sentence
+about one thing. Compare AUDIT 34.290 (two writers of one quantity): here one reader summed two quantities that
+were spelled the same way.
+
+**The repair.** `pack-ledgers.ts` pools by treatment key and reports every key separately, and it does not discard
+the published figure — it *recomputes* it, so the difference between "arithmetic error" and "mixed population" is
+visible:
+
+| reading | episodes | broke | repaired | delta |
+| --- | --- | --- | --- | --- |
+| the four post-R152 folds (as published) | 194 | 27 | 18 | −4.64 pp |
+| key with no rotation declared | 154 | 20 | 14 | −3.90 pp |
+| bounded arm only (`rotation=fair-share`) | 40 | 7 | 4 | −7.50 pp |
+| pre-treatment artefact (`unstated`) | 57 | 6 | 4 | −3.51 pp |
+| all five | 251 | 33 | 22 | −4.38 pp |
+
+Every key is negative, so the *conclusion* — this pack costs accuracy in this lane — survives the correction; the
+number does not, and neither did the claim to have pooled one experiment.
+
+**The other half: a number that was available and never computed.** The same two blocks define inertness exactly —
+`inert = served − repaired − broke` — and no round had quoted the share. It is **78.1% [72.6, 82.8]** over 251
+served packs, and it is the only quantity on this lane that replicates across folds (70.3–87.5%) while the delta
+flips sign. A census that had been in every artefact since R144 was never read as the primary reading, because the
+lane was organised around the delta.
+
+**A second layer, found while writing this up.** The key is not total either. `rotation` is projected only when an
+arm declares one, so `poc-l4-pair-r152` carries none while its registration pins `serveRotation: fair-share` — which
+means the "no rotation declared" pool above still contains a bounded fold. So the published pool was a mixture, and
+the *replacement* pool is a smaller mixture: pooling by the artefact's declaration is necessary and not sufficient.
+The repair is R202 (write `none` explicitly, so absence stops meaning two things), and until it lands the keys are
+quoted as what the artefact declares.
+
+**The reusable rules.** (1) A pool states its keys, and a key is whatever the treatment block carries — including
+serving policy — but a field that is omitted when absent cannot be a key, because "none" and "not recorded" print
+the same way. (2) When a claim flips sign across folds and another quantity does not, the stable quantity is the
+finding, and the flip is the instrument's resolution talking. (3) A definition in the data (`inert` is "the verdict
+did not change") is a measurement, not an assumption, and it should be quoted as one.

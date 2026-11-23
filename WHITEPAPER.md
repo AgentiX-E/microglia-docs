@@ -5390,3 +5390,16 @@ asserts by importing the driver with nothing set — and a treatment that moves 
 treatment that moved one. That closes the loop this chapter opened: the configuration a deployment serves, the
 configuration an arm measures, and the reading behind each field are now one record, read by both sides, with the
 difference between them named and priced.
+
+**Fifth, on τ² the pack is inert on 78% of the episodes it is served in, and that is the reading that replicates.**
+Every τ² fold already carried the two blocks that close `inert = served − repaired − broke` — inertness is defined
+as "the episode's verdict did not change", so the share is a count rather than an estimate. Over five paid folds,
+251 served packs and three treatments it is **78.1% [72.6, 82.8]**, and it stays between 70% and 88% in every fold
+while the paired delta flips sign (+2.50 … −10.81 pp). The same shape appears in the other two families this paper
+measures: **88%** of injected rules on BIRD moved nothing, and only **38.7%** of ALFWorld games ever engaged the
+ledger. Three workloads, three instruments, one conclusion — the binding constraint is that most served memory
+cannot act, not that the ranker is slightly miscalibrated. It also corrects a published number: the −4.64 pp this
+paper quoted was pooled over two treatments, and the gate now reports **−3.90 pp** for the key that declares no rotation
+and **−7.50 pp** for the bounded one; both remain negative, so the sign held while the population did not.
+The key itself is not yet total — one fold declares no rotation while its registration pins one — which R202 fixes
+by writing `none` as a value.

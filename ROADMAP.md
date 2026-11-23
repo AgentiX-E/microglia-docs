@@ -9157,3 +9157,62 @@ unmoved*, because "asked for the default" and "never mentioned it" are different
 **Acceptance.** A type plus a diff: the driver imported with nothing set moves zero fields (the baseline arm *is*
 the product); imported with `TAU_PACK_BUDGET=1500 TAU_SPEAK_MARGIN=0.05 TAU_INJECTION_NOTE=hardened` it moves exactly
 those three, in profile order, with the reasons the table records. **Price ¥0.00.**
+
+## R200 (built this round) — the pack's three ledgers, and the only share that replicates
+
+**Question.** When a pack is served, what did it actually do? The lane had five paid τ² folds and three blocks per
+fold (`serveYield`, `degradation`, `comparison`) that had never been read as one account.
+
+**Mechanism.** `packages/eval/src/pack-ledgers.ts` reads a fold into `served / inert / repaired / broke` and closes
+the identity **`inert = served − repaired − broke`** — a definition of inertness rather than an estimate of it. It
+derives `inertShare`, `engagedShare`, `breakPremium` and `repairsPerBreak`, refuses six shapes that would make the
+reading a claim (missing block, inert that does not close, two populations, a comparison from another run, an
+impossible degradation, a percentage that is not the ledger's own fraction), and pools **by treatment key** —
+including `rotation`, which is a serving policy. `eval/results/pack-ledgers.json` is the committed record;
+`pnpm eval:pack-ledgers --check` recomputes it from the artefacts and refuses drift.
+
+**Readings.** **78.1% [72.6, 82.8]** of 251 served packs were inert; the corpus delta is **−4.38 pp**; the stable
+quantity across five folds and three treatments is the inert share (70.3–87.5%) while the delta flips sign
+(+2.50 … −10.81). The published **−4.64 pp** is reproduced exactly from the four post-R152 folds and shown to have
+mixed R152c's bounded arm with three folds that declare none: by key, **−3.90 / −7.50 / −3.51 pp**. The key is
+itself not total — `poc-l4-pair-r152` declares no rotation while its registration pins one — which is R202. The corpus needs **12 of
+its 33 breaks prevented (36%)** before the pooled delta stops being negative.
+
+**Price.** ¥0.00. **Refutation.** If a sixth fold lands outside 70–88% inert, the replication claim is wrong and the
+share is a property of a split rather than of the pack.
+
+## R201 (queued) — the engagement gate: withhold where nothing can act
+
+**Question.** R200 says 78% of served packs changed nothing. Can a gate withhold them *before* the episode, and
+does withholding an inert pack really cost nothing?
+
+**Design.** R123's rung (`speakMargin`) is the existing mechanism: the pack carries a decision score, the host
+serves only when it clears a margin, and the artefact records the withheld share. The registered reading is a
+**dose–response** — three margins that withhold ≈0%, ≈35% and ≈70% of packs, 40 held-out retail tasks × 4 trials —
+with the *inert share* and the **bill** as the primary readings and the delta as a by-product. The prediction is
+`inertShare` falling monotonically with the rung and `repaired` falling more slowly than `broke`, which is what
+"withholding an inert pack is free" means operationally.
+
+**Acceptance.** A gate is worth shipping only if its highest rung keeps **≥ 4 of the corpus's 22 repairs** while
+preventing **≥ 4 of its 33 breaks**; below that it is a cost knob, not a mechanism. Depends on R198's step 2 for
+the bill, because the gate's whole justification is a price it saves.
+
+**Price ≈ ¥4–5** (three rungs × 40 tasks × 4 trials at the τ² retail rate). **Not bought.**
+
+## R202 (registered) — the serving policy is a field, including when it is `none`
+
+**Question.** R200 pools by a treatment key that cannot be computed for a fold written before `rotation` was
+projected: `poc-l4-pair-r152` declares no rotation, its registration pins `serveRotation: fair-share`, and the two
+are indistinguishable in the artefact. So a pool that is correct by construction is not yet possible.
+
+**Mechanism.** `treatmentOf` writes `rotation` unconditionally, as the declared value or the literal `none`, and the
+pair artefact copies it. The key then separates "served with fair-share travel" from "served without a rotation",
+and the three folds whose artefacts predate the field keep an `unstated` key of their own rather than being filed
+under a label they never earned.
+
+**Acceptance.** A fixture pair whose arms declare no rotation writes `rotation: "none"`; one whose arms declare
+`fair-share` writes the value; the two produce **different** keys; and the committed record's `unstated` pool
+shrinks by exactly the folds re-run after the change, never by the folds that were merely re-read.
+
+**Price ¥0.00**, and it is a precondition of R201's dose–response: a gate compared against a mixture cannot be
+said to have passed or failed.

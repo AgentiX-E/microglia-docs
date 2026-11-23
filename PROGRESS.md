@@ -26664,3 +26664,90 @@ known call count, so a dispatch would return a price rather than a second accura
 unchanged and arithmetic: the four published τ² rows have half-widths of ±9 to ±11 pp at 40 held-out tasks × 4
 trials, so a fifth draw of the same size cannot move the pooled −4.64 pp off zero. It buys the *cost* axis and the
 delivery census, not a resolution.
+
+### 240 — The pack's three ledgers: 78% of what is served cannot change anything, and that is the only number that replicates (07:55 UTC)
+
+**The question this round asked.** The user's standing objection is that the *way* memory is used, not only what is
+stored, is what produces the negative effect. The lane had five paid τ² folds and no single place where "what the
+pack did" could be read: `serveYield` said renders/opportunity/repairs/breaks/inert, `degradation` said
+broke/repaired/blankRight/measured, `comparison` said lost/gained/paired, and nothing compared them.
+
+**The identity.** They close an identity nobody had written down:
+
+```text
+inert = served - repaired - broke
+```
+
+A pack is inert exactly when the episode's verdict did not change, so the identity is the *definition* of inertness
+rather than an estimate of it. `packages/eval/src/pack-ledgers.ts` derives everything else from it and refuses six
+shapes that would turn a count into a claim: a missing block, an inert count that does not close, two blocks
+reporting different populations, a comparison from a different run, a repair where the control was already right,
+and a percentage that is not `(repaired − broke) / measured`.
+
+![R200: the inert share across five folds, and what the engaged packs were worth](figures/pack-ledgers-200.png)
+
+| fold | served | inert | repaired | broke | repairs per break | delta |
+| --- | --- | --- | --- | --- | --- | --- |
+| `poc-l4-pair-r152` | 40 | 35 | 3 | 2 | 1.50 | +2.50 pp |
+| `poc-l4-pair-official` | 40 | 33 | 4 | 3 | 1.33 | +2.50 pp |
+| `poc-l4-pair` (pre-R152) | 57 | 47 | 4 | 6 | 0.67 | −3.51 pp |
+| `poc-l4-pair-r152c` (bounded) | 40 | 29 | 4 | 7 | 0.57 | −7.50 pp |
+| `poc-l4-pair-swapped` | 74 | 52 | 7 | 15 | 0.47 | −10.81 pp |
+| **all five** | **251** | **196** | **22** | **33** | **0.67** | **−4.38 pp** |
+
+**Finding 1 — the delta does not replicate; the inert share does.** Five folds, five splits, three treatments: the
+delta ranges from **+2.50 to −10.81 pp**, and it flips sign, inside intervals ±9 to ±11 points wide. The inert share
+lands between **70.3% and 87.5%** on every one of them, with a corpus interval of **[72.6, 82.8]**. The difference is
+structural rather than lucky: a delta is a contrast between two arms and inherits both arms' noise, while an inert
+share is a count over episodes whose verdicts were observed. So the defensible sentence about this memory is not
+"it costs accuracy" — that claim is under-resolved — but **"most of what it serves cannot change anything, and the
+part that can breaks slightly more often than it repairs (33 against 22)."**
+
+Findings from the other family say the same thing: on the ALFWorld board only **106 of 274 games (38.7%)** ever
+engaged the ledger (R195), so 61% of the served packs there changed nothing either.
+
+**Finding 2 — the published −4.64 pp was a mixture.** R197's cancellation quoted a pooled census of −4.64 pp over
+194 pairs. That pool is the four folds paid after R152 — and it averaged **R152c's bounded arm** (a `serveRotation`
+over the travel budget) with three folds that declare none. The gate now pools by treatment key and prints each
+separately:
+
+| treatment key | folds | episodes | inert | delta | breaks to flip |
+| --- | --- | --- | --- | --- | --- |
+| `…/traceClaims=6` (no rotation declared) | 3 | 154 | 77.9% | −3.90 pp | 7 of 20 (35%) |
+| `…/traceClaims=6/rotation=fair-share` (bounded) | 1 | 40 | 72.5% | −7.50 pp | 4 of 7 (57%) |
+| `unstated` (pre-treatment artefact) | 1 | 57 | 82.5% | −3.51 pp | 3 of 6 (50%) |
+
+Every key is negative, so the conclusion survives the correction while the number does not. A test recomputes
+**−4.64 pp over the four post-R152 folds** from the artefacts, which is the check that separates "our arithmetic was
+wrong" from "our pooling was mixed": the first would have shown up as a different number, the second shows up as the
+same number over a population that is not one treatment.
+
+**Finding 3 — the key itself is not total, and that is the next seam.** `rotation` is projected into the treatment
+block only when an arm declares one, so a fold written before the projection cannot be assigned: `poc-l4-pair-r152`
+carries no rotation while its own registration pins `serveRotation: fair-share`. The "no rotation declared" pool
+therefore contains at least one bounded fold — a smaller mixture than the published one, but not zero. The gate
+refuses to infer the value from the registration (an inference would make the key depend on a file the artefacts do
+not reference) and instead quotes the keys as *what the artefact declares*. **R202** makes the field total by
+writing `none` explicitly, which is ¥0 and one line of projection.
+
+**What a gate has to buy, in episodes.** The corpus needs **12 of its 33 breaks prevented (36%)** before the pooled
+delta stops being negative. That is a target a mechanism can be priced against — and it is *not* the target
+"serve less", because withholding an inert pack is free by construction: the verdict it did not change stays
+unchanged, and only the bill moves.
+
+**What is deliberately still empty.** The price column. `inertPriceOf` requires a *census* on both arms and refuses
+to price a count, a census without a token column, or a negative subtraction. Every committed fold predates R198's
+reader, so all five are `unpriced` with the reason printed — and `l4-pair` now publishes each arm's `promptTokens`
+beside its `calls`, which is what the subtraction needs. **The first priced dispatch fills the column without a code
+change**, which is the whole point of having made the refusal explicit.
+
+**Acceptance, counted.** **6,209 tests over 299 files** (+42, all in `pack-ledgers.test.ts`), coverage
+**100 / 99.91 / 100 / 100**, and the new module **100 / 100 / 100 / 100**. The gate is in `pnpm check`
+(`pnpm eval:pack-ledgers --check`), recomputes the record from the artefacts and refuses a fold that moved or one
+the record no longer carries. Coupling ledger **262 modules / 75,049 lines** (+1 module, +622 lines, core still
+`coupled=0`); README's layer table recomputed to `eval` **196 modules / 58,854 lines**. Round cost **¥0.00**.
+
+**Two refusals the module makes that the lane had been making in prose.** A percentage that is not the ledger's own
+fraction is refused (`net does not close`), because the artefact prints both and they are one division apart. And a
+`repaired` count larger than the episodes where the control was wrong is refused (`degradation is impossible`),
+which is the check that would catch a per-task row scored against two different golds.
