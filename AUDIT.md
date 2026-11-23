@@ -15971,3 +15971,44 @@ committed keys is unchanged; and `pnpm eval:pack-ledgers --check` reports no dri
 is inventing treatments. (2) A test whose expectation was copied from an artefact's shape tests the artefact, not
 the rule — assert the property the field is supposed to have. (3) When a registration names a layer ("one line of
 projection"), check that the defect is reachable from that layer before pricing the round.
+
+## 34.296 — A purchase was priced before anyone checked whether the data already existed
+
+**What was claimed.** R201 was registered as "three margins that withhold ≈0%, ≈35% and ≈70% of packs, 40 held-out
+retail tasks × 4 trials", priced at **≈¥4–5**, and left queued. The round was written as a dispatch because a
+dose–response is a curve and a curve sounds like an experiment.
+
+**What was true.** Every committed pair artefact already carries `serveSweep`: a ladder that prices **every** rung
+(0, 0.01, 0.02, 0.05, 0.08, 0.1, 0.15, 0.2, 0.25, 0.3) against the same episodes, with `served`, `withheld`, `kept`
+and `broke` per rung. The three registered margins are three rows of a table that had been bought five times and
+never read as a curve. The round's answer was ¥0, and the ¥4–5 would have bought a sixth draw of a population whose
+curve was already known to within a fold's width.
+
+**How it was found.** Reading R201's acceptance predicate against the artefacts rather than against the pattern of
+previous rounds: "keeps ≥4 of 22 repairs while preventing ≥4 of 33 breaks" — 22 and 33 are the *corpus* totals, so
+the predicate is a statement about a table, and the table existed. The `serveSweep` block had been in every pair
+artefact since R123's rung lost, and no reader had consumed it as a dose.
+
+**The class.** **A purchase priced before the inventory was checked.** Three of this project's rounds have now
+repaired the same shape at different layers — a claim that needed a number, a number that needed a dispatch, and a
+dispatch that needed nothing because the artefact already held the reading. The reusable test is the acceptance
+predicate: if it names counts the corpus already reports, the round is a reader until proven otherwise.
+
+**A second defect, found while reading it.** The obvious dose table reports *one* inert column, and that column rises
+to 1 with the rung **by construction** — a withheld pack is inert because withholding cannot change a verdict the
+pack did not change. A round that published only it would have certified any threshold as a success. The module
+therefore reports two: `inertAll` (the gate's own reading) and `inertServed` (the ledger's, over survivors), plus
+`selectivity = prevention − repairLoss`. The corpus then says the thing one column could not: at rung 0.01 the gate
+loses 18.2% of the repairs to prevent 18.2% of the breaks — exactly proportional, selectivity +0.0pp — and through
+0.05–0.10 it is **negative** (−10.6pp, −1.5pp), i.e. the margin silences *helping* packs faster than harming ones.
+
+**What was not done, and why it matters.** No dispatch was sent to confirm the counterfactual, because the sweep's
+model — a withheld trial reverts to the control's verdict — is exactly what a `speakMargin` dispatch assumes too. A
+confirming run would test the model, not the corpus, and the model is already the one the lane has been scoring
+against since R123. The round is therefore recorded as a *reading*, and the dispatch that would test the model is
+priced separately (≈¥1–2 at one rung) and deferred until the bill makes the trade decidable.
+
+**The reusable rules.** (1) Price a round against the artefacts before pricing a dispatch. (2) When a metric is
+guaranteed to move in the desired direction by construction, publish the construction's complement beside it.
+(3) A threshold that meets a count while being exactly proportional to the corpus is a dose knob with a threshold's
+name; the diagnostic is `prevention − repairLoss`, and it has a sign.

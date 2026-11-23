@@ -9188,7 +9188,7 @@ its 33 breaks prevented (36%)** before the pooled delta stops being negative.
 **Price.** ¥0.00. **Refutation.** If a sixth fold lands outside 70–88% inert, the replication claim is wrong and the
 share is a property of a split rather than of the pack.
 
-## R201 (queued) — the engagement gate: withhold where nothing can act
+## R201 (answered this round, ¥0) — the engagement gate: withhold where nothing can act
 
 **Question.** R200 says 78% of served packs changed nothing. Can a gate withhold them *before* the episode, and
 does withholding an inert pack really cost nothing?
@@ -9205,6 +9205,29 @@ preventing **≥ 4 of its 33 breaks**; below that it is a cost knob, not a mecha
 the bill, because the gate's whole justification is a price it saves.
 
 **Price ≈ ¥4–5** (three rungs × 40 tasks × 4 trials at the τ² retail rate). **Not bought.**
+
+**Result (12:05 UTC).** Not bought, because it did not need buying: every committed fold carries `serveSweep`, a
+ladder pricing every rung against the same episodes, so the registered three margins are three rows of a table that
+already existed. `eval/rung-dose.ts` reads it (`pnpm eval:rung-dose`, ¥0.00). The corpus over 251 trials:
+
+| rung | withheld | kept | prevented | inert·served | selectivity | net |
+|---|---|---|---|---|---|---|
+| 0.01 | 32 | 18 | 6 | 79.5% | +0.0pp | −3.59pp |
+| 0.05 | 68 | 13 | 10 | 80.3% | −10.6pp | −3.98pp |
+| 0.10 | 106 | 11 | 16 | 80.7% | −1.5pp | −2.39pp |
+| 0.25 | 173 | 10 | 23 | 74.4% | +15.2pp | +0.00pp |
+
+The acceptance predicate **is met** (rung 0.01: 18 repairs kept, 6 breaks prevented) — by a rung whose losses and
+gains are exactly proportional to the corpus (18.2% each, `selectivity +0.0pp`). So the gate is not a mechanism over
+inert packs: it is a **cost knob with a measured price**, 12.7% of the bill for 18% of the repairs at 0.01, and
+through 0.05–0.10 it is anti-selective because the margin silences repairing packs first. The registered prediction
+that the inert share falls with the rung is **refuted** as stated: among served packs it rises, then falls only where
+more than half the packs are withheld. The **net delta turns positive only by turning the memory off** (+0.00 at
+0.25 with 69% withheld; +0.40 at 0.30 with 76%). AUDIT 34.296, TECH-DESIGN 17.185, PROGRESS 242.
+
+**What is left of this round:** one confirming dispatch at a single rung (≈¥1–2) to test the sweep's counterfactual
+— *a withheld trial reverts to the control's verdict* — which is the model the lane has scored against since R123.
+Deferred until the bill makes the trade decidable, i.e. until R198's step 2 lands.
 
 ## R202 (built this round) — the serving policy is a field, including when it is `none`
 

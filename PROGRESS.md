@@ -26827,3 +26827,64 @@ table recomputed to `eval` **196 modules / 58,901 lines**. Round cost **¥0.00**
 **In flight.** R198's step 2 was dispatched at 11:03 UTC inside the 10:00→01:00 off-peak stretch (the guard's own
 arithmetic: 109-minute estimate, 14 hours of window, `fits`). It is the first fold that carries a bill, and it is
 what fills the price column R200 printed as `unpriced`.
+
+### 242 — R201 answered without a dispatch: the gate is a dose knob, and the curve was already in the artefacts (12:05 UTC)
+
+**The round changed from a purchase to a reading, and the reading is worth more than the purchase would have been.**
+R201 was queued as three dispatches (≈0%, ≈35%, ≈70% withheld) at ¥4–5 to trace a dose–response for `speakMargin`.
+Every committed pair artefact already carries `serveSweep`: a ladder pricing **every** rung — 0, 0.01, 0.02, 0.05,
+0.08, 0.1, 0.15, 0.2, 0.25, 0.3 — against the same episodes, with `served`, `withheld`, `kept` and `broke` per rung.
+The registered margins are three rows of a table that had been bought five times. `packages/eval/src/rung-dose.ts`
+reads it and `pnpm eval:rung-dose --check` gates it. **Cost ¥0.00.**
+
+**The corpus, over 251 trials, 22 repairs and 33 breaks at rung 0.**
+
+| rung | served | withheld | kept | broke | prevented | inert·served | selectivity | net |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 251 | 0 | 22 | 33 | 0 | 78.1% | +0.0pp | −4.38pp |
+| 0.01 | 219 | 32 | 18 | 27 | 6 | 79.5% | +0.0pp | −3.59pp |
+| 0.02 | 212 | 39 | 18 | 27 | 6 | 78.8% | +0.0pp | −3.59pp |
+| 0.05 | 183 | 68 | 13 | 23 | 10 | 80.3% | −10.6pp | −3.98pp |
+| 0.08 | 160 | 91 | 13 | 20 | 13 | 79.4% | −1.5pp | −2.79pp |
+| 0.10 | 145 | 106 | 11 | 17 | 16 | 80.7% | −1.5pp | −2.39pp |
+| 0.15 | 118 | 133 | 11 | 14 | 19 | 78.8% | +7.6pp | −1.20pp |
+| 0.20 | 96 | 155 | 10 | 12 | 21 | 77.1% | +9.1pp | −0.80pp |
+| 0.25 | 78 | 173 | 10 | 10 | 23 | 74.4% | +15.2pp | +0.00pp |
+| 0.30 | 61 | 190 | 9 | 8 | 25 | 72.1% | +16.7pp | +0.40pp |
+
+**Finding 1 — the acceptance predicate is met, and meeting it is not enough.** R201's bar was "keeps ≥4 of 22
+repairs while preventing ≥4 of 33 breaks". Rung 0.01 keeps **18** and prevents **6**. A round that stopped there
+would have shipped a gate. The number that stops it is `selectivity`: at 0.01 the rung loses 4/22 repairs (18.2%)
+and prevents 6/33 breaks (18.2%) — **exactly the corpus's own proportion**, selectivity +0.0pp. It is a dose knob
+with a threshold's name: the same effect as serving every third request and every third pack being withheld.
+
+**Finding 2 — through the middle band the gate is anti-selective.** At 0.05 selectivity is **−10.6pp** and at 0.08
+and 0.10 it is −1.5pp: the margin silences *repairing* packs faster than breaking ones. The mechanism is visible in
+the margin's definition — a pack whose top two candidates are close is one where the ranking was contested, and a
+contested pack is often the one that changed the verdict — but the measurement is what makes it a claim.
+
+**Finding 3 — the inert share does not fall, so the registered prediction is refuted as stated.** Among the packs a
+rung still serves, inertness *rises* through the low and middle rungs (78.1 → 79.5 → 80.3 → 80.7%) and falls only
+where more than half the packs are withheld (74.4% at 0.25, 72.1% at 0.30). The prediction was that a gate over
+inert packs would concentrate engagement. It does not, because a margin knows nothing about whether a pack mattered.
+
+**Finding 4 — the net delta turns positive only by turning the memory off.** +0.00pp at 0.25 with 69% of packs
+withheld, +0.40pp at 0.30 with 76%. That is the arithmetic of a dose, and it is the third time this corpus has
+answered a mechanism question with a quantity question.
+
+**The module, and the two refusals that are design.** Two inert columns (`inertAll`, the gate's own reading, which
+rises by construction; `inertServed`, the ledger's, over survivors), plus `selectivity` as a nullable number — `null`
+on a corpus that repaired nothing, because `-1` would read as the strongest possible finding about a gate on the
+strength of an empty column. Fourteen new tests pin the arithmetic at three levels: one fold, a pool, and the
+committed corpus against `pack-ledgers`' headline (rung 0 must equal the ledger: same trials, same repairs, same
+breaks, same net, same inert share — the invariant that keeps the two readers seeing one corpus).
+
+**Acceptance, counted.** **6,242 tests over 300 files** (+27 for the dose module and its refusals), coverage
+**100 / 99.91 / 100 / 100**, `rung-dose.ts` **100 / 100 / 100 / 100**. Coupling ledger **263 modules / 75,542 lines** (+1 module, core still
+`coupled=0`); `eval` layer **197 modules / 59,341 lines**.
+The gate is in `pnpm check` (`pnpm eval:rung-dose --check`). Round cost **¥0.00**, against ¥4–5 registered.
+
+**What is left of R201, and it is not the curve.** One confirming dispatch at a single rung (≈¥1–2) would test the
+sweep's counterfactual — *a withheld trial reverts to the control's verdict* — which is the model the lane has
+scored against since R123. It is deferred until R198's bill makes the trade decidable, because the only open question
+now is whether 12.7% of the injection bill is worth 18% of the repairs, and that is a price, not a threshold.

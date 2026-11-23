@@ -11325,3 +11325,37 @@ round's acceptance is therefore stated as a *non*-movement — the record regene
 clean, and a test asserts each of the five committed keys is exactly what it was — beside the movement it does buy:
 a fixture pair that declares no policy and one that declares `fair-share` now produce different keys, end to end
 through the step that publishes the artefact.
+
+## 17.185 — `eval/rung-dose.ts`: a curve is a reader, and the reading it must publish twice
+
+A gate is a claim about a population, so pricing one is a table: for each threshold, what survives and what it costs.
+R201 registered three dispatches at ¥4–5 to fill that table. The dispatches were unnecessary — every committed fold
+carries `serveSweep`, a ladder that already prices every rung against the same episodes — and the module that reads
+it is the round.
+
+**The type carries the two readings a gate is judged on, and they are not the same number.**
+
+| field | definition | direction as the rung rises | what it licenses |
+| --- | --- | --- | --- |
+| `inertAll` | `(trials − kept − broke) / trials` | rises to 1 | nothing on its own: a withheld pack is inert by construction |
+| `inertServed` | `(served − kept − broke) / served` | the empirical question | whether the rung selects on inertness |
+| `selectivity` | `prevention − repairLoss` | the empirical question | whether the rung is a mechanism (positive) or a dose (zero) or anti-selective (negative) |
+
+A module with only the first column would report every gate as a success, because the definition guarantees the
+result. The second and third exist because a threshold can be applied to any ranking, and the interesting question is
+not *how much* it silences but *what kind* — and the corpus answers: the low rungs silence repairs and breaks in
+exactly the proportion the corpus holds them (18.2% each at rung 0.01), the middle band silences repairs first
+(−10.6pp at 0.05), and only rungs that remove more than half the memory become selective.
+
+**`selectivity` is nullable, and that is a decision rather than a type detail.** A corpus that repaired nothing has
+no repair denominator; the arithmetic would produce `−1`, which reads as the strongest possible finding about a gate
+on the strength of an empty column. `null` says the denominator is missing, and the line prints `n/a`. This is the
+same rule as `repairsPerBreak` in §17.182 and for the same reason: a rate with no denominator is not zero.
+
+**The refusals are the ladder's own arithmetic, not the reader's opinions.** `withheld == trials − served` and
+`kept + broke ≤ served` are checkable inside one row; a fold that fails them cannot price anything. The ladder-set
+refusal is the pooled version: pooling is over one ladder, not the intersection of several, because an intersection
+silently excludes whichever fold happened to report fewer rungs — which is how a curve becomes a property of the
+experiment rather than of the corpus. And a curve with no rung 0 is refused rather than rebased: every delta in the
+record is against the ungated row, and a reader that chose a different baseline would publish numbers the artefacts
+do not support.
