@@ -9336,6 +9336,36 @@ a failed prediction rather than a saving.
 red. The six numbers are recorded here and in PROGRESS 247. **R205** is the instrument fix — the agent reports per
 request whether a body was injected, the driver joins it to the ledger — and it needs a re-run, because the flag is
 not in this artefact.
+## R205 (built this round, not bought) — the injected population is a field, so a transient fold can name its share
+
+**Question.** R204's fold could not be read: `serveYield.renders` counted the packs the facade served and the agent
+read a sentence, so 50 renders described 40 episodes of which six carried a body. The gate written before that run
+refused a fold whose guidance call *failed* — and the run had `failures: 0`, declining through a second path with the
+same effect. Can the population a share is taken over be a field rather than an inference?
+
+**What was built (¥0.00, no model call).**
+
+| layer | field | where it is taken |
+|---|---|---|
+| agent | `injectedEpisodes: boolean[]` + `episodesWithBody`, one per boundary | where the injected message is built, not where the pack is decided |
+| join (`tau2-attribution.ts`) | `EpisodeOutcome.injected`, `withheldEpisodes` on the item table | the episode loop; dropped episodes stay `covered` so the count is not reported as a join failure |
+| pair (`l4-pair.ts`) | `serveYield.withheld` beside `renders`/`inert` | the join's own count |
+| gate (`pack-ledgers.ts`) | refuses a transient fold with no `withheld`, a census that does not close, or a failure | the artefact, not the cause |
+| verifier (`r204_readback.py`) | grades the share only when the population is named; refutes only when the Wilson lower bound clears the band | 17 self-test cases |
+
+**Why the flag is per episode and taken at the effect.** A refusal, a provider failure and an empty recall all end
+with no body, and the counter that produced them cannot say which. `_open_episode()` appends the boundary and its flag
+at one site, because two parallel lists appended at two sites drift and the positional join then hands every flag
+after the gap to the wrong episode.
+
+**Why the gate is not a relaxation.** It swapped an inference (the refusal count) for a field the artefact carries.
+A refusal fold with no `withheld` is still refused — that is every artefact written before this commit, including
+R204's own — and a provider failure is still refused on top, because an episode the provider lost is a hole in the
+arm's coverage rather than a population question.
+
+**Price of the re-run: ≈ ¥3–4.** Registration `prereg/R205-injected-population.md`, identical identity to R204 so the
+fold is poolable with its key, one instrument added. It buys the population reading the first fold could not produce
+and validates the instrument in production before any further arm depends on it.
 
 ## R202 (built this round) — the serving policy is a field, including when it is `none`
 

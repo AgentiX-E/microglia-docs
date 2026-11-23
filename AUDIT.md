@@ -16148,3 +16148,34 @@ before it is a result about the mechanism, and the second reading is always the 
 **Left open, deliberately.** The fix is the agent reporting per request whether a body was injected, joined by the
 driver to the ledger. That is an instrument change and it needs a re-run, because the flag is absent from this
 artefact; it is registered as R205 rather than patched into a threshold that would have made this fold look quotable.
+
+### 34.208 The gate was written from the branch that had a stack trace
+
+**What happened.** R204's transient arm came back with `failures: 0`, `refusals: 34` of 40, and a store that did not
+move. The gate written the round before refused a fold whose guidance call *failed*, on the ground that a failed call
+injects nothing while the facade's pack still counts as rendered. The condition it named never occurred and the fold
+passed, carrying a share computed over fifty renders of which six carried a body.
+
+**Why the branch was the wrong place to write it from.** `guidance()` catches an exception, counts a failure and
+returns `""`; three lines below, a `NONE` reply returns `""` through a different path. Two paths, one effect — and the
+gate was written from the one that produced a log line. A gate is a statement about a **population**, so it has to be
+written from the effect (this episode carried no body) rather than from the cause (the provider was down). The census
+had counted three outcomes from the day it was designed; the gate named one of them.
+
+**What was changed.** The effect is a field: `injectedEpisodes`, one per boundary, raised where the injected message is
+built. The join drops the episodes that carried nothing and publishes the count, the pair carries
+`serveYield.withheld`, and the gate asks the artefact whether it named its population instead of inferring it from a
+counter. Refusals are no longer a refusal; a fold with no `withheld` still is.
+
+**The two rules this leaves.** (1) **A parallel list is a positional join.** `episodeStarts` and `injectedEpisodes`
+are only aligned if both are appended at the same site, so both are appended by `_open_episode()`; the fixture that
+cleared one and not the other produced three cases reading a shifted population, which is the failure the pairing
+exists to prevent and the reason the fixture now clears both. (2) **A refutation needs an interval, not a point.** With
+six bodies the interval is 30–40 pp wide and contains the pool and everything above it; requiring the lower bound to
+clear the band costs one branch and removes the class of verdict that a small sample produces by accident — the same
+disease as reading a red gate as a green one, one layer down.
+
+**Left open, deliberately.** Whether the refusal rate (85%) is a property of the *material* rather than of the body is
+not this round's question. The literature's 59.9% summarises the failing trajectory of the task at hand and discards
+it; these records come from other retail tasks and mostly do not bear on the next request. That arm is a registration,
+not a patch.

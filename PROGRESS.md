@@ -27129,3 +27129,43 @@ the ledger — **R205**, and it needs a re-run because the flag is not in this a
 **Delivery.** `pnpm check` green: 301 files, **6,259 tests**, coverage **100 / 99.91 / 100 / 100**; readback at 14
 self-test cases, ledger at 49. Both fixes are tests first: `pack-ledgers.test.ts` gains the refusal fold verbatim from
 this run (`calls: 40, sentences: 6, refusals: 34, failures: 0`), the readback gains the same fold as a fixture.
+
+### 248 — R205 built: the population became a field, because the gate had named a cause and the run declined through another (00:55 +0800)
+
+R204's fold produced three readings and one unreadable. `serveYield.renders` counts the packs the *facade* served; on
+a transient arm that pack is the summariser's **input**. Fifty renders, forty episodes, six bodies — and the inert
+share, 80.0%, was computed over the fifty. The gate that should have refused it named a **cause** (`failures > 0`);
+the run had `failures: 0` and 34 refusals, and declined through a second path with the same effect.
+
+**The fix is the effect, in four layers, at ¥0.00.**
+
+| layer | field | taken where |
+|---|---|---|
+| agent | `injectedEpisodes: boolean[]`, `episodesWithBody` | where the injected message is built — one flag per episode |
+| join | `EpisodeOutcome.injected`, `withheldEpisodes` | the episode loop; dropped episodes stay `covered` |
+| pair | `serveYield.withheld` beside `renders`/`inert` | the join's own count |
+| gate | no `withheld` → refused; census must close; failure still refused | the artefact |
+
+**Two parallel lists are one list only if they are appended at one site.** `_open_episode()` does both appends, because
+a boundary list and a flag list that drift hand every flag after the gap to the wrong episode and the share comes out
+over a population nobody chose. The self-test found this the honest way: an existing case cleared `episodeStarts`
+without clearing the flags, and the next three cases read a shifted population.
+
+**The gate did not get nicer; the artefact got checkable.** A refusal fold **without** `withheld` is still refused —
+that is every artefact written before this commit, R204's own included. A provider failure is still refused on top,
+because an episode the provider lost is a hole in the arm's coverage rather than a population question. What changed
+is that a refusal is no longer a caveat: after the join it is a **count** — 34 of 40 episodes carried nothing — and
+the census's arithmetic (`calls == sentences + refusals + failures`) is now checked before the population is named.
+
+**The interval, not the point.** After the fix the surviving population can be six episodes, and six of forty is a
+population where 100% and 60% are the same observation. The readback quotes a Wilson interval and the refutation
+requires the **lower bound** to clear 78.7% + 10 pp. That change has its own case: 38 of 40 renders is 95.0% with a
+lower bound of 83.6%, which does not clear 88.7% at n = 40 — graded, not refuted. A rule that fired on the point
+estimate would be this round's own defect one layer down.
+
+**Delivery.** 45 agent cases / 189 assertions, 80 attribution, 49 ledger, 14 pair end-to-end, 17 readback self-test
+cases. `pnpm check` green: 301 files, **6,268 tests**, coverage **100 / 99.9 / 100 / 100**. Pushed `8f9c899f`.
+
+**Status: built, not bought.** Registration `prereg/R205-injected-population.md` — identical identity to R204, one
+instrument added, so the fold is poolable with R204's key. **≈ ¥3–4**, and it buys the population reading the first
+fold could not produce plus a production check of the instrument before any further arm depends on it.

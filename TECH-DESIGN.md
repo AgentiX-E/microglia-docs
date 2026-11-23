@@ -11425,3 +11425,36 @@ decided in `PROJECTION` in the same commit that emits them. R152's `serveRotatio
 spread member is exempt from the excess-property check: the type did not grow, the table stayed exhaustive over a
 description that was no longer true, and the pair refused the arm after the run. The projection test's fixture now
 states both fields, so the `carried` decision is exercised rather than written down.
+
+### 17.175 The population a share is taken over is a field, and the flag is raised at the effect
+
+**The shape.** Four layers, one quantity: the episodes whose prompt carried a body.
+
+```text
+agent   injectedEpisodes: boolean[]      one per boundary; raised where the injected message is built
+        episodesWithBody: number         its sum, stated once so a reader never re-adds it
+join    EpisodeOutcome.injected          any boundary of a repeated task injecting makes the episode served
+        withheldEpisodes: number         episodes dropped from renders and from the per-item table
+pair    serveYield.withheld              beside renders / inert, so a zero is a reading and not an absence
+gate    ledger refuses                   a transient fold with no withheld, a census that does not close,
+                                         or a provider failure
+```
+
+**Why the episode and not the call.** One episode makes one guidance call in the registered arm, but a retry inside
+the episode makes a second one, and the first may have declined. The population is the episode because the outcome is
+measured on the trial, and the flag is `true` if **any** of its requests carried a body.
+
+**Why the effect and not the decision.** `pack_for` decides the pack; `generate_next_message` builds the message.
+Between them a refusal, a failure or an empty recall can turn a decided pack into nothing, so the flag is raised at
+the second site. The first draft of this instrument would have flagged the decision and reproduced the defect it was
+written to remove, one layer in.
+
+**Why `_open_episode()` exists.** Two lists, two appends, one function. The alternative — an append at each site — is
+what produced a self-test where one case cleared the boundaries and not the flags, after which three cases graded a
+population shifted by two. The pairing is the invariant; a function is the only place to keep it.
+
+**What the gate refuses, and what that is worth.** A transient fold with no `withheld`: every artefact written before
+this commit, including R204's own, because those renders may still be the facade's. A census that does not close: the
+arm's own arithmetic, which a program with one integer per call cannot break honestly. A provider failure: the
+coverage hole that the population field cannot repair. What it no longer refuses is a refusal, because a refusal is
+the arm's registered behaviour and the join has already removed its episodes from the denominator.
