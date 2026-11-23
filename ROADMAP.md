@@ -9134,7 +9134,14 @@ writes `calls: 0` **and** `usage_absent: 1`; the arm artefact and the pair artef
 same document, asserted end to end (PROGRESS 239). A census whose numbers are not numbers is refused (`bad-usage`
 for a string, a negative, and `1e999`).
 
-**Step 2, dispatch, ¥2–3 — registered, not bought.** Two arms × four trials on τ² retail, read on the **cost** axis
+**Step 2, dispatch, ¥2–3 — attempted, refused by the guard at ¥0.00, queued for the 10:00 UTC window.** The first
+attempt (run `45086942405`, 00:07 UTC) was stopped before its first model call by `eval:window-fit`, and reading the
+refusal exposed a defect in its advice: it named 01:00 — the hour peak billing begins — as the hour to dispatch at
+(AUDIT 34.294). The guard now carries `peakOpensAt` and `windowOpensAt` separately and walks to the first off-peak
+stretch that can hold the estimate. From 00:07 UTC no legal window is reachable inside the `not_before` cap, so the
+dispatch is queued for the 10:00 UTC stretch, which is fifteen hours long.
+
+Two arms × four trials on τ² retail, read on the **cost** axis
 and on the delivery census (`serveYield`: renders, opportunity, repairs, breaks, inert), which is the lane's version
 of the question the ALFWorld side answered with `cycles.py`: is the pack used where it can help, or rendered where
 nothing can be repaired? The accuracy delta is a by-product; the registered readings are the bill and the census.

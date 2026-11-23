@@ -26741,13 +26741,39 @@ reader, so all five are `unpriced` with the reason printed — and `l4-pair` now
 beside its `calls`, which is what the subtraction needs. **The first priced dispatch fills the column without a code
 change**, which is the whole point of having made the refusal explicit.
 
-**Acceptance, counted.** **6,209 tests over 299 files** (+42, all in `pack-ledgers.test.ts`), coverage
+**Acceptance, counted.** **6,211 tests over 299 files** (+44: 42 for the ledger, 2 net for the guard's second
+hour), coverage
 **100 / 99.91 / 100 / 100**, and the new module **100 / 100 / 100 / 100**. The gate is in `pnpm check`
 (`pnpm eval:pack-ledgers --check`), recomputes the record from the artefacts and refuses a fold that moved or one
 the record no longer carries. Coupling ledger **262 modules / 75,049 lines** (+1 module, +622 lines, core still
-`coupled=0`); README's layer table recomputed to `eval` **196 modules / 58,854 lines**. Round cost **¥0.00**.
+`coupled=0`); README's layer table recomputed to `eval` **196 modules / 58,885 lines**. Round cost **¥0.00**.
 
 **Two refusals the module makes that the lane had been making in prose.** A percentage that is not the ledger's own
 fraction is refused (`net does not close`), because the artefact prints both and they are one division apart. And a
 `repaired` count larger than the episodes where the control was wrong is refused (`degradation is impossible`),
 which is the check that would catch a per-task row scored against two different golds.
+
+**The dispatch, and the guard that produced a better finding than the run would have.** R198's step 2 was sent at
+00:07 UTC on Monday 2026-11-23, minutes after this round's push. The job installed the τ² environment, counted the
+corpus's labels, and was refused by the lane's own off-peak guard **before its first model call** — ¥0.00 spent,
+which is the guard doing its job:
+
+```text
+off-peak window: 52 minute(s) left against an estimate of 109 — the run would cross into the window that opens at
+01:00 … Dispatch with not_before: 01:00
+```
+
+That message is wrong in the way that matters: **01:00 is the hour peak billing begins.** The field it printed
+(`windowOpensAt` = `now + minutesUntilPeak`) is the *closing* edge of the current stretch, so the advice named the
+moment the guard exists to avoid — an operator who followed it would have bought the same run at double price. The
+repair (AUDIT 34.294) makes `WindowFit` carry both hours: `peakOpensAt` (01:00, what the run would cross) and
+`windowOpensAt` (the next stretch long enough to hold it — 04:00 here, 10:00 for a 227-minute run), found by a walk
+that measures each stretch instead of assuming the first one fits. The test that had asserted the wrong string now
+asserts the property: the named hour must *fit*.
+
+**What that means for the price column.** The purchase is legal at 04:00–06:00 UTC (120 minutes against a
+109-minute estimate) or, safely, in the fifteen-hour stretch that opens at 10:00. From 00:07 neither is reachable:
+`not_before` is capped at 240 minutes, and the deadline check subtracts the wait from a 340-minute job, so a
+not_before of 04:00 with `deadline_min 130` leaves 95 minutes for a 109-minute run. The dispatch is therefore
+queued for the 10:00 window — the same rule R142 learned the expensive way, now with correct arithmetic in the
+message. Nothing was spent on the refused attempt, and the round's ¥0.00 stands.

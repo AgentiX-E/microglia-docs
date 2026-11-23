@@ -11266,3 +11266,33 @@ supports.
 interval (4), and a **process** layer that reads the five committed artefacts, recomputes the published −4.64 pp and
 the five-fold −4.38 pp, and asserts that every treatment key is negative. The third layer is what makes the module a
 gate rather than a library: the numbers in the paper are recomputed from the files a reader can open.
+
+## 17.183 — `eval/window-fit.ts`: two hours in a refusal, because one of them was the wrong one
+
+`windowFit` answers a question `planBandWait` and `isPeak` cannot: *will this run still be inside the off-peak band
+when it finishes?* It already did the arithmetic correctly — `estimated = ceil(episodes × 26 s / 60) + 10` — and its
+refusal was wrong in a way no number in it revealed. `windowOpensAt` was computed as `now + minutesUntilPeak`, and
+`minutesUntilPeak` returns the moment **peak begins**; the field therefore carried the closing edge of the current
+stretch while its name, its docstring and the printed sentence all said "the hour the guard is waiting for".
+
+The type now separates the two facts:
+
+| field | meaning | example at 00:47 Monday |
+| --- | --- | --- |
+| `minutesRemaining` | off-peak minutes left in this stretch | 13 |
+| `peakOpensAt` | the hour the run would cross into | `01:00` |
+| `windowOpensAt` | the next off-peak stretch long enough to hold the run | `04:00` |
+
+`nextFittingWindow` is the walk behind the third: start at the crossing, move to the next off-peak start, measure
+what that stretch offers, and if it is shorter than the estimate jump past the peak to the following one. Two
+consequences are load-bearing. A 227-minute run is told **10:00**, not the 04:00 stretch it would overrun. And a card
+whose every stretch is an hour long raises `no off-peak window in the next week is long enough for this run` rather
+than naming a moment that is itself peak — the failure mode of returning `now`, which is what a simpler
+implementation would have done.
+
+**Why this belongs in the technical design rather than a commit message.** The guard's *advice* is part of its
+contract: it is the only thing an operator reads before spending money, and it was the inverse of the rule. The test
+suite had codified it — `expect(...).toContain('Dispatch with not_before: 06:00')` for a run that needed the 10:00
+stretch — because the expectation was written from the implementation's output. The replacement asserts the property
+instead: whatever hour it names must be able to hold the run, and the two hours must differ, because a guard that
+names the same hour twice has stopped distinguishing them.

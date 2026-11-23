@@ -15893,3 +15893,46 @@ serving policy — but a field that is omitted when absent cannot be a key, beca
 the same way. (2) When a claim flips sign across folds and another quantity does not, the stable quantity is the
 finding, and the flip is the instrument's resolution talking. (3) A definition in the data (`inert` is "the verdict
 did not change") is a measurement, not an assumption, and it should be quoted as one.
+
+## 34.294 — The guard that refused a run and told the operator to dispatch at the hour it was warning about
+
+**What was claimed.** `windowFit` refuses a dispatch whose run would cross into a peak band, and its refusal names
+the hour to put in `not_before` so the next attempt lands in a window that fits. The message read:
+
+```text
+off-peak window: 52 minute(s) left against an estimate of 109 — the run would cross into the window that opens at
+01:00 … Dispatch with not_before: 01:00
+```
+
+**What was true.** 01:00 is the hour **peak billing begins**, not an off-peak window. `windowFit` computed
+`windowOpensAt` as `now + minutesRemaining`, and `minutesUntilPeak` returns exactly that moment — the *closing* edge
+of the current stretch. So the field named "the hour the guard is waiting for" carried the hour the guard exists to
+avoid, and an operator who followed the advice would have bought the same run at **double price** (the card bills
+peak at 2× on input and output) or been refused again per phase, losing the half it had already paid for.
+
+**How it was found.** R198's step 2 was dispatched at 00:07 UTC on a Monday, five minutes after the ledger round
+was pushed. The job installed the τ² environment, counted the corpus's labels, and was refused by this guard before
+its first model call — **¥0.00 spent**, which is the guard working. Reading the refusal is what exposed the advice:
+the run needed 109 minutes against the 52 left before 01:00, and the message told the operator to dispatch at 01:00.
+
+**The class.** Not "a wrong number". An **instruction that contradicts the rule it is enforcing**, emitted by the
+same function that enforces it. The guard was correct and its advice was the inverse of its purpose; an operator
+who trusted the line would have produced the failure the line was written to prevent.
+
+**The repair.** `WindowFit` now carries two hours: `peakOpensAt` (what the run would cross, 01:00) and
+`windowOpensAt` (the next off-peak stretch long enough to hold the estimate, 04:00 here). A `nextFittingWindow`
+walk finds the second: from a peak edge it moves to the next off-peak start, measures the stretch, and if it is too
+short jumps past the peak to the following one — so a 227-minute run is told 10:00 rather than 04:00, and a card
+whose every stretch is an hour long raises rather than naming a moment that is peak.
+
+**The deeper defect: the test asserted the advice.** `window-fit.test.ts` expected
+`Dispatch with not_before: 06:00` for a 05:30 start, and its own comment two lines above said the run needed the
+*04:00* stretch. The expectation was written from the implementation's output rather than from the rule, which is
+how a guard keeps a wrong instruction for as long as nobody reads the message as an instruction. Both cases now
+assert the *fitting* hour: `04:00` for a 00:47 start, because that morning's stretch is 120 minutes against a
+109-minute estimate, and `10:00` for a 05:30 start, because the 04:00 that would have fitted has already passed and
+the next off-peak start after the 06:00 peak is 10:00. `window-fit.ts` is 100% covered on all four dimensions.
+
+**The reusable rules.** (1) A refusal's advice is part of the guard and needs the same test as the refusal.
+(2) When a message names an hour, the test should assert the *property* of that hour (it fits), not the string;
+a string that came from the implementation cannot detect that the implementation is wrong.
