@@ -15936,3 +15936,38 @@ the next off-peak start after the 06:00 peak is 10:00. `window-fit.ts` is 100% c
 **The reusable rules.** (1) A refusal's advice is part of the guard and needs the same test as the refusal.
 (2) When a message names an hour, the test should assert the *property* of that hour (it fits), not the string;
 a string that came from the implementation cannot detect that the implementation is wrong.
+
+## 34.295 — The reader was asked to supply a fact only the writer had
+
+**What was claimed.** The ledger gate pools folds by a treatment key that includes `rotation`, and R200's docstring
+said the key describes "what the file declares, not what ran", with R202 named as the round that would "make the
+field total by writing `none` explicitly". The round was registered as one line of projection and ¥0.
+
+**What was true.** The registration understated the work by naming the wrong layer. `treatmentOf` omitted `rotation`
+when no arm stated one, so `poc-l4-pair-r152` — whose registration pins `serveRotation: fair-share` and whose
+artefact says nothing — produced the *same key* as the three unbounded folds. Four folds, one label, one bounded arm
+inside it: the mixture R200's pooling was supposed to have removed was removed for exactly one fold (R152c) and
+preserved for the other.
+
+**Why the tests did not catch it.** They could not: every fixture constructed its treatment object by hand, so the
+key function was tested against inputs a producer never emits. The defect lived in the *seam* between `treatmentOf`
+and `treatmentKeyOf` — one site that omitted, one site that honoured the omission — and no unit test owned both ends.
+The end-to-end pair test asserted a treatment block without a rotation field, which is the defect written down as an
+expectation: the test had been written from the artefact's shape rather than from the rule.
+
+**The class.** A **fact assigned to the wrong layer**. A reader cannot know whether a missing field means "declared
+nothing" or "written before the field existed", and asking it to decide produces a label nobody earned. The repair
+is at the producer, because the producer ran; the reader's omission rule stays, because a committed key may not move
+because a file was re-read — which is the same shape as 34.287's rule that an artefact may not be re-labelled by
+re-reading it.
+
+**The repair.** `treatmentOf` writes `rotation` unconditionally (the agreed value or `none`) and `Treatment.rotation`
+is a required field, so a future call site cannot omit it; `l4-pair` states the memory arm's policy unconditionally
+and leaves the control arm silent, which is its actual state. Five properties are asserted: a fixture pair that
+declares nothing writes `none`; one that declares `fair-share` writes it; the two keys differ; every one of the five
+committed keys is unchanged; and `pnpm eval:pack-ledgers --check` reports no drift against the committed record.
+
+**The reusable rules.** (1) Totality of a compared field is a property of the producer; a reader that fills blanks
+is inventing treatments. (2) A test whose expectation was copied from an artefact's shape tests the artefact, not
+the rule — assert the property the field is supposed to have. (3) When a registration names a layer ("one line of
+projection"), check that the defect is reachable from that layer before pricing the round.

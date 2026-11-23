@@ -26777,3 +26777,53 @@ asserts the property: the named hour must *fit*.
 not_before of 04:00 with `deadline_min 130` leaves 95 minutes for a 109-minute run. The dispatch is therefore
 queued for the 10:00 window — the same rule R142 learned the expensive way, now with correct arithmetic in the
 message. Nothing was spent on the refused attempt, and the round's ¥0.00 stands.
+
+### 241 — R202: the field is written by the process that ran, so the key stops deciding by omission (11:55 UTC)
+
+**One defect, and it was in the seam rather than in either side of it.** R200 closed §240 with a sentence it could
+not enforce: `rotation` reached the treatment block only when an arm declared one, so `poc-l4-pair-r152` — whose own
+registration pins `serveRotation: fair-share` — produced the *same pool key* as the three unbounded folds. Four folds
+under one label, one of them bounded: the mixture R200's pooling had removed for R152c and preserved for the rest.
+
+**Why no test caught it.** Every fixture built its treatment object by hand, so `treatmentKeyOf` was tested against
+inputs no producer emits. The defect lived between `treatmentOf` (which omitted) and `treatmentKeyOf` (which honoured
+the omission), and no unit test owned both ends. The end-to-end pair test asserted a treatment block *without* a
+rotation field — the defect written down as an expectation, because the expectation had been copied from the
+artefact's shape rather than from the rule.
+
+**The repair, and the asymmetry that is the design.**
+
+| layer | before | after |
+|---|---|---|
+| `treatmentOf` | `rotation` present iff an arm stated one | always present: the agreed value, else `none` |
+| `Treatment.rotation` | optional | **required** — a future call site cannot forget it |
+| `l4-pair` memory arm | `undefined` when its block was absent | `rotationModeOf(block)`, which is `none` for absence |
+| `l4-pair` control arm | silent | silent, unchanged: it serves no pack, so it has no policy to declare |
+| `treatmentKeyOf` | omits a field the file lacks | **unchanged** |
+
+The last row is the load-bearing one. Making the reader total looks simpler and is wrong twice: it would re-label
+four committed folds on a rule they never ran under, and it would write a `none` into files that never said it. The
+producer can say `none` because the producer ran; the reader can only report what the file says. Three states now
+have three keys — *(no segment)* for the pre-field folds, `rotation=none` for a fold that declared nothing,
+`rotation=fair-share` for R152c and every bounded arm.
+
+**Acceptance, five properties, all measured.**
+
+1. a fixture pair that declares no policy writes `rotation: "none"` — through `bin/l4-pair.ts`, not a literal;
+2. a fixture pair whose memory arm declares `fair-share` writes `fair-share`;
+3. the two produce different keys (`treatmentKeyOf` on the published treatments);
+4. all five committed keys are byte-identical to what they were, so a re-read never re-labels a fold;
+5. `pnpm eval:pack-ledgers --check` reports no drift, and a test asserts `driftOf(committed, fresh) === []`.
+
+**What it buys.** R201's dose–response compares a gate against a population; a mixture cannot say whether a gate
+passed or failed. The pool is now one treatment by construction, which is the precondition the next round spends
+against — and it cost nothing, which is what a totality repair should cost.
+
+**Acceptance, counted.** **6,215 tests over 299 files** (+4: two in the pair's end-to-end step, one on the key
+states, one on the committed record's non-movement), coverage **100 / 99.91 / 100 / 100**, `cross-fit.ts` and
+`pack-ledgers.ts` both 100 on all four dimensions. Coupling ledger **262 modules**, core `coupled=0`; README's layer
+table recomputed to `eval` **196 modules / 58,901 lines**. Round cost **¥0.00**.
+
+**In flight.** R198's step 2 was dispatched at 11:03 UTC inside the 10:00→01:00 off-peak stretch (the guard's own
+arithmetic: 109-minute estimate, 14 hours of window, `fits`). It is the first fold that carries a bill, and it is
+what fills the price column R200 printed as `unpriced`.

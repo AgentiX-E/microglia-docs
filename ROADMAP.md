@@ -9206,7 +9206,7 @@ the bill, because the gate's whole justification is a price it saves.
 
 **Price ≈ ¥4–5** (three rungs × 40 tasks × 4 trials at the τ² retail rate). **Not bought.**
 
-## R202 (registered) — the serving policy is a field, including when it is `none`
+## R202 (built this round) — the serving policy is a field, including when it is `none`
 
 **Question.** R200 pools by a treatment key that cannot be computed for a fold written before `rotation` was
 projected: `poc-l4-pair-r152` declares no rotation, its registration pins `serveRotation: fair-share`, and the two
@@ -9223,3 +9223,10 @@ shrinks by exactly the folds re-run after the change, never by the folds that we
 
 **Price ¥0.00**, and it is a precondition of R201's dose–response: a gate compared against a mixture cannot be
 said to have passed or failed.
+
+**Result (11:55 UTC).** Built as registered, with one layer changed and one deliberately not: the totality is at the
+producer (`treatmentOf` writes `rotation` unconditionally and `Treatment.rotation` is required), while
+`treatmentKeyOf` keeps its omission rule so no committed key moves. All four acceptance clauses hold — a fixture pair
+that declares nothing writes `none`, one that declares `fair-share` writes it, the keys differ, the committed record
+regenerates with `driftOf` empty, and the five committed keys are byte-identical. Five properties asserted, no new
+artefact needed. AUDIT 34.295, TECH-DESIGN 17.184, PROGRESS 241.

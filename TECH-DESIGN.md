@@ -11296,3 +11296,32 @@ suite had codified it — `expect(...).toContain('Dispatch with not_before: 06:0
 stretch — because the expectation was written from the implementation's output. The replacement asserts the property
 instead: whatever hour it names must be able to hold the run, and the two hours must differ, because a guard that
 names the same hour twice has stopped distinguishing them.
+
+## 17.184 — `eval/cross-fit.ts` and `eval/pack-ledgers.ts`: totality belongs to the producer, not the reader
+
+A pool key is an equality test, so a field that only some files carry is not a field: it is a coin flip on whether
+two folds are comparable. `rotation` was in exactly that state. `treatmentOf` wrote it when an arm stated one, the
+reader omitted it otherwise, and the two shapes — *declared nothing* and *written before the field existed* —
+produced one string. R202 moves the totality to the writer and deliberately leaves the reader alone.
+
+| layer | before | after | why there |
+| --- | --- | --- | --- |
+| `treatmentOf` (`cross-fit.ts`) | `rotation` present iff an arm stated one | always present: the agreed value, else `none` | the pair is the last place that knows which arm stated what |
+| `l4-pair` memory arm | `undefined` when its artefact carried no `serveRotation` | `rotationModeOf(block)`, which is `none` for absence | the memory arm is the only arm that can carry a policy |
+| `l4-pair` control arm | `undefined` unless it carried a block | unchanged: silent | it serves no pack, so it has no policy to declare — silence, not disagreement |
+| `treatmentKeyOf` (`pack-ledgers.ts`) | omits a field the file lacks | unchanged | a committed key may not move because the fold was re-read |
+
+The asymmetry is the design. Making the reader total looks simpler and is wrong twice: it would re-label the four
+committed folds on the strength of a rule they never ran under, and it would put the `none` into files that never
+said it. The producer can say `none` because the producer ran; the reader can only report what the file says.
+
+`Treatment.rotation` is a required field now, which is the type-level half: a future call site cannot forget it, and
+the compiler refuses a treatment assembled without one. That is the same move §17.181 made for `ArmServe` — the
+identity a comparison rests on is not an optional decoration.
+
+**What the change does not claim.** `none` on a pre-field artefact would have been a guess about a run nobody
+recorded, and the three folds whose registrations pin a policy are not re-derived from those registrations. The
+round's acceptance is therefore stated as a *non*-movement — the record regenerates byte for byte, `--check` is
+clean, and a test asserts each of the five committed keys is exactly what it was — beside the movement it does buy:
+a fixture pair that declares no policy and one that declares `fair-share` now produce different keys, end to end
+through the step that publishes the artefact.
