@@ -16179,3 +16179,38 @@ disease as reading a red gate as a green one, one layer down.
 not this round's question. The literature's 59.9% summarises the failing trajectory of the task at hand and discards
 it; these records come from other retail tasks and mostly do not bear on the next request. That arm is a registration,
 not a patch.
+
+### 34.209 Two refutations fired on a healthy fold, because both were written from a count
+
+**What happened.** R205's fold is the first transient run with a named population, and my own readback marked it
+`ABANDONED` twice over. The call rule fired on **42 calls against 40 episodes**, and the price rule fired on
+**+3,454.9 tokens an episode**. Both were false, and both were false for the reason this project keeps re-learning:
+the rule was written from a number that correlates with the defect rather than from the defect.
+
+**The call rule.** The registration named one failure mode — a summariser called once per *turn* rather than once per
+episode — and the rule that guarded it was `calls == episodes`. Two of the 42 calls are retries: the host re-asked the
+same turn inside two episodes, the pack was decided again, and the agent counts that as `recallRepeats`. A per-turn
+plant on this corpus makes ~400 calls; a retry makes one more. The rule is now two rules with the mechanism on each
+side: `calls < episodes` means an episode was never asked (the arm is not the registered one), and `calls ≥ 2 ×
+episodes` means the plant. The middle is the arm doing what it said.
+
+**The price rule.** A per-episode premium is the body's price only when the two arms spend the same number of calls,
+and that is a property of the user simulator rather than of the arm. This fold's memory arm made **750 calls against
+683** — the treatment took a different path through the same task — so +3,454.9 tokens an episode was **67 turns**.
+The comparable quantity is the arm's prompt total minus what its own summariser was shown, over its *agent* calls:
+**4,693.4 against the control's 4,697.0**, a ratio of 0.9992. The body cost ≈ 583 tokens an episode and nothing else.
+The rule now grades per call whenever the call counts differ by more than 5%, and quotes the premium beside the counts
+that confound it.
+
+**The third one, in the ledger.** `measured == rendered` is not an identity on a fold that withholds episodes:
+`degradation` counts 40 paired trials, `serveYield` counts 9 renders. A ledger that refused this fold would have been
+a ledger that refused every transient fold with a working instrument; a ledger that ignored the mismatch would have
+stopped checking a real identity for every other arm. It is scoped instead: each census closes inside itself, the
+cross-population triple is owed only where the populations are one, and a test states both halves with this fold's own
+numbers.
+
+**The rules.** (1) A refutation has to name the defect's *shape*, not a count that happens to separate the healthy case
+from it — or the first honest fold refutes itself. (2) When one arm's denominator moves, the quantity that carries the
+claim is the one divided by the unit that stayed put; the premium moved because the *simulator* moved, and the
+per-agent-call cost did not. (3) A gate that fires on a good artefact is worse than no gate: the fold was `GRADED`
+only after three rules were repaired, and each repair is a test built from the numbers that broke it.

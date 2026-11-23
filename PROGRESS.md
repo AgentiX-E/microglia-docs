@@ -27169,3 +27169,65 @@ cases. `pnpm check` green: 301 files, **6,268 tests**, coverage **100 / 99.9 / 1
 **Status: built, not bought.** Registration `prereg/R205-injected-population.md` — identical identity to R204, one
 instrument added, so the fold is poolable with R204's key. **≈ ¥3–4**, and it buys the population reading the first
 fold could not produce plus a production check of the instrument before any further arm depends on it.
+
+### 249 — R205 bought: the instrument works, the share is still unresolved, and the readback had two false positives of its own (02:15 +0800)
+
+Run `45219898506`, two arms, 114 tasks (74 learned / 40 held out), one trial, **≈ ¥3.4**. The registration's purpose was
+narrow: the same arm, with a join that can name the population its share is over. It did that, and then it found three
+things the round was not looking for.
+
+| reading | R204's fold | R205's fold |
+| --- | --- | --- |
+| the call | 40 calls, 6 sentences, 34 refusals, 0 failures | **42 calls, 5 sentences, 37 refusals, 0 failures** |
+| the store | 73 → 73, `grew: false` | **73 → 73, `grew: false`** |
+| the renders | 50 — the facade's packs | **9 — the prompts**, with **35 of 40 episodes withheld** |
+| the share | 80.0% over a population that was not the injected one | **88.9% [56.5%, 98.0%] over 9 renders** |
+| the delta | +5.00 pp, p = 0.727, [−7.5, +17.5] | **+5.00 pp, p = 0.6875, [−7.5, +17.5]** |
+| pass@1 | 82.5% → 87.5% | **82.5% → 87.5%** |
+| the price | −146,081 tokens (negative) | **+138,198 tokens, +3,454.9 an episode** |
+| per agent call | — | **4,693.4 against the control's 4,697.0 (99.92%)** |
+
+**The instrument did what it was built to do.** `serveYield.renders` fell from 50 to 9, `withheld` is 35, and the
+ledger gate — the one that refused R204's fold — **accepts this one**: `renders 9, inert 8, measured 40, delta 5`. The
+closing identity still holds inside each census (8 = 9 − 0 − 1), and the trial-level reading is unchanged at 40 pairs.
+
+**The refusal rate replicates, and that is the round's real result.** Two runs, two harnesses of the same arm:
+6 of 40 and 5 of 42 episodes got a sentence — 15.0% and 11.9%, **11 of 82 calls pooled**. The summariser is shown
+records retrieved from other retail tasks and declines on seven of eight. That is now a property of the *material*
+measured twice, not an artefact of one run, and it is what R206 is registered against.
+
+**The share is unresolved and the interval says so.** 88.9% over nine renders has a lower bound of 56.5%, so the fold
+cannot tell 78.7% from 100%: the prediction that the share stays within ±10 pp fails on the point estimate and the
+refutation does not fire, which is exactly what the Wilson rule added in R205 was for.
+
+**The delta replicated to the point.** 82.5% → 87.5%, +5.00 pp, p = 0.69–0.73 in both folds. Two runs of the same arm
+on the same corpus are not independent evidence about the mechanism — they are the same 40 tasks — but a harness that
+reproduces its point estimate to 0.00 pp is a harness whose readings can be compared between rounds, and the previous
+one could not be.
+
+**My own readback produced two false positives, and the artefact caught them before they were published.**
+
+1. **42 calls against 40 episodes fired "a call per turn".** Two of the calls are retries: the host re-asked the same
+   turn inside two episodes and the pack was decided again, which the registration allows and the agent counts as
+   `recallRepeats`. The refutation was written from a count instead of from the mechanism it protects — the plant the
+   registration named is *ten* calls an episode. It is now two rules: `calls < episodes` (an episode nobody asked
+   about) and `calls ≥ 2 × episodes` (a per-turn plant).
+2. **"+3,454.9 tokens an episode" fired "the arm paid for the block and the sentence".** The memory arm made 750 calls
+   against the control's 683: the premium is 67 extra *turns* of a user simulator that took a different path. Per agent
+   call, net of the summariser's own input (93,267 characters ≈ 23,317 tokens), the arm cost **4,693.4 tokens against
+   the control's 4,697.0** — identical to 8 parts in 10,000. The body cost **≈ 583 tokens an episode** and bought
+   nothing else. The price is now graded per agent call whenever the two arms' call counts differ, and the per-episode
+   premium is quoted beside the counts that confound it.
+
+**A third defect, one layer down.** The ledger's `measured == rendered` identity is not an identity on a fold that
+withholds episodes: `degradation` counts 40 paired trials and `serveYield` counts 9 renders. It is now **scoped** —
+each census closes inside itself, and the cross-population triple is owed only by folds that withhold nothing — with a
+test that uses this fold's own numbers and a block fold as the control.
+
+**Why the fold is not in `eval/results/`.** The gate accepts it; the *corpus* would not. `headlineOf` pools every
+committed fold and reports how many treatments it mixed, so one guidance fold turns "−3.44 pp over six block folds"
+into a number that mixes two arms. A treatment-scoped headline is the prerequisite, and it is named rather than
+worked around: until then, a transient fold is quoted from its own artefact and the record says so.
+
+**Delivery.** `pnpm check` green: 301 files, **6,268 tests**, coverage **100 / 99.9 / 100 / 100**; readback at **21
+self-test cases**; attribution 80, ledger 50, pair end-to-end 14, agent 45 / 189 assertions.

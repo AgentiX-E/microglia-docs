@@ -9336,7 +9336,7 @@ a failed prediction rather than a saving.
 red. The six numbers are recorded here and in PROGRESS 247. **R205** is the instrument fix — the agent reports per
 request whether a body was injected, the driver joins it to the ledger — and it needs a re-run, because the flag is
 not in this artefact.
-## R205 (built this round, not bought) — the injected population is a field, so a transient fold can name its share
+## R205 (bought 23 Nov, ¥3.4) — the injected population is a field, so a transient fold can name its share
 
 **Question.** R204's fold could not be read: `serveYield.renders` counted the packs the facade served and the agent
 read a sentence, so 50 renders described 40 episodes of which six carried a body. The gate written before that run
@@ -9363,9 +9363,48 @@ A refusal fold with no `withheld` is still refused — that is every artefact wr
 R204's own — and a provider failure is still refused on top, because an episode the provider lost is a hole in the
 arm's coverage rather than a population question.
 
-**Price of the re-run: ≈ ¥3–4.** Registration `prereg/R205-injected-population.md`, identical identity to R204 so the
-fold is poolable with its key, one instrument added. It buys the population reading the first fold could not produce
-and validates the instrument in production before any further arm depends on it.
+**Result (run 45219898506, 23 Nov, ¥3.4).** Two arms, 114 tasks, 74/40, one trial.
+
+| reading | R204's fold | R205's fold |
+|---|---|---|
+| the call | 40 calls, 6 sentences, 34 refusals | **42 calls, 5 sentences, 37 refusals, 0 failures** |
+| the store | 73 → 73 | **73 → 73** |
+| the renders | 50 — the facade's | **9 — the prompts, with 35 of 40 episodes withheld** |
+| the share | 80.0%, over the wrong population | **88.9% [56.5%, 98.0%] over 9** |
+| the delta | +5.00 pp, p = 0.727 | **+5.00 pp, p = 0.6875** |
+| pass@1 | 82.5% → 87.5% | **82.5% → 87.5%** |
+| the price | −146,081 tokens | **+138,198, but 4,693.4 against 4,697.0 tokens an agent call** |
+
+**The instrument works and the gate now accepts the fold** (`renders 9, inert 8, measured 40, delta 5`) on the same
+gate that refused R204's. **The refusal rate replicated**: 6/40 then 5/42, 11 of 82 calls pooled, so the material's
+irrelevance is measured twice rather than once. **The share is unresolved** — nine renders cannot separate 78.7% from
+100% — and the delta reproduced to 0.00 pp, which is a statement about the harness rather than about the mechanism.
+
+**Three of my own rules were wrong and the artefact said so before anything was published.** "42 calls against 40
+episodes" fired the per-turn plant rule (two calls are retries); "+3,454.9 tokens an episode" fired "paid for both
+bodies" when the memory arm had made 750 calls against 683 — per agent call, net of the summariser's input, the arm is
+at 99.92% of the control's and the body cost ≈ 583 tokens an episode. And the ledger's `measured == rendered` identity
+is not one on a fold that withholds, so it is scoped rather than dropped.
+
+**Not in `eval/results/`, and why.** The gate accepts it; the corpus headline pools every committed fold and says how
+many treatments it mixed, so one guidance fold turns "−3.44 pp over six block folds" into a mixed number. A
+treatment-scoped headline is the prerequisite, named rather than worked around.
+
+## R206 (registered, not built) — the same task twice: guidance distilled from attempt k, discarded at the end
+
+**Question.** Four rounds varied whether the memory speaks, how much, and what the pack is made of at serve time. None
+varied **where the material comes from**, and the literature's largest effect is a statement about exactly that:
+summarise the failing trajectory of the task at hand, inject it into the next attempt at the same task, discard it
+(49.0 stored lessons / 53.5 raw logs / 59.9 transient guidance).
+
+**Shape.** 40 held-out retail tasks, `trials: 4`, **no store at all**: trial 1 is the control, a failed trial is
+distilled into one sentence, trial k+1 of the same task is handed it. The key is the task's own opening request, which
+the sidecar already receives as `boundaryTexts`; the runner, the only side that knows the reward, writes the
+trajectory. The reading is **pass^4 on 40 tasks**, the first time this lane would be placeable on the leaderboard's own
+scale.
+
+**Registered because the prediction is falsifiable and the price is known: ≈ ¥5–7.** Not built: the sidecar key and the
+runner's write are engineering, not a dispatch.
 
 ## R202 (built this round) — the serving policy is a field, including when it is `none`
 
