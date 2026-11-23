@@ -9229,6 +9229,39 @@ more than half the packs are withheld. The **net delta turns positive only by tu
 — *a withheld trial reverts to the control's verdict* — which is the model the lane has scored against since R123.
 Deferred until the bill makes the trade decidable, i.e. until R198's step 2 lands.
 
+## R204 (registered) — transient guidance: write nothing durable, and say something task-specific
+
+**Question.** The largest published effect in the memory literature says the durable artefact is the defect:
+*More Memory, Worse Agents* (Indiana / Tencent HY, 19 Oct 2026) measured stored lessons at **49.0%**, raw logs at
+**53.5%**, and per-task guidance built from the logs and **discarded after one task** at **59.9%**, over nine
+benchmark/model settings. This record has the first two — R93's raw store reads `pass^4` **0.700** and R99's **0.625**,
+against lesson stores at 0.561–0.702 — and has never built the third. It is the one mechanism whose published gain is
+larger than every effect this record has reported since R85.
+
+**Mechanism.** Same corpus, split, tasks, trials, store and recall floor as R198, and the control arm unchanged. The
+memory arm keeps the **raw** unit (`distillUnit.unit = raw`, `form = record`), so nothing distilled is ever written;
+at each request it retrieves the top records the existing recall ranks first, makes **one** model call to write a
+short guidance sentence *for that request*, injects that sentence as the pack, and writes nothing back. The distinction
+from R93/R99 is therefore one field: what the pack is made of at serve time. The distinction from every lesson arm is
+the write path: no new item exists after the episode, and the store's item count is the same at the end as at the start.
+
+**Registered readings, in order.** (1) The guidance call is attributable: the memory arm's `usage` exceeds its control
+by one call per served request and by a positive prompt-token premium, and the pair publishes both. (2) The store did
+not grow: `storeItems` at the end equals the count the learn half wrote, and the evaluation-mutation gate passes.
+(3) The inert share, whose 78.1% is the number this whole line of work is about: a mechanism that makes the pack act
+should move it, and a rung of the margin curve did not. (4) The delta, as a by-product, quoted against the ±11pp
+resolution of 40 held-out tasks rather than as a finding.
+
+**Refutation.** If the guidance call cannot be separated from the episode's own calls, the arm is not the arm and the
+round is a repair. If the store grows during evaluation, it is a lesson arm with a step in front of it. If the pack is
+withheld on every request (the model refuses to write guidance), the reading is about the prompt rather than the
+mechanism and is reported as such. And if the inert share moves *up*, the published 59.9% does not transfer to a
+single-shot retail harness, which is a finding about the corpora and is stated as one.
+
+**Price ≈ ¥3–4** (two arms × 114 tasks × 1 trial, as R198, plus one guidance call per served request), and the
+engineering is the larger cost: a serve-time render path, its census, and the no-durable-write gate. Not bought.
+
+
 ## R202 (built this round) — the serving policy is a field, including when it is `none`
 
 **Question.** R200 pools by a treatment key that cannot be computed for a fold written before `rotation` was

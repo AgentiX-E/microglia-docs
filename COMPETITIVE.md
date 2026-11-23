@@ -9632,3 +9632,45 @@ repair rate on the 22 that landed).
 and a price, not a mechanism, so the inert share cannot be computed for them from published material. That is not a
 gap in the instrument; it is the part of the comparison their disclosure does not support, and it is stated here
 rather than filled with an estimate.
+
+### R201 and R202: the axis gains a second column, and the 2026 papers that name why ours is negative
+
+**The gate was the obvious competitor strategy, and it is now priced.** Every memory system on this board can be
+described by how much it serves; the cheapest way to look cheaper is to serve less. R201 prices that move on our
+own corpus, over the 251 trials the lane already bought, at every rung of `speakMargin`:
+
+| rung | packs withheld | repairs kept | breaks prevented | inert among served | selectivity |
+|---|---|---|---|---|---|
+| 0.01 | 12.7% | 18 of 22 | 6 of 33 | 79.5% | +0.0pp |
+| 0.05 | 27.1% | 13 of 22 | 10 of 33 | 80.3% | −10.6pp |
+| 0.10 | 42.2% | 11 of 22 | 16 of 33 | 80.7% | −1.5pp |
+| 0.25 | 68.9% | 10 of 22 | 23 of 33 | 74.4% | +15.2pp |
+
+`selectivity = prevention − repairLoss`, both as shares of their own totals. **A dose knob has selectivity 0**,
+because it removes repairs and breaks in the corpus's own proportion; a gate that selects on uselessness is
+positive. Nothing on this board publishes the number, and the reason is visible in the table: the first rung that
+meets a shipped gate's bar is *exactly proportional* (+0.0pp), and the middle band is negative — the threshold
+silences the packs that were repairing. So "serve less" is not a mechanism here, and any competitor row that
+improves by serving less is buying a dose, not a fix.
+
+**Four 2026 results, and which of them this record has and has not replicated.**
+
+| result | what it found | this record |
+|---|---|---|
+| *More Memory, Worse Agents* (Indiana / Tencent HY, 19 Oct 2026) | stored lessons **49.0%**, raw logs **53.5%**, per-task guidance built from logs and discarded **59.9%**, over nine settings | the first two are **measured here**: a raw store reads `pass^4` **0.700** (R93, 15 records) and **0.625** (R99, 73 records), against lesson stores at 0.561–0.702. The third — *transient guidance, nothing durable written* — is **not measured**, and it is registered as R204 |
+| *MemTrapBench* (Aug 2026) | every framework underperformed no-memory; correct memories distort reasoning (fixation, belief drift); the fix acts at inference, telling the model to discount a biasing memory | **not replicated.** Our harm is measured as verdict flips, not as distortion on unrelated tasks, and our gate is a pre-episode threshold rather than an inference-time discount |
+| Agent Memory Leaderboard (Aug 2026) | best of 69 submissions **58.02 / 100** across recall, multi-hop, temporal, governance, personalisation, rule-execution, safety, privacy | **not comparable.** It scores recall and use of stored facts; our τ² row scores a task outcome with the store injected. Different quantities, and this document does not place them on one axis |
+| *MemoryDojo* / FARMA / MemGhost (2026) | every memory system is poisonable; forged reasoning beats keyword and consensus defences | **out of scope by construction.** Our write path is the host's own corrections, so untrusted text is not an input; the adversarial axis is a different threat model and is not claimed |
+
+**What the competitor scan has now covered, and what it has not.** Three families are read at mechanism level and
+each has a measured arm here: **store granularity** (raw record vs distilled claim vs consolidation), **retrieval
+scope** (domain, scope, condition), and **serving policy** (floor, budget, rotation, margin). One family is read and
+unmeasured — **transient, discard-after-use guidance** — and it is the one whose published effect is largest. One
+family is measured but not shipped — **inference-time discounting of a retrieved memory that conflicts with the
+current task** — and no arm here has tried it, because our harness has no second-stage critic.
+
+That is the honest position: the gap to the leader on τ² is not a shortage of memory (three quarters of what is
+served is inert) and not a shortage of exposure (the margin curve says exposure is a dose), it is a shortage of
+**mechanisms that make a stored item act at the moment it is wrong**. The two candidate mechanisms this scan names
+are R204's transient guidance and an inference-time critic, and both are priced below the cost of another accuracy
+draw.

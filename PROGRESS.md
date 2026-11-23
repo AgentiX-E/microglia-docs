@@ -26877,7 +26877,7 @@ answered a mechanism question with a quantity question.
 **The module, and the two refusals that are design.** Two inert columns (`inertAll`, the gate's own reading, which
 rises by construction; `inertServed`, the ledger's, over survivors), plus `selectivity` as a nullable number — `null`
 on a corpus that repaired nothing, because `-1` would read as the strongest possible finding about a gate on the
-strength of an empty column. Fourteen new tests pin the arithmetic at three levels: one fold, a pool, and the
+strength of an empty column. Twenty-seven new tests pin the arithmetic at three levels: one fold, a pool, and the
 committed corpus against `pack-ledgers`' headline (rung 0 must equal the ledger: same trials, same repairs, same
 breaks, same net, same inert share — the invariant that keeps the two readers seeing one corpus).
 
