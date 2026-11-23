@@ -11359,3 +11359,68 @@ silently excludes whichever fold happened to report fewer rungs — which is how
 experiment rather than of the corpus. And a curve with no rung 0 is refused rather than rebased: every delta in the
 record is against the ungated row, and a reader that chose a different baseline would publish numbers the artefacts
 do not support.
+
+## 17.186 — `eval/serve-body.ts` and the agent's guidance path: a body as a field, and a call made where the bill can see it
+
+Three rounds moved the memory's *dose* (R198's price, R201's rung ladder, R152's rotation) and the inert share did
+not follow: 78.7% of served packs changed nothing, at rung 0.01 the gate removed repairs and breaks in exactly the
+corpus's proportion, and the net delta turns positive only by turning the memory off. What none of them moved is the
+**body** of the pack. R204 makes it a field and builds the arm the literature's largest effect is about.
+
+**Two names, total at the producer.**
+
+| body | what the prompt carries | where it comes from |
+| --- | --- | --- |
+| `rendered` | the block the store served, injected on the first turn and reused for the episode | every arm before R204; the resolver's answer when nobody declares one |
+| `guidance` | one sentence written for the request by one model call, discarded when the episode ends | `serveBody: guidance` in a registration |
+
+`serveBody` joins `rotation` in `Treatment` as a field that is **always** written for a pack-serving arm and absent on
+the control, which serves nothing and therefore has no body to state. Two folds that served two bodies are two
+treatments, and `treatmentKeyOf` appends the field after `rotation` so no key committed before it moves.
+
+**Where the call is made is an attribution decision.** The agent, not the facade:
+
+```text
+first turn ──▶ recall(block) ──▶ one litellm completion(records + request)
+                                        │
+                                        ├─ a sentence ──▶ injected as the pack
+                                        ├─ NONE       ──▶ nothing injected (the arm's gate)
+                                        └─ error      ──▶ nothing injected (counted as a failure)
+```
+
+`run_split.py` counts every litellm call the process makes through a success callback, including the user simulator's.
+A completion issued from the agent therefore lands in the same account the episode is billed to, and the
+registration's first reading — *the memory arm's usage exceeds its control's by one call per served episode, with a
+positive prompt premium* — is a subtraction over two counters rather than a second instrument. The same call issued
+from the TypeScript facade would be invisible to that counter, and proving it happened would cost a new census.
+
+**Three outcomes rather than two.** A model that was asked for a sentence can decline (`NONE`), fail (provider), or
+answer. Collapsing the first into the third would report a working model as an unreachable one; collapsing it into
+the second would report an unreachable provider as an arm with a gate. All three are counted, and only the first is a
+served pack.
+
+**No fallback to the block, and the reason is the treatment.** When the summariser fails the agent injects nothing.
+Falling back would serve R93's treatment under R204's name, silently, in precisely the episodes where the mechanism
+was unavailable — and the artefact would then contain two treatments whose mixture no field records. The alternative
+cost is a handful of episodes with no memory, which is visible as `failures` and honest.
+
+**The arm's central claim is about a file, so the file is counted.** `storeGrowth: { before, after, grew }` is taken
+in the driver on both sides of the evaluation phase and recorded on both arms. It is the only way "nothing durable was
+written" can be a measurement rather than a claim about code, and it costs one query against the in-process store the
+facade already serves from.
+
+**Two traps this round had to disarm, both found by reading rather than by running.**
+
+- **A raw store and a support floor of two are incompatible.** Raw records are one verbatim event each, so every one
+  of them carries `supportTasks: 1`; R198's `serveSupport: 2` would have retired the entire store and the arm would
+  have measured an empty pack for a reason unrelated to its mechanism. The header leaves the floor at 1 and says so.
+- **`serveYield.renders` stops being the injected count.** The facade serves the block; the agent injects the
+  sentence. An episode whose guidance call failed would be booked as an inert pack, inflating the number the whole
+  line of work is about. `pack-ledgers` refuses a `serveBody: guidance` fold whose `failures` are non-zero, with the
+  text `N of M guidance calls failed, so the rendered count is not the injected one`.
+
+**The projection rule, restated with two more fields.** `serveBody` and `storeGrowth` are declared in `Tau2Raw` and
+decided in `PROJECTION` in the same commit that emits them. R152's `serveRotation` reached a paid dispatch because a
+spread member is exempt from the excess-property check: the type did not grow, the table stayed exhaustive over a
+description that was no longer true, and the pair refused the arm after the run. The projection test's fixture now
+states both fields, so the `carried` decision is exercised rather than written down.

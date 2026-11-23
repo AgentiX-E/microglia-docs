@@ -9229,7 +9229,7 @@ more than half the packs are withheld. The **net delta turns positive only by tu
 — *a withheld trial reverts to the control's verdict* — which is the model the lane has scored against since R123.
 Deferred until the bill makes the trade decidable, i.e. until R198's step 2 lands.
 
-## R204 (registered) — transient guidance: write nothing durable, and say something task-specific
+## R204 (built this round, not bought) — transient guidance: write nothing durable, and say something task-specific
 
 **Question.** The largest published effect in the memory literature says the durable artefact is the defect:
 *More Memory, Worse Agents* (Indiana / Tencent HY, 19 Oct 2026) measured stored lessons at **49.0%**, raw logs at
@@ -9260,6 +9260,37 @@ single-shot retail harness, which is a finding about the corpora and is stated a
 
 **Price ≈ ¥3–4** (two arms × 114 tasks × 1 trial, as R198, plus one guidance call per served request), and the
 engineering is the larger cost: a serve-time render path, its census, and the no-durable-write gate. Not bought.
+
+**Built (23 Nov, ¥0.00).** The engineering the paragraph above prices is done, and `pnpm check` is green without a
+single model call: 6,257 tests over 301 files, coverage 100 / 99.91 / 100 / 100, and the agent's own module at
+**100% of 205 statements and 50 branches** under the python lane's instrument.
+
+| what landed | where | what it makes possible |
+|---|---|---|
+| the switch and its refusal | `packages/eval/src/serve-body.ts` | `TAU_SERVE_BODY` resolves to `rendered` (default) or `guidance`; an unimplemented spelling throws before the first call |
+| the header and the wire | `prereg.ts` (`serveBody`), `prereg-form.ts` (`body=`), `sota.yml` (`TAU_SERVE_BODY`) | the registration names the body; a dispatch cannot run the other one under its name |
+| the call | `eval/drivers/tau2/microglia_agent.py` | one litellm completion per served episode, inside the agent, so it lands in the arm's own `usage.calls` |
+| the treatment field | `cross-fit.ts` (`serveBody`, total), `pack-ledgers.ts` (key order), `l4-pair.ts` (`transient`) | a sentence fold cannot pool with a block fold, and the pair publishes the three readings |
+| the no-write gate | `tau2-driver.ts` (`storeGrowth`), `tau2-instrument.ts` (`Tau2Raw` + `PROJECTION`) | the store is counted on both sides of the phase, on both arms |
+| the ledger refusal | `pack-ledgers.ts` | a transient fold whose guidance calls failed is refused rather than read as inert |
+
+Three outcomes are counted apart because a language model says nothing in three ways: `sentences` (served),
+`refusals` (`NONE` — the arm's own gate), `failures` (the provider). A failure injects **nothing** rather than falling
+back to the block: a fallback would serve the R93 treatment under the transient arm's name in exactly the episodes
+where the summariser was unavailable.
+
+Two things were decided against the registration's first draft and are stated rather than silently fixed:
+
+- **No `serveSupport` floor.** A raw record carries `supportTasks: 1`, so the floor of 2 that R198 ran would have
+  retired the entire store and served nothing — the arm would have measured an empty pack for a reason unrelated to
+  its mechanism. The header leaves the floor at 1 and says why.
+- **No `serveRotation`.** The body is the treatment; a rotation would have made the arm differ from R99 in two fields
+  and the pool could then not attribute the delta to either.
+
+**What the arm should cost less of.** The block is paid once as the summariser's input instead of riding 11.2 turns of
+every episode as context, so R198's 3,299.6 injected tokens an episode is the number this arm is expected to undercut
+— at a 96-token sentence over 11.2 turns the context term falls from ≈3,300 to ≈1,100 against a one-off ≈2,500-token
+summariser call. A bill that rises means the arm paid for both bodies.
 
 
 ## R202 (built this round) — the serving policy is a field, including when it is `none`

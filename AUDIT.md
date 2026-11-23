@@ -16012,3 +16012,41 @@ priced separately (≈¥1–2 at one rung) and deferred until the bill makes the
 guaranteed to move in the desired direction by construction, publish the construction's complement beside it.
 (3) A threshold that meets a count while being exactly proportional to the corpus is a dose knob with a threshold's
 name; the diagnostic is `prevention − repairLoss`, and it has a sign.
+
+## 34.297 — The served count and the injected count were the same number until an arm separated them
+
+**What was found.** The inert identity `inert = served − repaired − broke` has one denominator, and for six folds
+that was safe for a reason nobody had written down: the block the facade served *was* what the agent read, so
+`serveYield.renders` and "packs the model saw" were the same population. R204's transient arm breaks that identity of
+reference without touching the identity of arithmetic — the facade still serves the block, but the agent injects a
+sentence written from it, and an episode whose guidance call failed carries **nothing**. In that episode the facade
+counted a render and the model read no memory at all, so the episode is inert by construction and would be booked as
+an inert pack.
+
+The size of the error is not incidental. The number this entire line of work is about is 78.7% inert, every gate in
+the lane is judged against it, and a wiring defect that trades failures for inertness would move it in the direction
+that looks like success. A fold of 40 episodes with a 10% guidance failure rate would report 78.7% as ≈81%, with
+every gate green and no field of the artefact able to say why.
+
+**Why nothing caught it.** Both quantities were correct in their own layer. The facade's count is what the facade did;
+the agent's `injectedMessages` is what the agent did; and the pair published neither side by side. A defect that lives
+in the *difference between two layers' accounts* is invisible to a test of either layer, which is the same shape as
+AUDIT 34.295 (a reader asked to supply a fact only the writer had) and the same shape R48 found one level up.
+
+**The repair.** The refusal is in the ledger rather than in the count, because a count cannot be repaired without
+inventing a population: `pack-ledgers` refuses a `serveBody: guidance` fold whose guidance census reports any failure,
+with the text `N of M guidance calls failed, so the rendered count is not the injected one`, and refuses the absence of
+the census as a third state. The alternative — subtracting failures from renders — would publish a share over a
+population no field of the artefact carries, which is the arithmetic AUDIT 34.296 (a purchase priced before anyone
+checked the data) was written about.
+
+**The near-miss behind it, recorded because it would have cost a dispatch.** The registration's first draft carried
+`serveSupport: 2` from R198. Raw records are one verbatim event each, so every one of them has `supportTasks: 1`, and
+the floor would have retired the whole store: the arm would have served an empty pack on every request and reported a
+mechanism that did nothing. The floor is a filter on *claims with corroboration*, and the raw unit has none by
+construction — a switch inherited from a neighbouring registration is a switch nobody re-derived.
+
+**The reusable rules.** (1) When two layers each keep an account of "how many", publish both in one artefact and
+compare them; the defect lives in the difference. (2) A treatment that changes the *object* of a count changes which
+events are in it — check every counter whose denominator was the old object. (3) A switch copied from the registration
+next door is a hypothesis about this one's unit, and the unit is what makes it true or false.

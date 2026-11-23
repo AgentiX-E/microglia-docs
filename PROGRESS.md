@@ -26942,3 +26942,54 @@ the net only reaches zero at rung 0.30, where 74% of packs are withheld. R201's 
 `poc-l4-pair.json` is the pre-R152 fold and is not overwritten). Both derived records regenerated —
 `pack-ledgers.json` now carries six folds and one priced column, `rung-dose.json` six ladders — and
 `pnpm check` holds both. Round cost **¥2.75**, against ¥2–3 registered.
+
+### 244 — R204 built and not bought: the pack's body becomes a field, and the arm the literature says is largest is now dispatchable (21:35 UTC)
+
+R200 read the corpus, R201 moved the dose, R202 made the policy a field. All three left the number that started the
+line of work where they found it: **78.7% [73.6, 83.0]** of 291 served packs changed nothing. The one axis none of them
+touched is what the pack actually *says* — and that is the axis *More Memory, Worse Agents* (19 Oct 2026) measured at
+**59.9%** for per-task guidance built from logs and discarded, against 53.5% for the raw logs and 49.0% for the stored
+lessons this record has been distilling since R58.
+
+R204 is that arm, and this round built it without buying anything (**¥0.00**).
+
+| the switch | the mechanism |
+| --- | --- |
+| `serveBody: guidance` in the header, `body=` on the wire, `TAU_SERVE_BODY` in the workflow | resolved at module load; a spelling no body implements throws before the first call |
+| `MICROGLIA_GUIDANCE=1` in the agent's environment, and no other phase's | one litellm completion per served episode, **inside the agent**, so it lands in the arm's own `usage.calls` |
+| the sentence is the pack, the block is its input | `guidance.sentences` / `refusals` (`NONE`) / `failures` counted apart |
+| `storeGrowth: { before, after, grew }` on both arms | the store counted on both sides of the phase: "nothing durable" is a measurement of a file |
+| `serveBody` in `Treatment`, total at the producer | a sentence fold cannot pool with a block fold; committed keys do not move |
+| `pack-ledgers` refuses a transient fold with failed calls | `serveYield.renders` is the facade's count, and on this arm it is not the injected one |
+
+**Three decisions were taken against the registration's own first draft, and two of them would have cost the run.**
+
+- **`serveSupport: 2` would have retired the entire store.** A raw record is one verbatim event, so every one of them
+  carries `supportTasks: 1`; R198's floor of two is a filter that admits nothing on this unit, and the arm would have
+  reported an empty pack for a reason that has nothing to do with its mechanism. The header leaves the floor at 1.
+- **`serveRotation: fair-share` would have made the arm differ from R99 in two fields**, and the delta could then be
+  attributed to neither. The rotation is dropped: the body is the treatment.
+- **A failed guidance call injects nothing** rather than falling back to the block. A fallback would serve R93's
+  treatment under R204's name, silently, in precisely the episodes where the summariser was unavailable.
+
+**The defect this round found before the dispatch, and it is the interesting one.** `serveYield.renders` counts the
+packs the *facade* served. On every arm before this one that was also what the agent read, so served and injected were
+one population and the inert identity had one denominator. On the transient arm the block is the summariser's input:
+an episode whose guidance call failed carried nothing at all while its block still counted as rendered, and every
+failure would have been booked as an **inert pack** — inflating the one number this entire line of work is about. The
+ledger now refuses such a fold with `N of M guidance calls failed, so the rendered count is not the injected one`
+rather than publishing a share over a population the artefact does not carry. A second instance of the same family:
+the two new fields are declared in `Tau2Raw` **and** decided in `PROJECTION` in the commit that emits them, because
+R152's `serveRotation` reached a paid dispatch through a spread member that TypeScript exempts from the excess-property
+check.
+
+**Delivery.** 301 test files, **6,257 tests**, coverage **100 / 99.91 / 100 / 100**; the agent's own module at
+**100% of 205 statements and 50 branches** (42 self-check cases, 173 assertions) under `coverage --branch`; the
+coupling ledger recomputed to **264 modules / 75,756 lines**, the eval layer to 198 / 59,555. New tests on the round:
+4 in `serve-body.test.ts`, 3 on the header, 2 on the wire, 1 end-to-end pair that publishes all three readings and
+proves the sentence fold's key differs from the block fold's, 2 ledger refusals, 1 projection case, and 12 in the
+Python self-check.
+
+**Price of the dispatch: ≈ ¥3–4**, and the arm is expected to come in *cheaper* than R198's 3,299.6 injected tokens an
+episode — the block is paid once as the summariser's input instead of riding 11.2 turns as context. Not bought yet:
+the next dispatch buys it.
