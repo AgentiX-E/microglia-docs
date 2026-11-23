@@ -16110,3 +16110,41 @@ when nobody is looking. (2) Whatever that witness can check, the local tree must
 written down as a list, so a change on this side is refused here rather than discovered there. (3) When a copy drifts,
 ask what the new field *means on this side* before asking what it means to the compiler: the cheapest fix (`0`) was
 available and would have replaced a loud failure with a quiet, plausible one.
+
+### 34.207 The gate covered the actor nobody used, and the census was measuring the input
+
+**What happened.** R204's transient arm ran once (run `45192820103`) and came back with `failures: 0` and
+`refusals: 34` of 40. The ledger gate written the round before refused a transient fold whose `failures > 0`, on the
+reasoning that a failed call injects nothing while the facade's block still counts as rendered — and it read this fold
+as quotable, because the condition it named had not occurred. A refusal injects nothing for exactly the same reason:
+the summariser was shown the records, judged that they do not bear on the request, and wrote `NONE`. The difference
+between the two is *who declined*, which is a fact about the run and not about the population.
+
+**Why the miss is structural rather than careless.** The gate was written from the failure branch of the code that had
+been read most recently — `guidance()` catches an exception, counts it, and returns `""` — and the refusal branch
+returns the same `""` three lines further down through a different path. Two paths, one effect, and the gate named the
+one with a stack trace. A gate is a statement about *populations*, so it has to be written from the *effect* (this
+episode carried no body) rather than from the *cause* (the provider was down), and the effect here had two causes from
+the day the census was designed with three counters.
+
+**The quantity that was wrong, and how wrong.** On this fold `serveYield` reported 50 renders, 6 repairs, 4 breaks and
+40 inert, closing to 80.0%. Only six episodes carried a body. So 44 of the 50 renders were packs the agent never read,
+and the 80.0% — the number the round was registered to move — is a statement about the input. `V1-pack-not-empty` has
+the same defect one layer up: it certified "40 of 40 requests carried an item" for a fold in which six did.
+
+**What was changed instead of the threshold.** The gate refuses refusals as well as failures, with the counts in the
+message. The readback compares calls to the **episodes** rather than to `renders` — 40 calls against 50 renders is a
+healthy fold, and the first draft of the refutation would have called it a per-turn plant — and it returns
+`NO_MEASUREMENT` for a share it cannot attribute. And a negative token premium, which this fold produced (the memory
+arm spent 146,081 fewer prompt tokens than its control), is reported as a failed prediction: no pack-serving arm
+undercuts its control, so the sign is the refusal rate in another column rather than an efficiency.
+
+**The rules.** (1) A gate is written from the population it protects, not from the branch that produced the condition;
+if one effect has two causes, the gate names the effect. (2) When an arm's census counts a population and its ledger
+counts another, the fold can support the readings that use the census and none that use the ledger — say which, rather
+than publishing the one that looks like a result. (3) A premium with the wrong sign is a defect in the instrument
+before it is a result about the mechanism, and the second reading is always the tempting one.
+
+**Left open, deliberately.** The fix is the agent reporting per request whether a body was injected, joined by the
+driver to the ledger. That is an instrument change and it needs a re-run, because the flag is absent from this
+artefact; it is registered as R205 rather than patched into a threshold that would have made this fold look quotable.

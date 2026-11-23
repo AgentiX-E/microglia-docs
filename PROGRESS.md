@@ -27080,3 +27080,52 @@ layer table moved with the change (node 1,294 → 1,308 lines), which is the rea
 **The guard that refused the dispatch was right, and it cost nothing to obey.** An hour earlier it would have bought
 a run on a tree with a red lane; instead the arm waited 24 minutes, and the ¥3–4 was spent on a tree whose adapter and
 whose substrate agree. **R204 was then dispatched: run 45192820103, two arms, 130-minute deadline.**
+
+### 247 — R204 bought: the summariser refused 85% of the records it was shown, and that is the finding (23:40 +0800)
+
+Run `45192820103`, two arms, 114 tasks (74 learned / 40 held out), one trial, **¥3.4** by the lane's own estimate.
+Three registered readings, and one instrument defect that the run itself exposed.
+
+| reading | the fold |
+| --- | --- |
+| the call | **40 calls, 6 sentences, 34 refusals, 0 failures**, one per evaluated episode, arithmetic closes |
+| the store | **73 → 73, `grew: false`** — nothing durable was written, measured on the file |
+| the served share | `serveYield` 50 renders / 6 repairs / 4 breaks / 40 inert = **80.0%** — and not about the sentences |
+| the delta | **+5.00 pp**, p = 0.727, [−7.5, +17.5], minimum detectable **19.81 pp** → UNRESOLVED, as registered |
+| the price | memory **3,099,936** prompt tokens vs control **3,246,017** — *less*, which is the refusals in the bill |
+
+**The refusal rate is a second instrument saying what R200 said.** The summariser was shown the same block the block
+arm injects, and told `NONE` was an acceptable answer. It declined on **34 of 40** episodes — 85.0%. R200 measured the
+inert share from outcomes at **78.7%** over 291 served packs; this fold's own census says **80.0%**. A model reading
+the records and an outcome counter watching the episodes agree within 6 pp, which is the first time this record has
+had two independent measurements of the same quantity. The published 59.9% is not contradicted by this; the two are
+about different *material* — Anti-Persistence summarises the failing trajectories of the task at hand, this arm
+summarises retrieved records from other tasks.
+
+**The defect: on this arm the census describes the input.** `serveYield.renders` counts the packs the *facade* served,
+and the agent read a sentence. An episode whose call answered `NONE` carried nothing while its block still counted as
+rendered, so 34 of 40 episodes were booked as inert packs — the 80.0% is a statement about packs nobody read. The
+ledger's gate covered `failures > 0` and this fold had `failures: 0` with 34 refusals: a refusal injects nothing
+exactly as a failure does, and only the actor differs. `V1-pack-not-empty` has the same shape one layer up — it
+reported "1.25 rules/question, 40 of 40 requests carried an item" for a fold in which the agent read something on six.
+
+**What was fixed on the evidence, in the same round.** The ledger's transient gate now refuses refusals as well as
+failures (`34 of 40 guidance call(s) answered NONE, so the rendered count is not the injected one`); the readback
+compares the call count to the **episode** count rather than to `renders` — the first draft would have called this
+healthy fold a per-turn plant, 40 calls against 50 renders — and it returns `NO_MEASUREMENT` for the share with the
+two answerable readings printed above it; and a negative token premium is reported as a failed prediction rather than
+as a saving, because no pack-serving arm undercuts its control.
+
+**What the body costs when it exists.** 89,951 summariser prompt characters over 40 episodes, ≈**562 tokens an
+episode** against R198's **3,299.6** for the block — 5.9× cheaper, at 15% coverage. That is the number the price column
+was missing, and it is a *lower bound* on the arm's cost rather than a saving: the arm was cheap because it mostly
+declined.
+
+**Why the fold is not in the pool.** The gate refuses it, correctly, so committing it to `eval/results/` would leave
+`pnpm check` red. The artefact stays with the run and the six numbers are recorded here. The fix is an instrument, not
+a threshold: the agent has to report per request whether a body was injected, and the driver has to join that flag to
+the ledger — **R205**, and it needs a re-run because the flag is not in this artefact.
+
+**Delivery.** `pnpm check` green: 301 files, **6,259 tests**, coverage **100 / 99.91 / 100 / 100**; readback at 14
+self-test cases, ledger at 49. Both fixes are tests first: `pack-ledgers.test.ts` gains the refusal fold verbatim from
+this run (`calls: 40, sentences: 6, refusals: 34, failures: 0`), the readback gains the same fold as a fixture.

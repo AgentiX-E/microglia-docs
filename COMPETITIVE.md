@@ -5219,6 +5219,16 @@ a single variable.
 **The one-sentence summary of all four.** Retrieval quality is not the binding constraint; whether the
 retrieved thing is *still true here*, and whether it is allowed to *persist* after it has been used, are.
 
+**What this lane's own Anti-Persistence arm measured, and why it does not contradict 59.9%.** R204's transient arm was
+dispatched once (run `45192820103`, 114 retail tasks): the summariser was shown the same block the block arm injects
+and allowed to answer `NONE` when the records do not bear on the request. It answered `NONE` on **34 of 40** episodes.
+That single number is the table's first row read from the other side — the published arm summarises the **failing
+trajectories of the task at hand**, while this one summarises **retrieved records from other tasks**, and on a
+single-shot retail harness with 73 correction records the second material is mostly irrelevant. The refusal rate is
+also the outcome counter's number: R200's inert share is **78.7%** over 291 packs and this fold's census is **80.0%**,
+so a model's applicability judgement and an episode-level counter agree within 6 pp. The mechanism is not in dispute;
+the material is, and *More Memory, Worse Agents* never had to state which of the two its 59.9% came from.
+
 ### W.2 This lane's own nulls, re-read through those mechanisms
 
 | this record's finding | the mechanism it is consistent with | what was never varied |

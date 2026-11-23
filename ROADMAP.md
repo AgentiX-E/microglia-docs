@@ -9229,7 +9229,7 @@ more than half the packs are withheld. The **net delta turns positive only by tu
 — *a withheld trial reverts to the control's verdict* — which is the model the lane has scored against since R123.
 Deferred until the bill makes the trade decidable, i.e. until R198's step 2 lands.
 
-## R204 (built this round, not bought) — transient guidance: write nothing durable, and say something task-specific
+## R204 (bought 23 Nov, ¥3.4) — transient guidance: write nothing durable, and say something task-specific
 
 **Question.** The largest published effect in the memory literature says the durable artefact is the defect:
 *More Memory, Worse Agents* (Indiana / Tencent HY, 19 Oct 2026) measured stored lessons at **49.0%**, raw logs at
@@ -9309,6 +9309,33 @@ is a finding, and a lane that fails its own reading is not a broken lane.
 Two absences are `NO_MEASUREMENT` rather than `DISCARDED`, and one of them is why: `cross-fit.ts` omits a field no arm
 states, so a pair written before `serveBody` existed is unmeasured, not a mis-dispatched run — checked against
 `eval/results/poc-l4-pair-official.json`, which prints `serveBody absent: written before R204` and exits 1.
+**Result (run 45192820103, 23 Nov, ¥3.4).** Two arms, 114 tasks, 74/40, one trial.
+
+| reading | the fold | verdict |
+|---|---|---|
+| the call | 40 calls, **6 sentences**, **34 refusals**, 0 failures, one per evaluated episode | held |
+| the store | **73 → 73**, `grew: false` | held |
+| the share | `serveYield` 50/6/4/40 = 80.0%, over a population that is not the injected one | **unquotable** |
+| the delta | +5.00 pp, p = 0.727, [−7.5, +17.5] against 19.81 pp detectable | UNRESOLVED, as registered |
+| the price | 3,099,936 vs the control's 3,246,017 prompt tokens | negative — the refusals in the bill |
+
+**The number that came out is the refusal rate, and it is a replication.** The summariser, shown the same block the
+block arm injects and allowed to answer `NONE`, declined on **34 of 40** episodes. R200's outcome-based inert share is
+**78.7%** over 291 packs and this fold's own census is **80.0%**: a model reading the records and a counter watching the
+episodes agree within 6 pp. The published **59.9%** is not contradicted — it summarises the failing trajectories of
+the task at hand, and this arm summarises retrieved records from other tasks, which on 73 correction records are
+mostly irrelevant to the next request.
+
+**The instrument defect the run exposed, fixed in the same round.** `serveYield.renders` is the facade's count and the
+agent read a sentence, so a refused episode was booked as an inert pack; the ledger gate covered `failures > 0` and
+this fold had `failures: 0` with 34 refusals. The gate now refuses refusals too, the readback takes its denominator
+from the **episodes** and returns `NO_MEASUREMENT` for a share it cannot attribute, and a negative premium is graded as
+a failed prediction rather than a saving.
+
+**Not in the pool, and why.** The gate refuses this fold, so committing it to `eval/results/` would leave `pnpm check`
+red. The six numbers are recorded here and in PROGRESS 247. **R205** is the instrument fix — the agent reports per
+request whether a body was injected, the driver joins it to the ledger — and it needs a re-run, because the flag is
+not in this artefact.
 
 ## R202 (built this round) — the serving policy is a field, including when it is `none`
 
