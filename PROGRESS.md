@@ -26890,3 +26890,55 @@ The gate is in `pnpm check` (`pnpm eval:rung-dose --check`). Round cost **¥0.00
 sweep's counterfactual — *a withheld trial reverts to the control's verdict* — which is the model the lane has
 scored against since R123. It is deferred until R198's bill makes the trade decidable, because the only open question
 now is whether 12.7% of the injection bill is worth 18% of the repairs, and that is a price, not a threshold.
+
+### 243 — R198 read back: the price column is filled, and it refutes the number the registration wrote for itself (12:20 UTC)
+
+**The column exists.** R200 printed five folds `unpriced` with the reason, because every one predated R198's reader.
+The fold dispatched at 11:03 UTC is the first with a bill on both arms, and the ledger now reads:
+
+```text
+eval/results/poc-l4-pair-r198.json inert price: 3299.6 injected prompt tokens an episode, of which 2722.1 bought nothing
+```
+
+| reading | value |
+|---|---|
+| memory arm `pass^4` | **0.85** (34/40 episodes) |
+| reference arm `pass^4` | **0.825** (33/40) |
+| paired delta | **+2.50 pp** [−10.00, +15.00], p = 1.0000, UNRESOLVED at n=40 (18.53 pp minimum detectable) |
+| repairs / breaks | 4 repaired, 3 broke, 1 unresolved |
+| inert share | **82.5%** (33 of 40 served packs changed nothing) |
+| bill, both arms | **census**: 666 vs 653 calls, 3,162,246 vs 3,030,263 prompt tokens, 280,974 vs 275,969 uncached |
+| injected premium | **3,299.6 prompt tokens an episode**, of which **2,722.1** bought nothing |
+| money | learn $0.1969 + eval $0.0944 + $0.0931 = **$0.384 ≈ ¥2.75**, inside the registered ¥2–3 |
+| cost per repair | **32,996 injected tokens**, 131,984 over four repairs |
+
+**The registration's second prediction is refuted, and the refutation is the finding.** It said the memory arm's
+injected prompt tokens would land **between 100 and 900 an episode**, on the reasoning that a pack is one item inside
+a 2,400-character budget and the measured packs are 551–788 characters. The measured premium is **3,299.6** — 3.7×
+the top of that band, and 16× the pack. The reason is written in the driver and was never in the registration: the
+agent appends the pack as a second system message and **reuses it on every later turn of the episode**, so the price
+of a pack is its size **× the turns it rides**, plus the scaffold's own prompt, not its size once. R135 had already
+measured the mechanism from the other side (559 tokens of system growth per call against a 725-character pack) and
+under-read it as "carriage or unnamed material"; this fold prices it: 3,299.6 ÷ 11.2 turns an episode ≈ 295 tokens a
+turn, against a 197-token pack.
+
+**What that does to the cost axis.** Every competitor row reports delivery, i.e. tokens served. This lane can now
+report the two numbers that make delivery interpretable: **3,299.6 tokens an episode bought a pack that was inert
+82.5% of the time**, and the four repairs it did buy cost **33k tokens each**. A system that serves the same 3,300
+tokens and repairs twice as often is measurably better on this axis, and until this fold no row in this record could
+be asked the question.
+
+**The corpus, after six folds.** 291 served packs, **78.7% [73.6, 83.0]** inert, pooled delta **−3.44 pp**, and the
+target restated: **11 of 36 breaks (31%) must be prevented** before the pool stops being negative. Pooled by key, the
+new fold joins R152c's (`fair-share`, 2 folds, 80 served, 77.5%, **−2.50 pp**) — the mixture R200 corrected is now
+one treatment with two independent draws in it, and both are negative.
+
+**And the gate's curve, re-read at six folds.** Rung 0.01 still qualifies first (22 of 26 repairs kept, 6 of 36
+breaks prevented) with selectivity **+1.3pp** — no longer exactly proportional, because the new fold's three breaks
+are harder to withhold than its four repairs are to keep — but the middle band is still negative (−6.8pp at 0.05) and
+the net only reaches zero at rung 0.30, where 74% of packs are withheld. R201's verdict stands: a dose, not a gate.
+
+**Acceptance.** The run is green and the fold is committed as `eval/results/poc-l4-pair-r198.json` (the plain
+`poc-l4-pair.json` is the pre-R152 fold and is not overwritten). Both derived records regenerated —
+`pack-ledgers.json` now carries six folds and one priced column, `rung-dose.json` six ladders — and
+`pnpm check` holds both. Round cost **¥2.75**, against ¥2–3 registered.
