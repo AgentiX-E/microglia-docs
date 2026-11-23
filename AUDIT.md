@@ -16080,3 +16080,33 @@ three different runs. (2) If the registration says a reading would refute the ar
 a FAIL line under a `GRADED` verdict is a pass with a caveat, and no reader has ever acted on a caveat. (3) Prove the
 absent-field path against a real pre-change artefact rather than a fixture: the fixture is written by the same hand
 that wrote the state machine, and it will not disagree with it.
+
+### 34.206 A structural copy of an unpublished package is a promise with one witness, and that witness was a cron job
+
+**What happened.** Cortex's `createMemory` began emitting a `reads` field. Microglia's adapter re-declares cortex's
+`MemoryValue` instead of importing it — `@agentix-e/cortex-core` is not on npm — so the copy went on describing twelve
+fields while the substrate moved to thirteen. `ci` stayed green for as long as the change had been upstream, because
+there is no compiler on the other side of a promise to a package that cannot be installed. The `cortex` lane, which
+clones and builds the real package, was red on the next cron.
+
+**Why the copy exists at all, and why that does not make it safe.** A structural copy is the honest response to an
+unpublished dependency: it is checkable at the call site and it cannot drift behind a version range that does not
+exist. But "cannot drift behind a version range" is not "cannot drift" — it drifts *silently*, in the one direction
+nothing local observes, and it does so while every local gate reports success. The lane was written for exactly this
+and had never fired; the first time it fired it was found by a *dispatch guard* that refuses to buy on a red tree,
+not by anyone reading the lane.
+
+**The near-miss fix.** `reads` defaults to `0` in the factory, so `reads: 0` in the projection would have made the
+lane green in one line. It would also have been wrong: the field is cortex's retention tie-break — how many windows
+have quoted an entry — and microglia already counts that event as `applied` ("runs in which this item was retrieved
+and injected"). A projection that reset the count would hand the substrate a store where every entry looked equally
+used, and the FSRS review schedule built on that rank would answer a question nobody asked. The conformance script now
+passes the same `reads` into `createMemory` so the comparison is between two factories over one input, rather than
+between one factory and one default — the earlier shape would have passed a projection that dropped the value.
+
+**The rule this leaves.** (1) A promise to an uninstallable package needs a witness that lives outside the repository,
+and the repository must not treat that witness as optional: it ran on a schedule, and a schedule is a lane that fails
+when nobody is looking. (2) Whatever that witness can check, the local tree must check a *pin* of — the field set
+written down as a list, so a change on this side is refused here rather than discovered there. (3) When a copy drifts,
+ask what the new field *means on this side* before asking what it means to the compiler: the cheapest fix (`0`) was
+available and would have replaced a loud failure with a quiet, plausible one.

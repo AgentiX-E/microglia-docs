@@ -27043,3 +27043,40 @@ called as a function is a verifier whose CLI has never run.
 
 **Status: built, still not bought. Price ≈ ¥3–4.** The verifier is what makes the dispatch's artefact gradeable
 without a judgement call afterwards; the arm is the next thing this record spends on.
+
+### 246 — The scheduled lane caught what the local gate structurally could not: cortex added a field, and the adapter's copy did not (22:20 +0800)
+
+The tree was green, the readback was in the gate, and the R204 dispatch was ready to send at 13:56 UTC. It was
+refused — by a guard that will not buy on a red tree — because the latest run on `master` was not `ci`. It was
+`cortex`, on a cron, red:
+
+> `key sets differ: adapter [confidence,content,createdAt,difficulty,id,lastAccessedAt,source,sourceTrust,stability,tags,type,value] vs cortex [+reads]`
+> `field reads: adapter undefined vs cortex number`
+
+**Why nothing local could have seen it.** The adapter re-declares cortex's `MemoryValue` instead of importing it,
+because `@agentix-e/cortex-core` is not on npm — the copy is a *promise to a package nobody can install*, so `ci` has
+no compiler on the other side of it and the adapter's own tests compare the copy to itself. The `cortex` lane clones
+cortex, builds it, and compares the projection against the real `createMemory`; it is the only witness this promise
+has. That is the trade the lane was built for, and this is the first time the trade paid.
+
+**The field, and the mapping decision rather than a default.** Cortex's `reads` is its retention tie-break — "how many
+windows have quoted this entry", defaulted to zero because "a read is an event that happens after the write".
+Microglia's `applied` is the same event counted here — "runs in which this item was retrieved and injected" — so the
+projection carries the count instead of the factory's zero. Resetting it would have been one word shorter and would
+have told the substrate that a rule used a hundred times had never been read; a review schedule built on that rank
+answers a different question than the one cortex documented. And it is not `value`: cortex's own note distinguishes
+them — value is estimated future utility on a stated `[0, 1]` scale, a use count is unbounded and observed.
+
+**The pin now has two halves, because one of them is structurally local and one is structurally remote.** The lane
+compares against the real package and passes the same `reads` into `createMemory`, so the two factories are compared
+on a value rather than on a type. Locally, two tests hold what a machine here can hold: one asserts the count is
+carried, one pins the projection's **thirteen** field names — so a field added on this side without a decision fails
+in `ci`, and a field added upstream arrives as a named difference in the lane rather than as a surprise in a schedule.
+
+**Verified, not assumed.** `cortex` re-run on `23768e61` — **success**, `cortex conformance: ok (13 fields matched)`;
+`ci` on the same commit — **success**, 301 files, **6,259 tests**, coverage **100 / 99.91 / 100 / 100**. The README
+layer table moved with the change (node 1,294 → 1,308 lines), which is the readme-layers test doing its job.
+
+**The guard that refused the dispatch was right, and it cost nothing to obey.** An hour earlier it would have bought
+a run on a tree with a red lane; instead the arm waited 24 minutes, and the ¥3–4 was spent on a tree whose adapter and
+whose substrate agree. **R204 was then dispatched: run 45192820103, two arms, 130-minute deadline.**
