@@ -26837,6 +26837,8 @@ Every committed pair artefact already carries `serveSweep`: a ladder pricing **e
 The registered margins are three rows of a table that had been bought five times. `packages/eval/src/rung-dose.ts`
 reads it and `pnpm eval:rung-dose --check` gates it. **Cost ¥0.00.**
 
+![R201: the dose, and the selection the acceptance predicate cannot see](figures/rung-dose-201.png)
+
 **The corpus, over 251 trials, 22 repairs and 33 breaks at rung 0.**
 
 | rung | served | withheld | kept | broke | prevented | inert·served | selectivity | net |
