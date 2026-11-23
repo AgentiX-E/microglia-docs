@@ -26958,7 +26958,7 @@ R204 is that arm, and this round built it without buying anything (**¥0.00**).
 | `serveBody: guidance` in the header, `body=` on the wire, `TAU_SERVE_BODY` in the workflow | resolved at module load; a spelling no body implements throws before the first call |
 | `MICROGLIA_GUIDANCE=1` in the agent's environment, and no other phase's | one litellm completion per served episode, **inside the agent**, so it lands in the arm's own `usage.calls` |
 | the sentence is the pack, the block is its input | `guidance.sentences` / `refusals` (`NONE`) / `failures` counted apart |
-| `storeGrowth: { before, after, grew }` on both arms | the store counted on both sides of the phase: "nothing durable" is a measurement of a file |
+| `storeGrowth: { before, after, grew }` in the arm's own document | the store counted on both sides of the phase: "nothing durable" is a measurement of a file. The control opens no store, so the pair publishes `null` for it |
 | `serveBody` in `Treatment`, total at the producer | a sentence fold cannot pool with a block fold; committed keys do not move |
 | `pack-ledgers` refuses a transient fold with failed calls | `serveYield.renders` is the facade's count, and on this arm it is not the injected one |
 
@@ -26993,3 +26993,53 @@ Python self-check.
 **Price of the dispatch: ≈ ¥3–4**, and the arm is expected to come in *cheaper* than R198's 3,299.6 injected tokens an
 episode — the block is paid once as the summariser's input instead of riding 11.2 turns as context. Not bought yet:
 the next dispatch buys it.
+
+### 245 — R204's readback exists before the run: seven refutations written down, and two absences that nearly became verdicts (21:43 +0800)
+
+The registration ordered three readings and priced the rest as by-products. A verifier that grades them is now in the
+gate — `eval/verifiers/r204_readback.py`, in `pnpm eval:verifiers`, **13 self-test cases**, **¥0.00** — and it was
+written before the dispatch for the reason the registration exists at all: a shape chosen after the number is a shape
+chosen by the number.
+
+| reading | what it is asked | the number it is asked against |
+| --- | --- | --- |
+| the call | one guidance call per served episode; `calls == sentences + refusals + failures`; 60–100% of served episodes get a sentence | the arm's own census, beside `serveYield.renders` |
+| the store | `before == after`, and `grew is false` | the file, counted on both sides of the memory arm's phase |
+| the body | `failures == 0` — a failed call injects nothing, so a fold with failures cannot quote its served share | its own census |
+| the share (by-product) | inert against the six-fold pool | 78.7% ± 10 pp, R200's 291 packs |
+| the price (by-product) | injected tokens an episode | 3,299.6, R198's block arm |
+| the delta (by-product) | quoted beside the resolution, not against it | ±11 pp at 40 held-out tasks |
+
+**Seven refutations, each naming what it would mean.** The halves are not 74/40, so the pair is no longer comparable
+to the folds before it. A provider failure. The summariser ran a different number of times than there were served
+episodes — a per-turn plant is not the registered one-call-per-pack body. The pack was withheld on every request,
+which makes the reading about the prompt rather than the mechanism. The store grew, which makes this a lesson arm with
+a step in front of it. The inert share moved up more than 10 pp, which would say the published 59.9% does not transfer
+to a single-shot retail harness. The bill met or exceeded the block arm's, which would mean the arm paid for both
+bodies. `GRADED` and `ABANDONED` both exit 0: a refuted arm is a graded statement, and a lane that fails its own
+reading is not a lane whose job broke.
+
+**Two absences that would have been reported as verdicts.** The first draft graded `treatment.unit` by inequality, so a
+pair whose arms state no store came back `DISCARDED` — "another arm" — for a run that never happened. `cross-fit.ts`'s
+`agreement()` deliberately omits a field that no arm states (a control arm serves no pack and distils nothing), so
+absence is the *normal* shape of some committed artefacts and the honest state is `NO_MEASUREMENT`. Proven rather than
+assumed: run against `eval/results/poc-l4-pair-official.json`, the verifier prints `serveBody absent: written before
+R204` and `NO_MEASUREMENT`, exit 1, no traceback. Collapsing a missing field into a mis-dispatched run is the same
+error as reading a withheld pack as a mechanism effect, one layer up.
+
+**The self-test caught the second, and it was the interesting one.** "A call per turn" was a prediction only, and the
+case came back `GRADED` while printing three FAIL lines — a plant that changes the mechanism, graded as a reading about
+the body. The prediction had been written correctly; the state had not. A verdict that prints FAIL and returns GRADED
+is a verdict that has to be re-derived by every reader, which is the same failure the round's ledger refusal exists to
+prevent. It is a refutation now, and the refutation is guarded on `renders` being a count so that a file which omits
+the denominator is still unmeasured rather than abandoned.
+
+**Why the fixture is the driver's own shape.** `_pair()` mirrors `l4-pair.ts` field by field —
+`first/second.promptTokens`, `comparison.paired`/`deltaPp`, `foldSplit.learned`/`evaluated`,
+`serveYield.renders`/`inert`, `transient.guidance.{calls,sentences,refusals,failures}` and
+`transient.store.memory.{before,after,grew}` — so the thirteen cases grade the keys the driver writes rather than keys
+invented for the test. The JSON path is exercised separately, on a file on disk, because a verifier that is only ever
+called as a function is a verifier whose CLI has never run.
+
+**Status: built, still not bought. Price ≈ ¥3–4.** The verifier is what makes the dispatch's artefact gradeable
+without a judgement call afterwards; the arm is the next thing this record spends on.

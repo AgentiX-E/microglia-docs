@@ -11405,9 +11405,10 @@ was unavailable — and the artefact would then contain two treatments whose mix
 cost is a handful of episodes with no memory, which is visible as `failures` and honest.
 
 **The arm's central claim is about a file, so the file is counted.** `storeGrowth: { before, after, grew }` is taken
-in the driver on both sides of the evaluation phase and recorded on both arms. It is the only way "nothing durable was
-written" can be a measurement rather than a claim about code, and it costs one query against the in-process store the
-facade already serves from.
+in the driver on both sides of the evaluation phase and recorded in the arm's own document. It is the only way
+"nothing durable was written" can be a measurement rather than a claim about code, and it costs one query against the
+in-process store the facade already serves from. The control arm has no such field because it returns before the store
+exists — its silence is the absence of a file rather than a count of zero, and the pair prints `null`.
 
 **Two traps this round had to disarm, both found by reading rather than by running.**
 

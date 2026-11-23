@@ -9271,7 +9271,7 @@ single model call: 6,257 tests over 301 files, coverage 100 / 99.91 / 100 / 100,
 | the header and the wire | `prereg.ts` (`serveBody`), `prereg-form.ts` (`body=`), `sota.yml` (`TAU_SERVE_BODY`) | the registration names the body; a dispatch cannot run the other one under its name |
 | the call | `eval/drivers/tau2/microglia_agent.py` | one litellm completion per served episode, inside the agent, so it lands in the arm's own `usage.calls` |
 | the treatment field | `cross-fit.ts` (`serveBody`, total), `pack-ledgers.ts` (key order), `l4-pair.ts` (`transient`) | a sentence fold cannot pool with a block fold, and the pair publishes the three readings |
-| the no-write gate | `tau2-driver.ts` (`storeGrowth`), `tau2-instrument.ts` (`Tau2Raw` + `PROJECTION`) | the store is counted on both sides of the phase, on both arms |
+| the no-write gate | `tau2-driver.ts` (`storeGrowth`), `tau2-instrument.ts` (`Tau2Raw` + `PROJECTION`) | the store is counted on both sides of the memory arm's phase; the control opens none, so the pair publishes `null` for it |
 | the ledger refusal | `pack-ledgers.ts` | a transient fold whose guidance calls failed is refused rather than read as inert |
 
 Three outcomes are counted apart because a language model says nothing in three ways: `sentences` (served),
@@ -9292,6 +9292,23 @@ every episode as context, so R198's 3,299.6 injected tokens an episode is the nu
 — at a 96-token sentence over 11.2 turns the context term falls from ≈3,300 to ≈1,100 against a one-off ≈2,500-token
 summariser call. A bill that rises means the arm paid for both bodies.
 
+**Readback (¥0.00, written before the run).** `eval/verifiers/r204_readback.py` grades the three registered readings
+and quotes the by-products, in the gate (`pnpm eval:verifiers`, 13 self-test cases). Seven refutations, each stated as
+what it would mean rather than as a threshold: the halves are not 74/40, a provider failure, a call count that is not
+the served count, a pack withheld on every request, a store that grew, an inert share more than 10 pp above R200's
+78.7% pool, or a bill that meets R198's 3,299.6 tokens an episode. `GRADED` and `ABANDONED` both exit 0 — a refuted arm
+is a finding, and a lane that fails its own reading is not a broken lane.
+
+| the reading | the number it is asked against |
+|---|---|
+| one call per served episode, and `calls == sentences + refusals + failures` | the arm's census, beside `serveYield.renders` |
+| 60–100% of served episodes got a sentence | the census, against the registration's own prediction |
+| `before == after` and `grew is false` | the store file, counted on both sides of the phase |
+| inert share, delta, price | 78.7% ± 10 pp, ±11 pp, 3,299.6 tokens — all quoted, none chosen after the artefact |
+
+Two absences are `NO_MEASUREMENT` rather than `DISCARDED`, and one of them is why: `cross-fit.ts` omits a field no arm
+states, so a pair written before `serveBody` existed is unmeasured, not a mis-dispatched run — checked against
+`eval/results/poc-l4-pair-official.json`, which prints `serveBody absent: written before R204` and exits 1.
 
 ## R202 (built this round) — the serving policy is a field, including when it is `none`
 

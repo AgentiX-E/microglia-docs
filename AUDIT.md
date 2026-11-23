@@ -16050,3 +16050,33 @@ construction — a switch inherited from a neighbouring registration is a switch
 compare them; the defect lives in the difference. (2) A treatment that changes the *object* of a count changes which
 events are in it — check every counter whose denominator was the old object. (3) A switch copied from the registration
 next door is a hypothesis about this one's unit, and the unit is what makes it true or false.
+
+### 34.205 The state machine had three answers and the artefact had a fourth, and a failed prediction was reading as a pass
+
+**What happened.** R204's readback was written before the dispatch, which is the discipline; its state machine was not.
+Two of its exits were wrong in opposite directions. A pair whose `treatment.unit` was *absent* came back `DISCARDED` —
+the state that means "this is another arm" — because the field was graded by inequality, and `None != 'raw'`. And a
+planted arm that called the summariser once per *turn* rather than once per *episode* came back `GRADED` with three
+lines reading `FAIL`, because that reading had been written as a prediction instead of a refutation.
+
+**Why absence is not disagreement.** `cross-fit.ts`'s `agreement()` returns `value: undefined` when no arm states a
+field, and deliberately so: a control arm serves no pack, distils nothing, and has no unit, form, scope or knobs to
+report, so requiring every field twice would refuse the only pair shape the lane produces — the reason
+`poc-l4-pair-official.json` still reads `treatmentAbsent: "the arms do not both state unit: reference record none"`.
+A verifier that grades the pooled treatment therefore meets absence as a *normal* state, and reporting it as another
+arm invents a mis-dispatched run and hides the real one behind it. The same file, run against that committed artefact,
+now prints `serveBody absent: written before R204` and `NO_MEASUREMENT`.
+
+**Why a prediction is not a refutation.** The two lists in these reports render differently on purpose —
+`PASS`/`FAIL`/`n/a` against `FIRED`/`clear` — and only the second decides the state. Writing the call-count reading in
+the first list made the strongest available evidence of a wrong mechanism (a plant that is not the registered one)
+indistinguishable from a number that came out slightly off, and left the state saying the fold was gradeable. Every
+reading the registration names as a refutation has to be one: the alternative is a verdict that the reader has to
+re-derive from the lines above it, which is exactly the reading this record refuses to accept from other people.
+
+**The reusable rules.** (1) A grading state machine needs a state for "the field is not there", reachable *before* the
+inequality that would otherwise read absence as disagreement; absence, disagreement and failure are three facts about
+three different runs. (2) If the registration says a reading would refute the arm, it goes in the refutation list —
+a FAIL line under a `GRADED` verdict is a pass with a caveat, and no reader has ever acted on a caveat. (3) Prove the
+absent-field path against a real pre-change artefact rather than a fixture: the fixture is written by the same hand
+that wrote the state machine, and it will not disagree with it.
