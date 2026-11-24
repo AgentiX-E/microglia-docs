@@ -11738,3 +11738,30 @@ say other steps were fine. Mean verdict 439 characters, max 598 against a 600 ce
 `--from-reading` recomputes `P3` and its paired contrast from them, keeping `P0`–`P2` and `P4` as the calls produced
 them. A measure that changes should not cost a dispatch to test, and the ceiling of a measure should be checkable
 before anything is spent on it.
+
+### 17.176 The rescue rate: a conditional estimand, an exact interval, and a control inside the arm
+
+`eval/tools/rescue_rate.py` exists because `pass^k` cannot register a note (AUDIT 34.210). Four design decisions,
+each with the alternative it rejected:
+
+- **The estimand is a pair.** `P(pass at j+1 | fail at j)`, computed over adjacent scored attempts ordered by the
+  declared `trial` rather than by arrival. A census may be order-blind; a conditional rate may not, which is why
+  this is a second reader beside `note_bank.rows_of` rather than a call into it. Unscored attempts are dropped, so
+  the denominator is opportunities rather than attempts.
+- **The baseline is a committed document.** `eval/manifests/note-bank-baseline.json` holds R208's rewards with
+  `task_id`, `trial`, `seed`, the commit, the grid and the bill. The alternative — pointing the reader at the 32 MB
+  bank — would have made the baseline a file nobody carries, and a counterfactual that has to be re-derived from a
+  log is a counterfactual that gets estimated.
+- **The comparison is exact at n = 23.** Clopper-Pearson upper limits by bisection on the binomial tail, and
+  Fisher's exact test, both from `math.comb`. The alternative was a normal approximation, and the whole point of
+  buying twenty-three opportunities is to be able to say something at that size rather than to assume the
+  asymptotics arrived.
+- **The arm carries its own control.** No note exists before attempt 0, so the treatment's first attempts sample the
+  same process the bank sampled. `drift_of` compares the two counts on the shared tasks and a gap over four tasks
+  (`DRIFT`, exit 3) voids the comparison. This is what lets one arm stand in for two: the assumption is measured in
+  the run instead of asserted across runs.
+
+The state machine is the registration in code: `RESCUED` needs the registered 25 points **and** `p < 0.05`;
+`NO_LIFT` is awarded only when the upper limit sits below baseline + 25, so an underpowered run cannot be quoted as
+a refutation; `INCONCLUSIVE` is the honest middle; `NO_MEASUREMENT` (< 12 opportunities) and `DRIFT` have their own
+exit codes because both mean no reading exists rather than a reading of zero.

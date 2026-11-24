@@ -16497,3 +16497,27 @@ alone, against 1 the other way, **McNemar p = 0.0005**. A bar that a material ca
 measure computed over a *shared vocabulary* has a ceiling that shrinks as the population grows, and nobody computes
 it because the first small sample looked fine. The repair that generalises is `--from-reading`: a measure can now
 be recomputed from a kept artefact, so its ceiling can be checked before a dispatch is bought.
+
+### 34.210 A fold was costed at ¥12.5 for an endpoint that could not move
+
+**What was about to be bought.** Fifty failing tasks × two arms × four rounds = 400 episodes, ¥12.5, to measure
+`pass^k` lift from carrying a note between attempts.
+
+**Why it could not have worked.** `pass^k` is "all k attempts passed". A note is written only after a failed attempt
+and only between rounds (`run_split.py:1290`). A task that receives a note has therefore already failed attempt 0 —
+its `pass^k` is zero regardless of the note's quality — and a task that passes attempt 0 never has a note, so it
+evolves exactly as its control. The treatment's `pass^k` equals the control's in expectation.
+
+**The class.** This is the fourth measure in this lane whose ceiling was not checked before it was used: `N0b` fired
+three refutations on a population of zero, `P0` graded 82 truncations as refusals, `P3`'s exclusive vocabulary
+capped at 9.4%. The general form is sharper than "check the ceiling": an endpoint must be shown **reachable by the
+intervention** before it is costed. A measure can be well-defined, correctly computed, and still unable to register
+the treatment — and that failure looks exactly like a null result, which is why it survives review.
+
+**The check that generalises.** For every registered endpoint, name the smallest change the intervention could
+produce in it. Here the answer was "none": the note cannot appear before the attempt that must pass. The replacement
+estimand conditions on the failure the note needs — `P(pass at j+1 | fail at j)` — which is reachable by
+construction, has a paid counterfactual (65.2%, 15 of 23), and costs a quarter as much.
+
+**Class.** Measurement design. The defect was not in the code but in the pairing of an instrument with a claim, and
+the audit that catches it is one question per endpoint: *what would this number do if the intervention worked?*

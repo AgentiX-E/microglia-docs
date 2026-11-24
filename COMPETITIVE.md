@@ -9876,10 +9876,17 @@ and the only way to check one's own is to report the yield, the bill and the tru
 
 ![yield](figures/r210-yield.png)
 
+**The fold was cancelled before it was dispatched, and the replacement costs a quarter.** `pass^k` cannot register
+a note: the note needs a failure to be written from, and a task with a failure has already lost the all-attempts
+race. R211 measures the transition a note can actually act on, against the rate an unwritten attempt already
+achieves — **15 of 23, 65.2%** — for ¥3.1 instead of ¥12.5. No competitor publishes either number, so this is the
+lane's own instrument rather than a comparison; it is recorded here because a cost-per-decision of ¥3 is the number
+that decides whether a mechanism can be iterated at all.
+
 **Questions left open.**
 
-- The fold (10:01 UTC, 400 episodes, ¥17) is the first `pass^k` lift this lane can quote. Until it lands, the note
-  lane has no accuracy claim at all — only a yield and a specificity.
+- The rescue rate (dispatched 11:07 UTC, 100 episodes, ¥3.1) is the first behavioural reading of the material.
+  Until it lands, the note lane has no accuracy claim at all — only a yield and a specificity.
 - No competitor publishes a per-note cost or a note yield, so the 98% figure has no counterpart to be compared
   with; it is reported because a lift without a yield is unreadable.
 - `P3`'s amended bar is missed (44.7% vs 50%). Whether that matters depends on the fold: a note that names the

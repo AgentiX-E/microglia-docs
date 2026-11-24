@@ -27588,3 +27588,68 @@ because nothing had been written — and it is the first `pass^k` lift this lane
 **Cost of the round.** Bank $2.0103 (¥14.5) + three ablations $0.126 (¥0.9) = **¥15.4**. Instrument coverage 96.8%
 over six files (`notes` 96.0, `note_pilot` 97.0, `r206_readback` 96.3, `opening_stability` 98.1, `note_bank` 96.3,
 `note_material_ablation` 98.4), `--expect-files 6`, 189 + 141 + 52 + 35 + 37 + 96 self-check cases.
+
+## 241. The fold's endpoint could not move, and the arm that replaces it costs ¥3.1 instead of ¥12.5 (11:10 UTC)
+
+R210 ended with a dispatch armed: 50 failing tasks × 2 arms × 4 rounds = 400 episodes, ¥12.5, headline `pass^k`
+lift. The question that stopped it — "does this really cost ¥17, and is there a cheaper way" — produced a finding
+rather than a discount. The ¥17 was a 36% margin over a measured ¥12.5, and the ¥12.5 was buying a null that the
+endpoint guarantees.
+
+### 241.1 The endpoint is blind, and the proof is two lines of the driver
+
+`pass^k` is "every one of the k attempts passed" (`r206_readback.py:109`). A note is written only after a **failed**
+attempt, and the driver writes notes only between rounds (`run_split.py:1290`, `if summarize is not None and index +
+1 < rounds`). Compose the two:
+
+- a task that ever receives a note has already failed attempt 0, so its `pass^k` is zero whatever the note says;
+- a task that passes attempt 0 never has a note — the file is empty when attempt 1 opens — and evolves exactly as
+  its control does.
+
+So the treatment's `pass^k` equals the control's **in expectation**, for a perfect summariser and a useless one
+alike. Four hundred episodes would have produced `delta ≈ 0 pp` and the lane would have recorded it as evidence
+about the material. This is the fourth measure in this lane whose ceiling was never checked before it was used,
+after `N0b` (three refutations on a population of zero), `P0` (82 refusals that were truncations) and `P3`'s
+exclusive vocabulary (a 9.4% ceiling).
+
+### 241.2 The counterfactual was already paid for
+
+The mechanism lives one transition down, and its baseline is inside R208's bank:
+
+| reading | value |
+|---|---|
+| the fifty tasks, attempt 0 fails | 23 of 50 (27 pass and are not opportunities) |
+| of those 23, attempt 1 passes | **15 (65.2%)** |
+| every failing transition, 114 tasks | 39 of 63 (61.9%) |
+
+**An attempt that follows a failed attempt passes nearly two times in three with nothing carried.** Every claim this
+lane makes from here is against 65.2%. The baseline is committed as `eval/manifests/note-bank-baseline.json` —
+`task_id`, `trial`, `seed`, `reward` with the commit, the grid and the bill — 40 KB of the 32 MB document, so the
+counterfactual is read rather than re-derived.
+
+### 241.3 The arm, and why one arm is enough
+
+Fifty failing tasks, two rounds, one arm: 100 episodes, **$0.44 ≈ ¥3.1**, ~13 minutes at concurrency 3.
+
+Round 0 is the arm's own control. No note exists before it, so its pass count samples the same process the bank
+sampled — 27 of 50 — and comparing the two is a drift check that costs nothing. That is what makes one arm
+defensible instead of two: the assumption is measured inside the run rather than asserted across two runs. A
+disagreement of more than four tasks is `DRIFT`, a void comparison, not a wider interval.
+
+`eval/tools/rescue_rate.py` states five outcomes: `RESCUED` (`+25 pp` and exact `p < 0.05`), `NO_LIFT` (the arm's
+Clopper-Pearson upper limit below baseline + 25, so an underpowered run cannot be reported as a refutation),
+`INCONCLUSIVE`, `NO_MEASUREMENT` (< 12 opportunities, exit 2) and `DRIFT` (exit 3). 52 self-check cases, 99.7% line
+and branch coverage, one file, `--expect-files 1`.
+
+### 241.4 What is running, and the two branches
+
+`note-rescue` dispatched at **11:07:42 UTC** (run 45381286788), off-peak until 01:00 UTC. First real reading of a
+rescue rate: `15/23` is the bar, 23 opportunities expected.
+
+- **If `RESCUED`**: four rounds and the second domain (airline), ~¥9, and the material becomes a product default.
+- **If `NO_LIFT`**: a 25-point lift is excluded at this n, the sentence is not the problem, and the next spend is
+  EDV's verify-then-admit — a note validated against the verdict before it is served — which is offline-measurable
+  on the 85 stored failures for ≈¥0.5.
+
+**Cost of the round.** Bank $2.0103 (¥14.5) + four ablations $0.18 (¥1.3) = ¥15.8 to date, plus ¥3.1 for this
+dispatch. Instrument: `rescue_rate` 99.7%, the note lane's six files unchanged at 96.8%.

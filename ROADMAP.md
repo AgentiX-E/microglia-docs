@@ -9561,3 +9561,18 @@ registered 50% bar is still missed, so `P3` stays refuted — but the effect is 
 **Next: the fold, dispatched for 10:01:30 UTC.** The bank's 50 failing tasks × 2 arms × 4 rounds = 400 episodes at
 `concurrency 3`, ≈ $2.4 (¥17), ≈ 70 minutes. It is the first run in which the sidecar is exercised on notes that
 exist, and the first `pass^k` lift this lane can quote if there is one.
+
+**R211 replaced the fold, and the replacement is the roadmap's next gate.** The fold R210 armed — 400 episodes,
+¥12.5, `pass^k` lift — was withdrawn before dispatch: `pass^k` cannot move under a note, because reading one requires
+the failure that already forfeits it (AUDIT 34.210). R211 spends ¥3.1 to measure the transition a note can act on,
+against a baseline of **65.2%** that the bank had already bought.
+
+Two branches, decided by one number:
+
+- **`RESCUED`** (≥ +25 pp, exact p < 0.05): four rounds and the second domain, ≈ ¥9, and the served sentence becomes
+  a product default rather than an experiment.
+- **`NO_LIFT`** (the interval excludes +25 pp): the sentence is not the defect, and the lane stops tuning wording.
+  The next spend is EDV's verify-then-admit — a note validated against the evaluator's verdict before it is served —
+  which is measurable offline on the 85 stored failures for ≈ ¥0.5.
+- **`INCONCLUSIVE`**: one more dispatch at double the opportunities is the only honest next step, and its price is
+  known in advance (¥6.3).
