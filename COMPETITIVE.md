@@ -9792,3 +9792,49 @@ comparison possible, and the honest response is to record the absence rather tha
 tasks) is **not** on the ladder. Its interval is ±30 pp, which is the lane's own noise floor measured directly: the
 treatment served nothing at all, and the 33 pp difference is what two runs of one configuration produce at that
 sample. Plotting it beside 114-task rows would be a unit error wearing a chart's clothes.
+
+### R208's position: the memory competitors now publish a bill, and ours publishes nothing yet
+
+Read on 2026-11-24, the same day R207's pilot came back. Three things changed on the board side of this lane, and
+one of them changes the comparison that matters.
+
+**1. The learned-memory family is on the retail ladder with numbers.** These are the systems this project is
+actually competing with — they distil something from experience and serve it to the same stock agent, which is the
+note lane's mechanism with a bigger bank:
+
+| system | retail | metric | cost per reading | what it is |
+|---|---|---|---|---|
+| **EDV** (Execute–Distil–Verify, arXiv 2606.24428) | **88.6** | pass@1 | not published | offline experience bank, verify-then-admit, frozen at eval time |
+| **IBM learned guidelines** (τ² submission, Sep 2026) | **67.5** | pass^4 | **$0.1084** per conversation | guidelines learned from a retail train split the base split includes; no weight updates |
+| RB-MaTTS | 86.0 | pass@1 | not published | rule bank with test-time scaling in the same EDV table |
+| RAFT-30B-A3B | 61.4 | pass^4 | not published | fine-tuned on synthetic τ²-retail data |
+| stock `llm_agent`, frontier | 59.6 (Qwen3.5-397B) | pass^4 | not published | the board's own retail row, 84.4 pass^1 |
+| **microglia, note lane** | **no reading** | — | **$0.0019 / episode measured** | R207's grid failed once in forty-eight, so the arm was never exercised |
+
+**2. IBM's bill is the first competitor number this record can put on the cost axis.** $0.1084 a conversation for a
+67.5 pass^4 retail agent is 57× this lane's measured $0.0019 an episode — on a much stronger base model and with a
+train split overlapping the evaluation, both of which the submission states. The comparison that follows is not
+"cheaper is better"; it is that a *reading* at this lane's prices costs a fifth of one competitor episode, so the
+experiments that produce readings can be repeated where theirs cannot.
+
+**3. The board's metric moved away from the one this lane reports.** The public τ² page now headlines **pass^1**
+(87.9% mean over three domains for Qwen3.5-397B), while the submissions that state a bill state **pass^4**. The
+project site also records that v2.0 runs are not input-identical to v1.0.1 and that the assertion judge changed from
+GPT-4.1 to a GPT-5.4-mini, so 2.0 scores are not comparable with the 1.x ladder. This lane pins `v1.0.1` for exactly
+that reason, and R208's bank runs on it.
+
+**What this round buys, and what it refuses to claim.** The bank dispatched at 04:55 UTC is 40 held-out retail tasks
+at four trials, one control arm, **≈ $0.30** — the first `pass^4` this project will have on the split the ladder
+reports, and the population R208's material ablation needs. It is not a memory result: the note arm's own number
+stays absent until a grid with failures in it is run twice. What can be said today is narrower and still useful —
+the note lane's material is *free* (0.0295% of the arm's prompt tokens) and its per-episode price is two orders of
+magnitude under the only competitor that publishes one.
+
+**Questions this round leaves open, stated rather than implied.**
+
+- EDV's 88.6 retail pass@1 is a **pass@1** against IBM's **pass^4**; the two are not a ranking, and this record does
+  not put them in one column.
+- No competitor publishes the tokens a lesson costs to distil, which is the number this lane's whole design is
+  about; the closest is IBM's per-conversation bill, which includes serving but not distillation.
+- The six tasks R207 used are easier than the split: the board's retail pass^4 is 59.6–67.5 while those six passed
+  47 of 48 episodes. Nothing about the note lane can be concluded from them, which is why the bank exists.

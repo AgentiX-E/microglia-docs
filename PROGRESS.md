@@ -27462,8 +27462,10 @@ With no verdict the prompt is byte-identical to R207's, so a verdict run stays c
 `merge_notes_blocks` refuses a corpus whose phases disagree about the material.
 
 The gate the registration sets is a **failure bank**, because a grid that fails one episode in forty-eight cannot
-test a material: one control-only round over the retail split's 114 tasks, **$0.21 (¥1.5)** and about an hour, then
-two summariser calls per failed attempt — an ablation that costs under ¥0.5 and needs no simulator.
+test a material: one control arm over the retail **test** split's 40 held-out tasks at four trials (160 episodes),
+**$0.30 (¥2.2)** and about forty minutes at two episodes at a time, then
+two summariser calls per failed attempt — an ablation that costs under ¥0.5 and needs no simulator. The bank was
+dispatched at 04:55 UTC (`45329752184`).
 
 **Instrument coverage after the round.** 96.6% over the lane's four files: `notes.py` 96.1, `note_pilot.py` 97.0,
 `r206_readback.py` 96.3, `opening_stability.py` 98.1, with `--expect-files 4`. Self-checks 167 / 141 / 52 / 35.
