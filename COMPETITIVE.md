@@ -9761,3 +9761,34 @@ literature measured, and this lane can only reproduce it by making the file the 
 that report 114-task folds, and now with a measured statement no competitor publishes: on its retail corpus, a
 failure-derived material has almost nothing to derive from, and the number that would prove it is a refusal rate
 over a failure population none of these papers report either.
+
+### R207's position, as two panels rather than one scatter
+
+![R207 position](figures/r207-position.png)
+
+**Why two panels.** Every row of the published retail ladder states an accuracy and **none states a token bill**.
+A single accuracy-versus-cost scatter would therefore have to invent the x coordinate for five of six points, which
+is the one thing this record does not do. The left panel is the ladder as published; the right panel is what an
+episode costs *this* lane, measured from R206a's own bill ($0.0897 for 48 simulations, $0.0019 each at off-peak
+rates) and projected at the same rate.
+
+| | value | source |
+|---|---|---|
+| SapientAI-Agent-Opus-5, retail pass^4 | 72.8 | leaderboard submission with published trajectories |
+| IBM learned guidelines, retail pass^4 | 67.5 | unverified PR; guidelines learned on a train split the base split includes |
+| RAFT-30B-A3B | 61.4 | fine-tuned on synthetic τ²-retail data |
+| ALTK-Evolve | 57.5 | the bar this project registered against |
+| stock `llm_agent` gpt-oss-120b | 27.2 | one model family down from this lane's |
+| **microglia, retail** | **no quotable reading** | R41 recorded airline only; the retail cell is what R207's fold buys |
+| microglia, an episode | **$0.0019** | R206a's bill, 48 simulations |
+| microglia, a full retail split (114 × 4, one arm) | **≈ $0.85** | the same rate |
+
+**What the right panel is actually saying.** Not that this lane is cheap — that a *reading* is affordable enough to
+be repeated: the three bars are the pilot, the fold, and a whole split, and the largest of them is under a dollar. A
+competitor that publishes an accuracy and not a bill is not hiding a small number; it is declining to make the
+comparison possible, and the honest response is to record the absence rather than to guess at it.
+
+**And what is deliberately absent.** microglia's own R206a pilot (control 0.500 against treatment 0.833 over six
+tasks) is **not** on the ladder. Its interval is ±30 pp, which is the lane's own noise floor measured directly: the
+treatment served nothing at all, and the 33 pp difference is what two runs of one configuration produce at that
+sample. Plotting it beside 114-task rows would be a unit error wearing a chart's clothes.
