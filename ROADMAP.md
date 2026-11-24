@@ -9420,6 +9420,14 @@ must clear the sample's resolution.
 ended at 01:00 UTC and the next window opens 16:30 UTC. **R206a — the 48-simulation pilot at ≈ ¥1.5 — is the next
 dispatch**, and the fold follows only if the pilot's coverage clears 60% with zero collisions.
 
+**What R206a still needs before it can be dispatched (¥0, one round):** a *path*, not a mechanism. `run_split.py`
+takes `--rounds` and `--notes` and both are exercised by the self-checks, but nothing in `sota.yml` or
+`tau2-driver.ts` builds those argv — the pack lane's driver is written around a facade that this arm does not have.
+The pilot therefore needs its own compact workflow (install τ², run two phases — `microglia_agent` with and without
+`--notes` — read the merged `results.json` and the sidecar, write one artefact with per-arm pass^k, the note census
+and the bill). That is the honest boundary of this round: the material is built and tested, the dispatch path is
+not.
+
 ## R202 (built this round) — the serving policy is a field, including when it is `none`
 
 **Question.** R200 pools by a treatment key that cannot be computed for a fold written before `rotation` was

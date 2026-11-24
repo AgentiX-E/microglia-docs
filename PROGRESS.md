@@ -27280,3 +27280,10 @@ failures before 320 episodes are paid for.
 
 **Next window.** 16:30 UTC (00:30 Beijing), 50 minutes of setup plus the pilot; the fold follows only if the pilot's
 coverage clears 60% and its collisions are zero.
+
+**The one thing this round did not build, named so no reader thinks otherwise.** There is no *dispatch path* for the
+arm: `run_split.py` takes `--rounds` and `--notes`, and both are covered by the self-checks, but neither `sota.yml`
+nor `tau2-driver.ts` builds them — that driver is shaped around a facade this arm does not use. The pilot needs its
+own compact workflow (install τ², run the two phases, read the merged `results.json` and the sidecar, write one
+artefact with per-arm pass^k, the census and the bill). One round, ¥0, and it is the first item on the list below
+because a mechanism with no path is not a measurement.
