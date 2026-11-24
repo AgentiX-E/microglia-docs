@@ -16318,3 +16318,57 @@ means the third possibility has to be stated: on this benchmark, most failures m
 case a failure-derived material is starved *by construction* and the finding belongs to the benchmark rather than
 to the mechanism. The arm that distinguishes them shows the summariser the evaluator's verdict — a different
 material, registered separately, because changing it now would make R207's result attributable to neither.
+
+## 34.302 — Four files produced every number this lane published, and nothing measured how much of them ran
+
+Found while building R207, and it is the same class as 34.224 and 34.251: a gate that existed as a *figure* rather
+than as a requirement.
+
+**What was true.** `notes.py`, `note_pilot.py`, `r206_readback.py` and `opening_stability.py` each carried a
+self-check — 82, 76, 27 and 21 cases — and `ci.yml` ran none of them. `note-pilot.yml`'s contract job ran all four
+and checked that they exited 0. Nothing anywhere asked how much of each file those cases reached, so a refactor
+could take the instrument's coverage down and every job would stay green. Measured with `coverage --branch` over the
+four, before any new case:
+
+| file | lines+branches covered |
+|---|---|
+| `note_pilot.py` | 471 / 529 — **89.0%** |
+| `notes.py` | 533 / 563 — **94.7%** |
+| `opening_stability.py` | 172 / 215 — **80.0%** |
+| `r206_readback.py` | 213 / 246 — **86.6%** |
+| together | 1389 / 1553 — **89.4%** |
+
+**Why it is a defect and not a number.** These four files are the entire instrument of the arm: the sidecar's format,
+the producer that assembles the artefact, the grader that decides `GRADED`/`ABANDONED`, and the measurement that
+told R206 its binding does not exist. A regression in any of them produces a *number about nothing* rather than a
+crash, which is the failure mode this record has repaired twenty times and the one a green job cannot see. The
+concrete instance: `opening_stability.py`'s `main` — the only path the workflow uses — was 0% covered, and its
+`--json` branch had never been executed by any test.
+
+**The repair, in three parts.** Cases first: every reader guard, every `main` branch (including the off-peak window
+guard and the fixture writer), the new `scope`/`lookup`/`merge_documents` surface, and each of `rows_of`'s four
+refusals. Then the *reporter*: `r206_readback.self_test` was restructured around `run_cases(cases) -> (passed,
+failed)` so the suite can feed it one case with a deliberately wrong expectation and require it to be reported —
+the failure path is now measured rather than unreachable, because a suite that cannot fail is a suite whose green
+means nothing. Then the gate: the contract job runs the four under `coverage --branch --include=…` and fails below
+**95% per file** with `--expect-files 4`, which is the same checker and the same floor `ci.yml` already applies to
+the ALFWorld lane — one rule, two lanes, rather than a second convention.
+
+**After:**
+
+| file | before | after |
+|---|---|---|
+| `note_pilot.py` | 89.0% | **96.9%** |
+| `notes.py` | 94.7% | **95.7%** |
+| `opening_stability.py` | 80.0% | **98.1%** |
+| `r206_readback.py` | 86.6% | **96.6%** |
+| together | 89.4% | **96.5%** |
+
+**What the numbers say about the cases, not just about the coverage.** 137 + 132 + 44 + 35 cases replaced 82 + 76 +
+27 + 21, and the growth is not padding: twelve of the new `notes.py` cases are the five ways `lookup` can produce no
+note, which is the distinction between "the file had nothing for this task" and "the agent served nothing"; six of
+the new `note_pilot.py` cases are the merge's three refusals and the two identity counters; four of
+`r206_readback.py`'s are `rows_of`'s guards, each of which would otherwise let a malformed row be read as a score.
+
+**The rule this records.** A file whose output is a judgment rather than a value needs a coverage floor as much as a
+service does — more, because a service that breaks throws and a judge that breaks returns `GRADED`.

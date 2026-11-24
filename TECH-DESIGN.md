@@ -11570,3 +11570,59 @@ vocabulary rather than two.
 is nothing to compare — and that is a fact about the *grid*, not about the corpus. A caller that folded it into
 "not separable" would be reporting a corpus verdict from a one-round run; the pilot workflow therefore treats exit 2
 as "not measurable on this grid" and prints it rather than failing the job.
+
+## 17.190 — `notes.py` and `note_pilot.py`: the file as the identity, and a read that merges
+
+R206's material is bound to a task by the task's opening message, and R206a measured that bound at 0.006 exact reuse
+over 168 same-task pairs, with within-task similarity falling *below* cross-task similarity on the same corpus. R207
+keeps the material and moves the identity: the runner runs one task per invocation and the sidecar declares it.
+
+**The document.** `microglia.notes/2`, with `scope` a first-class field:
+
+```json
+{"schema": "microglia.notes/2",
+ "scope": {"kind": "task", "task": "5"},
+ "notes": {"<note_key of the opening>": {"note": "…", "attempt": 1, "reward": 0.0, "task": "5"}},
+ "collisions": {}}
+```
+
+`scope_of` has four answers, and `broken` is apart from `none` on purpose: a scope that claims to name a task and
+does not is a writer defect, while `none` is a store-free arm. `load` refuses a `/1` document rather than
+reinterpreting it — the agent then serves nothing and records the problem, which is the safe direction.
+
+**The lookup, and why it returns two things.** `lookup(document, text) -> (note, how)` with `how ∈ {key, task,
+none}`. The key is tried first because it is a statement about *this* request; the scope second because that is the
+identity the harness can actually give. The fallback fires only for `kind == "task"`, serves the entry with the
+highest `attempt` (a dictionary's order is a property of the writer, the attempt number a property of the run), and
+returns `("", "none")` if any entry in that file names a different task — the cross-task mechanism R41/R204
+measured, arriving by the one route R207 opens.
+
+The counter split is the reading's first gate: `keyHits` is R206's mechanism, `taskHits` is R207's, and a fold with
+`hits > 0` and `taskHits == 0` says the improvement came from the text rather than from the file. `hits` remains
+their sum so a reader of the older field reads the same quantity.
+
+**Why one task per process, priced.** `--notes` with two tasks is refused (`tau2-notes-need-one-task:N`). A run that
+merged two tasks into one sidecar would write two tasks' notes into one file, and the agent would have no way to tell
+which entry is its own — the defect the round exists to remove, reintroduced by the runner. The price is one τ²
+import per invocation, ~10 s, twelve of them on the pilot's grid: two minutes against one wrong-note serving.
+
+**The read, merged in three places.** An arm is six phases, so `note_pilot.py` takes each flag as a comma list:
+
+| level | function | what it refuses |
+|---|---|---|
+| the grid | `notes.merge_documents` | a task two documents list; a `(task, trial)` two documents hold |
+| the phase | `merge_summaries` | two models or two agents inside one arm; a band that is not shared (`mixed`) |
+| the corpus | `merge_sidecars` + `merge_trajectories` | nothing — a shared key is *counted*, because the reading it damages is a diagnostic |
+
+**Specificity is the one reading that is a property of the corpus.** With one task in hand every note's entities are
+trivially unique and the share is 1.0; so `specificity` returns `share: null` with a reason below two tasks, the
+runner writes `<notes>.trajectories.json` (the failed attempt each note came from), and the builder recomputes the
+share over all six. An artefact built without `--notes` carries `specificity: null` and the reading reports N3 as
+**unmeasured rather than refuted**: an absent diagnostic is not a finding about the material, and turning it into an
+abandonment would throw away a paid fold over a missing file.
+
+**The instrument, floored.** The lane's four Python files carried self-checks and no coverage gate, which is how
+`opening_stability.py` sat at 80.0% while every job was green. The contract job now runs the four under
+`coverage --branch` with `--min 95 --expect-files 4`, and they stand at 96.9 / 95.7 / 98.1 / 96.6 after this round's
+cases — including a deliberate wrong expectation fed to `run_cases`, because a suite that cannot fail is a suite
+whose green means nothing.

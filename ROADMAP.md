@@ -9483,6 +9483,26 @@ changes what the summariser is *shown*, not how the note is filed).
 **Price.** Pilot ¥0.64 on R206's own six tasks, then a fold whose grid is chosen before its numbers are seen: the ten
 held-out tasks whose control attempt failed. The fold itself ≈ ¥4.3 at the measured $0.0019 a simulation.
 
-**Not built.** The engineering is one round of work: the per-task invocation loop, the `scope` field and the agent's
-single-entry fallback, each with its own case.
+**Result (03:12 UTC).** Built, before any dispatch. `microglia.notes/2` carries `scope: {kind: task, task: T}`, the
+runner declares it before the first episode, and `lookup` serves the file's latest entry on a key miss **only** when
+the file names one task — and serves nothing at all if any entry in that file names another. A path reused for a
+different task is refused (`tau2-notes-scope-changed:5->9`) and `--notes` with two tasks is refused
+(`tau2-notes-need-one-task:N`), which makes `N5` true by construction rather than by inspection.
+
+Three consequences the single-task arm did not need, all of them in the reading path: the grid merges
+(`merge_documents`, refusing a duplicate task or a duplicate `(task, trial)`), the phase merges (`merge_summaries`,
+summing the bill and the counters and refusing two models in one arm), and **specificity recomputes over the merged
+corpus** — a share over one task is 1.0 by construction, so the runner writes each task's failed attempt to
+`<notes>.trajectories.json` and the builder computes the real share once all six are in hand.
+
+**The instrument was unfloored and is now floored.** Measured before this round's cases: 89.4% across the four Python
+files together, `r206_readback.py` 86.6% and `opening_stability.py` 80.0%. The contract job now runs them under
+`coverage --branch` and fails below 95% per file; they stand at 96.9 / 95.7 / 98.1 / 96.6. `run_cases` was extracted
+so the reporter's own failure path is *tested* — the suite feeds it a wrong expectation and requires it to fire.
+
+**Acceptance.** A fixture pair of six per-task phases grades `GRADED` with six scopes, no scope problem,
+`specificity == 1.0` and `taskHits > 0`; the merge refuses a duplicate task, a duplicate attempt and two models in
+one arm; and every one of the four files is at or above the 95% floor. All five hold in the contract job.
+
+**Price ¥0.00.** The pilot is the next purchase: R206a's six tasks × 4 rounds × 2 arms, ≈ **¥0.7** and ~33 minutes.
 

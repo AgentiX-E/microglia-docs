@@ -27343,3 +27343,61 @@ quoting a six-task delta.
 
 **Next.** R207's engineering (¥0), then its pilot on the same grid at ¥0.64, and only then a fold whose grid is
 chosen *before* its numbers are seen.
+
+## 238. R207 is built: the identity is the file, an arm is a list of phases, and the instrument has a floor (03:12 UTC)
+
+R206a's second defect was fatal to the mechanism and this round removes it — one field, one fallback, and four
+consequences that a single-task arm did not need.
+
+**The sidecar declares its task.** `microglia.notes/2` carries `scope: {kind: task, task: "5"}`. The runner writes it
+*before* the first episode, so the agent reads a file that names the task it is in instead of recognising the request
+it was given. `lookup` returns `("", "key" | "task" | "none")`, and the two identities are counted apart: `keyHits`
+is the opening text matching (R206's mechanism, 0.006 reuse), `taskHits` is the file naming the task (R207's). A
+single `hits` counter could not tell the repair from the defect it repaired.
+
+**Three states, and the safety is in the difference.** `task` serves the key's entry and, on a miss, the entry from
+the latest attempt — every entry in that file is about this task. `many` (a merge) and `none` (a store-free arm)
+serve the key only, because the identity is unknown again. And a file that declares task 5 while holding an entry
+for task 9 serves **nothing**: that is the cross-task mechanism R41/R204 measured, and it is the one thing this arm
+must not be.
+
+**An arm is now a list of phases.** Twelve invocations for six tasks × two arms, each with its own `--out`, log and
+sidecar; the cost is one τ² import each, ten seconds, cheaper than one wrong-note serving. So `note_pilot.py` takes
+every flag as a comma list and merges the grid (`merge_documents`: the union of tasks, every `(task, trial)` exactly
+once), the phase (`merge_summaries`: bills and counters add, the band survives only if every phase shared it) and the
+corpus (`merge_sidecars` + `merge_trajectories`). Three refusals, each the shape a half-finished loop leaves behind:
+`tau2-merge-duplicate-task:5`, `tau2-merge-duplicate-trial:5/0`, `tau2-note-pilot-mixed-model:…`.
+
+**Specificity had to move to the merge.** It is a property of the corpus: one invocation sees one task, every note's
+entities are trivially unique, and the share would be 1.0 by construction. `notes.specificity` now returns
+`share: null` with a reason below two tasks, the runner writes each task's failed attempt to
+`<notes>.trajectories.json`, and the builder recomputes the share over all six. An artefact without `--notes` carries
+`specificity: null` and N3 is *unmeasured*, not refuted — an absent diagnostic is not a finding about the material.
+
+**The instrument was unfloored, and that is now repaired with the number in the record.** The four Python files had
+self-checks each and no coverage gate: a refactor could take `opening_stability.py` anywhere and every job stayed
+green. Measured before this round's cases — **89.4%** together:
+
+| file | before | after | what closed the gap |
+|---|---|---|---|
+| `note_pilot.py` | 89.0% | **96.9%** | the merge, the fixture path, and the two `main` branches (window guard, fixtures) |
+| `notes.py` | 94.7% | **95.7%** | scope, `lookup`'s five no-note states, the attempts sidecar, `merge_documents` |
+| `r206_readback.py` | 86.6% | **96.6%** | `N5`, the four `rows_of` guards, and the reporter's own failure path |
+| `opening_stability.py` | 80.0% | **98.1%** | every reader guard and the whole command line |
+
+The reporter's failure path was made *testable* rather than left unreachable: `run_cases` returns `(passed, failed)`
+and the suite feeds it one case with a wrong expectation, requiring it to be reported. A suite that cannot fail is a
+suite whose green means nothing, and that is now an assertion rather than a hope.
+
+**The contract job checks the merge, not just the chain.** The fixture writer emits one phase per task, the builder
+merges them, and the step asserts six scopes, no scope problem, `specificity == 1.0`, `taskHits > 0` and a non-zero
+bill — so a push that breaks the per-task path convention, the CSV of `--tasks` or the merge fails for free instead
+of after 48 bought simulations. The coverage floor runs in the same job: 95% per file, `--expect-files 4`.
+
+**Cost.** ¥0. The pilot is the next thing bought, on R206a's own six tasks so the two are comparable line for line:
+`5,9,12,17,18,26` × 4 rounds × 2 arms, ≈ **¥0.7** and ~33 minutes at the lane's measured 26 s an episode plus twelve
+imports.
+
+**What the dispatch decides, stated before it runs.** Whether the file binding fires at all (`taskHits > 0` with
+`keyHits` near zero — the exact inverse of R206's failure), and whether coverage clears 0.6 now that the identity is
+not the obstacle. Neither is a claim: the artefact carries `claim: none`, and the delta is withheld at ±30 pp.
