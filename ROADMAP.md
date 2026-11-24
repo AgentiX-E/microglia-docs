@@ -9576,3 +9576,17 @@ Two branches, decided by one number:
   which is measurable offline on the 85 stored failures for ≈ ¥0.5.
 - **`INCONCLUSIVE`**: one more dispatch at double the opportunities is the only honest next step, and its price is
   known in advance (¥6.3).
+
+**R212 answered it, and the answer closes the behavioural lane.** Both arms in one dispatch over the hard
+twenty-four: the world held (attempt 0 agreed to one task), the mechanism was live (35 notes, 99 lookups, 54 hits),
+and the note rescued 12 of 30 against 13 of 34 — **+1.8 pp, `NO_LIFT`** at the registered scale. The sensitivity on
+the wider population is +7.5 pp, which would grade `INCONCLUSIVE` a fifth of a point above the bar.
+
+The lane therefore stops buying rescue-rate power, and the reason is arithmetic rather than taste: a 7.5-point
+difference at 80% power needs ~674 opportunities per arm, an episode yields 0.37, so ~1,800 episodes and **¥58** —
+four and a half times the fold that was cancelled for being expensive. Refining the sentence cannot be measured at
+any price this lane would pay.
+
+**Next, in order:** EDV's verify-then-admit (¥0.5, offline on the 85 stored failures), then `P3`'s learned
+guidelines (74 train → 40 held-out, ¥10). The behavioural question is now "should a failing note be refused", which
+is a decision rule and not a wording.

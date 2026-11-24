@@ -9885,8 +9885,14 @@ that decides whether a mechanism can be iterated at all.
 
 **Questions left open.**
 
-- The rescue rate (dispatched 11:07 UTC, 100 episodes, ¥3.1) is the first behavioural reading of the material.
-  Until it lands, the note lane has no accuracy claim at all — only a yield and a specificity.
+- **The rescue rate landed and it is a null with a live instrument**: 35 notes, 35 verdicts, 99 lookups, 54 task
+  hits, and +1.8 pp over the control (12/30 against 13/34, ¥7.2). A null with zero lookups would have been a
+  statement about the plumbing; this one is about the sentence.
+- **What a decision costs, in this lane's own money**: ¥3.4 to learn that the mechanism executes end to end, ¥7.2
+  to learn that the effect is below 25 points, and ¥58 to resolve the remaining +7.5 points at 80% power. No
+  competitor publishes an equivalent ladder, so the numbers are recorded as a frontier rather than as a comparison
+  — the useful reading is that a mechanism whose remaining question costs four times its first experiment is a
+  mechanism to stop funding, and that judgement took ¥10.5 to reach.
 - No competitor publishes a per-note cost or a note yield, so the 98% figure has no counterpart to be compared
   with; it is reported because a lift without a yield is unreadable.
 - `P3`'s amended bar is missed (44.7% vs 50%). Whether that matters depends on the fold: a note that names the

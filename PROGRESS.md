@@ -27653,3 +27653,68 @@ rescue rate: `15/23` is the bar, 23 opportunities expected.
 
 **Cost of the round.** Bank $2.0103 (¥14.5) + four ablations $0.18 (¥1.3) = ¥15.8 to date, plus ¥3.1 for this
 dispatch. Instrument: `rescue_rate` 99.7%, the note lane's six files unchanged at 96.8%.
+
+## 242. The note is read and does not rescue: two dispatches, ¥10.5, and a lane that has reached its price ceiling (12:25 UTC)
+
+The fold was cancelled at 11:00 UTC for being expensive and blind. Two dispatches later the lane has a behavioural
+answer, and it cost less than the fold: **R211 ¥3.4 + R212 ¥7.2 = ¥10.5**.
+
+### 242.1 R211: the mechanism worked, the baseline did not describe the run
+
+Fifty tasks, two rounds, one arm, 100 episodes, 24.4 s each, **$0.4820**.
+
+| reading | value |
+|---|---|
+| notes written / refused | **12 / 0** |
+| verdicts shown | 12 |
+| sidecar lookups / key hits / task hits | **103 / 13 / 13** |
+| opportunities | 12 |
+| rescued | 7 (58.3%) |
+| drift check: attempt 0 | **38/50 vs bank 27/50** |
+| verdict | **DRIFT** |
+
+The path from failure to served sentence executed end to end for the first time: R206's pilot found nothing because
+nothing had been written, R207's found one refusal, R211 wrote twelve and every one was read.
+
+The comparison was void, and the cause was my arithmetic rather than the arm. The drift tolerance of four tasks was
+described as one standard error at fifty, which assumes fifty independent draws; but `run_split.py` derives round
+*i*'s seed as `base + i` and **every task in that round shares it**, so the unit of replication is the seed and
+there is one per arm. Eleven tasks between two seeds is the between-world variance a binomial error cannot see
+(AUDIT 34.211).
+
+### 242.2 R212: both arms in one dispatch, and the effect is +1.8 points
+
+Twenty-four hard tasks, four rounds, both arms, same seeds, 192 episodes, **$1.0054** (control $0.5030, treatment
+$0.5024), 27.0 and 28.3 seconds an episode.
+
+| arm | episodes | rescue (pooled) | attempt 0 | pass^4 |
+|---|---|---|---|---|
+| control | 96 | 13 / 34 (38.2%) | 8 / 19 | 5 / 24 |
+| treatment | 96 | 12 / 30 (40.0%) | 9 / 19 | 2 / 24 |
+
+- **the world held**: attempt 0 agreed to one task, which is what same-seed pairing is for;
+- **the mechanism was live**: 35 notes, 35 verdicts, 99 lookups, 54 task hits;
+- **the note did not rescue**: +1.8 pp, exact p = 1.0, upper limit 59.4% below the registered 63.2% — `NO_LIFT`.
+
+The sensitivity, printed with the reading rather than after it: over all twenty-four tasks the arm is 16/35 (45.7%)
+against 13/34, **+7.5 pp with an upper limit of 63.4%**, a fifth of a point above the bar — that population would
+grade `INCONCLUSIVE`. The two numbers differ only in whether five tasks the control never failed are admitted; both
+are true, and the population is now a field of every reading.
+
+### 242.3 The price ceiling is arithmetic, not a judgement
+
+Detecting a 7.5-point difference at 80% power against a 38% baseline needs **674 opportunities per arm**. An
+episode yields 0.37 (35 from 96), so the read is ~1,800 episodes — **≈ ¥58, four and a half times the fold that was
+cancelled for being expensive**. Refining the sentence further cannot be measured at any price this lane would pay,
+which is a stronger statement than any p-value in this lane to date.
+
+### 242.4 What that hands to the next registration
+
+`serveBody: guidance` stops being tuned and stays a registered experiment. The next spend is EDV's
+verify-then-admit — a note validated against the evaluator's verdict **before** it is served — measurable offline on
+the 85 stored failures for **≈ ¥0.5**, and after that `P3`'s learned guidelines (74 train → 40 held-out) at ≈ ¥10.
+The behavioural lane's remaining question is not "is the sentence good" but "should a bad sentence be refused",
+which is a decision rule rather than a wording.
+
+**Cost of the round.** R211 $0.4820 + R212 $1.0054 = **$1.49 ≈ ¥10.5**. Lane to date: bank $2.0103 + four ablations
+$0.1826 + these two = **$3.68 ≈ ¥26.1**, against the ¥12.5 fold that would have returned a tautology.

@@ -16521,3 +16521,28 @@ construction, has a paid counterfactual (65.2%, 15 of 23), and costs a quarter a
 
 **Class.** Measurement design. The defect was not in the code but in the pairing of an instrument with a claim, and
 the audit that catches it is one question per endpoint: *what would this number do if the intervention worked?*
+
+### 34.211 The drift tolerance assumed independence that the seed design denies
+
+**What was measured.** R211's arm passed attempt 0 on 38 of the same fifty tasks the bank passed on 27. The drift
+gate fired — correctly — and the comparison was refused rather than published.
+
+**The defect.** The tolerance had been justified as "one standard error at fifty, about 7 points, so four tasks is
+one standard error rounded". That arithmetic treats the fifty tasks as fifty independent draws. They are not:
+`run_split.py` derives round *i*'s seed as `base + i`, and **every task in that round is run under the same seed**.
+The seed is a random effect shared by the whole attempt, so the unit of replication is the seed and an arm has one
+of them. The between-world standard deviation is therefore not `sqrt(p(1-p)/50)` = 5.4 points but something nearer
+the observed 22.
+
+**Why the gate was still right.** A tolerance calibrated on the wrong variance would, if widened, have licensed
+exactly the comparison it exists to block: two draws of two worlds, attributed to the material. The repair was to
+the *design*, not the number — buy the control in the same dispatch at the same seeds, which is common random
+numbers, and let `--baseline-dir` compare two arms inside one world. R212 then agreed to one task on attempt 0.
+
+**The class.** This is the third defect in this lane of the shape "an assumption in the arithmetic rather than in
+the code": `N0b`'s population of zero, `P0`'s truncations counted as refusals, and now an independence assumption
+the seeding quietly contradicts. The check that generalises is one question per statistic: *what is the unit of
+replication here, and does my variance know it?* For anything scheduled by seed, the answer is the seed.
+
+**Cost of finding it.** ¥3.4 — the price of the arm that was refused. That is the cheapest defect this lane has
+found, and it was found by a gate written before the defect existed.

@@ -11765,3 +11765,28 @@ The state machine is the registration in code: `RESCUED` needs the registered 25
 `NO_LIFT` is awarded only when the upper limit sits below baseline + 25, so an underpowered run cannot be quoted as
 a refutation; `INCONCLUSIVE` is the honest middle; `NO_MEASUREMENT` (< 12 opportunities) and `DRIFT` have their own
 exit codes because both mean no reading exists rather than a reading of zero.
+
+### 17.177 The population is a field, because the same two arms give +1.8 and +7.5
+
+R212's reading is a ratio of two totals, and a ratio needs a denominator that a reader can see. The default is the
+tasks the **baseline** failed — the ones for which a counterfactual exists — and it is printed:
+
+```
+| population | 19 task(s), those the baseline failed |
+```
+
+That default is a choice with a measurable consequence. Over those nineteen tasks the arm is 12/30 (40.0%) against
+13/34 (38.2%), **+1.8 pp**; over all twenty-four it is 16/35 (45.7%) against the same 13/34, **+7.5 pp**. The five
+extra tasks are ones the control never failed, so it contributes no opportunities there and the wider reading
+admits treatment-side transitions that have no paired counterpart. Both totals are honest; neither is the reading
+without its population, which is why the field exists rather than a footnote.
+
+Two consequences for the instrument:
+
+- **`--baseline-dir` over `--baseline` whenever both arms ran.** With one dispatch the drift check compares two arms
+  that share a seed, and `render` says `vs baseline` rather than `vs bank` — a label that invites the reader to
+  compare across runs, which is exactly the comparison AUDIT 34.211 refused;
+- **the verdict is graded on the registered population and reported with its sensitivity.** R212 registered the
+  twenty-four-task grid and its default selection gives `NO_LIFT`; the twenty-four-task total gives an upper limit
+  of 63.4% against a 63.2% bar, one fifth of a point from `INCONCLUSIVE`. A reader who is not shown both would take
+  a boundary for a margin.
