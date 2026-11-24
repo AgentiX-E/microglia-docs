@@ -27474,3 +27474,20 @@ dispatched at 04:55 UTC (`45329752184`).
 **Cost of the round.** ¥0.64 for the pilot, ¥0 for the readback and the repair. **Position:** the note lane's
 mechanism is unmeasured on a saturated grid, the material hypothesis is now testable for ¥2 instead of ¥4.3, and the
 fold stays unbought until P2 and P3 are measured on a population that has failures in it.
+
+**Addendum (05:30 UTC) — the bank's machinery, and a guard that estimated from a fallback.**
+
+| commit | what |
+|---|---|
+| `b3d5db0` | `note-bank.yml` — one control arm over the split at four trials, no sidecar, no push trigger |
+| `4d4b8f4` | `eval/tools/note_bank.py` — the bank reader: `pass^1`, `pass^k`, failures, and how many of them the evaluator explains; 27 cases, 97.3% |
+| `8fdbcfb` | the window guard estimates from the split's own count, not from a hardcoded forty |
+| `06430af` | the census step reads the reader's exit code instead of masking it (`scripts/audit.mjs` refuses `\|\| true`, and it is right to) |
+
+The guard fix is the round's second instrument defect and it was mine: with no `--tasks` the runner resolves the
+domain's split, which holds **114** retail tasks, while the guard's fallback assumed **forty** — a three-fold
+under-estimate in the one direction a window guard must never be wrong in. It now refuses against a per-domain
+ceiling before the install and re-checks against the count the split actually lists, before the first paid call.
+
+CI green on `06430af` (`45332543838`); the note lane's contract job green on `4d4b8f4` (`45331039429`) with the
+coverage gate now at **five files** and `--expect-files 5`.
