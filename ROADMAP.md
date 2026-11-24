@@ -9648,3 +9648,46 @@ and the lane's remaining work is the checker and the invocation policy, not the 
 **Order after R214:** the checker (admit a state change only on a receipt) at ≈ ¥8.5, then cross-domain transfer
 (retail → airline, 50 tasks, ≈ ¥6), then a submission to the τ² board — which needs the base agent to be one the
 board accepts, and that is a decision about the harness rather than about this lane.
+
+**R214 read: the state channel is served, attributed, and worse — because it moves.**
+
+228 episodes, $1.4261. Control **98/114 (86.0%)**, board **92/114 (80.7%)**: delta **−5.3 pp** [−15.0, +4.5],
+McNemar p = 0.2632, **13 tasks broken against 7 moved**. The mechanism was wired and served — 1,155 renders over
+114 episodes, an ask listed in 113 of 114, 84 of the 106 changing episodes ending with a receipt-ticked line — and
+it still lost.
+
+Two independent causes, both measured:
+
+- **the bill**: the board is 23 tokens a turn and raised the arm's cost **77%**, because a system block that
+  changes every turn invalidates the prefix cache (hit rate 90.4% → 75.1%, bill $0.3044 → $0.5094);
+- **the content**: the list grows to **10.6 asks** and closes **1.58** of them, because asks were collected from
+  every user message and a simulated user's clarifications are sentences that name an object after a verb.
+
+So the channel is not closed — the lesson channel is — but its next form is constrained on both sides at once.
+
+**R215 — the checker, and cache-stable state.** The board is written by the **write path**: a successful
+`exchange_*`/`return_*`/`modify_*`/`cancel_*` receipt marks its ask, and the block is emitted **only when it
+differs from the last emission**. Asks come from the request only; a clarification refines an ask rather than
+adding one. Same endpoint (+10 pp paired over 114 tasks), and a second bar this round bought: **the arm's cache
+hit rate must stay within three points of the control's**, which is the difference between a channel that can be
+served and one that cannot. 114 tasks, one attempt, two arms, 228 episodes, ≈ **$1.2 (¥8.5)**, ~30 minutes.
+
+The reason to expect anything is now sharper than "the literature says +23.9". The literature's +23.9 is a
+*checker*, and a checker changes state on an event; this round's failure is a *renderer*, which changes state on a
+clock. Both the cost and the accuracy data point at the same correction.
+
+**R216 — invocation policy.** Recuris's largest single component after state is *when* to retrieve: inject the one
+skill matched to the call being drafted, not the library. Our arm has never conditioned on the draft. Measured as a
+temporal rule (retrieve when a write is being composed), it is a dispatch argument on the same grid, ≈ ¥8.5.
+
+**R217 — cross-domain.** The same pair on airline (50 tasks, 14 policy-dense requests): the board's parser is
+retail-specific in its families, so the question is whether the *shape* transfers. ≈ ¥6.
+
+**R218 — submission alignment.** The τ² board's rows are models, not harnesses; an entry needs the base agent to be
+one the board accepts. That is a decision about the harness rather than about this lane, and it is the last step
+between 86.0% and a ranked position.
+
+**Order, and why.** R215 first because it is the only step that can turn the round's negative into a mechanism
+rather than a retreat, and because its cost bar is now known. R216 next because invocation is the only published
+component with a larger effect than the state channel's floor. R217 after both, because a parser that does not work
+in its own domain will not transfer.

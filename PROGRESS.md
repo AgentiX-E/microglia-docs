@@ -27868,3 +27868,138 @@ $1.0054 + R213 $1.5334 ≈ **$5.21 ≈ ¥37.0**, against the ¥12.5 fold that wo
 from the two-arm version: the empty directory made `rescue_rate` refuse an arm with no document (exit 4, correctly)
 and the reading step failed *after* the money was spent and every document written. The step now tests for a
 document rather than a directory (AUDIT 34.214), and the reading was recovered from the artefact.
+
+## R214 — the state channel: served faithfully, attributed well, and worse
+
+228 episodes, one attempt per task over all 114 retail tasks, two arms in one seed world, **$1.4261 (¥10.3)**.
+The board is the first material in this lane that is not a sentence about a failure, it costs no tokens to build,
+it was served on essentially every turn — and the arm that carried it scored **5.3 points lower at 77% higher
+cost**.
+
+### 244.1 The reading
+
+| arm | pass^1 | episodes | bill | per episode |
+|---|---|---|---|---|
+| control | **98/114 (86.0%)** | 114 | $0.5147 | $0.0045 |
+| board | 92/114 (80.7%) | 114 | $0.9114 | $0.0080 |
+
+| paired, by task | value |
+|---|---|
+| delta | **−5.3 pp**, 95% interval [−15.0, +4.5] |
+| McNemar exact | p = 0.2632 |
+| moved / broke / held / neither | 7 / **13** / 85 / 9 |
+
+`NO_LIFT` by the registered rule, and the failure is in the direction the registration called a refutation: a
+board that is not verified state, served every turn, is not a neutral addition. Thirteen tasks that passed without
+it failed with it, against seven the other way.
+
+**What held.** P1: the board rendered 1,155 times over 114 episodes (10.1 a turn against 11.3 assistant turns — the
+turn before the user says anything actionable legitimately carries none), and 113 of 114 episodes listed at least
+one ask (99.1%, bar 80%). P3: 84 of the 106 episodes that made a state-changing call ended with an ask **ticked by
+a receipt** (79.2%, bar 50%). The mechanism was wired, served, and attributed at the rate the census predicted.
+
+**What failed.** P2 (−5.3 pp against a +10 pp bar) and P4 (+77% cost against a 15% bar).
+
+### 244.2 The board did not shrink, and that is the accuracy story
+
+Recomputed from the documents, at the last turn of each episode:
+
+| reading | value |
+|---|---|
+| asks listed at the end, mean | **10.6** |
+| of which ticked, mean | 1.58 |
+| open lines at the end, mean | **9.0** |
+| episodes ending with nothing ticked | 30 of 114 |
+| episodes at the eight-line render cap | 34 |
+| state-changing calls made | 187 |
+| calls the board could not attribute | 62 |
+
+A to-do list that grows to eleven lines and closes one of them is not a working memory; it is a list of everything
+the user has said, with a receipt tick now and then. The cause is visible in the parser's own rule: asks are
+collected from **every** user message, and a simulated user's clarifications ("yes, the blue one", "no, only the
+lamp") are sentences that name objects and follow a verb. The census that licensed the parser measured 3.8 asks a
+task because it read one message; the run reads eleven.
+
+### 244.3 The bill is a cache property, not a length property
+
+The board is 200 characters a turn — 23 tokens, **+0.2% of a 4,728-token prompt**. It cost 77% more.
+
+| arm | prompt / call | cached | hit rate | model bill | bill / episode |
+|---|---|---|---|---|---|
+| control | 4,727.7 | 8,592,366 | **90.4%** | $0.3044 | $0.0045 |
+| board | 4,716.9 | 7,080,426 | **75.1%** | $0.5094 | $0.0080 |
+
+A system block that changes on **every turn** sits at the front of the prompt, so the prefix the provider had
+already cached is invalidated on every request. The provider's own `prompt_cache_hit_tokens` fell 15.3 points, and
+at this lane's rates (a miss at $0.15/M against a hit at $0.003/M) that is the whole difference: the arm re-bought
+a 4,700-token prefix twenty-five times an episode to show a list that had changed by one line.
+
+This is the most transferable number the lane has produced. **Memory that is re-served every turn is not cheap
+because it is small; it is expensive because it moves.** Every design that re-renders context per turn — this
+board, a rolling summary, an updated plan — pays the prefix again, and a lane that quotes the token count of its
+block instead of the cache hit rate of its arm is quoting the wrong number.
+
+### 244.4 What that changes: the board has to be cache-stable, and the checker is how
+
+The two failures have one fix between them, and it is not a prompt change.
+
+- **Emit on receipt, not on turn.** A board that is written only when a state-changing call succeeds changes a
+  handful of times an episode instead of twenty-five, so the prefix survives and the block is re-read only when it
+  says something new. That is also what the literature's +23.9 is built on: a *checker* in the write path, not a
+  renderer on the read path.
+- **Do not grow the ask list from the conversation.** Asks come from the request; a clarification refines one, it
+  does not add one. The parser needs a rule for that, and the 10.6-against-1.58 reading is the measurement that
+  says so.
+- **Price the channel in cache hit rate.** The registration's P4 asked for a bill; the bill answered with a
+  mechanism, and the next registration states the hit rate directly.
+
+R215 is therefore the checker: `modify_*`/`exchange_*` receipts write the board, the board is emitted only when it
+differs from the last emission, and the endpoint stays paired pass^1 over the same 114 tasks — at a cost that
+should be within a few points of the control's, which is what makes it affordable to run at all.
+
+### 244.5 The defects this round found
+
+Five, all before or by the contract job rather than after the money: the agent's 352 assertions were run by no
+workflow (34.215); the census counted calls rather than objects and scored a correct board as noise (34.216);
+the free-text attribution rule ran the containment the wrong way and excluded every address change (34.217); a
+call whose result never arrived was credited as a receipt (34.218); and the first parser's noise was a corpus
+property that needed two filters and one reverted fold to price honestly (34.219).
+
+### 244.6 Cost, and the estimate that was wrong
+
+| item | estimate | actual |
+|---|---|---|
+| 228 episodes | $1.0 (¥7.2) | **$1.4261 (¥10.3)** |
+| — control | $0.50 | $0.5147 |
+| — board | $0.50 | $0.9114 |
+| wall clock | ~35 min | 30 min |
+
+The estimate used the bank's $0.0044 an episode. This grid's control cost $0.0045 — the bank's number was right —
+and the board cost $0.0080 because of §244.3. The error was not in the price of an episode but in assuming the
+material was free: it is free to *build* and expensive to *serve*.
+
+Lane to date: bank $2.0103 + ablations $0.1826 + R211 $0.4820 + R212 $1.0054 + R213 $1.5334 + R214 $1.4261 ≈
+**$6.64 ≈ ¥47.8**.
+
+### 244.7 Where the project stands
+
+- **The lesson channel is closed by measurement** (R212, R213) and the **naive state channel is now closed by
+  measurement** (R214). What remains open is the one configuration neither round tried: state that changes only
+  when a receipt proves it, and a context that stops moving when nothing has happened.
+- **The number that moves is the cache hit rate.** 90.4% against 75.1% on the same prompt is a 67% bill
+  difference, and no accuracy claim in this lane has ever been that large.
+- **Our position on the board is unchanged**: 86.0% pass^1 with no memory at $0.0045, 87.9% for the SOTA row, and
+  the gap is a mechanism (gated patch evolution over state) rather than a wording.
+
+### 244.8 Next, and what it costs
+
+| step | what it is | time | CNY |
+|---|---|---|---|
+| **R215** | the checker: the board is written by the write path, emitted only when it changes, asks come from the request | 0.5 d build + 25 min | **8.5** |
+| R216 | invocation policy: retrieve on the draft of a write, not on the request | 0.5 d + 25 min | 8.5 |
+| R217 | cross-domain: the same pair on airline, 50 tasks | 0.2 d + 20 min | 6 |
+| R218 | submission alignment: the harness the board accepts | 0.2 d | 0 |
+
+R215's bar is unchanged — +10 pp paired over 114 tasks — because a channel that cannot clear it is not a channel
+worth a cache bill. Its cost bar changes: **the arm's cache hit rate must stay within three points of the
+control's**, which is the number this round bought.

@@ -11820,3 +11820,72 @@ was missing a family.
 `--note-source model|verdict` moves the material from the driver into the dispatch: the verdict arm's note is the
 evaluator's text with the `REWARD` line dropped and the met lines kept, because the harm this instrument measures
 is a *break* and a note that repeats what already passed is the only part of it that could prevent one.
+
+### 17.179 The goal board: asks from the request, receipts from the calls, and a refusal in between
+
+The state channel's material is a list, and its design is the rule that decides when a line is ticked.
+
+**Asks.** `goal_board.items_of` splits a user message at sentence boundaries and at `and`/`but`/`then`/`also`/`,`,
+then reads each clause for a **family** cue — exchange (exchange, swap, replace), return (return, refund), cancel,
+address, payment, transfer (human, representative, supervisor), modify (modify, change) — in that order, because
+"change my address" is an address ask and not a modify. A clause with no cue inherits the family of the clause
+before it **within the same sentence**, which is what makes "the smart thermostat for one compatible with Google
+Home" an exchange rather than a fragment; inheritance stops at the sentence because the next sentence is where
+this corpus changes the subject ("If not possible, you are angry") and an inherited family there manufactures asks
+nobody made. The object is what follows the cue up to the first conditional, preference or substitution word, so
+"exchange the keyboard **for** a clicky one" is an ask about a keyboard and not about clickiness. Two filters were
+measured rather than guessed: a clause that begins with a continuation word and carries no cue of its own is a
+modifier ("… but with clicky switches", "… same size"), and a negated cue ("do not exchange anything") is not an
+ask at all.
+
+**Receipts.** `receipts_of` keeps only the calls whose name is in `FAMILIES`, pairs them positionally with the tool
+results τ² returns in order, and requires the result to be present and not an error. Its **name table** comes from
+the episode's own reads: every `{item_id, name}` pair in any tool result, at any depth, because an order holds
+items and an exchange result holds the new order. Ids and free text are separated, because an id proves *which
+record* and a name proves *which product*.
+
+**The refusal.** `settles` requires the same family, a successful receipt, and containment between the receipt's
+names and the ask's words — **either direction**, because a user says "the keyboard" about a Mechanical Keyboard
+and "the mechanical keyboard" about a product the catalogue calls Keyboard. A receipt that names no product falls
+back to its free-text arguments (an address change carries no item id), and there the containment runs the other
+way: the ask's words must be spelled by the receipt, and one extra argument (`user_id`) must not defeat it. An ask
+that names no object is settled by the first receipt of its family and by nothing else. Everything else the
+receipts did is reported as **unattributed**, which is the board saying what it does not know.
+
+**The render, the tag, the counters.** Eight asks and 720 characters, a header that says a line is ticked only
+when a receipt names it, and an `unattributed` line. The block is injected under `microglia-board`, and
+`is_pack_message` accepts both tags so the previous turn's board is dropped by the same rule that drops a repeated
+pack (R137). `board_for` re-renders on every turn: the state channel's whole claim is that the board at turn nine
+knows what turn nine proved, and a memoised board would be a note with a list inside.
+
+**The grid.** One attempt over 114 tasks and two arms in one seed world, 228 episodes. `--note-source board`
+implies a parser and refuses `--notes`; with no sidecar there is no one-task-per-process constraint, so the
+population runs in a single `run_tasks` call. `--compare` reads the pair: the four-cell table, McNemar's exact
+test (the only test paired binary data supports), and Newcombe's interval quoted as **conservative** — ignoring
+the pairing widens it, so an interval that excludes zero here excludes it under the paired calculation too.
+
+### 17.180 Emission cadence: the cost of a material is how often it moves
+
+R214's board was 23 tokens a turn against a 4,728-token prompt, and it raised the bill 67%. The mechanism is
+positional rather than semantic: an injected block lives in the **system** message, the system message is the
+front of the prompt, and a provider's prefix cache is a function of the longest unchanged prefix. Rewriting the
+block on every turn shortens that prefix to zero, so the request is billed at the miss rate — and the provider's
+own counter measures it: `prompt_cache_hit_tokens` fell from 90.4% to 75.1% across the two arms of one dispatch.
+
+Three consequences for the design of any served material:
+
+1. **Cadence is the cost knob.** `--note-source board` re-renders per turn and pays the prefix; a note written
+   between attempts pays it once per attempt; a block written once per episode pays it once. The three differ by
+   orders of magnitude in bill and not at all in length, and the length is what every artefact in this repository
+   has recorded since R136 (`injectedChars`, `packChars`, `charsPerCall`).
+2. **The arm's cost must be quoted as a rate, not a size.** `cache.cache_hit_rate` is on every phase summary and
+   was read as a prefix-health diagnostic. It is a **price**: at this lane's card a miss is fifty times a hit.
+3. **Cache-stable emission is a design constraint on state channels.** If the board is written only when a
+   write-receipt succeeds, it changes a handful of times an episode and the prefix survives. That is also the
+   configuration the published +23.9 describes — a checker in the write path — so the cheap design and the
+   effective design are the same design, which is not true of the lesson channel.
+
+The ask supply rule carries the same lesson in the other direction. The census read one message and predicted 3.8
+asks a task; the arm read eleven messages an episode and listed 10.6, closing 1.58 of them. A material that is
+*added to* by every turn grows without bound, and its length then costs twice: once in tokens and once in the
+reader's attention. Asks come from the request; a clarification refines one, and the parser needs to say so.

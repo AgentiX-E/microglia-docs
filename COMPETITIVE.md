@@ -9941,3 +9941,40 @@ Three readings, in order of how much they should change the plan:
 - **The gap to SOTA is 6.5 points and it is a mechanism gap, not a wording gap.** Recuris reaches 87.9% with a
   working memory and a checker; its own ablation says the lesson library contributes nothing measurable. That is
   the same conclusion this lane reached from the other direction for ¥37, which is the useful thing to have bought.
+
+## R214 — the state channel enters the frontier's cost axis, negatively (24 Nov 2026)
+
+The board's top is unchanged: **87.9%**, Qwen3.5-397B on the official board and Claude Opus 5 + Recuris on
+avg@4. What changed is our own row, and it changed in a way that makes the cost axis legible for the first time.
+
+| system | τ²-retail | metric | cost / conversation | memory | stack |
+|---|---|---|---|---|---|
+| Qwen3.5-397B-A17B (official board) | **87.9%** | pass^1, mean over domains | not published | none | closed weights |
+| **Claude Opus 5 + Recuris** | **87.9%** | avg@4 | not published | experiential + verified working state | Python harness |
+| Claude Sonnet 4.5 + Skill-α | 86.0% | accuracy | not published | RL-generated skills | closed |
+| Claude Opus 4.5 (alone) | 85.3% | pass^1 | not published | none | closed |
+| GPT-5.2 (high) | 84.8% | pass^1 | not published | none | closed |
+| **microglia control (R214)** | **86.0%** | pass^1, 114 tasks, 1 attempt | **$0.0045** | none | Python + τ² |
+| DeepSeek-V3.2 + CaveAgent | 81.9% | accuracy | not published | stateful runtime | closed |
+| IBM learned guidelines | 81.14% (pass^1) / 67.54% (pass^4) | pass^1/pass^4, 114 × 4 | **$0.1084** | learned guidelines | not disclosed |
+| **microglia + goal board (R214)** | **80.7%** | pass^1, 114 tasks, 1 attempt | **$0.0080** | per-turn state board | Python + τ² |
+
+**What the round says about the field's own numbers.**
+
+1. **The +23.9 state effect did not replicate in its renderer form.** Ours is a board recomputed every turn from
+   the transcript, attributed by product name at 79.2% of changing episodes, and it cost 5.3 points and 77% of the
+   bill. The literature's state is written by a **checker** on a write and evolved under a validation gate; ours
+   was written by a **renderer** on a clock. The distinction is now the most valuable line in this table, and it
+   cost ¥10.3 to learn rather than ¥58.
+2. **Cost, not capability, is where the honest comparison lives.** Three rows of nine publish a cost. Ours is
+   24× cheaper than IBM's and 0.3 points worse on pass^1 with no memory, and 13× cheaper even with a state channel
+   that does not work. Any competitor claiming the SOTA row's 87.9% is claiming a model, not a mechanism: two of
+   the three top rows report no memory at all.
+3. **The gap to SOTA is 1.9 points from the control, and it is a mechanism gap.** The control is 86.0% at one
+   attempt with no memory; Recuris is 87.9% at avg@4 with a gated state evolution. A 1.9-point gap with a
+   4-attempt metric is inside what a stronger base model buys, which is why the next step is the checker rather
+   than a better sentence — and why an entry to that board needs the harness to be one the board accepts.
+
+**Figures.** `figures/r214-frontier.png` — left: the frontier with this dispatch's two arms and their Wilson
+intervals; middle: accuracy against cost for the three rows that publish one; right: the cache hit rate that
+explains the bill.

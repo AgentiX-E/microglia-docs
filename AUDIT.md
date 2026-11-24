@@ -16622,3 +16622,130 @@ lost nothing but the summary.
 **The repair.** The loop asks whether an arm produced a **document** (`compgen -G …/results-*.json`), not whether a
 directory exists, and the stale `mkdir` is gone. It is the same lesson as `note_bank`'s census: an artefact that
 exists is not an artefact that has content, and the code that decides has to look at the content.
+
+### 34.215 The agent every paid dispatch loads had 352 assertions and no gate
+
+`eval/drivers/tau2/selfcheck_agent.py` (53 cases, 223 assertions) and `selfcheck_usage.py` (38 cases, 129
+assertions) both run without a provider, a harness or a network. Neither was named by any workflow. `ci.yml`'s
+coverage source is `eval/drivers/alfworld` and its unit-test discovery is that directory's; `note-rescue.yml`,
+`note-bank.yml`, `note-pilot.yml` and `sota.yml` all *use* the agent and none of them runs its suite. So the module
+that decides how a treatment is served could have lost its note lookup, its pack-copy removal or its boundary
+bookkeeping in any refactor, and every job would have stayed green.
+
+This is the same class as the missing coverage floor (34.198) and the missing path filter (34.213): a gate that
+exists for the code that is *new* and not for the code that is *load-bearing*. It surfaced because R214 changes the
+agent — a new channel, a second tag, a per-turn render — and a change to a module whose tests nobody runs cannot be
+reviewed with confidence.
+
+**The repair.** `working-memory.yml`'s contract job runs both suites before any dispatch and on every push that
+touches the agent, the driver, the parser or the workflow. It is free (no model call) and takes twenty seconds.
+
+### 34.216 The census counted calls, so a board that was right was scored as noise
+
+`goal_board.census` first counted *required write calls*: for each call, does the board hold an ask of that family.
+Task 2 — "return the cleaner, headphone, and smart watch" — is a single `return_delivered_order_items` touching
+three items, and the board's three asks were scored as one found and **two spurious**. The parser was being
+penalised for reading the request correctly, and the resulting precision (34.0%) understated it by seven points.
+
+**The repair.** Each required write is weighted by the number of order items it touches (`len(item_ids)`, 1 when the
+call carries none), so the unit is the **object**. The reading moved to 79.6% recall at 41.4% precision, and the
+gate is pinned to the object reading and to a separate **family** reading (152/180, 84.4%) because a set-phrased ask
+— "modify all your pending tshirts" — is one ask covering two objects, and only the family reading measures that
+fairly. Two numbers, because the two questions are different and one of them is not the other's shorthand.
+
+### 34.217 Containment ran the wrong way for an address, and the test found it
+
+The free-text branch of the attribution rule — the branch an address change needs, because it carries no item ids —
+first required the *receipt's* words to be contained in the ask's. `modify_user_address(user_id="u1", address1="123
+Main Street", city="Chicago")` therefore never settled "change the address to 123 Main Street Chicago": `u1` is in
+the receipt and not in the request, and one extra word was enough. The rule was silently excluding every address
+change from the board, which is 35 of the 226 required objects.
+
+**The repair.** The direction is stated per branch and for a reason: a *named* product contains or is contained in
+the ask, because the two sides abbreviate differently; a *free-text* value has to be spelled by the receipt, so the
+ask's words must be a subset of the receipt's. The pinning test asserts both directions and the superset case.
+
+### 34.218 A call whose result never arrived was credited as a receipt
+
+`receipts_of` paired calls and results positionally and defaulted `ok = True` when a call had no result — the
+episode ended, the tool raised, the message was dropped. A credit for a change the environment may never have made
+is exactly the over-claim the board exists to refuse, so the default is now `False`: no result, no receipt.
+
+**How it was found.** By writing the assertion before the fix — the case "a call with no result is a receipt that
+did not happen" was written against the intended rule and failed. It is the twelfth defect in this lane found by a
+test written against a rule rather than against the code.
+
+### 34.219 The board's first render was eight lines of which three were noise, and the noise is a corpus property
+
+The parser's first pass produced 4.4 asks a task with 41% precision. Two filters cut it without costing a single
+required object — a clause that begins with a continuation word ("… but with clicky switches", "… same size",
+"prefer polyester") is a modifier and not a new ask, unless it carries its own verb; and a negated cue ("do not
+exchange anything") is not an ask, because a board that lists a forbidden action as pending sends the agent to do
+what the user refused. Folding a *near*-repeat into the longer statement was tried and **reverted**: it costs ten
+required objects across the corpus, because a comma list of products folds into the first one whenever two products
+share a word (79.6% → 75.2%). Missing an object is the defect the lane exists to remove; a repeated line is not.
+
+What is left is the corpus. Task 5 asks for two exchanges, then changes its mind mid-conversation and asks for a
+return; a board that lists the exchanges is faithful to the text and wrong about the script. That is a stated limit
+of reading what the user said (ARCHITECTURE 8.88), not a parser bug, and the run-time counters are what the reading
+quotes.
+
+### 34.220 A block that changes every turn invalidates the prefix, and the bill is 67% larger for 23 tokens
+
+R214 served a 200-character goal board on every turn: 23 tokens against a 4,728-token prompt, **+0.2%**. The
+arm's model bill came back at **$0.5094 against the control's $0.3044** — +67% — and the provider's own cache
+counter says why:
+
+| arm | prompt / call | cached tokens | hit rate | bill |
+|---|---|---|---|---|
+| control | 4,727.7 | 8,592,366 | 90.4% | $0.3044 |
+| board | 4,716.9 | 7,080,426 | 75.1% | $0.5094 |
+
+The system message is at the **front** of the prompt. A block that is rewritten every turn invalidates the prefix
+the provider had cached, so every request re-buys the whole conversation at the miss rate ($0.15/M) instead of the
+hit rate ($0.003/M). The lane has been quoting the *size* of its material since R92 — `injectedChars`,
+`packChars`, tokens per call — and the size was never the bill. The bill is how often the material **moves**.
+
+**Why this is the round's most transferable finding.** It applies to every design that re-renders context: a
+rolling summary, an updated plan, a state board, a reflection written mid-episode. Each of them looks free at the
+token count and costs a prefix. A lane that reports the cost of its memory as a length will systematically
+under-price the designs it is most interested in, which is exactly what happened here: the round was registered at
+≈ $1.0 on the assumption that a parser-built material is "free", and it cost $1.43.
+
+**The repair is architectural, not lexical.** Emit on the event that changes the state — a successful
+write-receipt — rather than on the turn. A board that changes three times an episode instead of twenty-five keeps
+the prefix and re-reads itself only when it says something new.
+
+### 34.221 The board closed 1.6 of 10.6 lines, and the second half of that sentence is the accuracy story
+
+The arm's own documents, recomputed at the last turn of every episode:
+
+| reading | value |
+|---|---|
+| asks listed at the end, mean | 10.6 |
+| ticked, mean | 1.58 |
+| open lines | 9.0 |
+| episodes ending with nothing ticked | 30 of 114 |
+| episodes at the eight-line render cap | 34 |
+| state-changing calls | 187 |
+| calls the board could not attribute | 62 |
+
+The census that licensed the parser predicted **3.8 asks a task** and measured its recall against the evaluator's
+own list. The run lists **10.6**, because asks were collected from every user message and a simulated user's
+clarifications are sentences that name an object after a verb. The census was not wrong; it measured one message
+and the run reads eleven. A material whose supply rule is "everything the user has said" grows monotonically, and
+a list that grows and does not close is a to-do list rather than a memory.
+
+The arm still attributed 79.2% of the episodes that made a change (84 of 106), which is why this is a diagnosis
+with a next step rather than a dead end: the rule that ticks a line works; the rule that **adds** one does not.
+
+### 34.222 The estimate was right about the episode and wrong about the material
+
+The registration costed 228 episodes at the bank's $0.0044: **$1.0**. The control came in at $0.0045 an episode —
+the bank's number was correct to a tenth of a cent — and the board at $0.0080, for the reason in 34.220. The
+registration's other assumption was that a parser-built material is free because it makes no model call. It is
+free to *build* and, if it is re-served, expensive to *serve*.
+
+**The rule this buys.** A cost estimate for a memory arm has three terms, not two: the episode, the material's
+own calls, and **the prefix the material invalidates**. The third is the only one that has ever surprised this
+lane, and it is measurable before a dispatch from the rate card and the emission cadence.
