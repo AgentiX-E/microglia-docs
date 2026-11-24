@@ -16263,3 +16263,58 @@ stamp.
 not see the messages). Collapsing them into "no note" is how a broken run is published as a null result, which is
 the collapse this file has recorded eleven times now. A fourth state — the sidecar exists and cannot be parsed — is
 `notes.problem`: the agent serves nothing *and* the artefact says why.
+
+## 34.300 — The binding was a sentence, and the sentence is re-written on every attempt
+
+**The defect.** R206 binds its material to a task by hashing the message that opened the episode: the runner writes
+the note under `note_key(first user message)`, the agent computes `note_key` from the message τ² handed it, and the
+matching entry is served. The registration asserted the identity was "stable within a task and different across
+tasks". Both halves are false on τ² retail:
+
+| reading | measured |
+|---|---|
+| exact key reuse over 168 same-task pairs | 0.006 |
+| within-task similarity min / mean | 0.132 / 0.444 |
+| cross-task similarity max / mean | 0.562 / 0.099 |
+| best fuzzy threshold | θ=0.30, 31 misses and 29 wrong servings |
+
+The user simulator generates the opening per attempt, so one task opens four ways; and tasks 5 and 9 are the same
+scenario for different users, so the *closest* text to a paraphrase of 5 is sometimes 9's opening. There is no
+threshold with a margin, and the shipped mechanism would have served nothing even at 100% coverage.
+
+**Why the pilot could not see it.** Its `hits: 0` was true and its cause was different: the summariser had written
+no note, because both failures were refused. Two sufficient causes, one number. A report naming either would have
+been wrong, and the wrong one ("no material was written") is the one a reader would have believed, because it is
+what the census says out loud.
+
+**The repair, in two parts.** An instrument (`eval/verifiers/opening_stability.py`) that answers the question for any
+`results.json` before an arm is dispatched; and a registration (`R207-transient-identity`) that stops matching text
+at all — one task per process invocation with its own sidecar, so the file the runner hands the agent *is* the
+identity. The failing pilot is what makes the second part affordable to specify: it reuses the same six tasks, so
+the two runs are comparable line for line.
+
+**What the instrument deliberately does not do.** It does not recommend a threshold. It prints the best one it can
+find and the two error counts that come with it, because a fitted constant presented as a property of English is
+the failure mode this repository has a rule about — and here the fitting is done on 168 pairs, which is exactly the
+sample size at which a threshold looks principled.
+
+## 34.301 — A material derived from failures cannot be measured on a corpus that hardly fails
+
+**The defect, and it is a design one rather than a code one.** R206's arm took six held-out retail tasks, four
+rounds, and produced **two** failures in twenty-four treatment episodes; the summariser declined both, and one of
+the two is an authentication dead end where escalating to a human is the policy's own answer. Coverage is therefore
+0.000 over one failure, and the arm's own gate called it `ABANDONED` — correctly, because the number it needs is a
+rate and one observation is not one.
+
+**Why this is worth recording as a defect rather than as a result.** The registration's sample was chosen for the
+*fold* (forty held-out tasks, the leaderboard's own half) and inherited by the pilot, where the base rate is
+83–92%. A pilot whose subject is "does the mechanism act" needs failures to act on, and the population of failures
+is a function of the corpus's difficulty rather than of the material. The next grid is therefore chosen **before**
+its numbers are seen: the ten held-out tasks whose control attempt failed in the fold's own control arm.
+
+**And the counter-check that must not be skipped.** A summariser that is handed a task's own failed trajectory and
+still answers `NONE` may be right — the failing attempt on task 5 shows an agent doing what the policy asks. That
+means the third possibility has to be stated: on this benchmark, most failures may not be the agent's, in which
+case a failure-derived material is starved *by construction* and the finding belongs to the benchmark rather than
+to the mechanism. The arm that distinguishes them shows the summariser the evaluator's verdict — a different
+material, registered separately, because changing it now would make R207's result attributable to neither.

@@ -27287,3 +27287,59 @@ nor `tau2-driver.ts` builds them — that driver is shaped around a facade this 
 own compact workflow (install τ², run the two phases, read the merged `results.json` and the sidecar, write one
 artefact with per-arm pass^k, the census and the bill). One round, ¥0, and it is the first item on the list below
 because a mechanism with no path is not a measurement.
+
+## 237. R206a read back: the pilot was starved, and the identity it binds by does not exist (09:15 UTC)
+
+**What was bought.** Run `45299603895`, the arm's own workflow, six *held-out* retail tasks (`5,9,12,17,18,26` —
+the first six of v1.0.1's official test split), four rounds, both arms, **¥0.64** ($0.0897), 26 minutes. The reading
+is `ABANDONED`, and the two reasons it gives are two different defects.
+
+**Defect one: the material was starved.** Of 24 treatment episodes **two** failed, and the summariser answered
+`NONE` on both — `written 0`, coverage `0.000`, specificity ungraded. The control passed 20 of 24, the treatment 22
+of 24. Reading the failing attempt explains the refusal: the user simulator could not authenticate, offered a user
+id, and the agent escalated to a human — which is what the policy asks for. **A failure whose cause is outside the
+agent's control contains no actionable note**, so this arm's coverage is a function of how many failures belong to
+the agent, and nobody had measured that on this corpus.
+
+**Defect two, and it is fatal: the identity does not exist.** The registration said the opening request is "stable
+within a task and different across tasks". Measured on the pilot's own 48 episodes by the instrument this round
+added (`eval/verifiers/opening_stability.py`):
+
+| reading | value |
+|---|---|
+| exact key reuse over 168 same-task pairs | **0.006** (one accidental match) |
+| within-task similarity, min / mean | 0.132 / 0.444 |
+| cross-task similarity, max / mean | **0.562** / 0.099 |
+| separable (within-min > across-max) | **no** |
+| best fuzzy threshold | θ=0.30 — 31 same-task pairs missed, 29 cross-task pairs wrong |
+
+τ²'s user simulator re-samples the opening every attempt, and two retail tasks can share a *scenario* (5 and 9 are
+both "exchange a water bottle and a desk lamp" for different users) — so a paraphrase of one task is closer to the
+other's opening than to its own sibling's. No threshold on text binds this material to a task.
+
+**The `hits: 0` was two defects wearing one number,** and a report that named either would have been wrong. That is
+why the measurement is a file: the next arm that binds anything to an episode can be told *before* it spends.
+
+**What was not bought, and why that is the decision.** The forty-task fold: 320 simulations at the measured ¥4.3
+would be spent on an arm whose binding cannot fire, and its zero would be published as "the material is inert" —
+the collapse this project exists to avoid, one layer below where it usually happens.
+
+**What the round did produce, at ¥0:**
+
+| artefact | what it is |
+|---|---|
+| `.github/workflows/note-pilot.yml` | the arm's dispatch path, with a **free** `contract` job that runs the same four commands over a fixture pair on every push and requires `GRADED` |
+| `eval/drivers/tau2/note_pilot.py` | 76 checks: the producer, the paired interval, `pass^k` over exactly-`k` tasks, and the off-peak window guard |
+| `eval/verifiers/r206_readback.py` | 27 cases: `N0`–`N4`, plus the two transcriptions it refuses (a headline its rows cannot produce; a census that does not close) |
+| `eval/verifiers/opening_stability.py` | 21 checks: exact reuse, within/cross similarity, and the best threshold's two error counts |
+| `prereg/R207-transient-identity.md` | the binding moved from the message to the file: one task per invocation, one sidecar per task, `scope: task` |
+
+**Two things the pilot taught that no document had stated.** A retail episode is short — 379 calls over 24 episodes
+— so 48 simulations cost $0.0897 and the fold is ≈ **¥4.3**, not the ¥5–7 the registration estimated. And a pilot's
+six-task interval is ±30 pp, which is visible in the pilot's own numbers: control `pass^4` 0.500 against treatment
+0.833 while **the treatment served nothing at all** — a 33.33 pp difference between two runs of the same
+configuration. That is the lane's noise floor measured directly, and it is the strongest argument yet for never
+quoting a six-task delta.
+
+**Next.** R207's engineering (¥0), then its pilot on the same grid at ¥0.64, and only then a fold whose grid is
+chosen *before* its numbers are seen.

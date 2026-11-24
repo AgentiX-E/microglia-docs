@@ -9725,3 +9725,39 @@ scan that (a) publishes the inert share of every fold with an interval, (b) sepa
 leaderboard: it has one pass^4 on forty retail tasks (82.5% pass@1, R198) against boards that report 114-task folds,
 and the difference is sample size, not skill. The material axis above is the first one on which this project can
 plausibly be *ahead* rather than merely careful, and it is one dispatch away from being measured.
+
+## The material literature assumes failures the agent can see — and that is now a measurable assumption
+
+The ranking this project has been chasing (stored lessons 49.0, raw logs 53.5, a summary of the attempt that just
+failed 59.9) is a ranking *of materials on the same tasks*. R206a's pilot is the first evidence here about the
+precondition underneath it, and the precondition is not free:
+
+| what the literature's tasks supply | what τ² retail's pilot supplied |
+|---|---|
+| failures dense enough that every attempt can be distilled | **2 failures in 24 attempts** (83–92% pass@1) |
+| failures attributable to the agent's own action | the one attempt read shows an authentication dead end where escalation **is** the policy |
+| a stable episode identity to bind a per-task note to | **none**: exact key reuse 0.006, corpus `NOT_SEPARABLE` |
+
+Three consequences for where this project stands.
+
+**1. The 11 pp the material is worth cannot be collected on a corpus that produces two failures.** At this base
+rate, an arm's coverage is bounded by the failure count, not by the summariser: a pilot that distilled *every*
+failure perfectly would still have produced two notes. The competitor figures are quoted on tasks designed to be
+failed repeatedly, and a comparison that ignored that would attribute a corpus property to a mechanism.
+
+**2. Two of this scan's "replications" were silently assuming the third row.** R204's guidance arm and R206's note
+arm both key their material to a request; R204 did not need the key to be stable (it served whatever the store
+retrieved), which is why it produced a number and R206 did not. The lesson is not that persistence is better — it is
+that **a transient material needs an identity a stored one does not**, and no paper in this scan reports how they
+obtained one on a harness that re-samples the user's opening.
+
+**3. The competitor that looks closest is the one that never leaves the process.** MemTrapBench's AdaptiveMem and
+the "More Memory, Worse Agents" line both operate on a *single task's own trajectory within one episode*, where the
+identity is the process. That is the shape R207 now implements — one task per invocation — and it is worth stating
+plainly that this is a retreat to a simpler binding, not an advance: the per-task, cross-attempt design is what the
+literature measured, and this lane can only reproduce it by making the file the identity.
+
+**Where microglia sits, unchanged.** Not SOTA on any board, one pass^4 at n=40 (82.5% pass@1, R198) against boards
+that report 114-task folds, and now with a measured statement no competitor publishes: on its retail corpus, a
+failure-derived material has almost nothing to derive from, and the number that would prove it is a refusal rate
+over a failure population none of these papers report either.

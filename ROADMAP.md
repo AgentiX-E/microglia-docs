@@ -9390,7 +9390,7 @@ is not one on a fold that withholds, so it is scoped rather than dropped.
 many treatments it mixed, so one guidance fold turns "−3.44 pp over six block folds" into a mixed number. A
 treatment-scoped headline is the prerequisite, named rather than worked around.
 
-## R206 (built 23 Nov, ¥0 so far) — the same task twice: guidance distilled from attempt k, discarded at the end
+## R206 (built 23 Nov, piloted 24 Nov ¥0.64, ABANDONED) — the same task twice: guidance distilled from attempt k, discarded at the end
 
 **Question.** Four rounds varied whether the memory speaks, how much, and what the pack is made of at serve time. None
 varied **where the material comes from**, and the literature's largest effect is a statement about exactly that:
@@ -9452,3 +9452,37 @@ producer (`treatmentOf` writes `rotation` unconditionally and `Treatment.rotatio
 that declares nothing writes `none`, one that declares `fair-share` writes it, the keys differ, the committed record
 regenerates with `driftOf` empty, and the five committed keys are byte-identical. Five properties asserted, no new
 artefact needed. AUDIT 34.295, TECH-DESIGN 17.184, PROGRESS 241.
+
+**Result, run `45299603895` (¥0.64, 26 min): `ABANDONED`, on two grounds.** The material was starved — 2 failures in
+24 treatment episodes, both refused by the summariser, and one of the two is an authentication dead end where the
+agent's escalation is what the policy asks for. And the binding does not exist: exact key reuse **0.006** over 168
+same-task pairs, within-task similarity minimum 0.132 against a cross-task maximum of 0.562, best fuzzy threshold
+θ=0.30 with 31 misses and 29 wrong servings (`eval/verifiers/opening_stability.py`).
+
+**The fold is therefore not bought.** 320 simulations at the measured ≈ ¥4.3 would go to an arm whose binding
+cannot fire, and its zero would be published as the material being inert. R207 supersedes the identity and leaves
+the material untouched.
+
+---
+
+## R207 (registered 24 Nov) — the same task twice, bound by the file rather than by the sentence
+
+**Why it exists.** R206a's pilot measured the one thing R206 assumed: a task's opening message is not an identity on
+τ². The user simulator re-samples it every attempt, and two retail tasks can share a scenario, so no threshold on
+text separates them.
+
+**What differs from R206.** Nothing about the material: the same summariser, the same prompt, the same single
+sentence, the same drop at the end of the task. The identity moves from the message to the **file** — one task per
+`run_split.py` invocation with its own sidecar, and the sidecar declares `scope: {kind: task}` so a mis-scoped file
+is refused rather than silently served.
+
+**Gates.** `V0`/`V8` plus four of its own: the sidecar is scoped to one task; a written note is actually served; a
+key collision inside one task's file is a refusal; coverage ≥ 0.6 with the identity fixed (below it, the next arm
+changes what the summariser is *shown*, not how the note is filed).
+
+**Price.** Pilot ¥0.64 on R206's own six tasks, then a fold whose grid is chosen before its numbers are seen: the ten
+held-out tasks whose control attempt failed. The fold itself ≈ ¥4.3 at the measured $0.0019 a simulation.
+
+**Not built.** The engineering is one round of work: the per-task invocation loop, the `scope` field and the agent's
+single-entry fallback, each with its own case.
+

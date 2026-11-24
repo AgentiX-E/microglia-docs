@@ -11497,3 +11497,76 @@ property of *this corpus*, not of English, which is why it is computed per phase
 **What is deliberately not here.** The critic. Whether a note should be *validated* before it is injected is
 MemTrapBench's AdaptiveMem, and it is the next arm if this one shows an effect — building it before the material is
 shown to act would be pricing a filter for a signal nobody has measured.
+
+## 17.188 — `note_pilot.py` and `r206_readback.py`: a producer, a grader, and the seam between them
+
+**Why two files.** The builder turns two phases into a document; the grader decides what the document means. Split
+because the two have different lifetimes: a fold's document is read months later by a reader who has neither the run
+nor the log, and a grader that had to rebuild the document would be a second implementation of the arithmetic that
+agrees with the first only until one of them is edited.
+
+**Placement, and what it buys.** The builder is `eval/drivers/tau2/note_pilot.py` (beside `notes.py`), the grader is
+`eval/verifiers/r206_readback.py` (beside every other readback). Both import nothing outside the standard library —
+the builder because the workflow's free half runs it on the *system* interpreter rather than inside τ²'s virtualenv,
+the grader because `r88_readback` is already there and its `Report` is the state machine every verifier shares.
+
+| function | what it promises | what it refuses |
+|---|---|---|
+| `last_json_line(text)` | the phase's summary object, read from the end of its log | `tau2-note-pilot-no-summary` when no line is a summary |
+| `trials_of(document)` | `{task, trial, reward}`, the trial index inferred only when absent | a document with no grid, an entry with no task, a reward outside [0, 1] |
+| `score_arm(document, k)` | `pass^k`, the episode rate, and the two lists of tasks that leave either denominator | a task with fewer than `k` trials is named `short` rather than averaged as a zero |
+| `material_of(summary)` | the census, the coverage over the rounds after the first, the agent's hits and lookups | `None` — not zeros — when the phase has no notes block |
+| `pair_of(control, treatment)` | the paired difference at both levels with Wald's interval on the discordant pairs | — |
+| `build(...)` | the document, `claim: "none"` | two agents, a control carrying notes, no shared task |
+| `grade(document)` | `GRADED / NO_MEASUREMENT / DISCARDED / ABANDONED` and a `Report` | — |
+
+**The seam, and why there is a job that only tests it.** `note-pilot.yml`'s `contract` job runs
+`--fixtures` → the builder's CLI → the grader, and requires the last line to be `GRADED`. It is the only test of the
+four commands' *composition*: a renamed flag, a `--tasks` string that no longer parses, a schema the two files
+disagree about, a `--seeds` list the builder casts to ints and the workflow passes as text. Every one of those is a
+defect that would otherwise first appear on a dispatch that had already bought 48 episodes, and none of them is
+visible to either file's own self-test.
+
+**The three refusals in the builder are about the comparison, not about the material.** Two agents makes the
+difference the wrapper's (R93); a control carrying a notes block is a treatment that leaked (the sidecar is read
+through an environment variable, so a stray variable is the ordinary way this happens); no shared task means there is
+no pair. The builder deliberately does *not* refuse a low coverage or a flat delta — those are readings, and a
+producer that withheld a document because it disliked its numbers would be the defect this record has repaired every
+time it has met one.
+
+**`pass^k`'s denominator, restated because it is the one place a number can be quietly biased.** A task counts only
+when it has exactly `k` scoreable trials; fewer leaves the denominator and is named in `short`, more is named in
+`long` and also leaves it. Averaging a task as a zero because one of its trials did not run is how a fold reports a
+`pass^4` about a grid it never ran, and the same rule is implemented on the TypeScript side (`toPassAtK`) for the
+same reason.
+
+## 17.189 — `opening_stability.py`: the question an arm must answer before it keys anything to an episode
+
+**What it is for.** Every arm that binds a material to "this task" needs the episode's identity to be available in
+the harness. R206 assumed it was, and the assumption was the arm's largest defect: its `hits: 0` had two sufficient
+causes and the wrong one was the plausible one. This file turns the assumption into a measurement that runs over any
+`results.json`, before a dispatch.
+
+| reading | what it decides |
+|---|---|
+| `exactReuse` | whether the shipped mechanism's key can ever match: 0.006 on τ² retail |
+| `withinMin` / `acrossMax` | whether *any* threshold could: separation needs the first above the second |
+| `best` | what a fuzzy matcher would cost — θ and its two error counts, printed rather than chosen |
+| `state` | `SEPARABLE`, `NOT_SEPARABLE`, `NO_MEASUREMENT` |
+
+**Why separation is the criterion and not accuracy.** A threshold's accuracy over all pairs is dominated by the
+cross-task pairs, and a classifier that said "different task" to everything would score well and serve nothing.
+What the mechanism needs is the *margin*: the least similar pair of attempts at one task must still be more similar
+than the most similar pair of attempts at two different ones. When that fails, the corpus is `NOT_SEPARABLE` and no
+threshold exists — which is what happens when two tasks share a scenario, as 5 and 9 do.
+
+**The tokenisation, and why it is the one the specificity check uses.** Lowercased words of at least four
+characters. Shorter ones (`to`, `my`, `a`) appear in every opening and would inflate every pair toward
+"same task"; longer-only would drop the product names that make two tasks distinguishable. The floor is a choice,
+and it is the same choice `notes.specificity` already made, so a reader comparing the two numbers is comparing one
+vocabulary rather than two.
+
+**Why `NO_MEASUREMENT` exits 2 rather than 0.** Fewer than two attempts at any task, or a single task, means there
+is nothing to compare — and that is a fact about the *grid*, not about the corpus. A caller that folded it into
+"not separable" would be reporting a corpus verdict from a one-round run; the pilot workflow therefore treats exit 2
+as "not measurable on this grid" and prints it rather than failing the job.
