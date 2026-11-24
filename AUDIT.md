@@ -16364,7 +16364,7 @@ the ALFWorld lane — one rule, two lanes, rather than a second convention.
 | `r206_readback.py` | 86.6% | **96.6%** |
 | together | 89.4% | **96.5%** |
 
-**What the numbers say about the cases, not just about the coverage.** 137 + 132 + 44 + 35 cases replaced 82 + 76 +
+**What the numbers say about the cases, not just about the coverage.** 138 + 132 + 44 + 35 cases replaced 82 + 76 +
 27 + 21, and the growth is not padding: twelve of the new `notes.py` cases are the five ways `lookup` can produce no
 note, which is the distinction between "the file had nothing for this task" and "the agent served nothing"; six of
 the new `note_pilot.py` cases are the merge's three refusals and the two identity counters; four of
