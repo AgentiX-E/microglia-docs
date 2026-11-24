@@ -16576,3 +16576,49 @@ number would move the other way?* An endpoint with only the first has no way to 
 
 **What it cost.** Nothing: the requirement rows were in every artefact the lane wrote. The reading was one
 reader away, and three dispatches (¥17.6) were interpreted without it.
+
+### 34.213 Every behavioural reading in this lane was taken through a noise floor larger than the effect
+
+**What was assumed.** That a 24-task grid at four rounds, with both arms in one dispatch and shared seeds, could
+resolve a 5-to-25-point effect. R212 was read that way, and its `NO_LIFT` was quoted as a property of the material.
+
+**What R213 measured.** Three arms, one world, 288 episodes. At **attempt 0** — before any note exists, with the
+same prompt and the same seed in every arm — the verdict arm passed 9 of the 20 tasks the control failed, against
+the control's 13. Four tasks. Nothing differs between the arms at that point except the provider's own sampling.
+
+That is the noise floor of the grid, measured rather than estimated: **20 points on 24 tasks**. And the
+requirement-level reading reverses between worlds for the same reason: the control's net is +1 in R212 and −10 in
+R213; the paraphrase's is −3 and +11.
+
+**The class.** This is the sixth instrument defect in this lane and the first one that is not about a number being
+computed wrongly — the numbers are right and the *replication unit* is too small. `N0b` fired on a population of
+zero, `P0` graded truncations as refusals, `P3`'s vocabulary capped at 9.4%, `pass^k` could not see a note, the
+debit's rate hid a harm channel, and now the grid itself is smaller than the effect. The check that generalises is
+one question per design: *how much does this number move when nothing changes?* — and the answer has to be measured
+(attempt 0, identical arms) rather than assumed from a binomial standard error, which is what the drift tolerance
+did.
+
+**Why the drift gate did not catch it.** Its tolerance is four tasks, which is the noise floor itself. A gate
+calibrated at the size of the noise cannot distinguish noise from signal; it can only refuse the worst draws. R212
+was read at a one-task gap and R213 at four, and both passed.
+
+**The repair is the population, not the gate.** 114 tasks put the floor near 9 points for 114 episodes — less money
+than the 96-episode grids it replaces. Any future behavioural claim in this lane is made on the bank's full
+population or not made.
+
+### 34.214 A directory is not an arm
+
+**What happened.** R213's dispatch ran all 288 episodes, wrote every document, uploaded them — and then the job
+went red in the reading step. A `mkdir -p "${RESCUE_DIR}/treatment"` survived from the two-arm version of the
+workflow, so an empty `treatment/` existed beside `control/`, `paraphrase/` and `verdict/`. The reading loop tested
+for the directory, called `rescue_rate` on it, and `rescue_rate` correctly refused ("no document under …", exit 4).
+The failure then skipped the debit step, which was the round's primary reading.
+
+**Why it matters beyond the bug.** Three separate decisions had to line up for this to be recoverable rather than
+fatal: the artefact upload runs with `if: always()`, the reader is a document reader rather than a log scraper, and
+the per-arm loop is a loop. R211 lost its per-task rows to a log-only reading and had to buy a second arm; this run
+lost nothing but the summary.
+
+**The repair.** The loop asks whether an arm produced a **document** (`compgen -G …/results-*.json`), not whether a
+directory exists, and the stale `mkdir` is gone. It is the same lesson as `note_bank`'s census: an artefact that
+exists is not an artefact that has content, and the code that decides has to look at the content.

@@ -9929,3 +9929,15 @@ Three readings, in order of how much they should change the plan:
 3. **The SOTA is 87.9% and it is a memory system.** Recuris reaches it by evolving *state* and *invocation policy*
    under a validation gate, not by writing better lessons. That is the cheapest published description of what this
    project has to build next, and it is why R214 is a goal board rather than a better sentence.
+
+**What R213 changed about our position.**
+
+- **The lesson channel is measured, not assumed.** 288 episodes, three arms: the paraphrase repairs +12.3 pp
+  [−3.5, +27.2] and the verdict — which names every unmet requirement, for zero tokens — +4.0 pp [−11.1, +18.8].
+  Both are below the grid's own noise, which R213 also measured: **four tasks in twenty at attempt 0, 20 points**.
+- **Our number is not comparable to the board's and we say so.** The board's rows are 114 tasks at avg@4; our
+  material arms are 24 hard tasks at four rounds. The only honest pairing is the bank: **81.4% pass^1 / 56.1%
+  pass^4 over 114 tasks, $0.0044 an episode**, no memory.
+- **The gap to SOTA is 6.5 points and it is a mechanism gap, not a wording gap.** Recuris reaches 87.9% with a
+  working memory and a checker; its own ablation says the lesson library contributes nothing measurable. That is
+  the same conclusion this lane reached from the other direction for ¥37, which is the useful thing to have bought.

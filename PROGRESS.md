@@ -27806,3 +27806,65 @@ memory system, and it is a memory system built on state.
 
 **Cost of the round.** R213 dispatch ≈ $1.5 (¥10.7); instruments free. Lane to date: bank $2.0103 + four ablations
 $0.1826 + R211 $0.4820 + R212 $1.0054 + R213 $1.5 ≈ **$5.18 ≈ ¥36.8**.
+
+### 243.6 R213 read: the verdict names everything and repairs less
+
+288 episodes, three arms, **$1.5334**, 25.9 s an episode. 63 notes written, none refused, every one read (201
+lookups, 93 key hits, 93 task hits).
+
+| arm | pass^1 | rescue | repaired | broken | net |
+|---|---|---|---|---|---|
+| control | 54.2% | 10/30 (33.3%) | 33/79 (41.8%) | 43/338 (12.7%) | −10 |
+| paraphrase | 59.4% | 11/27 (40.7%) | 40/74 (54.1%) | 29/343 (8.5%) | **+11** |
+| verdict | 57.3% | 11/31 (35.5%) | 38/83 (45.8%) | 31/334 (9.3%) | +7 |
+
+| movement against control | arm − control | 95% interval | exact p |
+|---|---|---|---|
+| paraphrase, repair | +12.3 pp | [−3.5, +27.2] | 0.15 |
+| paraphrase, break | −4.3 pp | [−9.0, +0.4] | 0.08 |
+| verdict, repair | +4.0 pp | [−11.1, +18.8] | 0.64 |
+| verdict, break | −3.4 pp | [−8.2, +1.3] | 0.18 |
+
+**P1 held exactly**: the verdict's notes name 82 of 82 unmet requirements (100%), the paraphrase's 38 of 73
+(52.1%). **P2 and P3 failed**: naming everything bought +4.0 pp where naming half bought +12.3, and the verdict
+broke *more* (9.3% against 8.5%) rather than less. **P4 held, and discriminates nothing** — both materials turned
+the population's bar positive, so the sign was not the material's doing.
+
+The registered refutation for this outcome says the material is inert whatever its selection, and it stands. The
+naming association of R212 was confounding.
+
+### 243.7 The reversal is the finding: the grid's noise is larger than every effect studied
+
+R212: control net +1, paraphrase −3. R213: control −10, paraphrase +11. Same tasks, same code, same driver; a
+different seed base. The requirement-level net moved by more than ten checks between two worlds.
+
+The mechanism is in the drift line, and it is not subtle: **at attempt 0, where no arm has a note and every arm
+sends the same prompt at the same seed**, the verdict arm passed 9 of the 20 tasks the control failed, against the
+control's 13. Four tasks, 20 points, with nothing different between the arms except the provider's own sampling.
+
+So the noise floor of a 24-task, four-round grid is ~20 points, and this lane has been measuring 5-to-15-point
+effects through it:
+
+- three dispatches, three stories, one material — the honest summary of the behavioural lane is **"no effect
+  larger than the grid's variance has been demonstrated, in either direction"**;
+- the drift tolerance of four tasks *is* the noise floor, which is why the same gate fired once and passed twice;
+- only effects above ~15 points are detectable at n = 24. Recuris's published +15.6 to +23.3 clears that; its +2.0
+  for a skill library does not, and its authors say the interval includes zero.
+
+### 243.8 What that changes, and what it costs
+
+Buy tasks rather than rounds. The bank already holds 456 episodes over 114 tasks at four trials; **a 114-task arm
+has a floor near 9 points**, and a one-attempt-per-task paired reading there is 114 episodes — **$0.60**.
+
+The next experiment is therefore not another material. It is the component the SOTA system's own ablation prices at
+**+23.9 points** and this lane has never built: a **working memory** — a goal board extracted once from the request
+and updated only when a tool receipt supports it — served in place of the lesson, over 114 tasks, one attempt, two
+arms, 228 episodes, **≈ $1.2 (¥8.5)**. Bar: +10 pp on pass^1, paired, with the interval excluding zero.
+
+**Cost of the round.** R213 $1.5334 (¥10.9). Lane to date: bank $2.0103 + ablations $0.1826 + R211 $0.4820 + R212
+$1.0054 + R213 $1.5334 ≈ **$5.21 ≈ ¥37.0**, against the ¥12.5 fold that would have returned a tautology.
+
+**One defect, found by the dispatch failing.** The job went red on a `mkdir -p "${RESCUE_DIR}/treatment"` left over
+from the two-arm version: the empty directory made `rescue_rate` refuse an arm with no document (exit 4, correctly)
+and the reading step failed *after* the money was spent and every document written. The step now tests for a
+document rather than a directory (AUDIT 34.214), and the reading was recovered from the artefact.

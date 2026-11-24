@@ -9620,3 +9620,31 @@ channel, and R213 measures its ceiling.
 
 Either way the lane stops treating a sentence about a failure as the unit of memory. The unit is *state*: what is
 done, what is pending, and what a receipt proves.
+
+**R213 read: the material was not the defect, and the grid is too small to see the defect.**
+
+Three arms, 288 episodes, $1.5334. The verdict material named 100% of the unmet requirements and repaired 45.8%,
+against the paraphrase's 52.1% naming and 54.1% repair: **naming is not the lever**, and the registered refutation
+for that outcome stands. The paraphrase's own +12.3 pp has an interval of [−3.5, +27.2].
+
+The reversal between R212 and R213 (control net +1 then −10, paraphrase −3 then +11) has one measured cause: at
+attempt 0, where no arm has a note, the arms differ by four tasks in twenty. **The noise floor of a 24-task grid is
+20 points**, and every reading this lane has published was taken through it.
+
+So the plan stops buying 24-task arm pairs, and the next experiment is chosen for two properties at once: an effect
+large enough to clear a 9-point floor, and a mechanism this lane has never built.
+
+**R214 — working memory, over the whole population.** A goal board extracted once from the request, listed as
+pending items, and marked done **only when a tool receipt supports it** — served instead of the lesson. 114 tasks,
+one attempt, two arms, 228 episodes, **≈ $1.2 (¥8.5)**, ~20 minutes at concurrency 3. Endpoint: pass^1, paired by
+task, bar **+10 pp with the interval excluding zero**. Floor at n = 114 is ~9 points, so the bar and the floor are
+the same size and the reading is honest about it.
+
+The expectation is not ours: Recuris's ablation on this benchmark prices a skill library at **+2.0 points (interval
+includes zero)** and a verified working state at **+23.9**, with the whole library dumped into context scoring 18
+points below the state-conditioned arm. If a goal board cannot clear +10, the channel is closed for this agent too
+and the lane's remaining work is the checker and the invocation policy, not the memory content.
+
+**Order after R214:** the checker (admit a state change only on a receipt) at ≈ ¥8.5, then cross-domain transfer
+(retail → airline, 50 tasks, ≈ ¥6), then a submission to the τ² board — which needs the base agent to be one the
+board accepts, and that is a decision about the harness rather than about this lane.
