@@ -27718,3 +27718,91 @@ which is a decision rule rather than a wording.
 
 **Cost of the round.** R211 $0.4820 + R212 $1.0054 = **$1.49 ≈ ¥10.5**. Lane to date: bank $2.0103 + four ablations
 $0.1826 + these two = **$3.68 ≈ ¥26.1**, against the ¥12.5 fold that would have returned a tautology.
+
+## 243. The harm had a name, and the competitor's own ablation says which material to build next (13:45 UTC)
+
+Three dispatches have asked "did the note help" and all three answered with a number that nets two opposite
+movements. R212's was 12/30 against 13/34. This round separates the movements, and the separation is the finding.
+
+### 243.1 What R212 says at requirement resolution
+
+Every episode is scored on a fixed set of requirements — the database match, the named actions, the assertions,
+the communicated facts. `eval/tools/memory_debit.py` counts their transitions, with no model call, from the
+documents R212 already paid for: 85 unmet and 332 met requirements per arm, against the rescue rate's thirty
+opportunities.
+
+| arm | episodes | pass^1 | pass^k | rescue | repaired | broken | net |
+|---|---|---|---|---|---|---|---|
+| control | 96 | 52.1% | 20.8% | 13/34 (38.2%) | 38/85 (44.7%) | 37/332 (11.1%) | **+1** |
+| paraphrase | 96 | 51.0% | 8.3% | 12/30 (40.0%) | 40/83 (48.2%) | 43/334 (12.9%) | **−3** |
+
+Repair +3.5 pp (p = 0.76), break +1.7 pp (p = 0.55): neither is resolved, and their sum is negative. The honest
+sentence is **"memory moves work around, and slightly against us"**, not "memory does nothing".
+
+### 243.2 The bar, and why a filter is not the answer
+
+The admission bar is `breaks/(repairs+breaks)` = **51.8%**, against a base repair rate of **48.2%**. A gate must
+find repairs at a rate above the break share, so a gate on this material would have to beat the population by 3.6
+points before it could invert the sign. That is R34's bar — measured on BIRD in an earlier life of this repository
+— arriving on a second corpus with the same verdict: **the filter has no headroom, so the material is the defect.**
+
+### 243.3 The material is pointed at the wrong requirement half the time
+
+| reading | value |
+|---|---|
+| unmet requirements the note names | 41 of 82 (50.0%) |
+| notes naming something / everything | 29 / 4 of 35 |
+| repaired when named | 22/41 (53.7%) |
+| repaired when silent | 17/41 (41.5%) |
+| exact p | 0.38 |
+
+An association, not a cause — a note may name the easy requirements — but it is the largest movement this lane has
+produced and it has a mechanical explanation: a summariser writing a sentence about a conversation can miss the
+one check that decides the episode. R208 added the verdict to its prompt and the sentence got better; it still
+misses half.
+
+So the repair is not a filter. It is to stop paraphrasing: `--note-source verdict` serves the evaluator's verdict
+as the note, which names 100% of the unmet requirements by construction, in the evaluator's words, at 447
+characters — the length the paraphrase spent 96 tokens approaching — for **zero tokens**.
+
+### 243.4 The three-arm dispatch, and the competitor that already measured this
+
+| arm | material | model calls per failure | cost |
+|---|---|---|---|
+| control | none | 0 | $0.50 |
+| paraphrase | R212's sentence (trajectory + verdict) | 1 | $0.50 |
+| verdict | the evaluator's verdict as written | **0** | ≈ $0.45 |
+
+288 episodes, ≈ **$1.5 (¥10.7)**, dispatched 13:34 UTC. `prereg/R213-debit-and-verdict.md` registers four
+predictions (naming 100%, repair above 48.2%, break below 12.9%, the bar's headroom turning non-negative) and four
+refutations, including the one that ends this mechanism entirely: if naming does not cause repair, no within-task
+sentence can be made to work.
+
+The reason to expect anything at all — and the reason to expect it from *state* rather than from lessons — is
+published. Recuris (arXiv 2608.24876, NUS/Stanford/Oxford/Princeton, August 2026) ablates its own memory on the
+same benchmark:
+
+| component | τ²-retail effect |
+|---|---|
+| experiential skills alone (a library of lessons) | **+2.0 points, CI includes zero** |
+| verified working state alone (a goal board) | **+23.9 points** |
+| both | +25.4 |
+| the whole library dumped into context every turn | 65.6, against 83.6 for injecting the one skill matched to the call |
+| removing write review (the checker) | −13.5 points on airline |
+
+**That is this lane's finding arriving from the other direction.** Three rounds here (£17.6) measured the lesson
+channel and found a wash; the SOTA system's own ablation prices the lesson channel at +2 points with an interval
+that includes zero, and the state channel at +24. The SOTA on τ²-retail — **87.9%, Claude Opus 5 + Recuris** — is a
+memory system, and it is a memory system built on state.
+
+### 243.5 What that changes
+
+- If R213 reads `REPAIRS`, the material was the defect and the verdict is the material: a free change.
+- If it reads `WASH` or `BREAKS`, the lesson channel is closed on this benchmark and R214 builds a **working
+  memory** — a goal board extracted once from the request, updated only when a tool receipt supports it — which is
+  the component Recuris prices at +23.9 and the one this lane has never tried.
+- Either way the unit of memory stops being a sentence about a failure. The unit is state: what is done, what is
+  pending, and what a receipt proves.
+
+**Cost of the round.** R213 dispatch ≈ $1.5 (¥10.7); instruments free. Lane to date: bank $2.0103 + four ablations
+$0.1826 + R211 $0.4820 + R212 $1.0054 + R213 $1.5 ≈ **$5.18 ≈ ¥36.8**.

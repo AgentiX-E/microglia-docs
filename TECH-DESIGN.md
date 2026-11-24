@@ -11790,3 +11790,33 @@ Two consequences for the instrument:
   twenty-four-task grid and its default selection gives `NO_LIFT`; the twenty-four-task total gives an upper limit
   of 63.4% against a 63.2% bar, one fifth of a point from `INCONCLUSIVE`. A reader who is not shown both would take
   a boundary for a margin.
+
+### 17.178 The debit: requirement keys, two denominators, and a bar instead of a gate
+
+`eval/tools/memory_debit.py` reads a paid run at the resolution the evaluator already scores. Four decisions:
+
+- **the key is the requirement, not the instantiation.** `("action", "exchange items")`, `("nl", <assertion
+  text>)`, `("db", "the database rows the request requires")`, `("communicate", <datum>)`. Two attempts that call
+  the same tool with different arguments are two attempts at one requirement; an argument-level key would make
+  the same requirement two different ones and the turnover would be a comparison of unrelated rows.
+- **two denominators, never one.** A repair can only happen on a requirement that was unmet; a break only on one
+  that was met. The rates are over 85 and 332 respectively, and a reader that divided both by the total would be
+  reporting the difference of two rates over two populations — exactly what the rescue rate already did.
+- **exact tests at these sizes.** Fisher's two-sided on both movements, imported from `rescue_rate` rather than
+  re-implemented, because at n ≈ 85 the asymptotics are the thing being assumed.
+- **the bar before the gate.** `breaks/(repairs+breaks)` is the precision a gate must exceed, computable before
+  any gate exists; when it sits above the base repair rate (51.8% against 48.2% in R212) the population is
+  net-negative and the honest next step is a different material rather than a filter. This is R34's bar on a
+  second corpus, and it is the reason R213 spends its money on `--note-source verdict` rather than on an admission
+  rule.
+
+The naming association is deliberately lexical. An embedding would make the reading depend on a model that
+changes between runs, and the question — "is the note about the thing that failed" — survives a blunt test: a note
+that never writes the words is not about them. Its 53.7%-against-41.5% is reported as an association with its
+p-value and its confounding stated, not as a causal claim. The word floor is two characters because `db` and `id`
+are requirement tokens: at three, the database requirement was unnameable by construction and the denominator
+was missing a family.
+
+`--note-source model|verdict` moves the material from the driver into the dispatch: the verdict arm's note is the
+evaluator's text with the `REWARD` line dropped and the met lines kept, because the harm this instrument measures
+is a *break* and a note that repeats what already passed is the only part of it that could prevent one.

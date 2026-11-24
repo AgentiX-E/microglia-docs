@@ -16546,3 +16546,33 @@ replication here, and does my variance know it?* For anything scheduled by seed,
 
 **Cost of finding it.** ¥3.4 — the price of the arm that was refused. That is the cheapest defect this lane has
 found, and it was found by a gate written before the defect existed.
+
+### 34.212 Three rounds of nulls were read through an endpoint that nets two movements
+
+**What was measured.** R210, R211 and R212 each asked "did the note help" and each answered with one number per
+episode (`pass^k`) or one number per attempt (the rescue rate). R212's answer was 12/30 against 13/34: a wash.
+
+**What the same documents say at requirement resolution.** Every episode is scored on a fixed set of requirements
+— the database match, the named actions, the assertions, the communicated facts — and those move independently.
+Counting them: the control repaired 38 of 85 unmet requirements (44.7%) and broke 37 of 332 met ones (11.1%),
+net +1; the paraphrase repaired 40 of 83 (48.2%) and broke 43 of 334 (12.9%), **net −3**. The material repairs
+3.5 points more and breaks 1.7 points more, and the sum of the two is negative.
+
+**The defect.** Not in the code and not in the run: in the *resolution*. A rate that nets two opposite movements
+cannot say whether a material did nothing or cancelled itself, and the difference decides the product. Three nulls
+were read as "the sentence is not good enough" when the record was saying "the sentence is pointed at the wrong
+requirement half the time" — the notes named 41 of the 82 requirements their source attempt missed (50.0%), and a
+named requirement is repaired 53.7% of the time against 41.5% when it is not.
+
+The naming test keeps two-letter tokens. A threshold of three made the database requirement unnameable, and a
+requirement that cannot be named is one the association can never count; the correction moved one requirement in
+82 and is recorded here rather than applied quietly.
+
+**The class.** This is the fifth defect in this lane of the shape "the instrument cannot see the thing":
+`N0b`'s population of zero, `P0`'s truncations graded as refusals, `P3`'s exclusive vocabulary with a 9.4%
+ceiling, `pass^k`'s blindness to a note, and now a rate that hides a harm channel. The general check is one
+question per endpoint: *if the intervention worked, which number moves — and if it also broke something, which
+number would move the other way?* An endpoint with only the first has no way to distinguish help from harm.
+
+**What it cost.** Nothing: the requirement rows were in every artefact the lane wrote. The reading was one
+reader away, and three dispatches (¥17.6) were interpreted without it.

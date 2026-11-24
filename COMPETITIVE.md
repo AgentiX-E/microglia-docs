@@ -9897,3 +9897,35 @@ that decides whether a mechanism can be iterated at all.
   with; it is reported because a lift without a yield is unreadable.
 - `P3`'s amended bar is missed (44.7% vs 50%). Whether that matters depends on the fold: a note that names the
   failing check half the time may still lift `pass^4` if the agent reads it.
+
+## R213 — the frontier, by published number (24 Nov 2026)
+
+The lane's own claim is about memory, so the comparison that matters is against systems that also add memory to a
+frozen model on the same benchmark. Five rows are published with enough detail to be compared; the rest of τ²
+retail's leaderboard is model capability rather than memory.
+
+| system | τ²-retail | metric | cost / conversation | memory | stack |
+|---|---|---|---|---|---|
+| Qwen3.5-397B-A17B (official board) | **87.9%** | pass^1, mean over domains | not published | none | closed weights (API) |
+| **Claude Opus 5 + Recuris** | **87.9%** | avg@4 | not published | experiential + working memory, gated patches | Python harness, frozen model |
+| Claude Opus 4.5 (alone) | 85.3% | pass^1 | not published | none | closed |
+| GPT-5.2 (high) | 84.8% | pass^1 | not published | none | closed |
+| Claude Sonnet 4.5 + Skill-α | 86.0% | accuracy | not published | RL-generated skills | closed |
+| DeepSeek-V3.2 + CaveAgent | 81.9% | accuracy | not published | stateful runtime | closed |
+| **IBM learned guidelines** | 81.14% (pass^1) → **67.54% (pass^4)** | pass^1/pass^4, 114 tasks, 4 trials | **$0.1084** | learned guidelines from a train split | not disclosed |
+| **microglia (bank, no memory)** | **81.4%** (pass^1) / 56.1% (pass^4) | pass^1/pass^4, 114 tasks, 4 trials | **$0.0044** | none | Python driver + τ² |
+| microglia + paraphrase note | 51.0% / 8.3% on the hard 24 | pass^1/pass^k | $0.0052 | one sentence per failure | same |
+
+Three readings, in order of how much they should change the plan:
+
+1. **The memory rows disagree with each other, and the disagreement is the finding.** Recuris's own ablation puts
+   the lesson library at **+2.0 points (CI includes zero)** and a verified working state at **+23.9**. This lane
+   spent three dispatches (¥17.6) measuring the lesson channel and found a wash — the same result, from the other
+   direction, at a fortieth of the cost.
+2. **Nobody publishes both accuracy and cost except IBM and us.** IBM's $0.1084 buys 81.14% pass^1 and 67.54%
+   pass^4 on the base split, with guidelines learned from a train split the base split includes — a leak they
+   declare and the board lists as unverified. Our $0.0044 is 25× cheaper and 0.3 points lower, with no memory
+   claim at all.
+3. **The SOTA is 87.9% and it is a memory system.** Recuris reaches it by evolving *state* and *invocation policy*
+   under a validation gate, not by writing better lessons. That is the cheapest published description of what this
+   project has to build next, and it is why R214 is a goal board rather than a better sentence.

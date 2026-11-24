@@ -9590,3 +9590,33 @@ any price this lane would pay.
 **Next, in order:** EDV's verify-then-admit (¥0.5, offline on the 85 stored failures), then `P3`'s learned
 guidelines (74 train → 40 held-out, ¥10). The behavioural question is now "should a failing note be refused", which
 is a decision rule and not a wording.
+
+**R213 measures the material, and the competitor's own ablation says which material to measure next.**
+
+`--note-source verdict` serves the evaluator's verdict as the note: it names 100% of the unmet requirements by
+construction, at 447 characters, for zero tokens. Three arms in one world (control, paraphrase, verdict), 24 hard
+tasks, four rounds, 288 episodes, ≈ ¥10.7 — dispatched 13:34 UTC.
+
+The reason to expect something, and the reason to stop expecting it from lessons, is published. Recuris
+(arXiv 2608.24876) ablates its own memory on the same benchmark and reports:
+
+| component on τ²-Retail | effect |
+|---|---|
+| experiential skills alone (a library of lessons) | **+2.0 points, CI includes zero** |
+| verified working state alone (a goal board) | **+23.9 points** |
+| both | +25.4 |
+| the whole skill library dumped into context every turn | 65.6, against 83.6 for injecting the one skill matched to the call |
+| removing write review (the checker) | −13.5 points on airline |
+
+That is this lane's finding arriving from the other direction: **the lesson channel is worth about nothing on this
+benchmark, and the state channel is worth about twenty-four points.** Three rounds here measured the lesson
+channel, and R213 measures its ceiling.
+
+- **If R213 says the verdict repairs more than the paraphrase** (`REPAIRS`), the material was the defect and the
+  verdict is the material — a free change, since it spends no tokens.
+- **If it says `WASH` or `BREAKS`**, the lesson channel is closed on this benchmark and the next arm is a **working
+  memory**: a goal board extracted once from the request, updated only when a tool receipt supports it, and served
+  in place of the lesson. That is R214, ≈ ¥11 for 288 episodes, and it is the component Recuris prices at +23.9.
+
+Either way the lane stops treating a sentence about a failure as the unit of memory. The unit is *state*: what is
+done, what is pending, and what a receipt proves.
