@@ -9529,3 +9529,35 @@ gate it sets is a **failure bank** rather than a fold: one control-only round ov
 **$0.21 (¥1.5)** and about an hour, then two summariser calls per failed attempt (under ¥0.5, no simulator) to
 measure P2's refusal rate and P3's specificity on a population that has failures in it. The 320-simulation fold
 stays unbought until those two are measured.
+
+**Result (08:00 UTC) — the bank, and three defects behind one measurement.**
+
+| reading | value |
+|---|---|
+| retail `pass^1` / `pass^4`, 114 tasks × 4 trials | **81.4% / 56.1%** |
+| failed attempts in the bank | **85**, all 85 explained by the evaluator |
+| cost | **$2.0103** (¥14.5), **$0.0044** an episode, 23.3 s an episode |
+| note yield, as first measured | **1.2%** of failures |
+| note yield, after the call was fixed | **98%** |
+| specificity, paired (verdict vs attempt) | 44.7% vs 28.9%, chance 23%, **McNemar p = 0.0005** |
+
+**The note lane had never run.** Every note call spent its whole 96-token budget on reasoning — `deepseek-flash`
+thinks by default and bills it against `max_tokens`, and the note call was the one call in the driver that did not
+disable it — so the empty answer was read as `NONE`. R206a, R207 and R208 each reported a refusal rate on that
+evidence, and the lane's yield was 1.2% of failures rather than 98%. A truncated call is now its own state,
+`P0` refuses to grade a reading that contains one, and `notes.call_note_model` is the only copy of the call.
+
+**The verdict material was one line repeated 85 times.** `action_checks[].action` arrives as an object
+(`{"name", "arguments"}`) and the reader wanted a string, so every failure rendered `ACTION not met`; the
+evaluator's `justification` was dropped. With actions rendered by name and arguments, justifications quoted, and
+**failures ordered before passes**, the verdict's mean length went 169 → 439 characters and the empty exclusive
+vocabulary 77 → 30 of 85.
+
+**And `P3`'s bar was unreachable.** As registered it needed a token no other failure held, which on this bank caps
+at 9.4%. The amended measure (a token of the failure's own failing lines, with the same note against the other 84 as
+its chance rate) reads 28.9% vs 44.7% with 15 notes specific only under the verdict against 1 the other way. The
+registered 50% bar is still missed, so `P3` stays refuted — but the effect is now measurable rather than invisible.
+
+**Next: the fold, dispatched for 10:01:30 UTC.** The bank's 50 failing tasks × 2 arms × 4 rounds = 400 episodes at
+`concurrency 3`, ≈ $2.4 (¥17), ≈ 70 minutes. It is the first run in which the sidecar is exercised on notes that
+exist, and the first `pass^k` lift this lane can quote if there is one.

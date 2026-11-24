@@ -11688,3 +11688,53 @@ phase is refused rather than averaged.
 **Cost, measured on a rendered example.** 210 characters on a retail failure against the attempt's 2,000: about 55
 tokens, 0.03% of the treatment arm's prompt in R207's pilot, billed inside the arm's own `prompt_tokens` rather than
 by a second instrument.
+
+## 17.192 — The material ablation: paired by construction, graded against chance
+
+The note lane's question is narrow — does showing the summariser the evaluator's verdict produce a better note
+than showing it the attempt alone — and the design is chosen to make that question answerable at n = 85 for four
+cents.
+
+**Paired.** Same failures, same model, same ceiling, `temperature=0`, one call each side, in one process. Only the
+material moves. A crossed design would confound the material with the schedule, and at this n the confound would be
+larger than the effect.
+
+**McNemar's exact test, not a difference of proportions.** In a paired binary outcome only the discordant pairs
+carry information: `rescued` (refused then written) against `lost` (written then refused), and separately
+`verdictOnly` against `attemptOnly` for specificity. Under the null the two are equally likely, so the count is
+binomial with `p = 1/2` and the two-sided exact p-value is twice the smaller tail, capped at 1. No normal
+approximation: the discordant counts are 2 and 16.
+
+**Four gates, in the order a failure of each would invalidate the others.**
+
+| gate | reads | bar | a failure means |
+|---|---|---|---|
+| `P0` | calls cut off at the token ceiling | 0 | nothing was measured; `exit 2` |
+| `P1` | failures whose verdict renders a line | ≥ 80% | the material does not exist |
+| `P2` | of what the attempt arm declined, how many the verdict arm wrote | ≥ 50% | the verdict does not rescue |
+| `P3` | notes naming a token of their own failing lines | ≥ 50% | the notes are written but not from the verdict |
+| `P4` | prompt characters the block adds, per failure | ≤ 667 | the block is a second trajectory |
+
+**`P0` exists because its absence cost three rounds.** `deepseek-flash` bills its reasoning against `max_tokens`; a
+note call that leaves thinking on returns an empty message, and `sentence_of` cannot tell that from `NONE`. The
+first ablation read 82 of 85 "refusals" that were truncations. `notes.call_note_model` now disables thinking and
+returns `finish_reason`, `truncated` is a state of its own in every census, and no reading is graded with one in it.
+
+**`P3` is measured against chance, and the chance rate is printed beside it.** A note that says "confirm the details
+with the customer" shares tokens with every failure's failing lines; a note that says "process the return for
+#W7387996 as well" shares them with one. Reporting the share without the baseline would let a vague material pass
+and a specific one fail. The registered measure — a token only the note's own failure held — is kept as
+`exclusive`, and on this bank its ceiling is 9.4% because the action a note most needs to name is an action other
+failures name too.
+
+**The verdict's content is part of the material, and it was degenerate.** `action_checks[].action` arrives as
+`{"name", "arguments"}`, and a reader that wanted a string rendered `ACTION not met` for all 85 failures; the
+evaluator's `justification` was dropped. The renderer now emits `ACTION not met: exchange_delivered_order_items(
+order_id=#W2378156, …)`, appends the justification when it says something new, and orders **failures before
+passes** so that a block truncated at its ceiling keeps the lines that explain the failure rather than the ones that
+say other steps were fine. Mean verdict 439 characters, max 598 against a 600 ceiling.
+
+**The measure can be recomputed from the reading.** `--keep-notes` carries the sentences and their verdicts;
+`--from-reading` recomputes `P3` and its paired contrast from them, keeping `P0`–`P2` and `P4` as the calls produced
+them. A measure that changes should not cost a dispatch to test, and the ceiling of a measure should be checkable
+before anything is spent on it.

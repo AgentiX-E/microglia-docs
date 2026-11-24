@@ -27491,3 +27491,100 @@ ceiling before the install and re-checks against the count the split actually li
 
 CI green on `06430af` (`45332543838`); the note lane's contract job green on `4d4b8f4` (`45331039429`) with the
 coverage gate now at **five files** and `--expect-files 5`.
+
+## 240. The bank, and three defects it took three dispatches to separate (08:00 UTC)
+
+The lane's first population measurement, and the round in which the note lane turned out never to have run.
+
+### 240.1 The bank: `pass^4` 56.1% on the split the ladder reports
+
+`note-bank` (`45329752184`, `b3d5db0`), 114 retail tasks × 4 trials, one control arm, no sidecar.
+
+| reading | value |
+|---|---|
+| tasks / episodes | 114 / **456** |
+| `pass^1` | **81.4%** |
+| `pass^4` | **56.1%** over 114 tasks |
+| tasks with a failure | **50** |
+| failed attempts | **85** |
+| failures the evaluator explained | **85 (100.0%)** |
+| verdict characters | mean 169, max 428 (as rendered then) |
+| cost | **$2.0103** (agent $1.5863, simulator $0.4240) |
+| cost per episode | **$0.0044** |
+| mean episode | 23.3 s |
+| wall clock | 96 min at concurrency 2 |
+
+Two instrument repairs came with it. **The bill was not in the census**: pricing it took a throwaway script, and the
+estimate it replaced had been argued at `$0.30` from the pilot's `$0.0019` an episode — measured on six tasks that
+all pass, which is the cheapest population the lane has. The split costs 2.4× more an episode and 6.5× the total.
+`note_bank.bill_of` now reads τ²'s own `agent_cost`, `user_cost` and `duration`, so a bank states what it cost,
+what an episode costs and how long one takes. **The guard estimated from a fallback**: with no `--tasks` the runner
+resolves the split (114 tasks) while the guard assumed forty — the one direction a window guard must never be wrong
+in. It now refuses against a per-domain ceiling before the install and re-checks against the listed count before
+the first paid call.
+
+`pass^4 56.1%` is the control: the stock agent on DeepSeek, no memory, no sidecar. It is not comparable line for
+line with the ladder's submissions (they run frontier models) but it is the first denominator this lane has.
+
+### 240.2 Three defects, each hiding the next
+
+The material ablation was dispatched three times on the same 85 failures, ≈ $0.042 a run.
+
+| run | what changed | attempt | verdict | P2 | P3 (as registered) | state |
+|---|---|---|---|---|---|---|
+| 45345191995 | as registered | 3 written / **82 refused** | 1 / 84 | 0 of 82 | 0.0% | REFUTED |
+| 45347478669 | thinking disabled | **84 / 1** | **85 / 0** | 1 of 1 | 1.2% / 4.7% | P3 refuted |
+| 45349096717 | the verdict's content | 83 / 2 | 85 / 0 | 2 of 2 | 15.7% / 16.5% | P3 refuted |
+
+**Defect one — the call.** Every note call spent its whole 96-token budget before writing. `deepseek-flash` answers
+in thinking mode by default and **bills the reasoning against `max_tokens`**; the note call was the one call in the
+driver that did not pass the thinking body its own agent and simulator calls pass. The tell was in the bill: 8,156
+completion tokens over 85 paired calls is **96.0 a call**, on an answer `NONE` would cost two tokens for.
+`R206a`, `R207` and `R208` all reported "the summariser refused" on that evidence — **three rounds of the note lane
+were measuring a truncation**, and the lane's yield was 1.2% of failures rather than the ~98% it should have been.
+
+**Defect two — the state.** `sentence_of` answers `""` to both "declined" and "cut off" and `note_round` counted
+both as `refused`. `truncated` is now its own state and counter, the census closes as `written + refused +
+truncated == failed`, and the ablation grades **P0 — no call was cut off** and returns `exit 2` when one was.
+
+**Defect three — the content.** With the call fixed the notes were written and P3 was 4.7%, so the next question was
+whether P3 could see specificity at all. It could not: **77 of 85 failures had an empty exclusive vocabulary**,
+which put P3's ceiling at 9.4% and made its 50% bar unreachable by construction. The cause was a reader that wanted
+a string where τ² sends an object (`action_checks[].action` is `{"name", "arguments"}`), so every failure rendered
+`ACTION not met` and nothing else, and the evaluator's `justification` — "the agent told the user there are 12
+options, not 10" — was dropped entirely. Rendering the action as `name(arguments)`, quoting the justification and
+emitting **failures before passes** inside the ceiling took the verdict's mean length from 169 to 439 characters and
+the empty-vocabulary population from 77 to 30 of 85.
+
+### 240.3 What the material is worth, measured against chance
+
+`P3` as registered has an unusable ceiling on this bank, so the amended measure is stated and then measured: a note
+is specific if it shares a token with its own failure's **failing lines**, and the same note against the other 84
+failures' failing lines is its chance rate. Paired on 85 failures:
+
+| material | names its own failing check | chance |
+|---|---|---|
+| attempt only | 28.9% | 22.5% |
+| attempt + verdict | **44.7%** | 23.2% |
+
+23 both, **15 verdict-only, 1 attempt-only**, 44 neither — **McNemar exact p = 0.0005**. The material doubles the
+note's specificity over chance and the registered bar of 50% is missed by 5.3 points, so `P3` stays refuted on its
+bar while the effect it was written to detect is now visible. `P2` is satisfied trivially: with thinking off the
+attempt arm declines 2 of 85, so there is nothing left to rescue, and its p of 0.5 on two discordant pairs is a
+direction and not evidence. `P1` (85 of 85) and `P4` (456 characters, ceiling 667) both hold.
+
+The qualitative read is unambiguous, and it is why P3 alone was never going to settle this. Task 12, attempt-only:
+*"Do not process the return before confirming the refund method with the customer."* Task 12, with the verdict:
+*"Process the return for order #W7387996 as well, since the user asked about multiple items and you only handled
+#W5490111."* One is advice about manner; the other names both orders.
+
+### 240.4 What is running, and the next number
+
+The **fold is dispatched for 10:01:30 UTC** (the first off-peak minute after the 06:00–10:00 window closes): the
+bank's 50 failing tasks × 2 arms × 4 rounds = 400 episodes, `concurrency 3`, ≈ $2.4 (¥17), ≈ 70 minutes. It is the
+first run in which the sidecar mechanism is exercised on notes that exist — R207 asked 24 times and found nothing
+because nothing had been written — and it is the first `pass^k` lift this lane can quote if there is one.
+
+**Cost of the round.** Bank $2.0103 (¥14.5) + three ablations $0.126 (¥0.9) = **¥15.4**. Instrument coverage 96.8%
+over six files (`notes` 96.0, `note_pilot` 97.0, `r206_readback` 96.3, `opening_stability` 98.1, `note_bank` 96.3,
+`note_material_ablation` 98.4), `--expect-files 6`, 189 + 141 + 52 + 35 + 37 + 96 self-check cases.

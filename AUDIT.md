@@ -16412,3 +16412,88 @@ rather than the state: a saturated grid must contain no `FIRED` line at all, mus
 asked for, must name the population as the reason, and must mark coverage `n/a`; and a summariser that declined
 every attempt must still abandon — on the coverage gate, with the sidecar gate clear. `r206_readback.py` stands at
 96.3% with `--expect-files 4`.
+
+## 34.304 — Three rounds of the note lane measured a truncation and called it a refusal
+
+**Defect.** The summariser's call was made twice in the driver — once in `run_split.py`'s `write` closure and once,
+later, in R208's ablation — and neither copy passed the provider's thinking switch. `deepseek-flash` answers in
+thinking mode by default and **bills the reasoning against `max_tokens`**; the note budget is `96` tokens for one
+sentence. So every call spent the budget before writing anything, returned an empty message, and
+`notes.sentence_of` — which answers `""` to both "the model declined" and "the model was cut off" — read it as
+`NONE`.
+
+R208's ablation is the measurement that exposed it, and it did so with its own bill rather than with a hypothesis:
+
+| reading | value | what a refusal would look like |
+|---|---|---|
+| paired calls | 170 | — |
+| completion tokens, attempt arm | 8,156 over 85 | 85 × 2 = 170 |
+| completion tokens per call | **95.95** | 2 |
+| completion tokens, verdict arm | 8,160 over 85 | 170 |
+| calls with content | 4 of 170 | 0 or 170 |
+
+A call that returns `NONE` costs two tokens. Every call cost 96. The two arms' totals are 96 × 85 to the token.
+
+**What it invalidated.** `R206a`, `R207` and `R208` each reported a refusal rate — 2 of 2, 1 of 1, and 82 of 85 —
+and each reasoned from it: "the attempt alone does not let a summariser name the mistake", "the verdict is what the
+summariser was missing". All three numbers were the token ceiling. R207's conclusion that its grid was saturated
+survives (that is arithmetic on rewards), and so does R208's bank; the *material* question was never asked, because
+neither arm ever produced an answer.
+
+**Class.** This is the third instrument defect in the lane and the first one that is a lost keyword rather than a
+wrong predicate. Its shape: **two copies of a call, one of which is edited.** The driver's own comment at
+`run_split.py:784` documents that `deepseek-flash` thinks by default and that the agent and simulator calls disable
+it; the note call was the copy written later and it did not. The repair removes the duplication rather than adding
+the keyword twice: `notes.call_note_model` is now the only summariser call, and the self-check asserts its
+`extra_body`, `max_tokens` and `temperature` — beside the request, where the next reader will see it next to the
+agent's own.
+
+**Second defect, in the same measurement.** `sentence_of` folds "declined" and "cut off" into one answer, and
+`note_round` counted both as `refused`. The census now separates them: `truncated` is its own state and its own
+counter, the census closes as `written + refused + truncated == failed`, and the ablation grades **P0 — no call was
+cut off** — refusing to read a material at all when one was (`exit 2`, `tau2-ablation-truncated`). A budget fact
+reported as a judgement is how three rounds went by without anyone asking why a model refused 96% of real failures
+that the evaluator had *explained in writing*.
+
+**Why the numbers looked plausible.** A refusal rate that high is not absurd on its face: most single attempts at a
+retail task fail in ways that do not generalise, and "no actionable lesson" is a defensible answer. The tell was in
+the bill, not in the rate — and the bill is only in the artefact because `note_bank.bill_of` was added one round
+earlier for a different reason (a cost estimate that was wrong by 6.5×). An instrument that reports what it spent is
+an instrument that can be caught.
+
+## 34.305 — `P3`'s bar was unreachable, and the verdict it graded was one line repeated 85 times
+
+**Defect.** R208's `P3` asked that a note contain a token its own failure's verdict held and **no other failure's**
+verdict held. Measured on the bank that bar had a ceiling of **9.4%**: 77 of the 85 failures had an empty exclusive
+vocabulary, because a retail verdict is mostly the schema (`REWARD`, `DB CHECK`, `ACTION met`) and the action names
+recur across tasks. The 4.7% the ablation reported was therefore half of a ceiling that said nothing, and the
+measure **inverts the incentive**: the action a note most needs to name — `exchange_delivered_order_items` — is
+exactly the action other failures name too.
+
+**The same round found why the vocabulary was empty.** `action_checks[].action` is `{"name": …, "arguments": {…}}`
+and `_check_line` wanted a string, so every failure rendered `ACTION not met` and nothing else; the evaluator's
+`justification` ("the agent told the user there are 12 options, not 10") was dropped by a reader that never looked
+for it. The material the ablation priced was therefore a cost without content, and the verdict arm "won" on `P2`
+by writing anyway.
+
+**Repair, in two parts.**
+
+1. *The content.* `_action_text` renders `name(arguments)`, `_check_line` appends the justification when it says
+   something the detail does not, and `verdict_text` emits the head (reward, database verdict), then the failing
+   checks, then the passing ones — a block cut off at 600 characters that shows twelve `ACTION met` lines and loses
+   the one `not met` tells the summariser the attempt was fine. Measured on the bank with no model call: mean 169 →
+   **439** characters, empty exclusive vocabulary 77 → **30** of 85.
+2. *The measure.* A note is specific if it shares a token with its own failure's **failing lines**, and the same
+   note against the other 84 failures' failing lines is its **chance** rate. Reported as a share, a chance rate and
+   a lift, with McNemar's exact test over the two materials on the same failures.
+
+**Why the amended measure is not a moved goalpost.** It is reported beside the registered one (`exclusive`), the
+bar is unchanged at 50%, and on the amended measure the bar is **still missed** (44.7%). What changed is that the
+measurement can now see the effect: 15 notes specific under the verdict and nowhere near it under the attempt
+alone, against 1 the other way, **McNemar p = 0.0005**. A bar that a material cannot reach measures the bar.
+
+**Class.** This is the third measure in the lane whose ceiling was never checked before it was used — after `N0b`
+(three refutations on a population of zero) and `P0` (82 refusals that were truncations). The general form: a
+measure computed over a *shared vocabulary* has a ceiling that shrinks as the population grows, and nobody computes
+it because the first small sample looked fine. The repair that generalises is `--from-reading`: a measure can now
+be recomputed from a kept artefact, so its ceiling can be checked before a dispatch is bought.

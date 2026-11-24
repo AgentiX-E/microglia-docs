@@ -9838,3 +9838,49 @@ magnitude under the only competitor that publishes one.
   about; the closest is IBM's per-conversation bill, which includes serving but not distillation.
 - The six tasks R207 used are easier than the split: the board's retail pass^4 is 59.6–67.5 while those six passed
   47 of 48 episodes. Nothing about the note lane can be concluded from them, which is why the bank exists.
+
+### R210's position: the lane's first measured point on both axes, and it is a denominator
+
+Read 2026-11-24, after the bank and three material dispatches. For the first time this record has a **measured**
+reading to put on the accuracy axis and a **measured** price to put on the cost axis — and both belong to the
+control arm, which is exactly what makes them usable.
+
+| system | retail | metric | cost per reading | stack | LLM |
+|---|---|---|---|---|---|
+| EDV (arXiv 2606.24428) | 88.6 | pass@1 | not published | — | yes, offline experience bank |
+| RB-MaTTS | 86.0 | pass@1 | not published | — | yes, rule bank + TTS |
+| Qwen3.5-397B (board) | 84.4 / 59.6 | pass@1 / pass^4 | not published | — | frontier model |
+| IBM learned guidelines | 67.5 | pass^4 | **$0.1084** / conversation | — | yes, no weight updates |
+| RAFT-30B-A3B | 61.4 | pass^4 | not published | — | fine-tuned |
+| **microglia control (no memory)** | **81.4 / 56.1** | pass@1 / pass^4 | **$0.0044** / episode measured | Python + TS monorepo | yes, DeepSeek |
+| **microglia + note lane** | **no reading yet** | — | +$0.0002 a note | — | — |
+
+![position](figures/r210-position.png)
+
+**What the point means, stated narrowly.** `56.1% pass^4` at `$0.0044` an episode against IBM's `67.5` at `$0.1084`
+is not "we are behind by 11 points" — the two run different base models, and a DeepSeek-based agent eleven points
+under a submission that reports fine-tuning on a train split overlapping the evaluation is a *denominator*, not a
+claim. It is the first time this project can say what its own agent scores on the population the ladder reports,
+and every memory arm from here is a difference from that number on the same 456 episodes.
+
+**The cost axis is where the lane competes.** $0.0044 an episode means a 456-episode measurement costs ¥14.5 and an
+85-failure material ablation costs ¥0.42. IBM's submission is the only other number on that axis, and it is 24.6×
+this one per reading — which matters because it *changes what can be measured*: three material ablations, a bank and
+a fold cost less than a single competitor conversation budget, so hypotheses can be killed by measurement instead
+of argued.
+
+**What this round's three defects say about the comparison.** Every published memory system reports a lift. This
+lane spent three rounds reporting a refusal rate that was a token ceiling; the mechanism it was supposed to test had
+never produced a note. Any competitor number in the table above is a claim that its own lane ran at least once —
+and the only way to check one's own is to report the yield, the bill and the truncation count beside the lift.
+
+![yield](figures/r210-yield.png)
+
+**Questions left open.**
+
+- The fold (10:01 UTC, 400 episodes, ¥17) is the first `pass^k` lift this lane can quote. Until it lands, the note
+  lane has no accuracy claim at all — only a yield and a specificity.
+- No competitor publishes a per-note cost or a note yield, so the 98% figure has no counterpart to be compared
+  with; it is reported because a lift without a yield is unreadable.
+- `P3`'s amended bar is missed (44.7% vs 50%). Whether that matters depends on the fold: a note that names the
+  failing check half the time may still lift `pass^4` if the agent reads it.
