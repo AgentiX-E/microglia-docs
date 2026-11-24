@@ -11626,3 +11626,65 @@ abandonment would throw away a paid fold over a missing file.
 `coverage --branch` with `--min 95 --expect-files 4`, and they stand at 96.9 / 95.7 / 98.1 / 96.6 after this round's
 cases — including a deliberate wrong expectation fed to `run_cases`, because a suite that cannot fail is a suite
 whose green means nothing.
+
+## 17.191 — `verdict_text`: the evaluator's side of a failure, quoted beside the attempt
+
+The note lane's material is one sentence distilled from a failed attempt. Until R208 the distiller saw only
+`trajectory_text` — the agent's own account of the episode — and R206a plus R207 measured four failures and four
+refusals. The refusals were correct: a premature escalation to a human reads as competent assistance in the
+transcript, and only the evaluator knows the required action was never taken.
+
+`notes.verdict_text(simulation, ceiling=600)` renders the evaluator's account as lines:
+
+| source | line |
+|---|---|
+| `reward_info.reward` | `REWARD 0` |
+| `reward_info.db_check.db_match` | `DB CHECK met` / `DB CHECK not met` |
+| `env_assertions[]` | `ENV not met: retail` |
+| `action_checks[]` | `ACTION not met: return_delivered_order_items` |
+| `communicate_checks[]` | `COMMUNICATE not met: the agent must tell the user the refund total` |
+| `nl_assertions[]` | `ASSERTION met: the agent apologises` |
+
+Three properties, each of them a decision:
+
+- **the head is kept on truncation**, where `trajectory_text` keeps both ends. The first two lines are the reward
+  and the database verdict, which are what decide the episode; a tail would keep whichever assertion the evaluator
+  appended last;
+- **both wire shapes are read.** τ² hands this process objects and an artefact holds JSON, so every field goes
+  through `_field`. R208 found the gap by asking both shapes the same question: `reward_of` used bare `getattr` and
+  the reward line silently vanished on the JSON side;
+- **the outcome's spelling is per check family** (`met`, `match`, `action_match`), and a check with no recognised
+  outcome is dropped rather than defaulted. A defaulted `met` would tell the summariser the opposite of what the
+  evaluator said, and a dropped family looks exactly like a family with nothing to report — which is why the reader
+  tries three names rather than one.
+
+`note_prompt(trajectory, verdict="")` returns R207's bytes exactly when no verdict is offered, so the two materials
+are comparable and not merely similar:
+
+```
+ATTEMPT
+<<<
+USER: I want to cancel order W2378156.
+  CALL cancel_pending_order(order_id="W2378156", reason="no longer needed")
+  FAILED Order W2378156 has already been delivered and cannot be cancelled.
+AGENT: I have cancelled your order.
+>>>
+VERDICT
+<<<
+REWARD 0
+DB CHECK not met
+COMMUNICATE not met: The agent must inform the user that the order cannot be cancelled because it has already been delivered.
+ASSERTION met: The agent apologises for the inconvenience.
+>>>
+```
+
+**The material is a dispatch argument.** `--note-verdict` and `note_verdict` default to off, and three artefacts
+carry the fact rather than a comment: the round census gains `verdict` / `verdicts` / `verdictChars`, the phase's
+notes block and the fold's merged census carry the same three, and `merge_notes_blocks` refuses a corpus whose
+phases disagree (`tau2-note-pilot-mixed-verdict:6:1`). An artefact written before the field existed reads as
+`false` — the same fact as a phase that ran before the material did — so mixing a pre-R208 phase with a verdict
+phase is refused rather than averaged.
+
+**Cost, measured on a rendered example.** 210 characters on a retail failure against the attempt's 2,000: about 55
+tokens, 0.03% of the treatment arm's prompt in R207's pilot, billed inside the arm's own `prompt_tokens` rather than
+by a second instrument.

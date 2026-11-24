@@ -9506,3 +9506,26 @@ one arm; and every one of the four files is at or above the 95% floor. All five 
 
 **Price ¥0.00.** The pilot is the next purchase: R206a's six tasks × 4 rounds × 2 arms, ≈ **¥0.7** and ~33 minutes.
 
+
+**Result (04:50 UTC).** Read back on `45323488852`: **the grid failed once in forty-eight and the summariser
+declined it**, so the arm was never given anything to serve. pass^4 control **100.0%** against treatment 83.3%
+(withheld, ±29.8 pp over six tasks); 24 lookups, **0 hits** (`keyHits` 0, `taskHits` 0) because no note existed;
+six sidecars declared six tasks with no scope problem. The identity binding is therefore **unexercised rather than
+broken** — `N5` passes, the runner declared each task, and the agent asked 24 times.
+
+The one failure is task 5's treatment round 1: `transfer_to_human_agents` on the second turn of a routine exchange,
+the tool answering "Transfer successful", the user stopping. The transcript reads as a competent escalation; the
+evaluator says `ACTION not met: return_delivered_order_items`, `DB CHECK not met`. The summariser answered `NONE`,
+correctly, given the attempt alone.
+
+**The instrument was wrong about that artefact and is repaired.** Three refutations fired on a population of zero —
+*the treatment never read its sidecar*, *the summariser wrote notes for too few failures*, *the notes restate the
+request* — each a false statement about the mechanism. `N0b` now grades the population first, `N1`–`N3` report
+`n/a` without it, the sidecar gate is conditioned on a note existing, and the state is `NO_MEASUREMENT` with
+`reason: no-distilled-failure` rather than `ABANDONED` (AUDIT 34.303). The workflow warns rather than failing.
+
+**R208 — the verdict beside the attempt — is registered and built** (`prereg/R208-verdict-material.md`), and the
+gate it sets is a **failure bank** rather than a fold: one control-only round over the retail split's 114 tasks,
+**$0.21 (¥1.5)** and about an hour, then two summariser calls per failed attempt (under ¥0.5, no simulator) to
+measure P2's refusal rate and P3's specificity on a population that has failures in it. The 320-simulation fold
+stays unbought until those two are measured.

@@ -16372,3 +16372,43 @@ the new `note_pilot.py` cases are the merge's three refusals and the two identit
 
 **The rule this records.** A file whose output is a judgment rather than a value needs a coverage floor as much as a
 service does — more, because a service that breaks throws and a judge that breaks returns `GRADED`.
+
+## 34.303 — Three refutations fired on an artefact that had nothing to refute
+
+**Defect.** R207's pilot was graded `ABANDONED` with three refutations fired: *the treatment never read its
+sidecar*, *the summariser wrote notes for too few failures*, *the notes restate the request*. Every one of them was
+false about the mechanism. The grid produced one failure in 48 episodes and it arrived in the last round, which is
+never distilled, so `failed` over the rounds a note is written from was **0** — and each gate translated that
+absence into a claim about a different party:
+
+| gate | what it asserted | the fact |
+|---|---|---|
+| `N1 and found one` (`hits > 0`) | the agent did not read the file it was given | the file held no note; `lookups` was 24 |
+| `N2 coverage ≥ 0.6` | the summariser wrote for too few failures | there were no failures to write for |
+| `N3 specificity ≥ 0.5` | the notes restate the request | there were no notes |
+
+**Class.** This is the file's own documented failure mode — "a gate written from a cause rather than from the
+effect" — committed by the file, one level up from the two it had already repaired. The general form: when a metric
+is a ratio whose denominator is a count of events the arm is supposed to cause, a zero denominator makes the ratio
+`None`, and `None` degrades to 0 in every comparison written as `(value or 0.0) >= bar`. The pattern appeared in
+three gates at once because each was written the same way.
+
+**Repair.** `N0b` grades the population before anything is computed from it: at least one failure must arrive in a
+round a note is written from. Without one, the three predictions report `n/a` (the `Report` type already carried
+`None` for exactly this), the refutations are conditioned on the same fact — `serviceable = written > 0` for the
+sidecar gate — and the state is `NO_MEASUREMENT` with `reason: no-distilled-failure` in the context block. The
+paired reading is still printed, because the one number a saturated grid has to offer is how saturated it was.
+
+**Why `NO_MEASUREMENT` and not `ABANDONED`.** The two states ask an operator for different actions. `ABANDONED`
+says *do not buy this material*; `NO_MEASUREMENT` says *this run did not try*. A saturated grid is the second, and
+the distinction is what stops the next round from being a rewrite of the mechanism that was never tested.
+
+**Why the workflow stays green.** The grading step reads the reason line, prints `::warning::`, and exits zero. A
+red job for a too-easy grid teaches an operator to re-dispatch rather than to read — the same argument that made
+`ABANDONED` green in R206.
+
+**Evidence the repair is a repair rather than a relabelling.** Four new self-check cases read the *rendered report*
+rather than the state: a saturated grid must contain no `FIRED` line at all, must still show that the file was
+asked for, must name the population as the reason, and must mark coverage `n/a`; and a summariser that declined
+every attempt must still abandon — on the coverage gate, with the sidecar gate clear. `r206_readback.py` stands at
+96.3% with `--expect-files 4`.

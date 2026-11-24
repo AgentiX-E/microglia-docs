@@ -27401,3 +27401,74 @@ imports.
 **What the dispatch decides, stated before it runs.** Whether the file binding fires at all (`taskHits > 0` with
 `keyHits` near zero — the exact inverse of R206's failure), and whether coverage clears 0.6 now that the identity is
 not the obstacle. Neither is a claim: the artefact carries `claim: none`, and the delta is withheld at ±30 pp.
+
+## 239. R207 read back: the grid failed once in forty-eight, the summariser declined it, and three refutations were about nothing (04:50 UTC)
+
+The pilot ran on `45323488852` (`master` `f91c555d`), 48 episodes over `5,9,12,17,18,26` × 4 rounds × 2 arms,
+**¥0.64** measured (`controlUsd` $0.0439 + `treatmentUsd` $0.0447). Contract job 27 s, pilot job 17 min. Evidence
+`eval/results/note-pilot/**` in artefact `note-pilot` (438 KB, 38 files).
+
+| reading | value |
+|---|---|
+| pass^4 control | **100.0%** (24/24 episodes) |
+| pass^4 treatment | 83.3% (23/24) |
+| delta | −16.67 pp, interval ±29.8 pp over 6 tasks — withheld |
+| note lookups | 24 (one per episode after the first) |
+| note hits | **0** — `keyHits` 0, `taskHits` 0 |
+| scopes | **6 for 6 tasks**, 0 problems (N5 passes) |
+| distilled failures | **0** over rounds 2–4 |
+| notes written / refused | 0 / **1** (the only failure, round 1, answered `NONE`) |
+| material share of the treatment's prompt | 0.0295% (495 tokens) |
+
+**What the pilot established.** The identity binding is *unexercised rather than broken*: six sidecars declared six
+tasks, the runner declared each before its first episode, and the agent asked 24 times and found nothing because
+there was nothing — the file was named, declared and read. The one failure in the whole grid is task 5's treatment
+round 1, where the agent's second turn called `transfer_to_human_agents` on a routine exchange, the tool answered
+"Transfer successful", and the episode ended with the user stopping. The transcript reads as a competent
+escalation; only the evaluator says `ACTION not met: return_delivered_order_items`, `DB CHECK not met`. The
+summariser declined it, correctly, given what it was shown.
+
+**The instrument was wrong about it, and that is the round's real finding.** `r206_readback.py` fired three
+refutations on this artefact — *the treatment never read its sidecar*, *the summariser wrote notes for too few
+failures*, *the notes restate the request* — and every one of them was a false statement about the mechanism. With
+no failure in a distilled round there is no note, and with no note there is no hit, no coverage and no specificity;
+each gate read an absence it could not distinguish from its own failure. This is the defect the file's own header
+warns about, committed by the file.
+
+**The repair: the population is a gate.** `N0b` runs before `N1` and requires at least one failure in a round a note
+is written from. Without one, `N1`'s "and found one", `N2`'s coverage and `N3`'s specificity report **`n/a`**,
+`N1`'s "never read its sidecar" is conditioned on a note existing (`serviceable = written > 0`), and the state is
+**`NO_MEASUREMENT`** with a greppable reason instead of `ABANDONED`:
+
+```
+context (not graded):
+  reason: no-distilled-failure — the grid failed nothing after round 1, so N1-N3 were not testable.
+  This is a saturated grid, not a refuted mechanism: dispatch a harder one.
+  pass^4: control 100.0% vs treatment 83.3%, delta -16.67 pp, interval ±29.8 pp over 6 task(s) — withheld
+  episode rate: control 100.0% vs treatment 95.8% (the level at which this n has resolution)
+```
+
+`NO_MEASUREMENT` and not `ABANDONED` because the two ask an operator for different things: do not buy this material
+versus this run did not try. The workflow reads the reason line, prints `::warning::`, keeps the artefact and stays
+green — a red job there would teach an operator to re-dispatch rather than to read.
+
+**Two populations, two names.** `failed == 0` is a saturated grid; `failed > 0 and written == 0` is a summariser that
+declined every attempt, and that *is* a refutation — it fires on `N2`'s coverage, which names the right cause.
+
+**R208 is registered and built, before any dispatch.** The verdict joins the attempt: `notes.verdict_text` renders
+the reward, the database verdict and every environment assertion, action check, communicate check and
+natural-language assertion with its outcome, and `note_prompt` quotes it as a second block behind `--note-verdict`.
+With no verdict the prompt is byte-identical to R207's, so a verdict run stays comparable to the pilot before it.
+`merge_notes_blocks` refuses a corpus whose phases disagree about the material.
+
+The gate the registration sets is a **failure bank**, because a grid that fails one episode in forty-eight cannot
+test a material: one control-only round over the retail split's 114 tasks, **$0.21 (¥1.5)** and about an hour, then
+two summariser calls per failed attempt — an ablation that costs under ¥0.5 and needs no simulator.
+
+**Instrument coverage after the round.** 96.6% over the lane's four files: `notes.py` 96.1, `note_pilot.py` 97.0,
+`r206_readback.py` 96.3, `opening_stability.py` 98.1, with `--expect-files 4`. Self-checks 167 / 141 / 52 / 35.
+`note-pilot` contract job `45328153048` green on `4aaa1c61`; `ci` `45328153052` green.
+
+**Cost of the round.** ¥0.64 for the pilot, ¥0 for the readback and the repair. **Position:** the note lane's
+mechanism is unmeasured on a saturated grid, the material hypothesis is now testable for ¥2 instead of ¥4.3, and the
+fold stays unbought until P2 and P3 are measured on a population that has failures in it.
