@@ -27231,3 +27231,52 @@ worked around: until then, a transient fold is quoted from its own artefact and 
 
 **Delivery.** `pnpm check` green: 301 files, **6,268 tests**, coverage **100 / 99.9 / 100 / 100**; readback at **21
 self-test cases**; attribution 80, ledger 50, pair end-to-end 14, agent 45 / 189 assertions.
+
+## 236. R206 is built: the material is a field, the headline is scoped to it, and the pilot is what is left
+
+**The mechanism, in one sentence.** No store, no facade, no retrieval: the runner distils **this task's** last
+failed attempt into one sentence at a round boundary, the agent reads it at the start of the next attempt at that
+same task, and it is dropped with the task.
+
+**Why rounds and not `trials`.** τ²'s `run_tasks(trials=4)` builds its argument list trial-major and hands it to
+one thread pool, so a task's attempt 2 may start before attempt 1's reward exists. Nothing in that contract promises
+otherwise. The phase is therefore `--rounds 4`: four `run_tasks` calls at seeds `base … base+3`, merged into one
+`results.json` with each round written as that trial's index. Two things fall out that `--trials` cannot give — the
+runner holds the reward between two attempts (the only place a note can be written, since the agent never learns the
+score), and **both arms get the same four seeds**, which is what a paired reading needs. The control is the same
+agent with `--notes` absent, not τ²'s stock agent: R93's defect was comparing across a wrapper, and R101 is the
+correction.
+
+**What is now tested without a provider** (all in `pnpm check`):
+
+| suite | before | after |
+|---|---|---|
+| `eval/drivers/tau2/notes.py --self-test` | — | **82 cases** |
+| `eval/drivers/tau2/selfcheck_agent.py` | 45 cases / 189 assertions | **51 cases / 211 assertions** |
+| `pack-ledgers` (headline scoping) | 51 tests | **54 tests** |
+| full `pnpm test` | 6,269 | **6,273** |
+
+The seven new agent cases are the mechanism's failure modes, each as a case that would have passed on a broken
+implementation otherwise: a note served and held for the whole episode; a task without one serving nothing while
+counting the lookup; a corrupted sidecar reported as a problem rather than as silence; **a note written between two
+rounds read by the next episode** (the staleness defect — rounds share one process); a facade pack winning over a
+note; and the notes block absent entirely when no sidecar was named.
+
+**The second finding of the round is not about the note at all.** `headlineOf` pooled every fold the corpus held, and
+R204's fold is the case that construction cannot survive: on a transient arm `serveYield.renders` counts the
+summariser's *inputs*, so adding the fold to a 291-pack pool moves the corpus share by changing what its denominator
+means. Every ledger now carries `body` (`rendered` by default, which is a fact about every artefact before R204),
+`headlineOf` **refuses** a corpus that mixes bodies and names both, and the committed record publishes the material
+it speaks about. The published number is unchanged — 78.7% inert of 291 served packs, over the rendered body — and it
+is now a statement about one mechanism rather than an average of two.
+
+**What R206 did not do: run.** It is 23:34 UTC; off-peak ends at 01:00 UTC and the fold is 320 simulations at the
+lane's measured 26 s an episode, which is 138 minutes before the reference arm's own 69. Dispatching now would cross
+into double rates with the run half-finished, and the workflow's window guard refuses exactly that. The registration
+therefore gained two amendments instead: the gates the material can actually be graded by (`V1`/`V2`/`V3`/`V5` are
+pack gates and answer about a pack this arm does not have; `N0`–`N4` replace them), and **R206a**, a 48-simulation
+pilot at ≈ ¥1.5 that buys the handoff observed in a real harness and the summariser's coverage on real retail
+failures before 320 episodes are paid for.
+
+**Next window.** 16:30 UTC (00:30 Beijing), 50 minutes of setup plus the pilot; the fold follows only if the pilot's
+coverage clears 60% and its collisions are zero.

@@ -11458,3 +11458,42 @@ this commit, including R204's own, because those renders may still be the facade
 arm's own arithmetic, which a program with one integer per call cannot break honestly. A provider failure: the
 coverage hole that the population field cannot repair. What it no longer refuses is a refusal, because a refusal is
 the arm's registered behaviour and the join has already removed its episodes from the denominator.
+
+## 17.187 — `notes.py`: the material as a file format, and the four states of "no note"
+
+**Placement.** `eval/drivers/tau2/notes.py`, beside `turns.py` and for the same reason: it imports nothing
+third-party, so the identity rule, the sidecar format, the trajectory renderer and the specificity check are all
+exercised by a self-check that needs no provider, no harness and no network. The things that need a process — the
+summariser call, the round loop, the merge — were pushed *out* of it into `run_split.py`, which is where the provider
+and the filesystem already live.
+
+**Contract.**
+
+| function | what it promises | what it refuses |
+|---|---|---|
+| `note_key(text)` | whitespace collapsed, case kept, bounded at 500 chars | `""` for anything that is not a non-empty string |
+| `note_of(notes, text)` | the sentence written for this task's last failure | `""` for no key, no entry, a non-string note |
+| `load(path)` | `(document, None)` for a missing file — round one is not a fault | `(empty, reason)` for unparseable JSON, a wrong schema, a non-object `notes` |
+| `record(...)` | the entry carries `note, attempt, reward, task, chars` | writes nothing for an empty key or an empty sentence |
+| `trajectory_text(...)` | the failure as `USER / AGENT / CALL name(args) / RESULT / FAILED` lines, ceiling applied to both ends | `""` when the messages are not readable |
+| `specificity(notes, trajectories)` | the share of notes naming a token unique to their own task's failure | `share: null` when nothing was graded |
+| `note_round(...)` | one round's failures distilled, three counters apart | never distils a pass, never a trajectory it could not read |
+| `merge_rounds(...)` | one document, round index as the trial index | refuses a task no round listed |
+
+**The three refusals inside a round, and why they are three.** `refused` is the summariser answering `NONE`, which
+is the arm's own gate and a *result*; `providerFailures` is the call failing, which is the run being broken; and
+`unreadable` is the reader not seeing the messages, which is an instrument fault. A round that reported one number
+for all three would let a broken run be published as "the material does not help".
+
+**The ceiling, and why it is applied to both ends.** A retail attempt is a request, a dozen calls and a complaint;
+truncating it at 2,000 characters from the left keeps the request and hides the mistake the note is supposed to name
+— which is the failure mode R88 measured on records. `trajectory_text` therefore keeps `ceiling/2` from each end.
+
+**Specificity, precisely.** Tokens are lowercase words of ≥ 4 characters, punctuation stripped at the edges and
+digits kept inside them, so `W2378156` survives as one entity and `pay-pal` does not become two. A note is specific
+when one of its tokens appears in its own task's failure and in exactly one task's failure in the phase. It is a
+property of *this corpus*, not of English, which is why it is computed per phase rather than stored per note.
+
+**What is deliberately not here.** The critic. Whether a note should be *validated* before it is injected is
+MemTrapBench's AdaptiveMem, and it is the next arm if this one shows an effect — building it before the material is
+shown to act would be pricing a filter for a signal nobody has measured.

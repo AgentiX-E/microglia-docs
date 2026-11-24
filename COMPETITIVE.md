@@ -9684,3 +9684,44 @@ served is inert) and not a shortage of exposure (the margin curve says exposure 
 **mechanisms that make a stored item act at the moment it is wrong**. The two candidate mechanisms this scan names
 are R204's transient guidance and an inference-time critic, and both are priced below the cost of another accuracy
 draw.
+
+## The negative effect is a property of the material, and the field now has numbers for it
+
+The standing question in this scan — "why does a memory that is retrieved faithfully still cost episodes?" — has an
+answer in the 2026 literature that is sharper than anything in this repository's own ablations, and it arrives as a
+*ranking of materials on the same tasks*:
+
+| material served into the next attempt | τ²-style pass rate | what it costs | replicated here |
+|---|---|---|---|
+| stored lessons, retrieved across tasks | 49.0 | a store that grows with every episode | **yes** — R92 … R205, 291 servings, 78.7% inert |
+| raw logs of past attempts | 53.5 | the whole trajectory, per episode | no |
+| one sentence distilled from the attempt that just failed | **59.9** | one summariser call per failed attempt | **built, not yet dispatched** (R206) |
+
+Three consequences, in the order they change what this project does next.
+
+**1. The gap is not retrieval quality, it is material choice.** R200 measured 78.7% of served packs changing no
+verdict, and four rounds then varied *how the same material speaks* (R123, R151, R201, R204) for ≤ 5 pp. A ranking
+where the material alone spans 11 pp — 49.0 to 59.9 on the same tasks — says those rounds were tuning the
+wrong axis. It also explains the sign of
+"more memory, worse agents": a retrieved lesson is *about another task*, and an agent that follows it is being told
+what worked somewhere else.
+
+**2. "Do not store it" is a mechanism, not a slogan.** The best-performing material is the one that never enters a
+store: it is distilled on failure, carried one attempt forward, and discarded. R204 is the closest thing this
+repository has to it and it differs in exactly the way that matters — R204's summariser was shown records retrieved
+from *other* retail tasks and declined on 34 of 40 episodes, which is why its share is unquotable. R206 changes the
+input and nothing else.
+
+**3. The critic is the next mechanism, and it is priced.** MemTrapBench's AdaptiveMem validates a memory before
+serving it. On this lane's numbers a critic can only pay for itself if it removes *broken* servings: R200's
+`repairsPerBreak` is 5.1, so a filter that removed the breaks without removing the repairs is worth up to
+`+3.44 pp × (broke / renders)`, which at 291 servings is a handful of episodes. The honest sequencing is therefore
+the one the roadmap already has: show that the material acts (R206), then filter it (R206c), and only then buy the
+critic's own tokens.
+
+**Where microglia sits on this axis, stated as a position rather than a claim.** It is the only implementation in this
+scan that (a) publishes the inert share of every fold with an interval, (b) separates the *material* from the
+*mechanism* in its treatment key, and (c) prices a serving in tokens rather than in calls. It is not SOTA on any
+leaderboard: it has one pass^4 on forty retail tasks (82.5% pass@1, R198) against boards that report 114-task folds,
+and the difference is sample size, not skill. The material axis above is the first one on which this project can
+plausibly be *ahead* rather than merely careful, and it is one dispatch away from being measured.

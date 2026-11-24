@@ -9390,7 +9390,7 @@ is not one on a fold that withholds, so it is scoped rather than dropped.
 many treatments it mixed, so one guidance fold turns "−3.44 pp over six block folds" into a mixed number. A
 treatment-scoped headline is the prerequisite, named rather than worked around.
 
-## R206 (registered, not built) — the same task twice: guidance distilled from attempt k, discarded at the end
+## R206 (built 23 Nov, ¥0 so far) — the same task twice: guidance distilled from attempt k, discarded at the end
 
 **Question.** Four rounds varied whether the memory speaks, how much, and what the pack is made of at serve time. None
 varied **where the material comes from**, and the literature's largest effect is a statement about exactly that:
@@ -9403,8 +9403,22 @@ the sidecar already receives as `boundaryTexts`; the runner, the only side that 
 trajectory. The reading is **pass^4 on 40 tasks**, the first time this lane would be placeable on the leaderboard's own
 scale.
 
-**Registered because the prediction is falsifiable and the price is known: ≈ ¥5–7.** Not built: the sidecar key and the
-runner's write are engineering, not a dispatch.
+**Registered because the prediction is falsifiable and the price is known: ≈ ¥5–7.**
+
+**Built 23 Nov (¥0): the mechanism, the key and the file, with 82 + 6 offline cases.** The phase is scheduled as
+`--rounds k` rather than `trials: k`, because a round boundary is the only point at which the runner holds a reward
+and the next attempt has not started — and it is what lets both arms share four seeds. The key is the episode's
+opening request, computed by `notes.note_key` on both sides. The file is re-read on a `(mtime, size)` stamp, because
+rounds share one process and a cached document would make the treatment a constant.
+
+**Amended the same day, because the header's gates could not grade the arm.** `V1` asks whether the served block was
+non-empty and this arm has no block; `V2`/`V3`/`V5` are pack-census gates. The arm is graded by `N0`–`N4` instead:
+same scaffold, the handoff observed, coverage ≥ 60% quotable, specificity ≥ 0.5, and a paired pass^4 whose interval
+must clear the sample's resolution.
+
+**Not dispatched, for the clock rather than the code.** 320 simulations at 26 s an episode is 138 minutes; off-peak
+ended at 01:00 UTC and the next window opens 16:30 UTC. **R206a — the 48-simulation pilot at ≈ ¥1.5 — is the next
+dispatch**, and the fold follows only if the pilot's coverage clears 60% with zero collisions.
 
 ## R202 (built this round) — the serving policy is a field, including when it is `none`
 

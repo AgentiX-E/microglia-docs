@@ -16214,3 +16214,52 @@ from it — or the first honest fold refutes itself. (2) When one arm's denomina
 claim is the one divided by the unit that stayed put; the premium moved because the *simulator* moved, and the
 per-agent-call cost did not. (3) A gate that fires on a good artefact is worse than no gate: the fold was `GRADED`
 only after three rules were repaired, and each repair is a test built from the numbers that broke it.
+
+## 34.298 — The corpus share was an average of two materials, and the fold that would have exposed it was never committed
+
+**The defect.** `headlineOf` pooled every fold in `eval/results/` and published one number: 78.7% inert of 291
+served packs. `serveBody` had been added to the treatment key in R204, so `pooledOf` separated a `guidance` fold from
+a `rendered` one — but the *headline* still averaged them, and R205's fold was held out of the corpus entirely
+rather than committed, which is how the defect stayed invisible: the corpus only ever contained folds it could pool.
+
+**Why it is a defect and not a preference.** On a transient arm, `serveYield.renders` counts the summariser's inputs
+(R204: 50 renders over 40 episodes of which six carried a sentence; R205: 9 renders with 35 of 40 episodes withheld).
+A share pooled over `renders` therefore has two different denominators in one population, and the number that comes
+out is a percentage of a quantity that means "served packs" on five folds and "things a summariser was shown" on the
+sixth. Nobody reading `78.7%` could have known which.
+
+**The repair.** `PackLedger.body`, read from the artefact's `serveBody` and defaulting to `rendered` — a fact rather
+than a guess, since every artefact before R204 injected the block the facade rendered. `headlineOf` refuses a mixed
+corpus and names both bodies; `headlineOf(folds, body)` pools one material. `packLedgersRecord` scopes the headline
+to the body the corpus is mostly made of and publishes `headline.body`, so the committed record says what it is
+about. `headlineLine` prints it: *"over the rendered body, pooled over 3 treatment(s)"*.
+
+**The near-miss worth recording.** Refusing a mixed corpus outright was the first shape of the repair, and it was
+wrong for a reason this repository keeps rediscovering: it makes the *gate* red when a legitimate fold is committed,
+which teaches an operator to hold the fold out — the same behaviour that hid this defect for a round. The refusal
+belongs to a caller that has not said which material it is asking about; the record's job is to say which one it
+published.
+
+**What the gate now catches.** A fold whose `serveBody` is new, a corpus of two materials, and a caller that omitted
+the body — three states that were one state (`pool it`) before. Covered by four new tests in
+`pack-ledgers.test.ts`, including the negative one: `headlineOf([fold('a'), fold('b', {body:'guidance'})])` throws
+with both bodies in the message.
+
+## 34.299 — A treatment that could not be written, and the three ways of writing nothing
+
+**The defect the design avoided before it existed.** The note is written by the runner and read by the agent, and
+the naive shape — a module-level dict, or a document cached at import — is a treatment that is a constant: rounds
+share one process, so the cache would serve round one's notes to round four. The arm would look inert for a reason
+that has nothing to do with the material, and every reading of it would be about the cache.
+
+**The repair, and the case that proves it.** `_notes_document()` is keyed on `(mtime, size)`; the runner writes
+between rounds and never during one, so a change means a new round rather than a race. The case
+`a_note_written_between_rounds_is_read_by_the_next_episode` asserts the first episode serves nothing, the file is
+rewritten, and the second episode serves the new sentence — which fails on any implementation that caches without a
+stamp.
+
+**The three ways of writing nothing, counted apart.** `refused` (the summariser answered `NONE` — the arm's gate),
+`providerFailures` (the call failed — the run is about an unreachable summariser), `unreadable` (the reader could
+not see the messages). Collapsing them into "no note" is how a broken run is published as a null result, which is
+the collapse this file has recorded eleven times now. A fourth state — the sidecar exists and cannot be parsed — is
+`notes.problem`: the agent serves nothing *and* the artefact says why.
