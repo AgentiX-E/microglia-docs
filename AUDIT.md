@@ -17241,3 +17241,73 @@ What survives is the comparison that matters and it is still the right call: sam
 and one message fewer in the system block. What does not survive is the sentence about 24%, which is now the third
 forecast this lane has had to retract and the only one where the error was in a mechanism rather than in a
 denominator.
+### 34.246 `--check` refused the field and accepted the block that was missing entirely
+
+Found while covering the new verification branch, not while reading the function. The board's prose rule is that a
+submission declares whether it modified a prompt. `check` enforced it here:
+
+```python
+if methodology is not None:
+    if isinstance(methodology, dict):
+        verification = methodology.get("verification")
+        if verification is not None:            # <- the requirement lives inside three guards
+            require(isinstance(verification, dict), ...)
+            require(isinstance(verification.get("modified_prompts"), bool), ...)
+```
+
+An entry with `verification: {}` was refused. An entry with **no `verification` key**, or with **no `methodology` at
+all**, fell through every guard and was read as having nothing to state. The omission that says the least was the one
+the check did not see.
+
+The class of defect is the same one this lane keeps meeting: a requirement inside a guard is a requirement with a
+silent exemption, and the exemption is always the emptier document. The repair moves the requirement out of the guard
+and reads the field once:
+
+```python
+verification = (methodology or {}).get("verification") if isinstance(methodology, dict) else None
+require(isinstance(verification, dict), "verification is not an object: an entry must declare modified_prompts …")
+```
+
+Three assertions now hold it — present-but-not-an-object, methodology present without the block, methodology absent —
+and the file's coverage went from 99% lines to 100% statements with one branch remaining, the module's own exit.
+
+### 34.247 A registration shipped without a header, so the gate that reads it was red on the previous commit
+
+`prereg/R218b-pass4.md` opened with `# R218b — four attempts, and the reliability column`. Every other registration in
+the repository opens with a `---` header block. `readPrereg` returned `{prereg: undefined, problems: [header: the file
+must open with a --- header block]}`, and `prereg-pack.test.ts` — which iterates every file in `prereg/` — reported
+`R218b-pass4.md: 1 problem(s)`.
+
+It shipped anyway. The suite that catches it was run in this iteration, not the one that added the file, and the
+push went out on the strength of a green CI from the *previous* push. Two things follow, and both are cheap:
+
+1. the header is now written, with the fields the gate requires (`id`, `step`, `opened`, `arms`, `sample`, `gates`)
+   and `## Prediction` / `## Refutation` sections whose bullets are each falsifiable — the previous prose had the
+   falsification test but not in the section the validator reads;
+2. the validator refuses angle-bracket placeholders anywhere in the body, which is why `--date <dispatch date>`
+   became `--date 2026-11-25`; the placeholder rule is what makes a copied registration fail rather than pass with a
+   template's text.
+
+The audit finding is not the missing header. It is that **a repository-wide gate is only a gate if the pre-push path
+runs it**, and the fix belongs there rather than in a resolution to remember.
+
+### 34.248 A board name and a board path were the same argument
+
+`load_board` took a path and defaulted to the 1.x snapshot. Naming a second snapshot would have made `--board` accept
+either a name or a path, and the ambiguity has a predictable failure: `--board 2x` would have been read as a relative
+path, produced `ENOENT` from three frames down, and a reader would have concluded the file was missing rather than
+the flag was wrong.
+
+The repair keeps both forms but makes them distinguishable by existence: a name in `BOARDS` resolves to a pinned file,
+anything else must be an existing file, and a string that is neither is refused with the names that do exist
+(`unknown-board: '3x' is not one of ['1x', '2x'] and is not a snapshot file`). The self-test's throwaway snapshots
+still work, and the message a caller gets names the two things they can type.
+
+Two smaller decisions in the same edit are worth recording because they are the kind that get undone:
+
+- `--position` and `--census` now **catch** `Refusal` and return `1` with a message, instead of letting it escape as
+  a traceback. A workflow reads an exit code either way; a traceback in a job log reads as a defect in the tool
+  rather than as a fact about the artefact.
+- the self-test's own `FAIL` line was unreachable from a passing run, so it was never executed. The counting moved
+  into `_tally(name, condition, counters)` and the suite exercises a failing assertion on its own counter. A
+  suite whose red is untested is a suite whose green is unverified.

@@ -9784,3 +9784,36 @@ block moves on 23% of turns) and the 8× price gap (it is 19× against the board
 attempts, two arms, 912 episodes, **$4.75**, with the registered prediction that the parser arm's `pass^4` lands at
 `0.816^4 = 44.3%` — lowered from 56.8% because the arm now reads 81.6 rather than 86.8, and the falsification test is
 unchanged: above 62 means attempts are correlated.
+
+## R220b (built 25 Nov, ¥0) — the placement that ships is the one the probe prices, and a rank names its population
+
+Two gaps closed on the same day, both of which were the same shape: **a number whose subject was narrower than its
+sentence**.
+
+The first was the board. R218a pinned 46 submissions and this project has been quoting ranks against them. The
+directory at tag `v2.0.0` holds **72**, of which **48** state a retail `pass^1` — 21 voice, 26 declaring no modality,
+nine spellings of the benchmark version. `submission.py` learned to read that directory (`--ingest`), to name which
+snapshot a reading is about (`--board 1x|2x`), to scope by version and modality (`--version`, `--text-only`), to
+print what the scope dropped, and to **refuse** an artefact whose version disagrees with the scope (`wrong-version`).
+Our 84.20 now reads **6th of 49** pooled, **2nd of 9** among text rows at τ² 1.0.1, **3rd of 9** among custom
+submissions — and one of the three numbers is published with the other two beside it.
+
+The second was the probe. `SERVING_DEFAULTS.placement` has been `tail` since R216b confirmed it, and
+`cache-placement.ts` priced four shapes without it: the product shipped the one position no committed reading had
+measured. Adding the case needed two axes, because a tail block's position is a function of when it was written
+(`writtenOnCall`) and a placement's price is the price of a change rather than of a turn (`revision`, `movePrice`).
+
+**What is next, in order, and what each is worth:**
+
+| step | what it settles | cost |
+|---|---|---|
+| **R218b** (dispatched) | the reliability column: `pass^4` for the shipped arm, four attempts, 912 episodes; the falsification test is whether attempts are independent draws | $4.75 ≈ ¥34 |
+| **R220c** (¥0) | one probe dispatch with `--rewrite-at` on the shipped shape: `movePrice` measured rather than derived, which is the number that explains R216b's 4% instead of asserting it | $0.02 |
+| **R219** | the admission policy: the fourth arm, with the bar already written from two measured cells (regressions 6 → ≤1 while keeping ≥12 of the 15 rescues) | ¥9.4 |
+| **R217** | the airline column, 50 tasks, which is the domain where the board's own rows are strongest (84.0 at the top) | ¥5.4 |
+| **R221** (new) | a 2.0 submission: the board's `v2.0` rows are 2 of 72, so a submission at 2.0 tasks is a different run, not a re-label of the 1.0.1 one | ¥34 |
+
+R221 is registered here rather than scheduled because it is the only item in the list whose *size* is not yet known:
+the 2.0 task set differs from 1.0.1, and a submission against it re-buys the grid. It becomes the next constraint
+only if the board moves its headline column to 2.0 — which it has not, and which is worth checking on every re-read
+rather than assuming.

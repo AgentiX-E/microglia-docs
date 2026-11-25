@@ -10306,3 +10306,74 @@ model: it is that six of the board's twenty-five retail rows publish a price at 
 models at frontier prices. Our number is a small model, a one-attempt reading, and an off-peak dispatch — three
 choices that are all legitimate and all worth stating beside the number, because a reader comparing $0.0056 to $0.387
 is comparing more than a model.
+## R220b — the leaderboard at 2.0, read as 72 rows: who is actually on it, what they run, and what they publish
+
+R218a read 46 submissions and called the result "the board". The directory at tag `v2.0.0` holds **72**, and the
+default branch no longer carries the directory at all. Reading all of them changes three of this document's own
+numbers, so the correction comes first and the competitor table second.
+
+### R220b.1 What the 72 rows are made of
+
+| axis | count | note |
+|---|---|---|
+| submissions in the directory | **72** | tag `v2.0.0`, commit `989d3285`, read 2026-11-25 |
+| rows stating a retail `pass^1` | **48** | airline 47, telecom 43 |
+| modality | voice **21**, text **1**, undeclared **26** | the field postdates most rows, so "text" is mostly an inference the tool refuses to make |
+| benchmark version | `1.0.1` **14**, `1.0.0` **12**, `0.1.3` **10**, `v0.1.3` **4**, `original tau-bench` **3**, `v2.0` **2**, two commit shas, one unstated | this is the axis that makes a pooled rank a category error |
+| submission type | custom **8**, stock **40** | every row that injects anything is custom |
+| rows stating a price | **8 of 48** | 6 text, 2 voice; median published text price **$0.11449** |
+| implementation stack | **Python** | τ²-bench itself is `pyproject.toml` + `src/` (2,518 stars); the leaderboard site is a Vite/React app. Stack is not a field the board publishes, so it cannot be tabulated per row |
+
+![R220b: microglia on the 2.0 leaderboard — accuracy against published price, and the three populations a rank can be a rank of](figures/r220-board-2x.png)
+
+### R220b.2 Who is above us, and what each of them is
+
+| rank (pooled) | row | retail `pass^1` | τ² version | what it is |
+|---|---|---|---|---|
+| 1 | Claude-Sonnet-4.5 | 86.20 | 0.1.3 | stock model, benchmark scaffold |
+| 2 | Gemini 3.0 Pro | 85.30 | v0.1.3 | stock model |
+| 3 | Pine Voice Preview | 85.09 | 1.0.1 | **voice** product, custom scaffold |
+| 4 | Qwen3.5-397B-A17B | 84.43 | 1.0.1 | stock model — **the only text row at 1.0.1 above us** |
+| 5 | gpt-live-1 | 84.21 | 1.0.1 | **voice** product, custom scaffold |
+| **6** | **microglia** | **84.20** | **1.0.1** | memory harness, custom, $0.00558 a trajectory |
+
+Two of the five rows above us were measured on `0.1.3`, which is a different task set, and two are voice products with
+a speech pipeline in front of the model. On the axis where the comparison is like-for-like — text rows at τ² 1.0.1 —
+there is **one** row above us, and the gap is **0.23 pp** against a ±3.2 pp resolution at n = 114. That is not a
+near-miss to be closed by tuning; it is a band, and the honest statement is that no text submission at 1.0.1 is
+separated from ours by this instrument.
+
+### R220b.3 The ranks §R216b.1 quoted were ranks of a 46-row population
+
+Three numbers in this document move, and the reason is the same for all three: the population was smaller than the
+one the board actually holds.
+
+| claim | as written in §R216b.1 | on the 72-row directory | why |
+|---|---|---|---|
+| rank | "second of 26" | **6th of 49** pooled, **2nd of 9** text at 1.0.1, **3rd of 9** custom | 22 more submissions, 7 more text rows at 1.0.1, 2 more custom rows |
+| price gap | "19× the median priced row" | **20.5×** ($0.11449 against $0.00558) | the median moved with the population: 6 text rows state a price, not 5 |
+| reliability | "not measured" | unchanged until R218b lands | four attempts, two arms, dispatched |
+
+The correction is not that the claim was too strong. It is that a rank quoted without its population is
+indistinguishable from a rank quoted against a population someone chose after seeing the result — and this document
+had no way to tell which one it had published.
+
+### R220b.4 What "SOTA" would have to mean here, given what the field publishes
+
+The field's own instrument is a **stock** model through the benchmark's scaffold, and the top of that column is
+86.20 on 0.1.3 tasks. A memory harness cannot win that column by being a better model; it wins by adding points to a
+model that is already on the board, at a cost that does not erase them. There are three ways to say that, in
+increasing order of strength, and only the third is worth publishing:
+
+1. **pooled rank** — 6th of 49. True, easy to quote, and compares nine benchmark versions and two modalities at once.
+2. **scoped rank** — 2nd of 9 among text rows at 1.0.1, behind one stock model by 0.23 pp. The comparison is
+   like-for-like, and the interval does not separate the two.
+3. **the paired claim** — the same model, with and without the memory, on the same tasks and the same seed, with a
+   paired interval: **+7.9 pp** measured inside a dispatch (R216's `control → front`), and R218b's job is to state the
+   reliability half of it as a `pass^4`.
+
+The third is the only one that attributes anything, and it is the one this project should submit — because a
+leaderboard row for a memory system that only reports its absolute number is a row a reader cannot tell apart from a
+better base model. What the field has *not* published, on any of the 72 rows, is a controlled delta at four attempts
+with a cost column beside it. That is the gap worth occupying, and it is narrower than "SOTA on τ²-bench": it is
+**SOTA on the claim that memory helps, measured**.

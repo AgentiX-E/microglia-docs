@@ -12036,3 +12036,59 @@ re-derivable from a file in the repository, and a re-read is a diff rather than 
 
 The cost of that choice is one stale snapshot between reads, and the mitigation is the `read_on` field: every
 quotation names it, and `--census` prints it back.
+### 17.187 The probe's input is an episode with a history, not a static prompt shape
+
+`placementPromptFor(placement, input)` used to take a policy, a block and the turns so far, and return the messages
+one placement would send. That is enough to price a block's *position* and not enough to price a block's *life*, and
+the difference is exactly the number R216b measured. Two fields were added to `PlacementPromptInput`, both optional
+and both defaulting to the previous behaviour, so every committed reading is reproducible from the same file:
+
+| field | meaning | default | why it exists |
+|---|---|---|---|
+| `writtenOnCall` | the 1-based call the block was written on | `1` | a `tail` block sits where it stood on that call; later turns append **after** it. Re-sending it at the end of every call would price a message order the arm never sends |
+| `revision` | `{ fromCall, block }` — a new body from that call on | absent | held still, every placement's bill is the control's plus one write; the difference between in-front and behind lives in what a *change* re-bills |
+
+Three invariants are enforced in the builder rather than documented beside it, because each one is a wrong
+measurement rather than a style preference:
+
+- **a call before the write carries no block**, for every placement. One rule, not a per-shape special case: the
+  block did not exist yet, whichever position it was later given.
+- **a revision before the write is refused.** A "revision" of a block that has not been written is a second write,
+  and a probe that priced it as one change would report a move that never happened.
+- **`first-turn` with a write on call 2 or later is refused.** That placement attaches the block to the task
+  statement, so its write is call 1 by construction; a late write has no position in it. Removing this made the
+  branch on `present` inside `first-turn` unreachable — it is now a comment, not a branch, which is what the coverage
+  gate asked for.
+
+`tail` was **appended** to `PACK_PLACEMENTS`, and the reason is the seed: the probe gives each shape its own policy
+text seeded by index (`3 + index * 1000`) so that one shape's calls cannot warm another's prefix. Inserting `tail`
+after `system-merged` would have re-seeded `first-turn` and made a committed reading unreproducible.
+
+The reading is `movePrice(ledger, call) = uncachedSeries[call - 1] - steadyUncached`. The denominator is the ledger's
+own median rather than a caller-supplied constant: a constant is the caller's model of the shape, the median is the
+shape's own bill, and the two disagree precisely when the shape is behaving unusually — which is when the number
+matters.
+
+### 17.188 A placement is a statement over a population, and the population is four coordinates
+
+`position(ours, board, metric, domain)` became `position(ours, board, metric, domain, version, text_only)`, and the
+reading gained a `population` block. The rule behind it: a rank is a statement about **(metric, domain, benchmark
+version, modality)** and a number missing any one of them will eventually be compared to the wrong row. The board's
+own retail column confirms it — 48 rows, nine spellings of the version field, 21 voice submissions, 26 that declare
+no modality.
+
+`scope(entries, version, text_only)` returns the kept rows **and what it dropped**, counted per axis, and the counts
+are printed with every placement (`N of M row(s); dropped 58 by version, 6 by modality, 0 kept row(s) declare none`).
+A scope that shrinks a denominator silently is the mechanism by which "2nd of 26" survived on a board of 72.
+
+Two refusals rather than two warnings:
+
+- **`unknown-board`** — a name that is neither in `BOARDS` nor an existing file. The message names the boards that do
+  exist, because the failure mode of a path-shaped flag is an `ENOENT` from three frames down.
+- **`wrong-version`** — the artefact's own `methodology.tau2_bench_version` disagrees with the scope. A `pass^1`
+  measured on 1.0.1 placed against 0.1.3 rows is the same defect as a three-domain mean in a retail cell: the number
+  is real and the comparison is not.
+
+`ingest(raw)` is the fold from a directory read to a snapshot, and its contract is that **absent stays absent**. A row
+that declares no modality keeps `modality: None`; the scope counts undeclared rows separately. A default here would
+answer the question the scope is asking, and the count — 26 of 48 — is one of the facts this round publishes.

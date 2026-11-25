@@ -28605,3 +28605,93 @@ And a forecast to retract. §248.9 predicted that confirming the tail placement 
 error was in the premise — the block only moved on **23% of turns**, so the prefix is re-bought on a change rather
 than on a turn, and the front arm was never paying the per-turn price the estimate assumed. The control, which serves
 no block at all, remains 26% below both. A placement saves what its cadence spends, and this cadence is low.
+### 248.17 The population: 72 rows, not 46, and the board's default branch no longer carries it
+
+R218a pinned 46 submissions and called that "the board". R220b read the directory again and found **72 rows at tag
+`v2.0.0`** — and no `web/leaderboard` on the default branch at all, so the tag is the largest set still readable. The
+difference is not clerical. Three axes the 46-row snapshot could not express are in those files:
+
+| axis | the 72 rows |
+|---|---|
+| retail `pass^1` stated | **48** rows |
+| modality | 21 voice, 1 text, **26 that declare nothing** |
+| benchmark version | nine spellings: `1.0.1` (14 retail rows), `1.0.0` (12), `0.1.3` (10), `v0.1.3` (4), `original tau-bench` (3), `v2.0` (2), two bare commit shas, one unstated |
+| submission type | 8 custom, 40 stock |
+
+The read itself was one script and 122 API calls; the *fold* is now `submission.py --ingest`, so the manifest is
+produced by the tool that reads it. `eval/manifests/tau2-board-2x-2026-11-25.json` is 72 entries with `modality`,
+`version`, `user_simulator`, `reasoning_effort` and `verification` lifted out of the three levels the board buries
+them at.
+
+### 248.18 One number, three ranks
+
+`--position` now names its population, and the same 84.20 reads differently at each scope:
+
+| scope | rank | rows above us | what the scope means |
+|---|---|---|---|
+| every retail row | **6th of 49** | Claude-Sonnet-4.5 86.20 (τ² 0.1.3), Gemini 3.0 Pro 85.30 (0.1.3), Pine Voice 85.09 (voice, 1.0.1), Qwen3.5-397B 84.43, gpt-live-1 84.21 (voice) | the board's own column, which pools nine benchmark versions and two modalities |
+| text rows at τ² 1.0.1 | **2nd of 9** | Qwen3.5-397B 84.43 | the only scope in which our tasks were the rows' tasks |
+| custom submissions | **3rd of 9** | Pine Voice 85.09, gpt-live-1 84.21 | the rows that modify the scaffold, which is what a memory harness does |
+
+Two of the three rows above us in the pooled column were measured on `0.1.3` — different tasks — and two are voice
+products. That is not a reason to prefer the flattering scope; it is the reason a rank must be quoted with one. The
+rank this round publishes is the **1.0.1 text** one, and the pooled one is printed beside it.
+
+The **cost axis** is sparser than it looks: **8 of 48** retail rows state a price, 6 of them text. The median
+published text price is **$0.11449** a trajectory, which is **20.5×** our $0.00558 — R216b's 19× was computed against
+the 46-row snapshot and the number moved by 8% when the population did.
+
+### 248.19 The probe priced four shapes and the product shipped the fifth
+
+`SERVING_DEFAULTS.placement` has been `tail` since R216b confirmed it, and `packages/eval/src/cache-placement.ts`
+priced `control`, `system-second`, `system-merged` and `first-turn`. The shipped position was the one position no
+committed reading had measured — the same divergence R220 closed between the manifest and the driver, one level down
+and inside the tool that was supposed to catch it.
+
+Adding the case is not enough, and the reason is a modelling one rather than a branch:
+
+- **a tail block's position is a function of when it was written.** `serve_tail` appends once and holds; later turns
+  go *after* the block. A probe that re-sent the block at the end of every call would price a message order the arm
+  never sends. `writtenOnCall` is the axis, and the calls before the write carry no block for **every** placement —
+  one rule, not a per-shape special case.
+- **the price of a placement is the price of a change.** Held still, every shape's steady state is the control's plus
+  one write, which is exactly why R216b measured **4%** and not 37%. `revision` changes the block's body from a named
+  call, and `movePrice(ledger, call)` reads that call's untracked tokens against the shape's own steady median.
+
+Three details worth keeping. `tail` was **appended** to `PACK_PLACEMENTS`, because the probe seeds each shape's
+policy text from its index and inserting it would have re-seeded three committed readings. The first call of `tail`
+equals `system-second` — with an empty conversation there is nothing to be behind — and that equality is asserted in
+the suite rather than special-cased away, so nobody "fixes" it later. And a `first-turn` shape with a write on call 2
+is **refused**, because that placement's write is the task statement by construction and a late write has no position
+in it.
+
+### 248.20 The coverage gate found two defects while it was being satisfied
+
+Both were found by writing the test that the gate asks for, not by reading the code.
+
+**`--check` passed the loud omission.** The board's prose rule is that an entry must declare `modified_prompts`. The
+check refused an entry that left the field out of its `verification` block and **accepted** an entry that left the
+whole block out — or the whole `methodology` — because the requirement sat inside `if methodology is not None`. An
+entry that says nothing at all was read as having nothing to say. Moved out of the guard; three assertions hold it
+(`verification` present, `methodology` absent, `methodology` present without the block).
+
+**R218b's registration was not a registration.** `prereg/R218b-pass4.md` had no `---` header, so `readPrereg`
+returned zero problems and no prereg — and `prereg-pack.test.ts` reported the file as "1 problem(s)" in every run
+that included it. It shipped in the previous push. The suite that catches it was not run before that push, which is
+the audit finding rather than the file: a gate exists to be run, and the pre-push path is where that is decided.
+
+Both are recorded in AUDIT 34.246–34.247 with the number of assertions that now hold them.
+
+### 248.21 What this iteration cost
+
+| item | value |
+|---|---|
+| R218b, two arms, 912 episodes, four attempts | **$4.75 ≈ ¥34** (dispatch 45646309827) |
+| the 2.0 directory read | $0 — 122 API calls, no model |
+| the probe changes | $0 — unit-tested, not dispatched |
+| lane to date | **$15.17 ≈ ¥109.2** |
+
+The probe's changes are free because they are arithmetic and shapes: `placementPromptFor` returns message arrays and
+`movePrice` subtracts two numbers. The only thing that would have cost money is dispatching the probe against the
+provider, and that is a separate decision — `--rewrite-at` exists so that the next dispatch can price a move on the
+shipped shape without buying a grid.
