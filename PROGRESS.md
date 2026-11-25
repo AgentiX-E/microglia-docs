@@ -28992,11 +28992,14 @@ and **this dispatch ran no control arm**, so the strata can only be read against
 
 | against R218b's control trial 0 | board | policy |
 |---|---|---|
-| regressions of the 96 tasks no-memory solves | **21** | **1** |
-| rescues of the 18 it does not | 16 | **18** |
+| regressions of the 96 tasks no-memory solves | **19** | **8** |
+| rescues of the 18 it does not | 10 | **11** |
 
-The registered bar is met on both counts and neither number is a within-dispatch measurement — which is exactly the
-kind of number this project has learned to stop quoting. And there is a second reason to be careful: **the shipped
+**The registered bar is not met either.** It asked for `regressions 6 → ≤1` with `≥12 of 15` rescues held; the dispatch
+read **8** regressions and **11** rescues. An earlier draft of this section said "met on both counts" because it was
+quoting a count taken from a shell one-liner that disagreed with the documents by twelve tasks — the correction is in
+AUDIT 34.261 and the count is now a reading (`goal_board.py --strata`), because a stratum that lives in a terminal is a
+stratum nobody can check. And there is a second reason to be careful: **the shipped
 arm's own regression count has now read 6, 10 and 21 across three dispatches of the same configuration**, so the bar
 as registered is a moving target and the paired contrast is the only stable quantity in the table.
 
@@ -29052,3 +29055,86 @@ does not move before it does.
 Lane to date: **$17.36 ≈ ¥125.0**. R219b's reading decides whether the rule becomes the product's default and whether
 the submission row moves from 86.8% into the top of the retail column — and if it does, it will be the first claim
 this project has made that is *both* above the field and larger than its own resolution.
+
+### 249.9 The replication came back flat, and the placebo had already said it would
+
+R219b ran the identical two-arm experiment 45 minutes later — same code, same seed world, same 114 tasks, same model,
+**228 episodes, $1.235 ≈ ¥8.9**:
+
+| | R219 | R219b | pooled |
+|---|---|---|---|
+| board (shipped) | 87/114 = 76.3% | 94/114 = 82.5% | — |
+| policy (the rule) | 99/114 = 86.8% | 93/114 = 81.6% | — |
+| δ | **+10.5 pp** [+0.4, +20.5] | **−0.9 pp** [−10.9, +9.2] | **+4.8 pp** [−1.2, +10.8] |
+| McNemar exact p | 0.0290 | 1.0000 | **0.1524** |
+| moved / broke | 19 / 7 | 11 / 12 | 30 / 19 |
+
+**The treatment applied in both dispatches, and identically:**
+
+| mechanism counter | R219 board → policy | R219b board → policy |
+|---|---|---|
+| `admission` | `all` → `state` | `all` → `state` |
+| chars a turn | 152.4 → 140.1 (−8.1%) | 150.0 → 137.6 (−8.3%) |
+| block changes | 260 → 211 (−19%) | 262 → 201 (−23%) |
+| bill an episode | $0.00552 → $0.00530 (−4%) | $0.00562 → $0.00521 (−7%) |
+
+That is the cleanest negative this lane has produced: **the intervention is provably present, provably cheaper, and it
+moves accuracy by +10.5 points and then by −0.9.** The pooled point estimate is +4.8 pp with an interval that includes
+zero, and the number that predicted this outcome was printed before either dispatch: at a 25.4% discordance rate a
+114-task grid resolves **13.2 pp** at 80% power (R218c), and +10.5 is inside it.
+
+And the stratum split, read by the tool rather than by hand (`--strata`, AUDIT 34.261):
+
+| against R218b's control | R219 board | R219 policy | R219b board | R219b policy |
+|---|---|---|---|---|
+| breaks, of the 96 no-memory solves | 19 (19.8%) | **8 (8.3%)** | 14 (14.6%) | 12 (12.5%) |
+| rescues, of the 18 it does not | 10 | **11** | 12 | 9 |
+
+Pooled: the shipped arm breaks **33 of 192** easy-task episodes and rescues **22 of 36**; the rule breaks **20** and
+rescues **20**. The harm falls by 39% and the gain falls by 9%, which nets to the +4.8 pp the paired test could not
+distinguish from zero. **So the rule halves the damage and gives back two rescues, and the two move the score in
+opposite directions by almost the same amount** — which is a much more useful sentence than "it broke 1 of 96". The bar was written against a control arm this dispatch did not
+run, and the shipped arm's own regression count has now read **6, 10 and 21** across three dispatches of the same
+configuration; there is no version of that count that is stable at 114 tasks.
+
+### 249.10 What is true regardless of the effect, and what the product does
+
+The rule's justification never depended on the accuracy delta, and that is why the round is not a write-off:
+
+- **The two judgment lines were false about the task 92.0% of the time** (1,808 of 1,965 entries over 456 paid
+  episodes). That is a defect in what the product says to its user's agent, measured against the evaluator's own list,
+  and it is true whatever the accuracy does.
+- **The rule makes the block 8% shorter and 19–23% less mobile, and the bill 4–7% lower** — replicated twice, exactly.
+- **It does not cost accuracy** within anything this grid can see: pooled +4.8 pp [−1.2, +10.8].
+
+So `admissionPolicy` **stays out of `defaults`**: the product's configuration is a *measured* configuration, and this
+measurement returns no accuracy effect at 114 tasks — a default moved on a point estimate whose interval includes zero
+is the exact failure this project has spent forty rounds learning to refuse. What the product gets instead is:
+
+1. the rule available behind the same switch (`MICROGLIA_BOARD=policy`, `--note-source board-policy`) and reported in
+   every phase census, so any later reading is a dispatch rather than a rebuild;
+2. the **record** that its two judgment lines are wrong 92% of the time, which is a correctness argument for removing
+   them and not an accuracy argument;
+3. **R222**, registered and priced: 1,600 episodes, **$7.4 ≈ ¥53**, the only reading that could support an accuracy
+   claim at five points. It is registered rather than queued, because the rule already saves 4–7% per episode and the
+   remaining question is worth ¥53 only if the submission needs the points.
+
+### 249.11 The methodological result, which is worth more than the round
+
+Three dispatches now say the same thing about this benchmark, and the third one did it prospectively:
+
+| round | what it claimed | what it read |
+|---|---|---|
+| R216-1 | the parser repairs are worth something | +7.9 pp |
+| R218b | the same arm, four attempts | −6.1 pp |
+| R219 | the admission rule, on its own instrument | **+10.5 pp, p = 0.029** |
+| R219b | the same, again | **−0.9 pp, p = 1.0** |
+
+R218c printed the reason before any of the last three: 114 tasks resolve 13.2 pp. A project that keeps dispatching
+8–10 point effects on a grid that cannot see them will keep publishing numbers that reverse, and the only defence is
+the one this round used — **register the replication before believing the first reading**, and write the refutation
+into the prereg so that a flat second reading is a result rather than an embarrassment.
+
+The submission row therefore does not move. It stays at the measured shipped configuration (84.20 retail `pass^1`,
+4th of 9 in the same-version text scope), and the reason it does not move to 86.8 is the same reason this project's
+ranks are worth reading: **the number was measured twice, and the second time it was not there.**

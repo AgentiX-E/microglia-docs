@@ -10524,7 +10524,7 @@ counterparts in the literature, and they arrive from four directions at once:
 | | no-memory | shipped block | the rule |
 |---|---|---|---|
 | pass^1, retail, 114 tasks | 84.2% (R218b) | 76.3%–84.2% across dispatches | **86.8%** (R219) |
-| memory-induced degradation | — | **6.7%** (R216-1), 10.8% (R216b), **21 of 96** (R219, cross-dispatch) | **1 of 96** |
+| memory-induced degradation | — | **6.7%** (R216-1), 10.8% (R216b), **19.8%** (R219), 14.6% (R219b), all against a cross-dispatch control | **8.3%** (R219), 12.5% (R219b) |
 | what it costs | — | 152.4 chars a turn | **140.1**, 4% cheaper |
 
 WikiTrace's 6.5% and our 6.7% are the same phenomenon measured on different suites, which is worth stating plainly:
@@ -10535,10 +10535,12 @@ WikiTrace's 6.5% and our 6.7% are the same phenomenon measured on different suit
 `86.8%` on retail `pass^1` would place the row **first of 48** retail rows, ahead of Claude-Sonnet-4.5 at 86.2 — and it
 would be the first time this project's number was both above the field and larger than its own grid's resolution.
 
-It is not claimed. The interval is [+0.4, +20.5] on **one** dispatch, the grid's identical arms turn over 25.4% of
-their tasks, and this lane has already published two contrasts of the same code (+7.9 and −6.1) that were noise. The
-published row stays at the measured shipped configuration until **R219b** repeats the two arms. The ordering of those
-two sentences — the number first, the refusal second — is the discipline; a project that inverts it is quoting a draw.
+It is not claimed, and R219b is the reason. The identical second dispatch read board 94/114 (82.5%) against policy
+93/114 (81.6%): **−0.9 pp**, McNemar p = 1.0, 11 moved and 12 broke. Pooled over both dispatches the rule is
+**+4.8 pp [−1.2, +10.8]**, p = 0.152 — inside the 13.2 pp a 114-task grid can resolve, which is exactly what R218c
+printed before either dispatch. The published row stays at the measured shipped configuration. The ordering of those
+sentences — the number first, the refusal second — is the discipline; a project that inverts it is quoting a draw, and
+this one quoted a draw for 45 minutes before the replication arrived.
 
 ### R219.3 The column the field still does not publish
 

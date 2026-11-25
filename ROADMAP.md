@@ -9931,7 +9931,7 @@ time. The rule that follows is one switch: the block admits state and refuses to
 | bill / episode | $0.00552 | **$0.00530** (−4%) |
 
 δ **+10.5 pp [+0.4, +20.5]**, McNemar exact p **0.0290**, 19 moved and 7 broke. Against R218b's control the shipped arm
-breaks **21** of the 96 tasks no-memory solves and the rule breaks **1** — cross-dispatch, and therefore indicative
+breaks **19** of the 96 tasks no-memory solves and the rule breaks **8** — cross-dispatch, and therefore indicative
 only. The shipped arm's own regression count has now read 6, 10 and 21 across three dispatches, which is why the
 within-dispatch paired contrast is the stable quantity and the strata are not.
 

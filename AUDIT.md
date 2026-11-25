@@ -17553,3 +17553,40 @@ Both defects share a property worth naming, because it is the third time this mo
 the shape the operator had in mind rather than against the shape the run can take.** The schedule guard assumed the
 cron fires on time; the reading guard assumed the dispatch has a `front` arm. A guard that fails closed on the
 operator's shape is a guard that passes on every run except the one that matters.
+
+### 34.261 The stratum count was taken in a shell, and it disagreed with the documents by twelve tasks
+
+R219's reading needed the split R216 had quoted for four rounds: of the tasks the no-memory arm solves, how many did the
+treatment break, and of the ones it fails, how many did it rescue. The first version was a fifteen-line Python
+one-liner over the two downloaded documents, and it reported **21 regressions and 1 rescue** for the policy arm. Four
+paragraphs were written from it — including the sentence "the registered bar is met on both counts" — before the same
+question was asked a second way, from the documents, by a script whose intermediate values could be printed:
+
+| | one-liner | recomputed from the documents |
+|---|---|---|
+| board, regressions of 96 | 21 | **19** |
+| policy, regressions of 96 | 1 | **8** |
+| board, rescues of 18 | 16 | **10** |
+| policy, rescues of 18 | 18 | **11** |
+
+The bar was `regressions 6 → ≤1` with `≥12 of 15` rescues held. Twenty-one to one reads as a triumph; nineteen to eight
+reads as what the pooled McNemar said — no effect — so the defect was not cosmetic. It changed the sentence the round
+was about to publish.
+
+Neither number is a within-dispatch measurement (this dispatch ran no control arm, so both columns are read against
+R218b's control 45 minutes earlier), and that remains the larger caveat. But the arithmetic defect is the one worth
+recording, because **it is the fifth time this project has published a number that no tool under a gate produced**, and
+the first where the number survived a review sentence and reached a report draft.
+
+The repair is the one the rest of this lane already uses: `goal_board.py --strata REFERENCE TREATMENT` computes the
+four counts from two documents, `strata_of` states the strata as the *reference's* outcomes (a stratum defined by the
+treated arm's own result would make both counts true by construction), and the self-test's fixture has all four counts
+distinct and unequal to each other. 99.9% of the module's lines and branches; `--expect-files 17` on every push.
+
+Two lessons, and the second is the general one:
+
+1. **A stratum is a reading, not an idiom.** If the number is going to appear in a report, it needs a tool, a fixture
+   and a gate, and the tool needs to be able to answer "no task in common" rather than dividing by zero.
+2. **The review that catches a number is the one that recomputes it from a different direction.** Every defect in this
+   file that mattered — 34.254, 34.256, 34.257, 34.258, this one — was found by asking the same question a second way,
+   and none by reading the first answer more carefully.
