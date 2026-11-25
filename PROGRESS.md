@@ -28982,6 +28982,8 @@ One dispatch, two arms, the same seed world, the same 114 retail tasks, 228 epis
 this lane has measured that also clears its own test, and it is the first one where the *mechanism* numbers and the
 accuracy number agree on the same story: a shorter block that moves less often, on the same parser, moves 19 tasks.
 
+![R219 — the admission rule, and the column no row publishes](figures/r219-admission.png)
+
 ### 249.4 The strata are cross-dispatch, and the replication is registered
 
 R219 was registered on a bar written against the no-memory arm — regressions 6 → ≤1 while keeping ≥12 of 15 rescues —
