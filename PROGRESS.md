@@ -28389,7 +28389,7 @@ The top three by retail `pass^1`: microglia 86.84, Claude Sonnet 4.5 **86.20**, 
 lane had been calling "the SOTA" (Qwen3.5-397B) is **84.43** retail and fourth.
 
 **So the sentence this project may say is narrower and stronger than the one it was saying**: on the column the board
-states most often, the memory harness is at the top by point estimate, at a fifteenth of the cheapest published
+states most often, the memory harness is at the top by point estimate, at an eighth of the cheapest published
 price, with a resolution of three points — and the column that measures reliability has never been run.
 
 ### 248.5 What changed in the repository

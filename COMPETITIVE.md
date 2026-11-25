@@ -10156,7 +10156,7 @@ would place it fifth of seventeen, behind the fine-tune and three frontier model
 
 ### R218a.5 Where microglia sits, in one line each
 
-- **On retail `pass^1`**: first of twenty-six by point estimate, ±3.2 pp, at $0.0060 — a fifteenth of the cheapest
+- **On retail `pass^1`**: first of twenty-six by point estimate, ±3.2 pp, at $0.0060 — an eighth of the cheapest
   published price and a sixty-fourth of the most expensive.
 - **On retail `pass^4`**: unranked. Not last: unmeasured. Sixteen rows state it and this project has never run four
   attempts, which is the one thing R218b buys.
