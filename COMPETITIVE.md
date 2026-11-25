@@ -10019,10 +10019,37 @@ part it cannot.
 intervals; middle: accuracy against cost for the three rows that publish one; right: the prefix cache hit rate
 across both rounds, which is where the bill lives.
 
-## R216 — the round that was rewritten by a replay, before it was paid for (registered 25 Nov 2026)
+## R216 — +7.9 pp from the parser repairs, and a placement still unmeasured (25 Nov 2026)
 
-**No new numbers yet.** The grid is registered and armed for the first minute of the provider's off-peak window
-(04:05 UTC); this entry records what changed about the *plan* and why the table below is unchanged.
+The first dispatch returned two arms of three. The round's own row moves to **86.8%**, and for the first time the
+movement is attributable: `front` is the repaired parser at R215's placement, so the +7.9 pp is the parser, not the
+address.
+
+| system | τ²-retail | metric | cost / conversation | memory | stack |
+|---|---|---|---|---|---|
+| Qwen3.5-397B-A17B (official board) | **87.9%** | pass^1, mean over domains | not published | none | closed weights |
+| **Claude Opus 5 + Recuris** | **87.9%** | avg@4 | not published | experiential + verified working state | Python harness |
+| **microglia + repaired contract (R216 front)** | **86.8%** | pass^1, 114 tasks, 1 attempt | **$0.0060** | contract + receipt ticks, two settlement grades | Python + τ² |
+| Claude Sonnet 4.5 + Skill-α | 86.0% | accuracy | not published | RL-generated skills | closed |
+| Claude Opus 4.5 (alone) | 85.3% | pass^1 | not published | none | closed |
+| GPT-5.2 (high) | 84.8% | pass^1 | not published | none | closed |
+| **microglia control (R216)** | **78.9%** | pass^1, 114 tasks, 1 attempt | **$0.0044** | none | Python + τ² |
+| DeepSeek-V3.2 + CaveAgent | 81.9% | accuracy | not published | stateful runtime | closed |
+| IBM learned guidelines | 81.14% (pass^1) / 67.54% (pass^4) | pass^1/pass^4, 114 × 4 | **$0.1084** | learned guidelines | not disclosed |
+
+**What the dispatch says.**
+
+1. **Fifteen tasks turned over against six**, +7.9 pp [−2.0, +17.6], McNemar p = 0.0784. Still `NO_LIFT` by the
+   registered rule and the largest movement this lane has recorded: R212 +1.8, R213 a wash, R214 −5.3, R215 +4.4.
+2. **Attribution cleared its bar in the live arm** — 32.7% → **75.5%** of writing episodes ending with a ticked ask,
+   `unattributed` 62 → 14. That is the mechanism the +7.9 is built on, and it is the first round where the board's
+   content, rather than its idea, can be shown to have changed.
+3. **The control is drifting and the treated arm is not**: 86.0 → 83.3 → 78.9 for the control across three
+   dispatches at the same seed, against 87.7 → 86.8 for the treated arm. Every number here is within-dispatch for
+   that reason, and no cross-round contrast in this table is quoted as a trend.
+4. **The placement is still unmeasured.** The tail arm never reached the model: the provider refuses a system
+   message inserted between an assistant message's `tool_calls` and the tool messages that answer them, and the
+   round's first implementation did exactly that on every turn a call was made. Fixed, gated, re-armed.
 
 | system | τ²-retail | metric | cost / conversation | memory | stack |
 |---|---|---|---|---|---|

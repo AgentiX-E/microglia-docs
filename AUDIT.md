@@ -16926,3 +16926,90 @@ the tail placement reaches it through a list the orchestrator owns.
 What the placement risks instead is **interpretation**: a system turn arriving after the user's may be read as an
 instruction rather than as context. Nothing in this round distinguishes "the board helped" from "the board's
 placement helped", which is why the grid has three arms — `tail − front` is the placement with the parser held.
+
+### 34.230 A block appended to `state.messages` splits a call from its results, and the provider refuses the request
+
+R216's first dispatch lost an entire arm to one line:
+
+```python
+kept = kept + [injected]          # appended at the end of the conversation
+```
+
+The provider's rule is exact — `An assistant message with 'tool_calls' must be followed by tool messages responding
+to each 'tool_call_id'` — and the agent's own conversation violates it for one turn out of every two: the turn a call
+is made ends with the assistant message carrying the call, and the results arrive as the *next* input. Anything
+appended there sits between the call and its answer, and the whole request is refused.
+
+**94 of 114 episodes** recorded no messages at all, and the 20 that survived were the ones whose first turn carried
+no call. Four attempts per task, then a recorded empty episode: the arm's `simulations` count was right, its
+per-episode bill was a seventh of the control's, and its accuracy was 8.8%.
+
+The repair is a computed position rather than an appended one. `tail_index(messages)` finds the last assistant
+message that carries calls, counts the run of tool messages after it, and returns *before* that assistant message
+when the run does not answer every call — a half-answered pair of parallel calls included, which is the case a
+"put it before the last message" rule would have got wrong.
+
+What makes this worth an audit entry rather than a commit message is that **the shape is not a property of this
+lane's material, it is a property of the tool-calling protocol**, and it will bite the next person who appends
+anything to a conversation: a reminder, a plan, a scratch pad. The front placement never met it because a system
+block is not in `messages` at all. R137's invariant — "at most one block, and it is this episode's" — was satisfied
+throughout.
+
+### 34.231 A cost ceiling is satisfied by an arm that stopped early
+
+The mechanism gate's job is to refuse a run whose material cannot be quoted. On dispatch `45546028726` it passed an
+arm that had reached the model on 20 of 114 episodes, and the reason is the bar's *shape*:
+
+| bar as registered | value the collapsed arm showed | verdict |
+|---|---|---|
+| `tailAppends ≤ changes` | 798 ≤ 798 | pass |
+| `tailHeld > 0` | 2,679 | pass |
+| block ≤ 500 chars | 142.2 | pass |
+| bill per episode ≤ 1.20 × control | **0.16 ×** control | **pass** |
+| attribution ≥ 60% | 0.0% | fail — but this is the *next* step |
+
+A one-sided cost bar cannot distinguish "cheap because the block is small" from "cheap because nothing happened". The
+number that separates them is not a cost at all: it is how many episodes reached the model. So the gate now reads
+that first —
+
+```python
+assert live >= 0.95 * max(alive.values()), f"{arm} reached the model on {live} of ... episode(s)"
+```
+
+— and the cost bar is a **band, −20% to +20%**, because a large negative is the same finding as a large positive and
+the registered derivation (+15%, R215's front placement +37%) only bounds one of them.
+
+The general form: **a guard that prices a cost must also bound the state a cheap cost implies.** Two of the three
+bars in this lane's history were wrong in the same direction — R215's 3-point cache bar was unachievable, and this
+one was achievable by failing — and both were found by reading the artefact rather than the verdict.
+
+### 34.232 A cron armed for the off-peak window did not fire, and the window is 4 hours wide
+
+R216's first dispatch was refused at 01:30 UTC by the rate guard, so the round armed itself:
+
+```yaml
+on:
+  schedule:
+    - cron: '5 4 25 11 *'      # the first minute of the first off-peak hour, 25 November
+jobs:
+  board:
+    if: ... || (github.event_name == 'schedule' && github.event.schedule == '5 4 25 11 *')
+```
+
+The workflow was on `master` at 01:44 UTC, two hours and twenty minutes before the trigger, and the run never
+appeared: `event=schedule` has no `working-memory` entry and the workflow's own history shows the 01:44 push and
+nothing between it and the 04:19 manual dispatch. GitHub's scheduler is documented as best-effort and can delay or
+drop a trigger, and a trigger that has never fired once is the one this lane has no evidence about.
+
+Consequences, in the order they matter:
+
+1. **A window is a deadline, not a schedule.** The off-peak band is 04:00–06:00 UTC and the grid takes ~55 minutes,
+   so a dispatch that waits for a trigger which never comes loses the whole window; the dispatch was made by hand at
+   04:19 and finished at 05:42 with 18 minutes to spare.
+2. **The arming is still the right shape, and it now needs a fallback.** The cron stays in the file — a trigger that
+   fires is free and one that does not costs nothing — but the round is not *waiting* on it: the operator's dispatch
+   is the primary, and the second dispatch is recorded with the exact call that reproduces it.
+3. **The guard's granularity is minutes and the schedule's is hours.** Nothing in this lane can now be dispatched
+   between 06:00 and 10:00 UTC without paying double, which is 4 of every 24 hours at the wrong multiple. That is a
+   constraint on when work happens rather than on what work is, and it is worth stating because three of the lane's
+   last four rounds were dispatched inside that band's neighbourhood by luck rather than by design.

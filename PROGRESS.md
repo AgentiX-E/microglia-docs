@@ -28234,3 +28234,92 @@ could not say which was the harm; that lesson cost $1.43 and this grid costs $0.
 
 Lane: bank $2.0103 + ablations $0.1826 + R211 $0.4820 + R212 $1.0054 + R213 $1.5334 + R214 $1.4261 + R215 $1.1996
 ≈ **$7.84 ≈ ¥56.4**, plus this round's $0.0002 smoke call. R216's grid is registered at ≈ $1.75 and not yet spent.
+
+### 246.6 The first dispatch: two arms of three, and the parser repairs are worth +7.9 pp
+
+Run `45546028726`, 04:19–05:42 UTC, 342 episodes, **$1.2739 (¥9.2)**.
+
+| arm | pass^1 | bill / episode | cache | block | changes | appends | held |
+|---|---|---|---|---|---|---|---|
+| control | **90/114 (78.9%)** | $0.00442 | 90.5% | — | — | — | — |
+| front | **99/114 (86.8%)** | $0.00604 (+37%) | 84.0% | 148.2 chars | 258 | — | — |
+| tail | 10/114 (8.8%) | $0.00071 | 91.6% | 142.2 chars | 798 | 798 | 2,679 |
+
+**The front arm is the round's first real number**, and it is the parser repairs under R215's placement:
+
+| contrast | value |
+|---|---|
+| paired, by task | **+7.9 pp**, [−2.0, +17.6] |
+| McNemar exact | p = 0.0784 |
+| moved / broke / held / neither | **15** / 6 / 84 / 9 |
+
+Fifteen tasks turned over against six, on a grid whose floor is about nine points. It is `NO_LIFT` by the registered
+rule — the interval touches zero — and 15:6 is the strongest movement this lane has recorded: R212 +1.8 pp, R213 a
+wash, R214 −5.3, R215 +4.4, R216 **+7.9**.
+
+**And attribution cleared its bar in the live arm.** The replay over the front artefact:
+
+| reading | R215 live | R216 front live | bar |
+|---|---|---|---|
+| writing episodes ending with a tick | 32.7% | **75.5%** (83 of 110) | 60% |
+| asks settled | 52 of 191 writes | **120 of 284** | — |
+| loose of settled | — | 6 of 120 | — |
+| absorbed | — | 3 | — |
+| `unrequested` | 77 | 54 | — |
+| `unattributed` | 62 | **14** | — |
+
+The four repairs took the same parser from crediting a third of its writing episodes to three quarters. The offline
+prediction was 69.2% on R215's transcripts; the live arm reads 75.5% on its own, and the direction of the difference
+is the one that matters — a board that shows ticks gives the agent something to finish.
+
+### 246.7 The tail arm never ran, and the provider said exactly why
+
+Every episode raised:
+
+```
+litellm.BadRequestError: DeepseekException - An assistant message with 'tool_calls' must be followed by tool
+messages responding to each 'tool_call_id'. (insufficient tool messages following tool_calls message)
+```
+
+`serve_tail` appended the block at the end of `state.messages`, and on the turn a call is made that put a system
+message **between the call and the results about to arrive**. Four attempts per task, then the episode was recorded
+with no messages: 94 of 114, and the 20 that survived are the ones whose first turn carried no call.
+
+The repair is `tail_index`: the insertion point is computed. The last assistant message carrying calls is found, the
+run of tool messages after it is counted, and if the run does not answer every call the block goes **in front of**
+that assistant message instead. The self-check case has one fixture per branch plus the provider's invariant checked
+over the result, and it was verified to fail on the old code before the fix landed.
+
+**The gate should have caught this and did not.** The mechanism gate passed the collapsed arm: `appends ≤ changes`,
+`held > 0`, block length fine, and the bill **16% of the control's** — which the one-sided bar read as cheap. A cost
+ceiling is satisfied by an arm that stopped early, so the bar is now a band (−20% to +20%) and the gate requires
+**liveness** before it reads any counter: every arm must reach the model on at least 95% of the episodes the best arm
+reached. Replayed against this dispatch's own artefact, the new gate fails with `board reached the model on 20 of
+114 episode(s): the arm did not run` (AUDIT 34.231).
+
+### 246.8 The control is drifting and the treated arm is not
+
+| dispatch | control | treated arm |
+|---|---|---|
+| R214 | 98/114 (86.0%) | 92/114 (80.7%), R214's board |
+| R215 | 95/114 (83.3%) | 100/114 (87.7%), the contract at the front |
+| R216 | **90/114 (78.9%)** | **99/114 (86.8%)**, the repaired parser at the front |
+
+Same 114 tasks, same seed 400, three dispatches over two days. The control has moved **seven tasks down** and the
+front arm **one**. Two explanations, and this round cannot separate them: sampling noise at n = 114 (sd ≈ 3.3 pp, so
+seven tasks is ~2 sd and not impossible), or a provider-side change that the board's material happens to buffer —
+a block that names the ask makes the episode less dependent on how the simulator phrases it.
+
+What it settles is a rule this lane has been applying since R211 and now has evidence for: **only a within-dispatch
+contrast may be quoted.** Every number in 246.6 is from one dispatch, minutes apart, and the re-dispatch re-runs all
+three arms rather than reusing the control.
+
+### 246.9 Cost, and the second dispatch
+
+| item | value |
+|---|---|
+| dispatch 1 (342 episodes, 3 arms) | **$1.2739 (¥9.2)** |
+| smoke call(s) | $0.0003 |
+| dispatch 2 (armed, 10:02 UTC) | ≈ $1.75 — registered |
+
+Lane to date: $7.84 + **$1.2742** ≈ **$9.12 ≈ ¥65.7**.
