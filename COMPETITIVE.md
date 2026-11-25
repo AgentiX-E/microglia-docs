@@ -10172,3 +10172,57 @@ The claim this project can defend on the board is narrower than "SOTA on τ²-re
 
 The claim it cannot defend yet is any sentence containing both "SOTA" and "reliability". That one needs four attempts
 and 912 episodes, and until it is run the column stays empty rather than approximated.
+
+## R218c — four 2026 papers on why memory hurts, and which of them this lane has already measured
+
+The user-facing question behind this lane is "why does memory make the agent worse". The literature answered it in
+2026 with numbers, and three of the four answers describe something this lane has measured on τ²-retail — in two
+cases before reading the papers.
+
+| paper | mechanism | number | our counterpart |
+|---|---|---|---|
+| **When Continual Learning Moves to Memory** (arXiv 2604.27003) | external memory does not remove the stability–plasticity problem, it relocates it to retrieval: old and new experience compete for the window | abstract procedural memory transfers; **negative transfer falls disproportionately on the hard cases**; finer granularity can buy forward transfer and cause severe forgetting | our board is abstract (a settled state, not a trajectory) and worked only once it was true; we have **no easy/hard split**, so the "hard cases" claim is unmeasured here |
+| **More Memory, Worse Agents** (arXiv 2610.27406) | *error reproduction*: a stored abstraction shapes execution, the resulting trajectory feeds the next abstraction, and the error persists past the deletion of its source | Anti-Persistence — retain trajectories, synthesize guidance **on demand**, discard after use — highest held-out success **and lowest LLM-call cost** | this is R219's shape, now with a citation: guidance is rebuilt at the moment a write is composed rather than persisted as a rendered block |
+| **WikiTrace** (KAIST AI) | memory-induced degradation: lessons are labelled with *whether* a task passed, not *why*, and are handed over without the trajectory | **>50% of degradations trace to a single misleading memory item**; insight→compilation→trajectory descent: 90.2 vs 87.0 score, regression 6.5% → 4.5%; descent rises to 44% on hard tasks | R214's **−5.3 pp** was exactly one misleading item — a renderer asserting a failure that had not happened. The four repairs (§246.6) took attribution from 32.7% to 75.5% and the same arm from −5.3 to **+7.9** |
+| **MemSyco-Bench** | memory *sycophancy*: the agent retrieves correctly and then defers to a stored belief it should have corrected | 61–62% of failures are retrieval-success/use-failure; a "are you sure?" prompt makes it **worse** | our block states only facts the tool path produced (an order was cancelled, a return was filed) and never a preference or a belief, which is the design rule this paper argues for |
+
+### R218c.1 What this changes, and it is not a new module
+
+Three readings, in the order they should change the plan:
+
+1. **The negative effect is a *truth* problem before it is a *retrieval* problem.** WikiTrace's "single misleading
+   item" and this lane's −5.3 pp are the same failure with different authors: theirs retrieved a bad lesson, ours
+   rendered a false statement about the agent's own state. Both are fixed by making the memory verifiable against
+   the record, not by retrieving less. That is what `--replay` measures and what the four repairs bought.
+2. **Abstraction is the right representation and the literature says so twice.** 2604.27003 finds abstract memory
+   transfers better than raw trajectories; 2610.27406 finds that the *persistence* of the abstraction is the
+   problem, not the abstraction. Our board is abstract and ephemeral-per-turn, which is on the safe side of both —
+   and its cost (a re-rendered block) is what R216's tail placement is trying to fix.
+3. **The invocation policy R219 was registered as is now the literature's own recommendation.** "Retrieve when a
+   write is being composed" is 2610.27406's Anti-Persistence with a different name, and that paper reports the
+   *lowest* LLM-call cost among the designs it compares — which is the axis this project competes on.
+
+### R218c.2 The split the literature implies, computed on our own dispatch for free — and it points the other way
+
+Both 2604.27003 and WikiTrace report that memory's harm concentrates on **hard** cases. The split costs nothing: a
+task's outcome under the control arm *is* its difficulty. Run over R216's own two arms (same dispatch, same 114
+tasks, minutes apart):
+
+| subset | n | control | front (board at the front) | delta |
+|---|---|---|---|---|
+| **easy** — the control solved it | 90 | 90 (100%) | 84 (93.3%) | **−6.7 pp** |
+| **hard** — the control failed it | 24 | 0 (0%) | 15 (62.5%) | **+62.5 pp** |
+
+**The state channel is a rescue mechanism, and its harm is on the cases that needed no help.** Fifteen of the
+twenty-four tasks no-memory cannot do are solved with the block; six of the ninety it already does are broken. The
+population +7.9 pp is the difference between those two numbers, which means the average has been hiding both.
+
+That inverts the literature's emphasis on this benchmark and it is the more useful shape: a memory whose harm falls
+on *already-solved* trajectories is a memory with a **timing** problem, not a knowledge problem — it is being served
+when the agent did not need it, and the fix is an admission rule rather than a better lesson. R219 is registered
+against exactly that, with a bar written from these two cells: **regressions 6 → ≤1 while keeping ≥12 of the 15
+rescues.**
+
+It also explains why the lesson channel measured a wash while the state channel moved: a lesson is an abstraction
+about *tasks* and applies to all of them; a state block is a statement about *this episode*, so its harm can only
+land where the episode was already fine.

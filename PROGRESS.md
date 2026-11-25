@@ -28414,3 +28414,28 @@ Lane to date: **$9.12 ≈ ¥65.7**, unchanged — a round that found three defec
 RAFT-30B-A3B (61.40), Claude-3.7-Sonnet (59.70), Qwen3.5 (59.65) and GPT-5 (58.77), ahead of Qwen3-Max (57.89). The
 test that would falsify independence is the same run: if the observed `pass^4` sits above 62, attempts are
 correlated and the "22% turnover" reading of §246.8 is a *between-dispatch* property only.
+
+### 248.7 The split that costs nothing, and the number it produces
+
+Computed from R216's two artefacts, at no cost, in seconds — the split a task's difficulty is read from is the control arm's own outcome:
+
+| subset (by the control arm's own outcome) | n | control | front | delta |
+|---|---|---|---|---|
+| easy | 90 | 90 (100%) | 84 (93.3%) | **−6.7 pp** |
+| hard | 24 | 0 (0%) | 15 (62.5%) | **+62.5 pp** |
+
+The state board **rescues 15 of the 24 tasks no-memory cannot do and breaks 6 of the 90 it already does.** The
+population +7.9 pp is the residue of those two numbers.
+
+Three consequences:
+
+1. **The harm is a timing problem, not a knowledge problem.** A block that damages only already-solved trajectories is
+   being served when nobody asked for it; the fix is an admission rule, not a better lesson.
+2. **The lever with the most headroom is the 6.** Removing the regressions alone takes the arm from 86.8% to 92.1%
+   on this grid; adding one more rescue takes it to 93.0%. The two are not equally hard.
+3. **The literature's emphasis inverts here.** 2604.27003 and WikiTrace both report that memory's harm concentrates on
+   hard cases; on this benchmark it concentrates on the easy ones, because a state block is a statement about *this*
+   episode rather than an abstraction about tasks.
+
+R219 is therefore registered with a bar written from these two cells rather than from a wish: **regressions 6 → ≤1
+while keeping ≥12 of the 15 rescues.**

@@ -9716,9 +9716,13 @@ at 78.9% would be `0.789⁴ = 38.8%`. The registered contrast is still paired `p
 if the observed value lands above 62, attempts are correlated and §246.8's 22% turnover is a between-dispatch property
 only. ≈ **$4.75 (¥34)**, ~76 minutes.
 
-**R219 — the invocation policy as a fourth arm.** Retrieve when a write is being composed, not when the request
-arrives. It is the largest published component this lane has not built, and R216's three-arm grid made it cheap to add
-as an arm rather than a round: `+10 pp` paired against the front arm, same 114 tasks, ≈ ¥8.5.
+**R219 — the invocation policy: serve the state when it is needed, not when it is renderable.** Retrieve when a
+write is being composed, not when the request arrives — the shape 2610.27406 calls Anti-Persistence and reports the
+lowest LLM-call cost among the designs it compares. R216's own artefacts price the headroom precisely: the board
+**rescues 15 of the 24 tasks no-memory cannot do (+62.5 pp) and breaks 6 of the 90 it already does (−6.7 pp)**, so the
+bar is written from those two cells — **regressions 6 → ≤1 while keeping ≥12 of the 15 rescues**. Same 114 tasks, one
+arm against `front`, ≈ ¥8.5. This is a timing problem, not a knowledge problem: the block is being served when the
+trajectory was already fine.
 
 **Order, and why (revised on R218a's reading).** R218b before R219 because the board states `pass^4` on sixteen rows
 and this project states none — an accuracy lead by point estimate with no reliability number is a claim a maintainer
