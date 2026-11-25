@@ -9852,3 +9852,36 @@ row is a statement about a system and not about a hypothesis — and `--position
 R218c is first because it is the cheapest item whose failure would invalidate every other one: if two identical arms
 interleaved do not read zero, nothing else on this grid can be believed, and the repair is the grid rather than the
 memory.
+
+## R218c (dispatched 25 Nov, ¥9.4) — the instrument test, and the two readers it needed
+
+Built and dispatched in one iteration, because a placebo that is not read is a round that bought nothing.
+
+**What was built.** `eval/drivers/tau2/interleave.py` is a driver rather than a flag on `run_split.py`, and the three
+decisions are each forced by the refutation it has to be able to state:
+
+1. **block-major schedule** — eight tasks a block, `a.00, b.00, a.01, b.01, …`, so the two readings of a task sit a
+   couple of minutes apart rather than R218b's thirty-five. The gap is *measured* per block and reported.
+2. **one process per (block, arm)** — both arms in one interpreter would share the provider client and the `litellm`
+   token callback, which is the state the preregistration names as proving nothing was measured. Thirty τ² imports
+   is the price; a bill, a wall clock and a resumable round per part is what it buys.
+3. **six verdict states, ordered** — `UNPAIRED`, `SHARED_PROCESS`, `GRID_ORDERED`, `ORDER_ASYMMETRIC`,
+   `BILL_DRIFT`, `PLACEBO_HELD`. The `p > 0.05` endpoint has no branch because the symmetry bar implies it: two
+   tasks of asymmetry is p = 0.5 at its tightest.
+
+**What it cost to build.** Nothing but time, and four defects found on the way (§34.252–34.255), of which the one
+that mattered was the *registration itself*: the endpoint as written asked `goal_board --compare` to print `NO_LIFT`,
+and two identical arms that disagree on no task print `NO_MEASUREMENT`. Caught before the dispatch, by writing the
+reading out against the six states — the same class of defect as §34.250, one round later.
+
+**What else it bought, for free.** R218d: the dose reader, and its first answer `NO_DOSE` on a *treated* arm, because
+a front-placement block never enters the transcript. That is a finding about the instrument, not about the memory, and
+it is why R218e exists.
+
+| step | what it settles | cost |
+|---|---|---|
+| **R218e** (registered) | the dose, recorded where it is known: one JSONL line an episode, so the next arm can be read per episode instead of per arm | ¥4.0 |
+| **R217** | the airline column, 50 independent *tasks* — the only thing R218b's ICC says reduces variance | ¥5.4 |
+| **R219** | the admission policy, fourth arm, bar written from two measured cells (regressions 6 → ≤1, ≥12 of 15 rescues kept) | ¥9.4 |
+| **R220c** | `movePrice` measured rather than derived, on the shipped shape | $0.02 |
+| **R221** | a 2.0 submission — only if the board moves its headline column to 2.0 | ¥34 |

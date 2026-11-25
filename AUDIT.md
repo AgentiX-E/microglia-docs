@@ -17370,3 +17370,51 @@ reader would think to do. Two consequences, both cheap:
 - the next paid dispatch publishes its reading through a channel `api.github.com` serves **directly** — a commit
   comment or a file the workflow writes with `contents: write` — so no result depends on a redirect behaviour or on
   a permission the token may not have.
+
+### 34.252 A merged arm would have reported one thirtieth of its bill
+
+`notes.merge_documents` keeps every key of the **first** document and replaces only `tasks` and `simulations` — right
+for a round whose documents are rounds of one grid, and wrong for an arm of thirty invocations. The merged
+`front.json` would have carried part 0's `usage` block: 1/15 of the arm's calls, 1/15 of its prompt, 1/30 of its
+bill. Nothing downstream reads it (the workflow's bill comes from τ²'s per-simulation costs, which merge correctly),
+which is exactly why it would have survived: a reader opening the document to ask what the arm cost would have got a
+number with a plausible shape and none of the arm in it.
+
+`interleave.py` repairs it twice over. The counters that are counts are summed (`_sum_usage`), the ones that are
+ratios are re-divided from the sums, and `diagnostics` — a per-invocation census of means whose first-call ratio
+belongs to one process — is **replaced by a pointer to the parts** rather than summed or inherited. Summing a mean
+of means over parts of unequal size produces a third number that no process measured; keeping the first part's would
+report one thirtieth of the run as the run.
+
+### 34.253 The cost estimate read an interleave as half a run
+
+The window guard's own arithmetic had a map from dispatch name to arm count — `{'three': 3, 'both': 2, 'pair': 2}` —
+and every name it did not know fell through to **1**. A new dispatch mode is a name it does not know, so R218c would
+have been armed with half the run it was guarding: 114 episodes where the grid is 228, and a guard that says a run
+fits in a window it does not fit in. The repair is one key and one comment, and the comment is the point: this is the
+second time a `dict.get(name, 1)` in this file has quietly halved a number (the first was `run_split.py`'s own
+`--trials` default on a round-scheduled phase).
+
+### 34.254 The placebo's endpoint could not be triggered, and it was registered that way
+
+`prereg/R218c-interleave.md` was registered with the reading `goal_board.py --compare control-a.json control-b.json`
+and the requirement that it print `NO_LIFT` with a delta inside ±5 pp. Two identical arms that disagree on **no task**
+do not print `NO_LIFT`: `render_comparison` returns `NO_MEASUREMENT` when there are no discordant pairs, because
+"the arms disagree on no task" and "the arms agree within noise" are different sentences.
+
+This is AUDIT 34.250 again, one round later, in the same register: an endpoint that the instrument can never produce.
+The difference is that this time it was caught **before** the dispatch, by writing out what the reading must print
+against the six states the driver implements. The registration now names the driver's six states rather than a
+`--compare` string, and `UNPAIRED`/`SHARED_PROCESS` — the two states in which there is nothing to read — are named as
+failures of the instrument rather than as absences.
+
+### 34.255 A suite that could not describe its own failure
+
+`interleave.py`'s self-test formats a failure as `name + ': ' + detail`, and half its checks pass a **dict** as the
+detail — a reading, a manifest, an episodes block. The first failure the suite ever produced was
+`TypeError: can only concatenate str (not "dict") to str`: the failure path raised instead of reporting.
+
+Found by writing a check that was wrong on purpose (the `moved`/`broke` expectation was 2/2 against the fake runner's
+1/1) rather than by reading the code — which is the argument for building the suite's own failure paths into the suite.
+Both modules now plant a failure, capture it, and assert that the report says so, so the branch that prints a FAIL is
+measured rather than assumed.

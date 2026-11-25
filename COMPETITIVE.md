@@ -10174,7 +10174,11 @@ The claim this project can defend on the board is narrower than "SOTA on τ²-re
 The claim it cannot defend yet is any sentence containing both "SOTA" and "reliability". That one needs four attempts
 and 912 episodes, and until it is run the column stays empty rather than approximated.
 
-## R218c — four 2026 papers on why memory hurts, and which of them this lane has already measured
+## R218c-lit — four 2026 papers on why memory hurts, and which of them this lane has already measured
+
+*(The `-lit` suffix is load-bearing: `R218c` is the interleaved placebo round registered after R218b, and the two
+first collided on one identifier — the section that read the literature and the round that tests the grid. The
+literature section keeps the lineage and gives up the bare id.)*
 
 The user-facing question behind this lane is "why does memory make the agent worse". The literature answered it in
 2026 with numbers, and three of the four answers describe something this lane has measured on τ²-retail — in two
@@ -10187,7 +10191,7 @@ cases before reading the papers.
 | **WikiTrace** (KAIST AI) | memory-induced degradation: lessons are labelled with *whether* a task passed, not *why*, and are handed over without the trajectory | **>50% of degradations trace to a single misleading memory item**; insight→compilation→trajectory descent: 90.2 vs 87.0 score, regression 6.5% → 4.5%; descent rises to 44% on hard tasks | R214's **−5.3 pp** was exactly one misleading item — a renderer asserting a failure that had not happened. The four repairs (§246.6) took attribution from 32.7% to 75.5% and the same arm from −5.3 to **+7.9** |
 | **MemSyco-Bench** | memory *sycophancy*: the agent retrieves correctly and then defers to a stored belief it should have corrected | 61–62% of failures are retrieval-success/use-failure; a "are you sure?" prompt makes it **worse** | our block states only facts the tool path produced (an order was cancelled, a return was filed) and never a preference or a belief, which is the design rule this paper argues for |
 
-### R218c.1 What this changes, and it is not a new module
+### R218c-lit.1 What this changes, and it is not a new module
 
 Three readings, in the order they should change the plan:
 
@@ -10203,7 +10207,7 @@ Three readings, in the order they should change the plan:
    write is being composed" is 2610.27406's Anti-Persistence with a different name, and that paper reports the
    *lowest* LLM-call cost among the designs it compares — which is the axis this project competes on.
 
-### R218c.2 The split the literature implies, computed on our own dispatch for free — and it points the other way
+### R218c-lit.2 The split the literature implies, computed on our own dispatch for free — and it points the other way
 
 Both 2604.27003 and WikiTrace report that memory's harm concentrates on **hard** cases. The split costs nothing: a
 task's outcome under the control arm *is* its difficulty. Run over R216's own two arms (same dispatch, same 114
@@ -10405,3 +10409,54 @@ No row on the board states this, and it is the number a practitioner needs: it s
 power, and that a `pass^4` reported without its ICC is a number whose precision the reader cannot infer. It also
 explains a fact about the leaderboard's own ordering — `pass^4` rows cluster far above `pass^1⁴`, which readers have
 been treating as a ceiling on reliability when it is a floor imposed by task difficulty.
+
+## R218c — the instrument: no leaderboard publishes the noise floor of its own deltas
+
+The board's 72 rows state a score. Sixteen state `pass^4`. None states a **resolution** — the size of a difference
+the grid can tell apart from its own noise — and none states a control measured in the same dispatch as the
+treatment. That is the third gap this project can occupy, and unlike the cost column it costs almost nothing to
+fill: the placebo is two arms of identical code.
+
+### R218c.1 What the field's numbers imply and nobody says
+
+R218b measured the noise floor directly and the result is uncomfortable for the whole board: the **same treated arm**
+read 86.84%, 81.60% and 78.07% across three dispatches of one afternoon, and the **control** read 78.95% and then
+84.21% — the ranking reversed twice, with no change of material. The arms of one grid ran thirty-five minutes apart.
+
+Read against a leaderboard, that means every neighbouring pair of rows within ~9 points is **unordered** by the
+publishing practice, whatever the row order implies. On the 48-row retail column that is most of the middle of the
+table. A field that reports `pass^1` to two decimals and never a within-day spread is publishing a ranking it has not
+shown it can resolve.
+
+| what a row states, in its retail column | rows of 72 |
+|---|---|
+| a `pass^1` | 48 |
+| a `pass^4` | 18 |
+| a cost per trajectory | 10 |
+| a control arm measured in the same dispatch | **0** |
+| a noise floor or a placebo for its own delta | **0** |
+| an intraclass correlation across its attempts | **0** |
+
+Counted by `submission.py --census` over the 72-row snapshot at tag `v2.0.0` (`989d3285`). The last three are zero
+because the schema has no field for them: the row's `verification` block carries three booleans about the submission's
+*prompts* — modified, omitted, and a free-text note — and nothing about the measurement.
+
+### R218c.2 What we publish instead, and what it costs
+
+Two instruments, both cheaper than a treatment arm:
+
+- **an interleaved placebo** — two arms of identical code, block by block, registered delta of zero. It costs 228
+  episodes ≈ **$1.3** and it either holds or it invalidates every contrast measured on the grid. Its six states
+  (`PLACEBO_HELD`, `GRID_ORDERED`, `ORDER_ASYMMETRIC`, `BILL_DRIFT`, `SHARED_PROCESS`, `UNPAIRED`) are published with
+  the reading, so a reader can see what the instrument checked rather than that it ran.
+- **a dose reader** — the attempt-level dose beside its own task's attempts, which converts "the arm's mean did not
+  move" into "the attempts that received more material did/did not pass more often, with the turn-count confound
+  quoted". Its first result is a negative about the instrument (`NO_DOSE`, because a system-message block never
+  enters the transcript), and publishing that is the point: the field's per-trajectory analyses have the same blind
+  spot and none of them says so.
+
+**Where that leaves the comparison.** On score we are 2nd of 9 in the scope where the rows share a benchmark version
+and a modality, at 20.5× lower cost per episode than the published text median. On *claims a reader can check* we are
+alone: a controlled delta, a reliability column, a noise floor, and a cost, over one population, from one dispatch
+family. The claim to occupy is not "highest `pass^1`"; it is **"the only row whose delta comes with its own
+resolution"**, and the two instruments above are what makes that sentence true rather than aspirational.

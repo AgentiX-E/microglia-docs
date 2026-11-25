@@ -12092,3 +12092,70 @@ Two refusals rather than two warnings:
 `ingest(raw)` is the fold from a directory read to a snapshot, and its contract is that **absent stays absent**. A row
 that declares no modality keeps `modality: None`; the scope counts undeclared rows separately. A default here would
 answer the question the scope is asking, and the count — 26 of 48 — is one of the facts this round publishes.
+
+### 17.189 An interleave is a schedule, a process boundary and a verdict, in that order
+
+R218c's driver is three decisions and each one is forced by the refutation it has to be able to state.
+
+**The schedule.** `plan(tasks, chunk=8)` emits one entry per (block, arm), ordered block-major: `a.00, b.00, a.01,
+b.01, …`. Block-major rather than arm-major is the round — arm-major is R218b's grid, where the two readings of a
+task sit thirty-five minutes apart — and eight rather than one is the compromise between the gap and thirty process
+starts. The gap is not assumed: `gaps(entries)` subtracts one arm's `endedAt` from the other's `startedAt` per block
+and reports median and worst, so a block size that buys a gap nobody looked at is visible in the reading.
+
+**The process boundary.** One `run_split.py` child per (block, arm). The alternative — both arms inside one
+`run_tasks` call — is cheaper, and it cannot answer the question: two arms in one interpreter share the provider
+client and the `litellm` success callback that counts this lane's tokens, so their bills and their latencies are one
+object's, and the preregistration names "a delta of exactly zero on every task" as the state that proves it. The
+boundary buys three things a shared process cannot: a bill per arm that is a sum of per-invocation bills, a wall
+clock per part that measures the confound, and a round that resumes after a transient failure without re-buying the
+parts already on disk (`--resume`, per part, checked against the plan's own task list so a part left by another grid
+is re-run rather than trusted).
+
+**The verdict.** Six states, ordered so that the sentence names the most fundamental failure first:
+
+```
+UNPAIRED          tasks or arms do not cover the same grid — nothing is paired
+SHARED_PROCESS    moved + broke == 0 — the instrument measured an import
+GRID_ORDERED      |delta| > 5 pp — the order is inside every contrast this grid has measured
+ORDER_ASYMMETRIC  |moved - broke| > 2 — the second reading inherited something
+BILL_DRIFT        |bill_b / bill_a - 1| > 10% — the halves ran under different conditions
+PLACEBO_HELD      every endpoint held
+```
+
+The registered `p > 0.05` bar has **no branch**, and that is a proof rather than an omission: with `|moved − broke| ≤
+2` the exact McNemar p is at least 0.5 (2 against 0 is the tightest split the symmetry bar admits, and its p is 0.5),
+so the symmetry bar implies the significance bar. The p is printed beside the counts so a reader quoting it can see
+what the symmetry bar stands in for.
+
+Two smaller decisions the file records because they are the kind that get reversed by accident:
+
+- **the arm labels are `control-a` and `control-b`, and the code is identical.** The label is the whole difference,
+  which is the point; a reader who sees one arm "doing better" is looking at the provider's afternoon.
+- **the workflow gates the instrument and prints the prediction.** An unpaired arm, a grid under a hundred episodes,
+  fewer than ten measured blocks, or arms that never disagree fail the build. `GRID_ORDERED`,
+  `ORDER_ASYMMETRIC` and `BILL_DRIFT` are `::warning`s and are read into the round's record by hand, because a red
+  job for a refuted prediction teaches an operator to rerun until the grid is green.
+
+### 17.190 A dose reader has to be able to say that it cannot see the dose
+
+`board_dose.py` asks whether an attempt that received more material passed more often than its own task's attempts
+that received less. The pairing is the design: within one task the domain, the opening, the seeded world and the
+difficulty are held fixed by construction, which is a decomposition a two-arm grid cannot make.
+
+The first reading is `NO_DOSE` on **both** arms of R218b — 456 episodes each, four attempts at 114 tasks — including
+the treated arm whose log counts 4,341 renders at 146.3 characters a render. The cause is a property of the harness
+rather than of the reader: a front-placement block goes into `state.system_messages`, which is composed into the
+request, and τ² persists the conversation. `grep -c microglia-board` over 32 MB of the treated document is **0**.
+
+Two candidate repairs, and the second is written down because it is the one that produces a plausible number:
+
+| repair | what it yields | why it is or is not shipped |
+|---|---|---|
+| read the block's tag | the exact dose, on an arm whose placement puts the block in the transcript (`tail`) | shipped — the product ships `tail`, so the instrument has an arm to read |
+| reconstruct the block from each turn's prefix | 7,813 boundaries against 4,341 renders; 121.0 characters a boundary against 146.3 a render | **not shipped**: the ordering it produces is turn count, and a retail episode fails *because* it ran long — a sign test on it would report "more material, fewer passes" and it would be a finding about episode length |
+
+The consequence is a registration rather than a patch: **R218e** has the arm write one JSONL line an episode —
+`turns`, `renders`, `chars`, `changes`, the verdict — where the dose is known, and the reader gains a `--sidecar` that
+checks the recording against the transcript it accompanies. Until that lands, the honest answer on every arm whose
+transcript carries no block is `NO_DOSE`, and saying so is the instrument working.
