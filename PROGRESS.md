@@ -28447,3 +28447,53 @@ against which rows. It says nothing about the **product** side. The measured con
 and a workflow input; the product surface is TypeScript; and nothing compares them. That is a real gap and it is
 registered as R220 rather than described as done, with a mechanism whose test is "change one value and exactly one
 test fails in each repository".
+
+### 248.9 What R216b costs, and the three places it was not yet minimal
+
+Asked directly, and the honest answer needed a table rather than a number, because the armed dispatch was buying
+something this round does not read.
+
+**Calibration from R216-1's own bills** (the only measurement of this workload at this scale):
+
+| arm | episodes | bill | per episode |
+|---|---|---|---|
+| control | 114 | $0.5039 | **$0.004420** |
+| front | 114 | $0.6889 | **$0.006043** |
+| board (tail) | 114 | $0.0812 — only **20 of 114** reached the model | — |
+
+**What the three arming options cost**, with the tail arm's per-episode rate interpolated between the other two (a
+block behind the conversation keeps the prefix, so it cannot be dearer than the front arm):
+
+| option | episodes | estimate | what it reads |
+|---|---|---|---|
+| three arms (as armed) | 342 | **$1.82 ≈ ¥13.1** | `control→front` again, and `tail−front` |
+| **two arms (as changed)** | 228 | **$1.32 ≈ ¥9.5** | `tail−front` — the round's endpoint |
+| tail alone | 114 | $0.63 | nothing: no pair, no reading |
+| merged with R218b | 1026 | $5.40 | everything, plus `pass^4` |
+
+**Three things were not minimal, and two are now fixed.**
+
+1. **A third of the episodes were redundant** — `control → front` is the price of the parser, measured inside R216-1,
+   and not re-measurable across dispatches (§246.8's 22% turnover). 342 → 228 episodes, $1.82 → $1.32 (AUDIT 34.240).
+2. **The smoke test had the wrong dialogue shape**, which is why R216-1 spent $1.2739 learning that a `system` turn
+   cannot sit between a `tool_calls` and its results. Rebuilt on the real shape for three eight-token calls
+   (AUDIT 34.239). *A priori* the most valuable line here: it would have prevented the wasted dispatch entirely.
+3. **The merge with R218b was considered and declined.** One dispatch of 1026 episodes reads `pass^1`, `pass^4` and
+   the placement from a single world for ≈$5.40 against $6.07 run separately — but a single 110-minute grid is a
+   single point of failure, and R218b's four trials are the round the board's reliability column needs. Risk
+   isolation is worth $0.67 here; it is registered as an option, not adopted.
+
+**What was already minimal, and stays.**
+
+| lever | choice | why it is the floor |
+|---|---|---|
+| `--replay` | used, **$0** | priced four parser repairs on R216-1's own artefacts instead of re-running them |
+| trials | 1 | the placement is a mechanism reading, not an accuracy estimate |
+| task count | 114 (all) | 60 tasks put the resolution at ±12 pp, and the bar is +10 |
+| attempts at the model | 1 per episode | — |
+| window | 10:02 UTC | first minute of the first off-peak hour; the peak bands are 01–04 and 06–10 |
+| both sides | `deepseek-flash` | the user simulator is part of the measurement; changing it to save money would change the number |
+| smoke | 3 × 8 tokens | one cent against a $1.29 grid |
+
+Lane to date: **$9.12 ≈ ¥65.7** before R216b, of which $1.27 was R216-1. R216b adds **$1.32 ≈ ¥9.5**, against $1.82
+as armed — the round's own audit paid for itself twice over.

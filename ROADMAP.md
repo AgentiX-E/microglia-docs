@@ -9708,6 +9708,13 @@ number under Claude Opus 4.5, and a `pass^1` subtracted from a `pass^4`). `eval/
 `eval/manifests/tau2-board-1x-2026-11-25.json`. What it bought: the sentence this project may say about its position,
 at **$0**. Rank 1 of 26 on retail `pass^1` by point estimate (±3.2 pp), `UNRANKED` on `pass^4`.
 
+**R216b (arming, revised) — two arms, not three.** The re-dispatch was armed as R216's grid and then audited for
+cost: `control → front` is the parser's price, already measured inside R216-1, and not re-measurable across dispatches
+(22% turnover, p ≈ 0.42), so a third of the episodes was buying a statistic nobody reads. `arms=placement` runs
+`front` then `board`: **228 episodes, ~$1.32 (¥9.5)** against 342 and $1.82. The smoke test was rebuilt on the real
+dialogue shape — a `system` turn after a `tool` result — because the version that passed had only ever sent user
+turns, which is why R216-1's tail arm died at the provider (AUDIT 34.239, 34.240).
+
 **R218b — four attempts, and the reliability column.** The measurement R218a proved is missing. Two arms (control and
 the repaired parser at the front), **114 tasks × 4 trials = 912 episodes**, seed 400, concurrency 6, one opening of the
 off-peak window. Registered prediction: the front arm's `pass^4` is `0.8684⁴ = 56.8%`, inside **[50, 62]**; the control

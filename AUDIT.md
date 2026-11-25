@@ -17104,3 +17104,44 @@ and one they will mark and question.
 `--emit --harness replace` forces the type, requires notes and references, and declares `modified_prompts: true`. It
 is not possible to emit a `standard` row from an artefact whose agent is not the stock one, because the tool reads
 the agent out of the document rather than out of an argument.
+
+### 34.239 The smoke test certified a dialogue the benchmark does not run
+
+R216-1's tail arm died on **94 of 114 episodes** with a `BadRequestError`, and the step whose entire purpose was to
+prevent that had passed four minutes earlier. It had passed because it built its conversation out of *user* turns:
+
+```python
+messages = [system, user, system, user]   # what the smoke test sent
+```
+
+A τ² retail episode is almost nothing but `assistant(tool_calls)` followed by `tool(result)` — the block lands in a
+conversation that is 90% tool traffic, and the naive append put a `system` turn **between a call and its result**,
+which the provider refuses. The smoke test therefore certified the one dialogue shape in which the naive append is
+legal, and the shape it did not send is the shape the benchmark sends.
+
+The cost of that gap was $1.2739 of dispatch plus a re-dispatch, and the lesson generalises past this lane: **a
+precondition test is only as good as the shape of its input.** A test that asks "does the provider accept a system
+turn after the user's" answers a question about a conversation; the driver needed an answer about *this* conversation.
+
+Fixed by building the real shape — a tool definition, an assistant turn that calls `get_order`, and the tool result —
+and sending the block in two positions: where `tail_index` puts it (asserted), and between the call and its result
+(printed, not asserted, because a provider that tolerated it would be news rather than a step failure). Three calls
+at eight tokens each.
+
+### 34.240 Three arms were armed to answer a question one contrast asks
+
+R216b was armed as R216's three-arm grid: control, front, tail. The tail arm is the only one whose number the round
+does not already have, and `control → front` was measured inside R216-1 at +7.9 pp.
+
+The redundancy is not merely expensive ($0.50 of 228 episodes it does not read); it is **not even a replication**.
+R216's own per-task comparison found the same arm turning over 22% of its tasks between two dispatches (15 pass→fail,
+10 fail→pass, p ≈ 0.42), which is why this lane's rule is that only within-dispatch pairs may be quoted. A second
+control would have produced a third statistic that is neither the old number nor a confirmation of it.
+
+Changed to `arms=placement`: `front` then `board`, 342 episodes → **228**, ~$1.82 → ~$1.32.
+
+The change exposed two gates that named `control` as their left arm and would have **skipped rather than failed**:
+`if control and treated:` is false when no control ran, and `--compare control.json …` would have killed the step
+under `set -e` only *after* the money was spent. Both now fall back to `front`, and `compare_of` carries the names of
+the files it compared — a reading that called its left arm "control" when the file was `front.json` would have been
+the same class of defect as §34.234, a number attached to the wrong label.
