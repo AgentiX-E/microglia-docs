@@ -17013,3 +17013,39 @@ Consequences, in the order they matter:
    between 06:00 and 10:00 UTC without paying double, which is 4 of every 24 hours at the wrong multiple. That is a
    constraint on when work happens rather than on what work is, and it is worth stating because three of the lane's
    last four rounds were dispatched inside that band's neighbourhood by luck rather than by design.
+
+### 34.233 The control's "drift" is turnover, and the arithmetic says so before the narrative does
+
+Three dispatches read the same control over the same 114 tasks at seed 400: 98 (R214), 95 (R215), 90 (R216). Seven
+tasks across two days looks like decay, and PROGRESS 246.8 named two hypotheses — sampling noise, or a provider change
+the board's material buffers.
+
+The artefacts settle it. R215's control and R216's control, task by task:
+
+| | tasks |
+|---|---|
+| pass in both | 80 |
+| fail in both | 9 |
+| **passed in R215, failed in R216** | **15** |
+| failed in R215, passed in R216 | **10** |
+
+Twenty-five flips for a net −5, on an arm whose rate is 0.86. Under independent sampling the expected turnover is
+2 × 0.86 × 0.14 × 114 ≈ **27**, and McNemar on 15 against 10 is p ≈ 0.42. The observed turnover is *exactly* what the
+null predicts and the net is indistinguishable from zero.
+
+**So there is no drift to explain, and the two hypotheses in 246.8 were both answers to a question the data does not
+ask.** What is real is the *turnover*: a fifth of this grid changes answer between two dispatches of the same arm,
+which is why a paired, within-dispatch contrast resolves nine points and a cross-dispatch comparison of two arms
+resolves almost nothing.
+
+Two consequences, and the second is the one that matters for the paper:
+
+1. **The registered floor was optimistic in the right direction.** 114 tasks was chosen for a ~9-point floor on a
+   *paired* comparison; the 22% turnover means the *unpaired* floor is roughly twice that. Both statements are
+   consistent, and only the first is the one every bar in this lane is written against.
+2. **A single-dispatched arm is a coin.** R216's +7.9 pp rests on 15 moved against 6 broke, which is a paired
+   statistic and survives this; a claim like "the board reached 86.8%, up from 87.7%" would not, because both numbers
+   carry ±22% task turnover and neither differs from the other.
+
+The general rule this lane keeps re-learning: **compute the turnover before writing the explanation.** A 22% churn
+under a stable rate is not a signal, and the arithmetic that says so costs one join over two artefacts.

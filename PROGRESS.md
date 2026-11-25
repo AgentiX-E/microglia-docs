@@ -28306,9 +28306,13 @@ reached. Replayed against this dispatch's own artefact, the new gate fails with 
 | R216 | **90/114 (78.9%)** | **99/114 (86.8%)**, the repaired parser at the front |
 
 Same 114 tasks, same seed 400, three dispatches over two days. The control has moved **seven tasks down** and the
-front arm **one**. Two explanations, and this round cannot separate them: sampling noise at n = 114 (sd ≈ 3.3 pp, so
-seven tasks is ~2 sd and not impossible), or a provider-side change that the board's material happens to buffer —
-a block that names the ask makes the episode less dependent on how the simulator phrases it.
+front arm **one**.
+
+**And the seven are turnover, not decay.** Comparing R215's control against R216's task by task: 80 passed in both,
+9 failed in both, **15 passed then failed**, **10 failed then passed**. Twenty-five flips for a net −5, against an
+expected turnover of ≈ 27 under independent sampling at a rate of 0.86, and McNemar on 15:10 is p ≈ 0.42. There is no
+drift to explain — a fifth of this grid changes answer between two dispatches of the *same* arm, which is exactly why
+every bar in this lane is a paired, within-dispatch bar (AUDIT 34.233).
 
 What it settles is a rule this lane has been applying since R211 and now has evidence for: **only a within-dispatch
 contrast may be quoted.** Every number in 246.6 is from one dispatch, minutes apart, and the re-dispatch re-runs all
