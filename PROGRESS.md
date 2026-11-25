@@ -28686,10 +28686,10 @@ Both are recorded in AUDIT 34.246–34.247 with the number of assertions that no
 
 | item | value |
 |---|---|
-| R218b, two arms, 912 episodes, four attempts | **$4.75 ≈ ¥34** (dispatch 45646309827) |
+| R218b, two arms, 912 episodes, four attempts | **$4.677 ≈ ¥33.7** (dispatch 45646309827; the estimate was $4.75) |
 | the 2.0 directory read | $0 — 122 API calls, no model |
 | the probe changes | $0 — unit-tested, not dispatched |
-| lane to date | **$15.17 ≈ ¥109.2** |
+| lane to date | **$15.10 ≈ ¥108.7** |
 
 The probe's changes are free because they are arithmetic and shapes: `placementPromptFor` returns message arrays and
 `movePrice` subtracts two numbers. The only thing that would have cost money is dispatching the probe against the
