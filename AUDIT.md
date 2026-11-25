@@ -16846,3 +16846,83 @@ own length per change", not a fixed number of points. R216 registers both.
 step, and the reading therefore exists with its failure attached. A mechanism gate that can only be satisfied by
 not running is not a gate; this one was satisfied by the mechanism and failed by the *bar*, and the artefact carries
 both numbers so the distinction survives the rerun.
+
+### 34.227 A registered repair was worth two settlements in a hundred and seven, and only a replay could say so
+
+R215's reading left one mechanism bar passed of four, and the round's diagnosis was written into 34.225: a
+set-phrased ask names no product, `settles()` requires containment, therefore 73% of writes went unattributed. R216
+was registered on that repair, a rule, a test suite and a gate.
+
+The repair was then measured against the arm that produced the diagnosis, for free:
+
+```
+$ python3 eval/tools/goal_board.py --replay eval/results/working-memory/board.json
+40 of 107 writing episode(s) ended with a tick (37.4%)
+104 asks… 58 settled, 2 absorbed, 77 unrequested, 53 unattributed
+```
+
+**Two.** The set rule addresses two settlements out of the 130 writes R215 could not credit. The other four causes,
+none of which the round had a name for:
+
+| cause | episodes |
+|---|---|
+| a call of a family the contract never stated | 25 |
+| an ask one word short of the product it names | 28 |
+| a contract sealed on a greeting that carried no ask | 14 |
+| a set ask | 2 |
+
+The general form is the one worth keeping: **34.225 was not a wrong observation, it was a wrong denominator.** The
+three episodes it quoted (`return everything two`, `return everything related`, `return cancel bunch recent
+basically anything related`) were real, and they were 3 of 130. A diagnosis built from the first examples a reader
+happens to look at is an anecdote with a percentage attached, and the percentage was never computed.
+
+What made this findable is a counter that did not exist: nothing reported **which rule produced which tick**. The
+artefact now carries `loose` (settlements at the weaker grade) and `absorbed` (calls a set ask took in), and
+`replay()` reproduces the whole reading over a document that already exists.
+
+The round's own accounting, since the discipline is the point: R216 was re-registered before its dispatch, so the
+wrong repair cost a day of design and **nothing** in tokens. R214's version of the same mistake — two changes in one
+arm, no way to separate them — cost $1.43 and a day.
+
+### 34.228 An off-peak guard that refused a pilot it should have allowed
+
+The round's dispatch was refused at 01:30 UTC:
+
+```
+tau2-pilot-peak-window: the run would be inside Wed 01:30 UTC, where the same tokens cost exactly twice the off-peak rate
+```
+
+The guard is right and it is doing what it was built for. It is also **duration-blind to the size of the run**: it
+refuses any dispatch that would sit inside a peak band, and the rate card's bands are 01–04 and 06–10 UTC on
+weekdays. A 342-episode grid inside one of those costs twice $1.75; a **single call** inside one of them costs
+$0.0002, and that one call is exactly what de-risks the round's new placement.
+
+Three ways out were available and two of them are wrong:
+
+- *disable the guard for this dispatch* — the guard is the only thing standing between this lane and a doubled bill,
+  and a switch that can be flipped under time pressure is a switch that will be;
+- *run the whole grid at peak* — $3.50 for a number that arrives an hour later;
+- **arm the dispatch for the first minute of the window and put the de-risking call inside the guarded job**, which
+  is what the round does. The smoke step is a *step*, not a dispatch, so it runs in the 04:05 job for one call.
+
+The general form: **a cost guard should be a function of the run it guards, and the pilot that de-risks a run is
+usually smaller than the run's own noise.** Where it is not — where the pilot and the grid cost the same — the guard
+is right to refuse both.
+
+### 34.229 The tail placement writes into the conversation, and nothing in this lane had done that
+
+Every block this lane has served went into `state.system_messages`, and the R137 invariant was built for that list:
+"at most one block, and it is this episode's". `serve_tail` writes into `state.messages` instead, which is a
+different list with a different owner — the orchestrator appends to it, the recorded transcript comes from the
+orchestrator's copy rather than from the agent's state, and a message the agent inserts therefore affects the prompt
+and **not** the artefact a reward is computed over.
+
+That last property is what makes the placement safe for validity rather than merely cheap: a block that appeared in
+the recorded `messages` could satisfy a natural-language assertion the agent never made, and a tick in the reward
+would be the board's, not the model's. Verified rather than assumed — R215's artefact carries only `user`,
+`assistant` and `tool` roles across 114 episodes, so the system-block injection never reached the transcript, and
+the tail placement reaches it through a list the orchestrator owns.
+
+What the placement risks instead is **interpretation**: a system turn arriving after the user's may be read as an
+instruction rather than as context. Nothing in this round distinguishes "the board helped" from "the board's
+placement helped", which is why the grid has three arms — `tail − front` is the placement with the parser held.

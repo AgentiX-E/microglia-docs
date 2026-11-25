@@ -10018,3 +10018,34 @@ part it cannot.
 **Figures.** `figures/r215-frontier.png` — left: the frontier with this dispatch's two arms and their Wilson
 intervals; middle: accuracy against cost for the three rows that publish one; right: the prefix cache hit rate
 across both rounds, which is where the bill lives.
+
+## R216 — the round that was rewritten by a replay, before it was paid for (registered 25 Nov 2026)
+
+**No new numbers yet.** The grid is registered and armed for the first minute of the provider's off-peak window
+(04:05 UTC); this entry records what changed about the *plan* and why the table below is unchanged.
+
+| system | τ²-retail | metric | cost / conversation | memory | stack |
+|---|---|---|---|---|---|
+| Qwen3.5-397B-A17B (official board) | **87.9%** | pass^1, mean over domains | not published | none | closed weights |
+| **Claude Opus 5 + Recuris** | **87.9%** | avg@4 | not published | experiential + verified working state | Python harness |
+| Claude Sonnet 4.5 + Skill-α | 86.0% | accuracy | not published | RL-generated skills | closed |
+| Claude Opus 4.5 (alone) | 85.3% | pass^1 | not published | none | closed |
+| GPT-5.2 (high) | 84.8% | pass^1 | not published | none | closed |
+| **microglia + contract (R215)** | **87.7%** | pass^1, 114 tasks, 1 attempt | **$0.0061** | contract + receipt ticks | Python + τ² |
+| **microglia control (R215)** | **83.3%** | pass^1, 114 tasks, 1 attempt | **$0.0044** | none | Python + τ² |
+| DeepSeek-V3.2 + CaveAgent | 81.9% | accuracy | not published | stateful runtime | closed |
+| IBM learned guidelines | 81.14% (pass^1) / 67.54% (pass^4) | pass^1/pass^4, 114 × 4 | **$0.1084** | learned guidelines | not disclosed |
+
+**What the round has established so far, and it is about method rather than rank.**
+
+1. **The state channel's deficit was in the parser, not in the idea, and the decomposition is now measurable.** Re-
+   parsing R215's own episodes says its ticks were 37.4% of writing episodes, that the round's registered repair (a
+   set phrase) was worth two of them, and that a weaker settlement grade plus a contract sealed at the first
+   productive turn takes the same parser to **69.2%**. The live arm replaces that prediction.
+2. **Recuris's +23.9 is still the number to beat and this lane is now measuring the same thing it measures.** Their
+   ablation prices *verified working state*; a board whose ticks require a receipt naming the ask is that, and the
+   difference between our +4.4 pp and their +23.9 is very likely the 63% of writes R215 could not credit rather than
+   the idea of a status list.
+3. **Nothing in the literature publishes what a state channel costs to serve.** Three of these nine rows publish a
+   bill at all, and ours is the only one that reports its prefix cache hit rate — which is the number that decides
+   whether a per-turn block is deployable. R216 moves from +37% to a registered bar of +20%.

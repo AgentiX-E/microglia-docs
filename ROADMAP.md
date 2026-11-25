@@ -9676,22 +9676,26 @@ The reason to expect anything is now sharper than "the literature says +23.9". T
 *checker*, and a checker changes state on an event; this round's failure is a *renderer*, which changes state on a
 clock. Both the cost and the accuracy data point at the same correction.
 
-**R216 — the set rule and the tail.** R215 closed the harm (+4.4 pp against R214's −5.3) and found two things it
-cannot fix by emitting less often: 73% of its writes were uncredited because a set-phrased ask ("return everything
-from my two most recent orders") names no product and therefore cannot be settled by containment (AUDIT 34.225); and
-a block at the **front** of the prompt costs one prefix per change, with a floor of one change an episode before any
-receipt moves anything (AUDIT 34.226). R216 answers both: a set ask is settled by family and absorbs its receipts,
-and the block moves to the **tail**, appended when it changes rather than rewritten in the system message — so its
-cost becomes its own length instead of the prefix it sits on. ≈ ¥9.
+**R216 — the four repairs and the tail.** Registered 25 November 2026 on a **replay** of R215's own artefact, which
+overturned the round's first registration: the set rule R215 named as its repair is worth two settlements in 107
+episodes, and the bulk is three other defects — an ask one word short of the product it names (28 episodes), a
+contract sealed on a greeting that carried no ask (14), and the account families whose receipts carry no item id
+(AUDIT 34.227). So the round repairs four things in the parser — a second settlement grade, a contract sealed at the
+first productive turn, the family rule extended to asks with words under a catalogue guard, and the set rule kept —
+and moves the block **behind the conversation** (AUDIT 34.226: a block at the front costs one prefix per change, with
+a floor of one change an episode). Three arms, so the parser and the address are priced separately. Predicted by
+replay: 37.4% → 69.2% of writing episodes ending with a tick. ≈ ¥12.6.
 
 **R217 — cross-domain.** The same pair on airline (50 tasks, 14 policy-dense requests): the board's parser is
-retail-specific in its families, so the question is whether the *shape* transfers. ≈ ¥6.
+retail-specific in its families, so the question is whether the *shape* transfers. Registered after R216's reading,
+because the parser now has four rules and a transfer that carries three of them is a finding about the fourth. ≈ ¥6.
 
 **R218 — submission alignment.** The τ² board's rows are models, not harnesses; an entry needs the base agent to be
 one the board accepts. That is a decision about the harness rather than about this lane, and it is the last step
 between 86.0% and a ranked position.
 
-**Order, and why.** R215 first because it is the only step that can turn the round's negative into a mechanism
-rather than a retreat, and because its cost bar is now known. R216 next because invocation is the only published
-component with a larger effect than the state channel's floor. R217 after both, because a parser that does not work
-in its own domain will not transfer.
+**Order, and why.** R216 first because its replay showed the round's registered diagnosis was worth two settlements
+and three unpriced defects were worth the rest (AUDIT 34.227) — and because it is the last round that can be measured
+three ways for the price of two and a half. R217 after it, because a parser that does not work in its own domain will
+not transfer. The invocation policy (retrieve when a write is being composed) is still the largest published
+component this lane has not built, and it is now cheap to add as a fourth arm rather than a round of its own.

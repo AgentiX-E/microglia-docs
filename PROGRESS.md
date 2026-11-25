@@ -28142,3 +28142,95 @@ R216 carries two changes because they answer one question — *is a status list 
 because the tail placement is the only remaining lever on a bill the registration now understands: a block that is
 appended after the conversation invalidates nothing in front of it, so its cost becomes its own length rather than
 the prefix it sits on.
+
+## R216 — the round a replay rewrote before it was paid for
+
+Registered 25 November 2026, dispatched from a three-arm grid armed for the first minute of the off-peak window
+(04:05 UTC). **No reading yet** — this section is what the round established before it spent anything, and the
+reading is appended when the dispatch lands.
+
+### 246.1 The registered diagnosis was wrong, and finding out cost nothing
+
+R215 ended with one mechanism bar passed of four and 32.7% of writing episodes ending with a ticked ask. Its own
+diagnosis, written into AUDIT 34.225, was that a set-phrased ask ("return everything from my two most recent
+orders") names no product and therefore cannot be settled by containment. R216 was registered on that repair.
+
+Then the round was re-parsed against its own artefact, which is free:
+
+```
+python3 eval/tools/goal_board.py --replay eval/results/working-memory/board.json
+40 of 107 writing episode(s) ended with a tick (37.4%)
+```
+
+The failing episodes classify into four causes, and the registered one is the smallest:
+
+| cause | episodes | example |
+|---|---|---|
+| a call of a family the contract never stated | 25 | the contract says *exchange*, the agent *returned* |
+| an ask one word short of the product it names | 28 | `specifically boots ordered` against **Hiking Boots** |
+| a contract sealed on a greeting that carried no ask | 14 | `""` against a `modify_pending_order_items` |
+| a set ask | **2** | `return everything related` |
+
+Two settlements in a hundred and seven episodes. The round's headline change would have been worth two points of
+attribution on a grid whose floor is nine — and it would have been reported as a null with no way to tell which of
+five things caused it. **A replay is the first thing to run and it was the instrument this lane did not have.**
+
+### 246.2 The four repairs, and the same replay after them
+
+1. **A second settlement grade.** `grade_of` returns `name` (containment, unchanged, the grade every R214/R215 tick
+   used) or `overlap` (a shared content word and at least half of the shorter side). The 28 episodes above are all
+   `overlap`, and every settlement of that grade is counted as `loose` so a reading says which rule produced it.
+2. **The contract seals at the first user turn that yields an ask.** Fourteen episodes opened with a greeting and
+   stated their asks in the next sentence; a contract sealed on the greeting is empty, and an empty contract calls
+   every change the episode makes *unrequested* — the board's most damning line, at an agent doing what it was told.
+3. **The family rule covers asks with words, guarded by the catalogue.** An ask that names no product the episode has
+   read, in an episode that has read at least one, settles by the first successful call of its family. That is what
+   reaches the account families — address, payment, transfer — whose receipts carry no item id at all. A wordless
+   ask needs no catalogue; an ask that names a product, at either grade, is never family-settled.
+4. **The set rule**, kept and demoted to what it measures: two settlements. It settles by family and absorbs later
+   calls of the same family; only a quantified ask absorbs, because a second "cancel the order" is a duplicate.
+
+Same replay, after the repairs:
+
+| reading | R215 parser | R216 parser |
+|---|---|---|
+| writing episodes ending with a tick | 40 of 107 (37.4%) | **74 of 107 (69.2%)** |
+| asks settled | 58 of 223 | **104 of 258** |
+| loose of settled | — | 7 of 104 |
+| absorbed | 2 | 1 |
+| `unrequested` | 77 | 68 |
+| `unattributed` | 53 | **18** |
+
+This is a **prediction about the live arm, not a result**: the replay re-parses episodes that ran under the old
+parser, and a model that sees ticks may act differently. The dispatch replaces it.
+
+### 246.3 The bill is an address, so the round moves the block
+
+AUDIT 34.226 established that R215's +37% was not a cadence: 247 changes × 4,756 prompt tokens, 114 of them first
+turns. This round puts the block **behind the conversation** — appended after the turn it belongs to, and left
+untouched when a receipt does not move it — so a change costs the messages after the old position and an unchanged
+turn costs nothing. The derivation puts the arm at ~+15% against the control where the front placement was +37%;
+the registered bar is 20%.
+
+The tail placement is the first change in this lane that writes a message of its own into `state.messages` rather
+than the system block, so the workflow makes **one call** with a system turn after the user's before it spends on
+the grid, and the dispatch is armed for **04:05 UTC** — the rate card's peak bands are 01–04 and 06–10 on weekdays,
+and the same tokens cost exactly twice inside them.
+
+### 246.4 Three arms, because the sum is the number nobody can act on
+
+| arm | material | what it prices |
+|---|---|---|
+| `control` | none | the world, and the drift |
+| `front` | the R216 parser under R215's placement | the three parser repairs |
+| `tail` | the same parser, block behind the conversation | the placement |
+
+`front − control` and `tail − front` are each one change. R214 changed the supply rule and the cadence together and
+could not say which was the harm; that lesson cost $1.43 and this grid costs $0.70 more than the two-arm version.
+
+**Estimate: ≈ $1.75 (¥12.6), ~55 minutes.** Grid 114 tasks, one attempt, seed 400, concurrency 3.
+
+### 246.5 Cost to date
+
+Lane: bank $2.0103 + ablations $0.1826 + R211 $0.4820 + R212 $1.0054 + R213 $1.5334 + R214 $1.4261 + R215 $1.1996
+≈ **$7.84 ≈ ¥56.4**, plus this round's $0.0002 smoke call. R216's grid is registered at ≈ $1.75 and not yet spent.

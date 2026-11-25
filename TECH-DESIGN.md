@@ -11930,3 +11930,65 @@ the request.** τ² guarantees it; a chat product does not, because a user can o
 four turns later. The portable form is a contract that is sealed by the first turn that yields an ask rather than
 by the first turn, and a board that says so when it has nothing to say. That variant is not registered here and
 this round does not measure it.
+
+### 17.182 The replay, and why a parser change must be priced before it is dispatched
+
+Every result document carries the messages of every episode, so a parser can be run over an arm that already ran.
+`goal_board.replay(document)` does exactly that and returns the readings the live arm returns, per episode:
+
+| field | what it answers |
+|---|---|
+| `writing` / `ticked` / `tickShare` | did the agent's writes connect to what was asked — the attribution bar's own population |
+| `asks` / `settled` | how much of the contract ever closed |
+| `loose` | how many settlements came from the weaker of the two grades |
+| `absorbed` | calls a set ask took in |
+| `unrequested` | calls of a family the contract never stated — the checker's output, not a parser defect |
+| `unattributed` | calls of an asked family the board could not name — the parser's blind spot |
+| `skipped` | episodes with no messages, excluded rather than counted as unticked |
+
+Three design rules make it trustworthy. **The denominator is episodes, not turns**, because the registered bar is
+written over episodes and a per-turn rate answers a different question. **An episode with no messages is skipped**,
+because a document truncated mid-grid would otherwise report a rate over episodes that never ran. **An episode with
+no state-changing call is not in the denominator**, because a read tool cannot satisfy an ask.
+
+The instrument's first use was to overturn the round that built it: R216 was registered on a set rule, and the
+replay says that rule is worth two settlements in a hundred and seven episodes (AUDIT 34.227). Its second use is the
+workflow's attribution gate, which now runs `--replay` on the arm's own artefact before the paired reading — the
+same measurement the registration was priced on, applied to the thing the registration was about.
+
+**What it cannot do.** It re-parses an arm that ran under the previous parser, so it predicts a *mechanism* and not a
+*result*: the live board shows ticks the replayed one never showed, and a model that sees them may act differently.
+It also cannot separate a correct loose tick from a wrong one, because it has no ground truth beyond the receipts
+themselves — which is why `loose` is a count and not a filter.
+
+### 17.183 Settlement grades: why two, and where the boundary is
+
+| grade | rule | where it came from |
+|---|---|---|
+| `name` | one word set inside the other | the only grade R214/R215 had; every tick in both readings |
+| `overlap` | ≥ 1 shared content word **and** ≥ ½ of the shorter side | 28 of R215's refusals were one word short |
+
+The threshold is a measurement and not a taste: `boots ordered specifically` against **Hiking Boots** is 1 of 2;
+`watch received` against **Smart Watch** is 1 of 2; `gaming related purchased` against **Gaming Mouse** is 1 of 3.
+A quarter would tick a lamp for a lamp, and containment (1.0) is the grade that missed all of them. The boundary is
+therefore *the shorter side*, not the ask's length, because the two sides abbreviate independently: a user says "the
+keyboard" about a **Mechanical Keyboard**, and a user says "the mechanical keyboard" about a product the catalogue
+calls **Keyboard**.
+
+The refusals that survive are the ones the board exists for — a receipt of the right family that names a *different*
+product by every word it has. The cost is stated: "Desk Lamp" against "Table Lamp" now ticks, and the round that
+separates a correct loose tick from a wrong one is a round that reports accuracy by grade. That round is not
+registered, and `loose` is what would justify it.
+
+### 17.184 The family rule's catalogue guard
+
+An ask that names no product is settled by the first successful call of its family. The naive form of that rule is a
+bug, and the bug is measurable: with an **empty** name table every ask "names no product", so the board ticks
+"cancel the pending order for the lamp" on the strength of any cancel. The guard is one line and it is the whole
+safety of the rule: **an ask with words is only judged nameless when the episode has read at least one product
+name.** A wordless ask needs no guard, because there is nothing to look for.
+
+Under the guard the shapes that arrive are all of one kind — order-level ("cancel the order"), set ("return
+everything from my two most recent orders"), and **account-level** ("the address is wrong", "split the payment
+between two cards"), where the receipt carries no item id and a name match is meaningless. The account families are
+most of R215's `unattributed` residue: 53 calls the board could not connect, of which 18 survive this round.
