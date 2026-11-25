@@ -10226,3 +10226,51 @@ rescues.**
 It also explains why the lesson channel measured a wash while the state channel moved: a lesson is an abstraction
 about *tasks* and applies to all of them; a state block is a statement about *this episode*, so its harm can only
 land where the episode was already fine.
+
+## R216c — four papers on *how* memory is used, and the one they agree on
+
+The question behind this lane is not "does memory help" but "why does it hurt". Four 2026 results answer the second
+half with numbers, and each names a mechanism this project has either measured or deliberately avoided — including
+one whose advice this repository implemented before reading it.
+
+| paper | the mechanism | the number | our counterpart |
+|---|---|---|---|
+| **RSCB-MC** — *Learning When to Remember* (arXiv 2604.27283) | memory injection is a **control decision**, not top-k retrieval: six actions including `abstain`, chosen from a 16-feature state; the reward penalises **false-positive injection more than missed reuse** | removing abstention takes false-positive injection from **0.0% → 17.5%** and cumulative reward from −31.740 → −87.800 | our easy-stratum **−6.7 pp on the 90 tasks the control already solved** is a false-positive injection, measured, with the same asymmetry |
+| **MINTEval** — *Memory under Multi-Target Interference* (arXiv 2605.18565) | **insertion bias**: systems append (AtomMem 87.6% of operations) and never update or delete; aggressive compression destroys revision provenance | 7 systems average **27.9%**, best 33.4%; retrieval/construction is **41.7%** of the drop, answering only 25.2%; explicit timestamps mitigate | our block is **overwritten, never accumulated** (`serve_tail` drops every pack message before placing one), and it states a settled fact rather than a summary |
+| **PI-LLM** — *Unable to Forget* | **proactive interference**: recall decays **log-linearly** with same-key updates; `"forget the previous values"` instructions are **ineffective and sometimes act as new anchors**; reasoning does not help | GPT-5 at ~40k reasoning tokens reaches only **71.7%** under high interference; resistance tracks parameters per token, **not context length** | this is why the block is **physically removed and re-placed**, never superseded by an instruction to ignore the old one — the paper says the instruction would have made it worse |
+| **DRIFTBENCH** | long-horizon **temporal validity**: versioned slots beat similarity search as revisions accumulate | hybrid fusion 0.920 overall; vector RAG and sliding window degrade sharply under repeated revisions | our asks carry the turn they were sealed on, and a settled ask leaves the block rather than ageing inside it |
+
+### R216c.1 The agreement, in one sentence
+
+All four say the same thing from four directions: **the harm is in the write and the admission, not in the retrieval
+score.** Similarity cannot establish that a stored fact is still true, still in scope, or still wanted — and every
+system that treats relevance as permission ends up injecting a confident wrong item into a trajectory that was doing
+fine.
+
+That is exactly the shape of this lane's own measurement. The state board **rescues 15 of the 24 tasks no-memory
+cannot do (+62.5 pp) and breaks 6 of the 90 it already does (−6.7 pp)**. The 15 are the mechanism working; the 6 are
+a false-positive injection, and RSCB-MC's contribution is naming the asymmetry that makes those 6 the more expensive
+half: a missed reuse costs one turn, an injected wrong fact compounds silently through every step after it.
+
+### R216c.2 What this changes in the plan, stated as three refusals
+
+1. **No instruction-level forgetting.** PI-LLM found that telling the model to ignore stale state makes errors
+   cluster *around the instruction*. So the block is removed from the message list, never superseded in prose.
+   `serve_tail` already does this (`is_pack_message` filter before placement) — it was written for the bill, and the
+   literature says it was also the correctness choice.
+2. **No summarisation of the board to save tokens.** MINTEval's worst-performing system is the one that compresses
+   hardest, and this lane's block is already the smallest artefact it ships: a list of open asks, ≤500 characters.
+   Compressing it further would trade the mechanism for its own cost saving.
+3. **R219 is an admission decision, not a retrieval tweak.** The registered bar — regressions 6 → ≤1 while keeping
+   ≥12 of the 15 rescues — is RSCB-MC's asymmetric loss written as a number this grid can settle. What R219 adds
+   beyond that paper is the *signal* it can use: a state block is not retrieved by similarity, so the admission
+   decision can be made from the episode's own tool traffic (has a write been attempted? has the ask been settled?)
+   rather than from a similarity score that does not exist here.
+
+### R216c.3 The one thing none of them measures, and we could
+
+Every one of the four evaluates **recall or task success**. None reports what a wrong memory costs *per turn after it
+is injected*. This lane's artefacts make that measurable for free: an episode that broke under the board has a
+trajectory, and the board's own `--replay` knows which turns it was serving. A round that reports **turns-to-recovery
+after a false-positive injection** would be a quantity the field is not publishing, computed from documents already
+on disk.

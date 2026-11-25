@@ -9752,3 +9752,20 @@ TypeScript, and **nothing in either repository compares them.** The mechanism, i
 
 The bar is mechanical and cheap: **change the placement in the manifest and exactly one test fails, in each
 repository.** Anything weaker is a promise about two codebases, which is what the current state is.
+
+**R216b — dispatched, and the two defects the arming found.** The cron did not fire (second time in the lane), so a
+funded dispatch is now `workflow_dispatch` only and the debt is asserted by CI through `eval/manifests/rounds.json`
+and `eval/tools/round_clock.py`. The provider precondition step was wrong three times before it passed — a user-turn
+conversation that certified a dialogue τ² does not run, a hand-written history the provider refused for lack of
+`reasoning_content`, and a forced `tool_choice` thinking mode forbids — and the version that ships **reports which
+placement it covered** rather than asserting a coverage it cannot guarantee (`AUDIT 34.241`–`34.243`). Run
+**45630594988**, `arms=placement`, 228 episodes, **$1.20 ≈ ¥8.6**.
+
+**R216c — the literature on *how* memory is used, and three refusals it licenses.** RSCB-MC (2604.27283) prices a
+false-positive injection above a missed reuse and shows abstention is what keeps the false-positive rate at zero;
+MINTEval (2605.18565) measures insertion bias at up to 87.6% of memory operations and compression as the worst
+performer; PI-LLM shows same-key interference decays recall log-linearly and that `"forget the old values"`
+instructions **make it worse**; DRIFTBENCH ranks versioned temporal slots over similarity search. Together they say
+the harm is in the **write and the admission**, which is where this lane's own −6.7 pp on already-solved tasks lives
+(COMPETITIVE R216c). The three refusals: no instruction-level forgetting, no summarising the block to save tokens, and
+R219 framed as an admission decision with the bar already written from two measured cells.

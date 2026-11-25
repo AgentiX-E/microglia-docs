@@ -17145,3 +17145,60 @@ The change exposed two gates that named `control` as their left arm and would ha
 under `set -e` only *after* the money was spent. Both now fall back to `front`, and `compare_of` carries the names of
 the files it compared — a reading that called its left arm "control" when the file was `front.json` would have been
 the same class of defect as §34.234, a number attached to the wrong label.
+
+### 34.241 A funded dispatch was armed on a clock that does not fire
+
+R216b's first arming was a `schedule:` entry — `2 10 25 11 *` — with a comment explaining that 10:02 UTC was the
+first off-peak minute after the previous dispatch returned. At 10:02 UTC nothing happened. No run, no error, no
+notification: GitHub's own documentation says scheduled events are **best-effort and may be dropped under load**, so
+there was nothing to fix. It was the second time in this lane (`AUDIT 34.232`), and the second time is what makes it
+a design defect rather than an incident.
+
+The defect is not that the timer is unreliable. It is that **spending money was delegated to something whose
+execution is not guaranteed** and whose firing nobody confirms. A cron that fires at the wrong moment is as bad as
+one that does not fire: it would dispatch into a window, a configuration and a budget that no one re-read.
+
+Both halves are now fixed, and they are different kinds of fix:
+
+- **The dispatch is a `workflow_dispatch`.** Nothing that spends money fires on a clock.
+- **The debt is a file, and CI asserts on it.** `eval/manifests/rounds.json` lists every round this project owes
+  with its date, its arms, its episode count and its estimate; `eval/tools/round_clock.py` reads it on every push and
+  exit `1` if a `registered` round is past its date. The failure mode this catches is not a wrong number, it is a
+  round that quietly stops being planned — the exact state R216b was in for four hours while the plan said it was
+  armed.
+
+### 34.242 A fabricated history is a history the provider will not accept
+
+Rebuilt on the real dialogue shape (a `tool_calls` turn and its result), the provider step failed with:
+
+> `The reasoning_content in the thinking mode must be passed back to the API`
+
+`deepseek-flash` answers in thinking mode unless told otherwise, and the assistant turn the test hand-wrote had no
+`reasoning_content` to give back — because there was no reasoning behind it. The fix is not a field: it is that
+**the first call is real**. The model is asked to call a tool, and the turn it returns, with whatever fields the
+provider demands be echoed, is the turn the placement tests are built on.
+
+### 34.243 Thinking mode does not support a forced tool choice, so the smoke test cannot guarantee its own coverage
+
+The third attempt forced the tool with `tool_choice={"type": "function", …}` and got:
+
+> `Thinking mode does not support this tool_choice`
+
+Three attempts, three constraints, each discovered by the previous one failing:
+
+| attempt | shape | outcome |
+|---|---|---|
+| R216-1 | `system, user, system, user` | **passed**, and the arm died on 94 of 114 episodes |
+| R216b-1 | hand-written `tool_calls` turn | `reasoning_content must be passed back` |
+| R216b-2 | real turn, forced `tool_choice` | `Thinking mode does not support this tool_choice` |
+| R216b-3 | real turn, choice left to the model | **reports what it covered** |
+
+The fourth row is the design change. A precondition test that is all-or-nothing cannot say what it verified, so this
+one prints which placement it covered: if the model declines to call the tool, the step still checks the placement a
+τ² conversation spends most of its turns in — a `system` turn after an assistant turn — and says in its own output
+that tool-call adjacency was **not** covered.
+
+**What the three failures cost, and it is the argument for the step.** R216b-1 and R216b-2 spent **$0.00** between
+them, because a precondition test runs before the grid. The one that passed spent **$1.2739** and bought a dead arm.
+A gate that fails is the cheapest thing this lane produces; a gate that passes while testing the wrong thing is the
+most expensive.

@@ -28497,3 +28497,54 @@ block behind the conversation keeps the prefix, so it cannot be dearer than the 
 
 Lane to date: **$9.12 ≈ ¥65.7** before R216b, of which $1.27 was R216-1. R216b adds **$1.32 ≈ ¥9.5**, against $1.82
 as armed — the round's own audit paid for itself twice over.
+
+### 248.10 The dispatch that did not happen, and the three smoke tests it took to arm one
+
+**R216b's 10:02 UTC cron produced no run.** No error, no notification — GitHub's schedule events are best-effort and
+may be dropped, which means there was nothing to fix and nothing to see. It was the second time (`AUDIT 34.232`).
+
+The response is three changes and one of them is a refusal:
+
+| change | what it is | what it prevents |
+|---|---|---|
+| **no funded dispatch on a clock** | the paid job answers `workflow_dispatch` only | spending money on a timer whose firing nobody confirms |
+| `eval/manifests/rounds.json` | every round owed, with date, arms, episodes, estimate | a round that quietly stops being planned |
+| `eval/tools/round_clock.py` + a CI step | exit `1` if a `registered` round is past its date | the four hours R216b spent invisible while the plan said "armed" |
+
+The clock is 30 assertions at **98.9%** of lines and branches, and it is the one gate whose subject is the plan
+rather than the code, so it runs as its own step.
+
+### 248.11 Three smoke tests, three constraints, and the one that reported instead of asserting
+
+The provider precondition step has now been wrong three times. Each failure was found by the previous one passing or
+failing, and the sequence is the most useful thing this round produced:
+
+| attempt | shape it sent | outcome | cost |
+|---|---|---|---|
+| R216-1 | `system, user, system, user` | **passed**; the tail arm then died on 94 of 114 episodes | **$1.2739** |
+| R216b-1 | hand-written `tool_calls` turn | `reasoning_content in the thinking mode must be passed back` | **$0.00** |
+| R216b-2 | real turn, forced `tool_choice` | `Thinking mode does not support this tool_choice` | **$0.00** |
+| R216b-3 | real turn, choice left to the model | **passed, and printed which placement it covered** | **$0.0001** |
+
+Three lessons, in the order they were paid for:
+
+1. **A precondition test is only as good as the shape of its input.** The first version certified a dialogue τ² does
+   not run — a conversation made of user turns — and the shape it skipped is the one that killed the arm.
+2. **A fabricated history is a history the provider will not accept.** The fix is not a field on a hand-written
+   message; it is that the first call is real, and the turn it returns is the turn the tests are built on.
+3. **The provider constrains the test as much as the driver.** Thinking mode forbids a forced tool choice, so the
+   step cannot guarantee its own coverage — and a step that cannot guarantee coverage must **report** it. The
+   version that ships prints `ok  the placement was covered with a real tool call and its result` or, if the model
+   answers in text, a `NOTE` that tool-call adjacency was not covered.
+
+The economics are the whole argument for the step existing: **the two failing versions cost $0.00 between them**
+because they run before the grid, and the one that passed cost **$1.2739** and bought a dead arm.
+
+### 248.12 Status of R216b
+
+Dispatched `2026-11-25T13:59:18Z`, run **45630594988**, `arms=placement` — `front` then `board`, 228 episodes,
+seed 400, concurrency 3. Estimate **$1.20 ≈ ¥8.6**; the smoke test and both failed armings add **$0.0001**. Lane to
+date on completion: **$10.32 ≈ ¥74.3**.
+
+Registered expectations, unchanged by any of the above: the placement's bill within −20%…+20% of the parser arm's,
+attribution ≥60%, and `tail − front` reported as the price of the move.
