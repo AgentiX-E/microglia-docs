@@ -28829,3 +28829,97 @@ attempts buying 1.2.
 3. **Stop quoting cross-dispatch deltas.** Every published "+7.9 pp" must carry "measured inside R216-1, not
    reproduced in R218b (−6.1)". The `serving-defaults.json` `confirmedBy` line stays, because a placement's price is
    a mechanical fact and its accuracy contrast was never the claim.
+
+### 248.28 R218c: the placebo ran, and it bought a different answer than the one it was registered for
+
+Two arms of identical code, 114 tasks, interleaved in blocks of eight, **$1.03 ≈ ¥7.4** against a $1.30 estimate.
+The dispatch took **35 minutes** end to end (17:33Z → 18:10Z) and every job was green.
+
+| | control-a | control-b |
+|---|---|---|
+| tasks passed | **92/114 (80.70%)** | **95/114 (83.33%)** |
+| bill per episode (τ²'s own) | $0.004575 | $0.004455 |
+| episodes | 114 | 114 |
+
+δ = **+2.63 pp**, McNemar p = **0.711**, moved **16**, broke **13**, held **79**, neither **6**, unpaired **0**, bill
+ratio **0.9736**. The two readings of a task began **70.9 s apart** (median over 15 blocks; worst 100.3 s; the handover
+between one invocation and the next is 0.0 s by construction).
+
+**Four of the five registered endpoints hold.** The delta is inside ±5 pp, the direction is not significant, the bills
+agree within 3%, and the arms are not suspiciously identical. The fifth — *moved and broke within two tasks of each
+other* — fails by **one task** (16 against 13), and the verdict the driver prints is `ORDER_ASYMMETRIC`.
+
+**That bar was mis-specified, and the reading is what shows it.** A two-task window on **29 discordant pairs** is not a
+test of direction: the tightest split it admits (2 against 0) already has p = 0.5, so the window rejects splits that
+are indistinguishable from a coin. The test of direction is McNemar, and it answers 0.711. The registered bar and the
+registered p-value were two tests of one question, and the tighter one had no power.
+
+### 248.29 The finding: the drift is sampling noise, and no schedule repairs it
+
+R218b's grid separated its two arms by **35 minutes** and turned over **22%** of its tasks. R218c separates its two
+arms by **71 seconds** — a factor of **30** — and turns over **25.4%** (29 of 114). The gap shrank thirtyfold and the
+noise did not move.
+
+So the 8.8-point spread across R216-1, R216b and R218b was never a time confound. It is the agent and the user
+simulator sampling differently from the same seed world, and it is a property of the **task**, exactly as R218b's
+ICC of 0.773 said. Three consequences, all of which change the plan:
+
+1. **Interleaving is not the repair.** It is still the right way to schedule — it removes the one confound that *could*
+   have been there, and it costs nothing — but it does not buy resolution.
+2. **The grid's resolution is now a number.** At a 25.4% discordance rate, 114 tasks resolve **13.2 pp** at 80% power
+   (two-sided 5%) and would need **799 tasks** to resolve five. τ²'s four domains hold about 300, which resolves
+   ~8 pp. Every "significant" contrast this lane has quoted at 6–9 pp was inside its own noise, and R216-1's +7.9 pp
+   is the clearest case: it was measured, it was real *in that dispatch*, and it was never detectable by design.
+3. **The plan's economics change.** A 10-point effect needs ~200 tasks (¥10–12 at the measured $0.0045 an episode:
+   200 × 1 attempt × 2 arms ≈ $1.8 ≈ ¥13). A 5-point effect needs ~800 tasks ≈ ¥52 for one contrast. Anything below
+   ten points is not worth dispatching on this benchmark, and the next rounds are re-scoped against that line rather
+   than against a hope.
+
+![R218c — the interleaved placebo](figures/r218c-placebo.png)
+
+### 248.30 What the instrument got wrong, twice, before it could say any of this
+
+Both defects were found by the reading rather than by review, and both are the same shape — a quantity that looked
+measured and was not (**AUDIT 34.256**, **34.257**):
+
+- the gap metric measured the **handover** (`start(B) − end(A)`), which is zero because the driver starts the next
+  part immediately, and reported **0.0 s over 15 blocks**. A metric that says an interleave is instantaneous cannot
+  tell an eight-task block from a one-task block. It now reports the **separation** (`start(B) − start(A)`) as the
+  reading and the handover beside it, and the workflow gates on the separation being at least thirty seconds.
+- the merged arm's bill read `document["usage"]`, and τ²'s results document **has no such key**: the bill is printed
+  by `run_split.py` as one JSON line at the end of the invocation, which lives in the part's log. The merged arm
+  therefore reported **$0.0000**. It now reads the phase summary off the log beside each part — and the two
+  estimators disagree: **$0.2994** from this driver's rate card against **$0.5216** from τ²'s own per-simulation
+  costs for the same 114 episodes, a factor of **1.74**. The card's peak band is exactly twice its off-peak band, so
+  1.74 is not a band effect; τ² prices from litellm's model table and this driver from `model-rates.json`, and the
+  two tables are different documents. Every bill this project publishes uses τ²'s number, so the published cost is
+  the conservative one and the comparisons stay internally consistent — but the gap is now on the record rather than
+  in a reader's head, and reconciling the two tables is its own small round.
+
+The second is the fourth time this lane has paid for an absence read as a zero, and the first time the absence was a
+key on a document that the summary line carries and the document does not.
+
+### 248.31 The instrument's own cost, and what it displaced
+
+The round cost **¥7.4**, 43% under estimate, because the estimate charged 26 s an episode and the grid ran at 14 s.
+What it displaced is larger: the plan's next three items were priced against "±9 pp per dispatch" as folklore. They
+are now priced against **13.2 pp at 114 tasks**, which retires two of them and re-scopes the third.
+
+### 248.32 Status
+
+**Where the project is.** The reliability column is filled (R218b), the placement the product ships is priced (R220b),
+and the grid's own resolution is measured (R218c). The submission row stands at **2nd of 9** in the scope where the
+rows share a benchmark version and a modality, at **20.5×** below the published text median cost per episode.
+
+**What is left, in the order the resolution number imposes:**
+
+| step | what it settles | cost |
+|---|---|---|
+| **R217** airline 50 tasks | joins a domain whose rows are the board's strongest; 164 tasks resolves ~11 pp | ¥5.4 |
+| **R218e** the dose, recorded | one JSONL line an episode, so the material's per-episode effect stops being unmeasurable | ¥4.0 |
+| **R219** the admission policy | regressions 6 → ≤1 while keeping ≥12 of 15 rescues — a **concentrated** effect in the easy stratum, which is the one shape a 114-task grid can still resolve | ¥9.4 |
+| **R220c** `movePrice` measured | one probe dispatch on the shipped shape | $0.02 |
+| **R221** a 2.0 submission | only if the board moves its headline column to 2.0 | ¥34 |
+
+R219 is now first on evidence rather than on taste: its effect is a **count** in one stratum (6 regressions to ≤1 out
+of 90 solved tasks), and a count is resolvable at 114 tasks where a 5-point mean is not.

@@ -10455,8 +10455,30 @@ Two instruments, both cheaper than a treatment arm:
   enters the transcript), and publishing that is the point: the field's per-trajectory analyses have the same blind
   spot and none of them says so.
 
+### R218c.3 The placebo ran, and it says the field's rankings are unresolvable at their own scale
+
+Two identical arms, 114 tasks, 71 seconds apart, **$1.03**:
+
+| | control-a | control-b |
+|---|---|---|
+| pass$^1$ | 80.70% | 83.33% |
+| bill / episode | $0.004575 | $0.004455 |
+| tasks whose verdict flipped | **29 of 114 = 25.4%** | |
+
+δ = **+2.63 pp**, McNemar p = 0.711, bills within 3%. The 29 discordant pairs are the number that matters: at a 25.4%
+discordance rate a 114-task grid resolves **13.2 pp** at 80% power and would need **799 tasks** to resolve five.
+
+Put that beside the board. The retail column's `pass^1` runs from 86.2 down through 48 ranked rows, most of them
+within nine points of their neighbours, and **no row publishes a resolution**. Two rows four points apart is a
+statement this instrument cannot support on 114 tasks — and none of the 72 submissions states how many attempts, how
+many tasks, or what its own turnover was. The ranking is published at a precision its authors have not shown they
+can measure, which is a stronger criticism than any single row's number.
+
+Our own record is the evidence and not an exception: R216-1's **+7.9 pp** and R218b's **−6.1 pp** are the same code,
+the same seed and the same tasks, and both are inside the 13-point band the grid can actually see.
+
 **Where that leaves the comparison.** On score we are 2nd of 9 in the scope where the rows share a benchmark version
 and a modality, at 20.5× lower cost per episode than the published text median. On *claims a reader can check* we are
-alone: a controlled delta, a reliability column, a noise floor, and a cost, over one population, from one dispatch
-family. The claim to occupy is not "highest `pass^1`"; it is **"the only row whose delta comes with its own
+alone: a controlled delta, a reliability column, a noise floor, a resolution and a cost, over one population, from one
+dispatch family. The claim to occupy is not "highest `pass^1`"; it is **"the only row whose delta comes with its own
 resolution"**, and the two instruments above are what makes that sentence true rather than aspirational.

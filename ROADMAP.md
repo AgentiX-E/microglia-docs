@@ -9853,7 +9853,7 @@ R218c is first because it is the cheapest item whose failure would invalidate ev
 interleaved do not read zero, nothing else on this grid can be believed, and the repair is the grid rather than the
 memory.
 
-## R218c (dispatched 25 Nov, ¥9.4) — the instrument test, and the two readers it needed
+## R218c (bought 25 Nov, ¥7.4) — the instrument test: the drift is sampling noise, and the grid resolves 13 points
 
 Built and dispatched in one iteration, because a placebo that is not read is a round that bought nothing.
 
@@ -9869,10 +9869,33 @@ decisions are each forced by the refutation it has to be able to state:
    `BILL_DRIFT`, `PLACEBO_HELD`. The `p > 0.05` endpoint has no branch because the symmetry bar implies it: two
    tasks of asymmetry is p = 0.5 at its tightest.
 
-**What it cost to build.** Nothing but time, and four defects found on the way (§34.252–34.255), of which the one
+**What it cost to build.** Nothing but time, and six defects found on the way (§34.252–34.257), of which the one
 that mattered was the *registration itself*: the endpoint as written asked `goal_board --compare` to print `NO_LIFT`,
 and two identical arms that disagree on no task print `NO_MEASUREMENT`. Caught before the dispatch, by writing the
-reading out against the six states — the same class of defect as §34.250, one round later.
+reading out against the six states — the same class of defect as §34.250, one round later. Two more were found by the
+reading: the gap metric measured the handover rather than the separation (0.0 s over 15 blocks), and the merged arm's
+bill read a `usage` key τ²'s document does not carry ($0.0000, where the bill is on the log line).
+
+**What it measured.**
+
+| | control-a | control-b |
+|---|---|---|
+| pass$^1$ | 92/114 (80.70%) | 95/114 (83.33%) |
+| bill / episode | $0.004575 | $0.004455 |
+| tasks flipped | **29 of 114 = 25.4%** | |
+
+δ **+2.63 pp**, McNemar p **0.711**, bills within 3%, separation **70.9 s** median (worst 100.3 s). Four of the five
+registered endpoints hold; the fifth — moved 16 against broke 13 — fails by one task against a bar that admits
+2-against-0 at p = 0.5, so the bar was mis-specified rather than the grid.
+
+**The finding, and it re-cuts the plan.** R218b's arms were 35 minutes apart and 22% of its tasks flipped. R218c's are
+71 seconds apart and 25.4% flip. Thirty times less time, the same noise: the 8.8-point afternoon was never a time
+confound, it is sampling, and no schedule removes it. At 25.4% discordance **114 tasks resolve 13.2 pp at 80% power**;
+five points needs **799 tasks**, ten needs **200**. τ²'s four domains hold about 300, which resolves ~8 pp.
+
+So the remaining rounds are re-priced against a resolution line rather than a hope: anything under ten points is not
+worth dispatching on this benchmark, and the next item is the one whose effect is a **count** in one stratum rather
+than a mean over the population.
 
 **What else it bought, for free.** R218d: the dose reader, and its first answer `NO_DOSE` on a *treated* arm, because
 a front-placement block never enters the transcript. That is a finding about the instrument, not about the memory, and
@@ -9880,8 +9903,8 @@ it is why R218e exists.
 
 | step | what it settles | cost |
 |---|---|---|
-| **R218e** (registered) | the dose, recorded where it is known: one JSONL line an episode, so the next arm can be read per episode instead of per arm | ¥4.0 |
-| **R217** | the airline column, 50 independent *tasks* — the only thing R218b's ICC says reduces variance | ¥5.4 |
-| **R219** | the admission policy, fourth arm, bar written from two measured cells (regressions 6 → ≤1, ≥12 of 15 rescues kept) | ¥9.4 |
+| **R219** (registered) | the admission policy — and it is now first on evidence: its effect is 6 regressions → ≤1 among the 90 tasks the control already solved, a **count in one stratum**, which a 114-task grid can still resolve where a 5-point mean cannot | ¥9.4 |
+| **R218e** (registered) | the dose, recorded where it is known: one JSONL line an episode, so the material's per-episode effect stops being unmeasurable | ¥4.0 |
+| **R217** | the airline column, 50 independent *tasks*: 164 tasks resolves ~11 pp, which is the only way the mean-based readings get any power | ¥5.4 |
 | **R220c** | `movePrice` measured rather than derived, on the shipped shape | $0.02 |
 | **R221** | a 2.0 submission — only if the board moves its headline column to 2.0 | ¥34 |

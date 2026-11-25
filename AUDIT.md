@@ -17418,3 +17418,44 @@ Found by writing a check that was wrong on purpose (the `moved`/`broke` expectat
 1/1) rather than by reading the code — which is the argument for building the suite's own failure paths into the suite.
 Both modules now plant a failure, capture it, and assert that the report says so, so the branch that prints a FAIL is
 measured rather than assumed.
+
+### 34.256 The gap metric measured the wrong interval, and said the interleave was instantaneous
+
+`gaps()` computed `start(B) − end(A)` — the time between one invocation finishing and the next starting — and the
+round's own reading came back with a median of **0.0 s over 15 blocks, worst 0.0 s**. The number is correct and it
+answers a question nobody asked: the driver starts the next part the instant the previous one exits, so the handover
+is always about fifty milliseconds, and a metric that cannot tell an eight-task block from a one-task block cannot say
+whether the round did what it was registered to do.
+
+The quantity the round is about is `start(B) − start(A)`: how far apart the two readings of the same task *began*,
+which is approximately the duration of one block. Measured properly it is **70.9 s** median (worst 100.3 s) against
+R218b's 2,100 s — a factor of thirty, which is the round's whole point and which the broken metric reported as zero.
+
+Two repairs, and the second is the one that stops it recurring: both intervals are now reported (`separation` and
+`handover`) so neither can stand in for the other, and the workflow **gates on the separation being at least thirty
+seconds** — a block that ran in under thirty seconds means the population was not the one the plan named. The flattened
+`median`/`max`/`perBlock` keys are kept, because every reader written before this one asks for them and a number that
+silently becomes a dict reads as an absence.
+
+### 34.257 The bill lived on the log, and the merge read the document
+
+`merge_arm` summed `document["usage"]` across the parts. A τ² results document **has no `usage` key**: the bill is
+printed by `run_split.py` as one JSON line when the invocation ends, and its only home is the part's log. So the
+merged arm reported **$0.0000** — and the `usd` block was otherwise well-formed, with two zeros and a `cny` of 0.0,
+which is exactly the shape that survives review.
+
+Found by asking the reading a question it had not been asked: the per-episode bills from τ²'s own per-simulation costs
+($0.004575 and $0.004455) were in the reading, and the arm totals beside them were zero. The merge now reads
+`_phase_summary` off the log named in the manifest, falling back to the document's own `usage` first so a future τ²
+that carries one is read without a change.
+
+**And the two estimators disagree**: $0.2994 from the rate card against $0.5216 from τ²'s per-simulation costs, a
+factor of 1.74. The card's peak band is exactly twice its off-peak band, so this is not a band effect — τ² prices from
+litellm's model table, this driver from `model-rates.json`, and the two are different documents. Every published bill
+uses τ²'s figure, so the numbers in the reports are the conservative ones and the comparisons are internally
+consistent; reconciling the tables is registered as its own small round rather than folded into this one.
+
+This is the fourth appearance of one defect — an absence read as a zero — and the first time the absence was a *key*
+the summary line carries and the document does not. The pattern is now named in one place: a document and a log
+written by the same process are two records of one fact, and a reader that consults only one of them is reading half
+the record.
