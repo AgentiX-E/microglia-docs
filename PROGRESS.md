@@ -28003,3 +28003,142 @@ Lane to date: bank $2.0103 + ablations $0.1826 + R211 $0.4820 + R212 $1.0054 + R
 R215's bar is unchanged — +10 pp paired over 114 tasks — because a channel that cannot clear it is not a channel
 worth a cache bill. Its cost bar changes: **the arm's cache hit rate must stay within three points of the
 control's**, which is the number this round bought.
+
+## R215 — the contract: asks from the request, and a block that moves only when a receipt moves it
+
+Run `45511205369` on `878b6ca5`, 24–25 November 2026, 228 episodes, **$1.1996 (¥8.6)**. The workflow failed its own
+mechanism gate and the documents were uploaded anyway, which is the behaviour this lane wanted: the money was
+spent, the reading exists, and the run says out loud that one of its registration's bars was missed.
+
+### 245.1 The reading
+
+| arm | pass^1 | episodes | bill | per episode |
+|---|---|---|---|---|
+| control | **95/114 (83.3%)** | 114 | $0.5064 | $0.00444 |
+| contract | **100/114 (87.7%)** | 114 | $0.6932 | $0.00608 |
+
+| paired, by task | value |
+|---|---|
+| delta | **+4.4 pp**, 95% interval [−4.9, +13.6] |
+| McNemar exact | p = 0.4049 |
+| moved / broke / held / neither | **14** / 9 / 86 / 5 |
+
+`NO_LIFT` by the registered rule — the movement is short of the ten-point bar — and the direction is the one that
+matters most: **R214's −5.3 is gone.** Fourteen tasks turned over against nine that broke, on a grid whose floor is
+about nine points, so the honest statement is that the arm is *not worse* and *not yet better*.
+
+The control moved too: 98/114 in R214, 95/114 here, same tasks and same seed. Three tasks is the sampling drift
+this lane's own R211 check predicted, and it is why R215 re-ran the control rather than reusing R214's.
+
+### 245.2 The mechanism held on three of four bars
+
+| reading | bar | value | verdict |
+|---|---|---|---|
+| turns whose block changed | ≤ 33% | **247 / 1,034 = 23.9%** | pass |
+| mean block | ≤ 500 chars | **150.5** | pass |
+| mean open asks a turn | ≤ 3.0 | **2.05** | pass |
+| cache hit rate against the control | ≤ 3 points | **−6.5 points** (90.4% → 84.0%) | **fail** |
+
+The cadence fix worked exactly as designed and is visible in the counters: **1034 renders, 247 changes, 787 stable
+re-serves**. R214's board changed on essentially every turn; this one re-served a byte-identical block on 76% of
+them. And the bill fell from +77% to **+37%** — half the penalty, for a block that carries a third of the lines.
+
+But the registered bar was 3 points and the arm missed it by 3.5. The arithmetic of why is now explicit rather than
+hand-waved: **247 changes × 4,756 tokens of prompt = 1.17 M tokens of uncached input**, against a control whose own
+uncached input is 860 k (114 cold starts plus drift). The board arm re-bought the prefix on 12.7% of its calls and
+that is the whole of its bill.
+
+**114 of those 247 changes are the first turn of an episode** — a block cannot be cached before it exists. So the
+incremental cadence is 133 changes over 920 turns, 14.5%, or 1.2 receipt-driven changes an episode. **On a
+nine-turn episode grid, no block that shows state can be cache-neutral: the cold start alone costs about six
+points.** The bar was wrong, not the arm, and R216's registration says so.
+
+### 245.3 Attribution collapsed, and the reason is the bug this round found
+
+| reading | R214 | R215 |
+|---|---|---|
+| asks listed at the last turn, mean | 10.6 | **1.96** |
+| of which ticked, mean | 1.58 | **0.45** |
+| episodes ending with ≥1 tick | 84 of 106 (79.2%) | **35 of 107 (32.7%)** |
+| state-changing calls | 187 | 191 |
+| calls credited to an ask | 125 (67%) | **52 (27%)** |
+| calls reported `unrequested` | — | 77 |
+| calls reported `unattributed` | 62 (33%) | 62 (32%) |
+
+The list stopped growing — 1.96 asks against 10.6 is the contract working — and the ticks stopped too. **P5 fails
+at 32.7% against a 60% bar**, and the artefacts say why. These are the contracts the parser built from the
+simulator's first message on four tasks:
+
+```
+return ['everything', 'two']                    exchange ['two', 'recent', 'water', 'bottle']
+return ['everything', 'related']                exchange ['desk', 'lamp']
+return ['cancel', 'bunch', 'recent', 'basically', 'anything', 'related']
+```
+
+and these are the receipts those same episodes made: `return_delivered_order_items` touching *Water Bottle,
+Mechanical Keyboard, Action Camera, Backpack*. **The ask names a set; the receipt names products; containment
+fails.** R214's board ticked such receipts only because its ten-line list happened to contain a product name from a
+later clarification — an accident of the defect, not a property of the rule.
+
+So the contract exposed a second defect in the settlement rule that the transcript reader had been hiding: **a
+set-phrased ask ("return everything from my two most recent orders") is unsettable by construction**, because the
+rule that settles asks requires the ask's words to name a product. Wordless asks ("cancel the order") already have
+a family rule; set-phrased asks have the same shape and no rule. That is R216's first change.
+
+### 245.4 What the round establishes
+
+- **The harm was the supply rule.** Take the list from the request and the −5.3 pp becomes +4.4 pp. The cost of the
+  channel was never the idea of state; it was a list that grew.
+- **Half the bill was the cadence and the other half is structural.** 23.9% is close to the floor a per-turn block
+  can reach: first turns plus receipts. The remaining cost cannot be removed by emitting less often — it can only
+  be removed by **not putting the block in front of the conversation**, which is the append-at-the-tail design
+  R216 registers.
+- **Attribution is the binding constraint, not accuracy.** The arm moved +4.4 points with 73% of its writes
+  uncredited. If the ticks are the mechanism, fixing the set rule is the highest-value change available; if they
+  are not, this round is the evidence that a *status list* is worth about four points and a *checker* is worth
+  more.
+
+### 245.5 The defects this round found
+
+Three, all before the money or by the gate rather than after it: the census the guide quoted was the census of a
+parser that no longer existed (34.223); the negation rule let "I don't want to return" through and its first repair
+cost a required ask (34.224); and the settlement rule cannot credit a set-phrased ask — found by the artefact's own
+attribution table, which is the reading P5 was registered for (34.225).
+
+### 245.6 Cost
+
+| item | estimate | actual |
+|---|---|---|
+| 228 episodes | $1.06 (¥7.6) | **$1.1996 (¥8.6)** |
+| — control | $0.51 | $0.5064 |
+| — contract | $0.55 | $0.6932 |
+| wall clock | ~30 min | 30 min |
+
+The estimate was right about the control to a hundredth of a cent and low on the treated arm by 26%, for the reason
+§245.2 prices: a block that changes 247 times costs 247 prefixes, and the registration's $0.55 assumed the cadence
+would fall to a handful.
+
+Lane to date: bank $2.0103 + ablations $0.1826 + R211 $0.4820 + R212 $1.0054 + R213 $1.5334 + R214 $1.4261 + R215
+$1.1996 ≈ **$7.84 ≈ ¥56.4**.
+
+### 245.7 Where the project stands
+
+- **The lesson channel is closed by three measurements**; the **transcript state channel is closed by one**; the
+  **contract state channel is open and neutral-positive** (+4.4 pp, interval includes zero).
+- **Our position**: control 83.3%, contract 87.7% on this dispatch; the R214 control read 86.0% on the same grid,
+  so the lane's own number has ±3 tasks of drift and every claim is quoted with its interval.
+- **The SOTA row is 87.9%** (Qwen3.5-397B, and Claude Opus 5 + Recuris), which the contract arm's point estimate
+  now touches and its interval does not: [84.1, 91.0] against the row's own interval.
+
+### 245.8 Next, and what it costs
+
+| step | what it is | time | CNY |
+|---|---|---|---|
+| **R216** | the set rule (a set-phrased ask is settled by family and absorbs its receipts) **and** the block moved to the tail, appended on change instead of rewritten at the front | 0.5 d + 30 min | **9** |
+| R217 | cross-domain: the same pair on airline, 50 tasks | 0.2 d + 20 min | 6 |
+| R218 | submission alignment, and the product-side `state` field with a checker | 0.2 d | 0 |
+
+R216 carries two changes because they answer one question — *is a status list worth anything when it ticks?* — and
+because the tail placement is the only remaining lever on a bill the registration now understands: a block that is
+appended after the conversation invalidates nothing in front of it, so its cost becomes its own length rather than
+the prefix it sits on.

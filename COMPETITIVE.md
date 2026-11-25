@@ -9978,3 +9978,43 @@ avg@4. What changed is our own row, and it changed in a way that makes the cost 
 **Figures.** `figures/r214-frontier.png` — left: the frontier with this dispatch's two arms and their Wilson
 intervals; middle: accuracy against cost for the three rows that publish one; right: the cache hit rate that
 explains the bill.
+
+## R215 — the contract: the harm is gone, the lift is not there, and attribution is the wall (25 Nov 2026)
+
+The board's top is unchanged: **87.9%**. What changed is that our own row moved back across the control and stopped
+short of it — and the cost axis, which R214 put on the table, is now split into the part a cadence can fix and the
+part it cannot.
+
+| system | τ²-retail | metric | cost / conversation | memory | stack |
+|---|---|---|---|---|---|
+| Qwen3.5-397B-A17B (official board) | **87.9%** | pass^1, mean over domains | not published | none | closed weights |
+| **Claude Opus 5 + Recuris** | **87.9%** | avg@4 | not published | experiential + verified working state | Python harness |
+| Claude Sonnet 4.5 + Skill-α | 86.0% | accuracy | not published | RL-generated skills | closed |
+| Claude Opus 4.5 (alone) | 85.3% | pass^1 | not published | none | closed |
+| GPT-5.2 (high) | 84.8% | pass^1 | not published | none | closed |
+| **microglia + contract (R215)** | **87.7%** | pass^1, 114 tasks, 1 attempt | **$0.0061** | contract + receipt ticks | Python + τ² |
+| **microglia control (R215)** | **83.3%** | pass^1, 114 tasks, 1 attempt | **$0.0044** | none | Python + τ² |
+| DeepSeek-V3.2 + CaveAgent | 81.9% | accuracy | not published | stateful runtime | closed |
+| IBM learned guidelines | 81.14% (pass^1) / 67.54% (pass^4) | pass^1/pass^4, 114 × 4 | **$0.1084** | learned guidelines | not disclosed |
+
+**What the round says.**
+
+1. **The supply rule was the harm.** Same idea, same parser family, one rule changed — asks come from the request
+   — and −5.3 pp became **+4.4 pp** [−4.9, +13.6], p = 0.405, 14 tasks turned over against 9 that broke. A
+   state channel that lists what the *user said* is worse than none; one that lists what the *request asked for*
+   is not.
+2. **Two points of accuracy are inside the drift, and the drift is measurable.** The control read 86.0% in R214
+   and 83.3% here on the same grid, same seed, one day apart. Every claim in this table carries an interval for
+   that reason, and the honest comparison of our two rows is an interval overlap rather than a rank.
+3. **The mechanism's price is structural, not behavioural.** Emitting only on change cut the change rate from
+   essentially every turn to 23.9% and the bill premium from +77% to +37%. It cannot cut it further: 114 of 247
+   changes are first turns, and a block at the front of the prompt re-bills everything behind it. The remaining
+   lever is placement — append at the tail — which is R216.
+4. **Attribution is the wall, and it is a parser defect with a name.** 73% of the round's writes were uncredited
+   because a set-phrased ask ("return everything from my two most recent orders") names no product and cannot be
+   settled by containment. Competitors' state channels are checkers over *calls*, not over product names; the gap
+   between 32.7% of episodes ticked and Recuris's +23.9 is very likely this.
+
+**Figures.** `figures/r215-frontier.png` — left: the frontier with this dispatch's two arms and their Wilson
+intervals; middle: accuracy against cost for the three rows that publish one; right: the prefix cache hit rate
+across both rounds, which is where the bill lives.

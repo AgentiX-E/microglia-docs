@@ -16749,3 +16749,100 @@ free to *build* and, if it is re-served, expensive to *serve*.
 **The rule this buys.** A cost estimate for a memory arm has three terms, not two: the episode, the material's
 own calls, and **the prefix the material invalidates**. The third is the only one that has ever surprised this
 lane, and it is measurable before a dispatch from the rate card and the emission cadence.
+
+### 34.223 The census the documentation quoted was not the census the code produced
+
+`USER-GUIDE` §32.70 stated the parser's licence as **180 of 226** required objects, **152 of 180** required
+families, **255** spurious asks and **86 of 114** tasks fully covered. Those were the census's numbers when R214 was
+*registered*. Two parser filters and one reverted fold landed before the dispatch, and the code that ran produced
+**176 / 150 / 238 / 84**.
+
+Nothing failed. The gate in `working-memory.yml` asserted `found >= 170`, `familyRecall >= 0.82`, `spurious <= 280`
+and `tasksCovered >= 82` — bounds wide enough to accept both readings, chosen when the point of the gate was to
+catch a *regression* rather than to pin a *licence*. So for one round the documentation, the registration and the
+artefact disagreed with one another, and every check was green.
+
+**Repair, in three parts.** The gate now pins the measured values with two points of slack (174/226 objects, 0.82
+families, 240 spurious, 82 tasks); the guide's paragraph carries the measured numbers and a note that the old ones
+were wrong; and this entry is the reason the note exists rather than a silent correction. **A census is a
+measurement, and a measurement quoted from a document is a number nobody re-ran.**
+
+The general form is worth stating because this repository is built on it: a bound that accepts two different worlds
+is not a gate, it is a memory of a gate. The slack in a bound should be the size of the noise the measurement has,
+which for a deterministic parser over a fixed corpus is zero — and R215's gate is the first in this lane with no
+slack at all.
+
+### 34.224 The negation rule let "I don't want to return" through as a live ask
+
+The parser refused "do not exchange" and "don't return" and passed **"I don't want to return the lamp"** as an
+ask, because the rule allowed exactly one word between the negation and the cue. That is the form this corpus uses
+more often than the bare one, and the consequence is the one the rule exists to prevent: a board line telling the
+agent to do what the user ruled out.
+
+The first repair allowed three words and cost a required ask: "if the agent doesn't allow **the** exchange" is a
+*condition about* an exchange, and reading it as a refusal dropped task 107's second exchange from the board.
+Recall fell 176 → 175 and noise 238 → 233 — a net loss dressed as a win, which is why the census is a gate rather
+than a chart.
+
+The rule as shipped reads the words between the negation and the cue: a **determiner** makes the cue a noun
+("doesn't allow the exchange") and is not a refusal; `only` makes it a correlative ("not only return it, but
+exchange it") and is not a refusal either; anything else inside three words is. Recall 176 of 226 — unchanged —
+and noise 235, three below where the round started. Three self-check cases pin all three forms, and the two
+rejected forms are the ones a plausible-looking extension gets wrong.
+
+### 34.225 A set-phrased ask cannot be settled, and the transcript reader was hiding it
+
+R215's contract listed 1.96 asks a turn against R214's 10.6, which is the supply rule working. The ticks fell from
+79.2% of writing episodes to **32.7%**, and the artefact's own table says why:
+
+| task 11 contract | task 11 receipt |
+|---|---|
+| `return everything two` | `return_delivered_order_items` on *Water Bottle, Mechanical Keyboard, Action Camera, Backpack* |
+| `return everything related`, task 12 | `return_delivered_order_items` on *Water Bottle, Action Camera, Backpack* |
+| `return cancel bunch recent basically anything related`, task 13 | `return_delivered_order_items` on four products |
+
+`settles()` requires the ask's words to be contained in the product name, in one direction or the other. A set
+phrase contains no product name, so **no receipt can ever satisfy it**; 73% of the round's 191 writes were reported
+`unrequested` (77) or `unattributed` (62).
+
+The rule already exists for the wordless case: "cancel the order" names nothing, and `board_of` settles it with the
+first receipt of its family. A set phrase is the same shape — *"everything from my two most recent orders"* is one
+ask over many objects — and it had no rule, because R214's ten-line list always happened to contain some product
+name from a later clarification. **The transcript reader did not attribute better; it had more chances to.** That is
+the general form worth keeping: a permissive supply rule makes an attribution rule look correct by giving it a
+target for every arrow.
+
+The repair is R216's: an ask whose words name no product **in the episode's own name table** is a *set* ask, and a
+set ask is settled by a receipt of its family and absorbs the later receipts of that family rather than leaving them
+unattributed. The name table is the only catalogue available and the containment rule already depends on it, so the
+test costs nothing new: `not _names_a_product(item, table)`.
+
+### 34.226 The 3-point cache bar was wrong, and the arithmetic says so before the next dispatch
+
+R215's P2 required the arm's cache hit rate within **3 points** of the control's. Measured: 90.4% → 84.0%, −6.5.
+The gate failed the run, which is what it was for. The bar itself was miscalibrated, and the reason is structural:
+
+| quantity | value |
+|---|---|
+| renders | 1,034 |
+| turns whose block changed | 247 (23.9%) |
+| — of which the episode's first turn | **114** |
+| — receipt-driven | 133 (1.2 an episode) |
+| prompt per call | 4,755.7 tokens |
+| uncached input, control | 859,816 tokens |
+| uncached input, contract | 1,484,893 tokens |
+
+247 × 4,756 ≈ 1.17 M tokens of prefix, against a control that buys 860 k. **The cold start alone is 114 changes out
+of 1,034 renders, and on a nine-turn episode a first-turn miss costs about six points of hit rate before any receipt
+moves anything.** No block that shows state can be cache-neutral on this grid, so a 3-point bar is a bar no correct
+implementation can clear — which means the round would have reported a mechanism failure for a design that was
+working as specified.
+
+**The rule this buys.** A cache bar has to be stated as a function of the grid: `changes × prompt` is the bill, and
+`changes` has a floor of one per episode. The honest bars are "no more than one change per receipt" and "the block's
+own length per change", not a fixed number of points. R216 registers both.
+
+**What the gate proved anyway.** It failed the job, the artefact had already been uploaded by an `if: always()`
+step, and the reading therefore exists with its failure attached. A mechanism gate that can only be satisfied by
+not running is not a gate; this one was satisfied by the mechanism and failed by the *bar*, and the artefact carries
+both numbers so the distinction survives the rerun.

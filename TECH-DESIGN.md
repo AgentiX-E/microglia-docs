@@ -11889,3 +11889,44 @@ The ask supply rule carries the same lesson in the other direction. The census r
 asks a task; the arm read eleven messages an episode and listed 10.6, closing 1.58 of them. A material that is
 *added to* by every turn grows without bound, and its length then costs twice: once in tokens and once in the
 reader's attention. Asks come from the request; a clarification refines one, and the parser needs to say so.
+
+### 17.181 The contract, and the two refusals that make a board a checker
+
+The board's unit of truth is a **contract**: the asks the request states, read from the first user turn, fixed
+before the first call. Three design decisions follow from that sentence and each of them is a rejection.
+
+**1. The asks are read once per episode, not once per turn.** `board_of(messages, scope='request')` parses
+`request_of(messages)` — the first non-empty user message — on every turn, from the messages the episode already
+carries. Nothing is memoised (a memoised contract is a note), but nothing new is admitted either. The rejection is
+of R214's supply rule: asks collected from every user turn grow monotonically, because a simulator's clarifications
+("yes, the blue one", "no, only the lamp") are sentences that name objects after a verb. 10.6 asks against 1.58 is
+not a parser bug in the ordinary sense — each line is faithful to a sentence — it is a supply rule with no closing
+condition.
+
+**2. A receipt settles an ask only by naming it, and a receipt that settles nothing is classified.** The
+attribution rule is unchanged from R214 because it worked (79.2% of changing episodes ended with a ticked line, and
+it never over-credited). What is new is that the failure side is split:
+
+| state | condition | line |
+|---|---|---|
+| `unrequested` | no ask of the receipt's family exists in the contract | `Not asked for by the request: N call(s) — tool` |
+| `unattributed` | the family exists, the receipt's object cannot be named | `Not attributed to any ask: N call(s) — tool` |
+| (nothing) | the call failed | — |
+
+The split matters because the two facts point at different repairs. `unrequested` is the agent doing work nobody
+asked for — the failure τ² charges for, and the only one of the three a *checker* can catch that a transcript
+cannot. `unattributed` is the board's own blindness (an address change carries no item id). Reporting them on one
+line, as R214 did, makes the parser's limit look like the agent's mistake. A failed call is on neither line: it
+changed no state, and a list of state is not a list of attempts.
+
+**3. The cadence is an accounted quantity rather than an inference from the bill.** The agent holds the block it
+last served and counts `changes` (turns whose block differed) against `renders` (turns that served one). The ratio
+is the share of turns that can invalidate a prefix, and it is now asserted **before** the paired reading in
+`working-memory.yml` — a run whose block changed on more than a third of its turns fails, whatever its accuracy,
+because it is not the arm the registration describes.
+
+One consequence worth naming for anyone reusing this: **the contract is a dependency on the first user turn being
+the request.** τ² guarantees it; a chat product does not, because a user can open with "hi" and state the task
+four turns later. The portable form is a contract that is sealed by the first turn that yields an ask rather than
+by the first turn, and a board that says so when it has nothing to say. That variant is not registered here and
+this round does not measure it.

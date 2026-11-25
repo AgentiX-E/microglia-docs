@@ -9676,9 +9676,13 @@ The reason to expect anything is now sharper than "the literature says +23.9". T
 *checker*, and a checker changes state on an event; this round's failure is a *renderer*, which changes state on a
 clock. Both the cost and the accuracy data point at the same correction.
 
-**R216 — invocation policy.** Recuris's largest single component after state is *when* to retrieve: inject the one
-skill matched to the call being drafted, not the library. Our arm has never conditioned on the draft. Measured as a
-temporal rule (retrieve when a write is being composed), it is a dispatch argument on the same grid, ≈ ¥8.5.
+**R216 — the set rule and the tail.** R215 closed the harm (+4.4 pp against R214's −5.3) and found two things it
+cannot fix by emitting less often: 73% of its writes were uncredited because a set-phrased ask ("return everything
+from my two most recent orders") names no product and therefore cannot be settled by containment (AUDIT 34.225); and
+a block at the **front** of the prompt costs one prefix per change, with a floor of one change an episode before any
+receipt moves anything (AUDIT 34.226). R216 answers both: a set ask is settled by family and absorbs its receipts,
+and the block moves to the **tail**, appended when it changes rather than rewritten in the system message — so its
+cost becomes its own length instead of the prefix it sits on. ≈ ¥9.
 
 **R217 — cross-domain.** The same pair on airline (50 tasks, 14 policy-dense requests): the board's parser is
 retail-specific in its families, so the question is whether the *shape* transfers. ≈ ¥6.
