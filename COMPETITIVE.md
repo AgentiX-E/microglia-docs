@@ -10119,6 +10119,7 @@ weights, routing or retrieval.
 | entry | retail `pass^1` | metric as stated | price | custom | what it is |
 |---|---|---|---|---|---|
 | **microglia (R216 front)** | **86.84** | `pass^1`, 1 attempt | **$0.0060** | yes | memory harness on deepseek-flash |
+| **microglia (R216b tail)** | **84.20** | `pass^1`, 1 attempt | **$0.0056** | yes | the same harness, block behind the conversation |
 | Claude Sonnet 4.5 | 86.20 | `pass^1` | — | no | frontier model |
 | Gemini 3.0 Pro | 85.30 | `pass^1` | — | no | frontier model |
 | Qwen3.5-397B-A17B | **84.43** | `pass^1` | — | no | frontier model (its 3-domain mean is 87.91) |
@@ -10274,3 +10275,34 @@ is injected*. This lane's artefacts make that measurable for free: an episode th
 trajectory, and the board's own `--replay` knows which turns it was serving. A round that reports **turns-to-recovery
 after a false-positive injection** would be a quantity the field is not publishing, computed from documents already
 on disk.
+
+
+### R216b.1 The row we would submit, and why its number is lower than R216's
+
+Two dispatches of the same code disagree by **5.2 points** on the parser arm: 86.84% in R216-1, 81.6% in R216b. That
+is not a regression and it is not a fix — it is the turnover this lane measured at 22% of tasks between dispatches
+(§246.8) showing up in the headline. **Which of the two numbers belongs on a submission is therefore a question about
+dispatches, not about the harness**, and the honest answer is the conservative one:
+
+| reading | pass^1 | bill per conversation | what it is |
+|---|---|---|---|
+| R216-1 `front` | 86.84% | $0.0060 | one dispatch, the highest this arm has read |
+| R216b `front` | 81.60% | $0.0058 | the same arm, four hours later, same seed |
+| **R216b `tail`** | **84.20%** | **$0.0056** | **the configuration the product now ships** |
+
+The row this project should submit is the **third**, for three reasons that are all about being checkable: it is the
+configuration `SERVING_DEFAULTS` exports, it is cheaper than either alternative, and its companion arm in the same
+dispatch is 81.6% — so anyone re-running it sees a pair of numbers made under one world rather than a singleton.
+
+Against the board, that places the row **second of 26** by point estimate (behind Claude Sonnet 4.5 at 86.20, ahead
+of Gemini 3.0 Pro at 85.30) at **$0.0056, the lowest published price on the board** — and the ranking is not the
+point: at n = 114 with ±3.2 pp of resolution, ranks one through four are one indistinguishable band, which is a
+sentence this document should have written the first time it published a rank.
+
+### R216b.2 Where our cost advantage actually comes from, now that it is measured
+
+$0.0056 against a median priced row of about $0.105 is **19×**, not the 8× claimed in §R218a.5. The gap is not the
+model: it is that six of the board's twenty-five retail rows publish a price at all, and the ones that do are frontier
+models at frontier prices. Our number is a small model, a one-attempt reading, and an off-peak dispatch — three
+choices that are all legitimate and all worth stating beside the number, because a reader comparing $0.0056 to $0.387
+is comparing more than a model.

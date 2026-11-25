@@ -9769,3 +9769,18 @@ instructions **make it worse**; DRIFTBENCH ranks versioned temporal slots over s
 the harm is in the **write and the admission**, which is where this lane's own −6.7 pp on already-solved tasks lives
 (COMPETITIVE R216c). The three refusals: no instruction-level forgetting, no summarising the block to save tokens, and
 R219 framed as an admission decision with the bar already written from two measured cells.
+
+
+**R216b — done.** The placement is confirmed on the registered terms: **$0.00558 an episode against $0.00583 (−4%)**,
+**+2.6 pp [−7.2, +12.5]** (p = 0.68, no movement), attribution **65.7%**, both arms alive 114/114. Total **$1.3007**.
+The strata replicated across two dispatches that share no episode — **−6.7 / −10.8 pp** on tasks the comparison arm
+already solved, **+62.5 / +61.9 pp** on the ones it did not — so "rescue mechanism with a timing defect" is now a
+finding rather than a reading. `eval/manifests/serving-defaults.json` carries it as `status: confirmed`, and R220's
+mechanism binds it to the product. Two forecasts were retired in the writing: the 24% saving (it is 4%, because the
+block moves on 23% of turns) and the 8× price gap (it is 19× against the board's median priced row).
+
+**R218b is next, and it is now the binding constraint.** Every claim this project can make about its accuracy is a
+`pass^1` at one attempt; sixteen board rows state `pass^4` and the field's reliability ceiling is 61.4%. Four
+attempts, two arms, 912 episodes, **$4.75**, with the registered prediction that the parser arm's `pass^4` lands at
+`0.816^4 = 44.3%` — lowered from 56.8% because the arm now reads 81.6 rather than 86.8, and the falsification test is
+unchanged: above 62 means attempts are correlated.

@@ -17202,3 +17202,42 @@ that tool-call adjacency was **not** covered.
 them, because a precondition test runs before the grid. The one that passed spent **$1.2739** and bought a dead arm.
 A gate that fails is the cheapest thing this lane produces; a gate that passes while testing the wrong thing is the
 most expensive.
+
+### 34.244 An arm was named in three places, and the third one only fails when the money is already spent
+
+The paired-reading step had to learn the same lesson twice. `AUDIT 34.240` recorded two places where `control.json`
+was the left arm by name — the bill band and the `--compare` line — and both were changed to fall back to `front`
+when a dispatch runs no control. There was a **third**: the block that prints "the parser, under R215's placement",
+guarded by `if [ -f front.json ] && [ -f board.json ]`, opening `${BOARD_DIR}/control.json` unconditionally.
+
+R216b dispatched `placement`, so `front.json` and `board.json` both existed, the guard passed, and the block raised
+`FileNotFoundError` — **after $1.3007 had been charged and before the reading was written**. The step is the last
+thing that runs, which is exactly why a defect there is the most expensive kind: every gate before it passed, and the
+number the money was spent to produce was never assembled.
+
+The fix is a gate on the control's own file plus a line that says so:
+
+```
+--- no control arm in this dispatch: the parser's price is R216-1's reading, not this one's ---
+```
+
+The reading was recovered from the job log and the uploaded artefact at no cost, which is the only reason this is a
+paragraph and not a lost round. The general form of the defect is worth naming: **an ablation grid is a grid of arms
+that may or may not exist, and every reference to an arm must be a lookup rather than a name.** Three greps found
+three; a fourth may be in a place this round did not read.
+
+### 34.245 The estimate that said 24% and the measurement that said 4%
+
+§248.9 registered that confirming the tail placement would make every subsequent dispatch **24% cheaper**, on the
+reasoning that a block behind the conversation keeps the prefix, so its per-episode bill should fall to the
+control's ($0.004420). R216b measured **$0.00558** — **4%** below the front arm, and 26% *above* the control.
+
+The premise was wrong in a way the arithmetic could have caught: **the block only moves on 23% of turns** (262 changes
+in 1,116 renders). The front arm therefore re-buys its prefix on a change, not on a turn, and the per-turn price the
+estimate assumed was never being paid. A placement saves what its cadence spends; a low cadence is a small saving
+from any placement.
+
+What survives is the comparison that matters and it is still the right call: same accuracy (p = 0.68), 4% cheaper,
+and one message fewer in the system block. What does not survive is the sentence about 24%, which is now the third
+forecast this lane has had to retract and the only one where the error was in a mechanism rather than in a
+denominator.

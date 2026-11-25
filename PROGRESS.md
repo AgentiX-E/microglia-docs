@@ -28548,3 +28548,60 @@ date on completion: **$10.32 ≈ ¥74.3**.
 
 Registered expectations, unchanged by any of the above: the placement's bill within −20%…+20% of the parser arm's,
 attribution ≥60%, and `tail − front` reported as the price of the move.
+
+### 248.13 R216b: the placement is cheaper and the accuracy does not move
+
+Run **45630594988**, `arms=placement`, 228 episodes, seed 400, one attempt, `deepseek-flash` both sides. **$1.3007**
+(¥9.4). Both arms alive: **114 of 114** episodes reached the model, which is the reading R216-1 could not make.
+
+| arm | pass^1 | bill | per episode | agent | user |
+|---|---|---|---|---|---|
+| `front` — block in the system message | 93/114 = **81.6%** | $0.6650 | $0.00583 | $0.004919 | $0.000914 |
+| `tail` — block behind the conversation | 96/114 = **84.2%** | $0.6357 | **$0.00558** | $0.004622 | $0.000955 |
+
+Paired: **+2.6 pp [−7.2, +12.5], McNemar p = 0.6776**, moved 13, broke 10, held 83, neither 8. **No movement the grid
+can resolve** — which is the outcome a placement should produce, since a placement is supposed to change the bill and
+not the task.
+
+The mechanism gate passed on its registered terms: 262 appends against 821 turns that found the block already in
+place, 150 characters a turn, 2.2 open asks a turn, and a bill within the −20%…+20% band. Attribution: **71 of 108
+writing episodes ticked (65.7%)**, over the 60% bar; 107 of 258 asks settled, 4 loose, 1 absorbed.
+
+### 248.14 The strata replicate, on a dispatch that shares no episode with the first
+
+Cut by the comparison arm's own outcomes — the split costs nothing and is a measurement rather than a label:
+
+| stratum | R216-1 (front vs control) | R216b (tail vs front) |
+|---|---|---|
+| the comparison arm solved it | 90 tasks, **−6.7 pp** (6 broken) | 93 tasks, **−10.8 pp** (10 broken) |
+| it did not | 24 tasks, **+62.5 pp** (15 rescued) | 21 tasks, **+61.9 pp** (13 rescued) |
+
+Two dispatches, different arms, no shared episode, and the same shape to within a point on the hard side. **The state
+block is a rescue mechanism whose harm lands on trajectories that were already fine** — that is now a replicated
+finding rather than one dispatch's reading, and it is the sentence R219's bar was written from.
+
+### 248.15 The paired reading died in its third branch, after the money was spent
+
+`control.json` was named in three places in the reading step. Two were taught to fall back to `front` before the
+dispatch (`AUDIT 34.240`); the third — the block that prints "the parser, under R215's placement" — still opened
+`control.json` by name, inside an `if` that only checks that `front` and `board` exist. It raised
+`FileNotFoundError` **after $1.3007 had been charged and before the reading was written**.
+
+The results in §248.13 come from the job log and the uploaded artefact, read locally at **no additional cost** — the
+four numbers the step would have printed were all in the log, and the strata needed only the two result documents.
+Fixed: the branch is now gated on the control arm's own file and says so when there is none.
+
+### 248.16 What this cost, and the estimate that was wrong
+
+| item | estimated | actual |
+|---|---|---|
+| R216b, two arms, 228 episodes | $1.20 (¥8.6) | **$1.3007 (¥9.4)** — 8% out |
+| the two armings that never fired | $0 | $0 |
+| the three smoke tests | $0.0001 | **$0.0001** |
+| lane to date | — | **$10.42 ≈ ¥75.0** |
+
+And a forecast to retract. §248.9 predicted that confirming the tail placement would make every subsequent dispatch
+**24% cheaper** by bringing the per-episode bill down to the control's. It is **4%**: $0.00558 against $0.00583. The
+error was in the premise — the block only moved on **23% of turns**, so the prefix is re-bought on a change rather
+than on a turn, and the front arm was never paying the per-turn price the estimate assumed. The control, which serves
+no block at all, remains 26% below both. A placement saves what its cadence spends, and this cadence is low.
