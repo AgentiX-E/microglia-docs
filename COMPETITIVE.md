@@ -10377,3 +10377,31 @@ leaderboard row for a memory system that only reports its absolute number is a r
 better base model. What the field has *not* published, on any of the 72 rows, is a controlled delta at four attempts
 with a cost column beside it. That is the gap worth occupying, and it is narrower than "SOTA on τ²-bench": it is
 **SOTA on the claim that memory helps, measured**.
+
+### R218b.1 The reliability cell, filled — and what nobody else on the board has published
+
+The board lists `pass^4` on sixteen of its rows and, until now, this project listed none. R218b filled it:
+
+| row | `pass^1` | `pass^2` | `pass^3` | `pass^4` | cost / trajectory | placed |
+|---|---|---|---|---|---|---|
+| microglia, treatment arm | 78.07 | 69.30 | 57.89 | **53.51** | **$0.00584** | **7th of 17** on `1x`, **2nd of 9** on `2x` text@1.0.1 |
+| the same dispatch's control | 84.21 | 71.05 | 61.40 | 57.89 | $0.00442 | — (not a submission: it serves no block) |
+
+The row is placeable and it is second only to a stock Qwen3.5-397B (59.65) in the scope where the rows share a
+benchmark version and a modality. What the field still has **not** published, on any of the 72 submissions, is a
+controlled delta with a reliability column beside it: every row states what its system scored, none states what it
+added to a model measured on the same tasks, in the same dispatch, at the same seed. That remains the claim worth
+occupying, and R218b's contribution to it is the negative half — the delta is not there to be published on this
+grid, because the grid's own drift is larger than the effect.
+
+### R218b.2 The reliability shape the board's column hides
+
+`pass^4` alone reads as "53.5% reliable" and hides the structure: **95.6% of tasks are solved at least once** in the
+control arm, **57.9% are solved four times in a row**, and **71 of 114 tasks are all-or-nothing** (66 with four
+passes, 5 with none). The intraclass correlation is **0.773** (control) and **0.745** (treatment), so three quarters
+of the variance is between tasks. Four attempts therefore buy about **1.2 attempts** of independent information.
+
+No row on the board states this, and it is the number a practitioner needs: it says that buying trials does not buy
+power, and that a `pass^4` reported without its ICC is a number whose precision the reader cannot infer. It also
+explains a fact about the leaderboard's own ordering — `pass^4` rows cluster far above `pass^1⁴`, which readers have
+been treating as a ceiling on reliability when it is a floor imposed by task difficulty.

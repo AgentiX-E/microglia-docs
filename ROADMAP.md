@@ -9817,3 +9817,38 @@ R221 is registered here rather than scheduled because it is the only item in the
 the 2.0 task set differs from 1.0.1, and a submission against it re-buys the grid. It becomes the next constraint
 only if the board moves its headline column to 2.0 — which it has not, and which is worth checking on every re-read
 rather than assuming.
+
+## R218b (bought 25 Nov, ¥33.7) — REFUTED: the reliability column is filled, the claim it was bought for is not there, and the instrument is smaller than the effect
+
+Two arms × 114 tasks × four attempts, **$4.677**. The round's claim was "the repairs buy reliability, not only
+accuracy". They do not, on this dispatch: `pass^4` **−4.4 pp** (53.51 against 57.89, p = 0.49) and `pass^1`
+**−6.1 pp**, outside the registered band. Two of five bars fail. The row is published anyway, because a leaderboard
+row is a statement about a system and not about a hypothesis — and `--position` places it **7th of 17** on `1x` and
+**2nd of 9** on `2x` text at τ² 1.0.1.
+
+**Three findings that matter more than the refutation.**
+
+1. **The drift is 8.8 points within one afternoon.** The treatment arm read 86.84, 81.60 and 78.07 across R216-1,
+   R216b and R218b — same code, same seed, same tasks — and the control read 78.95 then 84.21. The *ordering*
+   reversed, so R216-1's "+7.9 pp" and R218b's "−6.1 pp" are both single-dispatch artefacts. Every cross-dispatch
+   delta in this lane's history is now suspect, and the `serving-defaults.json` provenance survives only because a
+   placement's *price* is mechanical.
+2. **Attempts are not independent.** ICC **0.773** and **0.745**, overdispersion **1.92×**, four attempts ≈ **1.2**
+   independent ones, and `pass^4 / pass^1` **0.6875 / 0.6854** — the same ratio to three digits across two arms whose
+   `pass^1` differs by six points. Buying trials does not buy power; buying tasks does.
+3. **The prereg's falsification test could not fire.** Its interval came from R216's `pass^1`, in another dispatch.
+   Computed from each arm's own rate, both arms sit *above* independence by 7.6 and 16.3 points.
+
+**What is next, in order:**
+
+| step | what it settles | cost |
+|---|---|---|
+| **R218c** (registered) | interleaving: two *identical* arms run task-by-task, registered expectation **δ = 0**. A dispatch that cannot produce a zero on a placebo cannot measure a treatment. This is the fix for finding 1 and it is cheap | ≈ **$1.3 ≈ ¥9.4** |
+| **R217** | the airline column, 50 tasks — independent *tasks*, which is the only thing finding 2 says reduces variance; the board's airline rows are its strongest (84.0 top) | ¥5.4 |
+| **R219** | the admission policy, fourth arm, bar already written from two measured cells | ¥9.4 |
+| **R220c** | one probe dispatch with `--rewrite-at` on the shipped shape: `movePrice` measured instead of derived | $0.02 |
+| **R221** | a 2.0 submission — only if the board moves its headline column to 2.0, which it has not | ¥34 |
+
+R218c is first because it is the cheapest item whose failure would invalidate every other one: if two identical arms
+interleaved do not read zero, nothing else on this grid can be believed, and the repair is the grid rather than the
+memory.

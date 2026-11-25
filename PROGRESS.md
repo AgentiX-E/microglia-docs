@@ -28695,3 +28695,137 @@ The probe's changes are free because they are arithmetic and shapes: `placementP
 `movePrice` subtracts two numbers. The only thing that would have cost money is dispatching the probe against the
 provider, and that is a separate decision — `--rewrite-at` exists so that the next dispatch can price a move on the
 shipped shape without buying a grid.
+![R218b: the same arm across three dispatches, and the per-task clustering that makes four attempts worth 1.2](figures/r218b-reliability.png)
+
+### 248.22 R218b: the reliability column exists, and the claim it was bought to support is refuted
+
+Dispatch 45646309827, 25 November 2026, two arms × 114 retail tasks × **four attempts** = **912 episodes**,
+seed 400, concurrency 6, **$4.677** (¥33.7). Every episode reached the model in both arms (456/456), so nothing
+below is about an arm that stopped.
+
+| arm | `pass^1` | `pass^2` | `pass^3` | `pass^4` | bill per episode | writing episodes ticked |
+|---|---|---|---|---|---|---|
+| `control` | 84.21% | 71.05% | 61.40% | **57.89%** | $0.00442 | — |
+| `front` | 78.07% | 69.30% | 57.89% | **53.51%** | $0.00584 | **71.7%** (299/417) |
+
+Paired by task, exact McNemar on the tasks that differ:
+
+| contrast | delta | interval | p | moved / broke / held / neither |
+|---|---|---|---|---|
+| `pass^1` | **−6.1 pp** | [−16.2, +4.1] | 0.2295 | 9 / 16 / 80 / 9 |
+| `pass^4` | **−4.4 pp** | [−17.0, +8.4] | 0.4869 | 14 / 19 / 47 / 34 |
+
+The round's claim was *the repairs buy reliability, not only accuracy*. They do not, on this dispatch: `pass^4` is
+4.4 points **lower** in the treatment arm, and `pass^1` is 6.1 points lower, which is outside the registered
+[−2.0, +17.6] band. Two of the five bars fail, and the honest status of R218b is **refuted**, not "no lift".
+
+That is not the interesting part. The interesting part is what the grid says about the instrument.
+
+### 248.23 The same arm read 86.84, 81.60 and 78.07 in one day
+
+| dispatch | `front` `pass^1` | `control` `pass^1` | what the round concluded |
+|---|---|---|---|
+| R216-1 (14:5x) | **86.84%** | 78.95% | the parser is worth **+7.9 pp** |
+| R216b (15:5x) | 81.60% | — | the placement is worth +2.6 pp (its own pair) |
+| **R218b (16:0x–16:4x)** | **78.07%** | **84.21%** | the parser is worth **−6.1 pp** |
+
+Same code, same seed, same 114 tasks, same model. Three dispatches of the treatment arm span **8.8 points**, and the
+control spans 5.3. The ordering **reverses**: R216-1 measured the treatment above the control by 7.9 points and
+R218b measured it below the control by 6.1, with both arms inside one afternoon.
+
+Two conclusions, and the second is the expensive one:
+
+1. **No cross-dispatch comparison in this lane is valid**, including the ones already published. `§246.8` measured
+   22% task turnover between dispatches and used it to argue against drift; the pass rates say the drift is larger
+   than that argument allowed.
+2. **A single dispatch cannot resolve a 10-point effect at n = 114 either.** The intervals above are ±10 pp wide, and
+   the two point estimates they bracket differ by 14 points — so the paired design is working as designed and the
+   grid is simply too small, or too time-confounded, to answer the question it was built for.
+
+The mechanism was not idle: attribution is **71.7%** of writing episodes, above the 60% bar, and the block served.
+So the null is a null about *effect*, not about *implementation* — which is exactly the distinction `§246.x` set out
+to be able to make, and this is the first time it has been made cleanly in both directions.
+
+### 248.24 Attempts are not independent draws, and the prereg's interval could not have caught it
+
+The registered prediction was `pass^4 = pass^1⁴` under independence, with a falsification test: an observed `pass^4`
+**above 62** means a retry is not an independent draw. Observed for `front`: **53.51**, inside the [50, 62] interval.
+By the letter of the registration, independence survived.
+
+It did not. The interval was computed from **R216's** `pass^1` of 86.84, and this dispatch's arm reads 78.07 — so the
+interval was a prediction about an arm measured in another dispatch, which §248.23 has just shown is not the same
+arm. Computed from each arm's *own* rate, the independence prediction is:
+
+| arm | observed `pass^1` | independence predicts `pass^1⁴` | observed `pass^4` | excess | `pass^4 / pass^1` | independence's ratio |
+|---|---|---|---|---|---|---|
+| `control` | 84.21% | 50.3% | **57.89%** | **+7.6 pp** | **0.6875** | 0.597 |
+| `front` | 78.07% | 37.2% | **53.51%** | **+16.3 pp** | **0.6854** | 0.476 |
+
+Both arms sit far above independence, and the **ratio is the same to within 0.3 points** across two arms whose
+`pass^1` differs by six. The variance decomposition says why:
+
+| arm | mean successes of 4 | observed variance | binomial variance | overdispersion | **ICC** | effective independent attempts |
+|---|---|---|---|---|---|---|
+| `control` | 3.263 | 1.151 | 0.601 | **1.92×** | **0.773** | **1.21** |
+| `front` | 3.202 | 1.136 | 0.639 | **1.78×** | **0.745** | **1.23** |
+
+**Three quarters of the variance in outcome is between tasks, not between attempts.** Four attempts on a task buy
+about **1.2 attempts** of independent information. A task that fails once usually fails all four times — 71 of the
+control's 114 tasks are all-or-nothing (66 with four passes, 5 with none) — and the practical consequence is a
+purchasing decision, not a statistical one: **tasks reduce variance, attempts barely do**.
+
+### 248.25 The row the board would accept, for the first time with a `pass^4`
+
+`submission.py --emit` on the treatment arm produces a complete row, and `--check` passes it:
+
+| field | value |
+|---|---|
+| `pass_1` / `pass_2` / `pass_3` / `pass_4` | 78.07 / 69.30 / 57.89 / **53.51** |
+| cost per trajectory | **$0.00584** |
+| type | `custom` (the block is a system message the stock scaffold never writes) |
+
+Placed twice, at two scopes:
+
+| scope | rank | rows above |
+|---|---|---|
+| `1x`, every version | **7th of 17** | raft-30b-a3b 61.40, claude-3-7-sonnet 59.70, qwen3.5-397b 59.65, gpt-5 58.77, qwen3-max 57.89, qwen3-max 57.00 |
+| `2x`, τ² 1.0.1, text only | **2nd of 9** | qwen3.5-397b-a17b-think 59.65 |
+
+The `1x` placement is the round's registered endpoint and it exits `0`. The `2x` one is the scope where the rows
+were measured on the same tasks, and it agrees with the `pass^1` reading in §248.18: one stock model ahead of us,
+everything else behind. The price column is the one place this row is unambiguously first-shaped: **$0.00584 against
+a median published text price of $0.11449**, and the only cheaper row is a self-hosted $0.0000.
+
+### 248.26 What R218b cost, against what it was estimated at
+
+| item | estimated | actual |
+|---|---|---|
+| 912 episodes | $4.75 (¥34) | **$4.677 (¥33.7)** — 1.5% under |
+| wall clock | ~76 min + 9 install | 74 min + 9 |
+| retrieval of the documents | $0 | $0 — artifact download, once the redirect stopped carrying the PAT to the blob host |
+
+The retrieval is worth a line because it nearly cost the round: the job-log endpoint answers **403** for this token
+and the artifact endpoint redirects to `productionresultssa17.blob.core.windows.net`, where a forwarded
+`Authorization` header is rejected with **401**. Stripping the header on a cross-host redirect is the difference
+between a $4.68 result and no result at all. The next dispatch should not depend on a human noticing that: the
+workflow is going to publish its reading through a channel `api.github.com` serves directly.
+
+### 248.27 Status, and what the refutation changes about the plan
+
+**Where the project is.** R218b closes the reliability column — the last column this project could not state — and
+closes it with a negative result. The submission row is complete and placeable in two scopes. The instrument is
+smaller than the effect it is being asked to resolve: ±10 pp per dispatch, 9-point drift within a day, and four
+attempts buying 1.2.
+
+**What it changes.** Three things, in order of cost:
+
+1. **Interleave the arms.** `run_arm control` then `run_arm front` puts 35 minutes of provider time between the two
+   halves of a contrast. A within-task interleave removes the time confound at no extra spend, and the placebo that
+   proves it is two *identical* arms interleaved: the registered expectation is a delta of zero, and any dispatch
+   that cannot produce one cannot measure anything else. **R218c**, ≈ $1.3.
+2. **Spend on tasks, not attempts.** With ICC ≈ 0.75, the airline column (50 tasks) and the telecom column add
+   independent tasks that the retail grid cannot, and they are the columns where the board's own rows are strongest
+   (84.0 and 98.25 at the top). **R217**, ≈ ¥5.4.
+3. **Stop quoting cross-dispatch deltas.** Every published "+7.9 pp" must carry "measured inside R216-1, not
+   reproduced in R218b (−6.1)". The `serving-defaults.json` `confirmedBy` line stays, because a placement's price is
+   a mechanical fact and its accuracy contrast was never the claim.

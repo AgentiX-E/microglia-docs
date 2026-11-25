@@ -17311,3 +17311,62 @@ Two smaller decisions in the same edit are worth recording because they are the 
 - the self-test's own `FAIL` line was unreachable from a passing run, so it was never executed. The counting moved
   into `_tally(name, condition, counters)` and the suite exercises a failing assertion on its own counter. A
   suite whose red is untested is a suite whose green is unverified.
+### 34.249 The fifth bar was unenforceable, and the workflow skipped it without saying so
+
+R218b's registration listed five bars. The fifth — "the bill is within the −20%/+20% band of the control's
+per-episode cost, as in R216" — was copied from R216's *placement* contrast, where the two arms serve the same block
+in different positions. In a *parser* contrast the block sits in the system message in both arms and re-bills the
+prefix on every change, which is the mechanism R216's own notes price at **+37%**. The band, applied here, would have
+failed an implementation working exactly as specified.
+
+It did not fail, and that is the defect. In the workflow, the cost bar reads:
+
+```python
+baseline_name = "control" if per_episode.get("control") else "front"
+baseline, treated = per_episode.get(baseline_name), per_episode.get("board")
+if baseline and treated and baseline_name != "board":
+```
+
+For a `pair` dispatch there is no `board` arm, so `treated` is `None`, the block does not run, and the step passes.
+The two arms' actual bills — **$0.00442 and $0.00584, a 32% difference** — were never compared by any assertion.
+
+Two repairs, and the second is the general one:
+
+1. the bar belongs to the contrast that can carry it. A parser contrast's cost expectation is "the treatment re-bills
+   the prefix on a change", which is a *mechanism* expectation and is checked by the front arm's change rate
+   (`≤ 1/3` of turns), not by a band against the control;
+2. a bar whose subject is absent must **report**, not pass. The step now prints which arms it did not compare and
+   why, so a green check is a statement about something.
+
+### 34.250 A falsification interval computed from another dispatch cannot falsify anything
+
+The registered prediction was `pass^4 = pass^1⁴`, with the interval derived from **R216's** `pass^1` of 86.84%:
+predicted 56.8, interval [50, 62], and the rule "above 62 ⇒ attempts are correlated". The observed `pass^4` was
+**53.51** — inside the interval, so by the letter of the registration independence survived.
+
+Independence does not survive. The interval was a prediction about an arm measured in a *different dispatch*, and
+§248.23 shows that arm reading 86.84, 81.60 and 78.07 within one afternoon. Computed from each arm's own rate the
+independence prediction is 50.3% (control) and 37.2% (front) against observations of 57.89% and 53.51% — both far
+above. The variance decomposition agrees: ICC **0.773** and **0.745**, overdispersion **1.92×** and **1.78×**, and
+four attempts worth about **1.2** independent ones.
+
+The audit finding is not the arithmetic. It is that a registered test can be **unsatisfiable in principle** and still
+look like it passed, because its threshold was imported from a population that had drifted. The rule this round adds:
+an interval in a registration is computed from the same dispatch's own readings wherever a reading exists, and where
+it must come from elsewhere, that is stated as a prediction *about the drift* and not about the treatment.
+
+### 34.251 The reading almost died at the transport, twice
+
+The documents were 65 MB of arm output uploaded as an artifact. `api.github.com` serves them only through a redirect
+to `productionresultssa17.blob.core.windows.net`, and `urllib` forwards the `Authorization` header across that
+redirect — which the blob host rejects with **401 "Server failed to authenticate the request"**. The job-log endpoint
+answers **403** for this token at all.
+
+So a $4.68 result was one header-strip away from being unrecoverable, and the stripping is not something a later
+reader would think to do. Two consequences, both cheap:
+
+- the retrieval that works is a `HTTPRedirectHandler` subclass that removes `Authorization` when the netloc changes;
+  it is now a script in the lane's toolbox rather than a thing that was figured out once;
+- the next paid dispatch publishes its reading through a channel `api.github.com` serves **directly** — a commit
+  comment or a file the workflow writes with `contents: write` — so no result depends on a redirect behaviour or on
+  a permission the token may not have.
