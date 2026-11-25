@@ -12159,3 +12159,48 @@ The consequence is a registration rather than a patch: **R218e** has the arm wri
 `turns`, `renders`, `chars`, `changes`, the verdict — where the dose is known, and the reader gains a `--sidecar` that
 checks the recording against the transcript it accompanies. Until that lands, the honest answer on every arm whose
 transcript carries no block is `NO_DOSE`, and saying so is the instrument working.
+
+### 17.191 Admission is a separate decision from content, and it is the one that was never designed
+
+Eleven rounds of this lane changed what the memory block **said**: the ask source (R215, 10.6 asks a turn → 1.96), the
+settlement grades (R216, 2 of 107 episodes ticked → 75.5%), the placement (R216b, −4% and no accuracy cost). None of
+them changed **whether the block was admitted**, and the harm that survived all of them turns out to live there.
+
+The block has four kinds of line and they are not the same kind of object:
+
+| line | the claim | the ground truth it can be checked against | measured error |
+|---|---|---|---|
+| `[x] return: lamp` | a receipt named this ask | the tool result the episode carries | none: it is the receipt |
+| `[ ] exchange: keyboard` | no receipt names it yet | the same transcript | none: it is the transcript |
+| `Not asked for by the request: N call(s)` | the agent changed state nobody asked for | **the evaluator's action list** | **88.8% false** |
+| `Not attributed to any ask: N call(s)` | the parser could not name what a call touched | the same list | **98.1% false** |
+
+The first two are *state*, computable from the conversation and checkable against it. The last two are *judgment*: a
+statement about the request made by a closed cue list, over ground truth the block never reads. Nine tenths of those
+statements are wrong about the task (1,808 of 1,965 entries over 456 paid episodes), and the line written to be honest
+about the parser's blind spot is the least honest line in the block — because "the parser could not name it" and
+"nobody asked for it" are different facts and the render made them one sentence.
+
+**The design rule, stated once and applied at the renderer:**
+
+> A memory may state what the conversation supports. It may not annotate what it cannot name.
+
+That is `render(board, state_only=True)`, and the reason it is a rendering switch rather than a second renderer is the
+same reason `placement` is one variable: two switches for one arm produce a third treatment nobody registered. The
+admission rides `MICROGLIA_BOARD`, the phase census records `board.admission`, and `serving-defaults.json` will carry
+`admissionPolicy` beside `placement` once R219b confirms the effect — one artefact, two readers, one test per
+repository, exactly as the placement is bound.
+
+**Why this is a design principle and not a bug fix.** The same shape recurs at three other layers of this system, and
+the principle reads the same at each:
+
+| layer | the annotation that outran its evidence | the state form that replaced it |
+|---|---|---|
+| the block's refusals | "not asked for by the request" | silence, plus the receipts the transcript already carries |
+| the round registry | a bar written against a control arm the dispatch did not run (R219) | the within-dispatch paired contrast, and a replication before the default moves |
+| the leaderboard row | a `pass^1` with no resolution, no noise floor, no degradation count | `submission.py --position`, which prints the population and refuses a mismatched version |
+| the workflow's reading step | an arm named in the reader (`front.json`) rather than looked for | a branch that looks for `policy.json`, because a reader that names an arm dies after the money is spent |
+
+Each row is the same defect at a different altitude: **a claim that is cheap to make and expensive to check, replaced by
+one that is expensive to make and cheap to check.** That is the whole architecture of this project in one sentence, and
+R219 is the round where it finally reached the memory itself rather than the reporting around it.

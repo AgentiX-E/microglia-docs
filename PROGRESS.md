@@ -28923,3 +28923,130 @@ rows share a benchmark version and a modality, at **20.5×** below the published
 
 R219 is now first on evidence rather than on taste: its effect is a **count** in one stratum (6 regressions to ≤1 out
 of 90 solved tasks), and a count is resolvable at 114 tasks where a 5-point mean is not.
+
+## 249. The block was accusing: 92% of its refusals were wrong about the task, and the rule that stops it is worth +10.5 pp (04:05 UTC)
+
+R218c retired every contrast below ten points on this grid and promoted R219 for the reason it gave: R216's split had
+produced an effect that is a **count** in one stratum, and a count is resolvable where a five-point mean is not. What
+R219 did not have, when it was registered, was a mechanism. It has one now, and it is a defect rather than a
+hypothesis.
+
+### 249.1 The instrument, and the number it produced for free
+
+`goal_board.py --accusations` reads a τ² results document the lane has already paid for, takes the evaluator's own
+`evaluation_criteria.actions` as ground truth — a list the block never reads — and judges every `unrequested` /
+`unattributed` entry the block would have shown, on every turn the agent would have read it.
+
+| reading over R218b's front arm (456 episodes, 1,965 entries, 107 tasks with criteria) | value |
+|---|---|
+| entries naming a family the task **requires** a write in | **1,808 = 92.0%** |
+| the same over each episode's last block only | 239 / 277 = 86.3% |
+| episodes carrying at least one such entry | 178 of 456 |
+| `unattributed` entries that are false | 461 / 470 = **98.1%** |
+| `unrequested` entries that are false | 1,347 / 1,517 = 88.8% |
+
+Two facts follow, and the second is the one that decided the round:
+
+1. `unrequested` is a claim about the *request* made by a closed cue list. When the cue list misses an ask, every call
+   that satisfies it is reported as work nobody asked for — on a task where the ask exists and the task requires it.
+2. `unattributed` was written to be the honest line ("the family was asked for, this board could not name what the
+   receipt touched") and it is false about the task **98 times in 100**. The parser's blindness and the agent's mistake
+   were rendered in one breath, and a reader of the block cannot tell them apart.
+
+The repair is not a better parser — a cue list that grows with the corpus is a parser fitted to the corpus, and the
+honest reading of a zero-recall ask is silence. The rule is one switch: **the block admits state and refuses to admit
+judgment.**
+
+### 249.2 One variable, and the counters that prove it ran
+
+`MICROGLIA_BOARD=policy` is the tail placement — the configuration the product ships (`serving-defaults.json`) — with
+`state_only=True` at the renderer. The admission rides the placement's own variable because two switches for one arm
+is how an arm becomes a third treatment nobody registered. The phase census carries `board.admission`, and the
+workflow asserts it: `state` on the policy arm, `all` on the board arm. A reading that reported a delta without that
+field would not be able to tell a null from a treatment that never applied.
+
+### 249.3 What the dispatch read
+
+One dispatch, two arms, the same seed world, the same 114 retail tasks, 228 episodes, **$1.2329 ≈ ¥8.9**, 29 minutes:
+
+| | board (shipped) | policy (the rule) |
+|---|---|---|
+| pass^1 | 87/114 = **76.3%** | 99/114 = **86.8%** |
+| block chars a turn | 152.4 | **140.1** (−8.1%) |
+| block changes / appends | 260 | **211** |
+| turns the block was held | 854 | **937** |
+| bill an episode | $0.00552 | **$0.00530** (−4%) |
+| `admission` in the census | `all` | `state` |
+
+**δ = +10.5 pp [+0.4, +20.5], McNemar exact p = 0.0290; 19 tasks moved up, 7 down, 80 held.** It is the largest delta
+this lane has measured that also clears its own test, and it is the first one where the *mechanism* numbers and the
+accuracy number agree on the same story: a shorter block that moves less often, on the same parser, moves 19 tasks.
+
+### 249.4 The strata are cross-dispatch, and the replication is registered
+
+R219 was registered on a bar written against the no-memory arm — regressions 6 → ≤1 while keeping ≥12 of 15 rescues —
+and **this dispatch ran no control arm**, so the strata can only be read against R218b's control (35 minutes earlier,
+4 attempts, same seed):
+
+| against R218b's control trial 0 | board | policy |
+|---|---|---|
+| regressions of the 96 tasks no-memory solves | **21** | **1** |
+| rescues of the 18 it does not | 16 | **18** |
+
+The registered bar is met on both counts and neither number is a within-dispatch measurement — which is exactly the
+kind of number this project has learned to stop quoting. And there is a second reason to be careful: **the shipped
+arm's own regression count has now read 6, 10 and 21 across three dispatches of the same configuration**, so the bar
+as registered is a moving target and the paired contrast is the only stable quantity in the table.
+
+The interval excludes zero by **four tenths of a point**, on one dispatch of a grid whose identical arms turn over
+25.4% of their tasks. **R219b is registered: the identical two-arm experiment, again**, ¥8.8, and its bar is the sign
+plus the pooled discordant pairs. `admissionPolicy` stays in `notYet` until that reading exists.
+
+### 249.5 Two delivery defects, both found by the reading rather than by review
+
+- **The reading step named an arm.** The `admission` dispatch ran, spent the money, uploaded both documents, and then
+  died in `The paired reading` because the step's fallback chain was `control.json` → `front.json` and this dispatch
+  writes `board.json` and `policy.json`. Fifth place in that workflow where an arm was named rather than looked for,
+  and the fix is a branch that looks for `policy.json` by name. The documents survived, which is why the reading above
+  exists at all — the upload runs before the reading precisely so a broken reader cannot cost a paid grid twice.
+- **`ModuleNotFoundError: memory_debit`, on the runner and not locally.** `python3 eval/tools/goal_board.py` puts the
+  script's directory on `sys.path`; `python3 -m coverage run eval/tools/goal_board.py` leaves the working directory
+  first and the script's directory nowhere, and CI measures every module through `-m`. `_siblings()` now inserts the
+  directory and the suite forces both branches. **AUDIT 34.259.**
+
+### 249.6 Coverage, and the gate the instrument now sits behind
+
+| module | lines and branches | floor |
+|---|---|---|
+| `eval/tools/goal_board.py` | **99.9%** (1 partial: the `__main__` guard) | 95, and now on **every push** rather than only on a dispatch |
+| `eval/drivers/tau2/microglia_agent.py` | **99.8%** | 98 |
+| `eval/tools/serving_defaults.py` | 98.6% | 95 |
+| the lane's measured set | **99.3%** across 17 files | 95 |
+
+`goal_board` moved into `ci.yml`'s measured set (`--expect-files` 16 → **17**) because R219 added to it both the
+instrument and the switch the next paid reading is about, and a module that changes what every arm serves cannot be
+gated only on the days a dispatch is armed.
+
+### 249.7 What this does and does not establish
+
+**Establishes:** the block's two judgment lines are wrong about the task 92% of the time (1,808 of 1,965 entries, over
+456 paid episodes); removing them shortens the block 8%, moves it 19% less often, costs 4% less, and on this dispatch
+moves 19 tasks up against 7 down (p = 0.029); the counters prove the treatment applied.
+
+**Does not establish:** that the +10.5 pp is an effect rather than a favourable draw. One dispatch cannot say that, and
+the same lane has already published +7.9 and −6.1 for one configuration. **R219b** answers it, and the product default
+does not move before it does.
+
+### 249.8 Where the lane stands
+
+| step | what it settles | state | cost |
+|---|---|---|---|
+| R219 | the admission rule, first reading | **read: +10.5 pp, p = 0.029** | $1.23 |
+| R219b | the same two arms again | **dispatched, run 45690987353** | $1.23 |
+| R218e | the dose, recorded per episode | registered | $0.55 |
+| R217 | airline 50 tasks | registered | $0.75 |
+| R220c | `movePrice` measured | registered | $0.02 |
+
+Lane to date: **$17.36 ≈ ¥125.0**. R219b's reading decides whether the rule becomes the product's default and whether
+the submission row moves from 86.8% into the top of the retail column — and if it does, it will be the first claim
+this project has made that is *both* above the field and larger than its own resolution.

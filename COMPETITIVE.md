@@ -10505,3 +10505,55 @@ and a modality, at 20.5× lower cost per episode than the published text median.
 alone: a controlled delta, a reliability column, a noise floor, a resolution and a cost, over one population, from one
 dispatch family. The claim to occupy is not "highest `pass^1`"; it is **"the only row whose delta comes with its own
 resolution"**, and the two instruments above are what makes that sentence true rather than aspirational.
+
+### R219.1 The field has a name for this harm, and one competitor has already priced it
+
+The block's two judgment lines were wrong about the task **92.0%** of the time (1,808 of 1,965 entries over R218b's
+456 paid episodes; AUDIT 34.258), and the effect of removing them is **+10.5 pp** on one dispatch. Both numbers have
+counterparts in the literature, and they arrive from four directions at once:
+
+| work | what it calls the harm | what it measures | what it does about it |
+|---|---|---|---|
+| **WikiTrace** (arXiv 2611.14320, KAIST, Nov 2026) | *memory-induced degradation* — failing a task you would solve without memory | 90.2 average over five suites, **+10.7** over no-memory, **+3.2** over the same insights without evidence; degradation **6.5% → 4.5%** | links every lesson to the trajectory it came from; the agent descends the links before acting |
+| **"Useful Memories Become Faulty…"** (arXiv 2605.12978) | consolidation, not retrieval, is the harm | 19 ARC-AGI tasks: **100% → 54%** after a rewrite loop | episodic-only; no persistent abstraction |
+| **MemDev-Bench** | irrelevant history makes agents fail tasks they can solve | memory reuses a lesson without re-checking applicability | — |
+| **REM** | the bottleneck is *when* memory should appear, not what to retrieve | — | a lifecycle, not a ranker |
+
+**Our corresponding numbers, on a different benchmark and a different channel:**
+
+| | no-memory | shipped block | the rule |
+|---|---|---|---|
+| pass^1, retail, 114 tasks | 84.2% (R218b) | 76.3%–84.2% across dispatches | **86.8%** (R219) |
+| memory-induced degradation | — | **6.7%** (R216-1), 10.8% (R216b), **21 of 96** (R219, cross-dispatch) | **1 of 96** |
+| what it costs | — | 152.4 chars a turn | **140.1**, 4% cheaper |
+
+WikiTrace's 6.5% and our 6.7% are the same phenomenon measured on different suites, which is worth stating plainly:
+**the harm is not a defect of this project's parser, it is a property of serving state as if it were judgment.**
+
+### R219.2 What the standing would be if the rule holds — and why it is not claimed yet
+
+`86.8%` on retail `pass^1` would place the row **first of 48** retail rows, ahead of Claude-Sonnet-4.5 at 86.2 — and it
+would be the first time this project's number was both above the field and larger than its own grid's resolution.
+
+It is not claimed. The interval is [+0.4, +20.5] on **one** dispatch, the grid's identical arms turn over 25.4% of
+their tasks, and this lane has already published two contrasts of the same code (+7.9 and −6.1) that were noise. The
+published row stays at the measured shipped configuration until **R219b** repeats the two arms. The ordering of those
+two sentences — the number first, the refusal second — is the discipline; a project that inverts it is quoting a draw.
+
+### R219.3 The column the field still does not publish
+
+R218c.1 counted the schema: **0 of 72 rows** publish a control arm, a noise floor, or an ICC across their attempts.
+R219 adds a fourth absent column, and it is the one that would have caught this defect in any of the 72:
+
+| what a row states | rows of 72 |
+|---|---|
+| a `pass^1` | 48 |
+| a `pass^4` | 18 |
+| a cost per trajectory | 10 |
+| a control arm in the same dispatch | 0 |
+| a noise floor or placebo for its own delta | 0 |
+| **an accuracy on tasks the no-memory arm already solves, reported separately** | **0** |
+| **a count of memory-induced degradations** | **0** |
+
+WikiTrace publishes the degradation rate for its own system and no row on this leaderboard publishes it for any. That
+is the claim to occupy: not "highest `pass^1`" — **"the only row whose memory is priced by what it breaks."**

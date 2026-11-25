@@ -9908,3 +9908,49 @@ it is why R218e exists.
 | **R217** | the airline column, 50 independent *tasks*: 164 tasks resolves ~11 pp, which is the only way the mean-based readings get any power | ¥5.4 |
 | **R220c** | `movePrice` measured rather than derived, on the shipped shape | $0.02 |
 | **R221** | a 2.0 submission — only if the board moves its headline column to 2.0 | ¥34 |
+
+## R219 — read: the admission rule is +10.5 pp, and a replication is the next step
+
+**What it was for.** R220 and R218c left the plan with one item whose effect is a *count* rather than a mean:
+R216's split showed the state board rescuing 15 of the 24 tasks the no-memory arm cannot do and breaking 6 of the 90 it
+already does. The round's question was why a block that only states what the request asked damages a trajectory that
+was already fine.
+
+**The answer, measured for free before anything was dispatched.** Two of the block's four line kinds are judgments
+about the agent's calls, and `goal_board.py --accusations` judges them against the evaluator's own action list over an
+artefact already paid for: **1,808 of 1,965 entries (92.0%) name a family the task requires a write in**, and the
+`unattributed` line — written to be honest about the parser's blind spot — is false about the task **98.1%** of the
+time. The rule that follows is one switch: the block admits state and refuses to admit judgment.
+
+**What it read** (run 45684914838, 228 episodes, $1.2329 ≈ ¥8.9, off-peak):
+
+| | board (shipped) | policy (the rule) |
+|---|---|---|
+| pass^1 | 87/114 = 76.3% | **99/114 = 86.8%** |
+| block | 152.4 chars a turn, 260 changes | **140.1 chars, 211 changes** |
+| bill / episode | $0.00552 | **$0.00530** (−4%) |
+
+δ **+10.5 pp [+0.4, +20.5]**, McNemar exact p **0.0290**, 19 moved and 7 broke. Against R218b's control the shipped arm
+breaks **21** of the 96 tasks no-memory solves and the rule breaks **1** — cross-dispatch, and therefore indicative
+only. The shipped arm's own regression count has now read 6, 10 and 21 across three dispatches, which is why the
+within-dispatch paired contrast is the stable quantity and the strata are not.
+
+**What blocks the default.** The interval excludes zero by four tenths of a point, on one dispatch of a grid whose
+identical arms turn over 25.4% of their tasks. This project has published +7.9 and −6.1 for one configuration inside a
+single afternoon.
+
+| step | what it settles | state | cost |
+|---|---|---|---|
+| **R219b** | the identical two-arm experiment, again: does the sign hold, and do the discordant pairs pool to a verdict? | **dispatched, run 45690987353** | ¥8.8 |
+| **R218e** | the dose, recorded per episode (one JSONL line), so the material's effect stops being unmeasurable | registered | ¥4.0 |
+| **R217** | airline, 50 independent tasks: 164 tasks resolves ~11 pp | registered | ¥5.4 |
+| **R220c** | `movePrice` measured on the shipped shape | registered | $0.02 |
+| **R221** | a 2.0 submission — only if the board moves its headline column | registered | ¥34 |
+
+**If R219b holds**, two things move at once and in the same direction: `admissionPolicy: state` enters
+`serving-defaults.json` (with the product's `SERVING_DEFAULTS` following it by test), and the submission row moves from
+86.8% — above the current top retail row at 86.2 — with the degradation count printed beside it, which no row on the
+board publishes at all.
+
+**If it does not**, the honest record is that +10.5 pp was a draw, the rule is not promoted, and the next question is
+whether the harm is the block's *presence* rather than its *content* — which is R218e's dose, already registered.

@@ -17459,3 +17459,97 @@ This is the fourth appearance of one defect — an absence read as a zero — an
 the summary line carries and the document does not. The pattern is now named in one place: a document and a log
 written by the same process are two records of one fact, and a reader that consults only one of them is reading half
 the record.
+
+### 34.258 The block's two judgment lines were wrong about the task nine times in ten
+
+R216's split said the state board **rescues 15 of the 24 tasks the no-memory arm cannot do and breaks 6 of the 90 it
+already does**, and the round's own diagnosis was that a block damaging solved trajectories is being served "when
+nobody asked for it". That was a hypothesis with no measurement behind it. Measuring it took one instrument and no
+model calls: `goal_board.py --accusations` takes a finished τ² results document, takes the evaluator's own
+`evaluation_criteria.actions` as ground truth — a list the block never reads — and judges every `unrequested` /
+`unattributed` entry the block would have shown, on every turn the agent would have read it.
+
+| reading over R218b's front arm | value |
+|---|---|
+| episodes / refusal entries / tasks with criteria | 456 / 1,965 / 107 |
+| entries naming a family the task **requires** a write in | **1,808 = 92.0%** |
+| the same, last block of each episode only | 239 / 277 = 86.3% |
+| episodes carrying at least one such entry | 178 of 456 |
+| `unattributed` entries that are false | 461 / 470 = **98.1%** |
+| `unrequested` entries that are false | 1,347 / 1,517 = 88.8% |
+
+Two defects, and the second is worse than the first:
+
+1. **`unrequested` is a claim about the request, made by a parser.** When the cue list misses an ask, every call that
+   satisfies it is reported as work nobody asked for — on a task where the ask exists and the task requires it, so the
+   line is not merely unhelpful, it is false. 88.8% of them are.
+2. **`unattributed` was supposed to be the honest line** — "the family was asked for, and this board could not name
+   what the receipt touched" — and it is false about the task **98.1%** of the time. The parser's blind spot and the
+   agent's mistake were rendered in the same breath, and the reader of the block has no way to tell them apart. The
+   line that was written to be honest is the least honest line in the block.
+
+The repair is not a better parser. A cue list that grows with the corpus is a parser fitted to the corpus, and the
+honest reading of a zero-recall ask is silence rather than an accusation: `render(..., state_only=True)` admits the
+asks and their ticks and refuses both judgments. That is R219's treatment, and the instrument above is what makes it a
+measured decision rather than a preference about tone.
+
+The general lesson, and the fourth time this lane has found it in a different costume: **a block may state what it can
+support and must not annotate what it cannot.** The literature reaches the same conclusion from three directions —
+WikiTrace's evidence links (arXiv 2611.14320, memory-induced degradation 6.5% → 4.5%), MemDev-Bench's finding that
+irrelevant history makes agents fail tasks they could solve, and REM's reframing of retrieval as a *lifecycle*
+question — and none of them is about writing better lessons. This project spent five rounds writing better lessons.
+
+### 34.259 The suite passed locally and failed on the runner, because `-m` moves `sys.path[0]`
+
+The first push carrying R219's instrument went red on CI in the coverage step:
+
+```
+ModuleNotFoundError: No module named 'memory_debit'
+```
+
+on a lazy import (`compare_of` → Newcombe's interval) that the development interpreter had been reaching for eleven
+rounds. The reason is a difference between two ways of running the same file:
+
+| invocation | `sys.path[0]` | the sibling import works |
+|---|---|---|
+| `python3 eval/tools/goal_board.py --self-test` | `eval/tools` | yes |
+| `python3 -m coverage run eval/tools/goal_board.py --self-test` | the working directory | **no** |
+
+CI measures every module through `-m` — that is deliberate, and `ci.yml` says so in a comment three lines above the
+line that broke — and the module had always been run the other way. The repository's own convention for this ("each
+suite puts its own directory on `sys.path` rather than relying on the interpreter") existed and this file did not
+follow it, because the file predates the coverage gate that runs it.
+
+`_siblings()` inserts the directory and returns it; `compare_of` and `main --compare` call it before their lazy
+imports. The self-test asserts both branches — the second call changes nothing, and after the directory is taken off
+the path the next call puts it back — because the branch that failed was the one no test had ever forced. Two of the
+three checks were wrong on the first attempt (a count by string sees `eval/tools` and its absolute spelling as two
+entries), which is the useful kind of test failure: the assertion had to be stated as a property (idempotence) rather
+than as a tally.
+
+### 34.260 The reader named an arm, and the cron spent money on a round that was already read
+
+Two delivery defects in one dispatch, both of the same species and both caught only because the paid artefact survived
+them.
+
+**The reading step named an arm.** `The paired reading` built its two paths as `control.json` → fallback `front.json`
+and `board.json` → fallback `front.json`. The `admission` dispatch writes `board.json` and `policy.json`, so both
+fallbacks missed and `--compare` was handed a file that does not exist. The step died **after** the 228 episodes were
+paid for and after the documents were uploaded — which is the one ordering in that workflow that works: the upload
+precedes the reading precisely so a broken reader cannot cost a grid twice, and it is why the reading in PROGRESS 249.3
+exists at all. It is the **fifth** place in that file where an arm is named rather than looked for; the fix is a branch
+that looks for `policy.json` by name, because the arm whose absence would turn the reading into a comparison of an arm
+with itself is exactly the one worth naming.
+
+**The cron was still armed for a round that had been read.** A `schedule` firing at 19:41 UTC started a `placement`
+dispatch — `front` and `board`, 228 episodes, ≈ $1.3 — nine hours after the cron time it was armed for and long after
+R216b had been read. The job-level guard compares `github.event.schedule` against the cron string, which is satisfied
+by *any* firing of that entry, including a delayed one, so the guard that was written to stop a stale cron from
+spending money cannot see lateness. It also held the workflow's concurrency group, which kept R219b pending behind it.
+The run was cancelled before its arms finished, and the trigger is removed: a paid grid is **dispatched** with a date,
+an arm set and a registered bar, never armed on a date and hoped for.
+
+Both defects share a property worth naming, because it is the third time this month: **the guard was written against
+the shape the operator had in mind rather than against the shape the run can take.** The schedule guard assumed the
+cron fires on time; the reading guard assumed the dispatch has a `front` arm. A guard that fails closed on the
+operator's shape is a guard that passes on every run except the one that matters.
