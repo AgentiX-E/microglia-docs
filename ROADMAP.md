@@ -9699,3 +9699,29 @@ and three unpriced defects were worth the rest (AUDIT 34.227) — and because it
 three ways for the price of two and a half. R217 after it, because a parser that does not work in its own domain will
 not transfer. The invocation policy (retrieve when a write is being composed) is still the largest published
 component this lane has not built, and it is now cheap to add as a fourth arm rather than a round of its own.
+
+**R218a — the submission, and the metric a row may be compared on.** Free round, 25 November 2026. The board is a
+directory of `submission.json` files, so it can be read as data; reading it found three cells of this project's own
+competitive table were not the quantity their column said (a three-domain mean in a retail column, another model's
+number under Claude Opus 4.5, and a `pass^1` subtracted from a `pass^4`). `eval/tools/submission.py` emits, checks and
+**places** a row, and refuses to place one on a metric the artefact does not state; the snapshot is pinned as
+`eval/manifests/tau2-board-1x-2026-11-25.json`. What it bought: the sentence this project may say about its position,
+at **$0**. Rank 1 of 26 on retail `pass^1` by point estimate (±3.2 pp), `UNRANKED` on `pass^4`.
+
+**R218b — four attempts, and the reliability column.** The measurement R218a proved is missing. Two arms (control and
+the repaired parser at the front), **114 tasks × 4 trials = 912 episodes**, seed 400, concurrency 6, one opening of the
+off-peak window. Registered prediction: the front arm's `pass^4` is `0.8684⁴ = 56.8%`, inside **[50, 62]**; the control
+at 78.9% would be `0.789⁴ = 38.8%`. The registered contrast is still paired `pass^1` (+10 pp bar) — `pass^4` is the
+*new* reading and its bar is the board's: it must be stated at all, and it must beat the control's. Falsification test:
+if the observed value lands above 62, attempts are correlated and §246.8's 22% turnover is a between-dispatch property
+only. ≈ **$4.75 (¥34)**, ~76 minutes.
+
+**R219 — the invocation policy as a fourth arm.** Retrieve when a write is being composed, not when the request
+arrives. It is the largest published component this lane has not built, and R216's three-arm grid made it cheap to add
+as an arm rather than a round: `+10 pp` paired against the front arm, same 114 tasks, ≈ ¥8.5.
+
+**Order, and why (revised on R218a's reading).** R218b before R219 because the board states `pass^4` on sixteen rows
+and this project states none — an accuracy lead by point estimate with no reliability number is a claim a maintainer
+would list as `Unverified` at best, and the reliability column is where the field's ceiling is 61.4 rather than 86.8.
+R217's cross-domain arm is unchanged and still after R219, because the parser now has four rules and the airline pair
+will price the *fourth* as a transfer rather than a repair.

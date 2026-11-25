@@ -28327,3 +28327,90 @@ three arms rather than reusing the control.
 | dispatch 2 (armed, 10:02 UTC) | ≈ $1.75 — registered |
 
 Lane to date: $7.84 + **$1.2742** ≈ **$9.12 ≈ ¥65.7**.
+
+## R218a — the submission, and the metric a row may be compared on
+
+**Free round** (no model calls), 25 November 2026. Registered as "submission alignment: the harness the board
+accepts". What it found is that the harness was the smaller half of the misalignment: the *arithmetic* this lane has
+been quoting about its own position was comparing cells that are not the same quantity.
+
+### 248.1 The board, read as data instead of as a table
+
+The τ²-bench 1.x leaderboard is a directory of `submission.json` files in the benchmark's own repository, so it can be
+read as data. Read 2026-11-25 at commit `768f3d8f` and pinned as `eval/manifests/tau2-board-1x-2026-11-25.json`:
+
+| what the board holds | count |
+|---|---|
+| submissions (30 current + 16 legacy) | **46** |
+| entries that state a retail cell | **25** |
+| entries that state a price | **5** |
+| entries that state `pass^4` | **16** |
+| entries marked `custom` | **4** |
+
+### 248.2 Three defects in the table this lane has been quoting
+
+| the claim | what the board's files say | size |
+|---|---|---|
+| "the SOTA row is **87.9%** on τ²-retail" | 87.91 is the **mean over retail, airline and telecom** of Qwen3.5-397B; its retail cell is **84.43** | 3.5 pp |
+| "**Claude Opus 4.5** (alone) 85.3%" | 85.3 is **Gemini 3.0 Pro's** retail cell; Opus 4.5's is **79.61** | 5.7 pp, wrong model |
+| "86.0% against 87.9%, a **1.9-point gap**" | our 86.0 is `pass^1` at **one** attempt; 16 board rows state `pass^4`, the reliability reading | metric |
+
+None is a typo, and no amount of care with individual cells would have caught them: each is a cell quoted without
+the domain, the metric or the model that gives it meaning. The third is the expensive one — it made a `pass^1` look
+like a near-miss on a `pass^4`, when the two differ by roughly twenty-five points for every system that states both.
+
+### 248.3 The tool, and the refusal that is the point
+
+`eval/tools/submission.py`, 105 assertions, **99.0%** of lines and branches:
+
+| operation | what it does | what it refuses |
+|---|---|---|
+| `--emit` | a dispatch becomes a `submission.json`: `pass_1..pass_4` computed from the grid, bill averaged per trajectory | a mixed agent/model/simulator, a duplicate `(task, trial)`, a domain the board does not read |
+| `--check` | mirrors the published schema — every object closed, every range, the contact, the reference enums — plus the prose rules | a custom entry with no notes or no reference, an entry that leaves `modified_prompts` unstated |
+| `--position` | our row among the board's rows on one metric in one domain | a metric the artefact does not state, and it exits `1` so a script cannot read it as a placement |
+| `--census` | what the board holds, per domain and per metric | — |
+
+`--harness replace` forces `submission_type: "custom"`, because this project replaces the scaffold: the block is a
+system message the stock τ² agent never writes. A tool that let the type be typed freely would let a run claim a
+mechanism it did not execute.
+
+### 248.4 What the position actually is
+
+R216's front arm, 114 retail tasks, one attempt, `deepseek-flash` on both sides:
+
+| reading | value | note |
+|---|---|---|
+| retail `pass^1` | **86.84%** | **rank 1 of 26** by point estimate |
+| resolution at n=114 | **±3.2 pp** | so "first" means "indistinguishable from the top three" |
+| retail `pass^4` | **absent** | one attempt cannot be squared; the board's top is 61.40 |
+| cost per conversation | **$0.006043** | the priced rows run $0.0482–$0.3870; one states $0.0000 self-hosted |
+
+The top three by retail `pass^1`: microglia 86.84, Claude Sonnet 4.5 **86.20**, Gemini 3.0 Pro **85.30**. The row this
+lane had been calling "the SOTA" (Qwen3.5-397B) is **84.43** retail and fourth.
+
+**So the sentence this project may say is narrower and stronger than the one it was saying**: on the column the board
+states most often, the memory harness is at the top by point estimate, at a fifteenth of the cheapest published
+price, with a resolution of three points — and the column that measures reliability has never been run.
+
+### 248.5 What changed in the repository
+
+- `eval/tools/submission.py` and its suite; `eval/manifests/tau2-board-1x-2026-11-25.json` (the pinned snapshot).
+- `package.json`: the suite joins `eval:verifiers`, so it runs in CI with the other self-tests.
+- `ci.yml`: measured under the same floor as the drivers, `--expect-files` 11 → **12**.
+- `docs/ARCHITECTURE.md` §8.95, `docs/USER-GUIDE.md` §32.75, `docs/GLOSSARY.md` (five terms: `pass^k`, `avg@4`,
+  three-domain mean, submission type, unranked).
+
+### 248.6 Cost, and what the missing column costs
+
+| item | estimate | actual |
+|---|---|---|
+| this round (no model calls) | $0 | **$0** |
+| R218b: four trials, two arms, 912 episodes | $4.75 (¥34) | registered, not spent |
+
+Lane to date: **$9.12 ≈ ¥65.7**, unchanged — a round that found three defects in its own reporting for nothing.
+
+**Registered prediction for R218b.** If attempts are independent draws at the front arm's 86.84%, `pass^4` lands at
+`0.8684^4 = 56.8%`, inside **[50, 62]**. That would place the row around **5th of 17** on retail `pass^4` — behind
+RAFT-30B-A3B (61.40), Claude-3.7-Sonnet (59.70), Qwen3.5 (59.65) and GPT-5 (58.77), ahead of Qwen3-Max (57.89). The
+test that would falsify independence is the same run: if the observed `pass^4` sits above 62, attempts are
+correlated and the "22% turnover" reading of §246.8 is a *between-dispatch* property only.

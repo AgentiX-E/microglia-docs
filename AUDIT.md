@@ -17049,3 +17049,58 @@ Two consequences, and the second is the one that matters for the paper:
 
 The general rule this lane keeps re-learning: **compute the turnover before writing the explanation.** A 22% churn
 under a stable rate is not a signal, and the arithmetic that says so costs one join over two artefacts.
+
+### 34.234 A three-domain mean was quoted as a retail cell for eight rounds
+
+Every competitive table from R213 to R216 carries a row `Qwen3.5-397B-A17B | 87.9% | pass^1, mean over domains |
+τ²-retail`. The third column says "mean over domains" and the header of the table says retail; the two cannot both be
+true, and nobody reconciled them because the number was right — 87.91 *is* the mean of that entry over retail,
+airline and telecom.
+
+The board's own file says retail is **84.43** (airline 81.5, telecom 97.81). So the row overstated the retail SOTA by
+**3.5 points**, and every "1.9-point gap" written against it was 5.4 points against the wrong number and 1.4 points
+against the right one — with the board's actual retail top, Claude Sonnet 4.5, at **86.20**.
+
+Fixed by `eval/tools/submission.py`, which will only place a row in a domain it names, and by the pinned snapshot
+that makes the number re-derivable. The prose correction is COMPETITIVE §R218a.
+
+### 34.235 A competitor's row carried another model's number
+
+The same tables carry `Claude Opus 4.5 (alone) | 85.3% | pass^1`. The board's `claude-opus-4-5_sierra_2026-02-26`
+states retail **79.61** — and 85.3 is `gemini-3-pro_google_2025-11-18`'s retail cell. The row is a 5.7-point
+overstatement attached to the wrong vendor's model, which is the failure mode a table invites: cells are copied by
+position and the model name is retyped.
+
+`--census` and `--position` read the model name out of the same object as the number, so the two cannot separate.
+
+### 34.236 The metric was compared across k, and the tool refuses the comparison
+
+The lane's own row was `pass^1` at one attempt; the rows it was compared against state `pass^4` over four. Sixteen
+board rows state `pass^4`, and for every one of them `pass^4` is **20–30 points below** its `pass^1` — 84.43 → 59.65
+for Qwen3.5, 81.58 → 58.77 for GPT-5. The two quantities are accuracy and reliability, and the lane had been reading
+its accuracy as a near-miss on everyone else's reliability.
+
+`--position --metric pass_4` on a one-attempt artefact prints `UNRANKED` and exits `1`. That exit code is the audit:
+a pipeline that treated it as a rank would fail rather than publish.
+
+### 34.237 The mean that included the retrieval domain
+
+The first version of `mean_over_domains` averaged every domain the entry stated, and read Qwen3.5's three-domain mean
+as **68.38** instead of 87.91 — because `banking_knowledge` was in the average (its banking `pass^1` is 9.79). The
+suite caught it on the assertion that pins 87.91, which is the only reason this defect is a paragraph and not a
+fourth wrong number in a table.
+
+`TEXT_DOMAINS` is now a named constant with the reason attached: banking is a retrieval benchmark with its own tab,
+its own configuration and a task shape that is not a customer-service conversation.
+
+### 34.238 The entry was `custom` and nothing said so
+
+The board's `standard` entry is a general-purpose model through the benchmark's own agent scaffold; a submission that
+adds a planner, a router, a custom tool or modified control flow is `custom`. This project replaces the scaffold —
+`agent_info.implementation` in every dispatch document reads `microglia_agent` — so the entry has always been
+`custom`, and no document in this repository said it. That is the difference between a claim a maintainer will list
+and one they will mark and question.
+
+`--emit --harness replace` forces the type, requires notes and references, and declares `modified_prompts: true`. It
+is not possible to emit a `standard` row from an artefact whose agent is not the stock one, because the tool reads
+the agent out of the document rather than out of an argument.

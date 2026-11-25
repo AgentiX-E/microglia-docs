@@ -10076,3 +10076,99 @@ address.
 3. **Nothing in the literature publishes what a state channel costs to serve.** Three of these nine rows publish a
    bill at all, and ours is the only one that reports its prefix cache hit rate — which is the number that decides
    whether a per-turn block is deployable. R216 moves from +37% to a registered bar of +20%.
+
+## R218a — the board read as data: the retail column, the reliability column, and which of the two we are on
+
+The tables in §R213–§R216 were assembled by hand from leaderboard pages and papers, and reading the leaderboard's own
+files shows three of their cells were not the quantity the column said. This appendix supersedes those cells. Every
+number below comes from `eval/manifests/tau2-board-1x-2026-11-25.json`: τ²-bench 1.x text, read 2026-11-25 at commit
+`768f3d8f`, 46 submissions.
+
+### R218a.1 What the board holds, and what "the field" therefore means
+
+| | count |
+|---|---|
+| submissions (30 current + 16 legacy) | 46 |
+| state a retail cell | 25 |
+| state a price | **5** |
+| state `pass^4` | **16** |
+| marked `custom` | **4** |
+| state a user simulator | 22 |
+
+Two denominators matter for every claim in this document. **Five of twenty-five publish a cost**, so a cost-versus-
+accuracy frontier has six points on it including ours — not because the field is cheap, but because it does not
+report. And **four entries are `custom`**, which is the only population our own row belongs to.
+
+### R218a.2 The four custom entries, and the fact that none of them is a memory
+
+| entry | what it is | retail pass^1 | retail pass^4 | cost |
+|---|---|---|---|---|
+| **RAFT-30B-A3B** (Northeastern HAI Lab) | Qwen3-30B **fine-tuned** on synthetic retail data | 82.46 | **61.40** | $0.0000 |
+| **Nemotron-Orchestrator-8B** (NVIDIA) | an orchestrator routing between strong and weak models | 84.20 | — | — |
+| Cortex 0.1 (Principled Machines) | a cognitive architecture; banking only | — | — | — |
+| Distyl ButtonAgent | GPT-5.4 + a hosted vector store; banking only | — | — | — |
+| **microglia** (this project) | a state block written by the tool-receipt path | **86.84** | not measured | **$0.0060** |
+
+The retail `pass^4` leader is a **fine-tune**, which the standard track forbids by rule ("a model that was not trained
+on τ-bench tasks, rewards or evaluation data") and lists as custom here. The retail `pass^1` leader among custom
+entries is **this project**, and it is the only custom entry on the board whose mechanism is memory rather than
+weights, routing or retrieval.
+
+### R218a.3 The corrected frontier, retail column
+
+| entry | retail `pass^1` | metric as stated | price | custom | what it is |
+|---|---|---|---|---|---|
+| **microglia (R216 front)** | **86.84** | `pass^1`, 1 attempt | **$0.0060** | yes | memory harness on deepseek-flash |
+| Claude Sonnet 4.5 | 86.20 | `pass^1` | — | no | frontier model |
+| Gemini 3.0 Pro | 85.30 | `pass^1` | — | no | frontier model |
+| Qwen3.5-397B-A17B | **84.43** | `pass^1` | — | no | frontier model (its 3-domain mean is 87.91) |
+| Nemotron-Orchestrator-8B | 84.20 | `pass^1` | — | yes | model routing |
+| RAFT-30B-A3B | 82.46 | `pass^1`, 4 attempts | $0.0000 | yes | fine-tune |
+| GPT-5 | 81.58 | `pass^1` / `pass^4` | $0.1055 | no | frontier model |
+| GPT-5.2 | 81.58 | `pass^1` / `pass^4` | $0.0716 | no | frontier model |
+| Claude Opus 4.5 | **79.61** | `pass^1` / `pass^4` | $0.3870 | no | frontier model |
+| GPT-5.2 (none) | 75.00 | `pass^1` / `pass^4` | $0.0482 | no | frontier model, no reasoning |
+
+**The corrections to §R213–§R216, stated plainly.** The row called "Qwen3.5-397B, 87.9%, the SOTA" is a three-domain
+mean; its retail cell is 84.43, fourth. The row called "Claude Opus 4.5 (alone) 85.3%" is **Gemini 3.0 Pro's** cell;
+Opus 4.5 states 79.61 and is the most expensive row on the board at $0.3870 a conversation. And the "1.9-point gap to
+SOTA" was a `pass^1` subtracted from a number that is neither retail nor a `pass^1`.
+
+### R218a.4 The reliability column, which is where the field actually competes
+
+Sixteen entries state `pass^4`, and for every one of them it is 20–30 points below its own `pass^1`:
+
+| entry | `pass^1` | `pass^4` | what four attempts cost it |
+|---|---|---|---|
+| RAFT-30B-A3B | 82.46 | **61.40** | 21.1 |
+| Claude-3.7-Sonnet | 72.10 | 59.70 | 12.4 |
+| Qwen3.5-397B-A17B | 84.43 | 59.65 | 24.8 |
+| GPT-5 | 81.58 | 58.77 | 22.8 |
+| Qwen3-Max-Thinking | 79.39 | 57.89 | 21.5 |
+| GPT-4.1 | 74.00 | 52.30 | 21.7 |
+| Claude Opus 4.5 | 79.61 | 51.75 | 27.9 |
+| GPT-5.2 | 81.58 | 51.75 | 29.8 |
+| **microglia** | **86.84** | **not measured** | — |
+
+So the field's reliability ceiling is **61.4%**, and its best accuracy is 86.8%. Those are different systems. The
+registered prediction for this project's own `pass^4` is **56.8%** (independence at 86.84), inside [50, 62] — which
+would place it fifth of seventeen, behind the fine-tune and three frontier models, ahead of Qwen3-Max.
+
+### R218a.5 Where microglia sits, in one line each
+
+- **On retail `pass^1`**: first of twenty-six by point estimate, ±3.2 pp, at $0.0060 — a fifteenth of the cheapest
+  published price and a sixty-fourth of the most expensive.
+- **On retail `pass^4`**: unranked. Not last: unmeasured. Sixteen rows state it and this project has never run four
+  attempts, which is the one thing R218b buys.
+- **On the memory frontier**: the only entry on the board whose mechanism is memory. Every other custom entry is
+  weights (RAFT), routing (Nemotron) or retrieval (Cortex, Distyl), and two of those four do not run retail at all.
+
+### R218a.6 What this changes about "SOTA"
+
+The claim this project can defend on the board is narrower than "SOTA on τ²-retail" and does not need the word:
+
+> On the τ²-bench 1.x retail column, a memory harness on `deepseek-flash` is at 86.84% `pass^1` — first of 26 by point
+> estimate at a resolution of 3.2 pp, $0.0060 a conversation — and its `pass^4` is the next measurement, not a claim.
+
+The claim it cannot defend yet is any sentence containing both "SOTA" and "reliability". That one needs four attempts
+and 912 episodes, and until it is run the column stays empty rather than approximated.

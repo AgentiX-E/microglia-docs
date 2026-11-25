@@ -11992,3 +11992,47 @@ Under the guard the shapes that arrive are all of one kind — order-level ("can
 everything from my two most recent orders"), and **account-level** ("the address is wrong", "split the payment
 between two cards"), where the receipt carries no item id and a name match is meaningless. The account families are
 most of R215's `unattributed` residue: 53 calls the board could not connect, of which 18 survive this round.
+
+### 17.185 The submission contract: three properties, one row
+
+A leaderboard row is a claim, and a claim is only readable with three properties attached: the **metric** (which
+`k`), the **domain** (which population) and the **attempts** (how many draws the number was computed over). The
+schema the board publishes has a slot for the first and the second and none for the third, which is why the third is
+the one this project got wrong.
+
+The contract `eval/tools/submission.py` implements:
+
+| property | where it comes from | what it refuses |
+|---|---|---|
+| metric | the grid, `pass_k(grid, k)` | placing a row on a `k` the grid cannot support |
+| domain | `info.environment_info.domain_name` | a domain outside the four the schema names |
+| attempts | the number of distinct `trial` values per task | a duplicate `(task, trial)`, in one arm or across arms |
+| bill | the mean of `agent_cost + user_cost` | a partial bill (absent, not cheap) |
+| scaffold | `info.agent_info.implementation` | `standard` from an artefact that did not run the stock agent |
+
+Three shapes of reading follow, and the difference between them is the whole of R218a:
+
+```
+pass^1, one attempt   accuracy, resolution ±3.2 pp at n=114        placeable
+pass^4, four attempts reliability, "all four survived"             placeable only if four were run
+avg@4, four attempts  accuracy, estimated more precisely           comparable to pass^1, not to pass^4
+```
+
+`pass^k` is computed per task and then averaged, and **a task with fewer than k attempts leaves the denominator**.
+That rule is not a convenience: filling it with a zero computes "reliably fails" for a task that was never tried
+twice, which is the same defect as averaging an unmeasured arm into a rate — the rule `packages/eval/src/l4.ts`
+implements on the TypeScript side and `note_pilot.py` on the driver side.
+
+### 17.186 Why the snapshot is a file and not a fetch
+
+The board moves. COMPETITIVE records a leaderboard read on 2026-11-01 and again on 2026-10-29 where the top moved by
+0.45 pp in three days; a figure that re-fetches at render time is a figure whose numbers nobody can check against the
+sentence that quotes them.
+
+So the reading is an artefact: `eval/manifests/tau2-board-1x-2026-11-25.json`, carrying the source URL, the commit
+(`768f3d8f`), the read date and 46 submissions with their results, verification flags, user simulators and notes.
+Everything downstream — the position table, the figure, the census — reads that file, so a number in a document is
+re-derivable from a file in the repository, and a re-read is a diff rather than an argument.
+
+The cost of that choice is one stale snapshot between reads, and the mitigation is the `read_on` field: every
+quotation names it, and `--census` prints it back.
