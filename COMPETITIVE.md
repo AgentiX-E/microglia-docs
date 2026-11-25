@@ -10232,6 +10232,29 @@ It also explains why the lesson channel measured a wash while the state channel 
 about *tasks* and applies to all of them; a state block is a statement about *this episode*, so its harm can only
 land where the episode was already fine.
 
+### R218c-lit.3 The 2026 answer to "why does memory hurt", and the half of it this lane has already implemented
+
+A wider read this iteration adds three results and sharpens the split the first four implied. Every number below is
+**quoted from the paper**, not measured here; the column beside each is what this lane has measured on τ²-retail.
+
+| paper | mechanism | their number | our counterpart |
+|---|---|---|---|
+| **MemHarness** (arXiv 2607.28272, Shanghai AI Lab + ZJU + Fudan) | memory should be **reconstructed for the current state**, not replayed; feeding back raw successful trajectories is negative transfer because the actions were chosen in a *different* state | **RL + Raw Memory drops ALFWorld 76.4% → 70.1%** — worse than no memory at all; reconstruct-then-use reaches **85.2%** with Qwen2.5-7B, >23 pp above Gemini-2.5-Pro | **we are already on the reconstruct side**: the board is recomputed from the episode's own messages on every turn, holds no persisted guidance, and states only facts the tool path produced. And we still measure no lift — so on this benchmark the replay/reconstruct axis is *not* the binding one |
+| **MemDev-Bench** (real codebase histories, relevance controlled) | memory helps fine-grained localisation but makes agents fail tasks they could already solve; **irrelevant history increases those failures**; raw trajectories beat compressed memory on steps | qualitative splits, no pass-rate band | our **−6.7 pp on the 90 tasks the control already solved** against **+62.5 pp on the 24 it failed** is exactly that split, with a number: harm on the already-solved, rescue on the impossible |
+| **REM** (lifecycle, not retrieval) | the question is *when* memory should appear, not how to fetch it better | — | R219's admission rule, registered against **6 regressions → ≤1** while keeping **≥12 of 15 rescues** |
+
+**The synthesis, and it is uncomfortable for the null.** Three of the four mechanisms the 2026 literature names —
+replay of stale abstractions, unverifiable lessons, memory sycophancy — are either absent from this lane's design or
+already repaired (the four repairs in §246.6 took attribution from 32.7% to 75.5%). The fourth, **timing**, is the one
+we have measured harm from and have not yet fixed. So "the material is inert" is not the best reading of our own
+nulls; **"the material is served when it is not needed, and the population average cannot see the concentrated
+effect"** is.
+
+R218c adds the second half of that sentence with a number: at a 25.4% discordance rate, 114 tasks resolve **13.2 pp**.
+A mechanism that rescues fifteen and breaks six out of 114 nets +7.9 pp — real, and **inside the band this grid cannot
+see**. Which is why R219 is written against the two counts rather than against the net: a count in one stratum is
+resolvable at 114 tasks, and a net is not.
+
 ## R216c — four papers on *how* memory is used, and the one they agree on
 
 The question behind this lane is not "does memory help" but "why does it hurt". Four 2026 results answer the second
