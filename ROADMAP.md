@@ -9729,3 +9729,19 @@ and this project states none — an accuracy lead by point estimate with no reli
 would list as `Unverified` at best, and the reliability column is where the field's ceiling is 61.4 rather than 86.8.
 R217's cross-domain arm is unchanged and still after R219, because the parser now has four rules and the airline pair
 will price the *fourth* as a transfer rather than a repair.
+
+**R220 — one manifest, two readers: the configuration the eval measured is the one the product ships.** The gap this
+round names is structural rather than a defect: the measured configuration (asks from the request, block at the front,
+the four parser repairs, `--k 1`) lives in a Python driver and a workflow input, while the product surface is
+TypeScript, and **nothing in either repository compares them.** The mechanism, in three parts, all free:
+
+1. `eval/manifests/serving-defaults.json` — the measured defaults as data: placement, ask source, settlement grades,
+   the material ceiling. Written by the round that measured them, not by hand.
+2. The Python driver reads it instead of holding the value in a constant, so a dispatch cannot run a configuration the
+   manifest does not name (it refuses, rather than defaulting).
+3. A TypeScript test in `packages/core` asserts its own defaults equal the manifest, so a Python-side change that is
+   not mirrored fails `pnpm check` rather than shipping a product that behaves differently from the number quoted for
+   it.
+
+The bar is mechanical and cheap: **change the placement in the manifest and exactly one test fails, in each
+repository.** Anything weaker is a promise about two codebases, which is what the current state is.

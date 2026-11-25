@@ -28439,3 +28439,11 @@ Three consequences:
 
 R219 is therefore registered with a bar written from these two cells rather than from a wish: **regressions 6 → ≤1
 while keeping ≥12 of the 15 rescues.**
+
+### 248.8 The alignment this round did *not* close
+
+`submission.py` makes the **measurement** side honest: which configuration is best, which number may be claimed, and
+against which rows. It says nothing about the **product** side. The measured configuration lives in a Python driver
+and a workflow input; the product surface is TypeScript; and nothing compares them. That is a real gap and it is
+registered as R220 rather than described as done, with a mechanism whose test is "change one value and exactly one
+test fails in each repository".
