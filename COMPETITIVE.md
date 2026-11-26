@@ -10820,6 +10820,14 @@ behind it — a gap that cannot be closed *demonstrably* at any budget, only occ
 is 84.00 over a median of 63.8 across 24 rows: a **20-point spread**, so unlike retail, a resolvable improvement there
 would move a ranking. R217 buys exactly that, and R226 prices it at 6.72 pp of resolution for ¥16.
 
+> **R217 was cancelled the same day it was admitted, and by its own prerequisite.** R217a measured the retail parser
+> in the airline domain: **30.0%** family recall against its own **83.3%**, and two of the four causes are not
+> vocabulary — the policy makes the correct action a different family from the stated ask (a change is settled by
+> cancel-and-rebook), and `return` names a leg. A block whose items never settle is a broken instrument reporting a
+> null, so the ¥16 is not spent. The successor, **R227**, rewrites the contract instead: settle when a receipt touches
+> the **record** the ask names, whatever family it is in. The airline column stays the hole; it just takes one more
+> round of instrumentation to fill, and the alternative was a null that would have been quoted as a finding.
+
 **The threat to state plainly.** A competitor that publishes (accuracy, cost, served share, resolution) in one row owns
 the frame this project is arguing in. The mitigation is not a better gate — the gate families are exhausted on this
 grid — it is the airline column, where the spread is wide enough for a number to be a number.

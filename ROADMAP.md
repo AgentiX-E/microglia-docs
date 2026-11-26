@@ -10228,3 +10228,37 @@ the airline tasks' own required actions.
 
 **$74.1 queued → $18.2 survives (−75%), and ¥16 of it is one round.** The saving did not come from negotiating a price;
 it came from computing one, three times, in three different places.
+
+## R217a (read 26 Nov, ¥0) — the parser reaches 30% in a second domain, and R217 is cancelled
+
+**What changed.** R226 admitted the airline grid and named its prerequisite. This round built it and measured it: the
+five airline write tools entered `FAMILIES`, three cues entered the shared table after the retail seven, and a census
+manifest was built from tau2's own airline tasks — 50 tasks, 50 required writes, 7 requiring none.
+
+| domain | required writes | found | family recall | spurious | covered |
+|---|---|---|---|---|---|
+| retail (unchanged, now a CI assertion) | 226 | 176 | **83.3%** | 235 | 84/114 |
+| airline | 50 | 15 | **30.0%** | 52 | 29/50 |
+
+**The bar was "at or above retail's", and 30.0% is not.** The four causes, and only two of them are vocabulary:
+
+1. **The ask is not the action** (5 cancel + 1 transfer): the policy makes the correct action a different family from
+   the stated ask. A change is settled by cancel-and-rebook; a refusal by a transfer.
+2. **No action verb** (5 book): "you want to fly from New York to Seattle" states a route, "make a reservation" states
+   an object.
+3. **Cue priority** (6 modify / 3 passenger / 3 baggage): one clause, one family, and these asks carry two.
+4. **Domain collision** (5): `return` fires on "the return flight is May 20", where it names a leg.
+
+**The finding is about the contract, not the lexicon.** The board settles an item when a receipt **of the same family**
+names the product the ask names — sound where a request states the action and its tool is named after it, unsound where
+the action is a policy consequence. **R217 is cancelled**, ¥16 is not spent, and **R227** is registered at ¥0 with a
+weaker and more portable rule: settle when a receipt touches the **record** the ask names, whatever family it is in.
+
+| item | state | price | what it buys |
+|---|---|---|---|
+| **R227** record-keyed settlement | registered | **¥0** | the contract the airline domain actually supports, with a 0.75 record-recall bar |
+| R217 airline grid | **cancelled** | ¥0 (was ¥16) | stays unmeasured until R227 passes; the instrument was the blocker, not the money |
+| R221 2.0 submission | waiting | ¥34 | a row with a served share; pointless until there is a resolvable win to place |
+
+**The queue is now ¥0 of work and ¥34 of waiting.** That is not stasis: it is the shape a queue takes when three
+consecutive rounds refuse a purchase because the instrument could not have carried it.

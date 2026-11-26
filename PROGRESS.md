@@ -29944,3 +29944,51 @@ check: family recall on the 50 airline requests at or above the retail parser's 
 reveal null in `notYet`, beside the dose null and the serving decision, so the three negatives travel with the artefact
 the product tests bind rather than living only in this report. A negative result that does not change the shipped
 configuration is not a failure of the round; it is the round doing its job.
+
+## 249.36 The parser in a second domain: 30.0% against 83.3%, and the contract that explains the gap
+
+R226 admitted the airline grid and named what stood in front of it: `FAMILIES` maps the retail write tools to ask
+families, and an airline transcript's writes are not in the table, so a dispatch would have served a block whose items
+never settle. R217a was registered at ¥0 with a bar a census can check. This is that reading, and it refuses the round.
+
+**What was built.** Five airline write tools enter `FAMILIES` — `cancel_reservation` → cancel,
+`update_reservation_flights` → modify, the passenger and baggage updates → their own families, `book_reservation` → book
+— and three cues enter the shared table **after** the retail seven, so no retail request can change its parse. A census
+manifest for the airline domain was built from tau2 v1.0.1's own `tasks.json`: 50 tasks, each with the reason the user
+simulator was given and the writes the evaluator requires, 7 of them requiring none.
+
+**What the census says, on the same instrument.**
+
+| domain | tasks | required writes | found | family recall | spurious | covered |
+|---|---|---|---|---|---|---|
+| retail (unchanged) | 114 | 226 | **176** | **83.3%** | 235 | 84 |
+| airline | 50 | 50 | **15** | **30.0%** | 52 | 29 |
+
+**The retail column is the load-bearing one and it is why the three appended cues are safe.** A shared cue table is a
+table where an addition can move a number nobody looked at; the retail census was re-run and is unchanged to the digit,
+and it is now a CI assertion in both directions — retail's numbers must not move, airline's must not silently improve.
+
+**The misses decompose into four causes, and only two are about words.**
+
+| cause | count | what it is |
+|---|---|---|
+| **the ask is not the action** | 5 cancel + 1 transfer | the policy makes the correct action a *different family* from the stated ask: a change is settled by cancel-and-rebook; a refusal by a transfer to a human |
+| **no action verb** | 5 book | "you want to fly from New York to Seattle" states a route and no action; "make a reservation" names an object |
+| **cue priority** | 6 modify / 3 passenger / 3 baggage | one clause carries one family and these asks carry two: "change the passenger to yourself" reports a modify |
+| **domain collision** | 5 | the retail cue for `return` fires on "the return flight is May 20", where `return` names a leg |
+
+**The contract is what broke, and it is worth stating precisely.** The board settles an item when a receipt **of the
+same family** names the product the ask names. That rule is sound in a catalogue domain, where the request states the
+action ("exchange the keyboard") and the tool is named after it. It is not sound in a policy domain, where the request
+states an intention ("move my flight to Thursday") and the correct action is whatever the rules permit. No word list
+fixes that, and a parser that tried would be a lexicon fitted to the corpus — which the cue table's own comment forbids.
+
+**So R217 is cancelled rather than re-priced.** A block whose items never settle is not a null result, it is a broken
+instrument reporting one, and this project has already spent a round repairing exactly that defect in the domain where
+repairs were measurable. **R227** is registered in its place at ¥0 with a *different* contract: an item is settled when
+a receipt touches the **record** the ask names, whatever family that receipt is in. Its bar is record recall at or
+above 0.75, because family recall is the wrong quantity in a domain where the action and the ask disagree.
+
+**What this costs and what it saves.** ¥0 spent, ¥16 not spent, and the airline column stays unmeasured until the
+successor passes. The alternative — dispatching into a parser that reports nothing — would have produced a null that
+reads as "memory does not work on airline" and would have been quoted as one.
