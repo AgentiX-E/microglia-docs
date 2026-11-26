@@ -29341,3 +29341,10 @@ cannot quietly stop being computed the way a sentence can.
 
 Two stale claims went with it: TECH-DESIGN's gate table still described the pre-repair bar (`rows ≥ 220`) that the
 loss bound replaced, and the reading's printed sentence gave the confounded sign with no mention of the subset.
+
+**The registration's own gate refused the registration.** `prereg-pack.test.ts` compares every registration's stated
+ceiling against the pack that must carry it, and it parses the body for unfilled placeholders — so the amendment's
+`--document <an arm with four attempts at a task>` failed the push as `body: unfilled placeholder`, on the first run,
+in the file whose subject is that a claim has to be checkable. The fix is a quoted phrase rather than a bracket, and
+the episode is worth keeping: the gate that caught a defect in a document about gates is the argument for having
+written it as a gate.

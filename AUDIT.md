@@ -17820,6 +17820,13 @@ counts the grid implies, and sits under the same 95% floor as the readers it fee
 registration that quotes a power has to be checkable by a command; a power that lives in a person's head is a power
 nobody can refute.
 
+**The registration failed its own gate on the first push, and that is the note's one piece of luck.** The validator
+that holds a registration's ceiling against the pack that carries it also refuses unfilled placeholders in the body, and
+the amendment had written its command as `--document <an arm with four attempts at a task>`. CI went red at `pnpm test`
+with `body: unfilled placeholder`, which is the gate doing exactly what it was written for — a document that says "fill
+this in later" is a document whose claim nobody can check. The defect is fixed by quoting the phrase; it is recorded
+because a validator that catches the document about validation is the reason to write validators.
+
 **The gate now asserts the reading carries its decided subset** — `closeTurnPairs ≤ pairs`, the tolerance at 1, and
 `tiedTurnPairs ≤ closeTurnPairs`. A reading printed without them is exactly the reading a person quotes as if the
 confound had been controlled, and a JSON key that must be present cannot silently stop being computed.
