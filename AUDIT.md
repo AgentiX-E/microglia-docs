@@ -18652,3 +18652,114 @@ board it is printed beside, so `check_manifest` now compares it against the colu
 (`reading.unfolded`): a saved reading whose floor is not the contract's unfolded level is refused even when `holds` is
 truthful about the comparison it reports. That is the third checker rule added in three rounds, and all three exist
 because a document quoted a number a build could have checked.
+
+## 34.332 — A gate that its own domain cannot pass, registered without reading the floor
+
+**What was registered.** R235's B1 asked the clause arm to be no worse than the contract arm by **3.21 points**
+on the 114-task retail grid, with 456 episodes an arm. The registration went into `rounds.json` with a dispatch
+date and an estimate of $5.02, and it was quoted into four documents as "the next round".
+
+**What the instrument already knew.** `eval/tools/resolution.py` has, since R223, computed a grid's **floor**:
+the sampling error left when the attempts half of the variance is driven to zero, which is real task-to-task
+heterogeneity and cannot be averaged away by repeating a task. On 114 tasks that floor is **3.21 points**. The
+tool prints it as a refusal rather than as a number:
+
+```
+$ python3 eval/tools/resolution.py --control control.json --treatment front.json --domain-tasks 114 --delta 3.21
+      m      sd     MDE  episodes      USD  per point
+     4   25.6%   6.72pp       912     5.02  0.746 USD/pp
+  the domain's floor: 3.21pp at unlimited attempts — repeating a task cannot cross it, only more tasks can
+  +0.0321: UNREACHABLE — the domain's floor is 0.0321, above the 0.0321 it would have to resolve
+```
+
+So the round's gate was **the floor itself**. A non-inferiority test at exactly the domain's floor needs
+unlimited attempts, which is not a budget; and at the four attempts it was armed with, the minimum detectable
+effect is 6.72 points, so even a successful run could only have reported "no worse than −6.72", which is not the
+claim B1 makes. The four numbers, side by side:
+
+| quantity | value | source |
+|---|---|---|
+| the margin B1 tests | 3.21 pp | the registration |
+| the domain's floor | 3.21 pp | `resolution.py`, fitted from the grid on disk |
+| the MDE at the armed attempts | 6.72 pp | same tool, 912 episodes, $5.02 |
+| the MDE at 1,356 paired episodes | 3.21 pp | `2.802 × sd_diff / √n`, `sd_diff = 0.4755` measured |
+
+**The action taken, and why it is an action rather than a note.** R235 is `cancelled` with `actualUsd: 0.0`. The
+registration stays in the repository — it is the record of what was nearly bought — and `rounds.json` carries the
+withdrawal reason beside it so a reader cannot mistake a cancelled round for an unmet one. The money moves to two
+places where the sample size matches the question: **R236** (¥2.5, sixty episodes, a proportion to be estimated
+rather than a difference to be resolved) and **R237** (¥2.8, two external ladders priced at the cache).
+
+**The defect, stated generally.** This is the fourth entry in six rounds whose bar had the wrong *reference*:
+
+| entry | the bar | what the reference should have been |
+|---|---|---|
+| 34.328 | the display tax, a tolerance of 4 around zero | the same settlement rule on both sides |
+| 34.329 | the contract's floor, taken as 463 | that grid's own level (443 on the replication) |
+| 34.331 | coverage, 645 of 654 | the reachable set (636), which no renderer can exceed |
+| 34.332 | non-inferiority, 3.21 pp | a margin above the domain's floor, or a domain with more tasks |
+
+Each was caught by printing the quantity beside the bar rather than the bar alone, and each had passed a review
+that read the bar on its own. The mechanical rule this entry adds: **a bar whose margin is within the printed
+floor of the grid it is registered against fails the build**, and `rounds.json` now names `resolution.py` in the
+instrument field of any round that registers a non-inferiority margin, so the check has somewhere to look.
+
+## 34.333 — A submission priced as a re-run, when the episodes it reads were already bought
+
+**What was carried.** R221's 2.0 submission was planned at **¥36** — "pass^4 + cost + contract coverage +
+unsettled tax", two arms over 114 tasks. It sat in the roadmap for four rounds as the most expensive item after
+R235.
+
+**What is on disk.** `control.json` and `front.json` are 456 episodes an arm, four trials a task, each episode
+carrying `reward_info`, `agent_cost`, `user_cost` and the full transcript. From them, with no dispatch:
+
+| column | control | front |
+|---|---|---|
+| pass^1 | 0.8158 | 0.8004 |
+| pass^4 (all four attempts) | 0.5789 | 0.5351 |
+| tasks with within-task variation | 43 of 114 | 50 of 114 |
+| agent_cost + user_cost | $2.0144 | $2.6627 |
+
+`pass^k` is the unbiased estimator over the four attempts, the cost column is the run's own bill rather than a
+projection, and the contract coverage is the instrument's — so three of the four columns the submission needs
+are already bought, and the fourth (the unsettled tax) is a ¥0 reading over transcripts already in the artefact.
+
+**The defect.** "Submit" was read as "produce", and a submission whose inputs exist was priced as though they did
+not. The tell is in the plan itself: the same 456-episode grid is cited as the *evidence* for four other rounds
+while the submission that quotes it was budgeted at a dispatch. A number and its source were in the same table
+and nobody put them together. R221's cost is now **¥0**, and `rounds.json` records `R218b`'s **measured** cost
+($4.6771 against $4.75 projected, 1.6% high) so the next round that cites this grid cites a bill.
+
+## 34.334 — A long-context benchmark priced at the miss rate, when 99.5% of it is a shared prefix
+
+**What was carried.** LoCoMo and MemTrapBench together were planned at **~¥20**. Neither had a harness, so the
+line was an intuition about "long context is expensive".
+
+**What the arithmetic says.** A long-context QA set asks *n* questions about *d* documents. The provider bills a
+prompt token it must read at `miss` and one it serves from its prefix cache at `hit`, and on this project's rate
+card those are **$0.30 and $0.006 per million** — a factor of fifty. Grouping the questions by document is
+therefore not an optimisation of the harness, it is the difference between two billing models:
+
+| benchmark | questions | documents | context | off-peak | no shared prefix | ratio |
+|---|---|---|---|---|---|---|
+| LoCoMo | 1,986 | 10 | 27k | **¥1.96** | ¥58.43 | 29.8× |
+| MemTrapBench | 1,000 | 50 | 8k | **¥0.86** | ¥8.90 | 10.4× |
+| both | 2,986 | 60 | | **¥2.82** | ¥67.33 | 23.9× |
+
+LoCoMo moves 0.27M tokens at the miss rate and **53.35M** at the cached rate. The twenty dollars was the
+uncached column read as if it were the only one — and it is the column most published replications actually pay,
+because a harness that asks one question at a time in a fresh context cannot share anything.
+
+**What now exists.** `eval/tools/bench_budget.py` prices a benchmark from three integers and the rate card the
+two dispatchers already bill against, writes the reading to `eval/manifests/bench-budget.json`, and **re-derives**
+it on every push: `--check` refuses a saved budget whose total no longer matches the card, so a document cannot
+quote a number the build would not reproduce. Two further decisions are load-bearing and both are tested: a
+re-sample re-misses each document rather than assuming the provider's cache survived the interval, and the
+no-cache column is returned as a field rather than left for a reader to compute, because the ratio between the
+two columns is the entire argument.
+
+**And the generalisation, which is what this repository keeps relearning.** Three of the four cost figures in this
+plan were wrong for one reason: **a rate was applied to the wrong quantity**. R235 applied an effect size to a
+domain that cannot resolve it, R221 applied a dispatch to a submission that reads a finished grid, and the external
+line applied the miss rate to a workload that is 99.5% cache. None of the three was an arithmetic error. All three
+were a number that a build could have recomputed and no build did.

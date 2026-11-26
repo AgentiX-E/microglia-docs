@@ -30503,3 +30503,99 @@ not about rendering.
 **The product consequence, for the eleventh round running: no default moves** — and this time not because a measurement
 is missing. The rendering rules are measured, free, and invisible on the shipped board; the dispatch that makes them
 visible is R235's, and it is the first round in four that has to buy tokens.
+
+## 249.55 R235 withdrawn: the gate was the domain's own floor, and nobody had read it
+
+**¥0 was spent and ¥36 was not.** R235 registered a 3.21-point non-inferiority test on the 114-task retail grid.
+`eval/tools/resolution.py` prices that grid's floor — the sampling error that survives unlimited attempts — at
+**3.21 points**, and prints it as a refusal:
+
+```
++0.0321: UNREACHABLE — the domain's floor is 0.0321, above the 0.0321 it would have to resolve
+```
+
+The four numbers, side by side, are the whole argument:
+
+| quantity | value |
+|---|---|
+| the margin B1 tests | 3.21 pp |
+| the domain's floor | 3.21 pp |
+| the MDE at the armed four attempts | 6.72 pp, 912 episodes, $5.02 |
+| the MDE at 1,356 paired episodes | 3.21 pp (`sd_diff` 0.4755, measured on the 456 episodes on disk) |
+
+A round armed at 6.72 points to test a 3.21-point claim cannot return the claim, and the round whose *actual*
+uncertainty is "does a gain exist at all" cannot resolve one either. So R235 is `cancelled` with `actualUsd: 0.0`,
+its registration kept as the record of what was nearly bought. AUDIT 34.332.
+
+**This is the fourth bar in six rounds with the wrong reference** — 34.328 measured two settlement rules against
+each other, 34.329 took another grid's constant as a floor, 34.331 registered above a reachable set, and this one
+registered at a domain's floor. All four were caught the same way (print the quantity beside the bar) and all four
+had passed a review that read the bar alone. The rule added: a bar whose margin sits within its grid's printed
+floor fails the build.
+
+## 249.56 R221's submission costs ¥0, because the episodes it reads were bought in R218b
+
+Four rounds of roadmap carried the 2.0 submission at ¥36. The two grids on disk are 456 episodes an arm with four
+trials each, and every episode carries `reward_info`, `agent_cost`, `user_cost` and its transcript:
+
+| column | control | front |
+|---|---|---|
+| pass^1 | 0.8158 | 0.8004 |
+| pass^4 | 0.5789 | 0.5351 |
+| agent_cost + user_cost | **$2.0144** | **$2.6627** |
+| tasks varying across attempts | 43 / 114 | 50 / 114 |
+
+Three of the four submission columns are therefore already paid for, and the fourth (the unsettled tax) is a ¥0
+reading over transcripts already in the artefact. "Submit" had been read as "produce". **¥36 → ¥0**; `rounds.json`
+now records R218b's *measured* $4.6771 against its $4.75 projection, so the next round that cites this grid cites
+a bill rather than a plan. AUDIT 34.333.
+
+## 249.57 The two external ladders cost ¥2.82, because 99.5% of a long-context benchmark is one prefix
+
+The plan carried ~¥20 for LoCoMo and MemTrapBench. Both are priced now, from the rate card the dispatchers bill
+against, by three integers — questions, documents, context length:
+
+| benchmark | questions | documents | context | off-peak | no shared prefix | ratio |
+|---|---|---|---|---|---|---|
+| LoCoMo | 1,986 | 10 | 27k | **¥1.96** | ¥58.43 | 29.8× |
+| MemTrapBench | 1,000 | 50 | 8k | **¥0.86** | ¥8.90 | 10.4× |
+| both | 2,986 | 60 | | **¥2.82** | ¥67.33 | 23.9× |
+
+LoCoMo moves 0.27M tokens at the miss rate and 53.35M at the cached rate, and the cached rate is **one fiftieth**
+of the miss rate. The twenty dollars was the uncached column read as if it were the only one — which is the column
+most published replications actually pay, because a harness that asks one question at a time in a fresh context
+cannot share anything. `eval/tools/bench_budget.py` now prices it, saves the reading, and re-derives it on every
+push (`--check` refuses a total that no longer matches the card). AUDIT 34.334.
+
+## 249.58 The plan's price after three corrections of reference: ¥92 → ¥5.3
+
+| # | step | was | now | the reference that was wrong |
+|---|---|---|---|---|
+| 1 | R235's engineering half (driver serves the clause board) | ¥0 | **¥0** | — |
+| 2 | R235's accuracy dispatch, two arms | ¥36 | **cancelled** | an effect size applied to a domain that cannot resolve it |
+| 2b | R236's mechanism probe, 60 episodes, one arm | — | **¥2.5** | a proportion is estimated, not resolved |
+| 3 | parser scope (no inheritance across a turn) | ¥0 | **¥0** | — |
+| 4 | `CAP` bound to the product's `limit ?? 8` | ¥0 | **¥0** | — |
+| 5 | telecom third domain (design + first baseline) | ¥0 | **¥0** | — |
+| 6 | LoCoMo + MemTrapBench | ¥20 | **¥2.82** | the miss rate applied to a 99.5%-cache workload |
+| 7 | R221's 2.0 submission | ¥36 | **¥0** | a dispatch applied to a submission that reads a finished grid |
+| | **total** | **¥92** | **¥5.3** | |
+
+![The plan's price, before and after three corrections of reference](figures/r236-budget.png)
+
+Each step of the cascade is one wrong reference, not one discount: R235's gate was the domain's own floor, R221's
+"dispatch" read a finished grid, and R237's ¥20 was the uncached column of a workload that is 99.5% cache. The
+figure refuses to draw a plan whose lines do not add up to the totals in the manifests, so the cascade and the table
+above cannot disagree.
+
+Three of the four numbers were wrong for one reason and it is not arithmetic: **a rate applied to the wrong
+quantity**. None of the three needed a new measurement to catch — each needed the quantity printed beside the rate,
+which is the same repair as 34.328 through 34.332, one level out. The ¥5.3 that remains buys the two things that
+cannot be recomputed from what is on disk: an external ladder position that somebody else's harness grades, and a
+mechanism reading on a board no model has yet been shown.
+
+**What does not get bought, and it is the honest part.** No sum buys the retail accuracy gain. The floor is 3.21
+points on 114 tasks; the estimates of every treatment effect this lane has measured sit inside that interval; and
+the resolution ladder's own answer for 1.98 points is **300 tasks**, which is a third domain rather than a bigger
+retail dispatch. Spending ¥36 to report UNRESOLVED at 6.72 points would have been a measurement bought at the
+wrong resolution, which is the defect this lane has now audited four times.

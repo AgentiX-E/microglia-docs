@@ -5010,6 +5010,27 @@ own content twice, once in tokens and once in cache misses.**
 None of this makes the experiment cheaper than it is. It makes the number true, which is a different and more
 useful thing: ¥2.99 is a figure that can be spent without a conversation about whether it is right.
 
+**The same lesson, one order of magnitude larger, on the two external ladders.** LoCoMo asks **1,986 questions of ten
+conversations**; MemTrapBench a thousand of fifty. Grouped by document, 99.5% of their input is a shared prefix billed
+at the cached rate, and the pair costs **¥2.82**:
+
+| benchmark | questions | documents | context | off-peak | no shared prefix | ratio |
+|---|---|---|---|---|---|---|
+| LoCoMo | 1,986 | 10 | 27k | **¥1.96** | ¥58.43 | 29.8× |
+| MemTrapBench | 1,000 | 50 | 8k | **¥0.86** | ¥8.90 | 10.4× |
+| both | 2,986 | 60 | | **¥2.82** | ¥67.33 | 23.9× |
+
+The plan carried **¥20** for these two for four rounds, and the twenty was the uncached column read as if it were the
+only one. It is not a small error and it is not this project's alone: **it is the error most published replications
+of these sets make**, because a harness that asks one question at a time in a fresh context cannot share anything.
+So the cost columns of memory papers that do not state their cache rate should be read with a factor of thirty in
+mind — larger than the difference between most of the systems being compared, which means a leaderboard sorted by
+cost is currently sorting harnesses rather than methods.
+
+The correction is arithmetic a build can redo: three integers per benchmark and one rate card, saved to a manifest
+and re-derived on every push, so the number in this paragraph is one a reader can reject without re-running
+anything.
+
 ## A memory's negative effect is its reach, not its content — and reach is a field
 
 The project's question is whether extracted experience raises task success. It asked it 186 times, and the round that

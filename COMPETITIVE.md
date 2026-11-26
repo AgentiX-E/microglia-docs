@@ -11031,13 +11031,19 @@ is 15 `modify`, 2 `transfer` and 1 `exchange` write whose family the block never
 |---|---|---|
 | displayed coverage of the graded work | **97.2% at the product's own cap (636 of 654), 0 hidden of 636** | no competitor publishes a displayed-coverage number; blocks are built opaquely and reported only through end-to-end accuracy |
 | cost of a served block | **8.10 lines a call, 2.41 for the shipped board** | published as tokens per query where published at all; not decomposed by rendering rule |
-| accuracy within resolution | indistinguishable from the contract arm (0.23 pp behind same-harness) | the published leaderboard is the accuracy axis and this project is not on it — R235 is the round that would put it there |
-| leaderboard presence | two boards measured on our harness (BIRD Mini-Dev, τ² retail); LoCoMo and MemTrapBench registered as not-yet | the field's numbers are the field's own harnesses |
+| accuracy within resolution | indistinguishable from the contract arm (0.23 pp behind same-harness) — and **not resolvable further on this domain**: its floor is 3.21 pp and every effect this lane has measured sits inside it | the published leaderboard is the accuracy axis and this project is not on it; the ¥36 round that was going to put it there is cancelled because its gate equalled the floor (AUDIT 34.332) |
+| leaderboard presence | two boards measured on our harness (BIRD Mini-Dev, τ² retail); LoCoMo and MemTrapBench registered at **¥2.82** for the pair | the field's numbers are the field's own harnesses; the published replications of these two sets pay ~23× more than we do because they do not share a prefix |
 
 The competitive read of ten anchors is therefore narrower than it was after nine, and more honest: **this project has
 closed a measurement axis none of the leaders report, and has not closed the axis they compete on.** The rendering work
-cost ¥0 and is now complete; the remaining distance is a ¥36 dispatch (R235) for the accuracy column, an external-benchmark
-replication (~¥20) for leaderboard presence, and a third domain (¥0 to design) for generalisation. No part of that
-distance is a rendering question, and the competitor whose block construction most resembles the clause board — a
-full-transcript summariser — is the one whose accuracy number this project can now compare against without also
-inheriting its rendering cost.
+cost ¥0 and is now complete. What is left is priced at **¥5.3** in total — ¥2.82 for the two external ladders, ¥2.5 for
+a mechanism probe on the clause board, ¥0 for the submission whose episodes were bought in R218b — and the accuracy
+column is **not** among the things that money buys: 3.21 points is this domain's floor, and 1.98 points is a 300-task
+domain rather than a bigger retail dispatch.
+
+**The competitive implication, stated as a limitation rather than a plan.** Three of the four cost lines this document
+carried for four rounds were wrong for one reason — a rate applied to the wrong quantity — and the corrections moved the
+plan from ¥92 to ¥5.3 without a single new measurement (AUDIT 34.332–34.334). A competitor reading this should discount
+the *cost* columns of any memory paper that does not state its cache rate: the difference between a grouped and an
+ungrouped replication of the same set is a factor of thirty, which is larger than the difference between most of the
+systems being compared.

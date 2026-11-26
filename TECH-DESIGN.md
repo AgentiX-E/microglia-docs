@@ -12860,3 +12860,59 @@ no test binds them; `serving-defaults.json` carries `blockCeilingChars` and `ope
 rendering rules are about. It is the next ¥0 engineering item in this lane, and its shape is already decided by the
 mechanism that exists: one field in the manifest, read by the Python instrument and by `core/memory/serving.ts`, with a
 test on each side that fails when the two constants drift.
+
+## 17.200 — A budget is three integers and a rate card, and the card belongs to the dispatchers
+
+**The design problem.** Three cost figures in the project's plan were wrong in the same way and for four rounds:
+R235's dispatch was priced against a resolution the domain cannot reach, R221's submission was priced as a
+dispatch although its inputs were already bought, and the two external benchmarks were priced at a rate that
+applies to 0.5% of their tokens. Each was a *rate applied to the wrong quantity*, and none of the three needed a
+new measurement to catch — each needed the quantity printed beside the rate.
+
+**So the budget is arithmetic over four things, and all four are already in the repository.**
+
+```
+cost = Σ over benchmarks of  miss × rate.miss  +  hit × rate.hit  +  out × rate.out
+                              ↑                    ↑
+                              documents × context   (questions − documents) × context
+```
+
+`rate` comes from `eval/manifests/model-rates.json` — the same card `packages/eval/src/cost.ts` bills with and
+`eval/drivers/tau2/run_split.py` bills with — so a budget and a bill are two readings of one file. The three
+integers are the benchmark's own specification: LoCoMo is 1,986 questions over 10 conversations with a 27k-token
+average prompt (94,098 characters as EvalScope measures it, at the 3.5 characters a token this lane's dispatches
+actually ran at).
+
+**Three decisions in the arithmetic that are not free choices:**
+
+* **`miss` is the number of documents, not the number of questions.** A question that shares a prefix with the one
+  before it is served from the provider's cache, and on this card the cached rate is **one fiftieth** of the miss
+  rate. That single substitution turns LoCoMo from ¥58.43 into ¥1.96 — a 29.8× difference that is a *billing model*
+  and not an optimisation. Grouping by document is therefore part of the harness's design, not a tuning knob: a
+  replication that asks one question at a time in a fresh context pays the right-hand column, which is why the
+  published numbers for these sets are expensive.
+* **A re-sample re-misses each document.** The provider's prefix cache has a lifetime this project does not
+  control, so `samples=2` is priced as two misses per document rather than as one miss and a hit. Billing a second
+  pass at the cached rate would be a budget that assumes the provider's eviction policy in its own favour, and the
+  one thing a budget may not do is assume the favourable case.
+* **The no-cache column is returned as a field, not left to a reader.** `bill()` reports `uncachedUsd` and a
+  `multiplier` beside the bill, because the ratio is the whole argument for grouping and a reader who has to
+  compute it from two other fields is a reader who will not.
+
+**Peak and off-peak are part of the budget rather than a scheduling preference.** The card's peak windows double
+every rate, and they are `01–04` and `06–10` UTC on weekdays, so the same pair of benchmarks is ¥2.82 off-peak and
+¥5.63 at peak. The plan's dispatch hours are therefore a line in the budget, and the tool takes `--band` rather
+than reading the clock: a budget that depends on when it was computed is not a budget.
+
+**The reading is checked, not trusted.** `--out` writes `eval/manifests/bench-budget.json`; `--check` re-derives it
+from the card and refuses a total that no longer matches, a benchmark silently dropped, or a budget whose `hit` has
+been zeroed. CI runs both on every push, which is what makes a document's cost line a number a build reproduces
+rather than a number a document remembers.
+
+**And the floor, which is the same repair one level out.** `eval/tools/resolution.py` has printed a grid's **floor**
+— the sampling error that survives unlimited attempts — since R223, and R235 was registered at exactly that floor
+(3.21 points on 114 tasks), which means it could not pass at any budget. The tool already refused it in one line
+(`+0.0321: UNREACHABLE`); nothing read the line. So the registry now names the instrument any non-inferiority round
+is priced against, and the audit rule is mechanical: **a bar whose margin sits within its grid's printed floor fails
+the build**. Together the two tools answer the only two questions that precede spending — *can this domain resolve
+the effect* and *what does the work cost* — and both answer before a token moves.

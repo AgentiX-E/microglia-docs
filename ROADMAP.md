@@ -10598,3 +10598,71 @@ measured on the *dispatched* transcripts rather than on the replay.
 outcome is a delta between zero and the MDE, which is a result — it would say the coverage gap is not where task success
 lives and relocate the next four rounds to the third domain and the external benchmarks rather than to a fifth content
 rule.
+
+**Withdrawn 27 Nov 2026, before any token was spent.** Reading the floor rather than the ladder cancels this round:
+B1's margin **is** the domain's floor. `resolution.py` prints `+0.0321: UNREACHABLE`, and the armed four attempts see
+6.72 pp, so the round could not have returned the claim it was registered to make at any budget — 3.21 pp needs ~1,356
+paired episodes (¥70) and would still be a non-inferiority test that cannot see a gain. `actualUsd: 0.0`; the
+registration stays as the record of what was nearly bought (AUDIT 34.332). The money moves to R236 and R237 below,
+where the sample size matches the question, and the accuracy-gain question moves to a domain with more tasks — 1.98
+points needs 300, which is a third domain and not a bigger retail dispatch.
+
+---
+
+## R236 (registered 27 Nov, ¥2.5) — the clause board's mechanism, at sixty episodes
+
+Not *does coverage buy tasks* — that question is unaffordable at this domain's resolution — but the one underneath
+it: **when the block carries a live ask for the family the model is about to write, does the model write that
+family, at a rate the contract board does not reach?** A proportion is *estimated*, not a difference *resolved*, so
+sixty episodes answer it to ±12 points.
+
+30 tasks × 2 trials, **one arm** on the clause board (R231's admission, R233's order, R234's fold), off-peak, with the
+placement, grades, character ceiling and seed set held. The control is free: the 456 contract transcripts already on
+disk hold the same measurement.
+
+**Bars** (prereg/R236-clause-mechanism.md, before the money): **B1** on ≥95% of the 60 episodes some block the model
+read carries an **open** ask of the family the episode later writes, measured on the *dispatched* transcript; **B2**
+the share of episodes whose graded tool call names a family that was open at the time of the call is not below the
+same share on the 456 contract transcripts (a direction with a margin at ±9 points, not a win); **B3** total spend
+≤ **¥3**, read from the run's own `agent_cost` and `user_cost`.
+
+---
+
+## R237 (registered 27 Nov, ¥2.82) — the two external ladders, priced at the cache
+
+LoCoMo (1,986 QA over 10 conversations) and MemTrapBench, both on this harness, with the question sets **grouped by
+document** so each transcript is one shared prefix, graded by the sets' own rule scorers (token F1 and adversarial
+refusal) with no model judge.
+
+**Price** (`eval/tools/bench_budget.py`, ¥0, saved to `eval/manifests/bench-budget.json` and re-derived on every
+push):
+
+| benchmark | questions | documents | context | off-peak | no shared prefix | ratio |
+|---|---|---|---|---|---|---|
+| LoCoMo | 1,986 | 10 | 27k | **¥1.96** | ¥58.43 | 29.8× |
+| MemTrapBench | 1,000 | 50 | 8k | **¥0.86** | ¥8.90 | 10.4× |
+| both | 2,986 | 60 | | **¥2.82** | ¥67.33 | 23.9× |
+
+**Bars**: **B1** both sets run to completion with zero grader calls to a model, so a run whose `agent_cost` exceeds
+¥4 is a cache miss to be diagnosed rather than a benchmark to be re-run; **B2** LoCoMo reports its five category
+scores separately (841 / 282 / 321 / 96 / 446) rather than one number, because a memory system's failure is
+category-shaped; **B3** every score is reported beside the harness's own uncached counterfactual, so the ladder
+position is quotable at our price and not only at the provider's.
+
+---
+
+## The plan's price, after three corrections of reference
+
+| # | step | was | now | what the reference should have been |
+|---|---|---|---|---|
+| 1 | R235 engineering half (driver serves the clause board) | ¥0 | ¥0 | — |
+| 2 | R235 accuracy dispatch | ¥36 | **cancelled** | a margin above the domain's floor, or a bigger domain |
+| 2b | R236 mechanism probe | — | **¥2.5** | a proportion estimated at a proportion's sample size |
+| 3 | parser scope | ¥0 | ¥0 | — |
+| 4 | `CAP` bound to `limit ?? 8` | ¥0 | ¥0 | — |
+| 5 | telecom third domain | ¥0 | ¥0 | — |
+| 6 | LoCoMo + MemTrapBench | ¥20 | **¥2.82** | the cached rate on a workload that is 99.5% cache |
+| 7 | R221's 2.0 submission | ¥36 | **¥0** | a submission that reads a finished grid is not a dispatch |
+| | **total** | **¥92** | **¥5.3** | |
+
+![The plan's price, before and after three corrections of reference](figures/r236-budget.png)
