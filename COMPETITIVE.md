@@ -10754,3 +10754,71 @@ most rows on this board do not have.
 spending against retail accuracy is spending against a wall. The only purchase that buys resolution is **more
 independent tasks in a domain not yet measured**, which makes R217 (airline, 50 tasks, ¥5.4 = $0.74) the single
 capital-efficient item on the queue and the $68.7 of cancelled work the saving that funds it.
+
+## R225 — Two gate families measured, both at chance, and the frontier claim that does not need a resolution
+
+The field's answer to harmful memory is a **gate**. R223.1 catalogued five groups that built one in the same year, from
+five different signals. This round did not build a sixth; it measured whether *any* gate can be decided from what the
+episode reveals, on a grid that already holds both arms, and the answer is no. That is a different kind of contribution
+from a gate, and it has to be stated in the register the field uses — as a result about the decision, not as a system.
+
+| what the literature publishes | this project, after R223 and R225 |
+|---|---|
+| a gate, and its improvement | **two gate families, 950 cuts, and the multiplicity each had to beat** |
+| how many candidates were screened | 385 declared + 565 revealed, against 9.6 and 14.1 expected from noise |
+| the effect on the pairs the gate **refuses** | `skipDelta` with its own sign test — **0 of 950 cuts confirmed on a held-out half** |
+| the effect on the pairs it **serves** | `serveDelta`, because a gate that refuses well and serves at a loss has improved nothing |
+| the smallest effect the grid can resolve | **3.21 pp** retail; **4.85 pp** on a 50-task airline grid (R226) |
+| a served share on the benchmark row | **0 of 48 rows** on the 2.0 directory publish one |
+
+**The uncomfortable half.** Four independent groups reaching for gating is evidence the direction is right, and it also
+means a sixth gate is a commodity. What is not a commodity is the number that says the gate family on this grid carries
+no signal: 18 survivors where noise yields 14, and the one survivor reversing sign on the half it never saw. A
+competitor who publishes a gate and an improvement has published the one half of the measurement that a screen can
+produce by accident.
+
+### The frontier, on the rows that state a price
+
+Eight of the 2.0 directory's retail rows publish a `cost` per trajectory beside a `pass^1`. Scored on the plane those
+two axes define, **no row dominates this project** — none is at once at least as accurate and no more expensive:
+
+| row | organization | retail `pass^1` | cost / trajectory | dominates microglia? |
+|---|---|---|---|---|
+| GPT-5.2 | OpenAI | 81.58 | $0.07156 | no — accurate to 2.62 pp, **12.8×** the price |
+| GPT-5 | OpenAI | 81.58 | $0.10553 | no — **18.9×** the price |
+| Claude Opus 4.5 | Anthropic | 79.61 | $0.38695 | no — **69×** the price |
+| Example-Model-v2.0 | (template) | 78.50 | $0.12345 | no — **22×** the price |
+| GPT-5.2 (none) | OpenAI | 75.00 | $0.04822 | no — **8.6×** the price |
+| Claude Sonnet 4.5 | Anthropic | 72.37 | $0.25494 | no — **46×** the price |
+| grok-voice-think-fast-2.0 | xAI | 59.65 | $0.23825 | no |
+| qwen3.5-omni-plus-realtime | Qwen | 46.49 | $0.58077 | no |
+| **microglia** | **this project** | **84.20** | **$0.00558** | — |
+
+The cheapest published row is **8.6×** this project's price and 2.62 points below it. That ratio is not a point estimate
+inside a noise band: a factor of eight on a measured axis does not need 972 tasks to establish, which is why the
+frontier claim is the one claim available today that does not run into the wall.
+
+**What this does and does not say.** It does not say this project is the most accurate row on the board — it is 2.00
+points under Claude-Sonnet-4.5's 86.20, on a different task set (0.1.3), and six text rows sit inside one grid's
+resolution of each other (R223.2). It says that **on the plane a practitioner chooses in, nobody published a better
+combination**, and the cost axis is where the margin is large enough to be a fact rather than a ranking.
+
+### Where the SOTA actually is, and what would move it
+
+| column | SOTA | this project | gap | resolvable at 114 tasks? |
+|---|---|---|---|---|
+| retail `pass^1`, 1.0.1 | Qwen3.5-397B-A17B **84.43** | **84.20** | 0.23 pp | **no** — needs 972 tasks |
+| retail `pass^1`, any task set | Claude-Sonnet-4.5 **86.20** (0.1.3) | 84.20 (1.0.1) | 2.00 pp | no — different task set |
+| retail `pass^4` | reported by 4 of 48 rows | **53.51** | — | — |
+| retail cost / trajectory | **$0.00558** | — | **8.6× cheaper than the cheapest published** | **yes**, by construction |
+| airline `pass^1` | Claude-Opus-4.5 **84.00** | **not measured** | — | — |
+| telecom `pass^1` | Claude-Opus-4.5 **92.32** | **not measured** | — | — |
+
+**Airline is the hole, and it is the one the money should fill.** Retail's top row is 84.43 and this project is 0.23
+behind it — a gap that cannot be closed *demonstrably* at any budget, only occupied by a point estimate. Airline's top
+is 84.00 over a median of 63.8 across 24 rows: a **20-point spread**, so unlike retail, a resolvable improvement there
+would move a ranking. R217 buys exactly that, and R226 prices it at 6.72 pp of resolution for ¥16.
+
+**The threat to state plainly.** A competitor that publishes (accuracy, cost, served share, resolution) in one row owns
+the frame this project is arguing in. The mitigation is not a better gate — the gate families are exhausted on this
+grid — it is the airline column, where the spread is wide enough for a number to be a number.

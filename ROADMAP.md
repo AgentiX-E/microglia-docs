@@ -10142,7 +10142,89 @@ budget decision — it is the wall. **3.21 points is the smallest effect this do
 only item that attacks the wall. Fifty tasks in a domain this project has not measured do not lower retail's floor,
 but they are fifty independent observations of the same mechanism, which is the only currency the wall accepts.
 
+> **Re-priced by R226 (below).** ¥5.4 at the measured rate is 100 episodes — 50 tasks at *one* attempt over two arms —
+> and the design R217 needs is four attempts, which is 400 episodes and **¥16**. The queue survives at **$18.2**, and
+> the stale figure had travelled through five tables without recomputation (AUDIT 34.316).
+
 **The rule this round installs.** A funded round must carry two numbers before it is registered: the smallest effect
 its grid can resolve, and the largest effect its mechanism can produce. A round is admissible only when the second
 exceeds the first. Both are computable for free, and a queue audited with them would have refused $68.7 of its own
 work (AUDIT 34.312).
+
+## R225 (screened 26 Nov, ¥0) — the reveal: sixteen survivors, and the serving hypothesis closes
+
+**What changed.** R223 closed the space of things a request declares and named its successor in the same document:
+read what the episode **reveals**. This round is that successor, and it is the last opening in the lever the
+stratification said was worth money — *whether* to serve, worth **+7.5 pp** on the 43 tasks a no-memory arm solved some
+of and **−9.5 pp** on the 66 it solved every attempt.
+
+The instrument's boundary moved one message: the prefix now ends at the **reveal's own result**, which is the state the
+shipped invocation policy (R219) has in hand when it serves. That is what makes a reveal-keyed gate implementable
+rather than a counterfactual — the decision point exists at a turn the agent reaches. Six quantities are read from that
+payload and declared in the instrument before the screen ran: shape, characters, top-level keys, `items`, scalar leaves
+and variant axes.
+
+| | value |
+|---|---|
+| cuts screened (R223's 385 + the reveal family) | **565** |
+| admissible in sample | **18** |
+| expected from noise alone | **14.1** (sd 3.71) → **+1.04 σ, p = 0.148** |
+| the cut the screen chose | `skip revealLeaves ≥ 52` |
+| what it did on the half it never saw | **−6.5 pp** on 17 discordant pairs (6 up, 11 down), **p = 0.3323** |
+| pooled verdict | `DOMINATED` on the serve half |
+
+**The in-sample reading was the best this lane has seen for a gate** — +16.9 pp on 15 discordant pairs at p = 0.0010,
+skipping a third of the grid — and that is exactly why the split exists: on the half that chose it, the rule looks like
+a policy; on the half that never saw it, the sign reverses.
+
+**The structural reason, and it is the useful one.** The reveal is nearly as **task-constant** as the request:
+`revealEntries` and `revealChars` vary inside a task on 11% of tasks. So a cut on the reveal is an admission rule for a
+task class, exactly like R223's, and the class rule is what failed to transfer the first time.
+
+**Four levers, four closures.** More material (R218e: null), better material (R218b, 8.98, 8.99: null), conditional
+material (R223 385 cuts, R225 565 cuts: at chance), and whether to serve (worth +7.5 / −9.5 and not decidable from
+anything observable). The harm is a property of the material's **presence**. That conclusion was pre-committed by R223
+before this instrument existed, which is what makes it a reading rather than a retreat.
+
+**The product consequence: no default moves, for the fourth round running.** `serving-defaults.json` carries the reveal
+null in `notYet` beside the dose null and the serving decision, so all three travel with the artefact the product tests
+bind.
+
+## R226 (26 Nov, ¥0) — the airline grid, admitted by 1.18 points and priced at 3× its label
+
+R223's admissibility test, applied to the one item the queue still holds. No dispatch: two numbers, both computed from
+artefacts on disk.
+
+| number | value |
+|---|---|
+| 50-task grid, unlimited attempts | **4.85 pp** floor |
+| the same grid at 4 attempts | **6.72 pp** |
+| the same grid at 1 attempt | **12.24 pp** |
+| the mechanism's largest measured effect (R216, retail) | **7.90 pp** |
+| margin | **+1.18 pp → admitted**; the effect must transfer at **85%** of retail's |
+
+**Airline is a worse instrument per task, and it is still worth buying.** 50 tasks resolve 4.85 pp against retail's
+3.21 at 114 — fewer tasks, coarser grid. What it buys is not resolution but a **second domain**, the only thing that can
+say whether the +7.5 / −9.5 split is about memory or about retail. And airline's published column is unsaturated (top
+84.0, median 63.8 over 24 rows), so an effect there moves a ranking even when it sits inside the floor — the opposite
+of retail, where six rows share one measurement.
+
+**The price was 3× short** (AUDIT 34.316). ¥5.4 at the lane's measured $0.0052–0.0056 an episode is 100 episodes: 50
+tasks at *one* attempt. The design the round needs is four attempts over two arms, which is **400 episodes, $2.20,
+≈ ¥16**. The stale figure had been copied through five tables without recomputation — the same error class as the 85%
+price in 34.311, one order of magnitude smaller.
+
+**What comes first is free.** The board is a retail parser: `FAMILIES` maps the eight retail write tools to the six ask
+families, and an airline transcript's writes are not in the table. A dispatch today would serve a block whose items
+never settle — a broken instrument reporting a null. **R217a** is registered at ¥0 with a bar a census can check against
+the airline tasks' own required actions.
+
+| item | state | price | what it buys |
+|---|---|---|---|
+| **R217a** airline parser | registered | **¥0** | a block that can see its own successes in a second domain |
+| **R217** airline grid | registered, admitted | **¥16** | 50 independent tasks; the transfer of the split |
+| R221 2.0 submission | waiting | ¥34 | a row with a served share — pointless until there is a resolvable win to place |
+| R222, R224, R224b | cancelled | ¥0 | effects under the wall |
+
+**$74.1 queued → $18.2 survives (−75%), and ¥16 of it is one round.** The saving did not come from negotiating a price;
+it came from computing one, three times, in three different places.

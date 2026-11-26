@@ -5436,11 +5436,12 @@ form of the error the field is currently making: a retrieval gate reported witho
 is a result a reader cannot distinguish from a search.
 
 **And the reason is structural, not statistical.** Every observable available before the episode's first content
-arrives is **constant within a task**: the opening request is the user simulator's fixed utterance, and in this domain
-the first tool call is the identity lookup in 452 of 456 episodes, with the second act — `get_user_details` — in 355 of
-them. A threshold on such a field cannot serve one attempt and skip another; it can only switch memory off for a
-**class of tasks**, which is an admission rule and not a serving gate. The one survivor was exactly that, and it failed
-to transfer across task halves — the strongest available evidence that its apparent effect was selection.
+arrives is **nearly** constant within a task — the first tool call is the identity lookup in 452 of 456 episodes, with
+the second act — `get_user_details` — in 355 of them — and the one field that is *not* constant at all is the opening
+request, which the user simulator paraphrases on every attempt (AUDIT 34.315). A threshold on a near-constant field
+cannot serve one attempt and skip another; it can only switch memory off for a **class of tasks**, which is an
+admission rule and not a serving gate. The one survivor was exactly that, and it failed to transfer across task halves —
+the strongest available evidence that its apparent effect was selection.
 
 The conclusion is narrow and it is a constraint rather than a defeat. **Reach has to be decided by what the episode
 reveals** — the order, the item, the returned attribute row — because that is the first content in a transcript that
@@ -5448,3 +5449,54 @@ differs between a task memory helps and a task it damages. A request's surface c
 can the first act. Two candidate proxies died without a single dispatched episode, on artefacts that were already on
 disk, which is the strongest argument this project can make for screening before spending: the screen costs nothing,
 the dispatch costs nine yuan, and the order in which they are run is the difference between a measurement and a guess.
+
+## The reveal, measured: two gate families, 950 candidate rules, and no decision in either
+
+The previous section ended with a prediction in the imperative — *reach has to be decided by what the episode reveals* —
+and this is the section that tests it. The test is a replay over a grid that already holds both arms, so it costs
+nothing, and it is the same estimator the request-side screen used: a policy maps an episode's prefix to serve or skip,
+and the two quantities that decide whether it is worth running are the effect **on the pairs it refuses** and the effect
+**on the pairs it serves**, each with its own sign test.
+
+**What moved is one message.** The prefix used to end at the first tool call outside the authentication family. It now
+ends at that call's **result** — the payload the episode was shown before it decided what to do. That is not a
+technicality: it is the difference between a decision that can be taken and one that cannot. A gate keyed on the
+request acts before anything is known; a gate keyed on the reveal acts at the moment the agent is composing a state
+change, which is where the shipped policy already serves. The reveal is `get_order_details` in 436 of 456 episodes and
+it carries the order, its items, their variant axes and the payment history.
+
+**Six quantities are read from that payload** — its shape, its length, its top-level key count, the number of order
+lines, the number of scalar leaves (to a ceiling), and the number of variant axes under every `options` map — and the
+list was declared before the screen ran, because a family assembled after the outcomes are known has a multiplicity
+column that is a lie.
+
+| | request-declared (R223) | reveal-keyed (R225) |
+|---|---|---|
+| candidate rules | 385 | **565** |
+| admissible in sample | 1 | **18** |
+| expected from noise alone | 9.6 | **14.1** |
+| surplus over chance | −2.81 σ | **+1.04 σ (p = 0.148)** |
+| the rule it chose | `openingAsks ≥ 2` | `revealLeaves ≥ 52` |
+| what that rule did on the half it never saw | +3.2 pp, p = 0.66 | **−6.5 pp, p = 0.33** |
+
+Both families are at chance, and the reveal family is at chance in the most instructive possible way: its in-sample
+reading is the best this project has produced for a gate — **+16.9 points** on 15 discordant pairs at p = 0.0010,
+skipping a third of the grid — and on the half that never saw it, the sign reverses. That is what a screen's second half
+is for.
+
+**The structural reason, and it generalises.** The reveal is a property of the **task**, not of the attempt: the order
+record varies inside a task on 11% of tasks, the first tool call on 4%, and the opening request — the one field a user
+simulator rewrites every time — on 100%. So a threshold on the reveal is an admission rule for a task class, exactly
+like the request-declared rules that had already failed, and the class rule is the thing that did not transfer.
+
+**Four levers on memory, and four closures.** More material: null at both scales (R218e). Better material: null across
+three arms, two placements and three admission policies (R218b, 8.98, 8.99). Conditional material: at chance in two
+families and 950 candidate rules (R223, R225). Whether to serve: worth **+7.5 points** on the tasks a no-memory arm
+solves some of and **−9.5** on the tasks it solves every attempt, and not decidable from anything observable on this
+grid. The harm belongs to the material's **presence**.
+
+**What that means for a deployment.** Not a gate. The shipped policy is the state channel plus a timing rule — inject
+when a state change is composed — and it is measured, replicated, and 4–7% cheaper than serving at the front. The
+negative results do not change the product; they are why the product does not carry a predictor it cannot validate. A
+project that publishes a selector it cannot confirm has published a prior, and this one would rather publish the
+closure: two families, the multiplicity each had to beat, and the number of candidate rules that produced nothing.

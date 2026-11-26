@@ -18117,3 +18117,62 @@ discordant tasks, 14–14, p = 1.0 — but that grid carries the 7-turn confound
 it the power. Reporting the subset's 2–3 as a null would claim more than 5 pairs can support; reporting the whole
 grid's 14–14 as a null would claim a reading the confound forbids. The round therefore reports **one null with a
 confound and one bound without it**, and refuses to merge them.
+
+## 34.315 — A pre-registration that stated a 100% identity where the transcript says 96%, and 0%
+
+**The claim.** R223's pre-registration, and every document downstream of it, states the same sentence: *the opening
+turn is the user simulator's fixed utterance, so it is identical across a task's four attempts on 100% of tasks; any cut
+on it is an admission rule for a task class rather than a serving gate for one attempt.*
+
+**What the transcript says.** The simulator paraphrases. On R218b's 456 control episodes the four attempts of a task
+carry four different requests — "Hi, I just received order #W2378156 and I'd like to set up exchanges on a couple of
+items", then "Hi there! I'd like to exchange two items from my recent order", then a bulleted variant, then a fourth —
+and the measured constancy of every prefix field is:
+
+| field | constant within a task | the claim |
+|---|---|---|
+| `openingChars` | **0 of 114 (0%)** | 100% |
+| `openingAsks` | 23 of 114 (20%) | 100% |
+| `authCalls`, `callsToReveal` | 97 of 114 (85%) | 100% |
+| `firstTool` | 110 of 114 (96%) | 100% |
+| `revealTool`, `revealShape` | 108 of 114 (95%), 110 of 114 (96%) | — (new) |
+| `revealEntries`, `revealChars` | 101 of 114 (89%) | — (new) |
+
+So the field the claim is *about* is the one that varies most: the opening turn's length is different in every task's
+every attempt, because the user simulator rewrites it each time. The claim was not a rounding error; it was the
+opposite of the measurement.
+
+**Why it survived four rounds.** Because nothing computed it. The argument was made in prose in a pre-registration, it
+was plausible (a seeded simulator *should* be stable), and the instrument that could have contradicted it —
+`--observables` — printed the distribution of a field but not its within-task constancy for the categorical fields,
+and printed constancy only for the numerics. A number that no tool prints is a number that can be asserted; that is
+the defect, and it is the same defect class as the 85% price error in 34.311.
+
+**What it changes, and what it does not.** It does not change R223's verdict, and it makes that verdict *stronger*:
+the screen chose `openingAsks ≥ 2`, a cut that varies inside a task on 80% of tasks, so the policy it promoted was
+free to serve one attempt of a task and skip another — it was a genuine attempt-level gate and it still failed to
+replicate. What it does change is the sentence the lane may say about *why*: the correct statement is not "nothing
+varies inside a task" but "nothing that varies inside a task separates the pairs". The report now prints within-task
+constancy for every field, categorical ones included, so the next argument of this shape is a measurement rather than a
+belief.
+
+## 34.316 — The only purchase on the queue was priced for a grid the round no longer describes
+
+**The claim.** R217 is registered at ¥5.4 (≈ $0.74) in the roadmap, the queue table, the "what is left to spend" table
+and the competitive document, and the figure is repeated as the reason the cancellation of $68.7 was "the saving that
+funds it".
+
+**What the arithmetic says.** ¥5.4 at the lane's own measured rate of $0.0052–0.0056 an episode is **100 episodes**,
+which is 50 tasks at *one* attempt over two arms. R217's design is not one attempt: R226 prices the grid at four
+attempts, which is 400 episodes and **$2.20 ≈ ¥16**. The round was priced before R218b established that attempts are
+what an arm is bought in, and no later document recomputed it — a stale price travelling through five tables because
+each of them copied the one before it.
+
+**Why this is the same error as 34.311, one order of magnitude smaller.** In both cases the price was derived from an
+episode count that described a *different design* from the one the round would run, and in both cases the error ran in
+the direction that makes the round look affordable. The remedy is the same remedy: the price is a function of the design
+(grid × attempts × arms) and it is computed from the design, with the measured rate, in the document that registers the
+round. R217 now carries ¥16 and the sentence says which grid that buys.
+
+**And the round is still worth it.** Ten times cheaper than the next cheapest thing that was cancelled, and the only
+item on the queue that buys something no retail round can buy — a second domain.

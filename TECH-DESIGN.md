@@ -12451,3 +12451,69 @@ column is worth publishing even though it is not a score.
 | CI | under the same 95% floor as the rest of the Python lane (`--expect-files 22`) |
 | cost | ¥0 — it reads a grid already on disk |
 | outputs | `wall`, `ladder`, `fit`, `priced`, and a sentence that states the floor before any price |
+
+## 17.196 — The reveal channel: where the prefix ends, how a payload is read, and what a yield is worth
+
+R223 closed every observable a **request** declares and named its successor: read what the episode **reveals**. This
+section is the design of that channel — five decisions, each of which would have been a plausible defect in any of its
+four alternatives.
+
+**1. The boundary is the reveal's result, not the reveal's call.** The previous reader stopped at the first call
+outside the authentication family, on the argument that everything after it is the trajectory a policy acts before.
+That argument is correct for a policy timed at the *request* and wrong for one timed at the *write*, and the write is
+where the shipped invocation policy serves (R219). The prefix therefore ends **after** the reveal call's own result
+message and before anything else.
+
+The property is pinned by two assertions rather than one, because a single truncation test cannot tell a metric that
+reads the payload from one that ignores it:
+
+```python
+after_reveal = {"messages": full["messages"][:5]}    # ends just after the payload
+before_reveal = {"messages": full["messages"][:4]}   # ends just before it
+observables(full) == observables(after_reveal)       # reads the payload, nothing later
+observables(before_reveal)["revealShape"] == "none"   # no payload is a state, not a zero
+```
+
+`none` is load-bearing: an episode that spent its budget on authentication cannot be gated by what it never showed,
+and defaulting it to the smallest possible record would put an unmeasured decision into the policy's value — the same
+refusal `observables()` already makes for a missing transcript.
+
+**2. Results are bound to calls positionally, and the position is the reveal's.** The recorder writes a `role: tool`
+message per result and no call ids, so a message carrying k calls is answered by the next k tool messages in order.
+A turn that authenticates **and** asks for the order is the case that matters: the reveal is the second call, so it is
+owed the second result, and a reader that took "the next tool message" would price the reveal as the user id. The
+implementation keeps a queue of `(message_index, position)` keys and pops one per tool message, so a turn that leaves a
+call unanswered releases the slot rather than binding the next turn's result to it — the one failure mode a positional
+pairing can have, and it has its own assertion.
+
+**3. The payload is read into six quantities, declared before the screen.** `revealShape` (categorical), then
+`revealChars`, `revealKeys`, `revealEntries`, `revealLeaves`, `revealOptions`. Each has a mechanism sentence and none
+was added after an outcome was seen; the declaration is what makes `expectedByChance` a measurement rather than a
+decoration. Two structural choices inside the reader:
+
+- **Leaves are counted to a ceiling** (400) rather than to exhaustion. A pathological payload would otherwise turn a
+  screen into a walk, and the ceiling is above the largest order in the grid.
+- **`revealOptions` counts keys under every `options` mapping**, recursively, and stops at the same ceiling: the retail
+  catalogue keeps a product's variants there, so this is the breadth of the *choice* rather than of the record — the
+  field the harm hypothesis actually asks about.
+
+Free text is `unparsable` **and** carries its length. An agent that answered in prose revealed something of the same
+size and of no structure, and reporting both is the honest pair.
+
+**4. A yield is a binomial, and the sentence carries its tail.** `excess` computes the standard deviation of
+`cuts × 0.025` and reports `z` and `p`. The cuts are not independent — thresholds a few units apart name nearly the
+same subset — so the true number of trials is smaller than `cuts` and the binomial treats the family as more
+multiplied than it is. That errs in the direction of making a claim harder, which is the only direction a screen may
+err in.
+
+**5. The positive control is part of the instrument.** A reader that silently saw no payload would return
+`NOTHING_ADMISSIBLE` for ever, and every subsequent round would inherit a permanent negative that could not be
+falsified. The suite therefore carries a 48-task fixture whose damage is carried by the item count alone — with both
+payloads padded to equal length and given equal keys, so `revealChars` and `revealKeys` cannot win and the structural
+reader is what is actually tested. It confirms at `z = +1.76`. Without it, a `NOT_CONFIRMED` from this module would be
+indistinguishable from an outage; with it, the negative is a result.
+
+**What the design produced.** 565 cuts, 18 admissible against 14.1 from noise, and a chosen cut that reverses sign on
+the half it never saw (−6.5 pp, p = 0.33). The reveal is 89–93% task-constant for the structural fields, so the channel
+is an admission rule too — and admission rules were what R223 refuted. The design's value is not that it found a gate;
+it is that the gate family is now closed **with** a positive control behind the closure.

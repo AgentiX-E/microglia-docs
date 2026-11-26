@@ -29804,3 +29804,143 @@ attribute row — and no instrument in this project has yet produced a proxy fro
 correct action was to leave the shipped configuration alone. `serving-defaults.json` carries the dose null in its
 `notYet` block beside the serving decision, so the two negatives travel with the artefact the tests bind rather than
 living only in this report.
+
+## 249.32 The reveal: the boundary moves one message, and the gate becomes implementable
+
+R223 ended by naming its successor, and the naming was the useful part: *read what the episode reveals — the order, the
+item, the returned attribute row — because that is the first content in the transcript that can differ between a task
+the control already solves and one it does not.* This round built exactly that, and the build is four decisions.
+
+**The boundary.** `observables()` used to stop *at* the first tool call outside the authentication family. That is the
+right boundary for a policy timed at the request, and the wrong one for a policy timed at the write — and the write is
+where the shipped invocation policy serves (R219). So the prefix now ends at the reveal's **own result**: the payload
+the episode was shown before it decided what to do, and nothing after it. The property the boundary is supposed to have
+is now split into two assertions, both of which run on every push: a transcript truncated immediately after the reveal
+reads identically, and a transcript that ends *before* it reports `revealShape = none` rather than the smallest possible
+record.
+
+That move is what makes the gate **implementable**. A gate timed at the request is a counterfactual the harness cannot
+run; a gate timed at the write is a decision the agent can take, at a turn it actually reaches, with information it
+already holds.
+
+**The family.** Two categorical fields and four structural quantities, declared in the instrument's docstring before
+the screen ran:
+
+| field | what it is | median on R218b | distinct values |
+|---|---|---|---|
+| `revealShape` | object / array / scalar / unparsable / none | `object` (98.9%) | 3 |
+| `revealChars` | the payload's length | 1,163 | ~40 |
+| `revealKeys` | top-level keys | 14 | 12 |
+| `revealEntries` | `items` of an order, or an array's length | 3 | 6 |
+| `revealLeaves` | scalar values, ceiling 400 | 44 | ~35 |
+| `revealOptions` | variant axes under every `options` map | 9 | 15 |
+
+**The control that makes a negative readable.** A reader that silently saw no payload would return
+`NOTHING_ADMISSIBLE` on every grid and read as a permanent, unfalsifiable negative. So the suite carries a **positive
+control**: 48 synthetic tasks whose damage is carried by the item count alone, with the two payloads padded to the same
+length and given the same keys so that `revealChars` and `revealKeys` cannot win. It confirms, at `z = +1.76`, and it
+is the reason the reading below is a result rather than an outage.
+
+**The multiplicity column, upgraded.** R223 reported the yield beside `expectedByChance`. This round adds `excess`: the
+number of admissible cuts is binomial with 2.5% per cut, so the surplus has a standard deviation and the sentence
+carries `z` and a tail probability instead of inviting a reader to compare two numbers. The cuts are not independent —
+thresholds a few units apart are nearly the same subset — so the binomial treats the family as *more* multiplied than
+it is, which errs in the direction that makes a claim harder. That is the direction a screen may err in.
+
+## 249.33 565 cuts, eighteen survivors, and the one it chose reverses: the serving hypothesis is refuted
+
+The screen over R218b's 456 pairs, half for choosing and half for judging:
+
+| | value |
+|---|---|
+| cuts screened | **565** (R223's 385 plus the reveal family) |
+| admissible in sample | **18** |
+| expected from noise alone | **14.1** (sd 3.71) |
+| surplus | **+1.04 σ, p = 0.148** |
+| chosen cut | `skip revealLeaves >= 52` — refuse to serve the biggest records |
+| confirm half | skips **66%** of the pairs and buys **−6.5 pp** on 17 discordant pairs (6 up, 11 down), **p = 0.3323** |
+| serve half | **−2.0 pp** on 33 discordant pairs |
+| pooled | +1.8 pp against serving everything, +0.2 pp against serving nothing, **`DOMINATED`** |
+
+The in-sample reading was the best this lane has seen for a gate — **+16.9 pp** on 15 discordant pairs at p = 0.0010,
+skipping a third of the grid — and it is the cleanest illustration of why the split exists that this project has
+produced. On the half that chose it, `revealLeaves >= 52` looks like a policy. On the half that never saw it, the sign
+is negative, the p is 0.33, and the serve half loses too. **A family that yields 18 survivors where noise yields 14 is
+not a family with a faint signal; it is a family whose survivors are the noise.**
+
+And the one thing the screen *can* say with a p-value attached is structural: the reveal is **nearly as task-constant
+as the request** — `revealEntries` and `revealChars` vary inside a task on 11% of tasks — so a cut on the reveal is an
+admission rule for a task class, exactly like R223's, and the class rule is what failed to transfer the first time.
+
+**R223 pre-committed the consequence of this outcome, and the consequence is the round's finding.** No observable
+decision recovers the +7.5 / −9.5 stratification — not from what the request declares (R223, 385 cuts), not from what
+the episode reveals (R225, 565 cuts). Put beside the two rounds before it, the space is closed:
+
+| lever | round | outcome |
+|---|---|---|
+| **more** material | R218e | null: 14–14 at p = 1.0 with power; 2–3 at p = 1.0 without |
+| **better** material | R218b, 8.98, 8.99 | null: three arms, two placements, three admission policies, 8–10 pp harm unchanged |
+| **conditional** material | R223, R225 | refused: 385 declared cuts, 565 revealed cuts, neither beats its own multiplicity |
+| **whether to serve** | R223, R225 | the lever that is worth +7.5 / −9.5 and **cannot be pulled by any observable on this grid** |
+
+So the harm belongs to the material's **presence**. That sentence is the end of a search that began at R212 with a
+sentence about a failure and ran through eleven dispatches; it is also the most useful thing the lane can tell a
+practitioner, because every competing gate in the literature (COMPETITIVE R223.1) is a bet that a *signal* exists.
+
+## 249.34 A 100% identity that measures 96% and 0%
+
+While wiring the reveal family into `--observables`, the report was extended to print within-task constancy for the
+categorical fields — and the first line it printed contradicted a sentence that four documents had been quoting:
+
+> "the opening turn is the user simulator's fixed utterance, so it is identical across a task's four attempts on 100%
+> of tasks"
+
+It is identical on **0%** of tasks. The simulator paraphrases: four attempts of one task carry four different requests,
+differing in wording, length and formatting. The full table is in AUDIT **34.315**; the numbers that matter are
+`openingChars` 0%, `openingAsks` 20%, `firstTool` 96%, `revealEntries` 89%.
+
+**The defect is that nothing computed it.** The claim was made in prose in a pre-registration, it was plausible — a
+seeded simulator *should* be stable — and the instrument that could have contradicted it printed a distribution but not
+a within-task constancy for categorical fields. A number no tool prints is a number that can be asserted.
+
+**And the correction strengthens the round it corrects.** R223's chosen cut was `openingAsks ≥ 2`, a quantity that
+varies inside a task on 80% of tasks: the policy it promoted was free to serve one attempt of a task and skip another,
+so it was a genuine attempt-level gate and it *still* failed to replicate. The right sentence is not "nothing varies
+inside a task" but "nothing that varies inside a task separates the pairs", and the second is strictly harder to argue
+with.
+
+## 249.35 What is left: one purchase, admitted by 1.18 points, and the parser that has to come first
+
+R226 applied R223's admissibility test to the only item the queue still holds, using nothing but artefacts on disk:
+
+| number | value |
+|---|---|
+| airline grid, 50 tasks, unlimited attempts | **4.85 pp** floor |
+| the same grid at 4 attempts | **6.72 pp** |
+| the same grid at 1 attempt | **12.24 pp** |
+| the mechanism's largest measured effect (R216, retail) | **7.90 pp** |
+| margin | **+1.18 pp** → **admitted**, and the effect must transfer at **85%** of retail's to be visible |
+
+That is a knife-edge, and it is written down as one: a reading inside 6.72 pp is a statement about the grid. What makes
+the purchase worth its price is not resolution — airline at 50 tasks is a *worse* instrument per task than retail at
+114 — but **a second domain**, which is the only thing that can say whether a finding belongs to memory or to retail.
+Airline's published column is unsaturated (top 84.0, median 63.8 over 24 rows), so a real effect there would move a
+ranking even when it sits inside the floor.
+
+**What stands in front of it, and what it costs.** The board is a retail parser: `FAMILIES` maps the eight retail write
+tools to the six ask families, and an airline transcript's writes are not in the table. A dispatch today would serve a
+block whose items never settle — not a null result, a broken instrument reporting one, which is the defect R215 spent a
+round repairing in the domain where repairs were measurable. **R217a** is registered at ¥0 with a bar a census can
+check: family recall on the 50 airline requests at or above the retail parser's own.
+
+| item | state | price | what it buys |
+|---|---|---|---|
+| **R217a** airline parser | registered, ¥0 | ¥0 | a block that can see its own successes in a second domain |
+| **R217** airline grid | registered, admitted | **¥16** (400 episodes at the measured rate; the queue said ¥5.4, AUDIT 34.316) | 50 independent tasks, a second domain, the transfer of the split |
+| R221 2.0 submission | waiting | ¥34 | a row with a served share; pointless until there is a resolvable improvement to place |
+| R222, R224, R224b | cancelled | ¥0 | effects under a 3.21 pp floor |
+
+**The product consequence, for the fourth round running: no default moves.** `serving-defaults.json` now carries the
+reveal null in `notYet`, beside the dose null and the serving decision, so the three negatives travel with the artefact
+the product tests bind rather than living only in this report. A negative result that does not change the shipped
+configuration is not a failure of the round; it is the round doing its job.
