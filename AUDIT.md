@@ -18453,3 +18453,28 @@ were taken by three successive versions of the tool. The three older ones were r
 diffed against their saved values before being replaced: **zero value changes, zero changed bars**, and the new columns
 (`recoveredFromLate` on every board, the clause board, the boundary counters) arrived as additions. One tool version
 now backs every artefact the documents quote, which is the condition under which "reproducible" means something.
+
+## 34.327 — Three of this round's defects were in the instruments, and one of them expired
+
+R231's reading was clean: two bars held, one failed by an order of magnitude, and the numbers reproduce bit for bit.
+Everything found this round was found in the tooling, which has been this lane's ratio since R217.
+
+**The self-test that read the wall clock.** `round_clock`'s suite asserted `--now`-independent behaviour at the
+function level against one fixed moment, and drove the command line **without** `--now` in three assertions — so those
+three read the real clock. The fixture was dated `2026-11-26T13:00Z` and the assertion was "a registry that owes
+nothing exits zero": true when written, false at 13:10Z the next day, which is when CI next ran. The suite failed on
+the push that added this round and on no earlier one, and the diagnosis took a log fetch because the failure names an
+assertion and not a cause. One constant now feeds every invocation, and the code says why:
+
+> a test that reads the real clock is a test with an expiry date
+
+**The two that CI could not have found.** A ratio bar satisfied at `0 <= 0` (34.325) and two admission rules that
+counted the same column differently (34.326) are both invisible to any suite that only exercises the happy path — the
+first because the degenerate rule is never constructed, the second because nothing compares two instruments' counts.
+Both were caught by assertions written to *disagree* with the implementation rather than to confirm it, and that is the
+only reason to write them: the suite that agrees with the code cannot find the code's mistakes.
+
+**The recalibration, stated as a policy.** Four saved readings now exist and were taken by three versions of the tool.
+All four were regenerated under the current one and diffed before replacement: zero value changes, zero changed bars,
+additions only. From here a reading is regenerated whenever the tool changes, and the diff is the evidence that the
+change did not move a number — a saved reading nobody can regenerate is a quotation, not a measurement.
