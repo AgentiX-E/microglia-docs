@@ -9975,7 +9975,7 @@ rounds.
 |---|---|---|---|
 | **R218e** | does more material help the attempt that received it, holding the task fixed | **dispatched, run 45725844697** | ¥8.0 |
 | **R217** | airline, 50 independent tasks: 164 tasks resolves ~11 pp | registered | ¥5.4 |
-| **R220c** | `movePrice` measured rather than derived | registered | $0.02 |
+| **R220c** | `movePrice` measured rather than derived, `--rewrite-at` on the shipped shape | **registered, prereg written** | $0.02 |
 | **R222** | the admission rule at a grid that could see it (1,600 episodes) | registered, not queued | ¥53 |
 | **R221** | a 2.0 submission — only if the board moves its headline column | registered | ¥34 |
 
