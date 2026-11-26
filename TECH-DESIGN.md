@@ -12276,7 +12276,12 @@ as `coverage`. It then answers one of four states, and each sends a reader somew
 The confound is stated rather than removed: dose is endogenous, a longer episode both receives more blocks and has
 more chances to go wrong, so the reading is a decomposition of one arm's episodes and not a randomised contrast. The
 number that decides whether it is worth a registered round is the **sign** of the effect on the pairs whose doses
-differ while their turn counts are close.
+differ while their turn counts are close — and that subset is a computed column, not a sentence: `closeTurnPairs`, its
+pass counts, its own exact sign test and its tie count, drawn at `CLOSE_TURN_TOLERANCE = 1` turn of mean side length.
+The tolerance is measured rather than preferred: over R218b's four-attempt arm (684 within-task pairs) the within-task
+length gap has median 1 and mean 1.57, with 27.3% of pairs tied and 60.2% within one turn. On a 114 × 2 grid that
+implies ≈ 20 discordant pairs in total and ≈ 12 in the decided subset, which is why the round's power is 0.4 against a
+80/20 shift there and 0.8 against 90/10 (R218e, amendment 2) — a verdict on a large effect and a bound otherwise.
 
 ### Cost and gates
 
@@ -12286,5 +12291,5 @@ differ while their turn counts are close.
 | bill | **$1.10 ≈ ¥8.0** at $0.0048 an episode |
 | wall clock | ~45 min at concurrency 3 |
 | gates on every push | `dose.py` and `board_dose.py` self-tests under the 95% floor (`--expect-files 18`) |
-| gates on the dispatch | the join did not refuse; `rows == episodes ≥ 220`; `agreesRenders/Chars/Changes`; the placement is `tail` and `written ≤ chars` there; every row met its episode |
-| printed, not gated | `DOSE_READ` versus `NO_PAIRS`, because a refuted prediction is a finding and a red job teaches an operator to rerun until it is green |
+| gates on the dispatch | the raw recording exists and holds one line a scoring episode (`≥ 200`); the join did not refuse and `rows == counts.joined`; `missing + unresolved ≤ 10%` of the grid; `agreesRenders/Chars/Changes`; the placement is `tail` and `written ≤ chars` there, with `written > 0`; the reading carries `closeTurnPairs ≤ pairs` at tolerance 1; every row met its episode (`unscored == 0`, `unordered == 0`) |
+| printed, not gated | `DOSE_READ` versus `NO_PAIRS`, and the decided subset's size against the registered floor of ten, because a refuted prediction or a grid whose attempts differed in length is a finding — a red job teaches an operator to rerun until it is green |

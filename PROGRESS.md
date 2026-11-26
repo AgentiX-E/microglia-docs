@@ -29295,3 +29295,49 @@ The re-dispatch is armed and blocked on the clock rather than on the code: at 00
 off-peak window that fits the grid is **04:00–06:00 UTC**.
 
 ![R218e: what a transcript holds at either placement, what a render costs against a write under the tail, and what the repaired join returns on the failure shape the first dispatch actually met](figures/r218e-dose.png)
+
+## 249.17 The estimator, fixed before the second dispatch — and the column that did not exist
+
+The registration's own decisive sentence — *the sign on the pairs whose doses differ while their turn counts are
+close* — had no code behind it. The reader printed the length gap over **all** pairs and no subset, so the second
+dispatch would have returned a reading whose only sign was the confounded one (AUDIT 34.267). The subset is now a
+computed column, and the tolerance it is drawn at was measured on an artefact already paid for rather than chosen.
+
+**How many close pairs a 114 × 2 grid can make.** R218b's `front` arm is the only document on disk with four attempts
+at each of 114 tasks in one arm — 684 within-task pairs, no model calls to measure, and the arithmetic is now a gated
+tool rather than a scratch script (`eval/tools/dose_power.py`, 99.1% under the same 95% floor, `--expect-files` 18 → 19),
+because a number a registration quotes has to be reproducible by a command on every push:
+
+| quantity | value |
+|---|---|
+| gap in length within a task: median / mean | **1** / 1.57 turns |
+| pairs tied exactly | 27.3% |
+| pairs within **1** turn (the registered tolerance) | **60.2%** |
+| pairs within 2 / 3 turns | 80.0% / 91.7% |
+| within-task outcome disagreement under exchangeability | **17.9%** |
+| tasks that always pass / never pass / do both | 61 / 3 / 50 |
+| expected discordant pairs on the grid, all / decided subset | **≈ 20** / **≈ 12** |
+
+**What that buys before any money is spent: the round's own power, enumerated.** Two-sided exact sign test, α = 0.05:
+
+| discordant pairs | 65% | 70% | 75% | 80% | 90% |
+|---|---|---|---|---|---|
+| 10 | 0.09 | 0.15 | 0.24 | 0.38 | 0.74 |
+| 14 | 0.08 | 0.16 | 0.28 | 0.45 | 0.84 |
+| 20 | 0.25 | 0.42 | 0.62 | 0.80 | 0.99 |
+| 30 | 0.36 | 0.59 | 0.80 | 0.94 | 1.00 |
+
+At the twelve pairs the decided subset is expected to hold, the round has **0.40** power against the higher-dose side
+winning 80% of discordant pairs and **0.79** against 90%. So R218e is a test that can return a verdict on a large
+effect and a **bound** otherwise — and the bound is written into the registration as a pre-registered default rather
+than as an apology after the fact: *no shift larger than this grid can see, at the pair counts it actually made.*
+
+**The decision rule, registered in three parts.** A verdict needs `closeTurnPairs ≥ 10` **and** `closeP < 0.05` on that
+subset **and** the same sign over all pairs. Under ten close pairs the round returns no verdict whatever the p-value
+says, and the workflow prints that as a warning rather than as a red job — a grid whose attempts happened to differ in
+length is a fact about the population. The dispatch gate now asserts the reading **carries** its decided subset
+(`closeTurnPairs ≤ pairs`, tolerance 1, `tiedTurnPairs ≤ closeTurnPairs`), because a JSON key that must be present
+cannot quietly stop being computed the way a sentence can.
+
+Two stale claims went with it: TECH-DESIGN's gate table still described the pre-repair bar (`rows ≥ 220`) that the
+loss bound replaced, and the reading's printed sentence gave the confounded sign with no mention of the subset.

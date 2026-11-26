@@ -17772,3 +17772,59 @@ The test for this is a fixture of the failure, at a readable scale: two tasks, t
 text, one short round — asserting that the retry's last record is the one used, that the counts are 4 joined / 1 retry
 / 1 unresolved, and that the unresolved record is attributed to nobody. That fixture is why the second dispatch could be
 authorised before it was spent.
+
+### 34.267 The quantity two files said decides the round, and nothing computed it
+
+R218e's registration and `board_dose.py`'s own docstring both end their account of the confound with the same sentence:
+the number that decides the round is the **sign** of the effect on the pairs whose doses differ while their turn counts
+are close. The reader computed `turnGapMedian` — the length gap summarised over **all** pairs — and no subset. So the
+decisive quantity existed only as prose, and the second dispatch would have landed on an instrument whose only
+printed column was the confounded one. The reading that came back would have been quoted from it, because a column
+that exists beats a sentence that says which column should.
+
+This is the same family as 34.265 — a claim in the documentation that the code does not implement — and it is worse
+in one way: 34.265's false claim lived in a **gate**, which fails loudly, and this one lived in the **narrative**,
+which fails by being read. Nothing in the build could have caught it, since a subset that is never computed produces no
+error and no missing line: coverage cannot see a branch that was never written.
+
+**The repair is a column, a tolerance, and a measurement for each.** `closeTurnPairs` keeps the tasks whose two sides
+average within `CLOSE_TURN_TOLERANCE` of each other, with `closeHigherDosePassed`/`closeLowerDosePassed`, its own
+exact sign test `closeP`, its median dose gap, and `tiedTurnPairs` for the strict subset where the two sides are
+exactly equal. The tolerance is set from an artefact the lane had already paid for rather than from taste: over
+R218b's `front` arm — four attempts at each of 114 tasks, 684 within-task pairs, the only document on disk where one
+task's attempts can be compared without changing the arm — the within-task length gap has **median 1 turn, mean 1.57**,
+27.3% of pairs are tied, and 60.2% sit within one turn.
+
+That measurement also decides what the round can say, and it says so before the money is spent:
+
+| | value |
+|---|---|
+| within-task pairs in R218b's arm | 684 (114 tasks × 4 attempts) |
+| gap median / mean | 1 / 1.57 turns |
+| tied / within 1 / within 2 | 27.3% / 60.2% / 80.0% |
+| within-task outcome disagreement under exchangeability | 17.9% (61 tasks always pass, 3 never, 50 both) |
+| expected discordant pairs, 114 × 2 grid | **≈ 20**, of which **≈ 12** in the decided subset |
+| power at 12 discordant, 80/20 shift, α = 0.05 | **0.40** |
+| power at 20 discordant, 80/20 shift | **0.80** |
+
+Sixty-one of the 114 tasks pass all four attempts, so most of the grid can never enter a sign test however different
+its doses are — the round is a test on the ~50 tasks that move, and on the ~69 of those whose two sides are expected to
+run within a turn (60.2% of pairs, applied to the grid rather than measured on a two-attempt one). The
+registration now says so in advance, and the pre-registered rule is three-part: a **verdict** needs at least ten close
+pairs, `closeP < 0.05`, and the same sign over all pairs; anything weaker is a **bound** carrying its pair count; and
+fewer than ten close pairs returns no verdict at all, whatever the p-value says.
+
+The arithmetic that turns a spread into a power is committed rather than recalled: `eval/tools/dose_power.py` measures
+the spread on any document with several attempts a task, enumerates the exact sign test's reject probability at the
+counts the grid implies, and sits under the same 95% floor as the readers it feeds (`--expect-files` 18 → 19). A
+registration that quotes a power has to be checkable by a command; a power that lives in a person's head is a power
+nobody can refute.
+
+**The gate now asserts the reading carries its decided subset** — `closeTurnPairs ≤ pairs`, the tolerance at 1, and
+`tiedTurnPairs ≤ closeTurnPairs`. A reading printed without them is exactly the reading a person quotes as if the
+confound had been controlled, and a JSON key that must be present cannot silently stop being computed.
+
+Two smaller defects surface with it and are fixed here rather than noted: TECH-DESIGN's gate table still said
+`rows == episodes ≥ 220`, which the loss bound replaced when the first dispatch lost eleven boundary texts (34.266);
+and the reading's sentence printed the confounded sign with no mention of the subset, so a reader who stopped at the
+first line got the decomposition and never the reading.
