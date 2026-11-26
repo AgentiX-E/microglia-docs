@@ -10593,3 +10593,37 @@ Two consequences worth stating in the comparison rather than in a footnote:
 The claim this supports is narrow and checkable, which is the only kind this project makes: **the material can be priced
 per episode, against the phase's own counters, with the recording's completeness a gate rather than a promise** — and
 no row on the board, and no paper in the table, reports that quantity at all.
+
+### R218e.2 The deltas this lane quotes are smaller than its own grid can resolve, and the power table says so
+
+The comparison in R218e.1 is about an instrument no competitor publishes: a dose an episode. This note is about the
+number the instrument is asked to justify, and it is uncomfortable for the whole table rather than for the rivals.
+
+R218e's second amendment enumerated the exact sign test's reject probability at the pair counts a 114-task, two-round
+grid actually produces — ≈ 20 discordant pairs over all tasks and ≈ 12 in the subset whose sides ran within a turn
+(60.2% of within-task pairs, measured on the one arm that ran four attempts a task):
+
+| discordant pairs | 65% | 70% | 75% | 80% | 90% |
+|---|---|---|---|---|---|
+| 12 | 0.08 | 0.16 | 0.28 | 0.45 | 0.84 |
+| 20 | 0.25 | 0.42 | 0.62 | 0.80 | 0.99 |
+| 30 | 0.36 | 0.59 | 0.80 | 0.94 | 1.00 |
+
+`shift` is how often the treated side wins a discordant pair. **A memory effect that wins two thirds of the pairs it
+touches is invisible at this size** — 0.25 power — and the arm-level mean that would be quoted instead is a mean over a
+population where 61 of 114 tasks pass every attempt regardless.
+
+Three consequences, and the third is the one that changes what this project does next:
+
+1. **A ≤2-point delta on 114 tasks is not a finding.** It is consistent with a real mechanism and with nothing at all,
+   and this lane has published +7.9 and −6.1 for one configuration inside one afternoon — both above the noise, neither
+   above the resolution.
+2. **The 6.5-point gap to the board's 87.9% is resolvable; the 1.9-point gap to it is not.** R219's rule arm read
+   86.8%, and a comparison at that distance needs the airline column's ~164 independent tasks (R217) or a paired
+   within-task design, not another 114-task mean.
+3. **What is publishable here is the bound, not the point estimate.** "No shift larger than this grid can see, at the
+   pair counts it made" is a claim a competitor can check and a reviewer can refute; "memory gives +1.9" is a claim that
+   survives only because nobody prints the pair count it came from.
+
+None of the rows on the board publishes a discordant-pair count, a decided-subset size, or a bound. That is not a gap
+this project can close alone, but it is the reason its own rows now carry all three.
