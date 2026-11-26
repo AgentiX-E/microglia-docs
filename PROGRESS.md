@@ -29227,3 +29227,71 @@ A third defect was mine and lived for about a minute: folding the boundary-text 
 other call site appending it as well, and the agent's own suite caught it immediately (`28` boundaries for `14`
 episodes, and one empty text where a task should have been). The fold is right — one site, one order — and the suite
 is why the mistake cost nothing (AUDIT 34.264).
+
+## 249.15 The first dispatch: the grid ran, the join refused, and the recording went with it
+
+Run **45725844697**, 228 episodes (114 tasks × 2 rounds), **$1.2217 ≈ ¥8.8**, off-peak, 53 minutes. The mechanism
+rendered and wrote, the attribution ticked, and then the dose step failed on its own first assertion: *no dose block*.
+
+The census says why, and every part of it is the harness working as designed:
+
+| the recording held | count | what it is |
+|---|---|---|
+| records | **236** | 228 episodes + 8 retries |
+| boundary texts resolved to a task | 225 | 11 texts did not match: a retry's opening message differs from the one that was scored |
+| tasks with a record in **both** rounds | 111 of 114 | three episodes reached the model once |
+
+The join required every record to be claimed and every episode to find a record. It refused, `_dose_block` wrote
+nothing, and 236 per-episode recordings survived as three aggregates — `doseEpisodes 236`, `doseWritten 102,333`,
+`doseChars 321,295` — because `boardDoses` had already been popped out of the census before the join ran. **A refusal
+that cost the money it was protecting** (AUDIT 34.266).
+
+**What the aggregates still buy, and it is not nothing.** The first measurement of the tail placement's price as a
+ratio rather than as a bill, on 228 episodes:
+
+| reading | value |
+|---|---|
+| block served a render | 321,295 / 2,176 = **147.7 characters** |
+| block carried a write | 102,333 / 514 = **199.1 characters** |
+| **carried / served** | **31.9%** |
+| turns that re-wrote the block | 514 / 2,176 = **23.6%** |
+| turns that found it in place and paid nothing | 1,662 / 2,176 = **76.4%** |
+
+R215 could only infer that three quarters of the turns ride free; here it is counted. The 37-character element is
+visible too: a write carries 199 characters for a 148-character body.
+
+## 249.16 The repair: attribute what the harness produces, record before attributing
+
+Two rules, and the first is about what a join is allowed to refuse.
+
+**Attribute, do not refuse.** A retry takes the **last** record a task opened in its round, because a retry restarts
+the conversation and the scored attempt is the one that finished last. A boundary text that resolves to no task is
+counted `unresolved` and kept. An episode with no record is counted `missing` and dropped. All three travel in the
+census, so the loss is a number rather than an outage. The join still refuses the runner's own bookkeeping — mismatched
+lengths, snapshots that go backwards, a recording that grew after the last round — because those are defects in this
+code and not facts about τ².
+
+**Record before attributing.** The raw recording is written **first and always**, with the opening text beside the
+resolved task, whether the join succeeded or not. A refusal may cost a reader; it may never cost the grid.
+
+The repair was verified against the failing dispatch's own shape before a second yuan was spent: replaying the join
+over the real `boundaryTasks` (236 entries, 11 unresolved), the real 228 simulations in two rounds, and synthetic
+records, **every plausible partition of the marks produces 218 to 225 attributed episodes and no refusal** — where the
+strict version produced 0 at all of them. The gate was moved with it: it now bounds the *loss* (missing + unresolved ≤
+10% of the grid) rather than an absolute row count, because a bar at 220 would fail a correct run whose marks happened
+to land low, which is exactly the kind of one-sided bar this project has already written down twice.
+
+| | strict join | repair |
+|---|---|---|
+| rows on the failing shape | 0 | 218–225 |
+| sidecar written | no | always (raw first) |
+| a retry | refuses the grid | last record, counted |
+| an unresolved text | refuses the grid | counted, kept raw |
+| an episode with no record | refuses the grid | counted missing |
+| the gate | `rows ≥ 220` | `missing + unresolved ≤ 10%`, `rows ≥ 200` |
+
+The re-dispatch is armed and blocked on the clock rather than on the code: at 00:47 UTC the window guard refused a
+42-minute run because it would cross into the 01:00–04:00 UTC peak band, where the same tokens cost twice. The next
+off-peak window that fits the grid is **04:00–06:00 UTC**.
+
+![R218e: what a transcript holds at either placement, what a render costs against a write under the tail, and what the repaired join returns on the failure shape the first dispatch actually met](figures/r218e-dose.png)

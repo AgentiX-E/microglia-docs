@@ -9988,3 +9988,12 @@ rounds.
   can hold it. That is the strongest form of the harm hypothesis this lane can test without randomising the dose.
 - **`NO_PAIRS`** — the dose does not vary inside a task, which refutes the premise: the material's effect is then not
   identifiable from one arm at all and would need a randomised dose, a different round.
+
+**The first dispatch, and why the round is being dispatched twice.** Run 45725844697 ran the grid and returned 236
+recordings over 228 episodes, and the join refused all of them on facts τ² produces by design — 8 retries, 11 boundary
+texts that resolved to no task, 3 tasks that reached the model once. The refusal also discarded the recording, so the
+round's evidence survived as three aggregates: carried/served = **31.9%**, 147.7 characters served a render against
+199.1 carried a write, and 76.4% of turns paying nothing at all. That is the tail placement's price as a ratio for the
+first time, and it is not the dose reading. The join now attributes the three harness states and writes the raw
+recording before it joins (AUDIT 34.266); the re-dispatch is armed and waiting for an off-peak window that fits a
+53-minute run.

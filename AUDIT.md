@@ -17721,3 +17721,54 @@ Three repairs, in ascending order of importance:
 This is the same defect class as AUDIT 34.231 (a one-sided cost bar that a stopped arm passed): **an invariant derived
 from one configuration, written as though it held for all of them.** The general rule the project already has is that a
 bar must be two-sided; this adds the companion — a bar must also name the configuration it is a bar for.
+
+### 34.266 The join refused on facts the harness produces by design, and took the recording with it
+
+R218e's first dispatch ran the whole grid — 228 episodes, $1.2217 — and produced no sidecar. The census says why:
+
+```
+dose: episodes 236, rows 0, refused "round-0:46:no-record;round-0:4-record(s)-with-no-episode;round-1:93:no-record"
+```
+
+Three refusals, and **all three are things τ² does on purpose**:
+
+| what the recording held | count | what it is |
+|---|---|---|
+| records | 236 | 228 episodes + 8 retries |
+| boundary texts that resolved to a task | 225 | 11 resolution failures — the retry's opening message differed from the one that was scored |
+| tasks with a record in each round | 111 of 114 | 3 tasks reached the model only once |
+
+The join required every record to be claimed and every episode to find a record, so it refused, so nothing was
+written, and the only trace of 236 per-episode recordings is three aggregates in the census:
+`doseEpisodes 236`, `doseWritten 102,333`, `doseChars 321,295`. **A refusal that costs the money it was protecting** —
+and this project's own note on `--expect-files` says exactly this about a gate that cannot say no, one level down.
+
+What the run still bought, because the aggregates survived:
+
+| reading | value |
+|---|---|
+| block served / render | 321,295 / 2,176 = **147.7 characters** |
+| block carried / write | 102,333 / 514 = **199.1 characters** |
+| carried / served | **31.9%** |
+| turns that re-wrote the block | 514 / 2,176 = **23.6%** |
+| turns that found it in place | 1,662 / 2,176 = **76.4%** |
+
+That is the tail placement's price as a ratio rather than as a bill, measured on 228 episodes for the first time, and
+it is the number R215 could only infer: three quarters of the turns serve the block and pay nothing for it.
+
+**The repair is two rules, and the second is the general one.**
+
+1. **Attribute, do not refuse.** A retry takes the **last** record a task opened in its round, because a retry restarts
+   the conversation and the scored attempt is the one that finished last; a boundary text that resolves to no task is
+   counted and kept; an episode with no record is counted missing and dropped. All three travel in the census as
+   `retried`, `unresolved`, `missing`, so the loss is visible instead of fatal. The join still refuses the runner's own
+   bookkeeping — mismatched lengths, snapshots that go backwards, a recording that grew after the last round — because
+   those are defects in this code rather than facts about the harness.
+2. **Record before attributing.** The raw recording is now written **first and always**, whether the join succeeded or
+   not, with the opening text and the resolved task side by side. A refusal may cost a reader; it may never cost the
+   grid. The next person to hit an unattributable boundary will find the text that failed rather than three sums.
+
+The test for this is a fixture of the failure, at a readable scale: two tasks, two rounds, one retry, one unresolved
+text, one short round — asserting that the retry's last record is the one used, that the counts are 4 joined / 1 retry
+/ 1 unresolved, and that the unresolved record is attributed to nobody. That fixture is why the second dispatch could be
+authorised before it was spent.
