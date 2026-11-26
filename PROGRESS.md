@@ -29750,3 +29750,57 @@ columns are already published facts that need no dispatch: cost at **$0.00558 a 
 board's median row; stability at **pass^4 53.51**, which most rows do not publish at all; and the served-share with
 its conditional deltas, which **no row on the 72-entry directory reports**. The wall adds a fourth: a project that
 states its own resolution is a project whose rankings can be read correctly, and none of the six text rows does it.
+
+## 249.30 The dose is zero: more material changed nothing, at both scales, on a grid that had power
+
+R218e was dispatched at 04:00 UTC and read at 04:36, and it is the cleanest negative this project has produced. The
+question was the simplest one left: **does the amount of material an episode receives change whether it passes?** The
+arm records the block per episode, so for every task the two rounds can be compared against each other with the task
+itself held fixed.
+
+| scale | what it holds fixed | discordant tasks | higher side | lower side | level | p |
+|---|---|---|---|---|---|---|
+| whole grid | the task | **28** | 14 | 14 | 86 | **1.0000** |
+| length-matched | the task **and** the turn count (±1) | **5** | 2 | 3 | 12 | **1.0000** |
+
+The recording is complete and it agrees with the census: 228 of 228 episodes joined, no retries, no unresolved rows,
+222 of them carried a block averaging **1,421 characters**, and the two rounds of a task differed by a median of **820
+characters**. So the material was there, its size varied by more than half a block, and **the variation bought
+nothing**.
+
+**The two rows answer different questions and both answers are "no".** The whole grid has power and no direction: 28
+discordant tasks is enough to detect a large shift, and it returned a perfect 14–14. The length-matched subset has a
+direction — if there were one — with no power: five discordant tasks is under the six a unanimous sign test needs to
+clear 0.05, so the pre-registered rule returns a **bound** rather than a verdict, exactly as it was written to.
+
+**Why the confound is still the right thing to report.** The higher-dose side ran **7 turns longer** on the median task,
+so on the whole grid "more material" is also "a longer conversation" and cannot be separated from it. That is why the
+subset exists, and why the subset is thin: matching on length costs the sample the effect would need. The honest
+reading of both rows together is that **no design available on this grid – with the confound, or without it – supports
+the premise**, and each fails for a different reason rather than the same one.
+
+## 249.31 Three ways to improve memory, and all three are now closed
+
+This is the round where the lane stops looking for a better block. Put beside the two rounds before it, the negative
+results cover the whole space of "make the memory better":
+
+| lever | round | what it measured | outcome |
+|---|---|---|---|
+| **more** material | R218e | dose against pass rate, task held fixed | **null**: 14–14 at p = 1.0 with power; 2–3 at p = 1.0 without |
+| **better** material | R218b, 8.98, 8.99 | wording, placement, and the accusation the block makes | **null**: three arms, two placements, three admission policies, 8–10 pp harm unchanged |
+| **conditional** material | R223 | 385 prefix cuts screened, chosen on half the tasks | **refused**: one survivor, not replicated, fewer than chance |
+
+What survives is a single lever, and it is not about content at all: **whether the episode is served**. The stratified
+reading puts its value at **+7.5 points** on the 43 tasks a no-memory arm solved some of the time and **−9.5** on the 66
+it solved every attempt, and neither the amount of material (R218e) nor its accuracy (R224's ceiling, 2.11 pp under the
+floor) can reach the second group. Those tasks are damaged by the material's **presence**.
+
+**And that lever cannot be pulled with anything a request declares.** Every prefix observable on this grid is constant
+within a task on 100% of tasks (R223), so a threshold on one of them is an admission rule for a task class, not a
+serving gate for an attempt. The decision has to read what the episode **reveals** — the order, the item, the returned
+attribute row — and no instrument in this project has yet produced a proxy from that material.
+
+**The product consequence, stated plainly.** No default moves, and that is now the third round in a row where the
+correct action was to leave the shipped configuration alone. `serving-defaults.json` carries the dose null in its
+`notYet` block beside the serving decision, so the two negatives travel with the artefact the tests bind rather than
+living only in this report.

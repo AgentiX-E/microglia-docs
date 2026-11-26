@@ -18058,3 +18058,62 @@ above its label, which is a different failure with the same consequence.
 **The cost of the defect, stated in the only unit that matters.** Of $74.1 of queued work, **$68.7 would have been
 spent on measurements that could not have resolved their own hypotheses**, and the money would have been spent
 gradually, one plausible dispatch at a time, with nothing in the pipeline to say so.
+
+## 34.313 — A sign test whose n was the number of passing attempts
+
+**The claim.** R218e's reader reported, in its own words: *"the higher-dose side passed 50.0% of 180 attempt-pairs
+(90 against 90), sign test p = 1.0000"*. Two numbers in that sentence are wrong and one is wrong in a way that makes
+the round look ten times larger than it is.
+
+**The defect.** `within_task` counted, per task, how many of the higher-dose attempts passed and how many of the
+lower-dose attempts passed, and then handed **those two totals** to the sign test. A sign test takes the number of
+units that fell one way and the number that fell the other, with the units being the things that could differ — here,
+tasks. Passing attempts are not units: they are measurements *inside* a unit, and a task with four attempts contributes
+four passing attempts but only one comparison. With 114 tasks and two rounds each, the reader reported a sample of 180
+and a test over it, when the grid holds **114 comparisons of which 28 disagreed**.
+
+The arithmetic consequence, on the real grid: the true discordant split is **14 higher, 14 lower, 86 level**, and the
+sign test over that is p = 1.0 — the same verdict the wrong version reported, by coincidence and for the wrong reason.
+The coincidence is what makes this dangerous rather than merely wrong: a 90–90 split and a 14–14 split give the same
+p-value, so no gate, no reader and no reviewer would have noticed, and the next grid with a 90–91 split would have
+reported p = 0.94 where the task-level answer is p = 1.0 over a handful of pairs.
+
+**Why the unit matters and why it is the same error as everywhere else in this lane.** Every other reader here takes
+the task as its unit — `solve_strata`, `serve_policy`, `resolution` — for one reason: attempts inside a task are not
+independent draws. The dose reader was written before those, at a moment when the grid had four attempts a task and the
+attempt felt like the natural unit. It is the same mistake R216b made in a different costume: a quantity that looks
+like a sample size and is not.
+
+**The fix, and the regression that pins it.** `within_task` now reports three task-level counters — `taskWins`,
+`taskLosses`, `taskTies` — which must partition `pairs` exactly, and the sign test reads the first two. The
+`higherPassed`/`lowerPassed` counts survive as description with a label that says so. The new checks include the case
+that distinguishes the two conventions: three tasks where counting attempts gives 4 against 2 (p = 0.69) and counting
+tasks gives 2 against 1 (p = 1.0). No fixture that only ever saw equal totals could have caught this, which is the
+general lesson — **a test whose fixture cannot distinguish two definitions has not tested the definition**.
+
+**The gate that makes it unrepeatable.** `working-memory.yml` now asserts that the three counters sum to `pairs` and
+that the decided subset's three sum to `closeTurnPairs`, so a future version cannot quietly drop one of them; and it
+warns when the decided subset holds fewer than six discordant tasks, because five is a bound whatever its p says.
+
+## 34.314 — The round that was one task short of a verdict, and said so
+
+**The claim.** R218e's pre-registration fixes a three-part rule: a verdict needs at least ten close-turn pairs, a p
+below 0.05, and the same sign throughout; below that it returns a bound.
+
+**What the grid delivered.** 17 close-turn tasks — comfortably over the ten — carrying **5** discordant tasks (2 for
+the higher dose, 3 against, 12 level). The floor that binds is not the one the rule named. Ten *pairs* is a floor on
+the decided **subset**; the sign test needs six **discordant** pairs before a unanimous split clears 0.05 at all, and
+five discordant tasks cannot produce a p below 0.05 no matter which way they fall.
+
+**The defect is in the rule, not in the round.** A pre-registration that names a floor on the subset size and not on
+the discordant count inside it will, on a grid like this one, pass its own gate and then be unable to return the
+verdict it promised. The two numbers differ by a factor that depends on how correlated the arms are, which is exactly
+the quantity nobody knows in advance. The rule is amended: a verdict now requires **ten close-turn pairs and six
+discordant tasks inside them**, and the gate prints `bound` when the second floor is missed.
+
+**Why the honest output is a bound and not a null.** This distinction is the round's own thesis applied to itself. A
+null says "the effect is zero"; a bound says "the grid could not have seen it". The whole grid does support a null — 28
+discordant tasks, 14–14, p = 1.0 — but that grid carries the 7-turn confound. The subset removes the confound and with
+it the power. Reporting the subset's 2–3 as a null would claim more than 5 pairs can support; reporting the whole
+grid's 14–14 as a null would claim a reading the confound forbids. The round therefore reports **one null with a
+confound and one bound without it**, and refuses to merge them.
