@@ -5403,3 +5403,48 @@ paper quoted was pooled over two treatments, and the gate now reports **−3.90 
 and **−7.50 pp** for the bounded one; both remain negative, so the sign held while the population did not.
 The key itself is not yet total — one fold declares no rotation while its registration pins one — which R202 fixes
 by writing `none` as a value.
+
+## Reach is decided by the episode, not by the request — and both candidates for deciding it are empty
+
+An earlier section of this paper argues that a memory's negative effect is its **reach**, not its content: the same
+correct note damages the task that would have been solved without it, and the damage concentrates on exactly the
+tasks a no-memory arm already solves on every attempt (9.5 points lost there against 7.5 gained on the half-solved
+ones). If that is right, the decisive engineering question is not *what should the memory say* but **whether it should
+be served at all** — and that question has a hard constraint the content question does not: it must be answered
+**before** the episode's outcome exists.
+
+This paper can now report what happens when that constraint is taken literally and the candidate answers are priced.
+
+**A serving policy is an estimator, and it needs two columns.** Given a grid that ran a no-memory arm and a treated arm
+over the same tasks with the same number of attempts, a policy that maps an episode's prefix to serve-or-skip has a
+value, and the two quantities that decide whether it is worth running are conditional means over the subsets it
+creates: what skipping bought **on the pairs it skipped**, and what serving bought **on the pairs it served**. A gate
+that refuses correctly and serves at a loss has improved nothing, and no single accuracy number can express that. The
+instrument was built to report both, with a sign test each, and to choose its threshold on one half of the tasks and
+judge it on the other.
+
+**Three hundred and eighty-five thresholds, one survivor, and it did not replicate.** Over 114 tasks at four attempts
+in each arm — 228 paired episodes — the screen produced one admissible policy: refuse the episodes whose opening
+request states two or more asks. In sample it refused 35% of the pairs and bought **+13.8 points** on the 15 pairs that
+disagreed (13 for refusing, 2 against, p = 0.0074). On the half it had never seen it bought **+3.2 points** on 21 pairs
+(12 for, 9 against, p = 0.66), and the win-to-loss ratio fell from 6.5:1 to 1.3:1.
+
+The number that matters is not the p-value but the multiplicity: 385 thresholds at a two-sided 5% test produce about
+**ten** positive-and-significant results from noise alone. A screen that yields **one** has produced fewer discoveries
+than chance, which is evidence that the family carries no signal at all rather than a weak one. This is the general
+form of the error the field is currently making: a retrieval gate reported without the count of gates that were tried
+is a result a reader cannot distinguish from a search.
+
+**And the reason is structural, not statistical.** Every observable available before the episode's first content
+arrives is **constant within a task**: the opening request is the user simulator's fixed utterance, and in this domain
+the first tool call is the identity lookup in 452 of 456 episodes, with the second act — `get_user_details` — in 355 of
+them. A threshold on such a field cannot serve one attempt and skip another; it can only switch memory off for a
+**class of tasks**, which is an admission rule and not a serving gate. The one survivor was exactly that, and it failed
+to transfer across task halves — the strongest available evidence that its apparent effect was selection.
+
+The conclusion is narrow and it is a constraint rather than a defeat. **Reach has to be decided by what the episode
+reveals** — the order, the item, the returned attribute row — because that is the first content in a transcript that
+differs between a task memory helps and a task it damages. A request's surface cannot carry the decision, and neither
+can the first act. Two candidate proxies died without a single dispatched episode, on artefacts that were already on
+disk, which is the strongest argument this project can make for screening before spending: the screen costs nothing,
+the dispatch costs nine yuan, and the order in which they are run is the difference between a measurement and a guess.
