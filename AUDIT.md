@@ -17967,3 +17967,44 @@ that "top" and "bottom" are different numbers.
 findable only because the suite is executed on every push instead of being trusted. The 97 checks are worth exactly
 what the four that failed on their first run are worth, and those four were caught by the suite running rather than by
 reviewing it.
+
+## 34.309 — The reading recomputed from the definition, by a second implementation, to four decimals
+
+**The claim.** The screen's three rows are the round's finding, and every document quotes them.
+
+**What was done about it.** The confirm-half reading was recomputed from scratch by a thirty-line script that shares no
+code with the instrument: it loads the two documents, pairs by (task, attempt index) in the document's own order,
+counts asks lexically, and computes the difference with its own sign test. Result against the instrument's JSON:
+
+| reading | skipped | served | `skipDelta` | up | down | p |
+|---|---|---|---|---|---|---|
+| screen | 80 | 148 | +0.1375 | 13 | 2 | 0.0074 |
+| confirm | 93 | 135 | +0.0323 | 12 | 9 | 0.6636 |
+| pooled | 173 | 283 | +0.0809 | 25 | 11 | 0.0288 |
+
+Identical to four decimals on all three rows, including the discordant counts. The recomputation is not committed as a
+second tool — a second instrument in the tree is a second definition to keep in sync, which is the defect 8.99 warns
+about — but it is the check that a reading with this much weight gets before it is quoted, and the numbers above are
+its record.
+
+**Why this is an audit entry rather than a footnote.** The instrument's own 97 checks prove it computes what it says it
+computes on fixtures the same author wrote. They cannot prove the join is the join the documents support, because a
+fixture and a real grid can disagree in exactly the place that matters: attempt ordering, a task with three episodes,
+a reward shape. The recomputation reads the real documents and gets the same numbers, which is the only statement that
+covers the join itself. Where a reading changes a plan, it gets this treatment before it gets quoted.
+
+## 34.310 — A ledger that recorded what was promoted and nothing about what was refused
+
+**The claim.** `eval/manifests/serving-defaults.json` exists so the product ships the configuration the eval measured,
+and its `notYet` block names the one rule that is measured but not promoted, with the reason.
+
+**The defect.** The block was written when there was exactly one such rule, and R223 added a second — a screened and
+refused serving decision — without a line in the ledger. The consequence is not a wrong number; it is the *invisible*
+one: a reader of the manifest sees an `admissionPolicy` pending a replication and no record that the serving question
+was asked at all, which makes the next round look like the first attempt at it rather than the second. A ledger of
+promotions with no ledger of refusals is a ledger that makes a project look luckier than it is.
+
+**The fix.** `servingDecision` enters `notYet` with the three readings, the multiplicity, and the one sentence that
+states the product consequence — that no default moves, because nothing was promoted. Nothing reads the block: it is
+documentation that travels with the artefact the tests bind, which is the only kind of documentation that cannot drift
+away from the number it explains.
