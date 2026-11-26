@@ -18562,3 +18562,39 @@ display axis is no longer an open question about the cap: eight lines carry 96.6
 ordered, and the four that remain are hidden by **repetition** (nine `address` asks in front of one `modify`), not by
 settlement. That relocates the problem for the third round running — from admission to selection to *duplication* — and
 each relocation has been cheaper than the last.
+
+## 34.330 — The instrument models two of the product's three rendering decisions, and the third is now named
+
+R232 and R233 both say "the block the product renders". That sentence is true of two of the three decisions the shipped
+renderer makes and silent about the third, and the silence is worth a number rather than a footnote.
+
+**What the product does**, read from `packages/core/src` rather than from a document:
+
+| decision | the product | the instrument |
+|---|---|---|
+| ask source | the request's asks (`serving-defaults.askSource = request`) | the same, by construction |
+| cap | `options.limit ?? query.limit ?? 8` — **eight items by default** | `CAP = 8`, the same number |
+| order | the recall query's ranking (`anchoring: lexical`, `minCoverage`, `minEvidence`) | **statement order**, plus R233's open-first candidate |
+
+So `MAX_ITEMS = 99_999` in `render.ts` is not a display cap — it is the width of a five-character placeholder in the
+wrapper, and the comment beside it says so. The cap is `limit = 8`, and the instrument's constant is the product's.
+
+**What the instrument does not model is the ranking.** The instrument's block is a deterministic list in the order the
+asks were stated; the product's is a recall query's top eight. The size of the gap is bounded by the same two numbers
+this round measured: a contract board holds **2.41 items a call**, and a board of 2.41 items against a limit of 8 has
+nothing for a ranker to choose — its output is its input. A clause board holds **8.10**, and there a ranker would
+choose. That is why R232's and R233's numbers are exact for the shipped configuration and are a **lower bound** for the
+clause rule: ordering is the deterministic case of ranking, and a ranker that could tell a live `modify` from nine
+settled `address` lines would recover the four writes R233 could not.
+
+**Why this is disclosed rather than repaired.** Repairing it means either teaching the instrument the recall query or
+teaching the product the ordering, and the two are different rounds with different costs: the first is ¥0 and makes the
+measurement harder to attribute (a ranker's output changes with its lexical parameters), the second is a product change
+that should follow the accuracy dispatch rather than precede it. The lane records the limitation, names the bound, and
+leaves the choice to the round that buys the dispatch — which is also the round that could tell whether the ranker earns
+its tokens.
+
+**And the invariant this entry adds to the checker.** `serving-defaults.json` says `limit: 8` nowhere; the cap lives in
+`CAP` in the Python instrument and in `options.limit ?? 8` in the TypeScript one, and nothing compares them. A test that
+asserts the two constants agree is the only version of "the instrument measures the product's cap" that a build can
+check, and it belongs with the other cross-repository reads that `serving-defaults.json` already powers.
