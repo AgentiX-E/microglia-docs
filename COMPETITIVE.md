@@ -10831,3 +10831,36 @@ would move a ranking. R217 buys exactly that, and R226 prices it at 6.72 pp of r
 **The threat to state plainly.** A competitor that publishes (accuracy, cost, served share, resolution) in one row owns
 the frame this project is arguing in. The mitigation is not a better gate — the gate families are exhausted on this
 grid — it is the airline column, where the spread is wide enough for a number to be a number.
+
+### R228/R229 — the frontier does not move, and the negative-result axis does
+
+This round spent nothing and dispatched nothing, so **no row on any leaderboard changes**: the retail point stays at
+84.20 `pass^1` on 1.0.1 at $0.00558 per trajectory, second of the nine 1.0.1 text rows and 0.23 pp behind the top one,
+with the whole 1.0.1 column still led by Claude-Sonnet-4.5's 86.20 on a different task set. Nothing here is a submission
+and the table above is unchanged.
+
+What changed is the axis on which this project is alone. Five anchors have now been priced and refused on artefacts
+already paid for, and the fourth is the one a competitor would quote against us if we published it alone: a rule that
+accounts for **98.5%** of the work the evaluator grades and credits **zero** calls to nothing — while opening **1,019
+items across 403 episodes** that no required write needs. Publishing "98.5% settlement" without the column beside it
+would be exactly the practice this project's competitive section exists to criticise: a headline metric separated from
+the cost that makes it meaningless.
+
+| what the field publishes | what this round added to the comparison |
+|---|---|
+| accuracy (`pass^k`), some rows cost per trajectory | — unchanged |
+| — | **coverage of the writes the evaluator requires and the episode performed** (654 of 720), with the calls credited to nothing beside it |
+| — | **open tax**: items a board leaves open that no required write needs — 2.53 per episode for the read anchor against 1.79 required |
+| — | **disclosure order**: 155 of 232 unattributed writes (66.8%) are asks the conversation states after the first turn |
+| — | **item precision of a tick**: 99.3% of the request board's ticks are backed by a graded write; 99.1% of the read board's |
+
+**Where this leaves the SOTA argument.** The accuracy axis is settled within resolution: 0.23 pp at 114 tasks is below the
+±3.2 pp the grid can distinguish, and the cheapest published row is 8.6× this project's price at 2.62 pp lower accuracy.
+The cost axis is where the margin is a fact. The **third** axis — a memory block measured against the contract the
+conversation actually states — is where nobody else has a number at all, and it is the axis on which this project has
+just produced a mechanism for its own negative results rather than another null.
+
+**The risk this round raises.** A competitor reading the taxonomy can implement "admit asks as the user states them" in
+a week. What they cannot copy is the refusal: that the same move costs 4.9× the items if the admission rule is not
+discriminating, which is what R230 is registered to test. The moat is not the rule, it is knowing which rules fail and
+by how much — and that is the one asset this project has been compounding for six rounds at ¥0 per round.

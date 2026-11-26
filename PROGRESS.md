@@ -30075,3 +30075,97 @@ round, and the reason is the same as last round's — a negative result that doe
 the configuration doing its job. What changed is the *reason* the airline column is empty: it is no longer "the parser
 cannot see this domain" but "this domain's requests do not name the state a parse would have to bind to", which is a
 finding about the corpus and about every corpus shaped like it.
+
+## 249.39 The read anchor: complete, accusation-free, and blind to the difference between work and looking
+
+R227 left the lane with a contract and no instrument that could judge it: settle an item when a receipt touches a
+record — and a rule defined that way passes any recall test by construction. R228 therefore did not measure recall. It
+priced **four rules on one grid** and reported the cost column beside the benefit column, because the round's claim is a
+trade and a single number would have been a score.
+
+The grid is R218b's: 456 episodes over 114 retail tasks, 403 with a required write the episode performed (**654 of 720**
+required writes discharged), 712 successful writes in all, read at zero cost in 0.6 seconds.
+
+| board | work accounted for | episodes complete | credited to nothing | items | open, unneeded | precision |
+|---|---|---|---|---|---|---|
+| read (`strict`) | **644 / 654 (98.5%)** | 393 / 403 | **0** | 1,633 | 1,019 (**2.53**/ep) | 99.1% |
+| read (`loose`) | 644 (98.5%) | 393 | 0 | 1,648 | 1,034 (2.57/ep) | 99.1% |
+| ask (turn one) | 415 (63.5%) | 223 | 232 | 970 | 278 (0.69/ep) | 99.3% |
+| request | 416 (63.6%) | 225 | 232 | 970 | 278 (0.69/ep) | 99.3% |
+
+**The read anchor cannot miss a discharge, and that is a fact about the corpus before it is a fact about the rule.**
+Every successful write in this grid touches a record the episode had already opened — `unaccounted` is zero on all 456
+episodes — so a rule that credits any write to any opened record is complete by construction. What it is not is
+*relevant*: it opens 1,633 items over 403 episodes and leaves **1,019 of them open that no required write needs**,
+2.53 per episode against 1.79 required writes per episode. It cannot tell work from looking.
+
+**The bars.** B1 settlement holds (+34.9 points, 169 episodes gained and 1 lost). B2 accusation holds trivially (0
+against 232). B3, the open tax, **fails** at 2.53 against 1.79 — and fails again on the replication at 2.54 against
+1.81. R228 is REFUTED on the bar that was added to its registration *before* the reading, for the reason 34.321 records:
+the first two could only be satisfied by construction, and a bar a rule passes by being itself is not a bar.
+
+## 249.40 The conjunction fails by one write, and the reason is the round's result
+
+R229 bound the two anchors: an item is an ask, settled by a write **of its family to a record the episode opened**,
+one ask per call. Relevance from the request, attribution from the read.
+
+| board | covered | complete | unaccounted | items | precision |
+|---|---|---|---|---|---|
+| ask | 415 (63.5%) | 223 | 232 | 970 | 99.3% |
+| request | 416 (63.6%) | 225 | 232 | 970 | 99.3% |
+
+It is the request board. 10 episodes complete gained, 12 lost, one write short on coverage. **The rule that made the
+read board complete was not "the read" — it was "no ask at all".** Any rule that keeps the ask keeps the request
+board's ceiling, and the ceiling is not an attribution limit: it is a limit on how many asks the contract holds.
+
+On the replication the conjunction does hold (+1.7 points, 404 against 393), and that reversal is reported as a
+property of the grids: two grids that disagree by one write on a bar of this size have not decided anything, and a
+reading that picked the grid it passed on would be the defect this lane audits for.
+
+**The taxonomy is what carries forward.** The 232 unattributed writes decompose, and the tool prints the decomposition
+on every run:
+
+| cause | writes | share |
+|---|---|---|
+| the ask is stated in a **later user turn** | **155** | 66.8% |
+| the ask was stated and already spent | 61 | 26.3% |
+| never stated in any turn — refusals and transfers | 16 | 6.9% |
+
+Two thirds of the deficit is **disclosure order**. τ²'s simulator is instructed to disclose progressively ("wait for the
+agent to ask for specific information before providing it"), so on a third of these tasks the operative ask arrives in
+turn three or five, and a block that froze its contract at the first message is describing a task nobody is performing.
+
+**And following the conversation is not the repair.** The same binding rule over every user turn reaches
+**625 of 654 (95.6%)** with 19 unaccounted — at **4,761 items**, 4.9× the turn-one contract, 3.90 unneeded open items
+per episode. The extra items are the user's *answers* read as asks: "the mechanical keyboard", "box", "manuals",
+"processing time". An answer can contain a cue word.
+
+So the dial has two ends and both are wrong — a third incomplete, or complete and swamped fivefold. That is the first
+measured property of the block's own **content** that accounts for a negative result as a defect rather than as an
+absence of effect, and it is registered as R230 with a discriminator that needs no vocabulary: admit a later-turn ask
+only from a turn the assistant did not precede with a question.
+
+## 249.41 The instrument had a bug, and it had been in every reading for four rounds
+
+`receipts_of` paired the k-th **write** with the k-th **tool message**, so any read before a write shifted the verdict by
+one position. 37 of 456 episodes (8.1%) carried a wrong `ok` column, in both directions: a successful read before a
+refused write made the refusal look like a change that happened, and a failed read before a successful write made the
+write look refused. The aggregate moved by 8 episodes ticked (305 → 313), 11 calls credited to nothing (215 → 226) and
+0.7 points of false accusation (83.5% → 84.2%). AUDIT 34.320 records the table and why no fixture caught it: every
+fixture had one write and one result, so the index was 0 under both conventions.
+
+**What this round cost and what it bought.** ¥0 spent. Two anchors refused (five in total now), one bug found and fixed
+with its effect on every published column quantified, two new instruments under the 95% floor at 99.3% and 99%,
+five boards priced on one grid, and a taxonomy that turns "the block does not help" into "the block is describing the
+wrong task, and here is which turn the right one is in".
+
+| item | state | price | what it buys |
+|---|---|---|---|
+| **R230** later-turn admission | registered, bars written | **¥0** | the largest measured defect in the block's content |
+| R217 airline grid | cancelled, twice refused | ¥16 unspent | — |
+| R221 2.0 submission | waiting | ¥34 | four columns the leaderboards lack |
+| telecom third domain | not registered | ¥0 to design | a domain whose user model discloses differently |
+
+**The product consequence, for the sixth round running: no default moves.** `serving-defaults.json` is untouched,
+because a rule that fails its own cost bar is not a rule to ship, and the two read boards that would otherwise have
+looked like a 35-point win are exactly the ones the open-tax column refuses.

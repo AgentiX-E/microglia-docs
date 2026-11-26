@@ -18266,3 +18266,78 @@ reason: it is the most generous rule the contract could ship, and it is the one 
 **The consequence.** R217 stays cancelled, the ¥16 stays unspent, and the airline column stays empty with a measured
 reason rather than a suspected one. The successor changes the anchor rather than the rule: bind items to the records
 the episode **reads**, because the identifier a write carries enters through a read and never through the request.
+
+## 34.320 — The receipt's verdict came from the wrong result, on 37 of 456 episodes
+
+`goal_board.receipts_of` collects the episode's **write** calls into `calls` and every **tool** message into `results`,
+then pairs them by index:
+
+```python
+for index, call in enumerate(calls):
+    ok = results[index]["ok"] and "error" not in results[index]["content"][:40]
+```
+
+`calls` is filtered to the write families; `results` is not filtered at all. So the k-th *write* was paired with the
+k-th *result*, and any read before it shifted the pairing by one. The function's own docstring states the invariant it
+was breaking — "τ² runs the calls of one assistant message in order and answers each with one tool message, so the k-th
+call is answered by the k-th result" — and the loop counted writes rather than calls.
+
+**What it moved, measured on R218b's grid (456 episodes).** 37 episodes (8.1%) carried a wrong `ok` column. Re-read
+with the pairing fixed:
+
+| reading | before | after |
+|---|---|---|
+| episodes whose board ticked at least one ask | 305 | **313** |
+| asks ticked over 456 episodes | 450 | **451** |
+| calls the request board credited to nothing | 215 | **226** |
+| calls attributed to a set ask it absorbed | 11 | **14** |
+| ticks at the weaker `overlap` grade | 19 | **22** |
+| false accusations over the last block of each episode | 228/273 (83.5%) | **239/284 (84.2%)** |
+| episodes with at least one false accusation | 167/428 (39.0%) | **178/428 (41.6%)** |
+
+**Both directions were wrong, and the direction matters.** A read that succeeded before a refused write made the refusal
+look like a change that happened — the board saying "done" about something the environment rejected, which is the one
+failure `receipts_of` exists to prevent. A read that failed before a successful write made the write look refused, and
+the board withheld a tick it had earned. The two happened to nearly cancel in the aggregate: 8 more episodes ticked,
+but also 11 more calls credited to nothing.
+
+**Why nothing caught it.** Every fixture in the self-test paired a write with a single result, so the index was 0 in
+both conventions and the two agreed. The corpus has reads before writes on nearly every episode, which is precisely the
+case the fixtures did not have.
+
+**What was changed.** The position is now counted over **every** call, and it rides on the receipt so that a second
+implementation cannot re-derive it differently. Two assertions were added that fail in opposite directions — a
+successful write after a failed read must be `ok`, and a refused write after a successful read must not be — and one
+that pins the position itself. The affected readings are corrected in the documents that quoted them, and the
+correction is small enough to leave every conclusion intact: the refusal lines were wrong 83.5% of the time before and
+84.2% after.
+
+## 34.321 — A bar that could only be satisfied by construction, added to the registration after the prediction
+
+R228 was registered with two bars: settlement at least as good as the request board's, and `unaccounted` no worse. Both
+are satisfied **by the definition** of a rule that credits every write to any record it opened — the read anchor cannot
+miss a discharge when the record was read, because that is what crediting means. A round whose bars can only pass is a
+round that reports a tautology and calls it evidence.
+
+This was noticed while implementing the instrument, before the reading was taken, and a third bar was added to the
+registration: the items a board leaves open that **no required write needs** must not outnumber the writes the task
+requires. The reason it was not noticed at registration time is worth stating: a bar is written as a comparison against
+the *other* rule, and a comparison cannot catch a tautology, because a tautology beats any rule it is compared with.
+
+**The consequences, stated plainly.** The addition is legitimate — the number it tests had not been read — but it makes
+R228's registration a two-stage artefact, and a reader is entitled to know that. The audit entry exists so that the
+registration's history is visible rather than inferred. The same discipline is now part of the tool: `_bar` returns
+`holds: False` with a reason when nothing is graded, because "no episode discharged a required write" must not read as
+a pass.
+
+## 34.322 — Four boards, and the temptation to report the one that wins
+
+R228 and R229 produced four rules on one grid, and the difference between them is a factor of thirty in the columns
+that matter: 98.5% coverage with 2.53 unneeded open items per episode, or 63.6% coverage with 0.69. Reported alone,
+either number is a score. Reported together they are a trade, and the trade is the finding — a block that cannot miss
+also cannot tell work from looking, and a block that says only what was asked misses a third of what was done.
+
+The tool therefore prints **all five boards on every run**, including the three the bar was not evaluated over, and the
+saved reading carries all of them. The audit entry is here because the alternative was a one-line headline ("the read
+anchor settles 35 points more work"), and this repository has spent three rounds learning that a quantity separated from
+the column beside it is a quantity somebody will eventually quote alone.

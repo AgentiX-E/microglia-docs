@@ -12573,3 +12573,46 @@ R217a's number; a later round that changes either implementation changes that li
 **Cost.** Zero, and that is the design constraint rather than a happy accident: the projection reads a file the domain
 already publishes, the census reads the projection, and both run in the same suite as the rest of the lane's Python
 drivers, under the same 95% floor.
+
+## 17.198 — Four boards from one transcript, and the provenance that makes the comparison possible
+
+**The question the design had to answer.** R227 refused the record anchor on a *corpus* property. The successor
+proposes a rule that credits a write to a record the episode opened, and that rule's advantage is definitional, so the
+instrument cannot be a recall figure. It has to be a **comparison of rules on one grid**, with the cost of each rule
+measured in the same pass — which means the instrument has to be able to say, per episode and per call, *which* call
+settled *which* item, under *each* rule.
+
+**One pass over the transcript, in time order.** `eval/tools/read_anchor.py` walks the messages once and builds an event
+list: `open` (a read that returned a record's contents or its identity), `listed` (a record merely named inside another
+record's result), `lookup`, `nothing`, `unknown`, `write` (with its position in `goal_board.receipts_of`), and `result`.
+The pass is in time order because the round's question is *when* a record became visible: a write to a record opened
+two turns later is `unrequested` at the moment it happens, and a board that sorted by kind instead of by time would
+credit it and hide the one failure the rule can produce.
+
+**The three declarations that decide the reading, all made before it.**
+
+1. **Records are orders and accounts, not products.** Products are read constantly and written never; making them items
+   opens four items for a task that needs one, which is the open tax the round is measuring. Two kinds is what the
+   domain has, and a third would be a tax nobody asked to measure.
+2. **Two scopes, `strict` and `loose`.** `strict` is a read that returned the record's contents or its identity;
+   `loose` adds every id *listed* inside another record. `get_user_details` returns the user's whole order list, so the
+   difference between the scopes is exactly the listing rule and nothing else, and `strict` is the product-meaningful
+   one. Both are reported, because a rule that only works under the generous scope is a rule about the scope.
+3. **Discharge is one-to-one, on family *and* record.** A task that requires `cancel_pending_order` on `#W1` and an
+   episode that cancels `#W1` twice has discharged one requirement and made one extra call. Matching by family alone
+   would credit the second cancel to the first requirement and call the episode more complete than it is.
+
+**Provenance, which `goal_board` had to grow.** The request board knew *which receipt* settled an ask by name only. A
+comparison needs the **position** of the call — so `receipts_of` now carries the position of each call among all calls,
+the raw arguments (because a record rule needs the key the identifier arrived under, and `ids` had already flattened
+that away), and `board_of` publishes `credited`, the positions of every call it credited to some item. That is what
+makes the request board's column and the read boards' column the same column.
+
+**What the tool refuses.** A bar over nothing is not a pass: `_bar` returns `holds: False` with a reason when no
+episode discharged a required write. A taxonomy that does not sum to the writes it explains fails `--check`. A saved
+reading names the grid's sha256 and byte count, so a number in a document is traceable to the bytes it came from —
+which is the class of defect the last three audit entries were.
+
+**Cost.** Zero, and the whole reading takes 0.6 seconds over 456 episodes: the grid is an artefact a previous dispatch
+already paid for, and both rules are read from it rather than dispatched against it. Three of the five anchors this
+project has refused were refused this way.

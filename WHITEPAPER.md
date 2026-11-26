@@ -5526,3 +5526,43 @@ read becomes an item — and it is registered against a comparison on a grid alr
 hypothesis. Three anchors have now been tested and closed: what the request declares, what the episode reveals, and
 what the words name. The fourth is the state the agent has actually looked at, and it is the last one this project will
 test before it concludes that the block's *content* is not the lever this benchmark can see.
+
+**Five anchors, five refusals, and the one that explained them.** A working memory that lists what a task still needs is
+a claim about two different things at once: *what is required* and *what has been done*. This project has now tested
+five rules for joining them, each against a bar written before its number was read, and each has been refused:
+
+| anchor | rule | why it was refused |
+|---|---|---|
+| request (R223) | the words the request states | 385 cut points at −2.81σ; the words do not separate settled from open |
+| reveal (R225) | what the episode's first tool result reveals | 565 cut points at +1.04σ over a noise expectation of 14.1; the chosen one reverses sign on the confirmation half |
+| record (R227) | the record the request **names** | 54.0% of graded writes named, against a bar of 0.75 — the requests describe queries over state |
+| read (R228) | the record the episode **opened** | 98.5% of the work accounted for and **2.53 items per episode that nobody needs**, against 1.79 required |
+| ask-bound (R229) | an ask, settled by a write of its family to a record it opened | one write short of the rule it was built to beat: the read rule's completeness came from having no ask at all |
+
+The fourth row is the one that looks like a victory and is not, and it is worth being precise about why. In this corpus
+every successful write touches a record the agent had already opened, so a rule that credits any write to any opened
+record **cannot** miss a change: its "credited to nothing" column is empty and it beats the request rule by 34.9 points.
+What it cannot do is tell work from looking — it opens an item for every order the agent read to answer a question, and
+leaves 1,019 of them open across 403 episodes with no required write behind any of them. A block that is complete and
+more than half noise is not a better block; it is a different way of being wrong.
+
+**And the fifth refusal produced the only diagnosis this project has of its own negative result.** The 232 writes the
+turn-one contract cannot account for split three ways: **155 (66.8%)** are asks the conversation states *after* the
+first user turn, 61 are asks already spent, and 16 are never stated at all. Two thirds of the deficit is disclosure
+order — simulated users, like real ones, say "the keyboard" only once you ask which order, and τ²' s user model is
+instructed to disclose progressively. A contract frozen at the first message is not a weak description of the task; it
+is a description of a different task.
+
+The repair is not "read the whole conversation", and that is the part worth publishing. Reading every user turn lifts
+coverage to 95.6% and leaves 19 writes unaccounted — at **4,761 items, 4.9 times** the turn-one contract, because a
+user's *answers* contain the same verbs as their requests and are read as asks: "the mechanical keyboard", "box",
+"manuals", "processing time". Both ends of the dial are wrong, and the dial is not the parser — it is *when* the
+snapshot is taken.
+
+That reframes the project's negative results. Across six rounds the block's content has been measured as having no
+effect on task success, and the standing explanation was that the state channel is weak. The measurement above offers a
+different one: the block was describing a task the agent was not performing, and the field's benchmarks cannot see the
+difference because none of them scores a memory block against the contract the conversation actually states. The next
+round tests whether the two can be separated by the one discriminator that needs no vocabulary — an ask is admitted
+from a later turn only when the assistant did not precede it with a question — with bars on recovery, noise and
+coverage, and with the honest possibility that the defect is in the benchmark's user model rather than in the block.

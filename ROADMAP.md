@@ -10324,3 +10324,65 @@ successor is not allowed to spend money on the strength of a hypothesis that its
 third and last anchor this lane has: request (R223), reveal (R225) and record (R227) would all be at chance, and the
 honest statement becomes that the block's *content* is not the lever this benchmark can see. `unrequested` rising by
 more than the settlement gains refuses the round even if settlement improves.
+
+## R228 (read 26 Nov, ¥0) — REFUTED: the read anchor cannot miss, and cannot tell work from looking
+
+The successor to R227 moved the anchor from the record the request names to the record the **episode read**. On
+R218b's grid — 456 episodes, 403 of them graded, 654 of 720 required writes performed — it settles **644 of 654
+(98.5%)** against the request board's 416 (63.6%), and credits **zero** calls to nothing, because in this corpus every
+successful write touches a record the episode had already opened.
+
+| board | covered | episodes complete | credited to nothing | items | open, unneeded | precision |
+|---|---|---|---|---|---|---|
+| read (strict) | 644 (**98.5%**) | 393 | **0** | 1,633 | 1,019 (**2.53**/ep) | 99.1% |
+| request | 416 (63.6%) | 225 | 232 | 970 | 278 (0.69/ep) | 99.3% |
+
+**B1 holds, B2 holds, B3 fails** — the open tax is 2.53 per episode against 1.79 required writes, so the block is more
+than half noise, and it fails again on the replication (2.54 against 1.81). The round is refused on its own third bar,
+which was added to the registration before the reading precisely because the first two could only be satisfied by
+construction (AUDIT 34.321).
+
+**What it establishes.** Completeness and relevance are not two settings of one dial. A rule with no notion of a request
+is complete and useless; a rule that only knows the request is relevant and a third incomplete.
+
+## R229 (read 26 Nov, ¥0) — REFUTED: the conjunction does not recover the coverage
+
+An item is an ask, and the read supplies only the binding — a successful write of the ask's family **to a record the
+episode opened**, one ask per call. Relevance from the request, attribution from the read.
+
+It lands at **415 of 654 (63.5%)** — one write *below* the request board — with 232 unaccounted and 970 items. Bars:
+B1 fails by one write, B2 holds, B3 holds at 99.3% of ticks backed by a graded write. On the replication it holds
+(+1.7 points, 404 against 393); the reversal is reported as a property of the grids and not as a pass.
+
+**Why it fails is the round's result.** The rule that made the read board complete was not "the read" but "no ask at
+all". Keeping the ask keeps the request board's ceiling. R217a learned the same thing in the airline domain from the
+other direction: a contract that is only about records cannot see the asks, and a contract that is only about asks
+cannot see the records.
+
+**And the taxonomy is the finding that carries forward.** The 232 unattributed writes decompose as
+
+| cause | writes | share |
+|---|---|---|
+| the ask is stated in a **later user turn** | **155** | 66.8% |
+| the ask was stated and already spent | 61 | 26.3% |
+| never stated in any turn (refusals, transfers) | 16 | 6.9% |
+
+Two thirds of the deficit is **disclosure order**: τ²'s simulator is instructed to disclose progressively, so the
+operative ask often arrives in turn three, and a contract frozen at the first message describes a task nobody is
+performing. Reading every user turn reaches **95.6%** (625 of 654) with 19 unaccounted — at **4,761 items**, 4.9× the
+turn-one contract, 3.90 unneeded per episode, because the user's *answers* contain cue words and are read as asks.
+
+## R230 (registered 26 Nov, ¥0) — admit a later-turn ask only from a turn that is not an answer
+
+The one discriminator that needs no vocabulary: an ask is admitted from a user turn after the first **only when the
+assistant's previous turn did not ask the user a question**. A reply to a question is a value filling a slot the agent
+requested, not a requirement; a turn that follows a statement or a tool call is the user volunteering.
+
+Bars: recovery of at least **60%** of the 155 later-turn writes; no more than **twice** the turn-one contract's 970
+items; and coverage at least **73.6%**, ten points over the request board. B1 alone can be satisfied by a filter that
+helps only where the writes are; the third bar says the help has to be worth having.
+
+**Refutation.** If recovery is lost, the later-turn asks are not distinguishable from answers by turn position and the
+content question closes for this corpus. If noise is not removable while recovery holds, the discriminator has to move
+from the turn to the clause — which would be the first result in this lane that locates a defect in the benchmark's
+user model rather than in the block.
