@@ -29654,3 +29654,99 @@ and did not cost accuracy. The number still holds as a measurement between two a
 is the story about *why*, and a placement chosen for a wrong reason is one this project should stop describing as if the
 reason were right. It remains shipped because it is still the arm that measured cheaper, and because changing a default
 on an unexplained number is worse than keeping one.
+
+## 249.27 Resolution is a property of the domain, not of the budget — retail's floor is 3.21 points
+
+Every round in this lane has been priced in episodes and judged in points, and nobody had asked the question that
+sits between the two: **how large an effect can this grid resolve?** R218c answered it once, for one grid, and the
+answer — 13.2 points at 114 tasks — was quoted as a caveat. It is not a caveat. It is a ceiling, and it moves the
+whole plan.
+
+The arithmetic is one decomposition. For a paired grid the per-task difference of the two arms has a spread, and that
+spread splits in two: a **measurement** term, which falls as `1/m` because averaging more attempts a task estimates
+each task better, and a **heterogeneity** term, which does not fall at all because it is the tasks themselves
+disagreeing. Fitting both from R218b's 228 paired episodes:
+
+| attempts a task | spread | smallest resolvable effect (80% power) | episodes | USD |
+|---|---|---|---|---|
+| 1 | 46.6 pp | **12.24 pp** | 228 | 1.25 |
+| 2 | 33.9 pp | 8.89 pp | 456 | 2.51 |
+| 4 (R218b as run) | 25.6 pp | **6.72 pp** | 912 | 5.02 |
+| 11 | 17.5 pp | 4.60 pp | 2,508 | 13.79 |
+| 50 | 13.8 pp | 3.62 pp | 11,400 | 62.70 |
+| ∞ | 12.2 pp | **3.21 pp** | — | — |
+
+`var(m) = 0.2025/m + 0.0150`. The top row is the round: **at 114 tasks this domain cannot resolve an effect smaller
+than 3.21 points at any budget**, because the remaining spread is twelve points of task-to-task difference and the
+only way to average that down is more tasks — and retail holds 114. That is the whole domain, so the number is not a
+budget choice. It is a wall.
+
+**What the wall refuses.** Two quantities the lane has been chasing sit underneath it:
+
+| quantity | value | under the floor? |
+|---|---|---|
+| the gap to the strongest text row on the board | **0.23 pp** | **yes** |
+| R219b's replication of R219 — the reading that cancelled the admission rule | **−0.9 pp** | **yes** |
+| the same rule pooled over both dispatches | **+4.8 pp** | no — and resolving it needs 10.95 attempts a task, $13.73 |
+
+The second row is the uncomfortable one. The admission rule was cancelled because its replication read −0.9 points
+against the first dispatch's +10.5, and an 11.4-point swing is far above the wall, so that contradiction is real. But
+the *pooled* estimate the two dispatches support is +4.8 points, which clears the floor by 1.6 — meaning the question
+"does this rule help?" has never been measured at a resolution that could answer it. It has been read twice at the
+floor's edge and called twice.
+
+So the honest statement about the leaderboard changes shape. It is not "microglia is 6th of 49 and 0.23 points behind
+the second text row"; it is **"the six text rows on this board, spanning 84.20 to 86.20, are one measurement"** —
+their whole range is smaller than one grid's resolution. Nothing in that ordering is measured, in either direction.
+This project cannot prove it is ahead and cannot be shown to be behind.
+
+## 249.28 Two rounds cancelled before dispatch, and both cancellations cost nothing
+
+The wall is only useful if it is applied to the queue, so it was applied to the two funded items on it.
+
+**R222 is cancelled on its own arithmetic.** It registered 1,600 episodes at $7.4 to resolve the admission rule's
++4.8 points. The decomposition says 4.8 points needs **10.95 attempts a task and 2,497 episodes, $13.73** — the label
+was 85% low, because it assumed episodes are independent when the task-level spread says they are not. At $7.4 the
+round would have bought about 70% power: enough to run, not enough to believe, which is the worst purchase on the
+menu. Cancelled rather than re-priced, because a round whose price moves by 85% when the arithmetic is done properly
+was never the round that was registered.
+
+**R224 is cancelled for a subtler reason, and it is the one worth keeping.** R224 was to reconstruct the memory
+against the live state — the literature's strongest published gate, with ALFWorld reading 85.2 against 79.6 without
+reconstruction. The ceiling can be computed before running it, because this project has already measured *where* its
+harm lives:
+
+| stratum | tasks | what memory does there | can a content repair reach it? |
+|---|---|---|---|
+| solved on every attempt | 66 | **−9.5 pp** | **no** — these are damaged by being served at all, not by a wrong sentence |
+| solved some of the time | 43 | **+7.5 pp** | yes — this is where wrong or stale content does its work |
+| never solved | 5 | +25 pp | yes, marginally |
+
+Crediting the entire published 5.6-point ablation to the mixed stratum gives an arm-level lift of **+2.11 pp**.
+Doubling that gain gives +2.83 pp. Both are under the wall. To clear 3.21 points the mixed stratum would have to gain
+**+19.5 pp** — nearly three times the strongest published reconstruction result. The round could not have produced a
+readable answer at any sample size this budget allows, so $18 buys a number that will be quoted as "no significant
+difference" and read as a failed idea rather than as an underpowered one.
+
+That distinction is the reason to cancel rather than to run small: **an underpowered null is worse than no experiment**,
+because it spends the idea's credibility along with its money.
+
+## 249.29 What is left to spend, and why the answer is nearly nothing
+
+| item | was | now | why |
+|---|---|---|---|
+| R218e (in flight) | $1.22 | $1.22 | the dose per episode; already paid, reads in ~25 min |
+| R222 admission rule | $7.4 | **$0** | re-priced at $13.73 for 70% → 80% power, and 4.8 pp is at the wall's edge |
+| R224 reconstruction | $18 | **$0** | ceiling +2.11 pp against a 3.21 pp wall |
+| R224b reveal-keyed serving gate | $9 | **$0** | depends on R224; and no field that varies inside a task exists in the prefix |
+| R217 airline | $5.4 | **$5.4** | **the only purchase that buys independent tasks** — 50 more of them in a domain this project has not measured |
+| R221 2.0 submission | $34 | **$0 now** | a submission whose ordering is unmeasurable buys nothing; it waits for a real improvement |
+
+Of $74.1 of queued work, **$68.7 is cancelled and $5.4 survives**, and the surviving item is the only one that attacks
+the wall rather than leaning on it.
+
+**Why "spend nothing" is not the same as "stop".** The wall does not close the project; it relocates the claim. Three
+columns are already published facts that need no dispatch: cost at **$0.00558 a trajectory**, one twentieth of the
+board's median row; stability at **pass^4 53.51**, which most rows do not publish at all; and the served-share with
+its conditional deltas, which **no row on the 72-entry directory reports**. The wall adds a fourth: a project that
+states its own resolution is a project whose rankings can be read correctly, and none of the six text rows does it.

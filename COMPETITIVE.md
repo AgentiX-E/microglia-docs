@@ -10702,3 +10702,55 @@ The threat to state plainly: if a competitor publishes a served-share and a skip
 does, the differentiator above is gone and the remaining edge is only the paired two-arm discipline. The next row this
 project submits should therefore carry the served share beside the score — a column no row on the 72-entry directory
 has — rather than a higher point estimate.
+
+## R223.2 — The board's retail column has six text rows inside one grid's resolution, and no row publishes the number
+
+The competitive picture changed this round without a single competitor moving, because this project measured something
+about the *board* rather than about itself. Fitting R218b's 228 paired episodes gives retail's resolution as
+`var(m) = 0.2025/m + 0.0150`, whose floor at 114 tasks is **3.21 points**. The retail `pass^1` column on the current
+directory spans:
+
+| row | retail `pass^1` | task set | distance from this project | inside one grid's resolution? |
+|---|---|---|---|---|
+| Claude-Sonnet-4.5 | 86.20 | 0.1.3 | +2.00 pp | **yes** |
+| Gemini 3.0 Pro | 85.30 | 0.1.3 | +1.10 pp | **yes** |
+| Pine Voice Preview | 85.09 | 1.0.1 | +0.89 pp | **yes** |
+| Qwen3.5-397B-A17B | 84.43 | 1.0.1 | +0.23 pp | **yes** |
+| **microglia** | **84.20** | 1.0.1 | — | — |
+| GPT-5.2 | 83.90 | 1.0.1 | −0.30 pp | **yes** |
+
+**The whole text spread is 2.30 points against a 3.21-point floor.** Every pairwise ordering among these six is inside
+one measurement's noise, which means the ranking that this project has been reporting against — 6th of 49 pooled, 2nd
+of 9 among text rows at 1.0.1 — is a ranking of point estimates and not of measured differences. Three of the six
+additionally run a different task set (0.1.3), so their comparison carries a second, larger source of incomparability
+on top of the sampling one.
+
+**This is not a defence, and it cuts both ways.** The same arithmetic says this project cannot demonstrate it is ahead
+of Qwen3.5, and cannot be shown to be behind it. A 0.23-point gap would need 972 tasks to resolve, which is 8.5 times
+the domain. Nobody in this field is close to that, so nobody's ordering on this column is established.
+
+**What it does establish is a column nobody publishes.** Six rows give a point estimate and none gives the smallest
+difference it could detect. A board without that number cannot be read correctly: it invites a reader to treat a
+six-way tie as a six-way ranking, and every project on it has an incentive not to say so. The differentiator this
+project can now claim is not a higher score — it is the **resolution**, and it is the only claim on this board that a
+competitor cannot quietly decline to match, because declining it is itself an admission that their ordering is
+unmeasured.
+
+| what microglia publishes | who else on the 72-entry directory publishes it |
+|---|---|
+| retail `pass^1` and `pass^4` together | 4 of 48 (pass^4 is rare) |
+| cost per trajectory ($0.00558, 1/20.5 of the median row) | 19 of 48, and none beside a resolution |
+| served share and the skip-conditional delta | **0** |
+| **the smallest effect its own grid can resolve** | **0** |
+| the task-level design effect (4.94 at 14 attempts) | **0** |
+
+**The threat, stated as a threat.** A resolution column is cheap to compute once someone thinks of it, and it is the
+kind of thing a strong group publishes as a methods note the moment it occurs to them. If a competitor prints a
+confidence interval on a paired design before this project prints its floor, the methodological edge narrows to the
+two columns that are genuinely hard — served share and skip delta — both of which need a two-arm grid to exist, which
+most rows on this board do not have.
+
+**The strategic consequence, and it is where the money goes.** Retail's floor cannot be lowered by any budget, so
+spending against retail accuracy is spending against a wall. The only purchase that buys resolution is **more
+independent tasks in a domain not yet measured**, which makes R217 (airline, 50 tasks, ¥5.4 = $0.74) the single
+capital-efficient item on the queue and the $68.7 of cancelled work the saving that funds it.

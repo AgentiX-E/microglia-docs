@@ -10098,3 +10098,51 @@ it sits: a second system message is re-billed **17 tokens a call**, inside the 1
 | R216b's −4% | keeps its measurement, loses its derivation — every later quote has to say so (PROGRESS 249.26) |
 | the placement default | **unchanged**: the tail is still the arm that measured cheaper over two arms of one dispatch, and changing a default on an unexplained number is worse than keeping one |
 | the explanation | two candidates remain, neither proved: a write-versus-render attribution effect, or the grid drift this lane has measured at 8.8 points; separating them needs a bill decomposed by call type, which is **not registered** |
+
+## R223 continued (26 Nov, ¥0) — the wall: 3.21 points, and the two rounds it cancelled
+
+**What changed.** R223 asked whether to serve at all and answered "no prefix observable can decide it". That left a
+second question unasked, which turns out to govern the whole queue: *how large an effect can this grid resolve?*
+`eval/tools/resolution.py` answers it from a paired grid already on disk, by decomposing the per-task difference's
+spread into a measurement half that falls as `1/m` and a task half that does not.
+
+| attempts a task | spread | resolvable at 80% power | episodes | USD |
+|---|---|---|---|---|
+| 1 | 46.6 pp | 12.24 pp | 228 | 1.25 |
+| 2 | 33.9 pp | 8.89 pp | 456 | 2.51 |
+| **4 (as run)** | 25.6 pp | **6.72 pp** | 912 | 5.02 |
+| 11 | 17.5 pp | 4.60 pp | 2,508 | 13.79 |
+| 50 | 13.8 pp | 3.62 pp | 11,400 | 62.70 |
+| **∞** | 12.2 pp | **3.21 pp** | — | — |
+
+`var(m) = 0.2025/m + 0.0150`. Retail is a 114-task domain and this project runs all of it, so the bottom row is not a
+budget decision — it is the wall. **3.21 points is the smallest effect this domain can resolve at any price.**
+
+**Three consequences, in order of how much they cost.**
+
+1. **The leaderboard's six text rows are one measurement.** 84.20 (this project) to 86.20 spans 2.00 points, under the
+   wall. Nothing in that ordering is measured in either direction, which retires the "0.23 pp behind the second text
+   row" framing as a category error (COMPETITIVE R223.2).
+2. **R222 is cancelled**, not re-priced: 4.8 points needs 10.95 attempts a task and $13.73, 85% above its label, and
+   even then it sits 1.6 points above the floor (AUDIT 34.311).
+3. **R224 is cancelled for a ceiling**, computed without a dispatch: a content repair can only reach the 43 mixed
+   tasks, and crediting it the full published 5.6-point ablation lifts the arm by **+2.11 pp** — under the wall. To
+   clear it the mixed stratum would need +19.5 pp, three times the strongest published reconstruction result.
+
+| queue item | was | now | one line |
+|---|---|---|---|
+| R218e dose | $1.22 | in flight | reads ~04:53 UTC |
+| R222 admission | $7.4 | **$0** | price was 85% low; effect at the wall's edge |
+| R224 reconstruction | $18 | **$0** | ceiling +2.11 pp against a 3.21 pp wall |
+| R224b reveal gate | $9 | **$0** | no prefix field varies inside a task |
+| **R217 airline** | $5.4 | **$5.4** | **the only purchase that buys independent tasks** |
+| R221 2.0 submission | $34 | **$0 now** | an unmeasurable ordering buys nothing |
+
+**$74.1 queued → $5.4 survives (−93%).** R217 is kept and moved to the front of the queue for one reason: it is the
+only item that attacks the wall. Fifty tasks in a domain this project has not measured do not lower retail's floor,
+but they are fifty independent observations of the same mechanism, which is the only currency the wall accepts.
+
+**The rule this round installs.** A funded round must carry two numbers before it is registered: the smallest effect
+its grid can resolve, and the largest effect its mechanism can produce. A round is admissible only when the second
+exceeds the first. Both are computable for free, and a queue audited with them would have refused $68.7 of its own
+work (AUDIT 34.312).

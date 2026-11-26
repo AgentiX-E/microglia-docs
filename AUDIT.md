@@ -18008,3 +18008,53 @@ promotions with no ledger of refusals is a ledger that makes a project look luck
 states the product consequence — that no default moves, because nothing was promoted. Nothing reads the block: it is
 documentation that travels with the artefact the tests bind, which is the only kind of documentation that cannot drift
 away from the number it explains.
+
+## 34.311 — A price tag that assumed episodes are independent, and the 85% it hid
+
+**The claim.** R222 was registered at `estimateUsd 7.4` for 1,600 episodes, described as "~800 tasks a contrast",
+against a +4.8 pp effect.
+
+**Two defects, and the second is the one that matters.**
+
+*The task count does not exist.* Retail holds **114** tasks and this project runs the whole domain, so "800 tasks a
+contrast" is 114 tasks run seven times. The registration was written from an episode budget that was converted into a
+task count as if a task could be created by planning one, and nothing in the registry checked the conversion against
+the domain's size. A round that promises instruments the domain cannot supply will either be quietly shrunk at dispatch
+— which is what happened to R218e, 114 episodes becoming 228 — or run at a resolution nobody re-derived.
+
+*The independence assumption.* The price implies that 1,600 episodes carry the information of 1,600 independent
+observations. They carry the information of about **324**: the task-level decomposition fitted from R218b is
+`var(m) = 0.2025/m + 0.0150`, so fourteen attempts a task sit at a design effect of 4.94. Three hundred and
+twenty-four effective observations resolve 5.03 points at 80% power, and the round's target was 4.8 — which is how a
+label of $7.4 becomes a requirement of $13.73 and 10.95 attempts a task.
+
+**Why this is an audit entry and not an edit.** Re-pricing a registered round to 85% above its label, silently, is
+exactly the kind of correction that makes a ledger untrustworthy: every later reader would see a number smaller than
+the one the round needs and would assume the difference was negotiated. The round is cancelled and both figures are
+kept — `estimateUsd` 7.4 as registered, `correctedUsd` 13.73 as measured — so the size of the error travels with the
+correction.
+
+**The generalisation, which is in the tool rather than in this paragraph.** Any episode budget converted into a
+resolution by dividing by the cost assumes the episodes are independent. `eval/tools/resolution.py` now prints the
+design effect and the floor beside the price for every grid it reads, so the conversion cannot be made silently again.
+
+## 34.312 — The queue was audited for correctness and never for resolvability
+
+**The claim.** Two rounds had been sitting on the queue for days, R222 at $7.4 and R224 at $18, both registered with a
+stated effect they existed to detect, both with an `outcome` field waiting to be filled.
+
+**The defect.** Neither registration said how large an effect the grid could *see*. R222 named +4.8 pp and never
+checked it against the resolution; R224 named a mechanism and never asked what the largest lift a content repair could
+produce was. Both were audited for whether the mechanism was sound and for whether the arms were right, which are the
+questions a design review asks, and neither was audited for whether a positive result would have been distinguishable
+from zero at the sample size being bought. That is a whole class of defect: **a round can be perfectly designed and
+still be unable to answer its own question.**
+
+**What replaced the audit.** Every funded round now carries two numbers it did not carry before — the smallest effect
+it can resolve, and the largest effect its mechanism can produce — and a round is only admissible when the second
+exceeds the first. R224 fails that test by a clear margin (+2.11 against 3.21) and R222 clears it only at a price 85%
+above its label, which is a different failure with the same consequence.
+
+**The cost of the defect, stated in the only unit that matters.** Of $74.1 of queued work, **$68.7 would have been
+spent on measurements that could not have resolved their own hypotheses**, and the money would have been spent
+gradually, one plausible dispatch at a time, with nothing in the pipeline to say so.

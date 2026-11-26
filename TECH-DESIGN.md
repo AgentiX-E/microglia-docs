@@ -12372,3 +12372,82 @@ multiplicity is a p-hack with a table.
 | CI | measured on every push under the same 95% floor as the rest of the Python lane (`--expect-files 21`) |
 | cost | ¥0 — it reads documents already on disk |
 | registration | `prereg/R223-serve.md`; the successor round is deliberately **not** registered until a proxy passes the screen |
+
+## 17.195 — Resolution as a first-class quantity: the decomposition, the floor, and the admissibility test
+
+17.194 designed the instrument that decides *whether* to serve an episode. This section designs the one that decides
+*whether a round can answer its own question*, and it exists because the queue was audited for correctness and never
+for resolvability (AUDIT 34.312).
+
+### The quantity
+
+For a paired grid, let `d_i` be the difference of the two arms' pass rates on task `i`, averaged over `m` attempts.
+The standard error of the mean difference is `sd(d)/√N`, and `sd(d)` depends on `m` in a way that splits cleanly:
+
+```
+var(m) = a/m + b
+       ↑      ↑
+       |      └── task-to-task heterogeneity: the tasks themselves disagree, and no attempt count averages them away
+       └───────── measurement: two arms of m attempts estimate the same task imperfectly, and averaging helps
+```
+
+The smallest effect resolvable at 80% power and a two-sided 5% test is `2.802·√var(m)/√N`. As `m → ∞` the first term
+vanishes and the quantity converges to `2.802·√b/√N` — **the floor**. It is a function of `N` alone, so a domain with a
+fixed task count has a fixed floor, and no budget crosses it.
+
+### Why two rungs and not a regression
+
+The ladder's rungs are nested prefixes of the same grid: attempts 1..2 are a subset of attempts 1..4, so their errors
+are correlated and a least-squares fit over all rungs would report an uncertainty that the data cannot support. Two
+points determine the two parameters, and the two points chosen are the extremes — attempt 1, where the measurement term
+is largest, and the deepest rung the grid ran, where it is smallest. A fit from the extremes is the most conservative
+pair available and it uses every observation the grid holds.
+
+### The clipping rule, and what a negative `a` means
+
+If the spread does not fall as attempts rise, the fitted `a` is negative, which is not a small measurement error but a
+statement that the decomposition does not describe this grid: the arms can drift apart faster than averaging pulls them
+together, and when they do, more attempts buy nothing at all. The fit is then **clipped** with `a = 0` and the floor
+set to the observed spread at one attempt, and the reading carries `clipped` so a table prints the fit's status beside
+its numbers. A negative variance is not a variance, and a floor below zero would license any claim.
+
+A second clipping covers the opposite edge: when the fitted intercept lands below zero because the top rung is nearly
+at the floor, all of the spread is called measurement and the floor is zero. Both clips are named in the output rather
+than silently applied.
+
+### The admissibility test, which is the point of the file
+
+A funded round now carries two numbers:
+
+| number | where it comes from | computed by |
+|---|---|---|
+| **smallest resolvable effect** | the grid's task count and its fitted spread | `resolution.py` |
+| **largest effect the mechanism can produce** | the mechanism's own ceiling, from the harm stratification | hand, from a measured stratum table |
+
+A round is admissible only when the second exceeds the first. R224 failed at +2.11 against 3.21 and was cancelled
+before any money moved; R222 cleared 4.8 against 3.21 but only at 10.95 attempts a task, 85% above its registered
+price, and was cancelled for the price rather than for the ceiling.
+
+The test is deliberately asymmetric: the ceiling is an **upper bound** computed by crediting the mechanism every task
+it could reach and the full size of the strongest published result, so failing it means the round cannot succeed even
+under assumptions chosen to favour it.
+
+### What the floor changes about the leaderboard
+
+Two rows of a leaderboard that differ by less than the floor are not ordered. Applying 3.21 points to the board's
+retail column puts all six text rows — 83.90 to 86.20 — inside one band, which converts a ranking into a tie and
+retires the "0.23 pp behind the strongest text row" framing permanently. The correct statement is not that this
+project is close to the leader; it is that **the leader's margin over this project, and over the sixth row, is smaller
+than one grid can see**. A board that does not print its resolution invites the opposite reading, which is why the
+column is worth publishing even though it is not a score.
+
+### Gates
+
+| item | value |
+|---|---|
+| code | `eval/tools/resolution.py` |
+| self-test | 57 checks: both clips, the unreachable case, the design-effect scaling, a ragged grid, the failing assertion path |
+| coverage | 99% of 283 statements and 70 branches; the only uncovered arc is the `__main__` guard's false side |
+| CI | under the same 95% floor as the rest of the Python lane (`--expect-files 22`) |
+| cost | ¥0 — it reads a grid already on disk |
+| outputs | `wall`, `ladder`, `fit`, `priced`, and a sentence that states the floor before any price |
