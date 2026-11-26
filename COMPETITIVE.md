@@ -10658,3 +10658,47 @@ control stratum. The nearest thing is a "regression rate" over the suite, which 
 memory should be rewritten and one whose memory should be **served less often**, and it is the second. That is a
 product decision — when to serve — that no accuracy number on a leaderboard can express, and it is where this project's
 next round goes rather than to a better block.
+
+## R223.1 — the field has moved to gating, and none of them publishes what a gate does on the pairs it refuses
+
+Between R218c-lit and this round the literature turned. The question R218c-lit catalogued as "why memory hurts" is now
+being answered with **admission**: a gate in front of retrieval. That validates this project's direction and it
+narrows the moat, so the competitive reading has to be stated as a threat rather than as a lead.
+
+| work | what it gates | signal it gates on | what it publishes | where this project differs |
+|---|---|---|---|---|
+| **MemHarness** (arXiv:2607.28272, as reported) | whether a retrieved memory is used raw or **reconstructed** against the current state | the mismatch between the memory's original observation and the live state | ALFWorld **85.2** reconstructed against **79.6** without reconstruction; a prompt-only variant at **77.7**, below doing nothing | it reconstructs; this project prices *whether to serve at all*, and publishes the served-conditional effect with a sign test |
+| **MemGate** (arXiv:2606.06054) | candidate memories at retrieval time, via a query-conditioned mask | a learned mask over the query and the candidate | LoCoMo-based utility plus safety reductions across A-Mem, Mem0, MemOS, OpenClaw and four backbones | it optimises safety and personalisation; the quantity here is a task-level pass flag on a benchmark grid, and the gate is judged by a held-out half |
+| **abstention-aware retrieval** (arXiv:2604.27283, as reported) | whether to retrieve at all, with a bandit that abstains | risk-sensitive bandit over retrieval reward | a **75% false-positive rate on hard negatives with naive similarity**, **0.0%** with the abstention gate | closest neighbour in *decision shape*; it measures retrieval quality, this project measures episode success on a paired two-arm grid |
+| **validated-episode retrieval** (NeurIPS 2026, as reported) | retrieval restricted to episodes that were **validated** as fixes | whether the past episode resolved its task | **29 of 94** resolved against **19 of 94** without memory (30.9% vs 20.2%) | same instinct — serve less, serve better — and it publishes no served share, no skip-conditional effect, no confirmation split |
+| **MRMS** (arXiv:2607.04617) | the retrieval-to-generation gap as a governance layer | staleness, contradiction, supersession | **19–53% token reduction** at equal quality | it optimises tokens; this project reports tokens *and* the accuracy the tokens bought |
+| **MAP-Graph** | shared memory admission for multi-agent workflows, by **action risk** | provenance plus the action's risk tier (allow / block / reverify / redact / ask) | a five-way action gate, with ancestry-aware permission intersection | it gates actions, not episodes; it has no accuracy reading on a public benchmark |
+
+Three things follow, and the first is uncomfortable.
+
+**One: the honest SOTA statement is not "we gate memory".** Four independent groups arrived at gating within the same
+year, from four different signals — reconstruction mismatch, a learned mask, a bandit that abstains, a validation
+flag. A contribution that reads "we also gate" is a commodity. What none of the six publishes is the pair of numbers
+this round's instrument produces: the effect **on the pairs the gate refuses** (`skipDelta`, with its own sign test)
+and the effect **on the pairs it serves** (`serveDelta`), separated, because a gate that refuses well and serves at a
+loss has improved nothing. MemHarness comes closest with a 5.6-point ablation, and it ablates the *reconstruction*, not
+the *serve decision*.
+
+**Two: the multiplicity column is the differentiator, and it is a methodological one.** Every paper above reports the
+gate it built and its improvement. None reports how many gates were screened to find it, so a reader cannot tell a
+search from a design. This round screened **385** cuts, found **one**, and reported that noise alone would have yielded
+**9.6** — which converts a positive result into a refutation in a single line. That is not a bigger number than a
+competitor's; it is a number no competitor prints, and it is the one that stops a reader from being misled by the
+others.
+
+**Three: the leaderboard standing does not move this round, and it should not.** microglia sits at **84.20** retail
+`pass^1` on τ² `1.0.1` — **6th of 49** pooled, **2nd of 9** among text rows at 1.0.1 behind Qwen3.5-397B-A17B's 84.43,
+a gap of 0.23 pp against a ±3.2 pp resolution at n = 114. The SOTA on that column is **Claude-Sonnet-4.5 at 86.20**,
+measured on `0.1.3` — a different task set, which is why the pooled rank is a category error and the scoped one is the
+only comparable statement. A screening round that spends ¥0 cannot and should not move a leaderboard; what it moved is
+the project's position on the question the leaderboard does not ask.
+
+The threat to state plainly: if a competitor publishes a served-share and a skip-conditional delta before this project
+does, the differentiator above is gone and the remaining edge is only the paired two-arm discipline. The next row this
+project submits should therefore carry the served share beside the score — a column no row on the 72-entry directory
+has — rather than a higher point estimate.

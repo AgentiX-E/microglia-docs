@@ -17900,3 +17900,70 @@ Three things came out of it.
 The general lesson is the one this file keeps relearning in different coats: **a gate whose failure cannot reach its
 author is a gate that costs a cycle per discovery.** The three pushes above cost about fifteen minutes of CI and would
 have cost one had the channel carried the sentence the tool already printed.
+
+## 34.306 — One observable read the whole episode, in a file whose premise is that nothing does
+
+**The claim.** `observables()` walks an episode's messages and stops at the first tool call outside the identity
+family, so every field it returns is computable at the moment a serving decision would be taken. The regression test
+for the claim re-reads a transcript truncated at the reveal and asserts the observable set is identical.
+
+**The defect.** The set included `calls`, the total number of tool calls in the episode. On the fixture the truncation
+test compared `calls: 3` against `calls: 2` and failed — the field was reading the trajectory the policy is supposed to
+act *before*. It had also passed through the screen: `skip calls>=5` was one of the 385 cuts, and a cut on a
+whole-episode count is not a serving policy at all but an oracle that has already watched the outcome, priced as if it
+were available at the start.
+
+**Why the test caught it and nothing else would have.** The screen's own output is a table of numbers, and `skip
+calls>=5` looked like every other row: `NO_SEPARATION` at 98% served, no p-value. Nothing in that row says the
+observable is unavailable at decision time — the value is a plausible number between two other plausible numbers. The
+only thing that distinguishes a prefix from an oracle is a **second reading of the same episode with the future
+removed**, which is why the truncation check is the load-bearing test of the whole file rather than one assertion
+among ninety.
+
+**The fix.** The field is now `callsToReveal`: the identity calls plus the one reveal, which is the prefix's own
+length, and the truncation test passes because the quantity is defined on the prefix rather than computed over the
+document. The general rule this is the fifth instance of: **an observable is not "the column I computed", it is "the
+column that exists at time t", and the only proof of the second is a re-computation on a truncated input.**
+
+## 34.307 — Two branches no input could reach, and a check that graded a subset of size zero
+
+**The claim.** The verdict ladder refuses a policy for the right reason: not a decision, too few pairs, not profitable,
+admissible.
+
+**The defect.** It refused on two share gates, `servedShare` above 0.90 and `skippedShare` below 0.05, and the second
+is unreachable: a skip below 5% is a serve above 95%, so the first gate has already fired. The line was dead code in
+the strict sense — no document could take it — and the coverage run said so by reporting the line unexecuted while
+every check passed. The same round had a second instance in `screen()`: a guard for an empty split half that a
+parity split cannot produce once there are two tasks.
+
+**Why it matters more than tidiness.** A dead branch in a verdict ladder is a claim about inputs that do not exist, and
+the next reader will infer the input space from it: a reviewer reading `skippedShare < 0.05` concludes that a 3% skip
+is expressible and refused for thinness, when in fact a 3% skip is refused for being a 97% serve. The ladder's
+vocabulary is the specification, so a rung that cannot be stood on is a false specification.
+
+**The fix.** The floor is deleted with the subsumption recorded in a comment; the split guard is deleted as
+unreachable by construction. What replaced the missing rung is a genuinely different verdict that *is* reachable and
+was not expressible before: `DEGENERATE`, for a cut that skips everything, because such a policy has no serve half to
+defend and reporting it as `DOMINATED` implied a comparison it never made.
+
+## 34.308 — A check written by pattern, that could not be parsed, and the neighbour that indexed an empty list
+
+**The claim.** The suite has 97 checks and they exercise every verdict, both confirmation outcomes and every refusal.
+
+**The defect, in two parts.** One check asserted that a `>=` cut excludes a value one above the observed maximum —
+but `candidates()` only emits thresholds at observed values, so the list comprehension indexed `[0]` of an empty list
+and raised `IndexError`. Its neighbour, written in the same spirit, defined a lambda with `observed` twice and would
+have raised `SyntaxError` before a single check ran.
+
+**What that says about how the checks were written.** Both were produced by extending the shape of the check above
+them rather than by asking what the code can be given. The `IndexError` is the more instructive of the two: the check
+was asserting a property of a candidate that the generator deliberately does not produce, which means the assertion was
+about the test author's mental model of the generator rather than about the generator. The generator's real contract is
+that every emitted cut is evaluable and that each threshold includes the value it names — and that contract is what the
+rewritten checks now assert, on values the generator actually emits, with a fixture whose opening turns vary in width so
+that "top" and "bottom" are different numbers.
+
+**The general form.** A test that cannot run is cheaper to find than a test that runs and asserts nothing, and both are
+findable only because the suite is executed on every push instead of being trusted. The 97 checks are worth exactly
+what the four that failed on their first run are worth, and those four were caught by the suite running rather than by
+reviewing it.

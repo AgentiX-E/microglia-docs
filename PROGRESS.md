@@ -29465,3 +29465,126 @@ sent a grep plus forty lines and lost everything, because GitHub caps a step at 
 ALFWorld suites printing their own expected `FAIL` lines. The third sends **one** annotation with the last twelve lines
 joined, and the answer was on the first read. Fifteen minutes of CI across three pushes, for a sentence the tool had
 already printed into a channel nobody could open.
+
+## 249.21 The serving decision, and the instrument that prices it before it costs anything
+
+Every arm in this lane served the material to every episode, so the only question the dispatches have answered is *what
+the block should say*. The stratified reading says that question is the second one. On the 66 tasks the control solved
+every attempt the front placement loses 9.5 points; on the 43 it solved some of it gains 7.5; the mean is flat because
+the two populations cancel, not because the treatment does nothing (249.18). A decision about **whether** to serve is
+therefore worth more than a rewrite of the text.
+
+But a serving decision is made before the outcome exists, so it needs an observable that is on the table at that
+moment — and the lane has never had an instrument that turns a candidate observable into a number. `serve_policy.py`
+is that instrument, and its design choices are the round's substance rather than its plumbing:
+
+| decision | what it buys |
+|---|---|
+| the unit is the **pair** (task, attempt), joined across the two arms of one grid | a serving policy is a statement about an episode, and a task-level mean cannot price one |
+| the value is `serve(x)·y_treated + skip(x)·y_control` | the counterfactual for "don't serve" is the control arm of the same task and attempt, which is the only counterfactual any artefact on disk holds |
+| the two halves are **separate columns** with separate sign tests | a policy that skips correctly and serves at a loss has not improved on serving nothing, and one number hides that |
+| a cut is chosen on half the tasks and judged on the other half | a screen over hundreds of cuts will always find one that looks good; the held-out half is what makes the search honest |
+| the verdict ladder refuses **before** it tests | a policy that serves 96% of the grid is not a decision, and reporting a p-value for its 4% is a statement about four episodes |
+
+The ladder has five answers and each one is a different finding: `NO_SEPARATION` (serves more than 90% of the grid),
+`DEGENERATE` (serves none, so it has no serve half), `UNDERPOWERED` (fewer than ten discordant pairs on the skip side),
+`DOMINATED` (skips, but not profitably), `ADMISSIBLE` (positive skip effect, p below 0.05, serve half not negative). The
+90% gate replaced an 80% first draft on a measurement rather than a preference: at 80% a 15%-skip cut is refused
+whatever its power, and the honest reason to refuse a thin cut is that ten pairs cannot carry it, not that it is small.
+
+The screen also prints `expectedByChance` — the number of admissible cuts noise alone produces at that many cuts. That
+column exists because a screen quoted without its multiplicity is a p-hack with a table, and because this round's
+result turns on it.
+
+## 249.22 One cut in three hundred and eighty-five, and the multiplicity that makes it a refutation
+
+R218b's grid is 114 tasks with four attempts in each arm, so it prices 228 pairs. Run over it, the screen generated
+**385 cuts** from five prefix observables and returned:
+
+| verdict | cuts | what it means here |
+|---|---|---|
+| `DOMINATED` | 282 | the cut skips, and the skipped pairs do not favour the control |
+| `NO_SEPARATION` | 56 | the cut serves more than 90% of the grid — not a decision |
+| `UNDERPOWERED` | 38 | fewer than ten discordant pairs on the skip side |
+| `DEGENERATE` | 8 | the cut skips everything, so there is no serve half to defend |
+| **`ADMISSIBLE`** | **1** | skip the openings that state two or more asks |
+
+The single survivor is the shape the earlier refutation had already half-killed: the opening turn's ask count. The
+refutation in 249.19 was that a gate at *one or more* asks fires on 96.5% of the grid; at *two or more* it separates
+65/35, so the counting proxy was not dead, only mis-cut. Under the split it reads:
+
+| half | served | `skipDelta` | discordant pairs | p | verdict |
+|---|---|---|---|---|---|
+| screen (57 tasks, 114 pairs) | 64.9% | **+13.8 pp** | 15 (13 up, 2 down) | 0.0074 | `ADMISSIBLE` |
+| **confirm (57 tasks, 114 pairs)** | 59.2% | **+3.2 pp** | 21 (12 up, 9 down) | **0.66** | `DOMINATED` |
+| pooled (114 tasks, 228 pairs) | 62.1% | +8.1 pp | 36 (25 up, 11 down) | 0.029 | `ADMISSIBLE` |
+
+**The effect kept a quarter of its size and lost its sign test on the half it never saw.** The win-to-loss ratio went
+from 6.5:1 to 1.3:1. That is what a real effect decaying under replication looks like from the inside, and it is also
+what a selection artifact looks like — which is why the multiplicity is the decisive number rather than the p-value:
+385 cuts at a two-sided 5% test yield about **9.6** positive-and-significant results from noise alone, and the screen
+produced **one**. A family of proxies that yields less than chance is not a family with a faint signal; it is a family
+with none, and the survivor is the cut that cleared a bar the others did not reach.
+
+Two readings of that are available and only one is honest. The flattering reading is that the pooled row is
+`ADMISSIBLE` at p = 0.029 and the policy is worth +3.1 pp against serving everything — an improvement of a third of a
+point of accuracy per point of grid, for free. The honest reading is that a policy chosen on one half and tested on the
+other must be judged on the other, and there it is `DOMINATED`. The pooled row is in-sample by construction. It is
+printed because a reader will want it, and labelled because it cannot be the verdict.
+
+One more column deserves the same treatment. The serve half of the pooled policy reads +2.5 pp with 30 up and 37 down
+(p = 0.46): the rule admits a policy whose skip side is significant and whose serve side is indistinguishable from
+zero. The ladder permits that, because the requirement is that serving not *lose*, not that it win. It is worth
+knowing that on this grid the material's whole apparent value lives on the pairs the policy refuses.
+
+## 249.23 The second candidate proxy dies on the same artefact, in one command
+
+The roster of serving proxies had three entries and one of them was already refuted for free. The second — "serve from
+the second turn, after the model has acted once" — was priced the same way, by printing what the prefixes actually
+contain:
+
+| observable | distribution over 456 control episodes |
+|---|---|
+| first tool call | `find_user_id_by_name_zip` 344 (75.4%), `find_user_id_by_email` 108 (23.7%), `list_all_product_types` 2, `get_order_details` 1, none 1 |
+| a gate on that family | serves **99.1%** of the grid, skipping 4 episodes — not a decision |
+| first call outside the identity family | `get_order_details` 436 (95.6%), `list_all_product_types` 16 (3.5%), three singletons |
+| identity calls before it | median 2, min 0, max 6 |
+| calls up to and including the first reveal | median 3 |
+
+The model's first act is the authentication lookup in 452 of 456 episodes and its second is `get_user_details` in 355.
+"After the model has acted once" therefore means "after it has asked the user for their identity", which is a fact
+about the domain's authorization gate and carries no information about the task. The proxy is not weak; it is empty, and
+the emptiness was measurable before any dispatch.
+
+What survives both refutations is a shape rather than a candidate: **the signal has to come from what the episode
+reveals after the identity gate** — the order, the item, the returned attribute row — because that is the first content
+in a transcript that differs between a task the control already solves and one it does not. It is also the only place
+a per-attempt gate can live, which is the subject of the next section.
+
+## 249.24 The prefix is a task, not a turn
+
+The one admissible cut was the opening turn's ask count, and the opening turn is the user simulator's fixed utterance.
+The report makes that visible per field instead of leaving it to be inferred:
+
+| field | constant within a task's four attempts |
+|---|---|
+| `openingAsks` | 100% of 114 tasks |
+| `openingChars` | 100% |
+| `authCalls` | 100% |
+| `callsToReveal` | 100% |
+
+Every prefix observable this grid can express is constant inside a task. A cut on a task-constant field cannot serve
+one attempt and skip another; it can only switch memory off for a **task class**, which is an admission rule and not a
+serving gate. So the round's result is narrower than "no proxy works":
+
+- as an **admission rule**, the best cut available gained 13.8 points on half the task population and 3.2 on the other
+  half, with a win ratio that collapsed from 6.5:1 to 1.3:1 — a task class that does not transfer across task halves,
+  which is the strongest available evidence that the apparent effect was selection;
+- as a **serving gate**, nothing in the prefix varies enough to be one, so the question the harm stratification asks —
+  serve this attempt, skip that one — cannot be answered from what the request declares or from the first act, and
+  needs the content the episode itself surfaces.
+
+That is the next round's instrument rather than its conclusion: a serving schedule keyed to the **first content
+reveal**, screened by this tool on this grid before any money is spent, with the screen's own gate as the precondition
+for arming. The dispatch costs ¥9; the screen costs nothing; and this round is the demonstration that the order
+matters.

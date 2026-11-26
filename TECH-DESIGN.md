@@ -12293,3 +12293,82 @@ implies ≈ 20 discordant pairs in total and ≈ 12 in the decided subset, which
 | gates on every push | `dose.py` and `board_dose.py` self-tests under the 95% floor (`--expect-files 18`) |
 | gates on the dispatch | the raw recording exists and holds one line a scoring episode (`≥ 200`); the join did not refuse and `rows == counts.joined`; `missing + unresolved ≤ 10%` of the grid; `agreesRenders/Chars/Changes`; the placement is `tail` and `written ≤ chars` there, with `written > 0`; the reading carries `closeTurnPairs ≤ pairs` at tolerance 1; every row met its episode (`unscored == 0`, `unordered == 0`) |
 | printed, not gated | `DOSE_READ` versus `NO_PAIRS`, and the decided subset's size against the registered floor of ten, because a refuted prediction or a grid whose attempts differed in length is a finding — a red job teaches an operator to rerun until it is green |
+
+## 17.194 — The serving decision as an estimator: two conditional columns, a split, and a multiplicity floor
+
+17.191 established that admission is a separate decision from content and that it was never designed. This section is
+the design of the instrument that decides whether a candidate admission rule is worth money, and it is written around
+one constraint: **a serving decision is taken before the episode's outcome exists**, so the only admissible inputs are
+prefix observables, and the only way to price one without a new dispatch is a replay over a grid that already holds
+both arms.
+
+### The estimator
+
+For pair `i` — one (task, attempt) joined across the control and treated arms of the same dispatch — let `y_c` and
+`y_t` be the pass flags and let `x` be the episode's prefix. A policy `π` maps `x` to serve or skip, and
+
+```
+V(π) = (1/n) Σ_i [ π(x_i)·y_t,i + (1 − π(x_i))·y_c,i ]
+```
+
+Two differences follow and they are the whole design, because each is a **conditional** mean over a subset:
+
+| column | definition | what a bad value means |
+|---|---|---|
+| `skipDelta` | mean over skipped pairs of `y_c − y_t` | the material was worth serving to the very episodes the policy refuses |
+| `serveDelta` | mean over served pairs of `y_t − y_c` | the policy refuses well and serves at a loss, which is worse than refusing everything |
+
+Each carries its own two-sided exact sign test over the pairs that disagreed, and the pair counts are reported beside
+the p-values because a unanimous test over four pairs is p = 0.125. `V(π) − V(serve all) = skipShare × skipDelta` and
+`V(π) − V(serve none) = serveShare × serveDelta`; both are printed so a policy cannot look better merely by skipping
+more.
+
+The assumption is stated rather than hidden: attempt `i` of the control is the counterfactual for attempt `i` of the
+treated arm. No dispatch in this lane randomises a dose, so this is the strongest pairing the artefacts support and not
+a causal effect. What it licenses is a **screen** — refusing a proxy that cannot show a positive `skipDelta` on the half
+it was chosen from — and a screen is what keeps a ¥9 dispatch from being spent on a hypothesis that costs nothing to
+kill.
+
+### The split, and why the screen alone is not a result
+
+Hundreds of cuts over one grid will always contain one that looks good. The instrument therefore splits the **tasks**
+deterministically (parity of position in sorted order, so the split is reproducible from the artefact), chooses on one
+half, and re-evaluates the same predicate on the other. `CONFIRMED` requires, on the held-out half: a positive
+`skipDelta`, a p below 0.05 in the same direction, and at least six discordant pairs — six being the smallest count at
+which a unanimous sign test clears 0.05 (`2·2⁻⁶ = 0.031`). The pooled row is printed and is in-sample by construction.
+
+### The verdict ladder
+
+The ladder refuses before it tests, in a fixed order, because the order is the specification:
+
+| rung | condition | what it prevents |
+|---|---|---|
+| `DEGENERATE` | serves nothing | a policy with no serve half reported as if it had compared one |
+| `NO_SEPARATION` | serves more than 90% of the grid | a restatement of "always" being tested as if it were a decision |
+| `UNDERPOWERED` | fewer than ten discordant pairs on the skip side | a small effect promoted on arithmetic that cannot distinguish it from noise |
+| `DOMINATED` | skips, but not profitably, or serves at a loss | the common case, named so it cannot be quoted as a near-miss |
+| `ADMISSIBLE` | positive skip effect, p below 0.05, serve half not negative | — |
+
+The 90% gate is a measurement rather than a preference: the ask-count proxy fires on 96.5% of the grid, and at an 80%
+gate a 15%-skip cut would be refused for the wrong reason. The ladder has no rung for "skips less than 5%" because a 5%
+skip is a 95% serve, which the share gate has already refused — a dead rung would be a false statement about the input
+space (AUDIT 34.307).
+
+### The multiplicity floor, which is the part no competitor prints
+
+A screen of `m` cuts at a two-sided 5% test yields about `0.025·m` positive-and-significant results from noise alone.
+The instrument prints that number beside its yield, and the comparison is the reading: a family that produces **fewer**
+admissible cuts than chance has no signal, and its one survivor is a selection rather than an effect. On R218b this
+read 385 cuts, 1 admissible, 9.6 expected — a refutation in one line (PROGRESS 249.22). A screen quoted without its
+multiplicity is a p-hack with a table.
+
+### Gates
+
+| item | value |
+|---|---|
+| code | `eval/tools/serve_policy.py` |
+| self-test | 97 checks, every verdict, both confirmation outcomes, every refusal |
+| coverage | 99% of 453 statements and 124 branches; the only uncovered arc is the `__main__` guard's false side |
+| CI | measured on every push under the same 95% floor as the rest of the Python lane (`--expect-files 21`) |
+| cost | ¥0 — it reads documents already on disk |
+| registration | `prereg/R223-serve.md`; the successor round is deliberately **not** registered until a proxy passes the screen |

@@ -10026,3 +10026,52 @@ round's evidence survived as three aggregates: carried/served = **31.9%**, 147.7
 first time, and it is not the dose reading. The join now attributes the three harness states and writes the raw
 recording before it joins (AUDIT 34.266); the re-dispatch is armed and waiting for an off-peak window that fits a
 53-minute run.
+
+## R223 (screened 26 Nov, ¥0) — the serving decision: three candidates, one survivor, and it did not replicate
+
+**What the round is.** The stratified reading put the value of the material at +7.5 points on the 43 tasks the control
+solved some of and −9.5 on the 66 it solved every attempt (PROGRESS 249.18), which makes *whether* to serve worth more
+than *what* the block says. A serving decision needs an observable that exists before the outcome, so the round's first
+step is a screen: `eval/tools/serve_policy.py` replays a policy over R218b's 228 paired episodes and prices every cut
+it can express, choosing on half the tasks and judging on the other half.
+
+**The screen, run before any money.**
+
+| item | value |
+|---|---|
+| cuts screened | **385** |
+| admissible in sample | **1** — skip the openings that state two or more asks |
+| expected by chance at this multiplicity | **9.6** |
+| screen half | +13.8 pp on 15 discordant pairs (13 up, 2 down), p = 0.0074 |
+| **confirm half** | **+3.2 pp on 21 discordant pairs (12 up, 9 down), p = 0.66** |
+| pooled | +8.1 pp on 36 pairs, p = 0.029 — in-sample by construction |
+
+A family that yields *fewer* admissible cuts than noise is not a family with a faint signal. The verdict is
+`NOT_CONFIRMED`, and the round's result is that no prefix observable on this grid is a serving decision.
+
+**Two candidates died for free, on artefacts already on disk.** The ask count at one-or-more fires on 110 of 114
+openings (96.5%); a gate on the first tool call's family fires on **452 of 456** episodes (99.1%), because the first
+act in this domain is the identity lookup and the second is `get_user_details` in 355 of 456. "Serve after the model
+has acted once" is a gate on the authorization step.
+
+**And the prefix is a task, not a turn.** Every observable the grid can express is constant within a task's four
+attempts on 100% of tasks, because the opening turn is the simulator's fixed utterance. A cut on those fields is an
+admission rule for a *task class*, never a gate for one attempt — so the one survivor was judged as an admission rule
+and failed to transfer across task halves, and the serving question the harm stratification asks is still open.
+
+| next | what it settles | state | cost |
+|---|---|---|---|
+| **R218e** | the dose recorded per episode, joined to the reward | **dispatched, off-peak window** | ¥8.8 |
+| **R220c** | `movePrice` measured on the shipped shape | **dispatched** | $0.02 |
+| **R224** | a serving schedule keyed to the **first content reveal** (the order, the item, the returned attribute row) — the only prefix that varies inside a task | **not registered: needs a proxy and a passing screen first** | ¥0 to screen, ¥9 to run |
+| **R222** | the admission rule at a grid that could see it (1,600 episodes) | registered, not queued | ¥53 |
+
+**Why R224 is not registered.** The registration rule in this lane is that a funded action carries a date; R224 has no
+admissible proxy yet, and the screen is what decides whether it gets one. Registering it now would put a ¥9 debt on the
+clock for a hypothesis the same instrument could refuse for nothing — which is exactly the ordering R223 exists to
+establish. The successor's admission criteria are fixed here so they cannot move after the reading:
+
+1. a positive `skipDelta` with p below 0.05 on the **confirm** half, not the screen half;
+2. a serve half that does not lose, i.e. `serveDelta` at or above zero on the confirm half;
+3. at least ten discordant pairs on the skip side of the confirm half;
+4. the observable varies **within** a task, or the round is an admission rule and belongs in R222's lane instead.
