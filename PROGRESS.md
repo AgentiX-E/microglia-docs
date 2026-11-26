@@ -29396,3 +29396,31 @@ a registration that guessed at one would be the kind of plan this project has al
 with the number of *attempts*, so every task fell into `mixed` and the two strata the decomposition is about vanished
 while the table still printed three rows. The fixture with four attempts a task failed on the first run, which is the
 argument for writing the fixture before the prose (AUDIT 34.268).
+
+## 249.19 The cheapest serving proxy is refuted for free, in one command, before it cost anything
+
+249.18 moved the lane's next question from *what should the block say* to **when should anything be served**, and named
+three candidate proxies for the serving decision. The first — *serve only when the opening turn states an ask the block
+can settle* — is the only one whose premise can be measured on an artefact already paid for, so it was measured first.
+
+`goal_board.board_of` run over each of R218b's 114 distinct openings (one per task, taken from the first user message
+the arm actually saw, and deduplicated across the four attempts):
+
+| reading | value |
+|---|---|
+| asks per opening, mean / median | **2.40** / 2 |
+| tasks whose opening states **no** ask | **4** (tasks 4, 20, 67, 68) |
+| share of the grid the proxy would serve | **96.5%** |
+
+**The proxy separates nothing.** A serving rule that fires on 110 of 114 tasks is not a decision, and the retail corpus
+is built so that it cannot be: a τ² retail task *is* a request to change an order, so its opening almost always names
+what it wants. Registering the round would have bought a two-arm grid — ≈ ¥9 — whose treatment differed from its
+control on four tasks, and the reading would have been a 3.5% subsample reported as a serving policy.
+
+The refutation is worth more than the candidate: it says the serving proxy has to be something the *episode* reveals
+rather than something the request declares, which is the second candidate — serve from the second turn, after the
+model has acted once — and that one costs a serving schedule rather than a flag. It also says why the first candidate
+looked plausible: 2.40 asks an opening reads like a decision signal, and it is one about *what* to settle rather than
+about *whether* to serve at all.
+
+Recorded rather than deleted, because the next person to propose the ask count as a gate will find the number here.

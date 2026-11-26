@@ -9997,6 +9997,21 @@ covariate on R219b's two tail arms reads 91.0% and 92.0% — nine and eight poin
 depend on the placement (system message against tail) or on the admission rule (judgments admitted or refused), and it
 is not a wording effect at all (PROGRESS 249.18, COMPETITIVE R218e.3).
 
+**Three candidate proxies, and what each one has to satisfy before it can be registered.** A serving decision is
+made before the episode's outcome is known, so its input has to be observable at the time — and it has to be a
+*decision*, not a restatement of the strata, which are cut from a control run nobody has when serving.
+
+| proxy | observable when | what it costs | what would refute it |
+|---|---|---|---|
+| **the request's own ask count** — serve only when the opening turn states at least one ask the block can settle | before any model call, from the text the arm already parses | one flag in `board_for`, one test, no new data | **REFUTED for free (PROGRESS 249.19): 110 of the 114 openings state ≥1 ask (mean 2.40), so the flag fires on 96.5% of the grid and separates nothing** |
+| **the first tool call's family** — serve from the second turn, after the model has acted once | after one call, from the transcript the arm already keeps | a serving schedule, and the block then never sees the first decision | if the damage is caused by the *first* call's bias, delaying the serve removes the harm and the benefit together |
+| **the block's own settlement state** — serve only the asks still open, nothing when the block is empty | every turn, from the renderer | a change to what "empty" means, and the risk that an empty block still costs a turn | R197 measured a block whose empty share was 12 points of the arm's bill; an empty block that is still rendered is not a saving |
+
+The first was the cheapest and the only one whose premise could be checked **for free**, and that check has already
+killed it: 96.5% of the grid would be served (PROGRESS 249.19). What survives is the shape of the finding — the proxy
+has to come from what the **episode** reveals, not from what the request declares — which leaves the second candidate
+and makes its cost the next thing to price.
+
 **What that makes the next round.** The question moves from *what should the block say* to **when should anything be
 served**: the material is worth seven points on the half-solved stratum and costs nine on the solved one, so a serving
 decision is worth more than any rewrite. That round is **R223** and it is deliberately **not registered yet**: the
