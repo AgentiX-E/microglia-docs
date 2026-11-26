@@ -12666,3 +12666,39 @@ will explain — the numbers will simply look wrong, in the direction the rule w
 fails it. R230 passed "items ≤ 2× the contract" while rescuing 16% of what it targeted (AUDIT 34.323), so R231's cost
 bar is a ratio — items added over the contract per write rescued — which the degenerate rule fails at 5.6 and a working
 rule can pass at 1.5.
+
+### 17.193 Inheritance as a parameter, and the two arithmetic invariants R231 leaves behind
+
+R231 needed one thing from the parser: the ability to say **where inheritance stops**. The implementation is a keyword
+argument rather than a second parser, and the reason is a design rule this repository keeps rediscovering — a rule that
+is correct in one context and wrong in another should be *scoped*, not duplicated.
+
+```python
+def items_of(text: str, inherit: bool = True) -> list[dict]:
+    ...
+    if not named and not inherit:
+        continue          # outside the contract's turn, a neighbour's family belongs to the neighbour
+```
+
+The default preserves every caller that predates the round, which is all of them, and the read-anchor tool passes
+`inherit=False` for turns after the contract's. `clause_asks` then composes the two readings:
+
+    the contract's turn  -> items_of(text)                  # whole, inheritance and all
+    every other turn     -> items_of(text, inherit=False)   # only clauses that name their own family
+
+**Invariant 1 — the item set contains the contract's.** AUDIT 34.324 asked every later admission rule to state this,
+because R230's board read *more* turns and covered *fewer* writes. The clause board satisfies it by construction: the
+contract's turn is read whole, so its asks are a subset of the board's, and coverage cannot fall below the contract's
+by accident of filtering. The reading asserts it (`items >= request items`, `covered >= request covered`) rather than
+describing it, because the R230 failure was invisible in prose and obvious in one comparison.
+
+**Invariant 2 — a ratio bar requires a positive denominator.** `clause_bar` evaluates
+`recovered > 0 and added <= 1.5 * recovered` and reports `perWrite: None` when there is nothing to divide. The bar was
+registered as a ratio precisely because a ceiling had been passed by a rule that admitted almost nothing (34.323), and
+a ratio introduces the opposite defect: at `recovered = 0` the inequality is `0 <= 0`. The general form is in the
+audit; the code carries the guard and the suite carries both ends of it.
+
+**The interface stays one value.** `ask_board(entry, messages, scope)` with
+`scope in ("request", "conversation", "admitted", "clause")` and one more row in the reading's board table. A round
+that changes the content of a board must be readable on the same grid as the boards it is compared with, and the grid
+is 456 episodes of a paid dispatch: a new tool would have to re-buy it.

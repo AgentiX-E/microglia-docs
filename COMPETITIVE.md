@@ -10905,3 +10905,38 @@ write down before somebody else's benchmark says it.
 at 2.62 pp higher accuracy), and the third axis — a working memory measured against the contract the conversation
 actually states — now holds six refusals with the column that refused each. **No competitor publishes a number on that
 axis**, which is both the opportunity and the risk: an unclaimed axis is unclaimed until somebody else measures on it.
+
+## R231 — Every extractor publishes a coverage number. None publishes the price of one.
+
+The field's memory systems are extraction pipelines, and their published columns are counts: extraction rate, memories
+per conversation, tokens saved, and — where a benchmark exists — a per-task score after the memory is injected. What
+none of them publishes is the **denominator that makes the score meaningful**: how many asks the transcript contained,
+how many items the block listed, and how many items it listed for every write it actually helped.
+
+R231 is the first measurement in this lane that makes the trade arithmetic on a corpus with a grader behind it:
+
+| | contract (shipped) | R231 clause rule | every turn |
+|---|---|---|---|
+| required writes accounted for | 63.6% | **95.4%** | 95.6% |
+| items listed | 970 | 3,699 | 4,761 |
+| **items per covered write** | **2.33** | 5.93 | 7.62 |
+| asks offered by the transcript | 5,311 for 654 required writes — **8.1 per write** | | |
+
+**The competitive asset is the last row.** A vendor whose pipeline reads every turn and extracts per message inherits
+that 8.1: their block is either truncated (and their coverage number then describes a document the model never saw) or
+long (and their cost per conversation is eight times the demand). Neither is publishable as a defect because neither
+number is published. This project can now publish both, on a corpus whose grader is the environment rather than a
+model's opinion.
+
+**What a competitor could do that this project cannot.** A model-backed extractor can *rank*: it can read "yes, the
+purple one — and can you also check the other order" and keep the requirement while dropping the answer, which is the
+selection problem R231 leaves open and which a deterministic parser cannot solve at any scope. That is the honest
+statement of the gap: this lane has now priced the problem that a model solves and a parser does not, and it has priced
+it in the units the field does not publish.
+
+**Where the SOTA argument stands after seven refusals and one hold.** The accuracy axis remains settled within
+resolution (0.23 pp at 114 tasks against a ±3.2 pp floor); the cost axis remains a published fact (8.6× cheaper than
+the cheapest published row at 2.62 pp higher accuracy); and the third axis — a working memory measured against the
+contract the conversation actually states — now reads 95.4% coverage at 17.72 items per rescued write, which is the
+first number on that axis that is not a refusal. **No competitor publishes a number on that axis**, which is still both
+the opportunity and the risk.

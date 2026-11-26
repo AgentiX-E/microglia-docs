@@ -10407,7 +10407,7 @@ and it retires a phrase every document in this repository has used since R215 (A
 position. The registration's own reading of that outcome stands — the content question closes for this corpus at turn
 granularity, and the discriminator has to move to the clause.
 
-## R231 (registered 26 Nov, ¥0) — admit the requirement clause, not the turn
+## R231 (read 26 Nov, ¥0) — REFUTED on price: the clause rule reaches 95.4% and costs 17.7 items a write
 
 R230 left the material's location unambiguous: the requirement and the answer share a turn, so the discriminator has to
 be inside one. The change adds no word to the lexicon —
@@ -10432,3 +10432,53 @@ R230's ratio is 5.6 items per rescued write. B3 decides the round, and it needs 
 **Refutation.** If B1 fails again, the content question closes with three independent refusals and the lane's remaining
 work is the cost axis and a second domain rather than a fourth content rule. If B2 fails while B1 holds, the corpus
 states requirements in object lists rather than in clauses and the admission rule moves to the object.
+
+**What it measured.** One restriction and no new rule: the contract's turn read whole, every later turn contributing
+only the clauses that name their own family. On the 456-episode grid it recovers **154 of the 155** later-turn writes
+(**99.4%**, bar 60%) and accounts for **624 of 654** required writes — **95.4%**, bar 73.6% — while the contract
+accounts for 416 (63.6%). It fails B2, the efficiency bar, at **17.72 items per rescued write** (2,729 items over the
+contract for 154 writes, against a budget of 231). The replication repeats both halves: 156 of 156, 95.0%, 16.47 each.
+
+**The arithmetic that makes the refusal a result rather than a score.** The boundary drops **1,153 of the 5,311** asks
+the parser offers across 2,453 user turns, and it costs exactly **one** covered write (every-turn's 625 → 624). So
+inheritance — the mechanism R229 priced as the source of a 4.9× item count — is **22% of the inflation and 0.2 points
+of the coverage**. The other 78% is self-naming clauses inside later turns: the user restating, renegotiating and
+confirming in clauses that carry their own verbs.
+
+**Why the bar was unattainable, in the corpus's own words.** 5,311 asks are offered for 654 required writes — **8.1
+asks offered per required write**, 13.2 per graded episode. A block that reads turns ends with **3,069 of its 3,699
+items open**, **1,251** of them needed by nobody. No admission rule can price a rescue at 1.5 items when the material
+is eight times the demand, and that relocates the lane's problem from **admission** to **selection**.
+
+**Refutation, as registered.** B2 failing while B1 and B3 hold is the prereg's own third branch: the rule's coverage is
+real and its price is not payable. The prereg's *prediction* that object lists would be the cost is falsified by the
+one-write subtraction above — the inherited objects are 22% of the items and none of the deficit.
+
+## R232 (registered 26 Nov, ¥0) — measure the block the product displays, not the block the instrument builds
+
+The lane has measured what a transcript *supports* for seven rounds. It has never measured what an agent is *shown*,
+and the difference is one line of the renderer:
+
+    for item in items[:MAX_ITEMS]:    # eight lines, in the order the asks were stated
+
+R231's 95.4% is coverage of a 3,699-item board that the product cuts to eight. An ask stated ninth is invisible however
+correct the board is, so the round's result is not actionable until the display is measured — and the shipped default
+has not moved in seven rounds for a reason this round may finally name.
+
+The measurement is the artefact as it is rendered: at the moment of each graded write, take the messages before the
+call, build the board the product would serve, keep the first eight items, and ask whether an **open** item of the
+write's family is among them (`--scope displayed`). Two scopes side by side, because the question is a comparison: the
+contract's 2.4 items an episode against a cap of 8, and the clause board's 9.2 against the same cap.
+
+Bars, registered in `prereg/R232-the-first-eight.md` before any reading: **B1** displayed coverage of at least
+**73.6%** on at least one scope; **B2** the hidden share — required writes covered but not displayed — at most **20%**
+of that scope's covered writes; **B3** the contract's displayed coverage within **4 writes** of its full coverage, so
+that a cap which harms the shipped board is a finding about the cap and not about the clause rule.
+
+**Prediction.** B1 holds on the contract and fails on the clause board, and that failure is the useful one. B2 is where
+the clause rule is expected to die. B3 should hold easily, and is registered because a bar that can only fire on the
+new rule cannot inform.
+
+**Refutation.** B1 failing on both scopes would retire the coverage axis until the display is redesigned — the largest
+correction available in this lane. B1 and B2 holding for `clause` would make the ordering the next subject rather than
+the admission.

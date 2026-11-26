@@ -30236,3 +30236,71 @@ submission, and a second domain whose user model discloses differently.
 **The product consequence, for the seventh round running: no default moves** — except that `askSource: request` now
 carries three independent refutations of its alternatives in `provenance`, and `turnAdmission` is recorded in `notYet`
 so that the next reader does not spend a round rediscovering that a turn is both the answer and the requirement.
+
+## 249.45 R231 read: the accuracy target is reached, and the price is the corpus's
+
+The round cost ¥0 and it is the first in seven to hold the accuracy bar. Two of its three bars hold and the third
+fails by an order of magnitude, and the two halves have to be quoted together or neither is true:
+
+| | contract | R230 turn filter | **R231 clause** | every turn |
+|---|---|---|---|---|
+| coverage | 63.6% | 62.7% | **95.4%** | 95.6% |
+| writes recovered from later turns | — | 25 of 155 | **154 of 155 (99.4%)** | 155 |
+| items | 970 | 1,110 | **3,699** | 4,761 |
+| items per covered write | 2.33 | 2.71 | **5.93** | 7.62 |
+| open items nobody needs, per episode | 0.69 | 0.76 | **3.10** | 3.90 |
+
+B1 holds at 99.4% against a bar of 60%; B3 holds at 95.4% against 73.6%; B2 fails at **17.72 items per rescued write**
+against a budget of 1.5. The replication repeats both halves: 156 of 156, 95.0%, 16.47 each.
+
+## 249.46 The subtraction that turns a refusal into a result
+
+R229's finding was that reading every turn costs 4.9× the items. R231 shows what those items are made of, with one
+subtraction: the clause boundary drops **1,153 of the 5,311** asks the parser offers, and it costs **one** covered
+write (625 → 624). Inheritance is therefore **22% of the inflation and 0.2 points of the coverage**, and the other 78%
+is self-naming clauses inside later turns — the user restating, renegotiating and confirming in clauses that carry
+their own verbs, which no admission rule can refuse without refusing the requirement.
+
+The prereg predicted the opposite: that object lists continued across clauses ("return the lamp and the chair") would
+be the cost. They are not. The measurement is what overturns the prediction, and the prediction is left in the
+registration.
+
+**What is left is the corpus's price.** 5,311 asks offered for 654 required writes — **8.1 per required write**, 13.2
+per graded episode — so a block that reads turns ends with 3,069 of its 3,699 items open and 1,251 needed by nobody.
+The lane's problem is not *where the requirement is stated*; that question now has an answer, and the answer is
+deterministic, model-free and 95.4% complete. The problem is **which of the eight asks per required write to keep**.
+
+## 249.47 Where the lane stands after seven anchors, and why R232 is not an eighth admission rule
+
+| rule | round | coverage | the column that refused it |
+|---|---|---|---|
+| request (the contract) | R223 | 63.6% | the one every alternative is compared against |
+| reveal | R225 | — | screen reversed on the held-out half (+1.04σ) |
+| record | R227 | 54% named by record | 0.75 bar, measured before the money |
+| read-strict | R228 | 98.5% | open tax 2.53 against 1.79 required |
+| ask-bound | R229 | 63.5% | one write under the request board |
+| turn admission | R230 | 62.7% | recovery 16.1%, coverage below the contract |
+| **clause admission** | **R231** | **95.4%** | **17.72 items per rescued write** |
+
+**R232 is registered and unread, and it asks a different question.** Seven rounds measured what a transcript supports.
+None measured what an agent is shown, and the renderer is eight lines:
+
+```python
+for item in items[:MAX_ITEMS]:
+```
+
+R231's board holds 3,699 items and the product shows the first eight, in statement order. An ask stated ninth is
+invisible however correct the board is — so 95.4% is coverage of a document nobody receives, and the shipped default
+has not moved in seven rounds for a reason this round may finally name.
+
+| item | state | price | what it buys |
+|---|---|---|---|
+| **R232** displayed block | registered, bars written, **unread** | **¥0** | whether any of the coverage survives the cap |
+| parser scope (no inheritance across a turn) | measured: −0.2pp for −22% items | ¥0 | a one-keyword change to the shipped board |
+| R221 2.0 submission | waiting on a measurable gain | ¥34 | four columns the leaderboards lack |
+| telecom third domain | not registered | ¥0 to design | a user model that discloses differently |
+
+**The product consequence, for the eighth round running: no default moves** — and this round adds the first
+*actionable* product claim the lane has produced: inheritance should not cross a turn boundary. That is a scope change
+in `items_of`, not a second ask source, and `serving-defaults.json` records the measurement, the price and the
+reason it is not yet a default.

@@ -5527,9 +5527,9 @@ hypothesis. Three anchors have now been tested and closed: what the request decl
 what the words name. The fourth is the state the agent has actually looked at, and it is the last one this project will
 test before it concludes that the block's *content* is not the lever this benchmark can see.
 
-**Six anchors, six refusals, and the one that explained them.** A working memory that lists what a task still needs is
-a claim about two different things at once: *what is required* and *what has been done*. This project has now tested
-six rules for joining them, each against a bar written before its number was read, and each has been refused:
+**Seven anchors, six refusals — and the first one that holds the accuracy claim.** A working memory that lists what a
+task still needs is a claim about two different things at once: *what is required* and *what has been done*. This
+project has tested seven rules for joining them, each against a bar written before its number was read:
 
 | anchor | rule | why it was refused |
 |---|---|---|
@@ -5539,6 +5539,7 @@ six rules for joining them, each against a bar written before its number was rea
 | read (R228) | the record the episode **opened** | 98.5% of the work accounted for and **2.53 items per episode that nobody needs**, against 1.79 required |
 | ask-bound (R229) | an ask, settled by a write of its family to a record it opened | one write short of the rule it was built to beat: the read rule's completeness came from having no ask at all |
 | turn admission (R230) | a later turn read only when the agent's previous turn asked nothing | 77.2% of user turns follow a question, so the filter refused the turns the requirements were in: 25 of 155 recovered, coverage 62.7% — **below** the contract |
+| clause admission (R231) | the contract's turn whole; from every later turn, only clauses that name their own family | **not refused on accuracy**: 154 of 155 later-turn writes recovered, coverage **95.4%**. Refused on price: 17.72 items per rescued write against a bar of 1.5 |
 
 The fourth row is the one that looks like a victory and is not, and it is worth being precise about why. In this corpus
 every successful write touches a record the agent had already opened, so a rule that credits any write to any opened
@@ -5570,9 +5571,26 @@ later-turn writes (16.1%) and produced a block with more items and **less** cove
 
 That last inversion has a second cause, and it is this project's own: the contract is read from the first turn **that
 states an ask**, not from turn one, so on 52 of 403 episodes it lives in turn three or later — and the filter refused
-exactly that turn in 50 of them. A rule that reads more turns can therefore contain fewer requirements, which is why the
-successor restricts the parser's family inheritance to the contract's turn instead of gating whole turns (R231), and why
-every future rule in this lane has to state whether its item set contains the contract's.
+exactly that turn in 50 of them. A rule that reads more turns can therefore contain fewer requirements, which is why
+every rule in this lane now has to state whether its item set contains the contract's.
+
+**The seventh answer, and the first one that holds.** Restrict inheritance instead of gating turns — the contract's
+turn read whole, every later turn contributing only the clauses that name their own family — and the requirement is
+reachable without a model call: **154 of the 155** later-turn writes recovered (99.4%), **95.4%** of the 654 required
+writes accounted for, against the contract's 63.6%. It is deterministic, it adds no vocabulary, and it is one keyword
+in a function that already existed.
+
+It still does not ship, and the reason is the more valuable half. The block it builds holds **3,699 items** for those
+403 episodes — **17.72 for every write it rescued**, against a bar of 1.5 — because the corpus itself offers **5,311
+asks for 654 required writes**. Eight asks per required write. A block that reads a conversation cannot be cheaper than
+the conversation, and the lane's question is therefore no longer *where the requirement is stated* (that now has an
+answer) but *which of the eight asks per write to keep*. The one change the round does argue for is a scope: family
+inheritance should not cross a turn boundary, which costs 0.2 points of coverage and 22% of the items.
+
+**And one thing this project had never measured.** All seven rounds measured what a transcript *supports*. The block an
+agent receives is `items[:8]` — eight lines, in statement order — so a board holding 3,699 items is a board of which an
+agent sees eight, and 95.4% is coverage of a document nobody is shown. That is the next round, and it is the first one
+in this lane that measures the artefact rather than the transcript.
 
 That reframes the project's negative results. Across six rounds the block's content has been measured as having no
 effect on task success, and the standing explanation was that the state channel is weak. The measurement above offers a

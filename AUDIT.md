@@ -18409,3 +18409,47 @@ document had named. So two corrections follow, and both are in this commit:
    every turn), and its numbers are unaffected. R230's `admitted` is not, and any later round that filters turns,
    clauses or speakers must state whether its item set contains the contract's — because if it does not, coverage can
    fall while the rule widens, and that is a failure mode no comparison against the request board will explain.
+
+## 34.325 — Three rounds, three ways to pass a bar without doing the work
+
+R231's efficiency bar was registered before its reading and had to be repaired before it was evaluated. The defect is
+the third of its kind in three rounds, and the three are worth stating together because they are one class:
+
+| round | how the bar could be satisfied without the mechanism | what fixed it |
+|---|---|---|
+| R228 (34.321) | **by being the rule**: "at least the request board" is true of any rule that credits every write to a record it opened | a bar over the cost side, registered before the reading |
+| R230 (34.323) | **by admitting nothing**: "at most twice the contract's items" is passed by a filter that reads 560 turns and rescues 25 writes | a ratio — items per rescued write |
+| R231 | **by dividing by zero**: `added <= 1.5 * recovered` at `recovered = 0` is `0 <= 0`, which the degenerate rule satisfies | `recovered > 0 and …`, and a ratio reported as `None` rather than as a number |
+
+The R231 case is the sharpest because the ratio was the *fix* for the previous round's defect. A ratio removes the
+ceiling-passer and introduces a division-passer, and the general form is worth keeping:
+
+> **A bar stated as a ratio is only a bar if its denominator is required to be positive.**
+
+An interval, a ratio and a ceiling are not interchangeable, and each invites its own degenerate rule. The repair is in
+`clause_bar` and is asserted twice — once at the boundary (`93 of 155` with an item exactly at budget holds, one item
+over fails) and once at the degenerate point (`recovered = 0`, `added = 0` fails and reports `perWrite: None`).
+
+## 34.326 — Two instruments that print the same column must count the same event
+
+`clause_asks` was written to mirror `admitted_asks`, and it did not: the turn filter increments its turn counter
+**before** testing whether the turn stated anything, so an empty user turn is counted and skipped, while the clause
+rule skipped before incrementing. Both report a column called `turns`, both are printed in the same table, and on a
+transcript with an empty turn they would have disagreed by one — invisibly, because nothing compares the two.
+
+The assertion that caught it was written for a different purpose ("an empty turn is skipped by both admission rules
+alike"), and it is the only reason the defect is in this entry rather than in a later round's denominator. Two
+corrections follow: the counting rule is now stated in the code at the point it is applied, and the two rules are
+asserted to agree on it.
+
+**The same hour, a second defect of the same shape.** `render` prints the contract-turn diagnosis — "the filter
+refused that very turn in 50 of them" — and it had been moved inside the branch that prints R230's bars. A reading
+with no later-turn write returns a bar carrying only a reason, so the diagnosis vanished exactly where the absence it
+explains is largest. Fixed by keying the sentence on the **scope** rather than on the shape of the bar, and asserted
+with a reading that has no tests to print. A diagnosis is part of the reading, not part of the result.
+
+**And a third, of the reproducibility kind.** Four saved readings now exist (`r228`, `r229`, `r230`, `r231`) and they
+were taken by three successive versions of the tool. The three older ones were regenerated under the current one and
+diffed against their saved values before being replaced: **zero value changes, zero changed bars**, and the new columns
+(`recoveredFromLate` on every board, the clause board, the boundary counters) arrived as additions. One tool version
+now backs every artefact the documents quote, which is the condition under which "reproducible" means something.
