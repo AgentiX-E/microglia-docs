@@ -30032,9 +30032,10 @@ a predicate** computed from the records — "cancel all of your upcoming flights
 longer than four hours", "multiple flights for the same day", "downgrade all business flights to economy". No token in
 the request names the extension of a query. Six more are bookings whose object **the policy chooses** — "the cheapest
 business round trip", "exactly the same as your current reservation" — and at the moment the user speaks that object
-does not exist. Two are records the request genuinely leaves unnamed ("change the passenger name on the reservation",
-nine reservations on the account), one is a transfer, which is a refusal and not a write, and one is a change the
-policy settles with two receipts over two records.
+does not exist. One is a record the request genuinely leaves unnamed ("change the passenger name on the reservation",
+nine reservations on the account), one is a transfer, which is a refusal and not a write, and two are changes the policy
+settles with two receipts over two records — "change my upcoming reservation", where the user's own account holds
+exactly one reservation and the rule still cannot see it.
 
 **So the contract is right about the direction and wrong about the anchor.** The identifier a write carries enters the
 episode through a **read** — the agent cannot act without resolving one — and never through the request. That is a

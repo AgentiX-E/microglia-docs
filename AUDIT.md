@@ -18246,7 +18246,10 @@ reaches, 13 are **predicate asks** — the reference is a set selected by a cond
 your upcoming flights", "flights longer than four hours", "multiple flights for the same day") — and 6 are bookings
 whose object the policy chooses ("the cheapest business round trip", "exactly the same as your current reservation").
 Neither shape can be named by any token rule, because in the first the extension is not in the text and in the second
-the referent does not exist yet.
+the referent does not exist yet. The remaining four are one record the request genuinely leaves unnamed ("change the
+passenger name on the reservation", nine on the account), one transfer — a refusal rather than a write — and two changes
+the policy settles with two receipts over two records ("change my upcoming reservation", where the account holds exactly
+one reservation and the token rule still cannot see it).
 
 **Three implementation decisions were taken before the number was read, and each is stated so it cannot be mistaken
 for a fit:**

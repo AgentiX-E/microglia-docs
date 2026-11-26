@@ -10295,9 +10295,9 @@ the rule it replaced is the old contract.
 |---|---|---|
 | a set selected by a predicate | 13 | "cancel all of your upcoming flights"; "reservations that contain flights longer than four hours" |
 | the policy chooses the object | 6 | "the cheapest business round trip"; "exactly the same as your current reservation" |
-| the record is unnamed by design | 2 | "change the passenger name on the reservation", nine on the account |
+| the record is genuinely unnamed | 1 | "change the passenger name on the reservation", nine on the account |
 | no record at all | 1 | a transfer to a human |
-| one ask, two records | 1 | a change the policy settles with cancel-and-rebook |
+| one ask, two records | 2 | "change my upcoming reservation", settled by cancel-and-rebook |
 
 **What it changes.** Nothing ships. R217 stays cancelled and the ¥16 stays unspent — for the second time on the same
 purchase, and for a different reason each time: R217a found the parser could not see its own successes, R227 found the
