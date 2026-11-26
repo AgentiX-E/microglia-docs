@@ -10986,12 +10986,18 @@ Every commercial memory system makes at least one rendering decision per turn: w
 order, under what cut. None publishes the decision as a rule, and none measures what the rule costs in the only unit
 that matters — **graded work that did not appear on the block**.
 
-This project now has two such rules and both are content-free:
+This project now has two such rules, both content-free, and both measured to the end of the axis they act on:
 
 | rendering rule | the shipped order | the rule | what it recovered |
 |---|---|---|---|
-| ordering | statement order | open before settled, statement order inside each group | **10 of 14** hidden writes; nothing lost |
-| fold (registered) | one line per statement | one line per family | untested — R234 |
+| ordering | statement order | open before settled, statement order inside each group | **10 of 14** hidden writes; nothing lost (R233) |
+| fold | one line per statement | one line per family, applied after the ordering | **the last 4**: 632 → **636 of 654 shown**, 4 → **0 hidden of 636**, at the same 8.10 items a call (R234) |
+
+The two together are the axis: 622 → 632 → 636 shown, 14 → 4 → 0 hidden, three rounds, **¥0**, no model called, no item
+added. What is left unshown is not a rendering question and the fold's reading proves it — 18 writes whose family the
+moment board never held (15 `modify`, 2 `transfer`, 1 `exchange`), three of them on an empty block and none on a block
+with more than three open families. A ranker cannot recover a line that was never on the board either, which is why the
+"which eight families out of twelve" problem this document has been predicting did not open here.
 
 **Why this is a competitive asset rather than a prettiness.** A vendor's block is eight lines because eight is what
 fits a cache-friendly prefix, not because eight is what their task needs. Their ordering — usually "most recent first" or
