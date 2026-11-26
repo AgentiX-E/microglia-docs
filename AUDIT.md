@@ -17867,3 +17867,36 @@ and this lane has published +7.9 and −6.1 for one configuration inside one aft
 states — `STRATA_READ` with a delta and a sign test, and `STRATA_ONLY` with neither — and the borrowed mode prints the
 sentence "a baseline borrowed across two dispatches is a covariate and not a control" rather than leaving the reader to
 remember which table they are looking at.
+
+### 34.269 An import that worked on 3.11 and not on 3.10, and a diagnostic channel with a budget
+
+The strata tool's cross-check imports `goal_board.strata_of` lazily, so that the reader and the older strata function
+can be held against each other on a fixture. The suite passed here and **failed in CI** with
+`ModuleNotFoundError: No module named 'goal_board'`. The cause is a documented interpreter difference that this
+repository had already written down and still walked into: `python3 <script>.py` inserts the script's directory on
+`sys.path` on **3.11** and not on **3.10**, and CI pins 3.10 while the development interpreter is 3.11. The coverage
+step's own header says so — "a suite that imported a sibling module by bare name passed on the development interpreter
+and raised `ModuleNotFoundError` here" — four lines above the command that ran the file.
+
+Three things came out of it.
+
+1. **The fix is the convention the tree already had.** `board_dose.py` and `dose_power.py` put their own directory on
+   `sys.path` through a named function; this file imported a sibling and assumed the interpreter would do it. It now has
+   `_tools_on_path()`, and the suite asserts the directory appears on the path **exactly once**, so the idempotent case
+   is the tested one.
+2. **It is now reproducible on 3.11**, which is what makes the class of defect testable instead of remembered: `python3
+   -P eval/tools/solve_strata.py --self-test` removes exactly the insertion the interpreter performs for free, and it
+   failed the same way before the fix. A CI-only failure that cannot be reproduced locally is a failure that returns.
+3. **The diagnostic channel had a budget and the first two versions spent it on the wrong thing.** The job log is served
+   through a storage redirect this sandbox cannot authenticate against, so a red build said `exit code 1` and nothing
+   else. The step was changed to republish its output as `::error::` annotations — the one channel the API does serve —
+   and the first attempt emitted the **last fifteen lines**, which was three lines of stack and no exception. The second
+   emitted a grep for `Error|FAIL` followed by forty lines, and GitHub **caps a step at ten annotations**: the budget
+   went on ten `FAIL` lines that were the ALFWorld suites asserting their own refusals, and the traceback never
+   appeared. The third emits **one** annotation carrying the last twelve lines joined, and the
+   `ModuleNotFoundError` was on the first read. A diagnostic is a message with a size limit; the limit is part of the
+   design, and a grep is not a substitute for knowing which lines matter.
+
+The general lesson is the one this file keeps relearning in different coats: **a gate whose failure cannot reach its
+author is a gate that costs a cycle per discovery.** The three pushes above cost about fifteen minutes of CI and would
+have cost one had the channel carried the sentence the tool already printed.

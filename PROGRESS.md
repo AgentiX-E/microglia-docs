@@ -29441,3 +29441,27 @@ looked plausible: 2.40 asks an opening reads like a decision signal, and it is o
 about *whether* to serve at all.
 
 Recorded rather than deleted, because the next person to propose the ask count as a gate will find the number here.
+
+## 249.20 A green local suite and a red CI, and the interpreter difference the repository had already written down
+
+The strata reader's cross-check imports a sibling module lazily. It passed here, and CI — which pins Python **3.10**
+where the development interpreter is 3.11 — raised `ModuleNotFoundError: No module named 'goal_board'`, because
+`python3 <script>.py` inserts the script's directory on `sys.path` on 3.11 and not on 3.10. The coverage step's own
+header names that exact failure mode, four lines above the command that runs the file, which makes this a defect of
+reading rather than of knowledge.
+
+Three fixes, and only the first is about the import:
+
+| fix | what it removes |
+|---|---|
+| `_tools_on_path()` in `solve_strata.py`, mirroring `board_dose.py` | the assumption that the interpreter prepares `sys.path` |
+| a check that the directory appears on the path **exactly once** | the idempotent case, which is the one a second call takes |
+| `python3 -P` as the local reproduction | "it only fails in CI", which is how this class of defect returns |
+
+The other half of the round was the **diagnostic**. A failing job here reported `exit code 1` and nothing else, because
+the log is served through a redirect this sandbox cannot authenticate against; the step now republishes its output as
+annotations, which the API does serve. The first version sent the last fifteen lines and lost the exception; the second
+sent a grep plus forty lines and lost everything, because GitHub caps a step at ten annotations and the budget went on
+ALFWorld suites printing their own expected `FAIL` lines. The third sends **one** annotation with the last twelve lines
+joined, and the answer was on the first read. Fifteen minutes of CI across three pushes, for a sentence the tool had
+already printed into a channel nobody could open.
