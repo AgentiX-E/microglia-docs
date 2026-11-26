@@ -12803,3 +12803,60 @@ around zero would let an ordering lose three writes without a finding; a floor e
 fail every grid it was not measured on (AUDIT 34.329). `display_bar(summary, coverage, hidden, floor=...)` therefore
 takes the form as an argument and reports `B2_contract`/`B3_hidden` or `B2_hidden`/`B3_displayTax` accordingly, with the
 manifest checker walking both shapes.
+
+## 17.199 — Three pure functions in a fixed order: the block as `order → fold → cut`, and the third column that keeps a fold honest
+
+**The pipeline, and why the order is the design.** Every rendering decision this lane has measured is a function from
+the item list to the item list, and the three of them compose only in one arrangement:
+
+```
+items ──▶ order ──▶ fold ──▶ cut ──▶ the eight lines a model reads
+          │         │         │
+          │         │         └─ cap = 8, the product's own constant (`limit ?? 8`, `CAP = 8`)
+          │         └─ one line per family: first occurrence kept, repetition follows (R234)
+          └─ open before settled: stable partition, statement order inside each group (R233)
+```
+
+*Fold before the order* would change which items the partition sees — the order would then be sorting a list the round
+had already rearranged, and the two effects would be inseparable. *Fold after the cut* would change nothing at all: the
+eight lines are chosen by then, and a fold is a statement about position. So the arrangement is not stylistic. It is the
+only one in which each step's contribution is attributable, which is what lets R233 hold R232's board fixed and R234 hold
+R233's.
+
+**`_fold` is a two-bucket stable partition, and that is the whole rule.** `firsts` collects the first item of each
+family in arrival order, `repetition` collects the rest, and the result is `firsts + repetition`. No item is dropped, no
+settlement changes, `itemsAll` is untouched — so a board's *cost* columns are identical before and after the rule and
+the only column that can move is which lines the window spends itself on. This is the property that made the round free
+to read and, in the end, free to adopt: the rule cannot buy coverage with items because it has no way to add one.
+
+**The third column: `unfolded`.** A fold must not cost the shipped board, and the level it must not fall below was
+measured **before the fold existed** — 463 on the control grid, 443 on the replication. So a grouped reading carries
+three numbers per write, not two:
+
+| column | what it is | 654-write grid |
+|---|---|---|
+| `reached` | the write's family was open on the moment board at *some* line | 636 |
+| `displayed` | …and at a line inside the cap, under the round's rules | 636 |
+| `unfolded` | the contract's displayed level **without** the round's rule | 463 |
+
+`unfolded` exists because the alternative is the treatment grading itself. Deriving the floor from the folded board's
+own other window would be the defect AUDIT 34.329 caught with a constant from another grid, one level up: a rule asked
+whether it cost a board, judged against the same board after the rule. It is measured by one extra `visibility` call on
+the contract scope — the only extra board a grouped reading builds — and `check_manifest` now asserts that a saved
+reading's `floor` **is** its `unfolded` column, so a hand-edited floor is refused even when `holds` is truthful about the
+comparison it reports.
+
+**What the instrument deliberately does not model.** The pack builder ranks candidates before it takes eight
+(`mmrSelect` over a recall query), and the instrument's `moment` board takes the first eight items in statement or open
+order. On the shipped board the difference cannot exist — 2.41 items against a limit of 8 means `selected` is the whole
+candidate list — and on the clause board it can: 8.10 items with a ranker that could prefer a live `modify` to nine
+settled `address` lines would recover what R233 could not. That is why R232's and R233's numbers are exact for the
+shipped configuration and a **lower bound** for the clause rule (AUDIT 34.330), and why R234's 636-of-636 is a bound on
+the same side: the fold cannot show a line the board does not hold, so ordering and folding are the deterministic special
+case of the ranker the product already has.
+
+**The cap is named in two places and compared in none.** `CAP = 8` here, `options.limit ?? query.limit ?? 8` there, and
+no test binds them; `serving-defaults.json` carries `blockCeilingChars` and `openAskCeiling` but not the line count the
+rendering rules are about. It is the next ¥0 engineering item in this lane, and its shape is already decided by the
+mechanism that exists: one field in the manifest, read by the Python instrument and by `core/memory/serving.ts`, with a
+test on each side that fails when the two constants drift.

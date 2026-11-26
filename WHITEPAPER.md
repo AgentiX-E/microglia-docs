@@ -5542,11 +5542,20 @@ project has tested seven rules for joining them, each against a bar written befo
 | clause admission (R231) | the contract's turn whole; from every later turn, only clauses that name their own family | **not refused on accuracy**: 154 of 155 later-turn writes recovered, coverage **95.4%**. Refused on price: 17.72 items per rescued write against a bar of 1.5 |
 | displayed block (R232) | the same boards, measured **at the moment of the call** and cut to the eight lines the product renders | refused on a bar whose two sides measured different quantities (+47 writes). The measurement itself is the result: the clause board **shows an open ask for 95.1%** of the graded writes and hides **2.2%**, at **8.10 items a call** — so the price that refused R231 belongs to the accumulated board, not to the block |
 | open before settled (R233) | the same block, re-ordered: unsettled asks first, statement order inside each group | refused **by three writes**: 632 of 654 shown (96.6% against a bar of 97.0%), 4 hidden instead of 14, and the contract untouched at 463. The four that remain sit behind nine to thirty-nine open asks of one or two families — the residue is repetition, not settlement |
+| one line per family (R234) | the same block, folded: the first item of each family, then the repetition | shows **every write the board reaches** — 636 of 654 (97.2%), **0 hidden of 636**, at 8.10 items a call — and fails a coverage bar that was registered 1.4 points above the reachable set. The axis closes at its arithmetic maximum: the 18 writes left have no family on the block at all (15 `modify`, 2 `transfer`, 1 `exchange`) |
 
 The ninth row is the cheapest rule this project has measured and the first that a product could adopt on the rendering
 alone: it recovers **ten** of the fourteen writes the cap hid, loses none, adds no content and calls no model. It is also
 the row that relocates the problem for the third time — from *admission* (R231) to *selection* (R232) to
 *duplication* (R233) — and each relocation has cost less than the last.
+
+The tenth row closes that sequence. Folding the block to one line per family shows **636 of 654 (97.2%)** — every write
+the board reaches — and hides none, at the same **8.10 items a call**, replicated at 621 of 621 for a further **¥0**. The
+three rendering rounds between them moved 622 → 632 → 636 shown and 14 → 4 → 0 hidden without spending a token, adding an
+item or changing a settlement. What is left is not a rendering problem and the round proves it by naming it: 18 writes
+whose family the moment board never held, three of them on a block with no item on it and none on a block with more than
+three open families. A window can only choose among the lines it is given; the rest is *admission*, and the round that
+prices it is the first one since R223 that buys tokens.
 
 The eighth row changes how the other seven should be read, and it is the only one that is not about a rule. Every board
 above was built from the **finished** transcript — the artefact an evaluator reads. The artefact a model reads is built

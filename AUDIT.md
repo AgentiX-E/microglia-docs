@@ -18598,3 +18598,57 @@ its tokens.
 `CAP` in the Python instrument and in `options.limit ?? 8` in the TypeScript one, and nothing compares them. A test that
 asserts the two constants agree is the only version of "the instrument measures the product's cap" that a build can
 check, and it belongs with the other cross-repository reads that `serving-defaults.json` already powers.
+
+## 34.331 — A bar registered above the ceiling its own predecessor had already measured
+
+**What was registered.** R234's B1 asked the clause board to show an open ask for **at least 645 of 654** required
+writes (98.6%). The registration was written on 26 November, *after* R233's reading, and R233 reported `reached = 636`
+on the same grid. A rendering rule chooses among the lines a board holds. It cannot display a write whose family the
+board never carried. The maximum displayed coverage any content-free rendering rule can reach on that grid is therefore
+**636 of 654 = 97.2%**, and 645 was 1.4 points above it.
+
+**What it measured.** The fold shows **636 of 654 (97.2%)** — every write the board reaches, none hidden, 8.10 items a
+call, replicated at 621 of 621 — and fails B1 by nine writes. B2 held exactly (463 against the 463 the contract
+measured *without* the fold) and B3 held at 0.0% against a 0.5% bar. So the round is two passes and one failure, and the
+failure is about the registration rather than about the rule: **the rule's own column is at its arithmetic maximum.**
+
+**Why this is the third instance of one defect and not a fourth kind of defect.** The lane has now registered three bars
+whose *reference* was wrong while the arithmetic underneath was sound:
+
+| entry | the bar | why the reference was wrong |
+|---|---|---|
+| 34.328 | the display tax, `|shown − covered| ≤ 4` | the two sides measured different settlement rules; the cut contributes 0 |
+| 34.329 | the contract's floor, taken as 463 | 463 is the control grid's level; the replication grid's is 443 |
+| 34.331 | the clause board's coverage, 645 of 654 | 645 exceeds the reachable set its predecessor had already measured |
+
+Each was caught the same way — by printing the quantity beside the bar rather than the bar alone — and each produced a
+round that was *refused for the wrong reason*. The common shape is a bar whose number was chosen for its rhetorical
+force (a round number, a predecessor's constant, a "target") and then attached to a column that could not reach it.
+
+**The rule this entry adds, written so a future registration can be checked mechanically.** A rendering round's coverage
+bar must be expressed against the **reachable set**, not against the evaluator's denominator, unless the round also
+changes what is admitted to the board — in which case it is an admission round and must say so in its title. In the
+instrument's own terms: `B1_displayed.rates` is `displayed / discharged`, and a rendering round needs
+`displayed / reached` beside it. The two are one arithmetic step apart and answer different questions; R232 quoted the
+first (95.1%) and R233 the second (96.6% of 654 against 4 of 636 hidden), which is why the chain has been readable at
+all. R234 is the first round where the first is pinned at 1.0 by construction, and the reading now carries both.
+
+**What survives, and it is not small.** The three rendering rounds cost **¥0 between them** and moved the block from 622
+shown to 636, from 14 hidden to 0, with the item count fixed at 8.10 a call and no model in any of the three. The problem
+migrated three times — admission (R231) → selection (R232) → duplication (R233) — and this round closes it: the residue
+is 18 writes whose family the block never held (15 `modify`, 2 `transfer`, 1 `exchange`; three of them on a block with no
+item on it, none on a block with more than three open families). That is absence, and absence is the parser's and the
+admission rule's, not the window's.
+
+**The one thing this entry does not license.** It does not license shipping the fold, because there is nothing on the
+shipped board to fold: the contract board holds 2.41 items a call and one line per obligation already, so the rule is
+invisible there and its 463-against-463 is the proof rather than a coincidence. The rendering rules of R233 and R234
+become live on the day a board with repetition on it is served, which is the same dispatch that would answer whether any
+of this changes what a model does. Nothing is promoted for the eleventh consecutive round, and for the first time the
+reason is not that a measurement is missing but that the artefact being measured is not shipped.
+
+**And the mechanism this entry needed.** The floor a fold must not cost is a number no reader can re-derive from the
+board it is printed beside, so `check_manifest` now compares it against the column it was measured from
+(`reading.unfolded`): a saved reading whose floor is not the contract's unfolded level is refused even when `holds` is
+truthful about the comparison it reports. That is the third checker rule added in three rounds, and all three exist
+because a document quoted a number a build could have checked.

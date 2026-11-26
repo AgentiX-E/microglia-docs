@@ -30422,3 +30422,84 @@ change in this lane that a product could adopt on its own terms.
 **The product consequence, for the tenth round running: no default moves** — and this round adds a second *actionable*
 rendering claim to the first: open-before-settled costs nothing, loses no write, and recovers ten. Both are recorded in
 `serving-defaults.json` under `notYet.displayOrder`, which now carries two rendering rules rather than a question.
+
+## 249.52 R234 read: the fold shows everything the board reaches, and nothing else is on the board
+
+**¥0, 0 arms, 456 episodes, both grids, read on 27 November 2026.** The rule is `one line per family — the first item
+of each family in the order the board already has them, then the repetition`, applied after R233's ordering and before
+the cap. It is a stable two-bucket partition: no item removed, no settlement changed, and the item count identical.
+
+| | statement order (R232) | open before settled (R233) | **one line per family (R234)** |
+|---|---|---|---|
+| reached | 636 | 636 | 636 |
+| shown of 654 | 622 (95.1%) | 632 (96.6%) | **636 (97.2%)** |
+| hidden of 636 | 14 (2.2%) | 4 (0.6%) | **0 (0.0%)** |
+| items a call | 8.10 | 8.10 | 8.10 |
+| contract | 463 | 463 | 463 |
+
+Replication grid, same three columns: 602 → 614 → **621 shown of 643**, 19 → 7 → **0 hidden of 621**, 7.72 items a call,
+contract 443 → 443 → **444**.
+
+**B2 and B3 hold; B1 fails, and B1 was unpassable.** B2 — the fold must not cost the shipped board — is exact on both
+grids (463 against the 463 the contract measured *without* the fold; 444 against 443). B3 — at most 0.5% of what the
+clause board reaches may be hidden — is 0.0% on both, against 0.6% last round. B1 asked for **645 of 654** and got
+**636**; 645 was registered 1.4 points above the reachable set R233 had already measured, and a rendering rule cannot
+display a write whose family the board never held (AUDIT 34.331). The fold's own column is at its arithmetic maximum:
+**636 of 636**.
+
+**The eighteen that are not on the board.** 15 `modify`, 2 `transfer`, 1 `exchange` — writes whose family no open ask
+carries at any line of the moment block.
+
+| episodes | family needed | open families on the block | items on the block |
+|---|---|---|---|
+| 3ff28626 (×2), 4e217e6f | `modify` | — | 0 |
+| 4ee30edd | `modify` | cancel, payment, return | 5 |
+| 1d4f1dc3 | `modify` | exchange, return | 9 |
+| 8fdc7215 | `exchange` | return | 1 |
+| c0f899cd | `transfer` | cancel | 4 |
+| 07c2e99c | `transfer` | cancel, exchange, return | 7 |
+
+No residual block holds more than three open families, so the prereg's feared failure mode — breadth, more than eight
+distinct obligations in eight lines — **did not occur**. Repetition was the binding constraint and the fold removed all
+of it; what is left is absence, which no window can fix. The rendering axis closes here, on evidence rather than on a
+bar: the column it can move is at zero.
+
+## 249.53 What three ¥0 rounds bought
+
+The block a model reads went from 622 of 654 graded writes to 636 without spending a token, without adding an item, and
+without changing a settlement. The problem moved three times — admission (R231) → selection (R232) → duplication
+(R233) — and each move was cheaper than the last, which is the pattern this lane wants and had not previously seen three
+times in a row. Two rendering rules are now measured and free: `open before settled`, and `one line per family`.
+
+Neither ships, and the reason is now sharper than "not dispatched". The shipped contract board holds **2.41 items a
+call** and one line per obligation already, so both rules are invisible on it — 463 against 463 is the proof, not a
+coincidence. They become live on the day a board with repetition on it is served, which is a decision about admission and
+not about rendering.
+
+## 249.54 Where the lane stands after ten anchors
+
+| anchor | round | accuracy column | the column that refused it |
+|---|---|---|---|
+| request (the contract) | R223 | 63.6% covered | the baseline |
+| reveal | R225 | — | screen reversed on the held-out half (+1.04σ) |
+| record | R227 | 54% named by record | 0.75 bar, before the money |
+| read-strict | R228 | 98.5% covered | open tax 2.53 against 1.79 required |
+| ask-bound | R229 | 63.5% covered | one write under the request board |
+| turn admission | R230 | 62.7% covered | recovery 16.1%, coverage below the contract |
+| clause admission | R231 | 95.4% covered | 17.72 items per rescued write — a cost of accumulation |
+| displayed block | R232 | 95.1% shown at the cap | a bar whose two sides measured different quantities |
+| open before settled | R233 | 96.6% shown | 97.0% bar missed by three writes; residue is repetition |
+| **one line per family** | **R234** | **97.2% shown = 100% of reachable** | **a bar registered above the ceiling; residue is absence** |
+
+| item | state | price | what it buys |
+|---|---|---|---|
+| clause admission's accuracy dispatch (R235) | next, **registration due before spending** | **¥34** | whether 31.8 points of covered writes change what a model does |
+| parser scope (no inheritance across a turn) | measured: −0.2pp for −22% items | ¥0 | a one-keyword change to the shipped board |
+| the cap as one constant, not two | named by AUDIT 34.330 | ¥0 | a build-level guarantee that the instrument measures the product's window |
+| R221 2.0 submission | waiting on a measurable gain | ¥34 | four columns the leaderboards lack |
+| telecom third domain | not registered | ¥0 to design | a user model that discloses differently |
+| LoCoMo / MemTrapBench replication | not registered | ~¥20 | two external leaderboards on our own harness |
+
+**The product consequence, for the eleventh round running: no default moves** — and this time not because a measurement
+is missing. The rendering rules are measured, free, and invisible on the shipped board; the dispatch that makes them
+visible is R235's, and it is the first round in four that has to buy tokens.

@@ -11012,3 +11012,26 @@ project has not yet bought.
 axis remains a published fact; the third axis now reads **96.6% of the graded work displayed at the product's own cap,
 for 8.10 lines a call and zero model calls**, with both windows reported from one board. No competitor publishes a
 displayed-coverage number at all, which is still both the opportunity and the risk.
+
+**Where the SOTA argument stands after ten anchors, and the prediction this round retired.** R234 measured the fold and
+the breadth hypothesis it was registered to test **did not occur**: no residual block holds more than three distinct open
+families, and three of the eighteen unshown writes sit on a block with no item on it at all. So the "choosing which eight
+families out of twelve" problem — the one row of this table where a ranker would earn its tokens — is not this corpus's
+problem, and the fifth content round this document has been predicting is not the one the evidence asks for. What is left
+is 15 `modify`, 2 `transfer` and 1 `exchange` write whose family the block never carried: a **parser** deficit, priced at
+¥0, not a ranking one priced at ¥34.
+
+| axis | this project after ten anchors | the field |
+|---|---|---|
+| displayed coverage of the graded work | **97.2% at the product's own cap (636 of 654), 0 hidden of 636** | no competitor publishes a displayed-coverage number; blocks are built opaquely and reported only through end-to-end accuracy |
+| cost of a served block | **8.10 lines a call, 2.41 for the shipped board** | published as tokens per query where published at all; not decomposed by rendering rule |
+| accuracy within resolution | indistinguishable from the contract arm (0.23 pp behind same-harness) | the published leaderboard is the accuracy axis and this project is not on it — R235 is the round that would put it there |
+| leaderboard presence | two boards measured on our harness (BIRD Mini-Dev, τ² retail); LoCoMo and MemTrapBench registered as not-yet | the field's numbers are the field's own harnesses |
+
+The competitive read of ten anchors is therefore narrower than it was after nine, and more honest: **this project has
+closed a measurement axis none of the leaders report, and has not closed the axis they compete on.** The rendering work
+cost ¥0 and is now complete; the remaining distance is a ¥36 dispatch (R235) for the accuracy column, an external-benchmark
+replication (~¥20) for leaderboard presence, and a third domain (¥0 to design) for generalisation. No part of that
+distance is a rendering question, and the competitor whose block construction most resembles the clause board — a
+full-transcript summariser — is the one whose accuracy number this project can now compare against without also
+inheriting its rendering cost.

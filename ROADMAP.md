@@ -10562,3 +10562,39 @@ different problem, one the cap cannot solve and a ranking could.
 
 **Refutation.** B1 failing with the folded count unchanged closes the content-free rendering axis and makes the next
 round the paid one: the clause rule's accuracy dispatch at ¥34.
+
+**Read 27 Nov 2026 — ¥0, no dispatch.** The fold shows **636 of 654 (97.2%)** of the graded writes, **0 hidden of 636**
+(replicated 621 of 621), at **8.10 items a call** — unchanged — and the contract holds at 463 against the 463 its own
+statement order measured *without* the fold. B2 and B3 hold; B1 misses by nine writes and the miss is the finding: 645
+was registered 1.4 points above the 636 R233 had already measured as the reachable set, and a rendering rule cannot
+display a write whose family the board never held (AUDIT 34.331). The residue is 18 writes — 15 `modify`, 2 `transfer`,
+1 `exchange` — whose families are absent from the block, three of them on an empty block and none on a block with more
+than three open families. The feared failure mode, breadth, did not occur: repetition was the constraint and the fold
+removed all of it.
+
+The three rendering rounds are one chain at ¥0: **622 → 632 → 636 shown, 14 → 4 → 0 hidden, 8.10 items a call**, no model
+called. The rendering axis closes here.
+
+---
+
+## R235 (registered 27 Nov, ¥36) — the clause rule's accuracy dispatch
+
+The first round since R223 that buys tokens, and the only question four ¥0 rounds could not ask: does an agent that reads
+a live ask for 31.8 more points of the graded writes succeed more often? Two arms over the same 114 retail tasks at four
+attempts each — **456 episodes an arm, 912 in the pair** — with the placement, the grades, the ceilings, the seed and the
+trials held.
+
+**Price, from the grid rather than from a guess** (`eval/tools/resolution.py`, ¥0): 4 attempts a task sees **6.72 pp**
+for **¥36.2**; 2 attempts sees 8.89 pp for ¥18.1; 9.49 attempts sees 5.00 pp for ¥85.8; and **the domain's floor is
+3.21 pp at unlimited attempts**, so no budget resolves anything smaller on 114 tasks — that needs more tasks, which is
+the third-domain round.
+
+**Bars** (prereg/R235-clause-accuracy.md, before any dispatch): **B1** the clause arm is not below the contract arm by
+more than 3.21 pp; **B2** a positive delta must reach 6.72 pp or it is reported **UNRESOLVED at this sample** rather than
+as a win; **B3** on ≥95% of served blocks the clause arm carries an open ask of the family the episode later writes,
+measured on the *dispatched* transcripts rather than on the replay.
+
+**Prediction.** B1 holds with margin, B3 holds by construction, and B2 is the round's real uncertainty: the likeliest
+outcome is a delta between zero and the MDE, which is a result — it would say the coverage gap is not where task success
+lives and relocate the next four rounds to the third domain and the external benchmarks rather than to a fifth content
+rule.
