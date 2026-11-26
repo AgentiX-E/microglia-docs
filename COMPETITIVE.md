@@ -10646,6 +10646,12 @@ policies** — and seven to nine points of gain on the half-solved stratum, whic
 arms differ in wording (the rule removes every judgment line) and in placement (a system message against a block
 behind the conversation); none of those differences move the damage.
 
+The 19 damaged tasks are corroborated by an instrument this project already had: `goal_board.py --strata --k 4`
+over the same two documents reads 66 solved, 19 regressions, 14 rescues, and agrees with the table's `always` row to the
+task. What the table adds is the **rate per stratum** rather than pass^k, a delta with a sign test, and the same
+covariate applied to a later dispatch's two arms — which is what turns "19 regressions" into "the damage is nine points
+and it does not move with the wording or the placement".
+
 No row on the board, and none of the systems in R218e.1, publishes either column — a degradation count, or a rate per
 control stratum. The nearest thing is a "regression rate" over the suite, which cannot distinguish "damaged 9% of the
 70% we already solved" from "damaged 9% of everything". The distinction is the difference between a system whose

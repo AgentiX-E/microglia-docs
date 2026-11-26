@@ -29367,6 +29367,23 @@ Two effects, opposite signs, and the arm-level mean is their sum: 66 × (−9.5)
 **−1.8 task-units over 114**, which is the −1.5 pp the arm reads. The sign test over the tasks that moved is 23 against
 29, **p = 0.488** — the mean is not the finding and never was.
 
+**The reconciliation, because a second instrument is a second definition.** `goal_board.py --strata` already decomposes
+two arms of one grid, as pass^k on the first *k* attempts: at `--k 4` over these same two documents it reads **66 solved,
+48 failed, 19 regressions, 14 rescues** — the same 66 and the same **19** this table's `always` stratum reports, which is
+the check that matters and it passes exactly. The two readers differ in what they cut and what they count:
+
+| | `goal_board --strata --k 4` | `solve_strata` |
+|---|---|---|
+| the covariate | pass^4 on the first four attempts (a reliability reading) | the rate over every attempt (a difficulty reading) |
+| a regression | a solved task whose pass^4 fell to zero | a solved task whose rate fell below one |
+| a rescue | a failed task whose pass^4 reached one | a failed **every** task that came out better |
+
+They agree on the 19 because a task at 4/4 that drops to 3/4 is a regression under both. They differ on rescues (14
+against 3) because `--k 4` counts the 43 half-solved tasks reaching 4/4 as rescues while this table's `never` row counts
+only tasks the control never solved. Neither is wrong; the table above is the one that keeps the **rate**, which is what
+makes a per-stratum delta and its sign test meaningful, and `--strata` is the one that pools across dispatches without
+an estimator.
+
 **The damage is the reproducible part.** The same stratum read through the same covariate on the two tail arms of
 R219b — a later dispatch, a different placement, and the admission rule that removed every judgment line:
 
