@@ -17835,3 +17835,35 @@ Two smaller defects surface with it and are fixed here rather than noted: TECH-D
 `rows == episodes ≥ 220`, which the loss bound replaced when the first dispatch lost eleven boundary texts (34.266);
 and the reading's sentence printed the confounded sign with no mention of the subset, so a reader who stopped at the
 first line got the decomposition and never the reading.
+
+### 34.268 The stratum compared a rate with an attempt count, and the table printed three rows anyway
+
+`eval/tools/solve_strata.py` exists to separate two opposite effects that cancel in every arm-level mean: the tasks a
+memory arm **damaged** and the tasks it **failed to repair**. It stratifies on the control's own pass rate — never
+solved, always solved, or mixed — and the first version of that classification read
+
+```
+if control_rate == 0.0: return "never"
+if control_rate == attempts: return "always"
+```
+
+where `attempts` is the arm's attempt count (four). A rate can only equal an attempt count when the rate is 1.0 and the
+attempts are 1, so **every task fell into `mixed`**: the two strata the decomposition is about disappeared, and the
+output still printed a three-row table whose `always` and `never` rows were absent rather than empty. A reader would
+have seen "114 tasks, all mixed" and concluded the grid had no solved tasks — a wrong finding about the population
+produced by a comparison between two different kinds of number.
+
+The fixture caught it on the first run, because it asserts the stratum a known task lands in rather than the shape of
+the table: `KeyError: 'always'`. That is the whole value of writing the fixture before the prose — the defect is
+invisible in the output and obvious in an assertion about one task. It is recorded here because the same substitution
+(rate against count, share against row count, index against length) has now appeared three times in this lane's tools,
+and each time the table it produced looked complete.
+
+**The second defect was in the design, not the code, and it is refused rather than noted.** The same grid question can
+be asked of an arm from a *different* dispatch by borrowing the strata: 114 task ids are shared across R218b and
+R219b, so `--strata-from` reads R219b's arms through R218b's control strata. What must not travel across dispatches is
+the **delta**: a baseline from another run is a covariate measured before the treatment, not a control run beside it,
+and this lane has published +7.9 and −6.1 for one configuration inside one afternoon. The tool therefore has two
+states — `STRATA_READ` with a delta and a sign test, and `STRATA_ONLY` with neither — and the borrowed mode prints the
+sentence "a baseline borrowed across two dispatches is a covariate and not a control" rather than leaving the reader to
+remember which table they are looking at.

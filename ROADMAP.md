@@ -9989,6 +9989,20 @@ rounds.
 - **`NO_PAIRS`** — the dose does not vary inside a task, which refutes the premise: the material's effect is then not
   identifiable from one arm at all and would need a randomised dose, a different round.
 
+**Where the harm is, and it is not wording.** Stratified on R218b's control — the only grid on disk holding both a
+no-memory and a treated arm with four attempts at each of 114 tasks — the front arm loses **9.5 points on the 66 tasks
+the control solved every attempt** and gains **7.5 on the 43 it solved some of**, which is why every arm-level mean in
+this lane has read flat: the two effects cancel by population, not by mechanism. The same stratum read through the same
+covariate on R219b's two tail arms reads 91.0% and 92.0% — nine and eight points of damage — so the loss does not
+depend on the placement (system message against tail) or on the admission rule (judgments admitted or refused), and it
+is not a wording effect at all (PROGRESS 249.18, COMPETITIVE R218e.3).
+
+**What that makes the next round.** The question moves from *what should the block say* to **when should anything be
+served**: the material is worth seven points on the half-solved stratum and costs nine on the solved one, so a serving
+decision is worth more than any rewrite. That round is **R223** and it is deliberately **not registered yet**: the
+serving decision has to be made before the episode's trajectory exists, so it needs an observable proxy, and naming
+that proxy is the round. Its envelope is one two-arm grid at 228 episodes, ≈ ¥9, once a proxy with a test exists.
+
 **The first dispatch, and why the round is being dispatched twice.** Run 45725844697 ran the grid and returned 236
 recordings over 228 episodes, and the join refused all of them on facts τ² produces by design — 8 retries, 11 boundary
 texts that resolved to no task, 3 tasks that reached the model once. The refusal also discarded the recording, so the

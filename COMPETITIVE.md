@@ -10627,3 +10627,28 @@ Three consequences, and the third is the one that changes what this project does
 
 None of the rows on the board publishes a discordant-pair count, a decided-subset size, or a bound. That is not a gap
 this project can close alone, but it is the reason its own rows now carry all three.
+
+### R218e.3 The column that would have saved three rounds: damage on the tasks that already worked
+
+Every memory system in this literature is scored on a suite mean, and a suite mean over a population where most tasks
+are already solved is structurally unable to show the effect this project just measured. Stratified on a control's own
+pass rate — the one variable fixed before the treatment exists — the shipped block reads:
+
+| | tasks | control | **front** | tail `board` | tail `policy` |
+|---|---|---|---|---|---|
+| already solved every attempt | 66 | 100% | **90.5%** | **91.0%** | **92.0%** |
+| solved some attempts | 43 | 62.8% | 70.3% | 70.0% | 72.0% |
+| never solved | 5 | 0% | 25.0% | 80.0% | 20.0% |
+| all | 114 | 81.6% | 80.0% | 82.5% | 81.6% |
+
+**Eight to ten points of damage on the tasks that were already solved, in three arms, two placements and two admission
+policies** — and seven to nine points of gain on the half-solved stratum, which is what cancels in the mean. The three
+arms differ in wording (the rule removes every judgment line) and in placement (a system message against a block
+behind the conversation); none of those differences move the damage.
+
+No row on the board, and none of the systems in R218e.1, publishes either column — a degradation count, or a rate per
+control stratum. The nearest thing is a "regression rate" over the suite, which cannot distinguish "damaged 9% of the
+70% we already solved" from "damaged 9% of everything". The distinction is the difference between a system whose
+memory should be rewritten and one whose memory should be **served less often**, and it is the second. That is a
+product decision — when to serve — that no accuracy number on a leaderboard can express, and it is where this project's
+next round goes rather than to a better block.

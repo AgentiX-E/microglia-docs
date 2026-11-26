@@ -29348,3 +29348,51 @@ ceiling against the pack that must carry it, and it parses the body for unfilled
 in the file whose subject is that a claim has to be checkable. The fix is a quoted phrase rather than a bracket, and
 the episode is worth keeping: the gate that caught a defect in a document about gates is the argument for having
 written it as a gate.
+
+## 249.18 Where the harm is: the tasks that were already solved, and it is the same nine points in three arms
+
+R218b ran a `control` arm and a `front` arm over the same 114 tasks and the same seed world with **four attempts
+each** — the only artefact in this lane where both sides of "did the treatment damage what already worked, or fail to
+repair what did not" sit in one dispatch and carry repetition. `eval/tools/solve_strata.py` joins them by task and
+stratifies on the control's own pass rate, a quantity fixed before the treatment exists.
+
+| control stratum | tasks | control | front | delta | tasks up / down |
+|---|---|---|---|---|---|
+| **always** (control solved all four) | 66 | 100.0% | **90.5%** | **−9.5 pp** | 0 / **19** |
+| **mixed** (control solved some) | 43 | 62.8% | 70.3% | +7.5 pp | 20 / 10 |
+| **never** (control solved none) | 5 | 0.0% | 25.0% | +25.0 pp | 3 / 0 |
+| **all** | 114 | 81.6% | 80.0% | −1.5 pp | 23 / 29 |
+
+Two effects, opposite signs, and the arm-level mean is their sum: 66 × (−9.5) + 43 × (+7.5) + 5 × (+25.0) ≈
+**−1.8 task-units over 114**, which is the −1.5 pp the arm reads. The sign test over the tasks that moved is 23 against
+29, **p = 0.488** — the mean is not the finding and never was.
+
+**The damage is the reproducible part.** The same stratum read through the same covariate on the two tail arms of
+R219b — a later dispatch, a different placement, and the admission rule that removed every judgment line:
+
+| arm | always (66) | mixed (43) | never (5) | overall |
+|---|---|---|---|---|
+| R218b `front` (system message) | 90.5% | 70.3% | 25.0% | 80.0% |
+| R219b `board` (tail, judgments admitted) | 91.0% | 70.0% | 80.0% | 82.5% |
+| R219b `policy` (tail, state only) | 92.0% | 72.0% | 20.0% | 81.6% |
+
+Eight to ten points lost on the 66 tasks that were already solved, in three arms, across two placements and two
+admission policies; and seven to nine points gained on the 43 that were half-solved, in all three. The `never` stratum
+is five tasks and its 20–80% swing is noise, which the table prints rather than hides.
+
+**What this says about the memory rather than about the model.** The harm is not the block's *wording* — R219 changed
+the wording and the always-stratum damage did not move. It is not the *placement* — the front and both tail arms lose
+the same nine points. It is not the *judgment lines* — the rule that removed them left 92%. What every arm does is
+**serve material to a task the agent was already going to solve**, and on those tasks the material costs nine points of
+success rate. The benefit is real and lands on the tasks that were half-solved, and it is smaller in population than
+the damage because 66 tasks are already solved and 43 are not.
+
+That re-prices the lane's next question from *what should the block say* to **when should anything be served at all** —
+a serving decision, taken before the episode's own trajectory is known, which needs an observable proxy and its own
+registration. It is written into ROADMAP as R223 and deliberately **not registered**: naming the proxy is the round, and
+a registration that guessed at one would be the kind of plan this project has already paid for twice.
+
+**The instrument's own defect, caught by its fixture.** The first version of `_stratum` compared the control's *rate*
+with the number of *attempts*, so every task fell into `mixed` and the two strata the decomposition is about vanished
+while the table still printed three rows. The fixture with four attempts a task failed on the first run, which is the
+argument for writing the fixture before the prose (AUDIT 34.268).
