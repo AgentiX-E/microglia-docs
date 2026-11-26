@@ -5500,3 +5500,29 @@ when a state change is composed — and it is measured, replicated, and 4–7% c
 negative results do not change the product; they are why the product does not carry a predictor it cannot validate. A
 project that publishes a selector it cannot confirm has published a prior, and this one would rather publish the
 closure: two families, the multiplicity each had to beat, and the number of candidate rules that produced nothing.
+
+**The transfer claim, and the corpus that refuted it.** A memory that extracts what a request asked for is only
+generally useful if it travels, so this project took the block to a second domain: 50 airline tasks, a policy domain
+where the correct action is whatever the rules permit rather than what the words name. The first instrument there said
+the parser could see 30.0% of the required writes, against 83.3% on retail — and half of that gap was vocabulary, which
+is the kind of gap a project fixes by adding words. The successor round therefore changed the *contract* instead:
+settle an item when a receipt touches the record the ask names, whatever family that receipt is in.
+
+**That contract needed a number before it needed code, and the number is 54.0%.** Measured against the domain's own
+database, over 50 graded writes and three nested grades of naming — the reservation code stated (14.0%), a token only
+one of the user's records carries (50.0%), two identity tokens together (54.0%) — the most generous rule the contract
+could ship fails a bar of 0.75. With the family rule it replaced counted beside it, 60.0%.
+
+**What makes the failure a finding rather than a null is where the misses are.** Thirteen of twenty-three are asks
+whose reference is a **set selected by a predicate computed from the records** — all your upcoming flights, the ones
+longer than four hours, the two on the same day — and no token in a request names the extension of a query. Six more
+are bookings whose object the policy chooses, which does not exist when the user speaks. In a catalogue domain the
+request states the thing; in a policy domain it states a condition on a state the agent must read first.
+
+**So the anchor moves, and this is the honest shape of a negative result.** The identifier a write carries enters an
+episode through a read and never through the request, which means the board's item should be a record the episode has
+opened rather than a phrase the request contains. That is a different contract, with a different cost — every record
+read becomes an item — and it is registered against a comparison on a grid already paid for rather than against a
+hypothesis. Three anchors have now been tested and closed: what the request declares, what the episode reveals, and
+what the words name. The fourth is the state the agent has actually looked at, and it is the last one this project will
+test before it concludes that the block's *content* is not the lever this benchmark can see.

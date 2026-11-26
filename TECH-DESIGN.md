@@ -12517,3 +12517,59 @@ indistinguishable from an outage; with it, the negative is a result.
 the half it never saw (−6.5 pp, p = 0.33). The reveal is 89–93% task-constant for the structural fields, so the channel
 is an admission rule too — and admission rules were what R223 refuted. The design's value is not that it found a gate;
 it is that the gate family is now closed **with** a positive control behind the closure.
+
+## 17.197 — Record recall: measuring whether a request names the state its write touches
+
+**The question the design had to answer first.** R217a's successor was a contract, not a code path: an item settles a
+receipt that touches the record the ask names, whatever family the receipt is in. A contract about naming needs a
+measure of naming, and the measure decides the round before the round is dispatched. This section is that instrument.
+
+**Why the ground truth is state.** Every earlier census in this lane read a *call name*: the evaluator's list of
+required writes, tokenised into families. A record rule cannot be graded on a call name — the point of the rule is
+that the family is irrelevant — so the instrument reads the domain's database. `scripts/build_airline_records.py`
+projects `db.json` (7,042,725 bytes, sha256 `1af9fea6…`, 2000 reservations) down to the 27 users the 50 graded tasks
+belong to, keeping for each reservation exactly the fields a read returns: code, route, cabin, flight type, legs
+(number, both ends, date), passengers, baggage count, insurance. The projection writes its source's digest beside the
+table, so a claim about a record is recomputable from the bytes it was made from.
+
+**The three grades, declared before the reading.**
+
+| grade | test | why it is a grade and not the rule |
+|---|---|---|
+| `id` | the record's code appears in the request | strongest and rarest: the corpus codes a record in 7 of 50 writes |
+| `unique` | a token appears that exactly one of the user's records carries | identifies the record among the ones the user owns, which is the strongest claim a token can make |
+| `pair` | at least two identity tokens appear | a route is two ends, a leg is a flight and a date; one token of either is not identifying |
+
+`pair` is the bar's column. It is the most generous rule the contract could ship, so a failure there is a failure of
+the contract rather than of the threshold.
+
+**Four decisions that could have been fitted to the answer, and were not.**
+
+1. **Identity excludes cabin and flight type.** They are in the record and a request can ask to change them; counting
+   them matches `economy` to `economy` and raises recall. Baggage count and insurance are excluded for the same reason.
+2. **Airports expand to cities.** The database stores `JFK` and users say New York; the map travels in the manifest
+   because it is part of the projection from the domain, and a second copy in the tool would drift from it.
+3. **Dates are normalised on both sides.** `words_of` drops numbers — deliberately, because a number names a record and
+   not a thing — so `2024-05-20` is reconstructed from "May 20", "20 May" and "May 20th" before tokenising. This raises
+   recall and is the only repair that lets a date count at all.
+4. **A booking is measured on its itinerary.** A `book_reservation` carries no `reservation_id`, because the record it
+   touches does not exist yet; its arguments carry the legs, whose airports are resolved through the domain's flight
+   table. Skipping those writes would report a miss of a rule that never applied to them.
+
+All four can only raise the reading. With all four, the loosest grade reaches **27 of 50 (54.0%)** against a bar of
+0.75, and 30 of 50 (60.0%) when the family rule the round retires is counted beside it.
+
+**The output is a ladder and a list, not a rate.** The census prints `id`, `unique`, `pair`, `family` and `union`, and
+then every write no rule reaches with its record, its identity-token count and whether the family would have found it.
+That last list is what produced the round's actual finding — 13 of the 23 misses are predicate asks over sets, 6 are
+policy-chosen bookings — and a tool that printed a single recall figure would have delivered a number without a cause.
+
+**Two implementations of one allocation, and the check between them.** The family column has to be applied to *writes*
+here and to *families* in `goal_board.census`, so the allocation rule ("one ask of a family settles one write of that
+family") exists twice. Rather than trust the second, `record_census.py --family-found N` compares its own count with the
+one the retail census produced over the same corpus and exits non-zero on a disagreement. CI runs it with `15`, which is
+R217a's number; a later round that changes either implementation changes that line on purpose.
+
+**Cost.** Zero, and that is the design constraint rather than a happy accident: the projection reads a file the domain
+already publishes, the census reads the projection, and both run in the same suite as the rest of the lane's Python
+drivers, under the same 95% floor.

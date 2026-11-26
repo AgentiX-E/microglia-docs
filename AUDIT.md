@@ -18176,3 +18176,90 @@ round. R217 now carries ¥16 and the sentence says which grid that buys.
 
 **And the round is still worth it.** Ten times cheaper than the next cheapest thing that was cancelled, and the only
 item on the queue that buys something no retail round can buy — a second domain.
+
+## 34.317 — An artefact's note carried another domain's count, and nothing read it
+
+The airline census manifest opens with a note that explains what its fields mean, and that note said **"Seven of the
+fifty tasks require no write at all — they are refusals."** The number is wrong. Twenty-three of the fifty require no
+write; the ledger of required calls has 50 writes over 27 tasks, and 23 tasks whose evaluator action list is empty.
+
+**Where the seven came from.** The retail manifest. Its census reports `16 spare asks on the 7 task(s) whose correct
+outcome is no write` — seven of a hundred and fourteen — and the sentence was written for retail, then carried into
+the airline note with only the denominator changed. A copy that adjusts one number and not the other reads as a
+measurement and is not one.
+
+**Why nothing caught it.** Nothing read the prose. The census computed the split from the writes (it had to, to know
+which tasks had work to do) and the note was the only place the count appeared, so the two could disagree for a month
+without a red build. The `--census` line printed `29 of 50 tasks fully covered`, which counts the tasks whose writes
+were fully found and says nothing about tasks that had no writes.
+
+**What was changed.**
+
+- the note now says twenty-three and cites this audit entry, so a later copy carries the correction with the number;
+- `goal_board.census` publishes `writingTasks`, `refusingTasks`, `spuriousOnWriting` and `spuriousOnRefusing`, so the
+  split is a field rather than a sentence;
+- the `--census` line prints it: `52 spare ask(s), 29 of them on the 23 task(s) whose correct outcome is no write`;
+- CI asserts both domains' splits — retail `(107, 7)` with 16 spare on the seven, airline `(27, 23)` with 29 — because a
+  number that only appears in prose is a number the next edit can move.
+
+**The class of defect, stated plainly.** This is the third round in a row where a document asserted a quantity the
+artefact did not carry (34.311's stale price, 34.315's 100% identity). The pattern is the same each time: a sentence
+was written from a reading taken once, the reading was recomputed later, and the sentence was not. The only repair that
+has held is the one applied here — make the quantity a field, print it, and assert it.
+
+## 34.318 — The precision column has no reading in a policy domain
+
+The airline census publishes `precision 22.4%` beside retail's `42.8%`, and both numbers are computed the same way:
+the share of the parser's asks that some required write accounts for. In retail that is a reading about the parser. In
+airline it is a reading about the *corpus*, because **29 of the airline's 52 spare asks sit on the 23 tasks whose
+correct outcome is that nothing happens**. The user asks to cancel, the policy forbids it, the evaluator requires no
+write, and the board correctly shows an open item. Charging that ask as noise is charging the board for the benchmark's
+own refusals.
+
+**What the column is still good for.** Ranking parsers on the same domain: a change that raises precision without
+lowering recall has removed a real spare ask. What it cannot do is comparison *across* domains, and the fleet of
+cross-domain tables in this repository quotes family recall for exactly that reason.
+
+**What is reported instead.** `spuriousOnRefusing` and `spuriousOnWriting` are now separate fields, and the airline
+manifest's 52 decomposes into 29 on refusal tasks and 23 on writing tasks. The second number — 23 spare asks over 27
+writing tasks — is the one a parser comparison should be made on, and it is 23 rather than 52.
+
+**What was not changed.** The retail numbers, at all: 176/226 objects, 83.3% of families, 235 spare asks, 84 tasks
+covered. A column whose meaning changed for one domain does not get re-tuned for the other on the same commit.
+
+## 34.319 — The record rule, priced at 54% before the money was spent, and the bar was 0.75
+
+R217a retired family recall for the airline domain and registered its successor against a **record recall** bar of
+0.75. That bar was a hope: nobody had measured whether requests in a policy domain *name* the records their writes
+touch. R227 measured it, at zero cost, and the answer is no.
+
+| grade | writes | share |
+|---|---|---|
+| `id` — the request states the reservation code | 7 | 14.0% |
+| `unique` — a token exactly one of the user's records carries | 25 | 50.0% |
+| `pair` — two identity tokens together | 27 | **54.0%** |
+| family — the rule the contract retires, for comparison | 15 | 30.0% |
+| record or family, each write counted once | 30 | 60.0% |
+
+**The measurement is not the interesting part; the mission profile of the misses is.** Of the 23 writes no rule
+reaches, 13 are **predicate asks** — the reference is a set selected by a condition computed from the records ("all
+your upcoming flights", "flights longer than four hours", "multiple flights for the same day") — and 6 are bookings
+whose object the policy chooses ("the cheapest business round trip", "exactly the same as your current reservation").
+Neither shape can be named by any token rule, because in the first the extension is not in the text and in the second
+the referent does not exist yet.
+
+**Three implementation decisions were taken before the number was read, and each is stated so it cannot be mistaken
+for a fit:**
+
+- identity excludes cabin and flight type, because including them matches `economy` and raises the reading;
+- dates are normalised on both sides, because the board's own tokeniser drops numbers and `2024-05-20` would otherwise
+  never be seen;
+- a booking is measured on the itinerary its graded call asks for, resolved through the domain's flight table, because
+  a booking has no record to name and skipping it would report a miss of a rule that never applied.
+
+All three can only *raise* the reading, and it still fails by 21 points. The `pair` column is the bar's column for that
+reason: it is the most generous rule the contract could ship, and it is the one that fails.
+
+**The consequence.** R217 stays cancelled, the ¥16 stays unspent, and the airline column stays empty with a measured
+reason rather than a suspected one. The successor changes the anchor rather than the rule: bind items to the records
+the episode **reads**, because the identifier a write carries enters through a read and never through the request.

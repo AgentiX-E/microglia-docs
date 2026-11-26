@@ -29955,7 +29955,8 @@ never settle. R217a was registered at ¥0 with a bar a census can check. This is
 `update_reservation_flights` → modify, the passenger and baggage updates → their own families, `book_reservation` → book
 — and three cues enter the shared table **after** the retail seven, so no retail request can change its parse. A census
 manifest for the airline domain was built from tau2 v1.0.1's own `tasks.json`: 50 tasks, each with the reason the user
-simulator was given and the writes the evaluator requires, 7 of them requiring none.
+simulator was given and the writes the evaluator requires, 23 of them requiring none (this sentence said seven until
+AUDIT 34.317; seven is retail's count, carried across with the sentence).
 
 **What the census says, on the same instrument.**
 
@@ -29992,3 +29993,84 @@ above 0.75, because family recall is the wrong quantity in a domain where the ac
 **What this costs and what it saves.** ¥0 spent, ¥16 not spent, and the airline column stays unmeasured until the
 successor passes. The alternative — dispatching into a parser that reports nothing — would have produced a null that
 reads as "memory does not work on airline" and would have been quoted as one.
+
+## 249.37 The record rule, priced before the money: 54%, and the bar was 75%
+
+R217a cancelled the airline grid and registered its successor against a bar nobody had measured: *record recall at or
+above 0.75* — the share of graded writes whose record the request names. R227 is that reading. It costs nothing, and it
+refuses the round for a second and different reason.
+
+**The instrument, and why it had to be state.** Every earlier census here read a *call name*. A record rule cannot be
+graded on a call name — the point of the rule is that the family is irrelevant — so the ground truth is the domain's own
+database, projected to the 50 graded tasks by `scripts/build_airline_records.py`: each task's user, that user's
+reservations, and the evaluator's own writes with the record and the itinerary they name. 7,042,725 bytes and 2000
+reservations go in; 235 records belonging to 27 users come out, with the source's sha256 beside them.
+`eval/tools/record_census.py` reads the projection and reports three nested grades of naming.
+
+**The reading, on 50 graded writes over 27 writing tasks and 23 whose correct outcome is no write.**
+
+| grade | writes | share | what it means |
+|---|---|---|---|
+| `id` | 7 | 14.0% | the request states the reservation code |
+| `unique` | 25 | 50.0% | a token exactly one of the user's records carries |
+| `pair` | 27 | **54.0%** | two identity tokens together |
+| family | 15 | 30.0% | the rule the contract retires |
+| union | 30 | 60.0% | record or family, each write once |
+
+**The bar is 0.75 and the most generous grade reaches 54.0%.** The union is reported and is not a rescue: it contains
+the family rule the round retired, and a contract that needs the rule it replaced is the old contract with a second
+name.
+
+**Four decisions can only have raised this number, and all four were taken before it was read.** Identity excludes
+cabin and flight type (including them matches `economy`); airports expand to the city a user says (`JFK` is New York);
+dates are normalised on both sides (the board's tokeniser drops numbers, so `2024-05-20` would never be seen); a booking
+is measured on the itinerary its graded call asks for, resolved through the flight table, because a booking has no
+record to name. Without all four the reading is 40.0%, which is the ladder's floor rather than its bar.
+
+**The misses are the finding.** Thirteen of the twenty-three are asks whose reference is a **set of records selected by
+a predicate** computed from the records — "cancel all of your upcoming flights", "reservations that contain flights
+longer than four hours", "multiple flights for the same day", "downgrade all business flights to economy". No token in
+the request names the extension of a query. Six more are bookings whose object **the policy chooses** — "the cheapest
+business round trip", "exactly the same as your current reservation" — and at the moment the user speaks that object
+does not exist. Two are records the request genuinely leaves unnamed ("change the passenger name on the reservation",
+nine reservations on the account), one is a transfer, which is a refusal and not a write, and one is a change the
+policy settles with two receipts over two records.
+
+**So the contract is right about the direction and wrong about the anchor.** The identifier a write carries enters the
+episode through a **read** — the agent cannot act without resolving one — and never through the request. That is a
+different contract with a different failure mode, and it is registered as R228 with a bar measured on a grid this
+project has already paid for: settlement and false accusations, replayed from R218b's artefact at ¥0.
+
+**What this round cost and what it saved.** ¥0 spent, ¥16 not spent. The same purchase has now been refused twice for
+two different reasons — R217a could not see its own successes, R227's domain does not name the thing a success would be
+about — and the ¥16 is still in the queue rather than in a column that would have read as "memory does not work on
+airline".
+
+## 249.38 Two numbers were wrong in the documents, and both were wrong in prose
+
+The round's own census exposed two claims that had never been checked against the artefacts they described. Both are
+in AUDIT, and both were repaired by making the quantity a field rather than a sentence.
+
+**The airline manifest said seven tasks require no write; twenty-three do.** The seven is retail's — its census reports
+16 spare asks on 7 such tasks — and the sentence was written for retail and carried across with only the denominator
+changed. Nothing read the prose, so nothing could disagree with it. `goal_board.census` now publishes `writingTasks`,
+`refusingTasks`, `spuriousOnWriting` and `spuriousOnRefusing`; the `--census` line prints the split; and CI asserts both
+domains' numbers, so a shared sentence cannot move a count nobody looks at again.
+
+**And the precision column has no cross-domain reading.** Airline's 22.4% is not a statement about the parser: 29 of its
+52 spare asks sit on the 23 refusal tasks, where the user asks for something the policy forbids and the board is right
+to show an item still open. Charging those as noise is charging the board for the benchmark's own refusals. The split
+is a field now, and the column keeps its use where it has one — comparing parsers on one domain.
+
+| item | state | price | what it buys |
+|---|---|---|---|
+| **R228** read-anchored settlement | registered, bar written | **¥0** | the third and last anchor: items bind to what the episode reads |
+| R217 airline grid | **cancelled, twice refused** | ¥16 unspent | 50 independent tasks in a domain whose asks do not name records |
+| R221 2.0 submission | waiting | ¥34 | a row with a served share; pointless until a default moves |
+| telecom third domain | not registered | ¥0 to design | a domain with a different failure profile than both measured ones |
+
+**The product consequence, for the fifth round running: no default moves.** `serving-defaults.json` is untouched this
+round, and the reason is the same as last round's — a negative result that does not change the shipped configuration is
+the configuration doing its job. What changed is the *reason* the airline column is empty: it is no longer "the parser
+cannot see this domain" but "this domain's requests do not name the state a parse would have to bind to", which is a
+finding about the corpus and about every corpus shaped like it.

@@ -10262,3 +10262,65 @@ weaker and more portable rule: settle when a receipt touches the **record** the 
 
 **The queue is now ¥0 of work and ¥34 of waiting.** That is not stasis: it is the shape a queue takes when three
 consecutive rounds refuse a purchase because the instrument could not have carried it.
+
+## R227 (read 26 Nov, ¥0) — REFUTED: the record rule reaches 54%, and the misses say why
+
+R217a retired family recall and registered a successor against a bar of **record recall 0.75**: an item settles a
+receipt that touches the record the ask names, whatever family it is in. The bar assumed requests name records. R227
+tested the assumption before dispatching into it.
+
+**The instrument.** A projection of the domain's own database to the 50 graded tasks — each task's user, that user's
+reservations, and the evaluator's own writes with the record and itinerary they name — written by
+`scripts/build_airline_records.py` with the source's sha256 and byte count beside it (7,042,725 bytes, 2000 records,
+235 of them belonging to the corpus's 27 users). `eval/tools/record_census.py` reads it and reports three nested
+grades of naming, the family column, the union, and every write no rule reaches.
+
+**The reading.**
+
+| grade | writes | share |
+|---|---|---|
+| `id` | 7 | 14.0% |
+| `unique` | 25 | 50.0% |
+| `pair` | 27 | **54.0%** |
+| family | 15 | 30.0% |
+| union | 30 | 60.0% |
+
+**The bar is 0.75 and the loosest rule reaches 54.0%.** The round is REFUTED on its own registration, and the union —
+60.0% — is reported *not* as a rescue: the union contains the family rule the round retired, and a contract that needs
+the rule it replaced is the old contract.
+
+**The 23 misses, by cause.**
+
+| cause | writes | example |
+|---|---|---|
+| a set selected by a predicate | 13 | "cancel all of your upcoming flights"; "reservations that contain flights longer than four hours" |
+| the policy chooses the object | 6 | "the cheapest business round trip"; "exactly the same as your current reservation" |
+| the record is unnamed by design | 2 | "change the passenger name on the reservation", nine on the account |
+| no record at all | 1 | a transfer to a human |
+| one ask, two records | 1 | a change the policy settles with cancel-and-rebook |
+
+**What it changes.** Nothing ships. R217 stays cancelled and the ¥16 stays unspent — for the second time on the same
+purchase, and for a different reason each time: R217a found the parser could not see its own successes, R227 found the
+domain's requests do not name the thing a success would be about. The airline column closes for this parser family,
+and the closure is a measurement rather than a judgement.
+
+## R228 (registered 26 Nov, ¥0) — bind the item to the read, not to the words
+
+**Registered by R227's refutation, not on top of it.** The identifier a write carries is almost never in the request;
+it enters the episode through a read (`get_reservation_details`, `get_order_details`), because the agent cannot act
+without resolving one. So the reference for a board item is the record the episode has **read**, and the settlement is
+the first successful write that touches it.
+
+**What it is measured on.** The retail grid R218b produced, replayed — not dispatched. Two columns, both at zero cost:
+settlement (the read-anchored board must settle at least as many writing episodes as the request-anchored board, the
+1.18 pp admission R226 priced) and false accusation (`unrequested` per episode must not rise, because the read-anchored
+rule is wider by construction: every record the agent opens becomes an item).
+
+**Why the bar is a comparison and not a corpus property.** R227's bar was a property of the airline corpus and the
+corpus failed it. A bar on a grid already on disk is a bar this project can test without buying anything, and the
+successor is not allowed to spend money on the strength of a hypothesis that its own artefacts can check.
+
+**Refutation.** Settlement no better than the request-anchored board closes the read-anchored contract, and with it the
+third and last anchor this lane has: request (R223), reveal (R225) and record (R227) would all be at chance, and the
+honest statement becomes that the block's *content* is not the lever this benchmark can see. `unrequested` rising by
+more than the settlement gains refuses the round even if settlement improves.
