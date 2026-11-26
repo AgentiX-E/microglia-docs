@@ -10506,7 +10506,7 @@ items), which is R233.
 
 ---
 
-## R233 (registered 26 Nov, ¥0) — order the eight: open before settled
+## R233 (read 26 Nov, ¥0) — open before settled: ten of fourteen recovered, refused by three writes
 
 The block lists asks in the order they were stated, so a settled ask from the contract outranks an open one stated
 later, and the cap then hides a live requirement behind finished work. The rule under test is content-free — open items
@@ -10524,5 +10524,41 @@ B3 is the one that can fail — because the corpus offers 8.1 asks per required 
 
 **Refutation.** B1 failing with reach unchanged means the cap is binding and the lane changes a rendering parameter for
 the first time. Both holding closes the display axis at the product's cap and leaves the lane with the question it has
-deferred for three rounds: whether any of this changes what a model does. That is R234, and it is the first round since
+deferred for three rounds: whether any of this changes what a model does. That is R235, and it is the first round since
 R223 that has to buy tokens.
+
+**Read 26 Nov 2026, refused by three writes, and the three writes are the result.**
+
+| | statement order | open before settled |
+|---|---|---|
+| reached | 636 | 636 |
+| shown | 622 (95.1%) | **632 (96.6%)** |
+| hidden | 14 (2.2%) | **4 (0.6%)** |
+| contract | 463 | 463 |
+
+B1 (97.0%) missed by three writes, B2 held exactly, B3 held on the control grid at 0.6% and failed on the replication
+at 1.1% — the first round in this lane whose two grids disagree about *which* bar failed. The registered prediction
+fired precisely: reach is unchanged, so the cap is binding, and every one of the four residual writes is a `modify` ask
+behind **9 to 39 open asks of other families**, with nine `address` in the 41-item block. The residue is **repetition**,
+and its repair is a fold rather than a bigger window.
+
+---
+
+## R234 (registered 26 Nov, ¥0) — one line per family: the block fills its window with repetition
+
+The user restates an obligation across turns, the parser records each statement correctly, and the window spends its
+eight lines on the same obligation nine times. The rule under test is `one line per family — the first open item of each
+family, in statement order`: it removes nothing from the board and changes no settlement, and its input is a field the
+board already carries.
+
+Bars, registered in `prereg/R234-one-line.md` before any reading: **B1** the clause board shows an open ask for at least
+**645 of 654** (98.6%); **B2** the contract's grouped level is at least its own statement-order level (463 on the control
+grid); **B3** the hidden share falls to **0.5%** or less (≤ 3 of 636).
+
+**Prediction.** B1 holds (a fold lifts the widest residue from position 10 to position 2), B2 holds trivially, and B3 is
+at risk for a structural reason: a block whose open asks span more than eight **families** cannot be displayed at eight
+lines however it is folded. If the residue survives the fold, it survives as breadth rather than repetition — a
+different problem, one the cap cannot solve and a ranking could.
+
+**Refutation.** B1 failing with the folded count unchanged closes the content-free rendering axis and makes the next
+round the paid one: the clause rule's accuracy dispatch at ¥34.

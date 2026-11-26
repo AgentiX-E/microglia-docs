@@ -30373,3 +30373,52 @@ the only currency that matters at serving time: it shows an open ask for **70.8%
 clause board's **95.1%**, at 2.41 lines against 8.10. The lane has therefore never had a rule whose accuracy advantage
 survives the cap until now, and the reason it has not shipped is a dispatch it has not bought — not a price it cannot
 pay.
+
+## 249.50 R233 read: open before settled recovers ten of fourteen, and misses its bar by three writes
+
+| | statement order (the product) | open before settled |
+|---|---|---|
+| reached | 636 | 636 |
+| shown within eight lines | 622 (95.1%) | **632 (96.6%)** |
+| hidden | 14 (2.2%) | **4 (0.6%)** |
+| contract's level | 463 | 463 |
+
+B1 asked for 97.0% and got 96.6%; B2 held exactly (463 against its own 463); B3 held on the control grid at 0.6% and
+failed on the replication at 1.1%. **Refused on both grids, on different bars** — the first round in this lane whose two
+grids disagree about *which* bar failed.
+
+**The residue names the next problem.** All four remaining writes are `modify` asks behind nine to thirty-nine open asks
+of other families, and the families are not diverse: one block holds nine `address` asks, another eight `address` and
+three `exchange`. The user restates, the parser records each statement correctly, and the window spends its eight lines
+on one obligation stated nine times. That is **repetition**, and its repair is a fold (`one line per family`), not a
+larger cap — R234, registered before its reading, ¥0.
+
+**What the ordering is worth regardless of the verdict:** ten writes recovered, none lost, no content added, no model
+called, and both windows reported from one board so the change is auditable line by line. It is the first rendering
+change in this lane that a product could adopt on its own terms.
+
+## 249.51 Where the lane stands after nine anchors
+
+| anchor | round | accuracy column | the column that refused it |
+|---|---|---|---|
+| request (the contract) | R223 | 63.6% covered | the baseline |
+| reveal | R225 | — | screen reversed on the held-out half (+1.04σ) |
+| record | R227 | 54% named by record | 0.75 bar, before the money |
+| read-strict | R228 | 98.5% covered | open tax 2.53 against 1.79 required |
+| ask-bound | R229 | 63.5% covered | one write under the request board |
+| turn admission | R230 | 62.7% covered | recovery 16.1%, coverage below the contract |
+| clause admission | R231 | 95.4% covered | 17.72 items per rescued write — a cost of accumulation |
+| displayed block | R232 | 95.1% shown at the cap | a bar whose two sides measured different quantities |
+| **open before settled** | **R233** | **96.6% shown** | **97.0% bar, missed by three writes; residue is repetition** |
+
+| item | state | price | what it buys |
+|---|---|---|---|
+| **R234** one line per family | registered, bars written, **unread** | **¥0** | whether a fold removes the last four |
+| clause admission as a default | displayable (96.6% ordered) and affordable (8.10 lines) | **¥34** | the accuracy dispatch the refusal waits on |
+| parser scope (no inheritance across a turn) | measured: −0.2pp for −22% items | ¥0 | a one-keyword change to the shipped board |
+| R221 2.0 submission | waiting on a measurable gain | ¥34 | four columns the leaderboards lack |
+| telecom third domain | not registered | ¥0 to design | a user model that discloses differently |
+
+**The product consequence, for the tenth round running: no default moves** — and this round adds a second *actionable*
+rendering claim to the first: open-before-settled costs nothing, loses no write, and recovers ten. Both are recorded in
+`serving-defaults.json` under `notYet.displayOrder`, which now carries two rendering rules rather than a question.

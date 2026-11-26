@@ -10979,3 +10979,36 @@ one place where "we use a model" buys something measurable.
 axis remains a published fact; the third axis — a working memory measured against the contract the conversation states —
 now has two numbers instead of one, and the second one says the first one is deliverable at the product's own cap. No
 competitor publishes either.
+
+## R233 — Rendering rules are free, and none of the field publishes one.
+
+Every commercial memory system makes at least one rendering decision per turn: which lines enter the prompt, in what
+order, under what cut. None publishes the decision as a rule, and none measures what the rule costs in the only unit
+that matters — **graded work that did not appear on the block**.
+
+This project now has two such rules and both are content-free:
+
+| rendering rule | the shipped order | the rule | what it recovered |
+|---|---|---|---|
+| ordering | statement order | open before settled, statement order inside each group | **10 of 14** hidden writes; nothing lost |
+| fold (registered) | one line per statement | one line per family | untested — R234 |
+
+**Why this is a competitive asset rather than a prettiness.** A vendor's block is eight lines because eight is what
+fits a cache-friendly prefix, not because eight is what their task needs. Their ordering — usually "most recent first" or
+"highest similarity" — is chosen for retrieval, not for obligations. Measured here, statement order hides 2.2% of the
+graded work and open-before-settled hides 0.6%, on the same board, at the same cap, with no model call. A competitor
+that spends an LLM call to rank the block is buying something this rule gets for a stable partition of a list; a
+competitor that does not rank at all is leaving 1.6 points of displayable coverage on the table and cannot say so,
+because they do not measure displayed coverage.
+
+**What a competitor still does better, and it is now the fourth time it is the same thing.** The four writes the
+ordering cannot lift sit behind nine to thirty-nine open asks of one or two families, in a block whose length is 41 items
+because the user restated an obligation nine times. Folding is free (R234). But a block whose open asks span more than
+eight **distinct** families cannot be displayed at eight lines however it is folded, and choosing *which* eight families
+out of twelve is a ranking problem — the one place in this table where a model earns its tokens, and the one place this
+project has not yet bought.
+
+**Where the SOTA argument stands after nine anchors.** The accuracy axis remains settled within resolution; the cost
+axis remains a published fact; the third axis now reads **96.6% of the graded work displayed at the product's own cap,
+for 8.10 lines a call and zero model calls**, with both windows reported from one board. No competitor publishes a
+displayed-coverage number at all, which is still both the opportunity and the risk.

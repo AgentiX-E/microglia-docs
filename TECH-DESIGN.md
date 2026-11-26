@@ -12758,3 +12758,48 @@ run the loop. Measured on the 456-episode grid with its replication: **8.15 s** 
 **6.94 s** for the clause reading of the same two documents, so two moment boards per graded write cost 1.2 s over the
 finished-board reading they sit beside — the moment boards are *smaller*, and the pass is one board per distinct call
 message rather than one per call.
+
+### 17.195 An ordering is a permutation: one board, two windows, and `other`
+
+R233's implementation is thirteen lines and its design constraint is one sentence: **an ordering must not be a second
+measurement.** The block is built once, and both windows are read off it.
+
+```python
+open_items = [item for item in board["items"] if not item["settled"]]
+if any(item["family"] == family for item in open_items):
+    reached += 1
+    if any(item["family"] == family and not item["settled"] for item in board["items"][:cap]):
+        stated += 1                                   # the product's window
+    if any(item["family"] == family for item in open_items[:cap]):
+        shown += 1                                    # open-before-settled
+```
+
+**Why `open_items[:cap]` is the ordered window and needs no second list.** Under open-before-settled the first `cap`
+elements are exactly `open_items[:cap]` when there are that many open items, and every open item otherwise — so the
+second test is the ordered rendering expressed on the unordered board. Building the ordered board instead would double
+the cost and, worse, would put the two numbers in two objects that could drift.
+
+**Why the statement test keeps the `not settled` condition.** A family can appear settled at line 3 and open at line 9.
+The family test alone would credit a write whose obligation the model never saw, because what it saw was the word done.
+That is the difference between measuring visibility and measuring mention, and it cost one write on each grid when it
+was wrong (AUDIT 34.329).
+
+**`other`, and why every reading carries it.** `visibility` returns the window it reports and the window it does not, so
+`r232-reading.json` already contains R233's numbers and the two files agree by construction:
+
+```python
+assert fifth["display"]["clause"]["other"] == sixth["display"]["clause"]["displayed"]    # 632
+assert sixth["display"]["clause"]["other"] == fifth["display"]["clause"]["displayed"]    # 622
+```
+
+Those two assertions are in CI. They are the cheapest possible guard against the failure mode this lane keeps finding:
+two documents quoting two versions of one measurement, where the disagreement is invisible because neither document
+prints the other's number.
+
+**The third bar changes kind, not number.** R232's was a tolerance around a difference — `|displayed - covered| <= 4` —
+and R233's is a floor at the contract's own statement-order level. The reason is that the two rounds ask different
+questions of the same column: whether a *window* moved the shipped board, or whether an *ordering* did. A tolerance
+around zero would let an ordering lose three writes without a finding; a floor expressed as a cross-grid constant would
+fail every grid it was not measured on (AUDIT 34.329). `display_bar(summary, coverage, hidden, floor=...)` therefore
+takes the form as an argument and reports `B2_contract`/`B3_hidden` or `B2_hidden`/`B3_displayTax` accordingly, with the
+manifest checker walking both shapes.

@@ -5527,7 +5527,7 @@ hypothesis. Three anchors have now been tested and closed: what the request decl
 what the words name. The fourth is the state the agent has actually looked at, and it is the last one this project will
 test before it concludes that the block's *content* is not the lever this benchmark can see.
 
-**Eight anchors, six refusals, one hold, and one measurement that corrects them all.** A working memory that lists what a
+**Nine anchors, seven refusals, one hold, and two measurements that correct them all.** A working memory that lists what a
 task still needs is a claim about two different things at once: *what is required* and *what has been done*. This
 project has tested seven rules for joining them, each against a bar written before its number was read:
 
@@ -5541,6 +5541,12 @@ project has tested seven rules for joining them, each against a bar written befo
 | turn admission (R230) | a later turn read only when the agent's previous turn asked nothing | 77.2% of user turns follow a question, so the filter refused the turns the requirements were in: 25 of 155 recovered, coverage 62.7% — **below** the contract |
 | clause admission (R231) | the contract's turn whole; from every later turn, only clauses that name their own family | **not refused on accuracy**: 154 of 155 later-turn writes recovered, coverage **95.4%**. Refused on price: 17.72 items per rescued write against a bar of 1.5 |
 | displayed block (R232) | the same boards, measured **at the moment of the call** and cut to the eight lines the product renders | refused on a bar whose two sides measured different quantities (+47 writes). The measurement itself is the result: the clause board **shows an open ask for 95.1%** of the graded writes and hides **2.2%**, at **8.10 items a call** — so the price that refused R231 belongs to the accumulated board, not to the block |
+| open before settled (R233) | the same block, re-ordered: unsettled asks first, statement order inside each group | refused **by three writes**: 632 of 654 shown (96.6% against a bar of 97.0%), 4 hidden instead of 14, and the contract untouched at 463. The four that remain sit behind nine to thirty-nine open asks of one or two families — the residue is repetition, not settlement |
+
+The ninth row is the cheapest rule this project has measured and the first that a product could adopt on the rendering
+alone: it recovers **ten** of the fourteen writes the cap hid, loses none, adds no content and calls no model. It is also
+the row that relocates the problem for the third time — from *admission* (R231) to *selection* (R232) to
+*duplication* (R233) — and each relocation has cost less than the last.
 
 The eighth row changes how the other seven should be read, and it is the only one that is not about a rule. Every board
 above was built from the **finished** transcript — the artefact an evaluator reads. The artefact a model reads is built

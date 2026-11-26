@@ -18525,3 +18525,40 @@ second round rather than by an intention.
 end of the episode. Every item count this repository has quoted for three rounds was a cost of **accumulation**, and
 the efficiency bar that refused R231 priced an artefact that is never rendered. That is a correction to the instrument's
 own vocabulary, not to any rule, and it is larger than the round's verdict.
+
+## 34.329 — A bar whose floor was a constant from another grid
+
+R233 was the smallest round this lane has run and it produced a defect in the same class as the round before: a bar
+whose comparison was written against the wrong reference, caught before it could be published.
+
+**The defect.** The registration wrote the third bar as *"the contract's ordered displayed coverage must be at least 463,
+its unordered level"* — a number measured on the control grid. The code first implemented it literally, with 463 as a
+constant, and the replication immediately reported a failure: its contract level is **443**, not 463, because the
+replication is a different 456 episodes. A floor carried across grids is not a floor; it is a grid-specific reading
+wearing a bar's clothes, and it would have failed every future document that quoted the replication.
+
+The repair is the sentence the registration actually meant: **at least its own statement-order level**, computed per
+grid from the same board. On the control grid that is 463 — the registered number — and on any other grid it is the only
+statement that can be true or false for a reason.
+
+> A bar may carry a number from another grid only if it also carries the rule that reproduces that number there.
+
+**The second defect: the cost column lost its subject.** B2/B3's hidden test was evaluated on the scope that cleared B1,
+and when no scope cleared B1 there was no subject — the reading printed `None of None reached write(s) hidden on no
+scope that passed B1`. That is a *refused* round reporting its cost as unevaluated, which conflates "hidden nothing"
+with "not measured". The subject is now the best scope that passed, or the best scope there is when none did, with a
+`passed` flag beside it and a sentence in the reading that says which case the reader is looking at.
+
+**The third: a settled instance counted as a displayed obligation.** The statement-order test asked whether the write's
+*family* appeared in the first eight items; the ordered test asked whether an *open* instance did. On one board the
+family can appear settled at line 3 and open at line 9 — the model reads "done at line 3" and never sees the obligation,
+so the family test credits a write the block did not show. Restoring the settled condition moved the clause board's
+displayed count from 623 to 622 on the control grid and from 603 to 602 on the replication, and it is the difference
+between measuring visibility and measuring mention. It was found by the diff against the previous reading, which is the
+only reason the policy from 34.327 exists.
+
+**What the round's numbers did.** The ordering recovered **ten** of the fourteen hidden writes and lost none, so the
+display axis is no longer an open question about the cap: eight lines carry 96.6% of the graded work when the block is
+ordered, and the four that remain are hidden by **repetition** (nine `address` asks in front of one `modify`), not by
+settlement. That relocates the problem for the third round running — from admission to selection to *duplication* — and
+each relocation has been cheaper than the last.
