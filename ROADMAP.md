@@ -10075,3 +10075,26 @@ establish. The successor's admission criteria are fixed here so they cannot move
 2. a serve half that does not lose, i.e. `serveDelta` at or above zero on the confirm half;
 3. at least ten discordant pairs on the skip side of the confirm half;
 4. the observable varies **within** a task, or the round is an admission rule and belongs in R222's lane instead.
+
+## R220c (read 26 Nov, $0.02) — REFUTED: a move is priced by what it changes, not by where the change sits
+
+Registered to measure the one number R216b's −4% was explained with rather than measured: that a change behind the
+conversation re-bills the block and nothing else. Probe run 45749577193, `--rewrite-at 10`.
+
+| placement | `move_tokens` | blocks |
+|---|---|---|
+| `first-turn` | 1,882.5 | 1.26 |
+| `system-second` | 2,010.5 | 1.34 |
+| `system-merged` | 2,010.5 | 1.34 |
+| `tail` (shipped) | 2,010.5 | 1.34 |
+| `control` | −111.0 | −0.07 |
+
+**The predicted ordering is refuted.** The three conversation-adjacent shapes are indistinguishable to the token, and
+the shape the derivation named as the most expensive to move is the cheapest. In steady state the block is cached where
+it sits: a second system message is re-billed **17 tokens a call**, inside the 128-token tolerance.
+
+| consequence | state |
+|---|---|
+| R216b's −4% | keeps its measurement, loses its derivation — every later quote has to say so (PROGRESS 249.26) |
+| the placement default | **unchanged**: the tail is still the arm that measured cheaper over two arms of one dispatch, and changing a default on an unexplained number is worse than keeping one |
+| the explanation | two candidates remain, neither proved: a write-versus-render attribution effect, or the grid drift this lane has measured at 8.8 points; separating them needs a bill decomposed by call type, which is **not registered** |

@@ -29615,3 +29615,42 @@ a null easier to obtain. The calibration is therefore evidence that the ladder d
 that it cannot inflate at any size; the honest form is a bound, and the bound is what the next grid has to beat. What it
 does settle is the question a reader would otherwise have to take on trust: whether "one admissible out of 385" means
 the instrument is generous. It does not.
+
+## 249.26 A move costs the same wherever the block sits, and R216b's −4% loses its derivation
+
+R220c was registered to measure one number that had been *derived* rather than observed: that a change behind the
+conversation re-bills the block and nothing else, while a change in front of it re-bills everything the block sits in
+front of. The probe was dispatched with `--rewrite-at 10` — nine growing turns, then one extra call with the block's
+body changed — and it returns a signed `move_tokens` per placement: the tokens a call paid beyond the shape's own
+median steady state, on the call that changed the block.
+
+| placement | `move_tokens` | blocks (÷ 1,497) |
+|---|---|---|
+| `first-turn` | 1,882.5 | 1.26 |
+| `system-second` | 2,010.5 | 1.34 |
+| `system-merged` | 2,010.5 | 1.34 |
+| **`tail`** | **2,010.5** | **1.34** |
+| `control` | −111.0 | −0.07 |
+
+**The prediction was an ordering — `tail` cheapest, then `system-second`, `system-merged`, `first-turn` — and the
+ordering is refuted.** The three conversation-adjacent shapes price *identically* at 2,010.5 tokens, one and a third
+blocks, and the first-turn shape is the cheapest of the four. The tail is not the cheap placement; if anything it is
+the expensive one, and by 128 tokens over the shape the derivation called the worst.
+
+The steady state says the same thing from the other side: a second system message is re-billed **17 tokens a call**
+over the control, inside the 128-token tolerance the probe applies, so there is no placement premium to explain there
+either. Both halves of the derivation are gone, and the prereg's refutation clause applies exactly as it was written:
+R216b's **−4%** on the bill per episode stays a measurement with **no derivation behind it**, and every later quote of
+it has to say so. That is the honest consequence, and it is cheaper to state than to explain away.
+
+Two readings of the −4% remain available and neither is proved: the tail arm's lower bill may be an attribution effect
+(65.7% of episodes wrote at all, and a write is priced differently from a render), or it may be the same grid drift
+that has moved this lane's accuracy by 8.8 points inside one afternoon. Distinguishing them needs a bill decomposed by
+call type rather than by placement, which is a different probe and is not registered.
+
+What the round does settle is a design premise. The project's placement decision — `tail`, carried in
+`serving-defaults.json` and bound to the product by a test on each side — was justified by a number that was cheaper
+and did not cost accuracy. The number still holds as a measurement between two arms of one dispatch; what does not hold
+is the story about *why*, and a placement chosen for a wrong reason is one this project should stop describing as if the
+reason were right. It remains shipped because it is still the arm that measured cheaper, and because changing a default
+on an unexplained number is worse than keeping one.
