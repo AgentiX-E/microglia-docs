@@ -29590,3 +29590,28 @@ That is the next round's instrument rather than its conclusion: a serving schedu
 reveal**, screened by this tool on this grid before any money is spent, with the screen's own gate as the precondition
 for arming. The dispatch costs ¥9; the screen costs nothing; and this round is the demonstration that the order
 matters.
+
+## 249.25 The screen's own null: two identical arms yield zero admissible cuts where chance predicts three
+
+The multiplicity column in 249.22 is a formula. R218c left the artefact that turns it into a measurement: two arms of
+**identical** code over the same 114 tasks, run interleaved for exactly this purpose. On a grid whose truth is zero by
+construction, an honest screen must find nothing, and any admissible cut it returns is the instrument manufacturing a
+finding.
+
+| grid | pairs a half | cuts | `ADMISSIBLE` | expected by chance |
+|---|---|---|---|---|
+| R218c placebo (two identical arms, one attempt a task) | 57 | 132 | **0** | 3.3 |
+| R218b (control against front, four attempts a task) | 114 | 385 | **1** | 9.6 |
+
+Both grids return **fewer** admissible cuts than noise predicts, and the placebo returns none at all. That is the
+calibration the screen needed before its negative result on R218b could be believed: the same instrument, the same
+verdict ladder and the same cut generator, applied to a grid where the answer is known to be zero, refuses everything.
+The ladder is therefore not a machine for finding effects in noise — and the single survivor on R218b is not an
+artefact of how the cuts are enumerated, because the enumeration is identical and yields nothing on the placebo.
+
+Two differences are worth stating rather than smoothing. The placebo grid has **one attempt a task**, so its halves
+hold 57 pairs against 114, and it can express 132 cuts against 385 — less power and a smaller search, both of which make
+a null easier to obtain. The calibration is therefore evidence that the ladder does not inflate at this size, not proof
+that it cannot inflate at any size; the honest form is a bound, and the bound is what the next grid has to beat. What it
+does settle is the question a reader would otherwise have to take on trust: whether "one admissible out of 385" means
+the instrument is generous. It does not.
