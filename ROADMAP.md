@@ -10454,7 +10454,7 @@ is eight times the demand, and that relocates the lane's problem from **admissio
 real and its price is not payable. The prereg's *prediction* that object lists would be the cost is falsified by the
 one-write subtraction above — the inherited objects are 22% of the items and none of the deficit.
 
-## R232 (registered 26 Nov, ¥0) — measure the block the product displays, not the block the instrument builds
+## R232 (read 26 Nov, ¥0) — the block the product displays, measured: 95.1% shown, 2.2% hidden
 
 The lane has measured what a transcript *supports* for seven rounds. It has never measured what an agent is *shown*,
 and the difference is one line of the renderer:
@@ -10482,3 +10482,47 @@ new rule cannot inform.
 **Refutation.** B1 failing on both scopes would retire the coverage axis until the display is redesigned — the largest
 correction available in this lane. B1 and B2 holding for `clause` would make the ordering the next subject rather than
 the admission.
+
+**Read 26 Nov 2026, refused on B3, and the prediction was half right in the wrong half.**
+
+| | contract (`request`) | clause board (R231) |
+|---|---|---|
+| reached, at any line | 463 (70.8%) | **636 (97.2%)** |
+| shown, within eight lines | 463 (70.8%) | **622 (95.1%)** |
+| hidden | 0 | **14 (2.2%)** |
+| items per call | 2.41 | **8.10** |
+
+B1 holds (95.1% against 73.6%), B2 holds (2.2% against 20%) and B3 fails at **+47** (463 against 416, tolerance 4).
+The refusal is the instrument's: a cut removes items, so a gain cannot be its work, and the attribution column shows the
+contract's board reaching **463 with the cut and 463 without**. The +47 is a settlement-rule difference — 416 of the 463
+are also credited by the finished board and **47** are graded writes visible when the agent acted and unaccountable
+afterwards.
+
+The prediction that failed is the one the round was registered on: the cap was expected to kill the clause rule, and it
+does not. The clause board holds **8.10 items at the moment of a call**, not 3,699 — so the 17.72 items per rescued
+write that refused R231 price an artefact that is never rendered, and the rule's accuracy advantage is deliverable. The
+fourteen residual writes are an **ordering** fact (one inspected case: needed ask on line 9 of 12, behind three settled
+items), which is R233.
+
+---
+
+## R233 (registered 26 Nov, ¥0) — order the eight: open before settled
+
+The block lists asks in the order they were stated, so a settled ask from the contract outranks an open one stated
+later, and the cap then hides a live requirement behind finished work. The rule under test is content-free — open items
+first, settled items after, statement order preserved inside each group — and its only input is the `settled` flag the
+board already computes.
+
+Bars, registered in `prereg/R233-the-order.md` before any reading: **B1** the clause board shows an open ask for at
+least **634 of 654** (97.0%, against 622 unordered); **B2** no cost to the shipped board — the contract's ordered
+displayed coverage stays at **≥ 463**; **B3** the clause board's hidden share falls to **≤ 1.0%** (≤ 6 of 636), a tenth
+of R232's 2.2%.
+
+**Prediction.** B1 holds and lands near the ceiling, B2 holds trivially (the contract board is 2.41 items a call), and
+B3 is the one that can fail — because the corpus offers 8.1 asks per required write, a block can hold more than eight
+**open** items, in which case the cap binds on openness and the successor is `MAX_ITEMS` or one line per family.
+
+**Refutation.** B1 failing with reach unchanged means the cap is binding and the lane changes a rendering parameter for
+the first time. Both holding closes the display axis at the product's cap and leaves the lane with the question it has
+deferred for three rounds: whether any of this changes what a model does. That is R234, and it is the first round since
+R223 that has to buy tokens.

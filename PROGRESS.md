@@ -30304,3 +30304,72 @@ has not moved in seven rounds for a reason this round may finally name.
 *actionable* product claim the lane has produced: inheritance should not cross a turn boundary. That is a scope change
 in `items_of`, not a second ask source, and `serving-defaults.json` records the measurement, the price and the
 reason it is not yet a default.
+
+## 249.48 R232 read: the block is eight lines, and eight lines are enough
+
+The round measured the artefact instead of the transcript, and the measurement retired the worry the round was
+registered on.
+
+| | contract (`request`) | clause board (R231) |
+|---|---|---|
+| required writes graded | 654 | 654 |
+| reached, at any line | 463 (70.8%) | **636 (97.2%)** |
+| shown, within eight lines | 463 (70.8%) | **622 (95.1%)** |
+| hidden | 0 | **14 (2.2%)** |
+| items **per call** | 2.41 | **8.10** |
+| items **per episode**, finished | 2.41 | 9.18 |
+
+**B1 and B2 hold; B3 fails at +47 and the failure is the bar's.** The registered B3 asked that the contract's displayed
+coverage stay within four writes of its full coverage (416) and measured 463. A cut removes items, so a *gain* cannot
+be its work, and the round's attribution column proves it: the contract's board reaches **463 with the cut and 463
+without**. The +47 is a settlement-rule difference — 416 of the 463 are writes the finished board also credits, and 47
+are graded writes whose obligation was **on the block when the agent acted** and which the board cannot account for
+afterwards. That is a new quantity in this lane, and it is the first measurement of the gap between *what the block told
+the agent to do* and *what the block can explain afterwards*.
+
+**The correction that matters more than the verdict.** The clause board holds **8.10 items when the agent is
+deciding**, not 3,699. The 3,699 is the accumulated board at the end of the episode — the artefact an evaluator reads
+and no model ever sees. R231's refusal was on 17.72 items per rescued write, and that price belongs to accumulation:
+the rendering cost of the clause rule is bounded by the cap at eight lines a call and measures 8.10. The rule's accuracy
+advantage (95.4% of the graded writes) is therefore **deliverable**, and what keeps it out of the product is no longer
+price but the absence of an accuracy dispatch.
+
+**The fourteen are an ordering fact.** The block lists asks in statement order, so a settled ask from the contract
+outranks an open one stated later. The case inspected by hand is the whole mechanism: the ask the write needed sat on
+line 9 of a 12-line block, behind five asks of one family of which three were settled. `open before settled, statement
+order within each group` lifts it to line six — content-free, ¥0, and R233.
+
+**No default moves, for the ninth round running**, and this round says why with a number: the rendering is not the
+constraint. `serving-defaults.json` records the display measurement under `notYet.displayOrder`, and rewrites
+`notYet.clauseAdmission` because its refusal clause ("17.72 items per rescued write") no longer describes the cost of
+serving the rule.
+
+## 249.49 Where the lane stands after eight anchors
+
+| rule | round | accuracy column | the column that refused it |
+|---|---|---|---|
+| request (the contract) | R223 | 63.6% covered | the baseline every alternative is compared against |
+| reveal | R225 | — | screen reversed on the held-out half (+1.04σ) |
+| record | R227 | 54% named by record | 0.75 bar, measured before the money |
+| read-strict | R228 | 98.5% covered | open tax 2.53 against 1.79 required |
+| ask-bound | R229 | 63.5% covered | one write under the request board |
+| turn admission | R230 | 62.7% covered | recovery 16.1%, coverage below the contract |
+| clause admission | R231 | 95.4% covered | 17.72 items per rescued write — **now known to be a cost of accumulation** |
+| **displayed block** | **R232** | **95.1% shown at the cap** | **a bar whose two sides measured different quantities (+47)** |
+
+Seven of the eight refusals were about a rule. The eighth was about the instrument, and it is the only one whose
+correction changes how the other seven should be read: a board's size is a property of the moment, not of the episode.
+
+| item | state | price | what it buys |
+|---|---|---|---|
+| **R233** the order of the eight | registered, bars written, **unread** | **¥0** | whether open-before-settled removes the 14 |
+| clause admission as a default | displayable (95.1%) and affordable (8.10 lines) | **¥34** | the accuracy dispatch the refusal was waiting for |
+| parser scope (no inheritance across a turn) | measured: −0.2pp for −22% items | ¥0 | a one-keyword change to the shipped board |
+| R221 2.0 submission | waiting on a measurable gain | ¥34 | four columns the leaderboards lack |
+| telecom third domain | not registered | ¥0 to design | a user model that discloses differently |
+
+**The product consequence, restated.** The shipped default is the contract board, and R232 measures what that costs in
+the only currency that matters at serving time: it shows an open ask for **70.8%** of the graded writes, against the
+clause board's **95.1%**, at 2.41 lines against 8.10. The lane has therefore never had a rule whose accuracy advantage
+survives the cap until now, and the reason it has not shipped is a dispatch it has not bought — not a price it cannot
+pay.

@@ -18478,3 +18478,50 @@ only reason to write them: the suite that agrees with the code cannot find the c
 All four were regenerated under the current one and diffed before replacement: zero value changes, zero changed bars,
 additions only. From here a reading is regenerated whenever the tool changes, and the diff is the evidence that the
 change did not move a number — a saved reading nobody can regenerate is a quotation, not a measurement.
+
+## 34.328 — A bar written around a difference of two different quantities
+
+R232's reading is the cleanest the lane has produced: two bars hold by a wide margin, the third fails by an order of
+magnitude, both grids agree, and the four earlier readings regenerate bit for bit under the new tool. Everything found
+this round was again in the instrument, and the first one is the most instructive defect since 34.323.
+
+**The defect.** B3 was registered as *"the contract's displayed coverage must be within four writes of its full
+coverage"* — 416 — and measured **463**. A **cut** can only remove items. A gain of forty-seven writes can therefore
+not be the cut's, and the bar was comparing a quantity measured on the moment board (settle any open ask of the call's
+family) with a quantity measured on the finished board (one tick per call, receipts matched one to one). The two
+differ by 47 writes on the same 654, and B3 was written as if they were one number.
+
+What made the defect legible was a column the prereg demanded for a different reason: `reached`, the same board
+**without** the cut. Printed beside `displayed`, it reads 463 and 463 — the cap contributes zero — and the +47 is
+visibly a property of the clock rather than of the window. Without that column the round would have reported "the cap
+costs the contract 47 writes", which is arithmetically impossible and would have sent the next round to `MAX_ITEMS`.
+
+> A tolerance around a difference is only meaningful if both sides measure the same quantity, and the cheapest way to
+> know is to print the level that isolates each of the two changes.
+
+**The second defect: the cut was at the call, not at the message.** The first implementation sliced the event list at
+the write's own event, which is correct for a call alone and wrong for a message carrying two: the second call then saw
+the first call's settlement, and was credited against a line it never saw. The block is rendered **once** per assistant
+turn, so the boundary is the first event of that message. It is now found by `bisect` on the per-event message index,
+which makes the two calls agree by construction rather than by a cache.
+
+The way it surfaced is worth recording because it inverted the usual direction of suspicion. A hand recomputation per
+call disagreed with the aggregate by 47 writes, and the **recomputation** was the wrong one: the cache keyed by message
+had been accidentally right, and the per-call path was the bug. Two implementations of one measurement are a
+cross-check only when both are stated in the same terms.
+
+**The third: a printer that raised on a legal reading.** `render` formatted `itemsPerCall` with `:.2f` and the column is
+`None` when a grid has no graded episode — a reading the bar already refuses in words. The unit test did not catch it
+because its fixture had a graded episode; the command-line test did, because it ran the refusal end to end. Third time
+in four rounds that the CLI test found what the function test could not.
+
+**The policy from 34.327 held.** `r228`, `r229`, `r230` and `r231` were regenerated under the new tool and diffed
+before `r232` was saved: zero value changes across every board, every bar and both grids, additions only. The
+per-event message index is additive, `cap=None` is the identity, and `display=False` skips the new pass — so the
+sentence "a saved reading is regenerated whenever the tool changes, and the diff is the evidence" is now backed by a
+second round rather than by an intention.
+
+**What this round's numbers did to the lane's model.** The block is 8.10 items at the moment of a call and 3,699 at the
+end of the episode. Every item count this repository has quoted for three rounds was a cost of **accumulation**, and
+the efficiency bar that refused R231 priced an artefact that is never rendered. That is a correction to the instrument's
+own vocabulary, not to any rule, and it is larger than the round's verdict.

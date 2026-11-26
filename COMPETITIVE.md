@@ -10940,3 +10940,42 @@ the cheapest published row at 2.62 pp higher accuracy); and the third axis — a
 contract the conversation actually states — now reads 95.4% coverage at 17.72 items per rescued write, which is the
 first number on that axis that is not a refusal. **No competitor publishes a number on that axis**, which is still both
 the opportunity and the risk.
+
+## R232 — Every memory product renders a block. None publishes what the block it renders would show.
+
+A memory system's public artefact is a **rendered block**: MemGPT/Letta pages, Mem0's retrieved facts, Zep's summaries,
+LangMem's namespace lookups. Each ships a token budget, each measures its recall against the store it built, and none
+publishes the one number that joins the two: *of the requirements the task grades, how many had an open item inside the
+lines the model was actually shown, at the moment it acted?*
+
+The distinction is not academic, and R232 prices it:
+
+| | the stored memory (what vendors measure) | the rendered block (what a model reads) |
+|---|---|---|
+| size | 3,699 items over 456 episodes | **8.10 items per call**, cut to eight lines |
+| share of graded writes covered | 95.4% | **95.1%** shown, 2.2% hidden |
+| the same for a request-anchored block | 63.6% | 70.8% shown, 0% hidden |
+
+**Two published numbers that would be wrong if the field measured the block.** A vendor reporting "95% of requirements
+captured" is reporting a property of a store nobody queries directly: the model queries the eight lines the renderer
+produces, and the gap between the two is the hidden share — 2.2% here, and unbounded in principle for a pipeline with a
+larger store and the same cap. A vendor reporting "our block is 3,699 items" is reporting an accumulated artefact: at
+serving time their block is as long as their budget, and their per-episode item count is a cost of *accumulation*, not
+of *serving*. Neither claim is dishonest; both are unmeasured in the units the product is consumed in.
+
+**What this project can now publish that no competitor does.** Three numbers on one line — reached, shown, hidden — over
+a corpus whose grader is the environment, at the same cap the product ships. That is the only axis in this table where
+the lane's number is not a refusal *and* not a claim about a document. It is also the axis on which every vendor could
+be compared tomorrow: their blocks have a cap, their tasks have graded writes, and the hidden share is computable from
+artefacts they already log.
+
+**What a competitor still does better, and it is the same gap as last round.** A model-backed extractor can *order* its
+block by relevance, which is exactly what the fourteen hidden writes in R232 need: they were on the block and below the
+fold, behind settled items. A deterministic ordering rule (open before settled) is free and this project will price it
+in R233; a learned ranking is what a vendor with an LLM in the pipeline gets for the price of the call, and it is the
+one place where "we use a model" buys something measurable.
+
+**Where the SOTA argument stands after eight anchors.** The accuracy axis remains settled within resolution; the cost
+axis remains a published fact; the third axis — a working memory measured against the contract the conversation states —
+now has two numbers instead of one, and the second one says the first one is deliverable at the product's own cap. No
+competitor publishes either.

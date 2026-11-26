@@ -5527,7 +5527,7 @@ hypothesis. Three anchors have now been tested and closed: what the request decl
 what the words name. The fourth is the state the agent has actually looked at, and it is the last one this project will
 test before it concludes that the block's *content* is not the lever this benchmark can see.
 
-**Seven anchors, six refusals — and the first one that holds the accuracy claim.** A working memory that lists what a
+**Eight anchors, six refusals, one hold, and one measurement that corrects them all.** A working memory that lists what a
 task still needs is a claim about two different things at once: *what is required* and *what has been done*. This
 project has tested seven rules for joining them, each against a bar written before its number was read:
 
@@ -5540,6 +5540,16 @@ project has tested seven rules for joining them, each against a bar written befo
 | ask-bound (R229) | an ask, settled by a write of its family to a record it opened | one write short of the rule it was built to beat: the read rule's completeness came from having no ask at all |
 | turn admission (R230) | a later turn read only when the agent's previous turn asked nothing | 77.2% of user turns follow a question, so the filter refused the turns the requirements were in: 25 of 155 recovered, coverage 62.7% — **below** the contract |
 | clause admission (R231) | the contract's turn whole; from every later turn, only clauses that name their own family | **not refused on accuracy**: 154 of 155 later-turn writes recovered, coverage **95.4%**. Refused on price: 17.72 items per rescued write against a bar of 1.5 |
+| displayed block (R232) | the same boards, measured **at the moment of the call** and cut to the eight lines the product renders | refused on a bar whose two sides measured different quantities (+47 writes). The measurement itself is the result: the clause board **shows an open ask for 95.1%** of the graded writes and hides **2.2%**, at **8.10 items a call** — so the price that refused R231 belongs to the accumulated board, not to the block |
+
+The eighth row changes how the other seven should be read, and it is the only one that is not about a rule. Every board
+above was built from the **finished** transcript — the artefact an evaluator reads. The artefact a model reads is built
+from the messages before the call and cut to eight lines, and at that moment an episode has stated only 8.10 asks, not
+the 3,699 that accumulate over its whole length. An ask stated ninth is invisible however correct the board is, so the
+coverage column of the seven rows above was a claim about a document nobody receives until R232 measured what survives
+the cap: the clause rule loses **2.2%** of the writes it reaches, and the contract rule loses nothing because its block
+is 2.41 items a call. The efficiency bar that refused the best rule in this table priced an artefact that is never
+rendered, and the reason that rule has not shipped is now the absence of an accuracy dispatch rather than a price.
 
 The fourth row is the one that looks like a victory and is not, and it is worth being precise about why. In this corpus
 every successful write touches a record the agent had already opened, so a rule that credits any write to any opened

@@ -12702,3 +12702,59 @@ audit; the code carries the guard and the suite carries both ends of it.
 `scope in ("request", "conversation", "admitted", "clause")` and one more row in the reading's board table. A round
 that changes the content of a board must be readable on the same grid as the boards it is compared with, and the grid
 is 456 episodes of a paid dispatch: a new tool would have to re-buy it.
+
+### 17.194 The moment board: two cuts, one bisect, and a cap that is not a property of the board
+
+Every board in this lane until R232 was built from the **finished** transcript. The product renders `items[:8]` from a
+board built from the messages **so far**, and the two differ by a factor of 456 in size on the retail grid. R232's
+mechanism is therefore not a rule but a slice, and both of its boundaries are load-bearing.
+
+```python
+def moment(entry, messages, upto, scope):
+    stop = bisect.bisect_left(entry["at"], upto)        # (1) the events end where the message begins
+    return ask_board({**entry, "events": entry["events"][:stop]}, messages[:upto], scope, later=False)  # (2)
+```
+
+**(1) The event boundary is found by `bisect` on a per-event message index, not by counting calls.** `ledger` stamps
+every event with the index of the message it was read from (`at`), which is additive: the list is non-decreasing, so
+the first event at or after message *k* is a binary search. Slicing at the call's own event instead is right for a call
+alone and wrong for a message carrying two — the second call would see the first call's settlement and be credited
+against a line it never saw. The block is rendered **once** per assistant turn; two calls in one message read one block,
+and `visibility` caches by message index for that reason rather than for speed.
+
+**(2) `later=False` because a moment board must not consult the future.** `ask_board`'s `disclosedLater` taxonomy parses
+every user turn to explain a miss, which is legitimate on a finished board and a leak on a moment board. Off, the same
+miss is filed as `neverStated`, and the suite asserts that difference — which is the only observable evidence that the
+future was not read.
+
+**The cap is applied last and to the items only.**
+
+```python
+offered = len(items)
+if cap is not None:
+    items = items[:cap]
+```
+
+`itemsAll` keeps the uncut count, and the settled flags are untouched: a settled ask below the fold is still settled, so
+`credited`, `unaccounted` and `unbound` remain properties of the **rule**, while `items`, `open` and the displayed
+columns are properties of the **window**. That split is what makes `displayed / reached` a measurement of the cut rather
+than of the rule, and it is why the round could prove the cap contributed zero (463 reached, 463 shown).
+
+**Three numbers per scope, and no fourth.** `visibility` returns `required` (the evaluator's denominator), `reached`
+(family open at any line) and `displayed` (family open within the cap), with `hidden` as their difference and
+`hiddenShare` over `reached` — not over `required`, because the question the share answers is *of what the board
+reaches, how much does it hide*. A graded write the ledger never saw is counted in neither and stays in the denominator:
+the denominator is the evaluator's, not the instrument's.
+
+**The bar compares levels, never mixes them.** R232's B3 was registered against the contract's *full coverage* (a
+finished-board quantity) and measured a *displayed* one, and the +47 it produced was arithmetically impossible for a cut
+to cause. `display_bar` now reports `moment` (the uncut level) beside `displayed` **in the same object**, so a future
+bar cannot be written around the difference without both sides visible on one line of the reading. That is the design
+rule the audit entry states as a policy, expressed where it can be enforced by reading the JSON.
+
+**Cost.** The pass is one board per distinct call message per scope, and it is `display=True` only: `r228`–`r231` were
+regenerated under this code and diffed to zero changes, because `cap=None` is the identity and `display=False` does not
+run the loop. Measured on the 456-episode grid with its replication: **8.15 s** for the displayed reading against
+**6.94 s** for the clause reading of the same two documents, so two moment boards per graded write cost 1.2 s over the
+finished-board reading they sit beside — the moment boards are *smaller*, and the pass is one board per distinct call
+message rather than one per call.
