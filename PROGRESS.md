@@ -29509,6 +29509,8 @@ R218b's grid is 114 tasks with four attempts in each arm, so it prices 228 pairs
 | `DEGENERATE` | 8 | the cut skips everything, so there is no serve half to defend |
 | **`ADMISSIBLE`** | **1** | skip the openings that state two or more asks |
 
+![R223: the screen's yield against chance, the effect on the half it never saw, and the two candidates that died without a dispatch](figures/r223-serve.png)
+
 The single survivor is the shape the earlier refutation had already half-killed: the opening turn's ask count. The
 refutation in 249.19 was that a gate at *one or more* asks fires on 96.5% of the grid; at *two or more* it separates
 65/35, so the counting proxy was not dead, only mis-cut. Under the split it reads:
