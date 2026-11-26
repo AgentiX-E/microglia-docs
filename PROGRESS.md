@@ -29138,3 +29138,92 @@ into the prereg so that a flat second reading is a result rather than an embarra
 The submission row therefore does not move. It stays at the measured shipped configuration (84.20 retail `pass^1`,
 4th of 9 in the same-version text scope), and the reason it does not move to 86.8 is the same reason this project's
 ranks are worth reading: **the number was measured twice, and the second time it was not there.**
+
+---
+
+## 249.12 The transcript never held the block, at either placement
+
+R218d ended with a sentence that was published and that was wrong: *"a front-placement arm's material is not in its
+own transcript, because the block goes into `state.system_messages` while τ² saves the conversation."* The first half
+is true. The second half was a hypothesis about τ² that nobody had checked, and checking it took one `grep` over
+documents this lane had already paid for.
+
+| document | placement | episodes | occurrences of `<microglia-board>` | roles the transcript holds |
+|---|---|---|---|---|
+| R215 `front.json` | front | 114 | **0** | `assistant`, `user`, `tool` |
+| R216 `board.json` | tail | 114 | **0** | `assistant`, `user`, `tool` |
+| R219b `board.json` | tail | 114 | **0** | `assistant` 1,274, `user` 684, `tool` 905 |
+| R219b `policy.json` | tail | 114 | **0** | `assistant` 1,291, `user` 691, `tool` 927 |
+
+**There is no `system` message in any of them.** τ²'s saved document is the *conversation*: the system prompt is not
+in it, the adapter's preamble is not in it, and the board is not in it — at the tail placement, whose whole design is
+to write the block into `state.messages` so that the transcript would carry it. The block is real (the phase counts
+4,341 renders and 146.3 characters a render) and it is absent from the artefact.
+
+So R218d's null was not a fact about the front placement. **It was a fact about the reader**, and the honest answer
+for a document with no system message is now its own state, `NO_SYSTEM`:
+
+> `NO_SYSTEM: 114 scored episode(s) over 114 task(s), and the document holds 0 system message(s) in total — τ² saves
+> the conversation, not the prompt, so no transcript can carry a block and this is a fact about the document rather
+> than about the arm; the dose has to be recorded where it is made (R218e)`
+
+The distinction matters for the same reason every other one in this lane does: `NO_DOSE` says an arm served nothing
+and sends a reader to the wiring, `NO_SYSTEM` says the document could not hold the answer and sends them to the
+instrument. R218d published the first when the second was true, and the cost was a round of analysis spent on an
+artefact that never had the data.
+
+## 249.13 The dose, recorded where it is known
+
+R218e's build has three parts, and the split is the design.
+
+**The agent records.** One dict an episode, opened at the single site that already opens the boundary index, the
+injected flag and the boundary text — so `len(doses) == len(boundaryTexts) == len(episodeStarts)` is a property of one
+function rather than a convention four call sites have to keep. The renderer adds `turns`, `renders`, `chars` and the
+cadence; the writer adds `written`. The last two are deliberately different numbers:
+
+| field | what it counts | why it is not the other one |
+|---|---|---|
+| `chars` | characters of block **served**, summed over renders | what the model read on every turn, including the turns that left an unchanged block in place |
+| `written` | characters of block **carried**, summed over the messages put into the prompt | what a transcript would have shown, if the transcript kept one |
+
+A tail arm's `written / chars` is the share of the material that had to be transported again, and it is the
+placement's price expressed as a ratio instead of a bill. A front arm's is 1.0, because it replaces the block every
+turn — which is the bill R215 measured and R216 moved the block to avoid.
+
+**The runner joins.** The agent cannot name the task (τ² never tells it) so it records the opening text; the runner
+resolves text to task with R136's reader and, crucially, **partitions the recording by round**. `--rounds k` makes
+each attempt its own `run_tasks` call with `trials=1`, so inside a round every task appears exactly once and the round
+*is* the attempt index — `merge_rounds` already writes it as the document's `trial`. Snapshotting the recording's
+length after each round turns a flat list into k rounds, and the join inside a round is then 1:1 by task.
+
+The obvious alternative — match a record to an episode by turn count — was tried and refuted on a measurement over
+R219b's own document: the phase counted **1,171** agent calls and the transcript holds **1,274** assistant messages.
+The two are not the same quantity, and a join on them would be wrong at one episode in the middle of the grid and
+right everywhere else (AUDIT 34.263).
+
+**The join refuses rather than guesses**, in three states: a slice of the wrong length, a task twice in one round with
+no way to tell the attempts apart, and a record whose task the round did not run. And it *reports* a fourth instead of
+refusing it: `--trials k` with one round runs the attempts concurrently, so the trial index is completion order and not
+recoverable. Rows are still written with `trial: null`, the counts stay exact, and the reader uses the counts and
+refuses the pairs.
+
+## 249.14 Two defects in the registration, and the ¥53 they would have cost
+
+The registration was written on 25 November and amended on 26 November **before any money was spent**. Two of its
+sentences could not have produced a result:
+
+1. **The transcript check was impossible.** The prediction "the `chars` the sidecar writes equal the characters the
+   transcript carries" assumed a transcript that carries the block; §249.12 measures that none does. It is replaced by
+   the check that is possible and stronger: the rows must reproduce the phase's own `renders`, `charsTotal` and
+   `changes` **exactly**, and `written ≤ chars` on any placement. Those identities catch a recording that lost an
+   episode, counted one twice, or drifted from the module that produced the counters — and they are checkable on the
+   artefact the run actually writes.
+2. **One attempt a task cannot produce a single pair.** The reader splits each task at its median dose and needs an
+   attempt on each side, so 114 episodes at one attempt answers `NO_PAIRS` by construction, on any recording. The grid
+   is **228 episodes (114 × 2 rounds)**, ≈ **$1.10 ≈ ¥8.0**, and the round is the attempt index rather than `--trials 2`
+   for the reason in §249.13: two concurrent attempts leave the index unrecoverable.
+
+A third defect was mine and lived for about a minute: folding the boundary-text append into `_open_episode` left the
+other call site appending it as well, and the agent's own suite caught it immediately (`28` boundaries for `14`
+episodes, and one empty text where a task should have been). The fold is right — one site, one order — and the suite
+is why the mistake cost nothing (AUDIT 34.264).

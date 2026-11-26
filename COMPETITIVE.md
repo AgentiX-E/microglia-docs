@@ -10559,3 +10559,37 @@ R219 adds a fourth absent column, and it is the one that would have caught this 
 
 WikiTrace publishes the degradation rate for its own system and no row on this leaderboard publishes it for any. That
 is the claim to occupy: not "highest `pass^1`" — **"the only row whose memory is priced by what it breaks."**
+
+### R218e.1 The column the field does not publish either: a dose, per episode
+
+R219.3 counted the columns a leaderboard row leaves out. R218e adds one that is not a column at all but an
+**instrument**, and the reason it matters for the comparison is that every memory result in this literature is a mean
+over episodes.
+
+| work | what it reports about how much material arrived | what it can say about the episodes that received a lot |
+|---|---|---|
+| WikiTrace (arXiv 2611.14320) | a suite average and a degradation rate | nothing: the rate is over the suite |
+| "Useful Memories Become Faulty…" (arXiv 2605.12978) | 19 ARC-AGI tasks, before and after a rewrite loop | nothing: the comparison is the loop |
+| MemDev-Bench | failure counts under irrelevant history | the manipulation *is* the material, at the arm level |
+| REM | a lifecycle, no per-episode quantity | — |
+| **this project** | **characters served and characters carried, one record an episode, joined to the task and the attempt** | **a within-task sign test with its turn-count confound printed** |
+
+The gap is structural rather than a matter of effort: the harnesses these results run on save the **conversation**, not
+the prompt — four documents and 456 episodes here hold zero system messages and zero occurrences of the block's tag, at
+both placements (AUDIT 34.262). A system whose material is composed into the request is therefore invisible to its own
+artefact, and every published mean is a mean over a quantity nobody can decompose after the fact.
+
+Two consequences worth stating in the comparison rather than in a footnote:
+
+1. **A mean cannot distinguish inert from concentrated.** A treatment that helps the episodes which receive a lot and
+   does nothing on the rest reports the same number as one that does nothing at all, and the leaderboards above report
+   that number. This project's own four flat readings (R214, R215, R216b, R219b) have all had that shape, which is why
+   the dose is the next instrument rather than the next block.
+2. **The dose has to be recorded, not reconstructed.** Reconstructing it from the transcript was tried: 7,813 turn
+   boundaries against 4,341 renders, 121.0 characters a boundary against 146.3 a render, and the ordering it produces is
+   dominated by the turn count — the same variable that makes an episode fail. A reconstruction would have reported
+   "more material, fewer passes" and it would have been a finding about episode length wearing the memory's name.
+
+The claim this supports is narrow and checkable, which is the only kind this project makes: **the material can be priced
+per episode, against the phase's own counters, with the recording's completeness a gate rather than a promise** — and
+no row on the board, and no paper in the table, reports that quantity at all.

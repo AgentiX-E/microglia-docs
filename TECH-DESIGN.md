@@ -12204,3 +12204,87 @@ the principle reads the same at each:
 Each row is the same defect at a different altitude: **a claim that is cheap to make and expensive to check, replaced by
 one that is expensive to make and cheap to check.** That is the whole architecture of this project in one sentence, and
 R219 is the round where it finally reached the memory itself rather than the reporting around it.
+
+## 17.193 — The dose channel: one record an episode, one join in the runner, one identity in the census
+
+The question R218e exists to answer is inside a single task: **did the attempt that received more memory material pass
+more often than its sibling that received less?** Every reading this lane has produced is a mean over arms, and a mean
+cannot separate "the material is inert" from "the material helps on the episodes that receive it and the average is
+over a population where it rarely applies". The within-task comparison can, and it needs a quantity no artefact in this
+tree carries: how much block a given episode was served.
+
+### Why the transcript cannot be the instrument
+
+τ²'s `results.json` holds the **conversation** — `assistant`, `user`, `tool` — and no `system` message at all. Four
+documents on disk, two placements, 456 paid episodes, zero occurrences of the block's tag (AUDIT 34.262). The block is
+composed into the request and the request is not saved, so no reader built on the transcript could recover a dose, at
+either placement.
+
+### The three parts
+
+```
+microglia_agent                        run_split                         dose.py                 board_dose.py
+───────────────                        ─────────                         ───────                 ─────────────
+_open_episode(text)   ──┐
+  ├ episodeStarts       │  one site,    ┌─ snapshot len() after each round ─┐
+  ├ injectedEpisodes    ├─ three lists ─┤                                    │
+  ├ boundaryTasks       │  one order    └─ boundary_task_ids: text → task ──┤
+  └ boardDoses          ┘                                                   │
+board_for: turns, renders, chars, changes, stable                            │
+serve_tail / front: written                     rows(records, tasks, marks, rounds)
+                                                  → refused | identity + rows
+                                                  → <out>.dose.jsonl
+                                                                             │
+                                              census.diagnostics.dose = {agreesRenders, agreesChars, ...}
+                                                                             │
+                                                          --document X --sidecar X.dose.jsonl → DOSE_READ
+```
+
+**One append site.** `_open_episode(text)` is the only place the three boundary lists grow, so
+`len(doses) == len(boundaryTexts) == len(episodeStarts)` is a property of one function. The first attempt at this fold
+left a second call site appending, and the agent's suite caught it in a minute (AUDIT 34.264).
+
+**Two numbers, and the difference is the placement.** `chars` sums the block **served** over renders; `written` sums
+the block **carried** into the prompt. They are equal on the front placement, which replaces the block every turn, and
+unequal on the tail, which holds an unchanged block where it was written. `written / chars` is therefore the
+placement's price as a ratio — **below one on the tail and above one at the front**, where every render is written and
+each write adds the 37-character element. The inequality is stated per placement for that reason: "carried ≤ served"
+is false on the placement this project ran for eleven rounds before R216 (AUDIT 34.265).
+
+**The round is the attempt index.** `--rounds k` is k `run_tasks` calls with `trials=1`, so each round contains each
+task once and `merge_rounds` writes the round as `trial`. The runner snapshots the recording's length after each round
+and the join inside a round is 1:1 by task. The alternative — a turn-count key — was refuted on R219b's document
+(1,171 agent calls against 1,274 assistant messages; AUDIT 34.263).
+
+**Three refusals and one report.** `dose.rows` refuses a slice of the wrong length, a task twice in one round with no
+way to tell the attempts apart, and a record whose task the round did not run. It *reports* the concurrent case
+(`--trials k` in one round) with `trial: null` and `identity: "unordered"`, because the counts remain exact where the
+pairing does not.
+
+### What the reader does with it
+
+`board_dose.py --sidecar` joins rows to rewards by `(task, trial)`, drops a row it cannot attach, and reports the drops
+as `coverage`. It then answers one of four states, and each sends a reader somewhere different:
+
+| state | means | where it sends you |
+|---|---|---|
+| `NO_SYSTEM` | the document holds no system message at all | the instrument: this artefact cannot hold a dose |
+| `NO_DOSE` | the recording arrived and carried no characters | the renderer, or the population |
+| `NO_PAIRS` | doses were served and no task split into two | the premise: the material does not vary inside a task |
+| `DOSE_READ` | a within-task sign test with its turn-count confound printed beside it | the reading |
+
+The confound is stated rather than removed: dose is endogenous, a longer episode both receives more blocks and has
+more chances to go wrong, so the reading is a decomposition of one arm's episodes and not a randomised contrast. The
+number that decides whether it is worth a registered round is the **sign** of the effect on the pairs whose doses
+differ while their turn counts are close.
+
+### Cost and gates
+
+| item | value |
+|---|---|
+| grid | 114 tasks × 2 rounds = 228 episodes |
+| bill | **$1.10 ≈ ¥8.0** at $0.0048 an episode |
+| wall clock | ~45 min at concurrency 3 |
+| gates on every push | `dose.py` and `board_dose.py` self-tests under the 95% floor (`--expect-files 18`) |
+| gates on the dispatch | the join did not refuse; `rows == episodes ≥ 220`; `agreesRenders/Chars/Changes`; the placement is `tail` and `written ≤ chars` there; every row met its episode |
+| printed, not gated | `DOSE_READ` versus `NO_PAIRS`, because a refuted prediction is a finding and a red job teaches an operator to rerun until it is green |

@@ -9954,3 +9954,37 @@ board publishes at all.
 
 **If it does not**, the honest record is that +10.5 pp was a draw, the rule is not promoted, and the next question is
 whether the harm is the block's *presence* rather than its *content* — which is R218e's dose, already registered.
+
+## R218e — the dose, and the artefact that never held it
+
+**What changed on the way in, and why it is the round's first result.** The registration assumed the transcript could
+witness the block. It cannot, at either placement: τ² saves the conversation, and the four documents already on disk
+hold **zero `system` messages** and zero occurrences of the tag over 456 paid episodes (AUDIT 34.262). R218d's `NO_DOSE`
+was therefore a fact about the reader, not about the front placement, and the reader now distinguishes the two states.
+The registration's grid was also one attempt a task, which cannot produce a single within-task pair; it is 114 × 2
+rounds.
+
+| item | before | now |
+|---|---|---|
+| the dose | unmeasurable from any artefact | recorded by the agent, joined by the runner, written as JSONL |
+| the reader's null | `NO_DOSE`, on every document | `NO_SYSTEM` / `NO_DOSE` / `NO_PAIRS` / `DOSE_READ` |
+| attempts per task | 1 (no pair possible) | 2, and the round is the attempt index |
+| cost | ¥4.0 for a grid that could not pair | **¥8.0** for one that can |
+
+| step | what it settles | state | cost |
+|---|---|---|---|
+| **R218e** | does more material help the attempt that received it, holding the task fixed | **dispatched, run 45725844697** | ¥8.0 |
+| **R217** | airline, 50 independent tasks: 164 tasks resolves ~11 pp | registered | ¥5.4 |
+| **R220c** | `movePrice` measured rather than derived | registered | $0.02 |
+| **R222** | the admission rule at a grid that could see it (1,600 episodes) | registered, not queued | ¥53 |
+| **R221** | a 2.0 submission — only if the board moves its headline column | registered | ¥34 |
+
+**What each outcome would mean.**
+
+- **`DOSE_READ` with a positive sign on the pairs whose turn counts are close** — the material is useful where it
+  arrives, and the arm-level nulls are a population effect. That re-prices every flat reading in the lane and makes a
+  *targeted* serve the next design question rather than a better block.
+- **`DOSE_READ` with a negative sign** — more material, worse outcomes, with the turn count held as closely as one arm
+  can hold it. That is the strongest form of the harm hypothesis this lane can test without randomising the dose.
+- **`NO_PAIRS`** — the dose does not vary inside a task, which refutes the premise: the material's effect is then not
+  identifiable from one arm at all and would need a randomised dose, a different round.

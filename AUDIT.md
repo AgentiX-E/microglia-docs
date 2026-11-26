@@ -17590,3 +17590,134 @@ Two lessons, and the second is the general one:
 2. **The review that catches a number is the one that recomputes it from a different direction.** Every defect in this
    file that mattered — 34.254, 34.256, 34.257, 34.258, this one — was found by asking the same question a second way,
    and none by reading the first answer more carefully.
+
+### 34.262 The transcript is not the prompt: four documents, zero system messages
+
+The dose reader was built on a premise about the artefact: a *tail*-placement block is appended into
+`state.messages`, so the episode's saved transcript should carry it and its characters can be counted from the
+document. The premise was never tested directly. It was tested indirectly, by a reader that answered `NO_DOSE` on
+both arms of a 912-episode grid, and the explanation published for that null was about the *other* placement — the
+front, whose block goes into `state.system_messages` and is therefore "composed into the request" rather than saved.
+
+One pass over the four documents already on disk, which cost nothing:
+
+| document | placement | episodes | `<microglia-board>` occurrences | `system` messages |
+|---|---|---|---|---|
+| R215 `front.json` | front | 114 | 0 | **0** |
+| R216 `board.json` | tail | 114 | 0 | **0** |
+| R219b `board.json` | tail | 114 | 0 | **0** |
+| R219b `policy.json` | tail | 114 | 0 | **0** |
+
+The role census settles it: those documents hold `assistant`, `user` and `tool` and nothing else. **τ² saves the
+conversation, not the prompt** — the system prompt is not in the document either, and never has been. So the block is
+absent at *both* placements, the reader could only ever have answered `NO_DOSE`, and the explanation attached to that
+null was a hypothesis wearing a measurement's clothes.
+
+The defect has three parts, and each has its own repair:
+
+1. **A reader that can only answer one thing is not a reader.** The zero is now distinguished from the absence:
+   `system_messages_of` counts the document's system messages, and a document with none reports **`NO_SYSTEM`** —
+   which sends a reader to the instrument rather than to the wiring. `NO_DOSE` is reserved for an arm that had system
+   messages and no board among them, which a fixture now builds with another channel's tag.
+2. **A published explanation is a claim and needs the same gate as a number.** The sentence about front placement
+   stood for a round because it was plausible and because nothing in the tree could contradict it. What contradicts it
+   is one `json.dumps` and one `count`, and it is now a self-check fixture rather than a paragraph.
+3. **The dose had to be recorded at the source.** Which is R218e's whole content: the agent writes the characters
+   where it renders them, the runner joins them to the episode, and the agreement check is made against the phase's
+   own counters — three identities (`renders`, `charsTotal`, `changes`) that a recording cannot satisfy by accident.
+
+The general form, and it is the sixth time this lane has written it down: **an instrument's null is evidence about the
+instrument until the instrument's reach has been measured.** The reach here was zero, and it took four documents to
+say so.
+
+### 34.263 A turn count is not an assistant-message count: 1,171 against 1,274
+
+The dose recording has to be joined to the episode it describes, and the agent cannot name the task or the attempt:
+τ² constructs an agent per simulation and never tells it where it is (R136). The first join key considered was the
+turn count, because both sides appear to hold it — the record counts the model calls the episode made, and the
+document's transcript counts the assistant messages.
+
+Measured on R219b's `board.json` before any dispatch, because a join is cheap to check and impossible to notice:
+
+| quantity | value |
+|---|---|
+| agent model calls, phase counter `calls` | **1,171** |
+| `assistant` messages in the document | **1,274** |
+| difference | **103** over 114 episodes |
+
+They are not the same quantity, and the difference is not a constant that could be subtracted. A join on this key
+would have matched most episodes, missed some, and paired one episode's dose with another's verdict in a way no
+downstream reader could detect — the failure mode the project's own note on `_tools_on_path` describes as "a second
+definition of the same thing". The count is 11.2 assistant messages an episode against 10.3 calls, so the mismatch is
+not a rare tail either.
+
+The key that is exact is the **round**. `--rounds k` runs each attempt as its own `run_tasks` call with `trials=1`,
+so a round contains each task exactly once and `merge_rounds` writes the round index as the document's `trial`;
+snapshotting the recording's length after each round partitions a flat list into rounds, and the join inside a round is
+1:1 by task. The rejected key is recorded here rather than deleted from the history because the next person to want a
+per-episode join will reach for it first.
+
+### 34.264 The boundary text was appended at two sites, and the agent's own suite said so in a minute
+
+R218e folded the boundary text into `_open_episode`, which already appended the episode index and the injected flag,
+so that a record, its index and its text open together. The fold is right: three parallel lists appended at one site
+cannot drift, and `len(doses) == len(boundaryTexts) == len(episodeStarts)` becomes a property of one function.
+
+The first attempt at the fold left the *other* call site — the pack arm's, which had always appended the text itself —
+appending it as well. The suite that has protected this module since R214 reported it on the next run, in three
+sentences that each name the same defect from a different side:
+
+```
+FAIL  the text the recall was built from: expected ['where is my order 1234'], got ['', 'where is my order 1234']
+FAIL  one task name per boundary, in the same order: expected 14, got 28
+FAIL  the same slice the recall sends: expected 500, got 0
+```
+
+Twenty-eight boundaries for fourteen episodes, and an empty text where a task should have been. This is the case for
+the second call site's fixture existing at all: a refactor that moves a convention from two sites to one is exactly
+the refactor that leaves one of them behind, and nothing but a suite that drives both arms would have noticed before
+114 paid episodes ran with a recording joined to the wrong episodes.
+
+The repair is one line at the call site and one docstring at the function; the lesson is the ordering — **the fold was
+made, the suite was run, the defect was one minute old**, which is the only reason it is a paragraph here instead of a
+wasted dispatch.
+
+### 34.265 "Carried is at most served" is false on the placement this project ran for eleven rounds
+
+The dose record keeps two numbers: `chars` (block characters served, summed over renders) and `written` (characters of
+the messages the agent put into the prompt). The reasoning that produced them was that a block held in place is served
+again and not written again, so `written ≤ chars` — and that inequality was written into the dispatch gate, into the
+technical design and into the external guide as though it were a property of the mechanism.
+
+It is a property of **one placement**. `injected_message` wraps an untagged block in its element before it becomes a
+message, and the wrapper is 37 characters:
+
+```
+<microglia-board>\n ... \n</microglia-board>     17 + 2 + 18 = 37
+```
+
+At the **front** placement the block is replaced on every render, so *every* render is a write and each write carries
+those 37 characters on top of the body:
+
+| placement | served | written | ratio |
+|---|---|---|---|
+| R216 `front` | 1,097 renders, 162,584 chars | ≈ 162,584 + 37 × 1,097 = **203,173** | **1.25** |
+| R216 `board` (tail) | 3,477 renders, 494,315 chars | 798 appends, body + 37 each | **< 0.3** |
+
+So the gate as first written would have failed a correct front arm, and — worse — the sentence in the design document
+would have taught a reader that a front placement cannot exist. The dispatch that runs it is `tail`-only, so no money
+was at risk; the claim was the defect.
+
+Three repairs, in ascending order of importance:
+
+1. The gate asserts the **placement first** and the inequality second, with the inequality labelled as a statement
+   about the tail.
+2. `written > 0` is asserted beside it, because "carried nothing" is the failure the inequality cannot see: an arm
+   whose block is rendered and never written passes `written ≤ chars` trivially at zero.
+3. The design document, the external architecture note and the user guide now state the ratio as **placement-
+   dependent** — below one when an unchanged block is held, above one when every render is written — instead of
+   presenting one placement's arithmetic as the mechanism's.
+
+This is the same defect class as AUDIT 34.231 (a one-sided cost bar that a stopped arm passed): **an invariant derived
+from one configuration, written as though it held for all of them.** The general rule the project already has is that a
+bar must be two-sided; this adds the companion — a bar must also name the configuration it is a bar for.
