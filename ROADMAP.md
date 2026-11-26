@@ -10372,7 +10372,7 @@ operative ask often arrives in turn three, and a contract frozen at the first me
 performing. Reading every user turn reaches **95.6%** (625 of 654) with 19 unaccounted — at **4,761 items**, 4.9× the
 turn-one contract, 3.90 unneeded per episode, because the user's *answers* contain cue words and are read as asks.
 
-## R230 (registered 26 Nov, ¥0) — admit a later-turn ask only from a turn that is not an answer
+## R230 (read 26 Nov, ¥0) — REFUTED: turn position is not a discriminator, because 77% of user turns are answers
 
 The one discriminator that needs no vocabulary: an ask is admitted from a user turn after the first **only when the
 assistant's previous turn did not ask the user a question**. A reply to a question is a value filling a slot the agent
@@ -10386,3 +10386,49 @@ helps only where the writes are; the third bar says the help has to be worth hav
 content question closes for this corpus. If noise is not removable while recovery holds, the discriminator has to move
 from the turn to the clause — which would be the first result in this lane that locates a defect in the benchmark's
 user model rather than in the block.
+
+**What it measured.** The rule is one character — a later user turn is read only if the assistant's previous turn
+contains no question mark — and on the 456-episode grid it refused **1,893 of 2,453 user turns (77.2%)**, recovering
+**25 of the 155** later-turn writes (16.1%) and producing a board with **more** items (1,110) that covered **fewer**
+required writes (410 of 654, 62.7%) than the request board it was built to extend (416, 63.6%). B1 fails at 16.1%
+against 60%, B3 fails at 62.7% against 73.6%, and only B2 holds (1,110 items against 1,940) — which is the bar this
+round then had to restate for its successor, because a ceiling on noise is passed by a rule that admits nothing
+(AUDIT 34.323). The replication repeats all three: 20 of 156 (12.8%), 63.9% against 61.1%, 1,043 items, 1,876 of 2,422
+turns refused.
+
+**The two mechanisms, and the second is the one worth carrying.** First, the corpus's user model: τ²'s simulator asks
+constantly, so a turn is routinely both the answer and the requirement ("yes, the purple one — and can you also check
+the other order?"), and a whole-turn test cannot split them. Second, the contract's own address: `request_of` reads the
+first turn **that states an ask**, not turn one, so on **52 of 403** episodes the contract lives in turn three or later
+and the filter refused that very turn in **50** of them. That is how a board that reads more turns covers fewer writes,
+and it retires a phrase every document in this repository has used since R215 (AUDIT 34.324).
+
+**Refutation, as registered.** Recovery was lost: the later-turn asks are **not** distinguishable from answers by turn
+position. The registration's own reading of that outcome stands — the content question closes for this corpus at turn
+granularity, and the discriminator has to move to the clause.
+
+## R231 (registered 26 Nov, ¥0) — admit the requirement clause, not the turn
+
+R230 left the material's location unambiguous: the requirement and the answer share a turn, so the discriminator has to
+be inside one. The change adds no word to the lexicon —
+
+    the contract's turn is read as a whole; from every later turn, only the clauses that **name their own family**
+
+— which is the parser's existing inheritance rule (`items_of`: "a clause inherits the family of the clause before it
+within the same sentence") **restricted in scope**: inheritance keeps its job inside the contract's turn, where it makes
+"the smart thermostat for one compatible with Google Home" an exchange rather than a fragment, and loses the job of
+turning an answer's value into a requirement.
+
+Bars, registered in `prereg/R231-the-clause.md` before any reading: **B1** recovery of at least **60%** of the 155
+later-turn writes (unchanged from R230, and the bar that round failed); **B2** efficiency — the items added over the
+contract must not exceed **1.5 per write rescued**, restated from R230's count limit for the reason AUDIT 34.323 gives;
+**B3** coverage at or above **73.6%**.
+
+**Prediction.** B1 should hold for a volunteered requirement ("can you also cancel the other order") and should not
+hold for lists continued across clauses ("return the lamp and the chair"), where only inheritance reaches the second
+object — R216's census already priced that shape. B2 is the quantity a clause rule should move and a turn rule cannot:
+R230's ratio is 5.6 items per rescued write. B3 decides the round, and it needs 481 of 654.
+
+**Refutation.** If B1 fails again, the content question closes with three independent refusals and the lane's remaining
+work is the cost axis and a second domain rather than a fourth content rule. If B2 fails while B1 holds, the corpus
+states requirements in object lists rather than in clauses and the admission rule moves to the object.

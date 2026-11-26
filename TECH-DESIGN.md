@@ -12616,3 +12616,53 @@ which is the class of defect the last three audit entries were.
 **Cost.** Zero, and the whole reading takes 0.6 seconds over 456 episodes: the grid is an artefact a previous dispatch
 already paid for, and both rules are read from it rather than dispatched against it. Three of the five anchors this
 project has refused were refused this way.
+
+### 17.192 Why the admission rule has to move inside the turn, and how it does
+
+R230 priced the only admission rule that needs no vocabulary — read a later turn when the assistant's previous turn did
+not ask a question — and it failed on the corpus for two reasons that are architectural rather than statistical (PROGRESS
+249.43). The design consequence is a change of *scope* rather than a change of rule, and this section records the rule,
+its interface, and the invariant that any future admission rule in this repository has to state.
+
+**The rule.** The parser already has exactly one mechanism for turning a clause into an ask, and it is inheritance:
+
+```python
+for clause in CLAUSE.split(sentence):
+    named = family_of(clause)      # the clause's own action cue, or ""
+    if named:
+        family = named             # …and the family carries forward within the sentence
+    if family == "":
+        continue                   # a clause with no family of its own and nothing to inherit is not an ask
+    sentence_items.append({"family": family, "words": _object_words(clause, family), "clause": clause})
+```
+
+Inheritance exists for a reason a scope change must not undo: "the smart thermostat for one compatible with Google Home"
+is an exchange whose second object has no verb. Inside an *answer*, the same mechanism is what manufactures asks out of
+values — "yes, the purple one" inherits the exchange the agent had just proposed and becomes a second ask with the
+answer's words, which is where R229's 4.9× item count comes from.
+
+So R231 admits, from any turn after the contract's, **only the clauses that name their own family**:
+
+    family_of(clause) or nothing      # no inheritance across the boundary into a later turn
+
+and leaves the contract's turn read as a whole, inheritance and all.
+
+**The interface.** One more value of the `scope` argument that already exists — `ask_board(entry, messages, scope)` with
+`scope in ("request", "conversation", "admitted", "clause")` — and one more row in the reading's board table. No new
+tool, no new manifest, no new subcommand: a round that changes the content of a board must be readable on the same grid
+as the boards it is compared with, or the comparison becomes a comparison of instruments.
+
+**The invariant.** R230's reading produced a rule for every future round, and it is stated here because the code cannot
+enforce it:
+
+> **An admission rule must say whether its item set contains the contract turn's asks.**
+
+`askAll` does (it reads every turn). `admitted` does not (it refused the contract's turn in 50 of 403 episodes), and the
+sign of its coverage delta follows from that and not from its filter. A rule that widens *where* it reads while
+narrowing *what* it contains can lose work it had, and that is a failure mode no comparison against the request board
+will explain — the numbers will simply look wrong, in the direction the rule was supposed to improve.
+
+**The cost invariant, from the same round.** A bar on the *cost* side of a trade is only a bar if the degenerate rule
+fails it. R230 passed "items ≤ 2× the contract" while rescuing 16% of what it targeted (AUDIT 34.323), so R231's cost
+bar is a ratio — items added over the contract per write rescued — which the degenerate rule fails at 5.6 and a working
+rule can pass at 1.5.

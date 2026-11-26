@@ -30169,3 +30169,70 @@ wrong task, and here is which turn the right one is in".
 **The product consequence, for the sixth round running: no default moves.** `serving-defaults.json` is untouched,
 because a rule that fails its own cost bar is not a rule to ship, and the two read boards that would otherwise have
 looked like a 35-point win are exactly the ones the open-tax column refuses.
+
+## 249.42 R230 read: the turn filter is worse than doing nothing, and the corpus says why
+
+The round was ¥0 and it took twenty minutes. It refused on two of its three bars, on both grids, and the numbers are
+not close:
+
+| | control (456 ep, 403 graded) | replication |
+|---|---|---|
+| user turns read | 2,453 | 2,422 |
+| refused as answers | **1,893 (77.2%)** | 1,876 (77.5%) |
+| later-turn writes recovered | **25 of 155 (16.1%)** | 20 of 156 (12.8%) |
+| items opened | 1,110 | 1,043 |
+| coverage | **62.7%** | 63.9% |
+| the request board, same grid | 63.6% | 61.1% |
+
+B1 fails (16.1% against 60%), B3 fails (62.7% against 73.6%), B2 holds (1,110 against 1,940) — and B2 holding is the
+part that had to be repaired in the successor's registration, because a ceiling on items is passed by a rule that
+admits almost nothing (AUDIT 34.323). The board reads **more** turns and covers **fewer** writes than the contract it
+extends, which is a shape no previous round produced.
+
+## 249.43 The two mechanisms: a user model that asks, and a contract that was never in turn one
+
+**The first mechanism is the corpus.** τ²'s simulator asks the agent a question on most turns, so 77% of user turns are
+replies, and a reply is where the requirement rides: "yes, the purple one — and can you also check the other order?" is
+an answer by any positional test and half a requirement in fact. A feature that fires on three turns in four is not a
+discriminator; it is a description of the medium.
+
+**The second mechanism is ours, and it retires a phrase.** `request_of` reads the first turn **that states an ask** and
+falls back to the first turn only when none does — a documented fallback (R215) that no document has ever named. On
+**52 of 403** graded episodes the contract therefore lives in turn three or later, and the filter refused that very turn
+in **50** of them. That is the whole of the difference between 410 and 416: the admitted board is **not** a superset of
+the contract's asks. AUDIT 34.324 records the correction, and the glossary now defines **contract turn** rather than
+"turn-one contract".
+
+The consequence for every later round is a rule of construction: *state whether your item set contains the contract's
+turn*, because if it does not, coverage can fall while the rule widens and no comparison against the request board will
+explain it.
+
+## 249.44 Where the lane stands after six anchors, and what the ¥0 path is
+
+Six rules have been measured on one grid and six have been refused, each with the column that refused it:
+
+| rule | round | coverage | the column that refused it |
+|---|---|---|---|
+| request (the contract) | R223 | 63.6% | the one every alternative is compared against |
+| reveal | R225 | — | screen reversed on the held-out half (+1.04σ) |
+| record | R227 | 54% named by record | 0.75 bar, measured before the money |
+| read-strict | R228 | 98.5% | open tax 2.53 against 1.79 required |
+| ask-bound | R229 | 63.5% | one write under the request board |
+| turn admission | **R230** | **62.7%** | recovery 16.1% and coverage below the contract |
+
+**R231 is registered and unread, and it is the last content round this corpus can support.** It restricts the parser's
+family inheritance to the contract's turn instead of gating whole turns — the same lexicon, one scope narrower — with
+bars written before the reading (recovery ≥60%, ≤1.5 items per rescued write, coverage ≥73.6%). If it refuses, the
+content question closes with three independent refutations and the lane's remaining work is the cost axis, the ¥34
+submission, and a second domain whose user model discloses differently.
+
+| item | state | price | what it buys |
+|---|---|---|---|
+| **R231** clause admission | registered, bars written, **unread** | **¥0** | the last content rule this corpus can test |
+| R221 2.0 submission | waiting on a measurable gain | ¥34 | four columns the leaderboards lack |
+| telecom third domain | not registered | ¥0 to design | a user model that discloses differently |
+| MemTrapBench / LoCoMo replication | blocked on embedding quota | ~¥20 | external comparability |
+
+**The product consequence, for the seventh round running: no default moves** — except that `askSource: request` now
+carries three independent refutations of its alternatives in `provenance`, and `turnAdmission` is recorded in `notYet`
+so that the next reader does not spend a round rediscovering that a turn is both the answer and the requirement.

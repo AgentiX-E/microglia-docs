@@ -18341,3 +18341,71 @@ The tool therefore prints **all five boards on every run**, including the three 
 saved reading carries all of them. The audit entry is here because the alternative was a one-line headline ("the read
 anchor settles 35 points more work"), and this repository has spent three rounds learning that a quantity separated from
 the column beside it is a quantity somebody will eventually quote alone.
+
+## 34.323 — A bar that a nearly-empty rule passes, and a scope that defaulted to the previous round
+
+R230 was registered with three bars and passed one. The one it passed is the entry.
+
+**The bar.** R230's B2 was a count limit: the admitted asks must not exceed twice the turn-one contract's 970 items.
+The round produced **1,110 items** — inside the limit, by 830 — while rescuing **25 of the 155** writes the round
+existed to rescue. A rule that admits almost nothing satisfies a ceiling on noise, and the ceiling therefore was not
+binding: it is the mirror of the defect AUDIT 34.321 recorded, where a bar could only be satisfied by being the rule
+itself. There a tautology passed; here a **null** passes. The general statement is the one worth keeping: *a quantity
+chosen because it is the cost side of a trade is only a bar if the degenerate rule fails it.*
+
+The successor's B2 is restated as an efficiency ratio — items added over the contract, per write rescued, at most 1.5 —
+which the degenerate rule fails by construction (R230's own ratio is 5.6) and a working rule can pass. The restatement
+is recorded in `prereg/R231-the-clause.md` with this reason, and it is a registration change made **before** R231's
+reading, which is the only place such a change is legitimate.
+
+**The default.** Building the round found that `ask_board(entry, messages, scope)` accepted any string and fell through
+to the request board for every value it did not recognise:
+
+```python
+asks = module.board_of(messages, module.CONVERSATION if scope == "conversation" else module.REQUEST)["items"]
+```
+
+so `--scope admit` — a typo, or an earlier round's name for the same idea — would have run the **request** board and
+printed it under the new scope's heading. The defect has the shape this repository keeps finding: an absence (an
+unrecognised scope) read as a value (the default one), and it is invisible in every test that only ever passes valid
+scopes. Fixed with an explicit refusal, and the refusal is exercised by a test that passes `"wide"`:
+
+```python
+if scope not in ("request", "conversation", "admitted"):
+    raise ValueError(f"unknown ask scope {scope!r}")
+```
+
+**The printer.** A third defect surfaced from the same work: `render` formatted the paired coverage delta with `+.1%`,
+which raises on `None`, and `None` is what the reading carries when no episode discharged a required write. So the one
+reading the bar already refuses — absence — was the one reading the tool could not print. Fixed by formatting the
+absence as `n/a` beside the number, and asserted: a reading with nothing graded must render its refusal and exit
+non-zero rather than raise. Three defects, one round, all three in the *instrument* rather than in the measurement,
+which is the ratio this lane has run at since R217.
+
+## 34.324 — "The turn-one contract" is not read from turn one, on 13% of the episodes
+
+Every internal document since R215 says the block's content is **the turn-one contract**, and the code has never done
+that. `request_of` reads the first user content **that states an ask**, and falls back to the first user content only
+when none does:
+
+> "`""` when no user has spoken yet, which is a real turn … and a board that guessed a request would be inventing one."
+
+The distinction is invisible until a round filters turns, and R230 is that round: on **52 of 403** graded episodes the
+contract is read from turn three or later, because the episode opens with a greeting or a reply that states nothing
+parsable. The positional filter then refused *that* turn in **50** of the 52 — the turn the contract was read from was,
+in this corpus, usually an answer to the agent's opening question.
+
+**Why this is an audit entry and not a footnote.** The number that made the round interesting (410 covered writes
+against the request board's 416 — a board that reads *more* turns covering *fewer* writes) is entirely accounted for by
+this: the admitted board is not a superset of the request board's asks, and the reason is a documented fallback that no
+document had named. So two corrections follow, and both are in this commit:
+
+1. **The phrase changes.** "The turn-one contract" is replaced by **"the contract turn"** in the glossary and in new
+   text: the turn the contract is read from, which is turn one on 87.1% of these episodes and later on the rest. The
+   older passages are not rewritten wholesale — a phrase in a hundred paragraphs is not worth a hundred edits whose
+   only effect is to change a word — but the glossary defines the term the code implements, and the figure caption and
+   every new claim use it.
+2. **The superset assumption is retracted.** R229's `askAll` *is* a superset of the request board's asks (it reads
+   every turn), and its numbers are unaffected. R230's `admitted` is not, and any later round that filters turns,
+   clauses or speakers must state whether its item set contains the contract's — because if it does not, coverage can
+   fall while the rule widens, and that is a failure mode no comparison against the request board will explain.

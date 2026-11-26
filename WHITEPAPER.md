@@ -5527,9 +5527,9 @@ hypothesis. Three anchors have now been tested and closed: what the request decl
 what the words name. The fourth is the state the agent has actually looked at, and it is the last one this project will
 test before it concludes that the block's *content* is not the lever this benchmark can see.
 
-**Five anchors, five refusals, and the one that explained them.** A working memory that lists what a task still needs is
+**Six anchors, six refusals, and the one that explained them.** A working memory that lists what a task still needs is
 a claim about two different things at once: *what is required* and *what has been done*. This project has now tested
-five rules for joining them, each against a bar written before its number was read, and each has been refused:
+six rules for joining them, each against a bar written before its number was read, and each has been refused:
 
 | anchor | rule | why it was refused |
 |---|---|---|
@@ -5538,6 +5538,7 @@ five rules for joining them, each against a bar written before its number was re
 | record (R227) | the record the request **names** | 54.0% of graded writes named, against a bar of 0.75 — the requests describe queries over state |
 | read (R228) | the record the episode **opened** | 98.5% of the work accounted for and **2.53 items per episode that nobody needs**, against 1.79 required |
 | ask-bound (R229) | an ask, settled by a write of its family to a record it opened | one write short of the rule it was built to beat: the read rule's completeness came from having no ask at all |
+| turn admission (R230) | a later turn read only when the agent's previous turn asked nothing | 77.2% of user turns follow a question, so the filter refused the turns the requirements were in: 25 of 155 recovered, coverage 62.7% — **below** the contract |
 
 The fourth row is the one that looks like a victory and is not, and it is worth being precise about why. In this corpus
 every successful write touches a record the agent had already opened, so a rule that credits any write to any opened
@@ -5554,10 +5555,24 @@ instructed to disclose progressively. A contract frozen at the first message is 
 is a description of a different task.
 
 The repair is not "read the whole conversation", and that is the part worth publishing. Reading every user turn lifts
-coverage to 95.6% and leaves 19 writes unaccounted — at **4,761 items, 4.9 times** the turn-one contract, because a
+coverage to 95.6% and leaves 19 writes unaccounted — at **4,761 items, 4.9 times** the contract turn, because a
 user's *answers* contain the same verbs as their requests and are read as asks: "the mechanical keyboard", "box",
 "manuals", "processing time". Both ends of the dial are wrong, and the dial is not the parser — it is *when* the
 snapshot is taken.
+
+**The sixth refusal is the one that says where the material is.** If the deficit is disclosure order, the obvious
+repair is positional: admit a later turn only when the assistant's previous turn asked the user nothing — one character,
+no vocabulary, no model call. It failed, and the failure is the most useful number in this section. Of 2,453 user turns,
+**1,893 (77.2%)** follow a question from the agent. The requirement does not arrive *between* the answers; it arrives
+*inside* them: "yes, the purple one — and can you also check the other order?" The filter recovered 25 of the 155
+later-turn writes (16.1%) and produced a block with more items and **less** coverage than the contract it was extending
+(410 of 654, 62.7% against 416, 63.6%).
+
+That last inversion has a second cause, and it is this project's own: the contract is read from the first turn **that
+states an ask**, not from turn one, so on 52 of 403 episodes it lives in turn three or later — and the filter refused
+exactly that turn in 50 of them. A rule that reads more turns can therefore contain fewer requirements, which is why the
+successor restricts the parser's family inheritance to the contract's turn instead of gating whole turns (R231), and why
+every future rule in this lane has to state whether its item set contains the contract's.
 
 That reframes the project's negative results. Across six rounds the block's content has been measured as having no
 effect on task success, and the standing explanation was that the state channel is weak. The measurement above offers a

@@ -10864,3 +10864,44 @@ just produced a mechanism for its own negative results rather than another null.
 a week. What they cannot copy is the refusal: that the same move costs 4.9× the items if the admission rule is not
 discriminating, which is what R230 is registered to test. The moat is not the rule, it is knowing which rules fail and
 by how much — and that is the one asset this project has been compounding for six rounds at ¥0 per round.
+
+## R230 — Every memory product gates on messages, and this round prices what a message-level gate costs
+
+The field's extraction-based memories all make the same architectural choice: an LLM reads the transcript and decides
+what is worth keeping, per message or per turn. Mem0's pipeline extracts facts from a conversation pair and then runs
+an update decision against the store; Zep's graph builder extracts entities and edges per episode; LangMem's extractor
+takes a message list and returns memories. None of them publishes what their gate **refuses**, and R230 is the first
+measurement in this lane of what a positional gate costs when the corpus is a task-oriented conversation.
+
+**The number, in the field's own terms.** 1,893 of 2,453 user turns (77.2%) follow a question from the agent. A gate
+that treats a reply as low-value — "the user is answering, not instructing" — discards three turns in four, and in this
+corpus the requirement is *inside* the reply: "yes, the purple one — and can you also check the other order?" Measured
+cost: recovery of 25 of the 155 requirements stated after the first turn (16.1%), and coverage **below** the block that
+reads one turn (62.7% against 63.6%).
+
+| what the field publishes | what R230 added |
+|---|---|
+| extraction rate, memory count, "tokens saved" per conversation | — unchanged |
+| — | **answer share of a user turn**: 77.2%, the rate at which a message-level gate is refusing the material |
+| — | **recovery of the requirements a gate refuses**: 25 of 155, against a bar of 93 |
+| — | **coverage delta of a gate against no gate**: −0.9 pp on the control grid, +2.8 pp on the replication — a gate that is indistinguishable from not gating, at 1.14× the items |
+| — | **the contract's own turn**: 52 of 403 episodes read their contract from turn three or later, and a positional gate refused that turn in 50 of them |
+
+**Why this is a competitive asset rather than a curiosity.** The three rows a competitor would have to reproduce are
+cheap to reproduce — the rule is one character — and that is exactly why the *refusal* is the asset: a vendor who ships
+"only record what the user asks for" has, on this evidence, a memory that misses four fifths of what the user asks for,
+and no vendor publishes the column that would show it. This project's sixth axis (see R229/R228 rows) now has a
+negative result on it with a mechanism, which is a stronger position than a positive result with a single grid.
+
+**What a competitor could do that this project cannot yet.** Anything at clause granularity is theirs to win: an
+extractor that reads a reply and separates the value from the requirement is a prompting problem for a system that
+already calls an LLM, and this project's parser is deterministic and free but does not call a model. R231 tests whether
+inheritance scope alone captures it. If it does not, the honest reading is that a deterministic parser has reached its
+limit at clause boundaries and the LLM extractors have an advantage this lane cannot match at ¥0 — which is a thing to
+write down before somebody else's benchmark says it.
+
+**Where the SOTA argument stands after six refusals.** The accuracy axis remains settled within resolution (0.23 pp at
+114 tasks against a ±3.2 pp floor), the cost axis remains a published fact (8.6× cheaper than the cheapest published row
+at 2.62 pp higher accuracy), and the third axis — a working memory measured against the contract the conversation
+actually states — now holds six refusals with the column that refused each. **No competitor publishes a number on that
+axis**, which is both the opportunity and the risk: an unclaimed axis is unclaimed until somebody else measures on it.
