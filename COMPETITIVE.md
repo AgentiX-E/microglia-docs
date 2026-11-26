@@ -10807,14 +10807,15 @@ combination**, and the cost axis is where the margin is large enough to be a fac
 
 | column | SOTA | this project | gap | resolvable at 114 tasks? |
 |---|---|---|---|---|
-| retail `pass^1`, 1.0.1 | Qwen3.5-397B-A17B **84.43** | **84.20** | 0.23 pp | **no** — needs 972 tasks |
+| retail `pass^1`, text rows at 1.0.1 | Qwen3.5-397B-A17B **84.43** | **84.20** | 0.23 pp | **no** — needs 972 tasks |
 | retail `pass^1`, any task set | Claude-Sonnet-4.5 **86.20** (0.1.3) | 84.20 (1.0.1) | 2.00 pp | no — different task set |
+| retail `pass^1`, 1.0.1 including audio rows | Pine Voice Preview **85.09** | 84.20 | 0.89 pp | **no** — and a voice row, not a text one |
 | retail `pass^4` | reported by 4 of 48 rows | **53.51** | — | — |
 | retail cost / trajectory | **$0.00558** | — | **8.6× cheaper than the cheapest published** | **yes**, by construction |
 | airline `pass^1` | Claude-Opus-4.5 **84.00** | **not measured** | — | — |
 | telecom `pass^1` | Claude-Opus-4.5 **92.32** | **not measured** | — | — |
 
-**Airline is the hole, and it is the one the money should fill.** Retail's top row is 84.43 and this project is 0.23
+**Airline is the hole, and it is the one the money should fill.** The top text row at 1.0.1 is 84.43 and this project is 0.23
 behind it — a gap that cannot be closed *demonstrably* at any budget, only occupied by a point estimate. Airline's top
 is 84.00 over a median of 63.8 across 24 rows: a **20-point spread**, so unlike retail, a resolvable improvement there
 would move a ranking. R217 buys exactly that, and R226 prices it at 6.72 pp of resolution for ¥16.
