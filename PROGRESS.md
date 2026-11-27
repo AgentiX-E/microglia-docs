@@ -30749,3 +30749,25 @@ runs the reader with `--bar` on a `clause` dispatch, so the bar is a gate and no
 **补记（同轮，CI 抓到）。** `read_anchor` 的「错误覆盖率必须被拒绝」自检把篡改值写成字面量 0.5，而 R238 让该合成文档的真实覆盖率变成
 0.5，于是篡改不再篡改、断言失败——本地三套自检全绿，是 CI 在推送时抓住的（AUDIT 34.340）。改为从读数本身取偏移后，覆盖率门禁
 **18,987/19,112 = 99.3%，29 模块**，CI `0802c5a5` 全绿。
+
+## 249.63 R239：两台板子合成一个函数，四份清单同时移动（¥0）
+
+**位置。** 上一轮结尾的欠账是「`moment` 调用 `board_of`，删除读锚结算路径」。本轮做完，并且先花了 ¥0 把影响面量出来，再决定怎么改——因为这条裂缝接在 R236 的已发布门禁上，盲目统一可能悄悄移动一个门禁数字。
+
+**先量，再改。** 用只读探针在 456 集控制网格上把 `moment` 换成 `board_of` 版本重算：R236 的 B1 wired（431/456）、B2 acted（394/403）、served writes（685/723）**三项完全不动**；三份 display 清单的 request reached 从 463→461（control）、444→439（replicate）；`r237-traps` 的 rejected 列从 familyStale 507→483、staleUnsettled 304→290，而产品侧的 served 列 10/3,479 不动。结论：裂缝在 **ask 单位**，family 单位的门禁数字天然看不见它——这恰好又证明了一次 R238 说的「单位比规则更能决定一个数」。
+
+**做完的（TDD，¥0）。**
+
+- `read_anchor.ask_board` 增加 `settle` 参数：默认 `"read"` 保留读锚结算（r228–r231 的已发布读数量的是它，不能动），`"serving"` 走新函数 `_serving_ask_board`，其 items 的 `settled` 直接来自 `goal_board.board_of(messages[:upto], scope)`——与服务路径逐字相同的函数和参数。
+- `moment` 改传 `settle="serving"`，仍用 `entry["at"]` 的 `bisect` 边界保证「一条 assistant 消息里的两次写入读同一块板子」；结算不再来自 ledger 的 events。
+- 可判定的红色测试先行：一个「取消订单 #W5056519、从未读过该订单、写入只带订单号」的问句，服务侧在 `record` 档结算（`byRecord=1`），统一前 `moment` 报 `("cancel", False)`、统一后报 `("cancel", True)`。
+- 补测 serving 分支的 order/fold/cap 与两个拒绝路径；读锚路径的 order/fold 因其唯一调用者（`moment`）迁走而补两条契约测试，保证 r232–r234 的旧读数仍可被重算。
+- 四份清单重生成：r232/r233/r234（display 三档）与 r237-traps；sha256 仍指向原始控制网格 `b41ff472…`。`r236-replay.json` 逐字节不变，不重生成。
+
+**为什么清单必须显式重建。** `--check` 只验「清单内部 rows 求和 = 汇总」，不重算源文档。所以一份陈旧的清单照样自洽——它自洽于旧代码。CI 全绿不等于产品与测评一致；这次是「改了结算函数就必须重建清单」这条纪律把两者重新对齐。
+
+**证据链闭环。** 至此：`goal_board.board_of`（产品结算，三档）→ `moment`（仪器读数，同函数）→ `board_mechanism` / `memory_traps`（两个机制读数器）→ 三份 display 清单 + r236-replay + r237-traps（可重算的发布数字）全部由同一套结算产出。产品侧渲染的板子和测评侧读到的板子第一次是同一个函数的输出，不再有两套规则之间的距离。
+
+**门禁实测。** Python 全量 **19,048/19,173 = 99.3%，29 模块**，每模块 ≥95%；`read_anchor` 99.9%（line 1250/1250），`goal_board` 99.8%，`memory_traps` 99.2%，`board_mechanism` 99.8%；四套工具自检 + 九份清单 `--check` 全绿；13 个 workflow 解析通过；`check-python-floor` / `check-workflows` 全绿。
+
+**下一步最优路径。** ①telecom 第三域（¥0，4 天，把分辨率从 3.21pp 压到 1.98pp，让「准确率是否受益」这个 30 题分不开的问题第一次可判定）；②R237b 两条外部梯子（先做 MemTrapBench 判分器 50 条一致性校准，再定报价——判分器是 rubric + LLM judge，¥0.86 只覆盖作答不覆盖判分）；③R221 2.0 提交（¥0，读已有网格）；④解析器作用域的产品侧开关（¥0，0.5 天）。

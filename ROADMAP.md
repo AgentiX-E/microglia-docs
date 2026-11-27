@@ -10661,8 +10661,31 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 > **32 of 3,483 shown lines (0.92%)** and now reads **10 of 3,479 (0.29%)**, 22 closed. Two causes fixed in
 > `goal_board`: both sides of the name comparison are stemmed (`bus`/`glass`/`shoes` excepted), and a third settlement
 > grade settles an ask on the **record** it names when the receipt carried no product at all. The ten that remain are
-> partial-versus-whole returns, which an order id cannot decide. **R239** is the unification this leaves owed: `moment`
-> should call `board_of`, and three published manifests move at once.
+> partial-versus-whole returns, which an order id cannot decide. **R239**, registered for the next round, unifies `moment`
+> onto `board_of`; four published manifests move at once (AUDIT 34.341).
+
+## R239 (registered 27 Nov, ¥0) — one settlement function, four manifests moved, two gate numbers untouched
+
+> **Status, 27 Nov: done, ¥0.** `read_anchor.moment` now takes its settlements from `goal_board.board_of`, the exact
+> function the serving path renders, through `ask_board(settle="serving")`. The read-anchored branch stays the default
+> because r228–r231 published readings measure it; both branches return one shape, so the three consumers of `moment`
+> are unchanged. The decidable case is a cancel-by-id the episode never read: `board_of` settles it at the `record`
+> grade, the read anchor cannot (AUDIT 34.341).
+>
+> **Measured on 456 transcripts, before and after:** R236's B1 wired 431/456 and B2 acted 394/403 are **byte-identical** —
+> the gap was in the ask unit, and family-level bars cannot see it. What moved: r232/r233/r234 request reached
+> 463→461 (control) and 444→439 (replicate); r237 rejected familyStale 507/4,447→483/4,427 and staleUnsettled
+> 304→290; r237's product-side served column and `r236-replay.json` unchanged. Four manifests regenerated against the
+> original control grid (sha256 `b41ff472…`); `--check` only verifies internal arithmetic, so a stale manifest stays
+> green — regeneration is the mechanism that keeps the product and the evaluation reading the same board.
+>
+> **Gates:** Python 19,048/19,173 (99.3%), 29 modules all ≥95%, `read_anchor` 99.9%; all four tool self-tests and nine
+> manifest checks green; 13 workflows parse; both repos CI green.
+>
+> **Next, in order:** ① telecom third domain (¥0, 4 days — 3.21pp → 1.98pp resolution, so the accuracy question 30 tasks
+> cannot separate becomes decidable); ② R237b external ladders (calibrate the MemTrapBench judge on 50 items first —
+> ¥0.86 prices answers, not the rubric + LLM judge); ③ R221 2.0 submission (¥0, reads a finished grid); ④ parser-scope
+> product switch (¥0, 0.5 day).
 
 ## R237 (registered 27 Nov, ¥2.82) — the two external ladders, priced at the cache
 

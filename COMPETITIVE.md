@@ -11047,3 +11047,47 @@ plan from ¥92 to ¥5.3 without a single new measurement (AUDIT 34.332–34.334)
 the *cost* columns of any memory paper that does not state its cache rate: the difference between a grouped and an
 ungrouped replication of the same set is a factor of thirty, which is larger than the difference between most of the
 systems being compared.
+
+## R239 — the field's leaderboards, audited from source (27 Nov 2026)
+
+This round searched the literature and the products' own source/repositories for the authoritative memory benchmarks and
+their leaderboards, to answer a question the ten anchors above could not: **is the competitive picture complete?** It is
+not, and the reason is now specific enough to state.
+
+**The benchmarks, with their actual numbers and cost.** Scores are vendor-reported unless a neutral harness says
+otherwise; judge prompts move them by up to ±10 points, so cross-vendor comparison is an approximation.
+
+| benchmark | what it measures | leader & score | uses LLM | stack | token cost |
+|---|---|---|---|---|---|
+| LoCoMo (ACL 2024, 2402.17753) | 10 conversations, ~1,540 QA | Synap 93.2% (gpt-5-mini), Hindsight 89.61%; Mem0 66.9%→92.5% across methods | yes | vendor harness | shared-prefix cached |
+| LongMemEval (ICLR 2025, 2410.10813) | 500 QA / 40 sessions, 115K–1.5M tokens | Synap 95.6% @7.4K, Mem0 94.4% @6.8K, Zep 90.2% @4.4K | yes (gpt-4o judge) | vendor harness | 4.4K–44K/query |
+| MemBench (ACL 2025, 2506.21605) | factual/reflective × participant/observer | **RetrievalMemory @100K 0.833/0.933 beats FullMemory 0.647→0.489 and MemGPT 0.411** | optional | Python | simple retrieval wins |
+| MemoryAgentBench (2507.05257) | retrieval / test-time learning / long-range / selective forgetting | no method holds all four | yes | Python | 100K+ |
+| MemTrapBench (2608.20202) | 1,050 adversarial items, reasoning fixation + belief distortion | **every memory strategy scores below no-memory; best still drops >10%** | judge = GPT-5.2 + Claude-Sonnet-4.6 | Python | ¥0.86 prices answers only, not marking |
+| BEAM (2510.27246) | 2,000 QA, 128K–10M tokens | Mem0 64.1 @1M, 48.6 @10M | yes | Python | degrades with length |
+
+**The finding that matters to us.** MemTrapBench's result — memory hurts, under adversarial material — is the external
+instance of what this lane measured internally (PROGRESS 249.61–249.62). The literature has since named the mechanisms
+we were re-deriving: **Reasoning Fixation** (the block makes the agent repeat a wrong action), **Belief Distortion**
+(the block asserts work already done), and the cures now have numbers: **AdaptiveMem** checks whether memory applies
+before using it (+14.9 pp on LightMem/Gemini, no drop on standard sets); **ACB** binds facts to reply constraints with
+a validity state (+3.94 pp xMemory, +3.16 pp EverMemOS); **RER** adds +6.28 pp on L2 service; **RegimeCouncil** scores
+against a no-memory anchor and recovers +27.9 pp on cold start. **MemStrata** is the closest thing to our own finding:
+a bi-temporal ledger with deterministic supersession — settle is a state transition on a record id, not a deletion —
+the same shape R238/R239 gave the settlement rule.
+
+**Answer to "is the picture complete?"** No, in two ways. First, no single neutral leaderboard covers all six sets;
+AMB (agentmemorybenchmark.ai) is the only cross-vendor one and does not publish our harness. Second — and this is the
+one that keeps the project's claim narrow — **none of the field's leaderboards has a displayed-coverage column, a
+rendering rule, or a settlement-consistency measurement.** They report end-to-end accuracy on their own harness; the
+axis this project has closed (what the block the model read actually showed, ticked by the same rule the product uses,
+AUDIT 34.341) is invisible on every one of them. Synthesis: we have made the product↔evaluation gap zero, and the field
+has not measured that gap at all. We are on the frontier of *cost × consistency*, not on the accuracy leaderboard;
+the ¥36 accuracy round was cancelled precisely because this domain's 3.21 pp floor made it unresolvable (AUDIT 34.332).
+
+**What is borrowed, and what is still owed.** RER, ACB, AdaptiveMem and RegimeCouncil are all implementable on our
+board at ¥0 in inference-time code (a validity check before serving, a constraint binding at write time, a no-memory
+anchor paired with every armed arm). None is copied yet: each must be registered as its own round with its own bar,
+because the field's +pp are on other harnesses and cannot be quoted here. The next paid step stays R237b's judge
+calibration — the MemTrapBench scoring (rubric + GPT-5.2 + Claude-Sonnet-4.6, four dimensions, three independent
+answers over 1,050 items of 18–40 turns) is the price that was omitted when the pair was first quoted at ¥2.82.

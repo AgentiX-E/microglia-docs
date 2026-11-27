@@ -18984,3 +18984,30 @@ B1 证明更宽的窗口**确实被服务**（丢失开关的环境是 0/456）�
     miscounted["boards"]["request"]["coverage"] = (reading[...]["coverage"] or 0.0) + 0.25
 
 这条记录值得单独写下来的原因：它是本轮唯一一个「修复让测试失效」的案例，而这类失效不会以红色出现，除非那个测试恰好断言了它所测的东西。
+
+## 34.341 — 两台板子的裂缝是同一个函数：`moment` 现在调用 `board_of`，四份清单同时移动
+
+R238（34.339）留下一个明说的欠账：仪器的 `moment` 用读锚结算（一次写入只有在 episode 打开过它触及的 record 时才结算一个 ask），产品用 `goal_board.board_of` 的「名 / 重叠 / 记录」三档。两套规则在 456 集上 4,968 个 item-moment 中差 **133** 处。当时没有合，因为合起来会一次移动多份已发布清单——那需要单独一轮、单独登记，而不是在一个修复里偷偷改数字。本轮就是那一轮。
+
+**修法。** `read_anchor.moment` 增加 `settle="serving"`：它仍用 `entry` 的 `bisect` 边界保证「一条 assistant 消息里的两次调用读同一块板子」，但 items 的 `settled` 改由 `goal_board.board_of(messages[:upto], scope)` 给出——与服务路径逐字相同的一个函数。`ask_board` 保留默认 `settle="read"`，因为 r228–r231 的已发布读数量的就是读锚规则，不能动；两条路径返回同一个结构，三个消费方（`visibility` / `board_mechanism` / `memory_traps`）读同一份契约。
+
+**可判定的差异。** 一个「取消订单 #W5056519」的问句，episode 从未读过该订单，写入只带订单号、不带商品名：`board_of` 在 `record` 档结算它（`byRecord=1`），读锚因为 record 从未打开而结算不了。统一前 `moment` 报 `("cancel", False)`，统一后报 `("cancel", True)`——这就是裂缝本身，且它可被一条自检判定，而不是一个平均值。
+
+**四条门禁读数，两条完全不动。** 在 456 集控制网格上用同一读数器复算：
+
+| 读数 | 统一前 | 统一后 | 结论 |
+|---|---|---|---|
+| R236 B1 wired（measured） | 431/456 (94.5%) | 431/456 (94.5%) | 逐字节不变 |
+| R236 B2 acted（measured） | 394/403 (97.8%) | 394/403 (97.8%) | 逐字节不变 |
+| R236 served writes | 685/723 | 685/723 | 逐字节不变 |
+| r234 display：request reached（control） | 463 | 461 | 移动 −2 |
+| r234 display：request reached（replicate） | 444 | 439 | 移动 −5 |
+| r237 rejected.familyStale | 507/4,447 (11.4%) | 483/4,427 (10.9%) | 移动 −24 |
+| r237 rejected.staleUnsettled | 304/4,447 (6.84%) | 290/4,427 (6.55%) | 移动 −14 |
+| r237 served.stale（产品侧，ask 单位） | 10/3,479 | 10/3,479 | 逐字节不变 |
+
+R236 的已发布门禁数字之所以不动，是因为 B1/B2 判的是「窗口的 family 是否 open」——一个 family 的多条问句里只要还有一条 open，结算掉的部分不影响判定；裂缝弥合的是 **ask 单位**，不是 family 单位。这与 34.339「family 不是对的单位」是同一条结论的第二个证据。
+
+**三份清单 + 一份。** ROADMAP 登记的是「三份已发布清单」（display 三档 r232/r233/r234），实测还包括 r237-traps 的 rejected 列——因为它的 `classify` 也经 `moment` 取窗口。四份都用原始控制网格（sha256 `b41ff472…`）重生成，sha256 未变；`r236-replay.json` 逐字节不动，故不重生成。`--check` 只验清单内部算术自洽，不重算源文档，所以一份陈旧的清单仍然自洽——这正是「改了结算规则就必须显式重建清单」这条纪律的理由：自洽不等于与代码一致。
+
+**覆盖与门禁。** `read_anchor` 的 `settle` 分支加入红色测试先行（订单号取消一例证明 `moment` 必须跟随服务结算），再实现；新增的 serving 分支的 order/fold/cap/两个拒绝路径全部补测，读锚路径因其 order/fold 失去唯一调用者而补两条契约测试。全门禁：Python **19,048/19,173 (99.3%)**、29 模块全部 ≥95%，`read_anchor` **99.9%**，`goal_board` 99.8%，`memory_traps` 99.2%，`board_mechanism` 99.8%；13 个 workflow 解析通过；两仓 CI 全绿。

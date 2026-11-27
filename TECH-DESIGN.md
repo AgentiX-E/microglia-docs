@@ -13059,8 +13059,44 @@ numbers the amendment quotes cannot drift from the tool that produced them.
 不匹配，`records_in` 只能看到订单号，看不到"五件中的三件"。
 
 **代价与边界。** `record` 档的结算计入 `byRecord`，与 `loose` 并列出现在 board 上：一个读数里若大部分 tick 来自记录档，读者应当知道
-它信任的是问句自己拼写的订单号，而不是商品名。`moment`（仪器）仍用读锚结算，两套规则在 4,968 个 item-moment 中差 133 处，这就是
-R239 要统一的东西——它必须一次移动三份清单，所以不在本轮做。
+它信任的是问句自己拼写的订单号，而不是商品名。`moment`（仪器）此前用读锚结算，两套规则在 4,968 个 item-moment 中差 133 处——
+R239 已把它统一到 `board_of`（见 17.205），四份清单随之重生成。
 
-**新列 `served`。** `memory_traps` 现在同时给两个单位：`served`（被服务板子、ask 单位、按渲染档位取窗）与 `rejected`（读锚板子、
-family 单位）。同一批转录上二者读 0.29% 与 11.4%，这个差本身就是结论：单位比规则更能决定一个数的大小。
+**新列 `served`。** `memory_traps` 现在同时给两个单位：`served`（被服务板子、ask 单位、按渲染档位取窗）与 `rejected`（板子结算单位、
+family 聚合）。统一前二者读 0.29% 与 11.4%；统一后 rejected 读 10.9%（familyStale 483/4,427），served 不变——差仍在，因为单位不同，
+但「两套结算规则」这个额外的差已经消失。
+
+## 17.205 — 一条结算函数，两个消费者：`moment` 委托 `board_of`
+
+R238 把产品的结算规则补全到三档（名 / 重叠 / 记录），但仪器 `read_anchor.moment` 仍走另一条路：它经 `ask_board` 用读锚结算——一次写入
+只有在 episode 打开过它触及的 record 时才结算一个 ask，判据是 `record in seen`。两条路在 456 集上 4,968 个 item-moment 中差 133 处，
+全部在 family 内部。只要它们还是两个函数，测评侧读到的板子就不是产品侧渲染的板子，任何「更宽的窗口是否带来收益」的结论都可能在测一个
+产品从未服务的东西。
+
+**接口。** `ask_board` 新增 `settle` 参数，两个值：
+
+    "read"      默认。读锚结算，r228–r231 的已发布清单量的就是它，保持逐字节不变。
+    "serving"   R239。items 的 settled 由 goal_board.board_of(messages[:upto], scope) 给出，
+                与服务路径逐字相同的函数和参数。
+
+`moment` 传 `"serving"`。它仍用 `entry["at"]` 的 `bisect` 边界——两条同消息写入读同一块板子，这是 R232 就定下的不泄漏约束——但结算不再
+取自 ledger 的 events。`_serving_ask_board` 返回与 `ask_board` 相同的结构（`items` 带布尔 `settled`、`itemsAll`、`credited` 等），所以
+三个消费方（`read_anchor.visibility`、`board_mechanism.windows`、`memory_traps.episode_reading`）读同一份契约，一个字都不用改。
+
+**可判定的差异，而不是平均值。** 一条「取消订单 #W5056519」的问句，episode 从未读过该订单，写入只带订单号、不带商品名：
+
+    统一前 moment  → ("cancel", False)    读锚：record 从未打开，结算不了
+    统一后 moment  → ("cancel", True)     board_of：record 档，byRecord = 1
+
+这条差异进了自检：它证明统一改变了可观测行为，而不只是重构了调用链。
+
+**为什么门禁数字不动。** R236 的 B1（wired 431/456）与 B2（acted 394/403）判的是「窗口的 family 是否 open」。一个 family 有多条问句时，
+结算掉其中一部分、仍留一条 open，判定不变。裂缝在 ask 单位，family 单位的门禁天然看不见它——这与 R238 的「11.4% 是错的量纲」是同一条
+结论。真正移动的是 ask 单位的读数：r232–r234 的 request reached 463→461（control）、444→439（replicate）；r237 的 rejected familyStale
+507→483、staleUnsettled 304→290。产品侧的 served 列（10/3,479）与 r236-replay 逐字节不变。
+
+**清单纪律。** `--check` 只验清单内部算术自洽（rows 求和 = 汇总），不重算源文档。一份陈旧的清单照样自洽——它自洽于旧代码。因此改结算函数
+必须显式 `board_of` → 重生成四份清单（r232/r233/r234/r237-traps），并在审计里记下前后数字；`r236-replay.json` 因逐字节不变而不动。
+CI 全绿（清单自洽）与此刻的产品—测评一致（清单由当前代码生成）是两件事，后者靠这条纪律保证。
+EOF
+echo "TECH-DESIGN 17.205 appended and 17.204 updated"
