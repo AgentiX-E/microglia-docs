@@ -30928,3 +30928,39 @@ runs the reader with `--bar` on a `clause` dispatch, so the bar is a gate and no
 **可证伪链条。** `gate1-subset.json`（schema `@1`）带数据库与任务两份 sha256，`--check` 重算算术（affected≤hidden、served≤in_candidate、判定由 affected 强制），`--verify` 从两份字节重推导全部字段。ci.yml 在既有 telecom 命令后加 `--check-precision` / `--verify-precision`。
 
 **门禁实测。** Python 全量 **20,822/20,962 = 99.3%**，全模块 ≥95%；改动文件 `build_telecom_records` 99%（122 checks）、`budget` 99%（273 语句 0 未覆盖）、`resolution` 100%；`resolution --check-tiers` 0 问题；13 个 workflow 解析。（两仓 CI 推送后复核，见本轮推送记录。）
+
+## 249.69 R244：把记忆状态的裁决从「模型猜」变成「读时确定性计算」（¥0）
+
+**上一轮留下的口子。** R243 的竞品情报明确写下下一步：给渲染后的 pack 加一个 read-time state role，并在读时应用
+deterministic serial-max，「而不是去问模型——这正是 A-TMA 和 Freshness 量化的两项改动」。本轮在 ¥0、不调用任何
+模型的条件下完成这件事，并且没有移植任何论文的 +pp——两个 benchmark 都没有 microglia 的提交。它关闭的是 assembly
+缺口中「存储到提示词」的一半，并且是测量而非声称。
+
+**缺陷是六字段的渲染器覆盖在双时钟的 store 上。** `KnowledgeItem` 带 `validFrom/validUntil`（世界时间）、
+`systemFrom/systemUntil`（系统时间）、矛盾数与 `conflicted` 状态——Graphiti 和 DISCERN 验证的四时钟形状。
+`validityDecay` 故意把世界时间过期的规则保持 `active`，好让新证据能重新断言它，这是正确的存储。但 `encodeItemLine`
+只渲染 `id/kind/confidence/scope/when/statement`，于是过期但仍 active 的规则和活规则逐字节相同地到达模型，同一 claim
+的两个版本也一样。模型只能从措辞猜哪条还成立。这正是 assembly 步骤：A-TMA 的显式 state role 把冲突准确率从 0.425
+提到 0.725；Freshness 的 deterministic `max(serial)` 达到 78–94.8%，而把裁决交给模型的图 store 只有 7%。
+
+**实现是纯函数，不是一个可变的存储标志。** `state-role.ts` 从 item 加一个注入的时钟计算三态：`current`（已断言、
+无争议、在双时钟内）、`historical`（世界或系统时钟结束，或尚未生效）、`transition`（有矛盾或 `conflicted`，优先于
+时钟）。同一 claim（`namespace|kind|scopeKey`）内，最大 serial——`updatedAt` 定宽十进制、id 破平——为 current，其余
+降级 historical，但有争议的版本保留 `transition`。年龄不解决分歧。读时降级是每请求可逆的，所以一次 dispatch 能在
+同一 store 上跑双臂，跟 shape fold 的设计一致。
+
+**读数，从字节重推导（10 item、8 claim）：** current 3、historical 4、transition 3，**worldExpiredStillActive = 1**
+（旧渲染器会悄悄当成 current 的那条）。
+
+**三个读者，一个读数，无共享代码。** fixture 用 `null` 表示开区间时钟（store 自己的编码）；Python reader 的
+`--verify` 用与 TS 毫无共享的实现从字节重推导每个 role、serial、subject、winner、tally，`--check` 重算清单自身的
+算术；`state-role-manifest.test.ts` 用产品自己的四个函数推导同一读数逐字段比对。任何一边漂移就失败一边、构建停止。
+
+**TDD 两次抓到真东西。** 先写 20 条纯函数断言和 10 条渲染边界断言并确认文件缺失（RED）才实现；作者自己平局测试的
+方向错误（serial-max 取较大 id 而非较小）在跑之前被阅读发现；一个 item 共享 subject key 的 fixture 在它悄悄把无关
+claim 分组之前被重写。Python reader 首次运行在 clock-change 断言上用错 dict key；其 46% 自检覆盖率通过驱动全部
+refusal/tamper 路径提到 96.1%，而不是豁免它们。
+
+**门禁实测。** `state-role.ts` 四维 100%；Python reader 自检+check+verify 合并 96.1%（行+分支）；reader 自检
+48/48、`--check` 57/57、`--verify` 3/3；产品↔清单 4/4 一致；全量 vitest 覆盖率门禁；13 workflow 解析；
+`--expect-files` 30 → 31。两仓 CI 推送后复核。

@@ -11021,3 +11021,62 @@ semantic change was likewise driven RED-first by `R240b: registered at 0.0 again
 was taught cancellation. Coverage: `build_telecom_records` 99% (122 checks), `budget` 99% (273 statements, zero
 uncovered), `resolution` 100%; full gate 20,822/20,962 (99.3%), every module ≥95%; `resolution --check-tiers` 0
 problems; 13 workflows parse; TS 303 files / 6,300 tests pass. Both repos CI green on push.
+
+## R244 (read 27 Nov, ¥0) — the assembly step: read-time state roles and deterministic serial-max
+
+> **Status, 27 Nov: read, ¥0, no model called.** COMPETITIVE's R243 refresh licensed the next round explicitly: add a
+> read-time state role to the rendered pack and apply a deterministic serial-max at read "instead of asking a model —
+> the two changes A-TMA and Freshness quantify". This round did exactly that, at ¥0, from the store's own bytes. It
+> did not import either paper's +pp: neither benchmark has a microglia submission. It closed the storage-to-prompt
+> half of the assembly gap and measured, not claimed, what the old renderer hid.
+
+![R244 — three roles over a bitemporal slice; serial-max keeps one current revision per claim](figures/r244-state-role.png)
+
+**The defect was a six-field renderer over a bitemporal store.** `KnowledgeItem` carries `validFrom/validUntil`,
+`systemFrom/systemUntil`, a contradiction count and a `conflicted` status — the four-clock shape Graphiti and DISCERN
+validate. `validityDecay` keeps a world-time-expired rule `active` so fresh evidence can re-assert it, which is correct
+storage. But `encodeItemLine` rendered only `id/kind/confidence/scope/when/statement`, so an expired-but-active rule and
+a live one arrived at the model byte-identically, as did two revisions of one claim. The model was asked to infer which
+rule still held from prose. That is the assembly step: A-TMA's explicit state role raises conflict accuracy 0.425 →
+0.725; Freshness's deterministic `max(serial)` reaches 78–94.8% where a graph store delegating to a model reaches 7%.
+
+**The implementation is a pure function, not a stored flag.** `packages/core/src/apply/state-role.ts` computes three
+roles from the item plus one injected clock — `current` (asserted, uncontested, inside both clocks), `historical` (world
+or system clock ended, or not yet assertable), `transition` (contradiction or `conflicted`, which outranks the clocks).
+Within one claim (`namespace | kind | scopeKey`), the maximum serial — `updatedAt` as fixed-width decimal, id breaking
+a tie — is current; the rest are superseded to `historical`, except a contested one that keeps its `transition`. Age
+does not resolve a disagreement. Superseding at read is reversible per request, so one dispatch can carry both arms
+over one store, exactly as the shape fold does.
+
+**The reading, re-derived from bytes (10 items, 8 claims):**
+
+| role | items | note |
+|---|---|---|
+| current | 3 | live rules and the newest revision of each two-revision claim |
+| historical | 4 | world-expired, system-superseded, future-dated, and the superseded old revision |
+| transition | 3 | contradicted, conflicted, and the contested older revision kept visible |
+| **worldExpiredStillActive** | **1** | the rule the old renderer silently showed as current |
+
+**Three readers, one reading, no shared code.** `eval/fixtures/state-role-store.json` is the bitemporal slice (stores
+`null` for an open clock, the store's own encoding). `eval/tools/state_role.py --verify` re-derives every role, serial,
+subject, winner and tally from those bytes with an implementation that shares nothing with TypeScript; `--check`
+re-adds the manifest's own arithmetic (transition not overridden, winner's role unchanged, superseded = historical,
+tally/count/claim consistency). `state-role-manifest.test.ts` derives the same reading with the product's own
+`stateRoleOf`/`serialOf`/`subjectKey`/`resolveStates` and compares every field. A disagreement fails one reader and
+stops the build — the product ships the state the measurement read.
+
+**Test discipline, twice.** TDD wrote the 20 pure-function assertions and the 10 render-boundary assertions first and
+confirmed both files absent (RED) before implementing; a third 4-test file binds product to manifest. A coherence bug
+in the author's own tie-break test (serial-max picks the larger id, not the smaller) was caught by reading before the
+run, and a fixture whose items shared a subject key was rewritten before it could silently group unrelated claims. The
+Python reader's own first run failed its clock-change assertion on a wrong dict key, and its 46% self-test coverage was
+raised to 96.1% by driving every refusal and tamper path rather than exempting them.
+
+**Switch discipline; nothing committed moves.** `stateRole: { now }` is an option on `renderPack`/`buildPack`; absent,
+all pre-R244 artefacts render byte-identically. `now` is injected, so replay is deterministic. The option composes with
+`note`, `budgetBasis`, `shape`, `decision` without changing their bytes.
+
+**Gates:** `state-role.ts` 100% on all four dimensions; Python reader 96.1% (lines+branches) over self-test + check +
+verify; reader self-test 48/48, `--check` 57/57, `--verify` 3/3; product↔manifest 4/4 agreements; full vitest with
+coverage gates; `check-workflows.py` 13 workflows parse. `--expect-files` raised 30 → 31 for the new reader. Both repos
+CI green on push.

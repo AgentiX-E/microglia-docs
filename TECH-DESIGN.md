@@ -13263,3 +13263,52 @@ RETURN_GUARD = r"\b(return\w*|refund\w*)\b(?!\s+(?:excellent|poor|fair|good|upda
 R240b 的 rungs 原样保留——它们是给那三道闸门定价的尺子，取消的是支出不是算术。`resolution --check-tiers` 因此仍重推导十档且 0 问题。plan-costs.json 的 `totalNowCny` 从 7.02 降到 5.34，`totalFloorCny` 不变（R240b 的 floor 本就是 0）。
 
 **覆盖纪律。** CI 只对 self-test 计覆盖率，因此 `--precision` / `--check-precision` / `--verify-precision` 各分支、`check_precision` / `verify_precision` 的防御分支、`budget.checked()` 的取消分支与 registered 分支都在 self-test 内真实调用驱动。最终 `build_telecom_records` 99%（122 checks）、`budget` 99%（273 语句 0 未覆盖）、`resolution` 100%。
+
+## 17.211 R244 — the delivery-boundary state resolver
+
+**Placement: between `buildPack`'s MMR selection and `renderPack`'s character budget.** State resolution is a pure
+function over the selected candidates plus one clock. It runs before the budget for the same reason the shape fold
+does: a revision's role is a property of the set, not of the lines the character limit happens to carry, and a
+superseded line must not become current just because its winner was truncated away.
+
+**Sub-package layout and dependency direction:**
+- `packages/core/src/apply/state-role.ts` — pure functions only (`stateRoleOf`, `serialOf`, `subjectKey`,
+  `resolveStates`, `STATE_ROLES`). Imports `scopeKey` from `kernel`; imports nothing from `memory`, `eval`, or any
+  provider. This is the same direction as `shape-fold.ts`: delivery policy reads kernel types, never the store.
+- `packages/core/src/apply/render.ts` — `RenderOptions.stateRole?: { now: number }`. `renderPack` normalises each
+  `RenderableItem` into the narrow `StateSubject` view (absent clocks mean open bounds / `active`, the honest default
+  for an authored item), calls `resolveStates` once, and passes each id's role to `encodeItemLine`, which prints
+  `state` only when a role was resolved. `makePack` forwards the option unchanged.
+- `packages/core/src/apply/pack.ts` — `BuildPackOptions.stateRole?: { now: number }`, forwarded to `makePack`.
+- `packages/core/src/apply/index.ts` — re-exports the module so a host imports the classifier from one surface.
+- `eval/fixtures/state-role-store.json`, `eval/manifests/state-role.json`, `eval/tools/state_role.py` — the evaluation
+  half: a byte fixture, a recorded reading, and an independent re-deriver. `packages/core/src/apply/__tests__/
+  state-role-manifest.test.ts` binds the two halves.
+- `.github/workflows/ci.yml` (self-test under coverage + check + verify), `package.json` (`eval:verifiers` chain),
+  `vitest.config.ts` unchanged.
+
+**Decision table — exactly one role, in this order:**
+
+| condition | role | rationale |
+|---|---|---|
+| `contradictions > 0` or `status === 'conflicted'` | `transition` | a contest is never silently current; age does not resolve it |
+| `now > validUntil` or `now > systemUntil` | `historical` | world or system time has ended |
+| `now < validFrom` or `now < systemFrom` | `historical` | not yet assertable |
+| otherwise | `current` | asserted, uncontested, inside both clocks |
+
+Boundaries are inclusive (`now == validUntil` is current). Within a claim group (`namespace|kind|scopeKey`), the
+highest serial is current and other non-contested revisions are `historical`; a contested loser keeps `transition`.
+
+**Clock discipline.** `now` is injected at every layer — the store already treats time as a dependency (`clock.ts`),
+and a wall-clock read inside the renderer would make two replays of one store print different blocks. The fixture
+encodes an open clock as `null` (the store's JSON encoding of `Infinity`) and the reader translates explicitly.
+
+**Byte-identity guarantee.** `state` is printed only when `options.stateRole` is present and a role was resolved;
+`encodeItemLine`'s default record is unchanged. Four pre-existing knobs (`note`, `budgetBasis`, `shape`, `decision`)
+compose without change. `readme-layers.test.ts` verified the new module is counted once (core 50 / 11,044 lines).
+
+**Cost and what is deliberately not bought.** ¥0, no model call: the classifier and reader are pure arithmetic over
+bytes already in the store. This round does not purchase an accuracy dispatch. Whether the state role raises task
+success on a given workload remains a measurement the caller runs with the option on and off over one store — the
+one-variable contrast the library is built for. A-TMA's and Freshness's +pp are cited as locating the mechanism,
+never as this corpus's result.

@@ -11158,3 +11158,23 @@ rendered pack (`current`/`historical`/`transition`) and applies a deterministic 
 model — the two changes A-TMA and Freshness quantify. It does **not** license importing their +pp: those are on
 LoCoMo / ENT-310 / FactConsolidation under other harnesses, and microglia has no submission on any of them. microglia
 remains on the cost × consistency frontier, not on an accuracy leaderboard.
+
+## R244 intelligence refresh (27 Nov 2026) — the field's answer, implemented here at ¥0
+
+This round closed the loop on the R243 refresh rather than widening it. The two findings that had named the assembly
+step as the bottleneck were implemented as a pure function, and their *mechanism* — not their +pp — was reproduced on
+microglia's own store bytes.
+
+| source | mechanism taken | what microglia measured here |
+|---|---|---|
+| [A-TMA](https://arxiv.org/pdf/2607.01935.pdf) | explicit read-time state role (`current`/`historical`/`transition`); conflict accuracy 0.425 → 0.725 | three roles derived from the store's own four clocks + contradiction count; 10-item slice → current 3 / historical 4 / transition 3, including 1 world-expired rule the old renderer called current |
+| [Freshness](https://arxiv.org/abs/2606.01435v1) | deterministic `max(serial)` at read, 78%/94.8% vs graph-store 7% | fixed-width `updatedAt`+id serial; one current revision per claim, older superseded, contested loser keeps `transition`; no model called |
+| [DISCERN](https://arxiv.org/abs/2611.15729v1) | preserve at write, resolve at read on bi-temporal graphs | storage untouched; resolution at read is reversible per request so one dispatch can carry both arms |
+| [MemTrapBench](https://arxiv.org/abs/2608.20202) | a correct memory anchors the model to a frame that no longer fits | the defect enumerated is exactly that shape: a rule whose world clock ended presented as current |
+
+**Where microglia stands.** Still on the cost × consistency frontier, not on an accuracy leaderboard. No external
+benchmark submission exists, so none of the competitors' +pp transferable. What R244 adds is verifiable: the product
+ships the state role the measurement read, proven by three no-shared-code readers agreeing field by field, at ¥0 and
+with every committed artefact byte-identical by default. The competitor mechanisms most valuable to *replicate* —
+state role, deterministic serial-max, preserve-at-write/resolve-at-read — are now present in source and pinned by
+tests. What is not replicated is claimed accuracy: that needs a submission, which is a paid, separately-priced step.

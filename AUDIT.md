@@ -19150,3 +19150,40 @@ r"\b(return\w*|refund\w*)\b(?!\s+(?:excellent|poor|fair|good|updated|better|wors
 **测试审计（TDD 证据）。** 两次 bug 均由测试先发现：`precision_reading` 未定义时五条新断言先 RED；源文件名写成 `db.toml`（实际 `telecom-db.toml`）时探针立即报错。`budget.py` 的语义变更同样是先看到 `R240b: registered at 0.0 against gate 1's 1.68` 的 RED，再改 `checked()`。改动文件覆盖率：`build_telecom_records` 99%（122 checks）、`budget` 99%（273 语句 0 未覆盖）、`resolution` 100%；全量 20,822/20,962（99.3%），全模块 ≥95%。
 
 **代价与门禁。** ¥0，无模型调用。`resolution --check-tiers` 0 问题（梯子 rungs 保留为尺子，取消只改当前支出）；13 workflow 解析；TS 303 文件 / 6,300 测试全过。
+
+## 34.347 R244 — a six-field renderer over a bitemporal store (found and repaired at ¥0)
+
+**Finding (real defect, not a hypothetical).** `KnowledgeItem` carries four clocks and a contradiction count, and
+`validityDecay` intentionally keeps a world-time-expired rule `active` so fresh evidence can re-assert it. That is
+correct storage. The delivery boundary was not: `encodeItemLine` rendered `id/kind/confidence/scope/when/statement`
+only, so an expired-but-active rule and a live one, and two revisions of one claim, arrived in the prompt in identical
+form. The model was asked to decide from prose which rule still held — precisely the assembly step A-TMA (state role
+0.425 → 0.725) and Freshness (`max(serial)` 78–94.8% vs 7%) locate the harm. Enumeration on a bitemporal slice: 10
+items, 8 claims, roles current 3 / historical 4 / transition 3, and **1 world-expired-still-active** rule the old
+renderer silently presented as current.
+
+**Repair.** `state-role.ts` adds three read-time roles from the four clocks + contradiction count + one injected
+`now`, with `transition` outranking all clocks, and a deterministic serial-max over claim revisions. It is a pure
+function and a default-off switch on `renderPack`/`buildPack`, so every committed artefact re-renders byte-identically;
+`now` is injected, so replay is deterministic. Superseding at read (not write) keeps the store unchanged and lets one
+dispatch carry both arms. The roles follow the store's own `conflicted` status and clock semantics rather than
+inventing a second lifecycle.
+
+**Integrity of the reading.** A bitemporal fixture, an independent Python reader (`--build`/`--check`/`--verify`), and
+a product↔manifest TS test share no code and must agree field by field. The reader refuses a malformed fixture, an
+empty item set, a non-numeric clock, a wrong schema, a missing reading, a tampered role, an overridden transition, a
+changed winner, a wrong tally and a changed source digest — each driven by the 48-assertion self-test. Its own first
+run failed on a wrong dict key and its 46% coverage was raised to 96.1% by covering those paths rather than
+exempting them.
+
+**Process defects caught by reading, before they became results.** The author's tie-break test initially expected the
+smaller id to win while `serialOf` orders ascending — serial-max must pick the larger; corrected before running. The
+first fixture gave several unrelated items the same subject key, which would have silently grouped them under
+serial-max; rewritten to eight distinct claims. `check-python-coverage.py --expect-files` was raised 30 → 31 for the
+new covered module, and the README layer table was corrected to 50 modules / 11,044 core lines when `readme-layers`
+caught the new module — a gate doing the job it exists to do.
+
+**Gates.** `state-role.ts` 100% on lines/functions/branches/statements; render 100%, pack 100% lines; Python gate
+20,270/20,393 = 99.4% every module ≥95%; full vitest 306 files / 6,334 tests; 13 workflows parse. One transient
+`onTaskUpdate` worker timeout occurred on a many-core local run (documented in vitest.config.ts as the reason for
+`maxWorkers: 8`); a clean rerun was green with no unhandled error, and no code was weakened to accommodate it.
