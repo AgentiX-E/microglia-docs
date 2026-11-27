@@ -30567,7 +30567,7 @@ most published replications actually pay, because a harness that asks one questi
 cannot share anything. `eval/tools/bench_budget.py` now prices it, saves the reading, and re-derives it on every
 push (`--check` refuses a total that no longer matches the card). AUDIT 34.334.
 
-## 249.58 The plan's price after three corrections of reference: ¥92 → ¥5.3
+## 249.58 The plan's price after three corrections of reference: ¥92 → ¥5.34, floor ¥3.45
 
 | # | step | was | now | the reference that was wrong |
 |---|---|---|---|---|
@@ -30579,7 +30579,7 @@ push (`--check` refuses a total that no longer matches the card). AUDIT 34.334.
 | 5 | telecom third domain (design + first baseline) | ¥0 | **¥0** | — |
 | 6 | LoCoMo + MemTrapBench | ¥20 | **¥2.82** | the miss rate applied to a 99.5%-cache workload |
 | 7 | R221's 2.0 submission | ¥36 | **¥0** | a dispatch applied to a submission that reads a finished grid |
-| | **total** | **¥92** | **¥5.3** | |
+| | **total** | **¥92** | **¥5.34**, floor **¥3.45** | |
 
 ![The plan's price, before and after three corrections of reference](figures/r236-budget.png)
 
@@ -30587,6 +30587,13 @@ Each step of the cascade is one wrong reference, not one discount: R235's gate w
 "dispatch" read a finished grid, and R237's ¥20 was the uncached column of a workload that is 99.5% cache. The
 figure refuses to draw a plan whose lines do not add up to the totals in the manifests, so the cascade and the table
 above cannot disagree.
+
+**The bracket, and why it is not a hedge.** R236's B1 is a proportion with a bar at 0.95, so it can be decided early in
+one direction and never in the other: the registration stops at fifteen episodes if B1's exact binomial interval has
+already cleared the bar or has already fallen below 0.90. At the measured $0.00584 an episode that first checkpoint is
+**¥0.63**, so the plan's floor is **¥3.45** and its ceiling **¥5.34** — both ends computed by the same file, both
+registered before the first episode. A plan that quoted only the ceiling would be quoting the number that makes it look
+most expensive; a plan that quoted only the floor would be quoting the number that makes it look cheapest.
 
 Three of the four numbers were wrong for one reason and it is not arithmetic: **a rate applied to the wrong
 quantity**. None of the three needed a new measurement to catch — each needed the quantity printed beside the rate,

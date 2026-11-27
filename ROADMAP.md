@@ -10663,6 +10663,6 @@ position is quotable at our price and not only at the provider's.
 | 5 | telecom third domain | ¥0 | ¥0 | — |
 | 6 | LoCoMo + MemTrapBench | ¥20 | **¥2.82** | the cached rate on a workload that is 99.5% cache |
 | 7 | R221's 2.0 submission | ¥36 | **¥0** | a submission that reads a finished grid is not a dispatch |
-| | **total** | **¥92** | **¥5.3** | |
+| | **total** | **¥92** | **¥5.34**, floor **¥3.45** | |
 
 ![The plan's price, before and after three corrections of reference](figures/r236-budget.png)
