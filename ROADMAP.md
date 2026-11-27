@@ -10652,9 +10652,26 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 
 ---
 
+## R238 (registered 27 Nov, ¥0) — the settlement rule's two mechanical defects, and the number they were hidden in
+
+> **Status, 27 Nov: done, ¥0.** The 6.8% R237a published as a settlement defect is the **distance between two
+> settlement rules** — the instrument settles on a record the episode opened, the product settles on a product name —
+> and they disagree on 133 of 4,968 item-moments, all inside a family (AUDIT 34.339). The mechanical defect, on a
+> definition that can be decided: an open ask whose clause names a record a same-family write already carried. It read
+> **32 of 3,483 shown lines (0.92%)** and now reads **10 of 3,479 (0.29%)**, 22 closed. Two causes fixed in
+> `goal_board`: both sides of the name comparison are stemmed (`bus`/`glass`/`shoes` excepted), and a third settlement
+> grade settles an ask on the **record** it names when the receipt carried no product at all. The ten that remain are
+> partial-versus-whole returns, which an order id cannot decide. **R239** is the unification this leaves owed: `moment`
+> should call `board_of`, and three published manifests move at once.
+
 ## R237 (registered 27 Nov, ¥2.82) — the two external ladders, priced at the cache
 
-> **Status, 27 Nov: split, and the ¥0 half is done.** R237a (this round, **¥0**) built the in-lane trap readout that
+> **Status, 27 Nov 04:11 UTC: the probe ran and both bars held.** `git 3a769455`, 60 episodes, $0.34726 (¥2.47):
+> B1 wiring 59/60 (98.3% ±3.2%, bar 80%), B2 harm 50/52 (96.2% ±5.2%, bar 88.8%), 419 asks carried further and
+> 100/104 graded writes naming a carried family. No accuracy claim: 78.3% pass^1 over thirty tasks cannot separate
+> 78% from the grid's 85%. R236 is closed.
+>
+> **R237a** was the ¥0 half of the external ladder. R237a (this round, **¥0**) built the in-lane trap readout that
 > MemTrapBench's two families imply — `eval/tools/memory_traps.py`, 456 episodes, no model call — and it found a real
 > settlement defect (6.8% of shown lines ask for work an unopened record already discharged) plus one quantity that
 > had to be refuted (family-level staleness at 11.4% is a rate over the wrong unit; AUDIT 34.337). **R237b** is the
