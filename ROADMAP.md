@@ -10682,10 +10682,48 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 > **Gates:** Python 19,048/19,173 (99.3%), 29 modules all ≥95%, `read_anchor` 99.9%; all four tool self-tests and nine
 > manifest checks green; 13 workflows parse; both repos CI green.
 >
-> **Next, in order:** ① telecom third domain (¥0, 4 days — 3.21pp → 1.98pp resolution, so the accuracy question 30 tasks
-> cannot separate becomes decidable); ② R237b external ladders (calibrate the MemTrapBench judge on 50 items first —
-> ¥0.86 prices answers, not the rubric + LLM judge); ③ R221 2.0 submission (¥0, reads a finished grid); ④ parser-scope
-> product switch (¥0, 0.5 day).
+> **Next, in order:** ① **R241** the third domain's settlement handle (¥0, 2 days — the record grade reads zero there,
+> so the handle is the record the episode read rather than the identifier the clause spells); ② the third domain's
+> accuracy dispatch (**¥93.5, not ¥0** — see R240 below: 278 tasks × 2 arms × 4 attempts sees 4.30pp); ③ R237b
+> external ladders (calibrate the MemTrapBench judge on 50 items first — ¥0.86 prices answers, not the rubric + LLM
+> judge); ④ R221 2.0 submission (¥0, reads a finished grid); ⑤ parser-scope product switch (¥0, 0.5 day).
+
+## R240 (registered 27 Nov, ¥0) — the third domain's records, and a grade written in one alphabet
+
+> **Status, 27 Nov: done, ¥0, no model called.** The record grade's evidence is an identifier and its comparison is a
+> string intersection, which hides an assumption: that both sides spell it the same way. Retail hides that — a user
+> types the order id the write carries. **Telecom cannot**: its requests say `555-123-2002` and its writes carry
+> `line_id: L1002`, and `L1002` was dropped on the receipt side before any comparison (`ID` demanded six digits).
+> Measured on the domain's 20-task sample: the shipped rule reaches **0 of 8** graded writes, a token table that
+> ignores the ambiguity reaches 8, one that refuses it reaches 0 (AUDIT 34.342).
+>
+> **The middle reading is not a repair.** A customer's `phone_number` **equals one of their own lines'** in this
+> database, so the single token the requests carry is claimed by `customer:C1001` and `line:L1002` at once: ignoring
+> that credits a write to any of the household's lines, refusing it reaches nothing. No token-table repair exists.
+>
+> **Shipped, and inert where it can be proved so.** Both sides now read three shapes (`#W2378156` unchanged, a bare
+> `L1002`, `555-123-2002`) with the original floor kept (a bare number is not a record). Clause-level recall rises
+> 542 → 611 of 18,596 clauses; **no published settlement moves**, and that is falsifiable rather than asserted — a
+> grammar that matches nothing moves every column of the trap reader (`shown` 3,479→3,507, `hidden` 137→109,
+> `served.stale` 10→0, `familyStale` 483→518).
+>
+> **A second defect, in the previous round's method.** `r236-replay` did not re-derive byte-identically: its
+> comparison arm's `served` read **479** on disk and **477** under R239's grammar and under R240's. The two writes
+> were lost by R239, whose audit asserted byte-identity by `diff`-ing the manifest against *a backup of itself*. A
+> manifest is verified against a re-derivation, never against its own history. Regenerated; the correction is
+> recorded.
+>
+> **Fourth correction of reference, and it is the expensive kind.** The plan carried "telecom third domain, ¥0,
+> 3.21pp → 1.98pp". Both halves are wrong. `resolution.py --domain-tasks`: 114 + 50 + 114 = **278** tasks give a
+> floor of **2.06pp**; **1.98pp needs 300**, which the three domains do not hold. And a floor is a limit, not a
+> purchase — reaching it needs 3,223 attempts a task (1.79M episodes, $9,857). What is affordable is the rung:
+> **4.30pp at four attempts on 278 tasks** (6.72pp on 114), for **¥93.5** (278 × 2 arms × 4 attempts = 2,224
+> episodes at the measured $0.00584, × 7.2 CNY/USD). So the domain buys *resolution*, at a price, and the ¥0 half is
+> the projection and the pricing — which is this round. That ¥93.5 is **not** in `plan-costs.json` yet on purpose:
+> that file carries the four registered lines, and a dispatch enters it with its prereg, which R241 registers.
+>
+> **Gates:** Python 19,370/19,497 (99.3%), 30 modules all ≥95%, the new script 99.4% (238 lines, 0 uncovered); 35
+> self-test checks and a `--check` on the new manifest; 13 workflows parse; both repos CI green.
 
 ## R237 (registered 27 Nov, ¥2.82) — the two external ladders, priced at the cache
 
