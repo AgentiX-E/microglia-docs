@@ -11050,6 +11050,8 @@ systems being compared.
 
 ## R239 — the field's leaderboards, audited from source (27 Nov 2026)
 
+![Accuracy x cost, memory-augmented agents, sourced 27 Nov 2026. Left: LongMemEval vendor-reported scores against tokens/query; right: LoCoMo published methods. Green = open self-hosted, red = closed cloud service. microglia has no submission on either board — its measured axes are cost x consistency.](figures/r239-leaderboard.png)
+
 This round searched the literature and the products' own source/repositories for the authoritative memory benchmarks and
 their leaderboards, to answer a question the ten anchors above could not: **is the competitive picture complete?** It is
 not, and the reason is now specific enough to state.
