@@ -11080,3 +11080,46 @@ all pre-R244 artefacts render byte-identically. `now` is injected, so replay is 
 verify; reader self-test 48/48, `--check` 57/57, `--verify` 3/3; product↔manifest 4/4 agreements; full vitest with
 coverage gates; `check-workflows.py` 13 workflows parse. `--expect-files` raised 30 → 31 for the new reader. Both repos
 CI green on push.
+
+## R245 (read 27 Nov, ¥0) — a 429 is a family, and out of credit is a 403
+
+> **The user's correction, 27 Nov: Zhipu has been topped up; the 429 was rate limiting, not an empty balance.** This
+> round did NOT re-open R243's paid ladder. R243 cancelled Gate 1 because its affected subset was empty — all eight
+> graded telecom writes were already reachable by handle and served by the shipped settlement grammar, so there was
+> nothing to dispatch. That is a data result independent of whether the account was funded, and it stands. What the
+> correction changes is the *diagnosis*: the earlier reading of a 429 as "quota exhausted" was not grounded in the
+> provider's reply.
+
+![R245 — the 429 family and its three dispositions](figures/r245-429-taxonomy.png)
+
+**Authoritative evidence, not inference.** BigModel's own rate-limit page (retrieved 27 Nov 2026) states that each
+limit returns a distinct error and that **balance is HTTP 403 `INSUFFICIENT_BALANCE`**, account spend cap is 402
+`spend_cap_reached`, and the 429 family splits into a retryable concurrency limit (`rate_limit_error`), a retryable
+RPM limit (`rate_limit_exceeded` with `Retry-After`), and no-retry quota/cap cases (`API_KEY_QUOTA_EXHAUSTED`,
+`USAGE_LIMIT_EXCEEDED`, the 5h/1d/7d spend windows). Its reference client uses
+`NO_RETRY = {API_KEY_QUOTA_EXHAUSTED, USAGE_LIMIT_EXCEEDED, INSUFFICIENT_BALANCE}`. The GLM Coding Plan error table
+adds numeric codes: 1302/1305 back off, 1308/1310/1316–1321 wait for `next_flush_time`, 1113/1311/1309 need a
+top-up, 1313/1314/1315 need a different key or product.
+
+**The defect this repaired.** `eval/tools/embed-probe.ts` retried every non-2xx four times with a linear backoff —
+terminal balance/quota replies burned ten seconds and four calls and reported no family. `model-client.ts`
+`verdictOf` read status only, so a 429 carrying a no-retry code was treated as transient and retried four times.
+Both now consult `packages/eval/src/quota-disposition.ts`, a pure classifier from a parsed reply to fifteen families
+and three dispositions (`retry`, `wait-until`, `stop`). `quotaRetryAdvice` returns one decision; terminal replies
+never reach the backoff, a provider `Retry-After` still wins over the driver's backoff, and a plain 429 still
+retries — existing benchmark behaviour is preserved where the family really is a rate limit.
+
+**Three readers, one reading.** `eval/fixtures/quota-replies.json` holds real-shaped replies from the provider's
+docs. `eval/tools/quota_disposition.py --verify` re-derives every family, disposition and hint from those bytes with
+no shared code; `--check` re-adds the manifest's arithmetic. `quota-disposition-manifest.test.ts` derives the same
+reading with the TypeScript product and compares every field. A disagreement fails one reader and stops the build.
+
+**Cost and what is deliberately not bought.** ¥0, no model call: the classifier is pure arithmetic over a reply the
+driver already parsed. The paid ladder stays cancelled on R243's data result; re-opening it requires a new affected
+subset, not a topped-up account. The Zhipu 429 that blocked the embedding probe is now diagnosable at read time; the
+offline fallback remains available but is no longer the forced response to a misread status code.
+
+**Gates:** new module 100% on all four TS dimensions; `model-client.ts` and `embed-probe.ts` 100%;
+`quota_disposition.py` 97.2% combined over self-test + check + verify; reader self-test 66/66; product↔manifest 2/2;
+full vitest 308 files / 6,372 tests; 13 workflows parse; coupling snapshot 266→267 regenerated; README eval layer
+198→199 modules, 59,836→60,131 lines. `--expect-files` 31→32. Both repos CI green on push.

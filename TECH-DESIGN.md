@@ -13312,3 +13312,58 @@ bytes already in the store. This round does not purchase an accuracy dispatch. W
 success on a given workload remains a measurement the caller runs with the option on and off over one store — the
 one-variable contrast the library is built for. A-TMA's and Freshness's +pp are cited as locating the mechanism,
 never as this corpus's result.
+
+## 17.212 R245 — the quota-error classifier at the driver boundary
+
+**Placement: between the HTTP reply and the retry loop, in both drivers.** A quota decision is a pure function of
+what the provider already returned; it never calls the network or reads a clock. It runs before the backoff so a
+terminal reply is refused before the deadline is spent.
+
+**Sub-package layout and dependency direction:**
+- `packages/eval/src/quota-disposition.ts` — pure functions (`classifyQuotaFailure`, `quotaReplyFrom`,
+  `quotaRetryAdvice`) and the fifteen-family / three-disposition vocabulary. Imports nothing from `core`, `memory`,
+  or any provider SDK. Same direction as `provider-probe.ts`: delivery policy reads a recorded reply, not a live
+  endpoint.
+- `packages/eval/src/model-client.ts` — `terminal429Of(body)` consults the classifier when a 429 arrives; a terminal
+  family is counted as a failed prompt and thrown as `MG_E_CONFIG` with `family` and `hint` recorded. The existing
+  `verdictOf` fast path for 5xx/408/409/425 is untouched; a 429 with no family code still retries with `Retry-After`.
+- `packages/eval/src/bin/embed-probe.ts` — the non-2xx branch reads the body, builds a reply, and acts on
+  `quotaRetryAdvice`: terminal throws immediately, rate limit waits and continues. This is the path that actually hit
+  the Zhipu 429.
+- `packages/eval/src/index.ts` — re-exports the classifier so both drivers import one surface.
+- `eval/fixtures/quota-replies.json`, `eval/manifests/quota-disposition.json`, `eval/tools/quota_disposition.py` —
+  the evaluation half; `quota-disposition-manifest.test.ts` binds the two halves.
+- `.github/workflows/ci.yml` (self-test + check + verify, all under coverage), `package.json` (`eval:verifiers`).
+
+**Decision table — family first, disposition derived, in this order:**
+
+| reply | family | disposition |
+|---|---|---|
+| 403 any code | `balance.insufficient` | `stop` |
+| 402 any code | `window.cap` | `wait-until` |
+| 5xx | `server` | `retry` |
+| 429 `API_KEY_QUOTA_EXHAUSTED` | `key.quota` | `stop` |
+| 429 `USAGE_LIMIT_EXCEEDED` | `window.subscription` | `wait-until` |
+| 429 `INSUFFICIENT_BALANCE` | `balance.insufficient` | `stop` |
+| 429 coding 1113/1311/1309 | `balance.insufficient` | `stop` |
+| 429 coding 1313/1314/1315 | `coding.config` | `stop` |
+| 429 coding 1308/1310/1316–1321 | `coding.reset` | `wait-until` |
+| 429 coding 1302/1305 | `coding.backoff` | `retry` |
+| 429 window marker in message | `window.spend` | `wait-until` |
+| 429 `rate_limit_error` + concurrency message | `rate.concurrency` | `retry` |
+| 429 `rate_limit_error` other | `rate.upstream` | `retry` |
+| 429 `rate_limit_exceeded` + Retry-After | `rate.rpm` | `retry` |
+| 429 otherwise | `rate.unclassified` | `retry` |
+| 408/409/425 | `transient.4xx` | `retry` |
+| other 4xx | `refusal` | `stop` |
+
+Order is specificity: terminal codes and balance are checked before any rate-limit interpretation, because a
+spend window arrives under the generic `rate_limit_exceeded` code and only its message distinguishes it.
+
+**Wait discipline.** `quotaRetryAdvice(reply, attempt, backoff)` uses the provider's `Retry-After` when present and
+the caller's backoff otherwise; a terminal decision never calls `backoff`. Both drivers inject their own schedule —
+the classifier never owns a timer, which is what makes it replayable.
+
+**Byte-identity guarantee.** A plain 429 and a 5xx behave exactly as before; no committed artefact changes. The
+terminal branches are new paths reached only by replies carrying the named codes. `readme-layers.test.ts` verified
+the new module is counted once (eval 199 modules / 60,131 lines).

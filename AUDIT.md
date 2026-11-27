@@ -19206,3 +19206,42 @@ see, not a flaky rerun to be waved through.
 
 Final microglia CI on `bc33166d`: `completed/success`. docs CI on `8d6b83d2`: `success`. No gate was weakened,
 skipped, or given `continue-on-error`; each failure was rooted in a real divergence and repaired at the source.
+
+## 34.349 R245 — the status code was read as a verdict, and the account was blamed
+
+**Finding (real defect).** Two drivers collapsed a family of replies onto one behaviour. `embed-probe.ts` retried every
+non-2xx four times; `model-client.ts` `verdictOf` sent every 429 down the transient path. Neither read the error
+code, so `API_KEY_QUOTA_EXHAUSTED`, `USAGE_LIMIT_EXCEEDED`, a 5h spend window and an insufficient balance were all
+indistinguishable from a concurrency rate limit. The operational consequence was a wrong cost decision: a rate limit
+was diagnosed as an empty balance, paid experiments were cancelled and the embedding backend was switched to an
+offline fallback. BigModel's own docs put balance at 403, not 429 — so the diagnosis was not merely coarse, it was on
+the wrong status code.
+
+**Repair.** `quota-disposition.ts` is a pure classifier: parsed reply → one of fifteen families → one of three
+dispositions, with `quotaRetryAdvice` adding the caller's backoff and returning one decision. A terminal family never
+reaches the backoff; a `Retry-After` wins over it; a plain 429 still retries. The embed probe reads the body on a
+non-2xx and throws with the family named; `LlmClient` refuses a terminal 429 as `MG_E_CONFIG` before spending a
+second attempt, recording the family and hint for the readback.
+
+**Scope discipline — what was NOT reverted.** The user reported the account was topped up. That does not re-open
+R243's cancelled ladder: R243 cancelled Gate 1 because its affected subset was empty (eight telecom writes already
+served by the shipped handle), a data result independent of funding. Re-pricing a gate requires a new affected
+subset, not a topped-up wallet. A test that failed because of rate limiting was not silently re-run green; the
+mechanism that misread it was repaired at the source.
+
+**Integrity of the reading.** A real-shaped fixture, an independent Python reader and a product↔manifest test share
+no code and must agree field by field. The reader refuses a malformed fixture, an empty case set, a bad status, a
+duplicate id, a negative Retry-After, a wrong fixture/manifest schema, a missing reading, an unknown family or
+disposition, a changed tally, a tampered field and a digest change — each driven by the 66-assertion self-test.
+
+**Process defects caught before they became results.** The first test asserted a top-level code and an error-object
+type alias in the same body — a shape no provider sends — and was split into two real shapes rather than shaping the
+implementation to a fiction. The reader's first run used the manifest schema for the fixture and refused its own
+fixture; the two schemas were separated. A tamper test rewrote the shared fixture path so a later CLI verify failed
+on digest; the path is restored before the CLI checks. Coverage of the reader was 90% on the first combined run,
+raised to 97.2% by driving every refusal and `main()` branch, not by exempting them.
+
+**Gates.** quota-disposition / model-client / embed-probe 100% on all four TS dimensions; Python reader 97.2%;
+reader self-test 66/66; product↔manifest 2/2; full vitest 308 files / 6,372 tests; 13 workflows parse. Coupling
+snapshot regenerated (266→267) and README eval layer corrected (198→199 modules, 59,836→60,131 lines) when the new
+production module moved those ledgers — gates doing the job they exist to do.

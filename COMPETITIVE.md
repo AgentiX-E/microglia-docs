@@ -11178,3 +11178,26 @@ ships the state role the measurement read, proven by three no-shared-code reader
 with every committed artefact byte-identical by default. The competitor mechanisms most valuable to *replicate* —
 state role, deterministic serial-max, preserve-at-write/resolve-at-read — are now present in source and pinned by
 tests. What is not replicated is claimed accuracy: that needs a submission, which is a paid, separately-priced step.
+
+## R245 intelligence refresh (27 Nov 2026) — the provider's own error codes as a first-class signal
+
+This round did not import another accuracy number; it closed a cost-side diagnosis gap that had led to cancelling paid
+experiments on a misread status code. The authoritative source is the provider's own documentation, not inference.
+
+| source | fact taken | what microglia implemented |
+|---|---|---|
+| [BigModel rate limits](https://bigmodel.io/zh-cn/docs/rate-limits) | balance is HTTP 403 `INSUFFICIENT_BALANCE`; 402 `spend_cap_reached`; 429 splits into retryable concurrency/RPM and no-retry key/subscription/window cases; `NO_RETRY = {API_KEY_QUOTA_EXHAUSTED, USAGE_LIMIT_EXCEEDED, INSUFFICIENT_BALANCE}`; `Retry-After` for RPM and spend cap | a fifteen-family classifier with three dispositions; balance is never a retried 429; `Retry-After` wins over backoff |
+| [GLM Coding Plan 429 codes](https://www.aifreeapi.com/zh/posts/glm-coding-plan-429) | numeric 1302/1305 back off, 1308/1310/1316–1321 wait `next_flush_time`, 1113/1311/1309 top-up, 1313/1314/1315 key/product | all four groups classified from the numeric code in the body |
+| [429 diagnosis guidance](https://www.hqwc.cn/a/242287.html) | RPM vs TPM vs concurrency distinguished by short/long request probes and by `Retry-After` / `X-RateLimit-*` headers | the header is read and honoured; the family is named so a future RPM-vs-TPM probe has a place to record the result |
+
+**On the user's correction.** Zhipu has been topped up; the 429 was rate limiting. The evidence in the provider's own
+docs agrees that a rate limit and an empty balance are different replies on different status codes. What this does
+**not** do is re-open R243's cancelled paid ladder: that cancellation rested on an empty affected subset (eight
+telecom writes already served), a data result independent of funding, and it stands. A gate is re-priced when a new
+affected subset exists, not when a wallet is refilled.
+
+**Where microglia stands.** Still on the cost × consistency frontier, not on an accuracy leaderboard; no external
+benchmark submission exists, so no competitor +pp transfers. What R245 adds is verifiable at ¥0: the product ships
+the same error-family reading that an independent Python reader re-derived from committed bytes, and both drivers
+act on it before spending a retry. This is the cost-side counterpart to R244's assembly-side state role — neither is
+an accuracy claim, both are mechanisms pinned by three-reader agreement.

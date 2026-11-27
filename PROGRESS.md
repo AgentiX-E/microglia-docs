@@ -30979,3 +30979,17 @@ refusal/tamper 路径提到 96.1%，而不是豁免它们。
 
 最终 microglia CI（`bc33166d`）：success；docs CI（`8d6b83d2`）：success。没有任何门限被削弱、跳过或加
 `continue-on-error`；每次失败都在源头修复。
+
+## 249.71 R245：429 是一个错误家族，余额不足其实是 403（¥0）
+
+**用户订正（27 Nov）**：智谱已充值，之前的 429 是限流而非余额耗尽。本轮**没有**因此重开 R243 的付费梯子——R243 取消 Gate 1 的依据是 affected subset 为空（8 条 telecom 写入已由 shipped handle 覆盖并已被服务），这是与账户是否有钱无关的数据结论，继续成立。订正改变的是**诊断**：此前把 429 读成「配额耗尽」没有落在服务商的回复上。
+
+**权威证据（非推断）**：BigModel 官方 rate-limit 页（27 Nov 抓取）明确写出——余额不足是 HTTP **403 `INSUFFICIENT_BALANCE`**，账户消费上限是 402 `spend_cap_reached`，而 429 家族分为可重试的并发限流（`rate_limit_error`）、带 `Retry-After` 的 RPM 限流（`rate_limit_exceeded`），以及 no-retry 的额度类（`API_KEY_QUOTA_EXHAUSTED`、`USAGE_LIMIT_EXCEEDED`、5h/1d/7d 消费窗口）；其参考客户端用 `NO_RETRY = {API_KEY_QUOTA_EXHAUSTED, USAGE_LIMIT_EXCEEDED, INSUFFICIENT_BALANCE}`。GLM Coding Plan 数字码：1302/1305 退避，1308/1310/1316–1321 等 `next_flush_time`，1113/1311/1309 充值，1313/1314/1315 换 key/产品。
+
+**修复的真实缺陷**：`embed-probe.ts` 对所有非 2xx 一律线性退避 4 次，terminal 的余额/额度回复白烧 10 秒且不上报错误族；`model-client.ts` 的 `verdictOf` 只看 status，带 no-retry code 的 429 被当 transient 重试 4 次。两者现在都查 `quota-disposition.ts`——一个从解析后的回复到 15 个错误族 + 3 个处置（`retry`/`wait-until`/`stop`）的纯函数。`quotaRetryAdvice` 给出唯一决策：terminal 永不进入退避，服务商 `Retry-After` 仍优先于本地退避，裸 429 仍重试——只在错误族确为限流处保留既有 benchmark 行为。
+
+**三个读者一个读数**：fixture 收官方文档真实形状的回复；Python reader 无共享代码从字节重推导每个族/处置/hint，`--verify` 拒绝漂移的清单，`--check` 重算算术；`quota-disposition-manifest.test.ts` 用产品函数推导同一读数逐字段比对。任一漂移失败一边、构建停止。
+
+**成本与刻意不买的东西**：¥0，无模型调用——分类器是对 driver 已解析回复的纯算术。付费梯子维持 R243 取消态；重开需要新的 affected subset，而不是一个充了值的账户。Zhipu 429 现在在读取时可诊断；离线 fallback 仍可用，但不再是误读状态码后的强制选择。
+
+**门禁实测**：新模块四维 100%；`model-client.ts`、`embed-probe.ts` 100%；`quota_disposition.py` 自检+check+verify 合并 97.2%；reader 自检 66/66；产品↔清单 2/2；全量 vitest 308 文件 / 6,372 测试；13 workflow 解析；coupling 快照 266→267 重生成；README eval 层 198→199 模块、59,836→60,131 行；`--expect-files` 31→32。两仓 CI 推送后复核。
