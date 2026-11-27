@@ -11123,3 +11123,38 @@ MemTrapBench and PI-LLM, is *both, and our instrument separates them*: what we r
 settlement and display question (R232–R241 closed the product↔evaluation gap to zero). The remaining open half is a
 paid one: whether admitting the right items moves end-to-end task success, which is R237b's external ladder and the
 ¥0→¥1.68 gate ladder, not something this ¥0 census can claim.
+
+## R243 intelligence refresh (27 Nov 2026) — scope and staleness are where the field now locates the harm
+
+This round's sweep went after a narrower question than R242's: when memory hurts, is it *what* is stored, *how much*, or
+**where and when it is applied**? The field's answer has sharpened toward the last two, and toward the assembly step
+(retrieval → decision) rather than storage capacity — the same place this lane's PRESENCE result lands.
+
+| source | what it measured | reported effect |
+|---|---|---|
+| [A-TMA](https://arxiv.org/pdf/2607.01935.pdf) | Graphiti/Zep evidence with vs without an explicit **state role** | evidence support 0.812 but conflict accuracy only **0.425**; adding a state role → **0.725** (+0.240); LoCoMo temporal F1 0.0295 → 0.1705 |
+| [Freshness](https://arxiv.org/abs/2606.01435v1) | fact consolidation, Zep/Graphiti vs deterministic `max(serial)` | Zep/Graphiti reach only **7%** FC-SH; deterministic serial-max reaches **78% / 94.8%** (gpt-4o-mini / gpt-4o), +10.8 points — **assembly, not storage, is the bottleneck** |
+| [DISCERN](https://arxiv.org/abs/2611.15729v1) | "preserve at write, resolve at read" on additive bi-temporal graphs | ENT-310 abstention F1 0.924 vs ≤0.802; entity resolution 0.800 vs baselines <0.40; LoCoMo 0.663 vs 0.638 |
+| [PI-LLM](https://arxiv.org/abs/2506.08184) | repeated same-key updates, 0.6B–600B models | accuracy falls log-linearly to near zero with no plateau; "ignore the old value" instructions barely help; resistance scales with parameter count, not context length |
+| [Memory Transfer Learning](https://arxiv.org/pdf/2604.14004v1) | 6 benchmarks, shared memory pool across domains | heterogeneous pool +3.7%, but low-level trajectories cause **negative transfer** ("implementation anchoring"); rerank/rewrite no better than plain embedding — points to domain routing |
+| [Task Interference](https://arxiv.org/abs/2402.18216) | 5 datasets, 15 task switches | old-task dialogue history is itself the interference source; most switches lose significant accuracy |
+| [Graphiti](https://github.com/getzep/graphiti) / [Mem0](https://github.com/mem0ai/mem0) / [LangMem](https://langchain-ai.github.io/langmem/guides/dynamically_configure_namespaces/) | source: scope isolation + temporal invalidation | Graphiti: `group_id` partition, four clocks (`valid_at`/`invalid_at`/`created_at`/`expired_at`), contradictions marked expired not deleted; Mem0: `user_id`/`agent_id`/`run_id`/`app_id`, missing key is an error; LangMem: runtime namespace tuples; AWM: by website + task-template |
+
+**The blank spot, and why it is ours.** None of the sense-disambiguation work ([VERDICT](https://arxiv.org/pdf/2502.10352v1.pdf),
+[Golden-Retriever](https://arxiv.org/pdf/2408.00798)) handles a **symptom-style request** ("data not working") where the
+action cannot be named from the query at all — they all assume the ambiguous word is identifiable in the query. That is
+exactly R242's finding: the request names a symptom, the action is a consequence of policy, and no cue can see an ask
+the corpus does not state. It is also why R243 found gate 1's affected subset empty: there is no rankable object.
+
+**What we already have, verified in source rather than claimed.** The product's `KnowledgeItem`
+(`packages/core/src/kernel/types.ts`) already carries `validFrom`/`validUntil` (world time), `systemFrom`/`systemUntil`
+(system time), `contradictions`, a `conflicted` status, and a `visibleBefore` watermark — the same four-clock shape as
+Graphiti and the "preserve at write, resolve at read" rule DISCERN validates. No new mechanism was built for this; the
+honest result is that the field's most transferable finding was already implemented here, and the remaining gap is an
+instrument gap (no external benchmark submission), not a storage gap.
+
+**What it licenses, and what it does not.** It licenses a future round that adds a **read-time state role** to the
+rendered pack (`current`/`historical`/`transition`) and applies a deterministic serial-max at read instead of asking a
+model — the two changes A-TMA and Freshness quantify. It does **not** license importing their +pp: those are on
+LoCoMo / ENT-310 / FactConsolidation under other harnesses, and microglia has no submission on any of them. microglia
+remains on the cost × consistency frontier, not on an accuracy leaderboard.

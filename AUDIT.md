@@ -19134,3 +19134,19 @@ r"\b(return\w*|refund\w*)\b(?!\s+(?:excellent|poor|fair|good|updated|better|wors
 **测试审计（TDD 证据）。** 本轮两次 bug 均由测试先发现：guard 的四条断言先写、确认三条 RED 才实现；`derive_cues` 里局部变量 `reading` 遮蔽全局函数 `reading()` 导致的 UnboundLocalError，在自检运行中被捕获并改正为 `aread`。两个改动文件覆盖率均 **99%**（`goal_board` 1315 语句 0 未覆盖、`build_telecom_records` 708 语句 0 未覆盖，各仅 2 个不可达部分分支）。脚本自检对六个 cue 的每一类失败、guard 的三域读数、以及十种清单篡改（改名、翻 admissible、移 guard 列、改 digest、缺源、改路径等）逐条设了拒收断言。
 
 **代价与门禁。** ¥0，无模型调用。清单 `microglia/telecom-asks@1` 记录 `shippedGuard=true`、`shippedCues=[]`；ci.yml 新增 `--check-asks` / `--verify-asks` 两道命令。TS 与其它模块未改，随推送复核。
+
+## 34.346 — 一道挂着的付费闸门，和一个被两个清单同时声称的真相
+
+**本审计针对 R243：在花 ¥1.68 之前，用 ¥0 枚举 R240b gate 1 要移动的子集。** 结论先行：子集为空，gate 1 与上面两道付费闸门（¥8.41、¥93.51）取消；而真正必须修的不只是价格，是**计划清单与枚举清单互相矛盾**——`plan-costs.json` 说 R240b `registered ¥1.68`，`gate1-subset.json` 说 `CANCEL_GATE_1`，一个计划里两个数字同时为真。R243 把取消这件事在两个清单里对齐，并让校验器承认「取消」是一个合法状态。
+
+**缺陷一：把「尚未枚举」当成「值得定价」。** R240b 原文写得很诚实："The subset that a precision dispatch can move **has not been enumerated**"。但路线图随后把它当作下一步 ¥1.68 的付费门来推进。一个「尚未枚举」的子集和一个「非空」的子集不是一回事。R243 用 R240b 自己的判据把它枚举出来：答案在候选集里（blind 够到）且没有 shipped grade 结算且 ask 被 cap 切掉——三列全部实测，电信域是 8 / 8 / 0，交集为 0。这是一个把「欠一个测量」纠正为「测量后取消」的回合，和这个 lane 四次「价格是错的量」的传统同源。
+
+**缺陷二：gate 0 的修复必然清空 gate 1，此前没有人检查这个耦合。** R241 发布 handle grade 把可达性从 0/8 修到 8/8。这一步同时做掉了两件事：让每个可达的 write 都已被 shipped 结算（所以没有「够不到、排名低」的中间态），而 R242 又证明请求不命名 ask（所以没有可被 rerank 的对象）。gate 1 的前提是「答案在候选集但优先展示够不到」——R241+R242 合起来把这个前提的两半都消掉了。造一个只会重排候选的 dispatch，既没有要重排的候选，也没有够不到的答案。这是两个 round 的交互后果，任何单独读 R240b 或 R241 的人都不会发现。
+
+**缺陷三（本轮真正修的产品↔测评割裂）：校验器不允许「取消」。** `budget.py` 的 `checked()` 原先只有一条规则：一个带梯子的项，其 `nowCny` 必须等于第一个付费 gate 的价格。这条规则在「梯子总是活的」假设下是对的，但 R243 取消 gate 1 后，把 R240b 的 `nowCny` 改成 0 会让校验器报错——逼着计划要么继续挂着 ¥1.68 撒谎，要么让取消本身无法通过构建。修法是把「取消」建成一等状态：R240b `status=cancelled`、`cancelledBy=R243`、每个付费 gate 带 `status/cancelledBy`、gate 0 带 `passedBy=R241`；`checked()` 据此要求取消的梯子 `nowCny=0` 且每个取消的 gate 点名取消它的轮次，而 registered-at 校验只对仍活着的梯子生效。
+
+**方法审计：为什么这个取消是可证伪的。** `gate1-subset.json` 的判定 `CANCEL_GATE_1` 不是手填的——`check_precision()` 强制 `verdict` 由 `affected` 推出、`affected ≤ hidden`、`served ≤ in_candidate`；`verify_precision()` 从清单命名的数据库与任务字节重推导全部九个字段。自检对十种篡改逐条设了拒收断言（affected 虚高、verdict 改 DISPATCH、served 超过候选集、cap 不符、源摘要被改、源缺失、路径不存在等）。一个只能说「子集为空」的清单能对任何语料说这句话，所以字节重推导是必需的而非装饰。
+
+**测试审计（TDD 证据）。** 两次 bug 均由测试先发现：`precision_reading` 未定义时五条新断言先 RED；源文件名写成 `db.toml`（实际 `telecom-db.toml`）时探针立即报错。`budget.py` 的语义变更同样是先看到 `R240b: registered at 0.0 against gate 1's 1.68` 的 RED，再改 `checked()`。改动文件覆盖率：`build_telecom_records` 99%（122 checks）、`budget` 99%（273 语句 0 未覆盖）、`resolution` 100%；全量 20,822/20,962（99.3%），全模块 ≥95%。
+
+**代价与门禁。** ¥0，无模型调用。`resolution --check-tiers` 0 问题（梯子 rungs 保留为尺子，取消只改当前支出）；13 workflow 解析；TS 303 文件 / 6,300 测试全过。

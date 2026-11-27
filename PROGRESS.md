@@ -30902,3 +30902,29 @@ runs the reader with `--bar` on a `clause` dispatch, so the bar is a gate and no
 **ci.yml 加了两道命令**：`--check-asks` / `--verify-asks`，与既有 telecom 清单命令并列。
 
 **门禁实测。** Python 两个改动文件都达 **99%**（`goal_board` 1315 语句 0 未覆盖、`build_telecom_records` 708 语句 0 未覆盖，各 2 个不可达部分分支）；`goal_board` 自检新增 4 条 guard 断言、脚本自检 97 项（含 9 条 ask 分支与防御分支测试）；清单 `--check` + `--verify` 全过；13 个 workflow 解析。（两仓 CI 推送后复核，见本轮推送记录。）
+
+## 249.68 R243：把 R240b 的第一道付费闸门在花钱前用 ¥0 枚举为空（¥0）
+
+**上一轮留下的口子。** R240b 把 ¥93.51 的乘积拆成十档梯子，并明确写下一句欠账：「gate 1 能移动的子集尚未枚举，因为那是 R241 的可达性工作——如果电信的可达性停在 0/8，候选集里就没有正确答案，任何档位都不值得定价。」R241 把可达性从 0/8 修到 8/8（handle 档）并发布为产品 grade，清掉了 gate 0。R242 又确认：请求是症状描述（"data not working"），六个 cue 全部够不到 ask。**于是本轮在花 ¥1.68 之前，先把 gate 1 要移动的那个子集枚举出来。**
+
+**先写测试再实现，两次都抓到真东西。** 第一次 RED：在自检里写死五条断言（8/8 在候选集、8/8 已被 shipped grade 结算、0 个 ask、0 个被 cap 切掉的 write、affected=0 → CANCEL_GATE_1），运行确认 `precision_reading` 未定义才动手。第二次：把数据库文件名写成 `db.toml`（实际是 `telecom-db.toml`），探针立即报错并改正。两个 bug 都由测试而非阅读发现。
+
+**判据用的是 R240b 自己的文字，不是新发明的量。** precision dispatch 只能移动「答案在候选集里、但被 shipped 结算规则够不到、且 ask 被 cap 切到窗口以下」的 write。三列全部实测：`inCandidateSet` = blind 规则够到记录 = 8；`servedByShipped` = shipped 任一 grade（含 handle）结算 = 8；`hiddenByCap` = 请求里 ask 数超过 cap=8 的部分 = 0（请求 ask 总数为 0）。`affected = in AND NOT served AND hidden` = **0**。
+
+| 量 | 值 | 来源 |
+|---|---|---|
+| writes | 8 | R241 四规则表，`reading()` 从 db 字节重算 |
+| 在候选集（blind 够到） | 8 | 同上 |
+| 已被 shipped 结算（含 handle） | 8 | 同上 |
+| 请求里的 ask 总数 | 0 | `goal_board.items_of(request_of)`——症状，非动作 |
+| 被 cap=8 切掉 | 0 | ask 数为 0，不可能溢出 |
+| **affected** | **0** | 三者交集为空 |
+| 判定 | **CANCEL_GATE_1** | affected=0 机械推出，不可手改 |
+
+**结论：gate 1 与它上面的两道付费闸门（gate 2 ¥8.41、gate 3 ¥93.51）在 ¥0 取消。** R241 修 gate 0（发布 handle）时已必然清空 gate 1 的子集：可达的 write 全部已被 shipped grade 结算，不存在「可达但排名低」的中间态；而请求不命名 ask，没有可被 rerank 的对象。一个只会重排候选的 dispatch，既没有要重排的东西，也没有够不到的候选。
+
+**这是产品与测评一致性的又一处真实修复，不只是省了钱。** 此前 `plan-costs.json` 把 R240b 记为 `registered ¥1.68`，而 `gate1-subset.json` 记为 `CANCEL_GATE_1`——同一计划里两个数字互相矛盾。本轮把 R240b 改为 `cancelled ¥0`、`cancelledBy=R243`，四个付费 gate 各带 `status/cancelledBy`，gate 0 带 `passedBy=R241`；并 TDD 更新 `budget.py` 的 `checked()`：取消的梯子仍保留 rungs 作为定价的尺子，但当前支出必须为 0，且被取消的 gate 必须点名取消它的轮次。否则「取消闸门」会逼着计划要么撒谎（继续挂着 ¥1.68），要么让校验器拒绝取消本身。
+
+**可证伪链条。** `gate1-subset.json`（schema `@1`）带数据库与任务两份 sha256，`--check` 重算算术（affected≤hidden、served≤in_candidate、判定由 affected 强制），`--verify` 从两份字节重推导全部字段。ci.yml 在既有 telecom 命令后加 `--check-precision` / `--verify-precision`。
+
+**门禁实测。** Python 全量 **20,822/20,962 = 99.3%**，全模块 ≥95%；改动文件 `build_telecom_records` 99%（122 checks）、`budget` 99%（273 语句 0 未覆盖）、`resolution` 100%；`resolution --check-tiers` 0 问题；13 个 workflow 解析。（两仓 CI 推送后复核，见本轮推送记录。）

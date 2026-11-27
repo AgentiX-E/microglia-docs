@@ -10686,11 +10686,14 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 > shipped; the one repair is a return-cue guard. The vocabulary hypothesis is REFUTED for the third time** (R217a →
 > R227 → R242): the requests name symptoms, not actions, so no cue can see an ask the corpus does not state; ② the
 > third domain's accuracy dispatch, carried as a ladder rather than as a price (**R240b**: gate 0 reachability ¥0 →
-> gate 1 ¥1.68 → gate 2 ¥8.41 → gate 3 ¥93.51, and gate 3 is bought only when a publishable domain score is what is
-> wanted — **R241 cleared gate 0 at 8 of 8**; **R242 now adds that no cue is needed to reach the writes, because the
-> record grade reads them without one**); ③ R237b external ladders (calibrate the MemTrapBench judge on 50 items
-> first — ¥0.86 prices answers, not the rubric + LLM judge); ④ R221 2.0 submission (¥0, reads a finished grid);
-> ⑤ parser-scope product switch (¥0, 0.5 day).
+> gate 1 ¥1.68 → gate 2 ¥8.41 → gate 3 ¥93.51 — **R241 cleared gate 0 at 8 of 8**; **R242 added that no cue is needed
+> to reach the writes**); **READ (R243, below): gate 1's affected subset enumerated at ¥0 and found empty, so gates
+> 1–3 are CANCELLED and the whole paid ladder is now ¥0. R240b's rungs remain only as the ruler that priced them**;
+> ③ R237b external ladders (calibrate the MemTrapBench judge on 50 items first — ¥0.86 prices answers, not the rubric
+> + LLM judge) — **now the first live paid item in the plan at ¥2.82**; ④ R221 2.0 submission (¥0, reads a finished
+> grid); ⑤ parser-scope product switch (¥0, 0.5 day — **before dispatch, note that the product TypeScript has no
+> goal-board channel at all: `SERVING_DEFAULTS` is a declaration only `blockLines` consumes, so this switch needs a
+> consumer before it can be a switch**).
 
 ## R240 (registered 27 Nov, ¥0) — the third domain's records, and a grade written in one alphabet
 
@@ -10967,3 +10970,54 @@ caught by the self-test, not by reading. Both changed files reach **99%** covera
 
 **Gates:** Python both touched files at 99%, zero uncovered statements; `--check` + `--verify` on both telecom
 manifests; 13 workflows parse. Both repos CI green on push.
+
+## R243 (read 27 Nov, ¥0) — gate 1's affected subset, enumerated empty before the ¥1.68 was spent
+
+> **Status, 27 Nov: read, ¥0, no model called.** R240b registered a paid ladder and wrote down one debt in its own
+> words: gate 1 (40:1:1, ¥1.68) buys "the sign of the effect on the subset a precision dispatch can move", and that
+> subset "has not been enumerated, because enumerating it is R241's reachability work — and if telecom's reach stays
+> at 0 of 8, the candidate set holds no correct answer and no dispatch is worth pricing at any rung". R241 cleared
+> reachability at 8 of 8 by shipping the handle grade; R242 showed the requests name symptoms, not actions. This round
+> enumerated the subset at ¥0, from the same bytes, before buying the first rung.
+
+![R243 — the affected subset is empty: reachable writes are already served, and no ask is hidden](figures/r243-gate1.png)
+
+**The criterion is R240b's own prose, made mechanical.** A precision dispatch can move a write only if its answer is in
+the candidate set (`blind` reaches the record), no shipped settlement grade — including R241's handle — serves it,
+and its ask is cut below the cap. Three measured columns, one intersection:
+
+| quantity | value | source |
+|---|---|---|
+| graded writes | 8 | R241's four-rule table, re-derived from `telecom-db.toml` |
+| in the candidate set (blind reaches) | 8 | same table |
+| served by a shipped grade (incl. handle) | 8 | same table |
+| asks in the requests | 0 | `goal_board.items_of(request_of)` — symptoms, not actions (R242) |
+| hidden by cap = 8 | 0 | no asks, so none overflows |
+| **affected** | **0** | `in AND NOT served AND hidden` |
+| verdict | **CANCEL_GATE_1** | forced by `affected == 0`, not typed |
+
+**R241 necessarily emptied gate 1 when it cleared gate 0, and nobody had checked the coupling.** Gate 1 presupposes
+"answer in the candidate set but served too low". Shipping the handle made every reachable write served (removing the
+"too low" half); R242 made the ask count zero (removing the "rankable object" half). A dispatch that only re-ranks has
+neither a candidate to re-rank nor an answer it cannot reach. Gate 1 and the two paid gates above it (¥8.41, ¥93.51)
+cancel at ¥0; the ten rungs stay in the plan only as the ruler that priced them.
+
+**The defect this round actually repaired was a contradiction between two manifests.** `plan-costs.json` said R240b
+was `registered ¥1.68` while `gate1-subset.json` said `CANCEL_GATE_1` — one plan, two live truths (question 6). R243
+set R240b to `cancelled ¥0`, `cancelledBy: R243`, attributed each paid gate's cancellation to R243 and gate 0's
+passing to R241, and taught `budget.py`'s `checked()` that cancellation is a legal state: a cancelled ladder must
+spend zero and every cancelled gate must name its round, while the registered-at rule still binds a live ladder.
+Without that branch, cancelling a gate forced the plan either to keep lying about ¥1.68 or to fail the build. The
+plan's ceiling fell ¥7.02 → **¥5.34**; its floor stayed ¥3.45.
+
+**Falsifiability.** `eval/manifests/gate1-subset.json` (`microglia/gate1-subset@1`) carries the sha256 of its two
+sources; `--check` re-adds the arithmetic (`verdict` forced by `affected`, `affected ≤ hidden`, `served ≤ in_candidate`),
+`--verify` re-derives all nine fields from those bytes. Ten distinct tamperings are refused in the self-test. ci.yml
+adds `--check-precision` / `--verify-precision` beside the existing telecom commands.
+
+**Test discipline, twice.** TDD wrote five assertions and confirmed `precision_reading` was undefined (RED) before
+implementing; a source file misnamed `db.toml` instead of `telecom-db.toml` was caught by the probe. The `budget.py`
+semantic change was likewise driven RED-first by `R240b: registered at 0.0 against gate 1's 1.68` before `checked()`
+was taught cancellation. Coverage: `build_telecom_records` 99% (122 checks), `budget` 99% (273 statements, zero
+uncovered), `resolution` 100%; full gate 20,822/20,962 (99.3%), every module ≥95%; `resolution --check-tiers` 0
+problems; 13 workflows parse; TS 303 files / 6,300 tests pass. Both repos CI green on push.

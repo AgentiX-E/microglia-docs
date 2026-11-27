@@ -13242,3 +13242,24 @@ RETURN_GUARD = r"\b(return\w*|refund\w*)\b(?!\s+(?:excellent|poor|fair|good|upda
 **清单的证伪链。** `eval/manifests/telecom-asks.json` schema `microglia/telecom-asks@1`，带三份源（电信任务、retail-goals、airline-goals）的 sha256。`check_asks()` 重算算术与判据；`verify_asks()` 从三份源字节重跑 `ask_reading()` 并逐字段比对 before/after/shippedCues/shippedGuard 与六个 cue 行的四元组。ci.yml 在既有 telecom 命令后加 `--check-asks` / `--verify-asks`。两层分开，是因为「加法自洽」与「算术曾关于这些任务」是两件事——R240 的零就栽在后一半上。
 
 **覆盖率纪律。** 因为 CI 对本文件只统计 self-test 的覆盖率，`--asks` / `--check-asks` / `--verify-asks` 各分支以及十种防御分支都在 self-test 内通过真实调用驱动，而非留给 dispatch。最终 `goal_board.py` 与 `build_telecom_records.py` 均达 99%（语句 0 未覆盖，各 2 个不可达部分分支）。
+
+## 17.210 — 把取消建成一等状态：affected-subset 判据、清单的判定强制、校验器对 cancelled 的语义
+
+**问题重述。** R240b 把 accuracy dispatch 建成十档梯子，第一道付费闸（gate 1，¥1.68）买的是「precision dispatch 能移动的子集上的效应符号」。这个「子集」在注册时明确尚未枚举。R243 在付费前枚举它，并把「取消」这件事在代码、清单、校验器三层建成一试即过的状态。
+
+**判据的构造：三列实测，一个交集。** `precision_reading(db, tasks)` 复用 R241 的 `reading()` 四规则表（从 db 字节重算，不读存档），再叠加请求文本的 ask 计数：
+- `inCandidateSet` = `blind` 规则够到 write 的记录——答案在候选集里；
+- `servedByShipped` = `shipped`（name/overlap/record）或 `handle` 任一 grade 结算——已被当前配置服务；
+- `hiddenByCap` = 请求里 `items_of` 超过 `goal_board.MAX_ITEMS` 的部分，按任务累加其 graded writes——ask 被窗口切掉。
+`affected = in AND NOT served AND hidden`。电信样本：8 / 8 / 0，交集 0。判据的三列都是 R240b 文字的形式化，没有新发明的量。
+
+**为什么 R241 必然清空 gate 1。** gate 1 的前提是「答案在候选集但优先展示够不到」。R241 发布 handle 让所有 reachable write 都被 served（消掉「够不到」），R242 证明请求是症状、ask 数为 0（消掉「可重排的对象」）。`precision_reading` 把这两个交互后果压缩成三个数，任何一格不为零才需要付费。
+
+**判定由数据强制，不可手改。** `check_precision()` 的六条算术不变式里有两条是关键：`verdict == ('CANCEL_GATE_1' if affected==0 else 'DISPATCH')`，以及 `affected <= hidden`、`served <= in_candidate`。`verify_precision()` 从清单的两份 sha256 源字节重推导全部九个字段并逐字段比对。自检对十种篡改设了拒收断言。这与 R241/R242 的清单共享同一套 `--check`（验算术）+ `--verify`（验字节来源）两层，区别在于判定字段本身也被算出来而非存进去。
+
+**取消作为一等状态：`budget.py` 的语义变更。** `checked()` 对带梯子的项原有一条 `nowCny == first_paid_gate.cny` 的规则，它隐含「梯子总是活的」。R243 引入分支：
+- `status == 'cancelled' and cancelledBy`：要求 `nowCny == 0`，且每个 `rung != None` 的 gate 都必须 `status == 'cancelled'` 且有 `cancelledBy`；
+- 否则：保留原 registered-at 校验。
+R240b 的 rungs 原样保留——它们是给那三道闸门定价的尺子，取消的是支出不是算术。`resolution --check-tiers` 因此仍重推导十档且 0 问题。plan-costs.json 的 `totalNowCny` 从 7.02 降到 5.34，`totalFloorCny` 不变（R240b 的 floor 本就是 0）。
+
+**覆盖纪律。** CI 只对 self-test 计覆盖率，因此 `--precision` / `--check-precision` / `--verify-precision` 各分支、`check_precision` / `verify_precision` 的防御分支、`budget.checked()` 的取消分支与 registered 分支都在 self-test 内真实调用驱动。最终 `build_telecom_records` 99%（122 checks）、`budget` 99%（273 语句 0 未覆盖）、`resolution` 100%。
