@@ -10777,6 +10777,8 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 > and no dispatch is worth pricing at any rung. That ordering is the round's actual content: **the ladder exists so
 > that the ¥0 gate comes before the ¥1.68 gate, and the ¥1.68 gate comes before the ¥93.51 one.**
 >
+![R240b: one dispatch's ten rungs, each priced against the smallest effect it can resolve](figures/r240b-ladder.png)
+
 > **Registered as four gates** (`plan-costs.json`, schema `@2`, first paid gate = `nowCny`): **gate 0** reachability
 > at ¥0, which cancels the round if nothing is reachable; **gate 1** 40:1:1 at ¥1.68 for the sign; **gate 2**
 > 50:2:2 at ¥8.41 for the size with a control; **gate 3** 278:2:4 at ¥93.51 for a publishable domain score, priced
