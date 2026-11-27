@@ -10722,7 +10722,7 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 > the projection and the pricing — which is this round. That ¥93.5 is **not** in `plan-costs.json` yet on purpose:
 > that file carries the four registered lines, and a dispatch enters it with its prereg, which R241 registers.
 >
-> **Gates:** Python 19,370/19,497 (99.3%), 30 modules all ≥95%, the new script 99.4% (238 lines, 0 uncovered); 35
+> **Gates:** Python 19,505/19,635 (99.3%), 30 modules all ≥95%, the new script 99% (332 statements; the only uncovered lines are the `tomllib` fallback a 3.11 interpreter skips and the lane's 3.10 runner takes); 44
 > self-test checks and a `--check` on the new manifest; 13 workflows parse; both repos CI green.
 
 ## R237 (registered 27 Nov, ¥2.82) — the two external ladders, priced at the cache
