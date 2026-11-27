@@ -10626,6 +10626,19 @@ the share of episodes whose graded tool call names a family that was open at the
 same share on the 456 contract transcripts (a direction with a margin at ±9 points, not a win); **B3** total spend
 ≤ **¥3**, read from the run's own `agent_cost` and `user_cost`.
 
+**Status: the engineering half is done (¥0), the dispatch is pending its readout.** The driver can now serve the
+board: `board_of(scope=clause)`, `displayed(items, level)` as the `statement → open → grouped` ladder, the fold after
+the order and before the cut, and the window as one manifest field that the product, the parser and the instrument
+all read. The instrument delegates to the parser, so the block a reading describes is the block a model reads —
+proved by re-deriving four reading scopes over the 456 episodes and getting byte-identical JSON. AUDIT 34.335,
+PROGRESS 249.59.
+
+**What is still owed before the money: one reader.** B1 and B2 are per-episode proportions over the dispatched
+transcript, and no existing tool computes them: `--replay` reports ticks over the request board and `--compare`
+pairs two arms' rewards. The reader recomputes, for each call moment of a clause episode, the open families the block
+carried and asks whether the call names one of them — the same `moment`/`visibility` machinery `read_anchor` already
+owns, with the clause scope. ¥0, and it is what makes the ¥2.52 readable at all.
+
 ---
 
 ## R237 (registered 27 Nov, ¥2.82) — the two external ladders, priced at the cache

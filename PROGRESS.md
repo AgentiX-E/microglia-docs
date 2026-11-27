@@ -30606,3 +30606,40 @@ points on 114 tasks; the estimates of every treatment effect this lane has measu
 the resolution ladder's own answer for 1.98 points is **300 tasks**, which is a third domain rather than a bigger
 retail dispatch. Spending ¥36 to report UNRESOLVED at 6.72 points would have been a measurement bought at the
 wrong resolution, which is the defect this lane has now audited four times.
+
+## 249.59 R236's engineering half landed for ¥0: the driver can now serve the clause board
+
+The probe was registered and could not have been dispatched. R231's admission was a parser parameter, R233's order
+and R234's fold were **inline code in the instrument**, and `render` cut `items[:8]` in statement order — so an arm
+named `clause` would have served no block and the round would have reported a null about a treatment that never ran.
+AUDIT 34.335.
+
+| what | before | now |
+|---|---|---|
+| the board's reach | `board_of` knew two request-shaped scopes | `request` / `conversation` / `clause`, with the rung carried by the board |
+| the rungs | six inline lines in `ask_board`, `_fold` in `read_anchor` | `displayed(items, level)`, `statement → open → grouped`, read by `render` |
+| the rules' ownership | implemented twice (instrument and renderer) | implemented once, in the parser; the instrument **delegates** |
+| the window | four literals of eight | `serving-defaults.json:defaults.blockLines`, read by `pack.ts`, the parser and `CAP` |
+| the arm | a placement and an admission | placement, admission, reach and rung, one variable, four census fields |
+
+**The delegation is proved, not asserted.** The four reading scopes re-derived over the 456 episodes of
+`control.json` are byte-identical before and after (`diff` clean on 4,828 / 5,353 / 5,339 / 5,365 bytes), and
+`read_anchor --self-test` passes on its own assertions unchanged.
+
+**Tests, at the three places the arm is decided.** `goal_board --self-test` gains the clause scope (the object an
+answer only inherited is dropped; the contract's turn is not turn one), the ladder (the third case, where `grouped`
+differs from `open`, would not exist if the fold were a no-op), and `MAX_ITEMS == manifest.blockLines`.
+`selfcheck_agent --self-test` gains the switch table (every older value reads exactly as it did) and the served
+block (a later-turn ask appears at the clause rung that the request rung cannot see; the continued list's second
+object is given up, as registered). `dose --self-test` gains the raw dump's two new columns. TypeScript gains
+`pack-lines.test.ts` — the default `limit` as **behaviour**, which is the only assertion a re-introduced literal
+fails while every other test stays green.
+
+**Gates.** Python **17,917/18,036 = 99.3%** over 27 modules, `goal_board` 99.8%, `read_anchor` 99.9%; TypeScript
+303 files / **6,300** tests, typecheck clean. `serving_defaults.py` now checks `blockLines` for presence and maps
+`board-clause → tail`, so a dispatch that names the arm cannot disagree with the manifest that prices its placement.
+The README's layer table moved by the 15 lines `core` gained, which is the gate that exists for exactly this.
+
+**Cost: ¥0.** No provider call, no dispatch. The probe it unblocks is ¥2.52 (floor ¥0.63 at the fifteen-episode
+stopping rule) and still needs its own readout — B1 and B2 are per-episode proportions over the *dispatched*
+transcript, which no existing reader computes. That reader is the next unit, and it is also ¥0.

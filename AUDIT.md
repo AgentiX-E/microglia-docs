@@ -18763,3 +18763,63 @@ plan were wrong for one reason: **a rate was applied to the wrong quantity**. R2
 domain that cannot resolve it, R221 applied a dispatch to a submission that reads a finished grid, and the external
 line applied the miss rate to a workload that is 99.5% cache. None of the three was an arithmetic error. All three
 were a number that a build could have recomputed and no build did.
+
+## 34.335 — A rule three rounds measured, that the serving path could not render
+
+**What was carried.** R234 closed the display axis: the clause board shows an open ask for **636 of 654** required
+writes (97.2%), hides **none**, and costs the contract board nothing. Its own refutation said what comes next —
+"the round this lane has deferred since R223: whether any of it changes what a model does" — and R236 was registered
+with a **¥0 engineering half**: the driver serves the clause board (R231's admission, R233's order, R234's fold)
+instead of the contract board.
+
+**What was on disk.** The admission existed, as a parameter: `goal_board.items_of(text, inherit=False)`. The order
+and the fold existed, as **inline code in the instrument** (`read_anchor.ask_board`, `read_anchor._fold`). What did
+not exist was any path from either to a block a model reads:
+
+| piece | where it was | reachable from the driver |
+|---|---|---|
+| clause admission | `items_of(inherit=False)` + `read_anchor.clause_asks` | no — `board_of` knew two scopes, both request-shaped |
+| open-first order | six lines inside `ask_board` | no |
+| one line per family | `read_anchor._fold` | no |
+| `render` | `goal_board.render(board, state_only)` | yes, and it cut `items[:8]` in statement order |
+
+So the arm R236 registers could not have been built by dispatching it. `MICROGLIA_BOARD=clause` would have fallen
+through every branch in `board_placement()` (`tail`/`policy`/`front` only), served **no block at all**, and the
+round would have come back with a flat B2 — a null about a treatment that never ran, which is the failure class this
+project has now counted seven times and the one an accuracy delta cannot distinguish from a real null.
+
+**The four copies of eight.** The window is the one constant this project had written down four times:
+`packages/core/src/apply/pack.ts:113` (`options.limit ?? query.limit ?? 8`), `goal_board.MAX_ITEMS`,
+`read_anchor.CAP`, and R232's registration arithmetic. Three of them were in reach of a refactor and one was in a
+document. It is now `defaults.blockLines` in `eval/manifests/serving-defaults.json`, read by the product's
+`SERVING_DEFAULTS` (with `pack.ts` importing it instead of holding a literal), asserted by the parser's self-test
+against the manifest, and read by the instrument **through the parser** rather than re-declared.
+
+**What now exists, and the shape of the repair.** Three changes, each of which removes a way for a reading and an
+artefact to disagree:
+
+1. `board_of(messages, scope)` builds at `request`, `conversation` or `clause`, and a clause board carries
+   `display: "grouped"` — the rung travels with the board, so the renderer is not told twice.
+2. `displayed(items, level)` is the ladder `statement → open → grouped`, each rung containing the one before it, and
+   `render` reads the rung off the board. The fold stays **after** the order and **before** the cut, because that is
+   the only position in which it is the rule R234 measured.
+3. The instrument **delegates**: `read_anchor.clause_asks` is `goal_board.clause_items`, and `_fold` is
+   `goal_board.fold_family`. A rule written twice is a rule that can disagree with itself, and the disagreement here
+   would have been a block the model read that the reading could not reproduce.
+
+**The check that the delegation was a move and not a change.** The four reading scopes (`clause`, `ordered`,
+`grouped`, `displayed`) re-derived over the 456 episodes of `control.json` return **byte-identical** JSON before and
+after — 4,828 / 5,353 / 5,339 / 5,365 bytes, `diff` clean on each. A refactor of an instrument whose numbers are
+quoted by four documents is only defensible with that comparison, and it is reproducible in four seconds a scope.
+
+**And the arm is now a value the artefact carries.** `MICROGLIA_BOARD=clause` sets the placement (`tail`), the
+admission (`all`) and the reach in one variable; the census reports `scope`/`display`/`placement`/`admission`; the
+per-episode dose record carries `scope` and `display`, and the raw dump keeps them. The workflow asserts the four
+values it *ran* with, not the argument it was dispatched with, so an environment that lost one is a build failure
+rather than a flat result.
+
+**The generalisation.** An instrument is not a serving path. Three rounds measured a rule that no dispatch could
+have served, and every document those rounds produced was correct — the numbers, the bars, the refutations — while
+the one thing needed to *use* them was six lines of inline code in a measurement tool. The cheap check is to make
+the serving path call the same function the replay calls, and then to assert in the driver that the arm ran with the
+values the dispatch asked for. Both halves are now gates rather than intentions.

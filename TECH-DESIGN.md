@@ -12916,3 +12916,61 @@ rather than a number a document remembers.
 is priced against, and the audit rule is mechanical: **a bar whose margin sits within its grid's printed floor fails
 the build**. Together the two tools answer the only two questions that precede spending — *can this domain resolve
 the effect* and *what does the work cost* — and both answer before a token moves.
+
+## 17.201 — One board, three scopes, three rungs, and a window that is one number
+
+The serving path this section describes exists because a rule can be complete in an instrument and absent from the
+driver. The previous rounds measured three rendering rules on transcripts; this one makes them a property of the
+block a model reads.
+
+**The scope.** `goal_board.board_of(messages, scope)` accepts `request`, `conversation` and `clause`, and refuses
+anything else rather than defaulting — an unknown scope that falls through to the request board turns a typo in a
+dispatch into a quiet re-run of the previous round.
+
+```
+request       items_of(request_of(messages))
+conversation  items_of(content) for every user turn
+clause        clause_items(messages)["asks"]     # contract whole + self-naming clauses
+```
+
+`clause_items` returns the items **and** the diagnostics R231 registered: `turns`, `contract` (the turn that stated
+it, which need not be turn one), `wholeTurns`, `partialTurns`, `offered`, `kept`, `refusedInherited`,
+`containsContract`. The diagnostics travel because they are how a reading says why a board holds what it holds, and
+because the product and the instrument call the same function.
+
+**The rungs, and why they are a ladder rather than two flags.**
+
+```
+statement  the items as they arrived
+open       order_open(items, is_settled)          # unresolved first, statement order inside each group
+grouped    fold_family(order_open(items))         # then one line per family
+```
+
+`order_open` and `fold_family` each take one predicate — the tick, or the family — because the product's items carry
+`settled_by` (a receipt's name) and the instrument's carry `settled` (a boolean), and a rule that could read only one
+shape would be two rules again. The fold is applied **after** the order and **before** the cut: before the order it
+would decide which items the partition sees, and after the cut it would decide nothing at all.
+
+**The board carries its rung.** `board_of(..., CLAUSE)` sets `display: "grouped"`; every other scope sets
+`"statement"`. `render(board, state_only, display="")` resolves the rung as `display or board["display"]`
+`or "statement"`, so the two can only disagree if a caller passes a rung explicitly — which is exactly the case a
+test is written for. `displayed(items, "sorted-by-length")` raises rather than defaulting, for the reason the scope
+does.
+
+**The window.** `MAX_ITEMS` is 8, and it is also `defaults.blockLines` in `eval/manifests/serving-defaults.json`,
+which `SERVING_DEFAULTS.blockLines` restates for the product and `buildPack` reads instead of a literal. The
+parser's self-test asserts the two are equal, `serving.test.ts` asserts the product's copy equals the manifest's, and
+`pack-lines.test.ts` asserts the **behaviour** — a caller who names no limit gets eight items, and a caller who names
+twelve gets twelve — which is the only form of the assertion a re-introduced literal fails.
+
+**The instrument delegates.** `read_anchor.clause_asks(messages)` is `goal_board.clause_items(messages)`, and
+`read_anchor._fold` is `goal_board.fold_family`. The two are the same function because B2 asks whether the model
+acted on what the block *carried*, and a reading that re-derived the rule its own way would be describing a block
+the model never saw. Re-deriving the four scopes over 456 episodes before and after the delegation is what makes
+"the same function" a checked claim rather than a comment: the JSON is byte-identical.
+
+**What the driver records.** `MICROGLIA_BOARD` carries the arm as one value (`tail`, `front`, `policy`, `clause`),
+and `board_scope()`/`board_display()`/`board_placement()`/`board_admission()` all read it, so an arm cannot be
+half-set. The census carries the four values, the per-episode dose record carries `scope` and `display`, and the raw
+dump keeps them beside the join key. The workflow asserts the values the arm **ran** with, which is the difference
+between a flat result and a dispatch that measured nothing.
