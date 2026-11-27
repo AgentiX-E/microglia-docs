@@ -13220,3 +13220,25 @@ return bool({n for _, n in ask} & {n for _, n in carried})   # 否则忽略类�
 **测量脚本的依赖方向。** `build_telecom_records.py` → `goal_board`（导入已发布规则），而不是各写一份。四条规则共用同一段文本与同一次读取，所以任意两条之间的差别是规则本身而不是输入——这才叫消融。
 
 **反事实是这轮的验证核心。** 对数据库每条线路合成一次写入，统计每条规则承认多少条。`checked()` 校验「至多一条且是 blind 的子集」（至多而非恰好：没有账户认领的号码就是零），`--verify` 从字节重算整个 reading。**「至多一条」写进校验、「恰好那一条」写进报告**：前者是算术不变量，后者是关于这个数据库的断言，两者混在一处会让清单替自己的历史作证。
+
+## 17.209 — 词表消融的实现：负向前瞻守卫、逐个 cue 的三域 census、可从字节重推导的清单
+
+**问题重述。** R242 要量第三域的 ask 词汇：`CUES` 里缺 suspend/resume/roaming/refuel/plan/credit 六个 family 的词。实现的关键不是加词，而是让「加词有没有用」成为可测量、可复现、可拒绝的读数。
+
+**数据结构：`ask_document(tasks)`。** 与 `build_telecom_records` 的 record 投影同源：`reason` 取 `request_of(task)`（ticket + 指令文本，与板读的文本一致，R215 规则），`writes` 取评分器自己的写入并按工具名（经 `WRITES`）命名——census 再通过 `goal_board.FAMILIES` 把工具名映射成 family。一份语料，两个读数（record 与 ask），共用同一个任务 walker。
+
+**守卫是负向前瞻，不是词表。** `RETURN_GUARD` 在 `return/refund` 后紧跟八个封闭状态词之一时拒绝匹配：
+
+```python
+RETURN_GUARD = r"\b(return\w*|refund\w*)\b(?!\s+(?:excellent|poor|fair|good|updated|better|worse|normal)\b)"
+```
+
+封闭词表保证它不随语料增长；负向前瞻只削掉「恢复到某状态」的读法，不动「退货/退款」。该守卫已写入 `goal_board.CUES` 并成为产品默认；`goal_board` 自检新增四条断言锁住它（两条 state-return 必须是空 family、一条 refund 必须仍是 return、再加原有 retail 断言的回归）。
+
+**`derive_cues(guarded, extra)` 与全局状态。** `goal_board.CUES` 是模块级可变状态。因产品已带 guard，「before」臂必须用 `OLD_RETURN`（逐字重建的旧模式）替换回去，「after」臂就是出厂表。`derive_cues` 只**返回**一张表、不改全局；`_census_with(cues, doc)` 在 `try/finally` 里临时赋值并在任何异常下恢复。这保证三域×七种 cue 表的二十一次 census 互不污染，读数与调用顺序无关。自检显式断言「压测之后 `goal_board.CUES[1] == ('return', RETURN_GUARD)`」。
+
+**`ask_reading` 的二维三域。** 每臂读三件事：guard 的 before/after（电信的 found/spurious/tasksCovered，零售/航空的 found/spurious），以及六个 cue 各自相对 guarded 表的边际（六个字段：电信 found/required/spurious、零售/航空 spurious、两个布尔标志、一个 admissible）。判据是机械的：`admissible = reachesNewWrite and not addsSpurious`。六行全部 `admissible=false`，故 `shippedCues=[]`；`shippedGuard=true`。判据写进清单校验，任何「admissible 与两个标志矛盾」的篡改都会被拒收。
+
+**清单的证伪链。** `eval/manifests/telecom-asks.json` schema `microglia/telecom-asks@1`，带三份源（电信任务、retail-goals、airline-goals）的 sha256。`check_asks()` 重算算术与判据；`verify_asks()` 从三份源字节重跑 `ask_reading()` 并逐字段比对 before/after/shippedCues/shippedGuard 与六个 cue 行的四元组。ci.yml 在既有 telecom 命令后加 `--check-asks` / `--verify-asks`。两层分开，是因为「加法自洽」与「算术曾关于这些任务」是两件事——R240 的零就栽在后一半上。
+
+**覆盖率纪律。** 因为 CI 对本文件只统计 self-test 的覆盖率，`--asks` / `--check-asks` / `--verify-asks` 各分支以及十种防御分支都在 self-test 内通过真实调用驱动，而非留给 dispatch。最终 `goal_board.py` 与 `build_telecom_records.py` 均达 99%（语句 0 未覆盖，各 2 个不可达部分分支）。

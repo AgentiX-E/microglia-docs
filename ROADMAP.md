@@ -10682,14 +10682,15 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 > **Gates:** Python 19,048/19,173 (99.3%), 29 modules all ≥95%, `read_anchor` 99.9%; all four tool self-tests and nine
 > manifest checks green; 13 workflows parse; both repos CI green.
 >
-> **Next, in order:** ① **R242** the third domain's ask vocabulary (¥0, 1 day — six cues and the two-domain census
-> that would justify them; R241 settled the record question without one, and this is the axis R217a paid for on
-> airline, blocked until the lane holds telecom transcripts); ② the third domain's accuracy dispatch, carried as a
-> ladder rather than as a price (**R240b**: gate 0 reachability ¥0 → gate 1 ¥1.68 → gate 2 ¥8.41 → gate 3 ¥93.51,
-> and gate 3 is bought only when a publishable domain score is what is wanted — **R241 has now cleared gate 0 at
-> 8 of 8**, which is what made gate 1 worth pricing); ③ R237b external ladders (calibrate the MemTrapBench judge on
-> 50 items first — ¥0.86 prices answers, not the rubric + LLM judge); ④ R221 2.0 submission (¥0, reads a finished
-> grid); ⑤ parser-scope product switch (¥0, 0.5 day).
+> **Next, in order:** ① ~~**R242** the third domain's ask vocabulary~~ — **READ (below): six cues measured, zero
+> shipped; the one repair is a return-cue guard. The vocabulary hypothesis is REFUTED for the third time** (R217a →
+> R227 → R242): the requests name symptoms, not actions, so no cue can see an ask the corpus does not state; ② the
+> third domain's accuracy dispatch, carried as a ladder rather than as a price (**R240b**: gate 0 reachability ¥0 →
+> gate 1 ¥1.68 → gate 2 ¥8.41 → gate 3 ¥93.51, and gate 3 is bought only when a publishable domain score is what is
+> wanted — **R241 cleared gate 0 at 8 of 8**; **R242 now adds that no cue is needed to reach the writes, because the
+> record grade reads them without one**); ③ R237b external ladders (calibrate the MemTrapBench judge on 50 items
+> first — ¥0.86 prices answers, not the rubric + LLM judge); ④ R221 2.0 submission (¥0, reads a finished grid);
+> ⑤ parser-scope product switch (¥0, 0.5 day).
 
 ## R240 (registered 27 Nov, ¥0) — the third domain's records, and a grade written in one alphabet
 
@@ -10895,3 +10896,74 @@ position is quotable at our price and not only at the provider's.
 | | **total** | **¥92** | **¥5.34**, floor **¥3.45** | |
 
 ![The plan's price, before and after three corrections of reference](figures/r236-budget.png)
+
+## R242 (read 27 Nov, ¥0) — six cues, zero shipped; the repair was a `return` that changed meaning in another domain
+
+> **Status, 27 Nov: read, ¥0, no model called.** R241 left one honest gap in writing: the third domain's nine write
+> tools are in `goal_board.FAMILIES`, but no cue recognises their asks — recognising "my data is slow" as a request is
+> R217a's axis, and R217a paid for the airline three only because the lane held airline transcripts. This round held
+> the telecom sample at last, so it asked the deferred question with the same instrument R217a used: add the six
+> cue-less families (suspend, resume, roaming, refuel, plan, credit) one at a time and read the census in all three
+> domains. **The vocabulary hypothesis is refuted, for the third time in this lane.**
+
+![R242: six cues on two axes — what they reach in telecom, and what they add in the other domains](figures/r242-cues.png)
+
+**The reading, through the shipped rule.** `build_telecom_records.py --asks` builds a census document from the
+20 telecom tasks — `reason` is `request_of`, `writes` are the evaluator's writes named by tool — and measures every
+arm with `goal_board.census`, the product's own rule rather than a copy. Each cue is added to the **guarded** table,
+so the baseline is the product as it will ship.
+
+| cue | telecom found / required | telecom spurious | retail spurious | airline spurious | verdict |
+|---|---|---|---|---|---|
+| suspend | 0 / 10 | 0 | 235 | 52 | refuse — the word occurs 0 times in the requests |
+| resume | 0 / 10 | 0 | 235 | 52 | refuse — 0 times |
+| roaming | 0 / 10 | 0 | 235 | 52 | refuse — 0 times |
+| refuel | **1 / 10** | **13** | 235 | 52 | refuse — one write for thirteen false asks |
+| plan | 0 / 10 | 0 | 235 | 52 | refuse — only in a "change plan" concession |
+| credit | 0 / 10 | 0 | **245** | 52 | refuse — retail "credit card" adds ten |
+
+**Zero ship.** The finding R217a paid for on airline, R227 refuted on the record rule, and R241 worked around with a
+read-anchor is now measured here too: **the problem is the contract, not the lexicon**. A telecom request names a
+symptom ("data not working", "No Service"); the action is a consequence of policy. The one cue-able token, `refuel`,
+appears 22 times and every time inside "willing to refuel 2.0 GB **if necessary**, but you do not want to change your
+plan" — a concession, not a request. Adding it buys the single graded refuel write and manufactures thirteen asks the
+corpus never made. `credit` is worse: it is harmless in telecom and adds ten spurious asks in retail, where "credit
+card" names a payment method. That alone breaks the invariant R217a's append-after-retail ordering was built to hold:
+**an appended cue that changes a retail parse is a regression, not a gain.**
+
+**The defect that was worth fixing was not a missing word.** `return` fires 40 times on the telecom sample and all
+forty are spurious: "the speed test **returns** excellent internet speed", "the tool call does not **return** updated
+status". In retail `return` means send a product back; in telecom `returns` means *restores a state*. It is the same
+domain collision R217a recorded on airline ("the **return** flight is May 20") and left unfixed. R242 ships a negative
+lookahead — `return/refund` followed immediately by one of eight closed state words is not a refund ask:
+
+```python
+r"\b(return\w*|refund\w*)\b(?!\s+(?:excellent|poor|fair|good|updated|better|worse|normal)\b)"
+```
+
+The word list is closed and independent of the corpus, so the guard is not a parser fitted to it. Measured:
+
+| domain | spurious before → after | found before → after |
+|---|---|---|
+| telecom | 40 → **0** | 0 → 0 |
+| retail | 235 → 235 | 176 → 176 |
+| airline | 52 → 52 | 15 → 15 |
+
+**Every domain's `found` is unchanged; only telecom's false asks disappear.** That is the whole difference between a
+shippable repair and six refuted cues, and it is measured rather than asserted.
+
+**The manifest proves its own provenance.** `eval/manifests/telecom-asks.json` (`microglia/telecom-asks@1`) carries
+the sha256 of three sources — the telecom tasks and the retail and airline goals — and records `shippedGuard=true`,
+`shippedCues=[]`. `--check` re-adds the arithmetic and the admissibility verdict; `--verify` re-derives the entire
+reading from those bytes and compares every field. A manifest that can only say "zero cues ship" could say it about
+any corpus; this one has to be re-derived from this one. ci.yml adds `--check-asks` and `--verify-asks` beside the
+existing telecom commands.
+
+**Test discipline, twice.** TDD wrote the four guard assertions first and confirmed three RED before implementing;
+a second bug — a local `reading` shadowing the module's `reading()` function in `main`, an UnboundLocalError — was
+caught by the self-test, not by reading. Both changed files reach **99%** coverage (`goal_board` 1,315 statements,
+`build_telecom_records` 708 statements, zero uncovered lines, two unreachable partial branches each); the script's
+97 self-checks drive every CLI branch and ten distinct manifest tampers.
+
+**Gates:** Python both touched files at 99%, zero uncovered statements; `--check` + `--verify` on both telecom
+manifests; 13 workflows parse. Both repos CI green on push.

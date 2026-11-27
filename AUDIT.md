@@ -19112,3 +19112,25 @@ owners    L1002 -> C1001           customer 的 line_ids，以及 bill 的 custo
 **顺带被抓住的割裂：产品声明的词汇比板上实际产出的少两个。** `SETTLEMENT_GRADES` 写着 `name`、`overlap`，而 `goal_board` 自 R238 起还会返回 `record`；**没有任何测试比较过声明与实际返回值**，所以这个割裂存在了好几轮而没有症状。现在 `goal_board` 的自检把它自己的四个返回值与 `serving-defaults.json` 对齐，产品侧 TypeScript 读同一个文件，清单的 `provenance` 写下两个新等级的测量出处。第三域的九个写工具也进了 `FAMILIES`——板看不见的写入，谈不上结算。**未发布的**是这些 family 的 cue（把「我的流量坏了」识别成一个 ask），那是 R217a 的轴，需要本 lane 尚未持有的 telecom transcript，因此写进 `notYet` 而不是留成静默缺口。
 
 **代价与门禁。** ¥0，无模型调用。Python 全量 **20,270/20,393 = 99.4%**、**30** 模块全部 ≥95%；本轮重写的脚本 **99.7%**（492 条语句、0 行未覆盖），`goal_board` 语句覆盖 **100%**；脚本 63 项自检 + 清单 `--check` 与 `--verify`；TS 6,300 项测试全过，其中包括 README 层表门禁——它抓住了本轮加在 `core` 里的十二行并迫使层表更新，这正是该门禁存在的理由；13 个 workflow 解析；两仓 CI 全绿（`573b8bcd` / `b7edb2ad`）。
+
+## 34.345 — 词表不是契约：六个 cue 里五个无效、两个有害，真正的问题是 return 在另一个域换了意思
+
+**本审计针对 R242 的 ask 词汇测量。** 结论先行：`goal_board.CUES` 加第三域六个候选 cue（suspend/resume/roaming/refuel/plan/credit）的方案被拒绝——零个 ship；本轮唯一发布的是一条 `return` 负向前瞻守卫，它消除了电信域 40 个虚假 ask 且不改变零售/航空读数。所有数字来自已发布的 `goal_board.census()`，通过新增的 `build_telecom_records.py --asks` 在三域上测得，并锁进 `eval/manifests/telecom-asks.json`（自带三份源字节的 sha256），`--check` 验算术、`--verify` 从字节重推导。
+
+**缺陷一：把「让步/条件」读成「请求」。** `refuel` 在 20 题电信任务里出现 22 次，但每一次都在 "you are willing to refuel 2.0 GB **if necessary**, but you do not want to change your plan" 这个让步句里。加 `refuel` cue 后，电信 found 从 0 升到 1（恰好那一个 graded refuel 写入），但 spurious 从 0 升到 13——**用 13 个不存在的 ask 换 1 个真实写入**。这不是词表缺失，是把条件句当祈使句。R230 已在零售域量过同一个道理：77% 的用户 turn 是回答而非要求，位置不是判别器。
+
+**缺陷二：跨域一词二义破坏既有不变量。** `credit` cue 在电信域够到 0 个写入，却让零售 spurious 从 235 涨到 245——因为零售语料里 "PayPal is preferred for refund, but otherwise **credit** card can be accepted" 这类句子有 16 条。R217a 把航空三 cue 追加在零售七 cue 之后的全部理由，是「追加词不改变任何零售解析」，并由双域 census 的读数不变来持守。任何违反这一条的 cue 都是回归，不是增益。
+
+**缺陷三（本轮真正修的）：`return` 的语义随域漂移。** 电信请求里 "the speed test **returns** excellent internet speed"、"the tool call does not **return** updated status" 被 retail 的 `return/refund` cue 命中 **40 次，全部 spurious**。retail 里 `return` 是「退货」，telecom 里 `returns` 是「恢复到某状态」——同一个正则，两个域，两种意思。这是 R217a 航空域 "the **return** flight is May 20"（`return` 命名的是航段而非退货）那一类 domain collision 的电信版本，此前只在文档里记录、未修。本轮发布一条负向前瞻：
+
+```python
+r"\b(return\w*|refund\w*)\b(?!\s+(?:excellent|poor|fair|good|updated|better|worse|normal)\b)"
+```
+
+状态词表是封闭的八个词，与语料无关，因此不是「拟合语料的词表」。守卫后：电信 spurious 40→0、found 0→0；零售 spurious 235→235、found 176→176；航空 spurious 52→52、found 15→15。**三域的 found 全不动，只有电信的虚假 ask 被清空**——这是它可发布而六个 cue 不可发布的全部差别。
+
+**方法审计：为什么读数可信。** 四个环节，缺一不可：①读数经过产品已发布的 `goal_board.census()` 而非复写（复写可以是对的而产品是错的）；②六个 cue 逐个加在**已带 guard** 的表上，所以消融的基线是产品将发布的表，而非没人跑的旧表；③`derive_cues` 返回表而不改全局状态，`_census_with` 用 `finally` 恢复 `goal_board.CUES`，因此读数顺序不影响结果——本轮自检明确断言「guard 之后的表与出厂表逐项相同」；④清单从三份源字节重推导（`--verify`），因为只验算术的清单能对任何语料自证。
+
+**测试审计（TDD 证据）。** 本轮两次 bug 均由测试先发现：guard 的四条断言先写、确认三条 RED 才实现；`derive_cues` 里局部变量 `reading` 遮蔽全局函数 `reading()` 导致的 UnboundLocalError，在自检运行中被捕获并改正为 `aread`。两个改动文件覆盖率均 **99%**（`goal_board` 1315 语句 0 未覆盖、`build_telecom_records` 708 语句 0 未覆盖，各仅 2 个不可达部分分支）。脚本自检对六个 cue 的每一类失败、guard 的三域读数、以及十种清单篡改（改名、翻 admissible、移 guard 列、改 digest、缺源、改路径等）逐条设了拒收断言。
+
+**代价与门禁。** ¥0，无模型调用。清单 `microglia/telecom-asks@1` 记录 `shippedGuard=true`、`shippedCues=[]`；ci.yml 新增 `--check-asks` / `--verify-asks` 两道命令。TS 与其它模块未改，随推送复核。

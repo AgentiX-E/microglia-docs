@@ -11093,3 +11093,33 @@ anchor paired with every armed arm). None is copied yet: each must be registered
 because the field's +pp are on other harnesses and cannot be quoted here. The next paid step stays R237b's judge
 calibration — the MemTrapBench scoring (rubric + GPT-5.2 + Claude-Sonnet-4.6, four dimensions, three independent
 answers over 1,050 items of 18–40 turns) is the price that was omitted when the pair was first quoted at ¥2.82.
+
+## R242 intelligence refresh (27 Nov 2026) — the field has now measured the negative effect we keep measuring locally
+
+This round's literature sweep found that the field has caught up with this lane's central claim: **memory can lower
+task success, and the harm tracks the material's presence rather than its content, amount or timing** (our R218b /
+R218e / R223 / R225). Numbers below are as reported by the papers or official READMEs; cross-harness and
+vendor-reported scores are labelled and are not directly rankable.
+
+| source | what it measured | reported effect |
+|---|---|---|
+| [MemTrapBench](https://arxiv.org/abs/2608.20202) | five memory strategies on cognitive-bias / safety traps | **all five lost accuracy**; Gemini-3-Flash 85.16% → 71.17% (−14 pp), Qwen3-30B 81.83% → 70.13%; the two trap families were worst |
+| [PI-LLM](https://proceedings.colm.cc/paper_files/paper/2026/file/069274129275ec1c6511abb5f6d96a31-Paper-Conference.pdf) (COLM'26, 35+ models) | repeated same-key knowledge updates | accuracy ≈ a − b·log₁₀(n) → 0; "forget" instructions and CoT did not help; harm scaled with parameter count, not context length |
+| [AWM](https://arxiv.org/abs/2409.07429) | offline workflow memory + online workflow memory | the **combination scored below online alone** — direct evidence of offline→online negative transfer, what our R217a airline refutation found as "the rescue rule we retired" |
+| [A-MAC](https://arxiv.org/abs/2603.04549) | five-signal memory admission control | LoCoMo F1 0.583 (+0.042) with latency −31%; the admission rule is the mechanism, not the amount of memory |
+| [PlugMem](https://arxiv.org/abs/2603.03296) (ICML'26) | structured abstraction + read/write separation | LongMemEval 90.2, HotpotQA 79.1 F1, tokens −86~99% |
+| [SleepGate](https://www.alphaxiv.org/zh/abs/2603.14517) | timed consolidation under 10 updates | 97.0% vs baseline 10.0% |
+
+**What this licenses, and what it does not.** It licenses the framing this lane has already earned: a memory item is a
+candidate that must be *admitted*, not a fact that is automatically true, and the admission bar is measured against a
+no-memory anchor (our R242's two-axis `admissible = reachesNewWrite and not addsSpurious` is the same shape as A-MAC's
+five signals, reduced to the two this corpus can support). It does **not** license importing any of the +pp figures:
+they are on LoCoMo / LongMemEval / τ² under other harnesses and judges, and this project has no submission on any of
+them. microglia remains on the cost × consistency frontier, not on an accuracy leaderboard.
+
+**On the user's standing question — "is it what we remember or how we use it?"** The field's answer, now backed by
+MemTrapBench and PI-LLM, is *both, and our instrument separates them*: what we remember is the admission question
+(R242's six cues all failed it — a concession read as an ask, a word with a second meaning); how we use it is the
+settlement and display question (R232–R241 closed the product↔evaluation gap to zero). The remaining open half is a
+paid one: whether admitting the right items moves end-to-end task success, which is R237b's external ladder and the
+¥0→¥1.68 gate ladder, not something this ¥0 census can claim.

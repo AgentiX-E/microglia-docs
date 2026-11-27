@@ -30867,3 +30867,38 @@ runs the reader with `--bar` on a `clause` dispatch, so the bar is a gate and no
 **一个存在了数轮而没有症状的割裂。** `SETTLEMENT_GRADES` 声明两个等级，而板自 R238 起返回三个；没有测试比较声明与返回值。现在 `goal_board` 的自检对自己的四个返回值与 `serving-defaults.json` 对齐，产品 TS 读同一份清单，清单 `provenance` 记下两个新等级的出处。第三域九个写工具进入 `FAMILIES`（板看不见的写入无法结算），而**cue 仍未发布**——那是 R217a 的轴，需要 transcript，写进 `notYet`。
 
 **门禁实测。** Python **20,270/20,393 = 99.4%**，**30** 模块每模块 ≥95%；本轮重写的脚本 **99.7%**（492 语句、0 行未覆盖），`goal_board` 语句覆盖 **100%**；脚本 63 项自检、清单 `--check` + `--verify`；TS **6,300** 项测试全过（含 README 层表门禁，它抓住本轮加进 `core` 的十二行）；13 个 workflow 解析；两仓 CI 全绿（`573b8bcd` / `b7edb2ad`），`--verify` 在 CI 里从仓库内的字节重算通过。
+
+## 249.67 R242：第三域的 ask 词汇——六个 cue 全部被拒，发布的是一个 return 守卫（¥0）
+
+**上一轮留下的口子。** R241 在没有 cue 的情况下解决了「记录」问题（按 episode 读过的记录结算），但它明确写下：第三域九个写工具进了 `FAMILIES`，**识别这些 ask 的 cue 没有发布**，那是 R217a 的轴，写进 `serving-defaults.json` 的 `notYet`。R242 就是补上这道测量——只花 ¥0、不调用任何模型，用第三域自己的样本去问：给 `CUES` 加六个词，板子能看见多少真实的 ask？
+
+**测量沿用的是已发布的规则，不是临时写的一份。** `build_telecom_records.py` 扩展出 `--asks`：`ask_document()` 把 20 个电信任务的 `request_of`（ticket + 指令，与板读的文本同源）与评分器自己的写入（按工具名走 `FAMILIES`）投影成 census 文档，读数全部通过 `goal_board.census()`——产品里那条规则。三域同读：电信域 20 题、零售 114 题、航空 50 题。
+
+**先写测试再实现，两次都抓到了真东西。** 第一次 RED：先在 `goal_board` 自检里写死四条断言（"speed test returns excellent"、"tool call does not return updated status" 不应是退款 ask，而 "refund each order" 必须仍是），运行确认三条失败才动手。实现 guard 后全绿。第二次：`derive_cues` 的局部变量 `reading` 遮蔽了全局函数 `reading()`，UnboundLocalError——改名 `aread` 才过。两个 bug 都由测试而非阅读发现。
+
+**六个 cue 的消融（在已带 guard 的表上逐个加，三域同量）：**
+
+| cue | 电信 够到/应有 | 电信 spurious | 零售 spurious | 航空 spurious | 判定 |
+|---|---|---|---|---|---|
+| suspend | 0/10 | 0 | 235 | 52 | 拒：词在请求里出现 0 次 |
+| resume | 0/10 | 0 | 235 | 52 | 拒：0 次 |
+| roaming | 0/10 | 0 | 235 | 52 | 拒：0 次 |
+| refuel | **1/10** | **13** | 235 | 52 | 拒：1 个写入换来 13 个虚假 ask |
+| plan | 0/10 | 0 | 235 | 52 | 拒：只在 "change plan" 的让步里 |
+| credit | 0/10 | 0 | **245** | 52 | 拒：零售 "credit card" 增加 10 个虚假 ask |
+
+**六个全部拒绝发布，零个 ship。** 这是 R217a（航空词表）→ R227（record 规则）→ R241（handle）之后同一结论的第三次复现：**这个 lane 的问题从来不是词表（lexicon），而是契约（contract）**——电信请求根本不命名动作，它描述症状（"data not working"、"No Service"），动作是策略的结果。唯一能被 cue 命中的 `refuel` 出现在让步句 "willing to refuel 2.0 GB if necessary" 里，那不是请求；加它只会把 13 个让步读成 ask。`credit` 更糟：它在零售里是 "credit card"，跨域名义冲突，直接破坏 R217a「追加 cue 不改变零售解析」的不变量。
+
+**真正值得修的 bug 是 return 的跨域误命中，而它不是词表问题。** 电信请求里的 "speed test returns excellent internet speed"、"the tool call does not return updated status" 被 `return` cue 命中 **40 次，全部 spurious**——`return` 在第三域的语义是「恢复到某状态」，不是「退货」。R242 发布一条负向前瞻：`return/refund` 后紧跟状态词（excellent/poor/fair/good/updated/better/worse/normal）时不算 ask。
+
+| 域 | guard 前 spurious | guard 后 spurious | found（前→后） |
+|---|---|---|---|
+| 电信 | 40 | **0** | 0 → 0 |
+| 零售 | 235 | 235 | 176 → 176 |
+| 航空 | 52 | 52 | 15 → 15 |
+
+**守卫的双域安全是被测量的，不是声称的。** 三个数锁进 `telecom-asks.json`；`--check` 重算算术，`--verify` 从清单命名的三份源字节（电信任务 + 零售/航空 goals，各带 sha256）重推导整个 reading，任何漂移即失败。一个只会说「六 cue 零发布」的清单，能对着任何语料说这句话——所以必须能从字节重算。
+
+**ci.yml 加了两道命令**：`--check-asks` / `--verify-asks`，与既有 telecom 清单命令并列。
+
+**门禁实测。** Python 两个改动文件都达 **99%**（`goal_board` 1315 语句 0 未覆盖、`build_telecom_records` 708 语句 0 未覆盖，各 2 个不可达部分分支）；`goal_board` 自检新增 4 条 guard 断言、脚本自检 97 项（含 9 条 ask 分支与防御分支测试）；清单 `--check` + `--verify` 全过；13 个 workflow 解析。（两仓 CI 推送后复核，见本轮推送记录。）
