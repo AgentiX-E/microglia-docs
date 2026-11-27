@@ -30993,3 +30993,14 @@ refusal/tamper 路径提到 96.1%，而不是豁免它们。
 **成本与刻意不买的东西**：¥0，无模型调用——分类器是对 driver 已解析回复的纯算术。付费梯子维持 R243 取消态；重开需要新的 affected subset，而不是一个充了值的账户。Zhipu 429 现在在读取时可诊断；离线 fallback 仍可用，但不再是误读状态码后的强制选择。
 
 **门禁实测**：新模块四维 100%；`model-client.ts`、`embed-probe.ts` 100%；`quota_disposition.py` 自检+check+verify 合并 97.2%；reader 自检 66/66；产品↔清单 2/2；全量 vitest 308 文件 / 6,372 测试；13 workflow 解析；coupling 快照 266→267 重生成；README eval 层 198→199 模块、59,836→60,131 行；`--expect-files` 31→32。两仓 CI 推送后复核。
+
+## 249.72 R245 推送门禁：三处 local-pass/CI-fail 根因修复
+
+1. **语言审计**：仓库审计禁止 `.ts`/`.mjs` 里出现 CJK。我从服务商文档取来的两个中文窗口 marker 是字面 CJK，
+   改为 Unicode escape——源码全 ASCII、运行时 marker 仍匹配回复、语义不变；没有加任何审计豁免。
+2. **README 层计数**：修复给 `quota-disposition.ts` 加了两行注释，`readme-layers.test.ts` 重算 eval 层为 60,133
+   行，对账已提交的 60,131。更新表格而非测试。
+3. **coupling 快照**：同样两行使已提交快照从 76,641 变 76,643 行，`check-coupling-ledger.mjs` 抓到；重生成，
+   11 项检查全过。
+
+最终 microglia CI（`a95d0530`）：success；docs CI（`ad93dbd4`）：success。无门限削弱、跳过或 `continue-on-error`。

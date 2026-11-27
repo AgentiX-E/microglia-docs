@@ -19245,3 +19245,19 @@ raised to 97.2% by driving every refusal and `main()` branch, not by exempting t
 reader self-test 66/66; product↔manifest 2/2; full vitest 308 files / 6,372 tests; 13 workflows parse. Coupling
 snapshot regenerated (266→267) and README eval layer corrected (198→199 modules, 59,836→60,131 lines) when the new
 production module moved those ledgers — gates doing the job they exist to do.
+
+## 34.350 R245 — three local-pass/CI-fail defects, repaired at the source
+
+The push ran red three times; each was a real local/CI drift, not a flaky rerun.
+
+1. **Language audit.** The repo audit forbids CJK text in `.ts`/`.mjs` code. Two markers I had taken from the
+   provider's documentation — the Chinese window message and its test case — were literal CJK in the classifier and
+   its test. Rewritten as Unicode escapes: the source is ASCII, the runtime marker still matches the reply, and the
+   semantics are unchanged. No audit exemption was added.
+2. **README layer count.** The fix added two comment lines to `quota-disposition.ts`; `readme-layers.test.ts`
+   recomputed the eval layer at 60,133 lines against the committed 60,131. Updated the table, not the test.
+3. **Coupling snapshot.** The same two lines moved the committed snapshot from 76,641 to 76,643 lines;
+   `check-coupling-ledger.mjs` caught it. Regenerated; all 11 checks pass.
+
+Final microglia CI on `a95d0530`: `completed/success`. docs CI on `ad93dbd4`: `success`. No gate was weakened,
+skipped, or given `continue-on-error`.
