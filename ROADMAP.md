@@ -10654,6 +10654,14 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 
 ## R237 (registered 27 Nov, ¥2.82) — the two external ladders, priced at the cache
 
+> **Status, 27 Nov: split, and the ¥0 half is done.** R237a (this round, **¥0**) built the in-lane trap readout that
+> MemTrapBench's two families imply — `eval/tools/memory_traps.py`, 456 episodes, no model call — and it found a real
+> settlement defect (6.8% of shown lines ask for work an unopened record already discharged) plus one quantity that
+> had to be refuted (family-level staleness at 11.4% is a rate over the wrong unit; AUDIT 34.337). **R237b** is the
+> external harness and is still owed, and its price is **no longer ¥2.82**: the benchmark's grader is a rubric + LLM
+> judge (GPT-5.2 primary, Claude-Sonnet-4.6 for agreement) over 1,050 items of 18–40 turns, so the ¥0.86 line covers
+> the answers and not the marking (AUDIT 34.338). Re-price before dispatch.
+
 LoCoMo (1,986 QA over 10 conversations) and MemTrapBench, both on this harness, with the question sets **grouped by
 document** so each transcript is one shared prefix, graded by the sets' own rule scorers (token F1 and adversarial
 refusal) with no model judge.

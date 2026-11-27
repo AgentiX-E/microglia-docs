@@ -13010,3 +13010,32 @@ second 456-episode grid, which is why it is a ceiling and not a result.
 command that produced them; `--check` re-derives every share from its own counts, every denominator from the rows,
 and each verdict from its own bar. CI runs the check on `eval/manifests/r236-replay.json` on every push, so the
 numbers the amendment quotes cannot drift from the tool that produced them.
+
+## 17.203 — 陷阱读数器：三个可判定的量，和一个必须被推翻的量
+
+`eval/tools/memory_traps.py` 只做一件事：把 MemTrapBench 的两族陷阱翻译成**转录可判定**（无需模型）的量，并明确标出
+哪一族在本域**不可**用转录判定。它与 `board_mechanism.py` 共用 `read_anchor.moment` 与 `goal_board`——一个拥有自己
+解析副本的读数器，测的是模型没看过的块（AUDIT 34.335）。
+
+**三个量，定义在窗口上而不是在集上。** 窗口 = 一条 assistant 消息之前那一刻的 `items[:CAP]`（同一消息里的两次调用共用
+一个窗口，逐调用重算会把同样八行数两遍）：
+
+    settled     已结算且仍在行预算内的问句——渲染器会删掉它；报告它是为了给「结算规则值多少行」一个数
+    unused      该调用没有点名的开放问句；一次调用平均只用 1 个 family，而窗口平均花 7.73 行
+    fixation    同 family、同 `args` 签名的调用在环境拒绝之后被再次发出（首次不算，成功会清除拒绝）
+
+`fixation` 用 `args` 而不是 `arguments`：receipts 的键是前者，从后者读会让每一次调用的签名都是 `None` 的 repr，
+于是每一次拒绝都看起来像另一次拒绝的重复——一个把所有 episode 都算成固着的假阳性。
+
+**一个必须被推翻的量，以及为什么保留它。** family 级陈旧率（「某 family 成功写入后仍被列为未完成」）在控制网格上读
+11.4%，拆分后是 6.8%（该 family 从未结算）+ 203 条（同 family 多产品，显示正确）。量纲错在：**family 是板子结算的
+单位，问句才是模型读的单位**。保留它的三个理由：①可重算（清单里有 `rejected` 与其拆分，`--check` 每次推送复算）；
+②可复现证据（`--sample` 打印窗口，读者不必信任一段散文）；③给未来的问句级版本一个比较基准。
+
+**读数器没有门禁，这是刻意的。** `verdict()` 只在「有集但无写」「无集」时报错——这两种是**读不了**，不是「读到零」。
+本轮没有任何量达到可以立门的成熟度：`settled` 是规则的价值而非效应，`unused` 是描述，`fixation` 在 456 集里是 0
+（0/456 无法支撑一个门槛）。给描述性的量立门禁，等于把「今天的样子」固化成一个永远不该失败的断言。
+
+**它的代价与边界。** 456 集 0.9 秒、0 次模型调用；`--self-test` 覆盖 98% 的行与分支，包括合成转录的集成路径、CLI 的
+六条分支、以及存档的七种篡改。边界写在文件头：它**不能**判定「用户已经改口的问句是否仍然成立」——那是一道语义题，
+需要判分器，需要钱，是 R238 登记要买的东西。

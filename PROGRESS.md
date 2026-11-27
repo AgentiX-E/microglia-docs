@@ -30676,3 +30676,37 @@ served" about an arm that served it perfectly.
 **Gates.** Python 18,352/18,470 (**99.4%**) over **28** modules, `board_mechanism` 99%; the reader's own suite covers
 the wiring signature, both bars' failure paths, the saved form's arithmetic check and the CLI. `working-memory.yml`
 runs the reader with `--bar` on a `clause` dispatch, so the bar is a gate and not a printout.
+
+## 249.61 R237a：记忆负效果在本域的第一个读数，以及一个被自己推翻的数（¥0）
+
+**位置。** 计划里 R237 是「两条外部梯子」：LoCoMo + MemTrapBench，报价 ¥2.82。本轮**没有**花这笔钱，而是先做了它
+不需要花钱的那一半：把 MemTrapBench 的两族陷阱翻译成本域转录可以判定的量，并在已有的 456 集网格上读数。理由是顺序
+问题而不是省钱问题——如果我们的板子在 6.8% 的窗口里确实在要求已经完成的工作，那么外部梯子上测到的任何分数都会被
+这个缺陷污染，而修它不需要一分钱。
+
+**做完的。**
+
+- `eval/tools/memory_traps.py`（新建，384 行，**98% 覆盖**，`--self-test` 0 failures）：复用 `read_anchor.moment` 与
+  `goal_board`，不重写任何解析；输出 `settled` / `unused` / `fixation` / `rejected` 四个量，`--sample` 打印支撑
+  「推翻」的窗口，`--save`/`--check` 让文档引用的数字可重算。
+- `eval/manifests/r237-traps.json`（225 KB，`--check` 通过）：456 集控制网格的读数与其文档摘要，CI 每次推送复算。
+- 主读数：`settled` 117 条（0.20/窗口）、`unused` 47.9%（7.73 行/窗口）、`fixation` **0/456**（11 次拒绝，0 次原样重发）、
+  `rejected` 507/4,447（11.4%），拆分为 **304（6.8%）从未结算** + 203 多产品。
+- CI：`ci.yml` 把新工具纳入 Python 覆盖率门禁，模块数 28 → **29**，全量 18,849/18,976 = **99.3%**。
+
+**发现的缺陷（真实的那个）。** `ask_board` 只在写入命中「本集打开过的 record」时结算；对一个从未查询过的订单成功写入，
+板子什么都不结算，那条问句继续站在 8 行窗口里。6.8% 的陈旧行由此而来，成因机械、可复现、且**不是**策略问题。修法需要
+「问句的词 ↔ 写入的 id」的绑定（商品查询同时返回名称与 id），与「问句级陈旧率」的测量共用同一件基建——所以它是 R238
+的第一件事，而不是一句待办。
+
+**发现的第二个缺陷（钱的那个）。** MemTrapBench 的评分是 rubric + LLM judge（GPT-5.2 主裁判、Claude-Sonnet-4.6 校验，
+四维、三次独立回答），规模是 1,050 条 **18–40 轮**对话。计划表把它按「规则评分、不调模型、1,000 题 × 8k」计为 ¥0.86，
+**只覆盖了作答、没有覆盖判分**，合计数 ¥2.82 因此不能作为 R237b 的报价（AUDIT 34.338）。
+
+**没做的、以及为什么。** 两条外部梯子的 harness（LoCoMo 的 token-F1 与 MemTrapBench 的判分器）都还没写；MemTrapBench
+的判分器要先做 50 条一致性校准才能确定它是否能用规则复刻，否则就要把 LLM 判分计入预算。这是 R237b，仍然欠着，报价
+待重算。
+
+**下一步最优路径。** ①R236 的 60 集机制探针（已按 Amendment 2 登记 30 题的抽样规则，04:02 UTC 离峰调度，¥2.5，下限
+¥1.3）；②R238：问句↔id 绑定 → 修未结算缺陷 + 问句级陈旧率（¥0 工程半场）；③R237b：两条外部梯子与判分器一致性校准
+（预算待重算）；④telecom 第三域（¥0）；⑤R221 2.0 提交（读已有网格，¥0）。
