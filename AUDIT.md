@@ -18823,3 +18823,48 @@ have served, and every document those rounds produced was correct — the number
 the one thing needed to *use* them was six lines of inline code in a measurement tool. The cheap check is to make
 the serving path call the same function the replay calls, and then to assert in the driver that the arm ran with the
 values the dispatch asked for. Both halves are now gates rather than intentions.
+
+## 34.336 — B1's bar was a write's rate over an episode's denominator, and the correct arm fails it
+
+**What was carried.** R236's B1: "on ≥95% of the 60 episodes, some block the model read carries an **open** ask whose
+family the episode later writes", bar taken from R234's 636-of-654 display coverage — **97.2%**.
+
+**What the arithmetic says.** 636/654 is a share of **required writes**. B1 is a share of **episodes**. Those are
+different quantities, and the reader built to take B1 measured both on the 456 control transcripts before a token was
+spent:
+
+| reading | scope | episodes holding an ask the request board does not | graded episodes whose write named a family the window carried | writes naming a carried family |
+|---|---|---|---|---|
+| `control.json` | `request` | 0 of 456 (**0.0%**) | 318 of 403 (**78.9%**) | 479 of 723 |
+| `control.json` | `clause` | 431 of 456 (**94.5%**) | 394 of 403 (**97.8%**) | 685 of 723 |
+| `front.json` | `clause` | 430 of 456 (**94.3%**) | 385 of 398 (**96.7%**) | 666 of 712 |
+
+The episode-level "any write named a family the window carried" quantity — the closest reading of B1 as written — is
+**89.5%** at the clause scope. The registered bar was 95%. So the arm that serves the board perfectly fails B1 by
+5.5 points, and the arm that serves nothing fails it by 89.5: **a bar both arms fail is a bar that cannot
+distinguish**. It is AUDIT 34.332 one level down — a margin taken from the wrong quantity — found the same way, by
+printing the quantity beside the rate.
+
+**The amendment, registered before the first paid episode.** B1 becomes what its own purpose says it is, a **wiring
+certificate**: the recomputed block holds at least one ask the request board does not, on ≥80% of episodes. It reads
+94.5% on the control grid and **0.0%** when the same reader is pointed at the request scope — zero for an
+environment that lost the switch, which is the failure the bar exists to catch. B2 becomes a **harm bar**: the
+dispatched share of graded episodes must not fall more than the registered ±9 points below the replay ceiling
+(97.8%), i.e. ≥88.8%, because the ceiling comparison against the *contract* board (78.9%) would price the window's
+width — a superset by construction — as if it were the model acting. `prereg/R236-clause-mechanism.md`, Amendment 1.
+
+**The ceiling replicates, which is why it is a ceiling.** 97.8% on `control.json` and 96.7% on `front.json` — two
+independent 456-episode grids, 1.1 points apart, intervals overlapping. And the wiring signature replicates too:
+94.5% and 94.3% on the same two grids, 0.0% for the control. Both are saved in `eval/manifests/r236-replay.json`
+with the documents' sha256, and `board_mechanism.py --check` re-derives the parts on every push.
+
+**What the round can and cannot now claim.** It can certify the wiring, and it can bound the harm. It still cannot
+say the wider window helped: B2's point estimate will sit near the ceiling by construction, so the available claim is
+the negative one plus the descriptive share at the window the model actually read. That was true before the
+amendment; what changed is that the round now has a bar it can pass and a bar it can fail.
+
+**The generalisation, and it is the fourth of its kind.** A rate has a numerator and a denominator, and a bar taken
+from one number and stated about another is a bar nobody can pass. R235 applied an effect size to a domain that
+cannot resolve it; R221 priced a submission as a dispatch; R237's twenty dollars was the uncached column of a
+workload that is 99.5% cache. This one is the same defect in a *bar* rather than in a price — and it was caught by
+the same instrument: a tool that prints the quantity, run before the money.

@@ -12974,3 +12974,39 @@ and `board_scope()`/`board_display()`/`board_placement()`/`board_admission()` al
 half-set. The census carries the four values, the per-episode dose record carries `scope` and `display`, and the raw
 dump keeps them beside the join key. The workflow asserts the values the arm **ran** with, which is the difference
 between a flat result and a dispatch that measured nothing.
+
+## 17.202 — The reader: recompute the block, then ask whether the write named it
+
+R236's bars are per-episode proportions over a **dispatched** transcript, and no tool in this lane produced one. The
+reader is `eval/tools/board_mechanism.py`, and its design has one idea: the block cannot be quoted from a transcript
+(τ² stores no injected message — the tail placement writes into a copy), so it is **recomputed** from the same
+messages the driver had, with the same functions.
+
+```
+entry    = read_anchor.ledger(messages)                 # writes in order, each with its message index
+window   = read_anchor.moment(entry, messages, index, scope, order=…, fold=…)["items"][:CAP]
+served   = ∃ a write whose family is open on the window at its own call's moment
+acted    = the same test, restricted to writes that discharge an evaluator requirement
+wired    = board_of(messages, scope) holds an ask board_of(messages, request) does not
+```
+
+Three decisions are load-bearing:
+
+* **Keyed by message, not by call.** Two calls in one assistant message were answered by one block; a per-call key
+  would let the second call see a board the first never did — the leak `moment`'s two cuts were built to remove.
+* **The cut is applied here, not in `moment`.** The same board is read uncut by the attribution columns, and a
+  reader that asked an attribution tool for a window would be asking it to be a renderer.
+* **`wired` is computed once an episode over the finished conversation.** The switch either was on or it was not; a
+  per-call version would price the conversation rather than the arm.
+
+**What it found before the money.** B1's registered 95% was a per-*write* rate (R234's 636/654 = 97.2%) applied to a
+per-*episode* quantity (89.5% at the clause scope), so the correct arm failed it. B1 became a wiring certificate at
+80% — 94.5% on the control grid, **0.0%** at the request scope — and B2 a harm bar at the replay ceiling minus the
+registered resolution (97.8% − 9 = 88.8%), because comparing against the contract board's 78.9% would price the
+window's width, a superset by construction, as if it were the model acting. The ceiling replicates at 96.7% on a
+second 456-episode grid, which is why it is a ceiling and not a result.
+
+**The saved form is checked, not trusted.** `--save` writes the three readings with both documents' sha256 and the
+command that produced them; `--check` re-derives every share from its own counts, every denominator from the rows,
+and each verdict from its own bar. CI runs the check on `eval/manifests/r236-replay.json` on every push, so the
+numbers the amendment quotes cannot drift from the tool that produced them.

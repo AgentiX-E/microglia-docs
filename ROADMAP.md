@@ -10633,11 +10633,22 @@ all read. The instrument delegates to the parser, so the block a reading describ
 proved by re-deriving four reading scopes over the 456 episodes and getting byte-identical JSON. AUDIT 34.335,
 PROGRESS 249.59.
 
-**What is still owed before the money: one reader.** B1 and B2 are per-episode proportions over the dispatched
-transcript, and no existing tool computes them: `--replay` reports ticks over the request board and `--compare`
-pairs two arms' rewards. The reader recomputes, for each call moment of a clause episode, the open families the block
-carried and asks whether the call names one of them — the same `moment`/`visibility` machinery `read_anchor` already
-owns, with the clause scope. ¥0, and it is what makes the ¥2.52 readable at all.
+**The reader exists, and it changed the bars before any money (Amendment 1, ¥0).**
+`eval/tools/board_mechanism.py` recomputes the block as it stood before every write and reports, per episode,
+whether the window reached further than the request board and whether the write named a family it carried.
+Pointed at the 456 control transcripts at both scopes it reads:
+
+| reading | scope | wired | acted |
+|---|---|---|---|
+| `control.json` | `request` | 0 / 456 (0.0%) | 318 / 403 (78.9%) |
+| `control.json` | `clause` | 431 / 456 (94.5%) | 394 / 403 (97.8%) |
+| `front.json` | `clause` | 430 / 456 (94.3%) | 385 / 398 (96.7%) |
+
+B1's registered 95% was inherited from R234's **per-write** display rate and applied to a **per-episode** quantity,
+which reads 89.5% — so the correct arm would have failed it. **B1 is now a wiring certificate at 80%** (94.5%
+measured, 0.0% for an arm that lost the switch) and **B2 a harm bar at 88.8%** (the replay ceiling 97.8% less the
+registered ±9pp), because the contract-board comparison would price the window's width as if it were the model
+acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatch is now the only thing owed.
 
 ---
 

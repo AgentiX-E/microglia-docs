@@ -30643,3 +30643,36 @@ The README's layer table moved by the 15 lines `core` gained, which is the gate 
 **Cost: ¥0.** No provider call, no dispatch. The probe it unblocks is ¥2.52 (floor ¥0.63 at the fifteen-episode
 stopping rule) and still needs its own readout — B1 and B2 are per-episode proportions over the *dispatched*
 transcript, which no existing reader computes. That reader is the next unit, and it is also ¥0.
+
+## 249.60 R236's reader, and a bar the correct arm would have failed — caught for ¥0
+
+The probe's readout did not exist either. B1 and B2 are per-episode proportions over a **dispatched** transcript,
+and nothing in this lane computed one: `--replay` reports ticks over the request board, `--compare` pairs rewards.
+`eval/tools/board_mechanism.py` closes that: it recomputes the block as it stood before every write
+(`read_anchor.moment` at the arm's scope and rung — the renderer the driver runs), then asks whether the window
+carried the family and whether the write named it.
+
+**Pointed at the 456 control transcripts, before any money, it found that B1's bar was unreachable.**
+
+| reading | scope | wired (episodes holding an ask the request board does not) | acted (graded episodes whose write named a carried family) |
+|---|---|---|---|
+| `control.json` | `request` | 0 / 456 (0.0%) | 318 / 403 (78.9%) |
+| `control.json` | `clause` | 431 / 456 (94.5%, 3,025 extra asks) | 394 / 403 (97.8%) |
+| `front.json` | `clause` | 430 / 456 (94.3%, 2,876 extra asks) | 385 / 398 (96.7%) |
+
+B1 was registered as "≥95% of episodes, any write named a carried family", with the bar inherited from R234's
+**per-write** 97.2%. The per-episode quantity is **89.5%** — so the arm that serves the board perfectly fails, and
+the arm that serves nothing fails by 89.5. Both arms fail; the bar separates nothing. AUDIT 34.336.
+
+**Amendment 1, registered before the first paid episode.** B1 → wiring at **80%** (94.5% measured, 0.0% for a lost
+switch: the bar separates the two by ninety-four points). B2 → harm at **88.8%** (the replay ceiling 97.8% less the
+registered ±9pp), because comparing against the contract board's 78.9% would price the window's width — a superset
+by construction — as if it were the model acting. The ceiling replicates at 96.7% on the other 456-episode grid.
+
+**What this buys.** A dispatch whose wiring fails is a red build rather than a paragraph, and a round that can fail
+for a reason it could not have had before. Cost ¥0; the alternative was sixty episodes read as "the board was not
+served" about an arm that served it perfectly.
+
+**Gates.** Python 18,352/18,470 (**99.4%**) over **28** modules, `board_mechanism` 99%; the reader's own suite covers
+the wiring signature, both bars' failure paths, the saved form's arithmetic check and the CLI. `working-memory.yml`
+runs the reader with `--bar` on a `clause` dispatch, so the bar is a gate and not a printout.
