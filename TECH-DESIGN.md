@@ -13185,3 +13185,38 @@ budget.py                   → 读 manifest，只验算术自洽与闸门绑定
 `budget.py` 不重算 `mde` 是刻意的：那需要 `a`、`b` 与 `POWER_Z`，而一旦它拥有这三个常量，`mde` 就有了两份实现。它验的是「每一档的成本等于它自己的三个因子乘单价」与「每道闸门的价格等于它指向的那一档」——这两条不需要拟合，只需要乘法和查表。
 
 **价格的锚定顺序。** `check_tiers` 的价格来源是：调用方 `episode_usd` 优先；否则计划顶层的 `episodeUsd`；最后才是档所在条目自己的 `episodeUsd`。并且只要上层有值而条目与它不一致，就报错而不是采信条目。理由是一句话：**一行给自己定价的梯子能证明任何数。**
+
+## 17.208 — handle 档：三条关系、一个格、两把尺子
+
+**为什么解析器读 transcript 而不是建表。** 静态令牌表要在记忆仪器里放一份数据库副本，成为第二个真值来源；而且它会为一个从未发生的解析作证。读取在 transcript 里，`read_records` 只是把它整理成三条关系：
+
+```python
+phones     phone -> line_id      某条 line 记录自己的 phone_number
+accounts   phone -> customer_id  某个 customer 记录自己的 phone_number
+owners     line_id|bill_id -> customer_id
+```
+
+**为什么 `phones` 只从 line 记录取，不从 customer 记录取。** customer 的 `phone_number` 是**账户的联系号码**，不是某条线路的号码，两者是不同的断言。混在一起就会把账户号码定型成线路，兄弟线路的保护随之失效。
+
+**`known` 是第四个字段，负责「这个 id 是什么」。** 一段请求里裸写 `L1003` 时，规则必须知道它是线路——而这个事实不需要读到那条线：账户的 `line_ids` 已经说了它是线路。所以 `known` 同时从 line 记录与 customer 的 `line_ids` 学习。少了它，`L1003` 会退化成未定型键，与收据的类型化键比不出结果，读数静默为零（不报错、不失败）。
+
+**格子（lattice）的三条规则，按顺序咨询：**
+
+```python
+for kind in (LINE, BILL):          # OWNED = (LINE, BILL)
+    left  = {name for key, name in ask if key == kind}
+    right = {name for key, name in carried if key == kind}
+    if left and right:
+        return bool(left & right)  # 两侧都说了是哪一条，就在这一层比
+return bool({n for _, n in ask} & {n for _, n in carried})   # 否则忽略类型比记录
+```
+
+第一条拒绝兄弟：两侧都有线路时，账户相同不构成理由。第三条保住零售：未定型的订单号按拼写比较，即 R238 规则不变。**中间没有「账户兜底」这一步，是刻意的**——兜底会让第一条永远走不到。
+
+**`receipt_keys` 的两种来源。** 有 `args` 时按键名定型（`line_id` → line、`item_ids` → item，四种后缀各按自己的长度切，`[:-2]` 与 `[:-3]` 差一位就会得到 `line_` 这个类型名，且不报错）；没有 `args` 时退回扁平化的 `ids`，未定型——那正是它拥有的证据。**有类型时不再要求形状**：`_id_values` 必须看形状，因为形状是它唯一的证据；而参数名已经说了它是什么，这时再要求值也长得像标识符，会在任何短 id 的语料上把比较悄悄清空。
+
+**两个计数，不是一个。** `byRecord` 与 `byHandle` 分开上报：后者的证据是一次解析，比前者弱，读者必须能看见一块板子里有多少 tick 建立在解析上。
+
+**测量脚本的依赖方向。** `build_telecom_records.py` → `goal_board`（导入已发布规则），而不是各写一份。四条规则共用同一段文本与同一次读取，所以任意两条之间的差别是规则本身而不是输入——这才叫消融。
+
+**反事实是这轮的验证核心。** 对数据库每条线路合成一次写入，统计每条规则承认多少条。`checked()` 校验「至多一条且是 blind 的子集」（至多而非恰好：没有账户认领的号码就是零），`--verify` 从字节重算整个 reading。**「至多一条」写进校验、「恰好那一条」写进报告**：前者是算术不变量，后者是关于这个数据库的断言，两者混在一处会让清单替自己的历史作证。

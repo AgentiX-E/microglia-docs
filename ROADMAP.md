@@ -10682,12 +10682,14 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 > **Gates:** Python 19,048/19,173 (99.3%), 29 modules all ≥95%, `read_anchor` 99.9%; all four tool self-tests and nine
 > manifest checks green; 13 workflows parse; both repos CI green.
 >
-> **Next, in order:** ① **R241** the third domain's settlement handle (¥0, 2 days — the record grade reads zero there,
-> so the handle is the record the episode read rather than the identifier the clause spells); ② the third domain's
-> accuracy dispatch, carried as a ladder rather than as a price (**R240b**: gate 0 reachability ¥0 → gate 1 ¥1.68 →
-> gate 2 ¥8.41 → gate 3 ¥93.51, and gate 3 is bought only when a publishable domain score is what is wanted);
-> ③ R237b external ladders (calibrate the MemTrapBench judge on 50 items first — ¥0.86 prices answers, not the rubric
-> + LLM judge); ④ R221 2.0 submission (¥0, reads a finished grid); ⑤ parser-scope product switch (¥0, 0.5 day).
+> **Next, in order:** ① **R242** the third domain's ask vocabulary (¥0, 1 day — six cues and the two-domain census
+> that would justify them; R241 settled the record question without one, and this is the axis R217a paid for on
+> airline, blocked until the lane holds telecom transcripts); ② the third domain's accuracy dispatch, carried as a
+> ladder rather than as a price (**R240b**: gate 0 reachability ¥0 → gate 1 ¥1.68 → gate 2 ¥8.41 → gate 3 ¥93.51,
+> and gate 3 is bought only when a publishable domain score is what is wanted — **R241 has now cleared gate 0 at
+> 8 of 8**, which is what made gate 1 worth pricing); ③ R237b external ladders (calibrate the MemTrapBench judge on
+> 50 items first — ¥0.86 prices answers, not the rubric + LLM judge); ④ R221 2.0 submission (¥0, reads a finished
+> grid); ⑤ parser-scope product switch (¥0, 0.5 day).
 
 ## R240 (registered 27 Nov, ¥0) — the third domain's records, and a grade written in one alphabet
 
@@ -10790,6 +10792,56 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 > **100%** (`resolution.py` 462/462 statements with no partial branch, `budget.py` 253/253); `resolution.py
 > --check-tiers` re-derives all ten rungs on every push and refuses a plan whose rung is not its own factors; 13
 > workflows parse; both repos CI green.
+
+## R241 (registered 27 Nov, ¥0) — the handle is the record the episode read, and a rule is judged on what it refuses
+
+![R241: four rules on two axes — the writes each reaches, and the lines it credits that the request never named](figures/r241-handle.png)
+
+> **Status, 27 Nov: done, ¥0, no model called.** R240 left the third domain with no reachable record grade and one
+> open question: a phone number names **two** records here, because a customer's `phone_number` is also one of their
+> own lines'. What it did not settle is *which* repair is correct — and the answer turned out to be neither of the two
+> it priced. A table that ignores the ambiguity reaches 8 of 8 writes and credits **three** lines; a table that
+> refuses it reaches none. The rule that works anchors on the **read the episode performed** and compares at the
+> finest record type both sides name.
+>
+> **The three relations, and why the third is the round.** `read_records` keeps `phones` (a line record's own
+> number), `accounts` (a customer's own number) and `owners` (a customer's `line_ids`, a bill's `customer_id`) from
+> the transcript's tool results. A token a line claims resolves to **that line and its account — never to the
+> account's other lines**. Both sides of a settlement then usually name a line *and* an account, and a plain
+> intersection settles a write to line 3 from an ask about line 2 because the account matches; `same_record` refuses
+> that by comparing at the finest type both commit to. Retail is untouched: an untyped order id compares on its
+> spelling, exactly R238's rule.
+>
+> **Measured on the domain's 20-task sample, through the shipped resolver** (`build_telecom_records.py` imports
+> `goal_board` rather than re-implementing it, so a defect in the product's rule is a defect in this table):
+>
+> | rule | reaches (of 8) | credits (of 9 lines) |
+> |---|---|---|
+> | shipped, identifier only (R240) | 0 | — |
+> | blind token table | 8 | `L1001`, `L1002`, `L1003` |
+> | strict token table | 0 | — |
+> | **handle (R241)** | **8** | **`L1002`** |
+>
+> **The reading is now re-derivable from bytes in the repository.** The corpus (9.6 KB database, 84 KB task set) is
+> under `eval/fixtures/telecom/`, the manifest carries their digests, and `--verify` recomputes every figure —
+> counters, `credits`, `records`, `ambiguous`, and each row's four flags — and fails on any drift. R240 shipped its
+> zero on a manifest that could only check its own arithmetic, which cannot tell whether the arithmetic was ever
+> about this corpus.
+>
+> **A divergence found and closed.** `SETTLEMENT_GRADES` declared two grades while the board had emitted three since
+> R238; nothing compared the declaration with what the rule returns. The board's self-test now asserts its four
+> return values against `serving-defaults.json`, the product's TypeScript reads the same file, and the third domain's
+> nine write tools are in `FAMILIES` so a receipt from that domain is visible at all. What is deliberately **not**
+> shipped is a cue list for those families: recognising "my data is slow" as an ask is R217a's axis, needs telecom
+> transcripts the lane does not hold, and is named in the manifest's `notYet` rather than left as a silent gap.
+>
+> **The limit, stated.** The grade rests on a read, so a number no account claims — a household's second line —
+> resolves to nothing and credits nothing. A static table would reach it and would also reach every sibling.
+>
+> **Gates:** Python **20,270/20,393 (99.4%)**, 30 modules all ≥95%, the script this round rewrote at 99.7%
+> (492 statements, no uncovered line), `goal_board` at 100% of statements; 63 self-test checks in the script and a
+> `--check` plus a `--verify` on the manifest; TS 6,300 tests including the README layer-table gate, which caught the
+> twelve lines this round added to `core`; 13 workflows parse.
 
 ## R237 (registered 27 Nov, ¥2.82) — the two external ladders, priced at the cache
 
