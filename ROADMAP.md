@@ -10841,7 +10841,8 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 > **Gates:** Python **20,270/20,393 (99.4%)**, 30 modules all ≥95%, the script this round rewrote at 99.7%
 > (492 statements, no uncovered line), `goal_board` at 100% of statements; 63 self-test checks in the script and a
 > `--check` plus a `--verify` on the manifest; TS 6,300 tests including the README layer-table gate, which caught the
-> twelve lines this round added to `core`; 13 workflows parse.
+> twelve lines this round added to `core`; 13 workflows parse; both repos CI green (`573b8bcd` / `b7edb2ad`), with
+> `--verify` recomputing the whole reading from the fixtures that now live in the repository.
 
 ## R237 (registered 27 Nov, ¥2.82) — the two external ladders, priced at the cache
 

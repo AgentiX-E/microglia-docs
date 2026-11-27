@@ -30866,4 +30866,4 @@ runs the reader with `--bar` on a `clause` dispatch, so the bar is a gate and no
 
 **一个存在了数轮而没有症状的割裂。** `SETTLEMENT_GRADES` 声明两个等级，而板自 R238 起返回三个；没有测试比较声明与返回值。现在 `goal_board` 的自检对自己的四个返回值与 `serving-defaults.json` 对齐，产品 TS 读同一份清单，清单 `provenance` 记下两个新等级的出处。第三域九个写工具进入 `FAMILIES`（板看不见的写入无法结算），而**cue 仍未发布**——那是 R217a 的轴，需要 transcript，写进 `notYet`。
 
-**门禁实测。** Python **20,270/20,393 = 99.4%**，**30** 模块每模块 ≥95%；本轮重写的脚本 **99.7%**（492 语句、0 行未覆盖），`goal_board` 语句覆盖 **100%**；脚本 63 项自检、清单 `--check` + `--verify`；TS **6,300** 项测试全过（含 README 层表门禁，它抓住本轮加进 `core` 的十二行）；13 个 workflow 解析；推送后由 CI 复核。
+**门禁实测。** Python **20,270/20,393 = 99.4%**，**30** 模块每模块 ≥95%；本轮重写的脚本 **99.7%**（492 语句、0 行未覆盖），`goal_board` 语句覆盖 **100%**；脚本 63 项自检、清单 `--check` + `--verify`；TS **6,300** 项测试全过（含 README 层表门禁，它抓住本轮加进 `core` 的十二行）；13 个 workflow 解析；两仓 CI 全绿（`573b8bcd` / `b7edb2ad`），`--verify` 在 CI 里从仓库内的字节重算通过。
