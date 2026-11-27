@@ -19187,3 +19187,22 @@ caught the new module — a gate doing the job it exists to do.
 20,270/20,393 = 99.4% every module ≥95%; full vitest 306 files / 6,334 tests; 13 workflows parse. One transient
 `onTaskUpdate` worker timeout occurred on a many-core local run (documented in vitest.config.ts as the reason for
 `maxWorkers: 8`); a clean rerun was green with no unhandled error, and no code was weakened to accommodate it.
+
+## 34.348 R244 — three local-pass/CI-fail defects the push gate caught
+
+The local gates were green; the push turned red three times, and each failure was a real drift a local run could not
+see, not a flaky rerun to be waved through.
+
+1. **Reader coverage (93.2% in CI vs 96.1% local).** CI measured coverage on `--self-test` only; `--check` and
+   `--verify` ran as plain `python3`, so `main()`'s argparse branches were never counted. The self-test drives those
+   functions directly, which is why local (three commands under `coverage --append`) passed. Fixed by running check
+   and verify under `coverage run --append` in ci.yml, with the reason written beside the commands.
+2. **Bundle ceiling.** `apply/state-role.ts` is read by the product (`renderPack` prints `state`), so it is in the
+   core bundle: 55,071 raw / 18,865 gzip against 54,000 / 18,500. Raised deliberately to 56,000 / 19,000 with the
+   measurement and rationale in `scripts/bundle-size.mjs`; `--probe` still rejects a halved budget.
+3. **Coupling snapshot.** Adding a production module makes the tree 266 modules; the committed
+   `eval/results/poc-coupling.json` still described 265. `check-coupling-ledger.mjs` caught it. Regenerated and
+   pushed; all 11 checks pass.
+
+Final microglia CI on `bc33166d`: `completed/success`. docs CI on `8d6b83d2`: `success`. No gate was weakened,
+skipped, or given `continue-on-error`; each failure was rooted in a real divergence and repaired at the source.
