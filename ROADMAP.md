@@ -10684,9 +10684,10 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 >
 > **Next, in order:** ① **R241** the third domain's settlement handle (¥0, 2 days — the record grade reads zero there,
 > so the handle is the record the episode read rather than the identifier the clause spells); ② the third domain's
-> accuracy dispatch (**¥93.5, not ¥0** — see R240 below: 278 tasks × 2 arms × 4 attempts sees 4.30pp); ③ R237b
-> external ladders (calibrate the MemTrapBench judge on 50 items first — ¥0.86 prices answers, not the rubric + LLM
-> judge); ④ R221 2.0 submission (¥0, reads a finished grid); ⑤ parser-scope product switch (¥0, 0.5 day).
+> accuracy dispatch, carried as a ladder rather than as a price (**R240b**: gate 0 reachability ¥0 → gate 1 ¥1.68 →
+> gate 2 ¥8.41 → gate 3 ¥93.51, and gate 3 is bought only when a publishable domain score is what is wanted);
+> ③ R237b external ladders (calibrate the MemTrapBench judge on 50 items first — ¥0.86 prices answers, not the rubric
+> + LLM judge); ④ R221 2.0 submission (¥0, reads a finished grid); ⑤ parser-scope product switch (¥0, 0.5 day).
 
 ## R240 (registered 27 Nov, ¥0) — the third domain's records, and a grade written in one alphabet
 
@@ -10724,6 +10725,69 @@ acting. `prereg/R236-clause-mechanism.md` Amendment 1; AUDIT 34.336. The dispatc
 >
 > **Gates:** Python 19,502/19,629 (99.3%), 30 modules all ≥95%, the new script 99% (328 statements, no uncovered line, two partial branches); 44
 > self-test checks and a `--check` on the new manifest; 13 workflows parse; both repos CI green.
+
+## R240b (registered 27 Nov, ¥1.68 of a ¥93.51 ladder) — the price was a product; it is now a ladder
+
+> **Status, 27 Nov: done, ¥0 spent.** The line that followed R240 said "the third domain's accuracy dispatch, ¥93.5".
+> The arithmetic was right and the *shape* was wrong: `278 × 2 arms × 4 attempts = 2,224 episodes` at the measured
+> `$0.00584` is one number multiplied out of three factors that buy three different things, and a reader shown the
+> product cannot say which factor they would rather not pay for.
+>
+> | factor | what it buys | needed to answer "does a precision dispatch help?" |
+> |---|---|---|
+> | × 278 tasks | a denominator the effect is divided by | no — more tasks divide the effect smaller |
+> | × 2 arms | a control to pair against | no — the control half is usually already on disk |
+> | × 4 attempts | the floor 6.72pp → 4.30pp | no — that is a *published score's* precision |
+>
+> **The ladder, re-derived from the grid's own fit** (`resolution.py --tier`, every rung re-multiplied on every
+> push by `--check-tiers`). The fit is `var(m) = 0.20248/m + 0.014962`, fitted from the retail grid, and it
+> reproduces the three numbers this plan has quoted since R235 — floor **3.21pp**, four attempts **6.72pp** at 114
+> tasks, **4.30pp** at 278 — so the ladder is the same ruler, read at more lengths:
+>
+> | tasks | arms | m | episodes | CNY | MDE | floor | kind |
+> |---|---|---|---|---|---|---|---|
+> | 278 | 2 | 4 | 2,224 | **93.51** | 4.30pp | 2.06pp | paired delta |
+> | 278 | 1 | 4 | 1,112 | 46.76 | 4.20pp | — | absolute score |
+> | 114 | 2 | 4 | 912 | 38.35 | 6.72pp | 3.21pp | paired delta |
+> | 114 | 1 | 4 | 456 | 19.17 | 6.56pp | — | absolute score |
+> | 114 | 1 | 1 | 114 | 4.79 | 13.12pp | — | absolute score |
+> | 50 | 2 | 2 | 200 | 8.41 | 13.51pp | 4.85pp | paired delta |
+> | 50 | 1 | 2 | 100 | 4.20 | 14.01pp | — | absolute score |
+> | 40 | 2 | 2 | 160 | 6.73 | 15.10pp | 5.42pp | paired delta |
+> | 40 | 1 | 1 | 40 | **1.68** | 22.15pp | — | absolute score |
+> | 24 | 1 | 1 | 24 | 1.01 | 28.60pp | — | absolute score |
+>
+> **Two measurements share this table and they are not the same one.** A one-armed rung cannot produce a paired
+> delta — there is nothing to pair it with — so it is priced as an absolute score's half-width,
+> `2.802 × √(0.25/Nm)`, at a pass rate of one half, which maximises `p(1−p)` and is therefore the conservative
+> bound. Pricing a one-armed dispatch with the paired formula would quote a resolution the dispatch cannot deliver;
+> this plan has made that class of error four times, so the two kinds are printed in their own column.
+>
+> **A cheap rung is a blunt ruler, and the table says so.** Forty tasks have a floor of **5.42pp** against the
+> 278's **2.06pp** — the floor rises as the root of the task ratio, not the ratio. That is why the cheap rungs are
+> not a discount: they answer a *different* question, in a domain where the effect is expected to be large. A
+> precision dispatch moves only the questions whose answer is in the candidate set but ranked low; on 278 tasks
+> that subset's effect is diluted into the low single digits, and the dilution is precisely what the 2,224-episode
+> product was buying its way back out of. Measured on the subset, the same effect is large, so 40 episodes at
+> ¥1.68 resolve the *sign* — and a sign that is negative cancels the rest.
+>
+> **What this round did not buy.** Every number above is arithmetic over a fit on disk; no episode was dispatched.
+> The subset that a precision dispatch can move has not been enumerated, because enumerating it is R241's
+> reachability work — and if telecom's reach stays at **0 of 8** (R240), the candidate set holds no correct answer
+> and no dispatch is worth pricing at any rung. That ordering is the round's actual content: **the ladder exists so
+> that the ¥0 gate comes before the ¥1.68 gate, and the ¥1.68 gate comes before the ¥93.51 one.**
+>
+> **Registered as four gates** (`plan-costs.json`, schema `@2`, first paid gate = `nowCny`): **gate 0** reachability
+> at ¥0, which cancels the round if nothing is reachable; **gate 1** 40:1:1 at ¥1.68 for the sign; **gate 2**
+> 50:2:2 at ¥8.41 for the size with a control; **gate 3** 278:2:4 at ¥93.51 for a publishable domain score, priced
+> again at the cache before it is bought. The line's opening figure is ¥93.51 and the registered figure is ¥1.68,
+> which is the same correction this plan has made four times: **a quantity was priced, and it was the wrong
+> quantity.**
+>
+> **Gates:** Python **19,811/19,935 (99.4%)**, 30 modules all ≥95%, and the two files this round touched at
+> **100%** (`resolution.py` 462/462 statements with no partial branch, `budget.py` 253/253); `resolution.py
+> --check-tiers` re-derives all ten rungs on every push and refuses a plan whose rung is not its own factors; 13
+> workflows parse; both repos CI green.
 
 ## R237 (registered 27 Nov, ¥2.82) — the two external ladders, priced at the cache
 
