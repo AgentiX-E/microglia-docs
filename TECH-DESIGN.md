@@ -13429,3 +13429,65 @@ fixture `eval/fixtures/view-consistency.json`（7 案例，覆盖五种 verdict�
 新模块四维 100%；行为 23 测试 + 绑定 8 测试；Python reader 96.7%（self-test+check+verify 合并，覆盖 main 的
 argparse 分支）；README core 层 50→51 模块、11,044→11,243 行、adapter 2.6%→2.5%；coupling 267→268 模块、
 11 项检查；bundle 不变（模块不在渲染路径）；`--expect-files` 32→33。
+
+## 17.214 R247 — 抽象生命周期：从单条观测到持久化决策的纯函数
+
+**一句话决策，先于论证。** 事件记录（exemplar）永远累积；claim 默认是按需合成、用完即弃的临时 guidance，只有当它
+自己的观测结果证明稳定有用才持久化、证明有害则丢弃。理由：Anti-Persistence（arXiv 2610.27406）把负效果的载体
+定位在**被持久化的错误抽象**——它经抽象→执行→再抽象自我再生——并实测"保留轨迹、抽象临时化"以最低 LLM 成本换得
+更高 held-out 成功率。
+
+### 模块与位置
+
+`packages/core/src/apply/abstraction-lifecycle.ts`，在 `apply` 层——因为它决定什么进入持久记忆，与 `viewConsensus`
+（单条稳定性）、`stateRole`（读侧状态）并列，均从 `apply/index.ts` 导出。纯函数，无 clock、无网络、无模型；输入是
+单条的 kind 与可选 utility。为什么调用方提供 kind：产品已有 `isEventKind` 作为"什么是记录"的规范判据，本模块复用
+同一语义，而不是重新发明一套分类。
+
+### 数据形状
+
+```ts
+type AbstractionLifecycleInput = {
+  id: string; kind: string;
+  utility?: { injected: number; flippedUp: number; flippedDown: number };
+};
+type Disposition = 'retain' | 'ephemeral' | 'discard';
+```
+
+字段与产品 `Utility` 同义。净翻转 `delta = flippedUp - flippedDown`（无 utility 时为 0）。`delta`、`injected`、应用的
+`minInjections` 全部上报用于 readback，但**判定只看 delta 符号、kind 与门槛**，不看幅度——与 R246"按符号不按幅度"
+同一纪律，也让三读者可以用整数精确复现、无浮点漂移。
+
+### 判定阶梯（顺序即论证）
+
+1. `kind === 'exemplar'` → `retain` / `event-record`。记录不是 claim，两条记录不矛盾，没有可复现的规则。
+2. `delta < 0` → `discard` / `harmful-abstraction`，**先于门槛**。错误复现的起点是一条害过一次的规则；量不能赦免它。
+3. `delta > 0 && injected >= minInjections` → `retain` / `stable-help`。足够观测见过它有用，取得持久化资格。
+4. `delta > 0`（低于门槛）→ `ephemeral` / `insufficient-outcomes`。是提示，不是证据；按需重建，不存。
+5. 其余（`delta === 0` 或无 utility）→ `ephemeral` / `no-signal`。无证据持久化。
+
+### 守卫（refuse rather than default）
+
+id 非空字符串；kind 属于 `CLAIM_KINDS ∪ {exemplar}`（与 `isEventKind` 的补集一致）；`injected/flippedUp/flippedDown`
+非负整数；`flippedUp + flippedDown <= injected`；`minInjections` 是 ≥1 的整数。违规抛 `MG_E_CONFIG`，违规 id 进入
+message 而不只在 details——宿主通常只记 message。未知 kind 被拒，因为把记录误判成 claim（或反之）会静默反转整个
+持久化策略。
+
+### 确定性与开关纪律
+
+判定不依赖任何外部状态；同名输入恒等；不修改输入（测试用 `Object.freeze` 验证）。默认关闭：调用方显式调用才生效，
+R247 之前所有已提交工件逐字节不变。与 `stateRole`/`viewConsensus` 相同：选项在调用侧，不在存储侧。
+
+### 三读者契约
+
+fixture `eval/fixtures/abstraction-lifecycle.json`（12 案例，覆盖三种 disposition、五种 reason）；清单
+`eval/manifests/abstraction-lifecycle.json` 由 `eval/tools/abstraction_lifecycle.py --verify` 从字节重推导，`--check`
+重算清单自身阶梯（disposition/reason 属于闭集、kind/delta/门槛唯一决定判定），`--self-test` 66 条含每个守卫/
+篡改/CLI 分支；`abstraction-lifecycle-manifest.test.ts` 用产品 `abstractionLifecycle` 推导同一读数逐字段比对。
+全整数或字符串字段，无浮点比较（不同于 R246 的 gain）。任一读者漂移即失败一边、构建停止。
+
+### 门禁
+
+新模块四维 100%；行为 22 + 绑定 14 测试；Python reader 97.8%（self-test+check+verify 合并，覆盖 main 的 argparse
+分支），self-test 66/66；README core 层 51→52 模块、11,243→11,425 行；coupling 268→269 模块、11 项检查；bundle
+不变；`--expect-files` 33→34；全量 `pnpm check` 退出码 0。

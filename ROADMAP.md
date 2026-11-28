@@ -11168,3 +11168,47 @@ bundle 不变（core 55,071/18,865 B，模块 opt-in 不在渲染路径）；`--
 **注意：本轮不是准确率收益，也不是付费臂。** 它是写侧机制，与 R244（读侧）、R245（成本侧）合成三个边界的完整
 覆盖；它把用户的核心假设变成一个可证伪、可复核的接纳判据，并为后续的 R104b（模型 proposer）提供"proposer 写出的
 候选必须先过一致性门"的接线点。
+
+## R247 (read 28 Nov, ¥0) — 把"记忆负效果"的第二半钉死：累积轨迹，抽象默认临时化
+
+> **状态，28 Nov：read，¥0，未调用模型。** R246 关掉了写侧的第一个问题——单条修正是否经得起换一种分析。
+> 本轮关掉紧邻的第二个问题：一条规则**过了那道门之后，到底该不该被存下来**。Anti-Persistence
+> （arXiv 2610.27406，Indiana University + Tencent）给这个问题标了数：它命名 *error reproduction*——一个错误抽象
+> 塑造一次执行的轨迹，那条轨迹又成为下一轮综合的输入，于是同一错误在原始规则被删掉之后仍被重新导出。它的设计
+> **保留轨迹与结果、按需重建任务特定 guidance、执行后丢弃**；在三个 benchmark、三个 backbone 上以最低的平均
+> LLM 调用成本取得更高的 held-out 成功率。本轮复刻这个机制为一个纯函数。**不导入任何 +pp**——该榜没有 microglia 提交。
+
+![R247 — 每条知识的净翻转与门的判定，颜色为 disposition](figures/r247-anti-persistence.png)
+
+**本仓的那条缝。** `isEventKind` 早已区分 `exemplar`（一次事件的记录——两条记录不会互相矛盾）与 claim 类
+（`constraint`/`negative`/`lexicon`/`procedure`/`abstention`，断言某个类上的东西）。这正是 Anti-Persistence
+"经验 vs 抽象"的分界线；缺的是架在其上的**生命周期决策**——记录与 claim 过去受同一套持久化规则支配。
+
+**实现。** `packages/core/src/apply/abstraction-lifecycle.ts` 导出 `abstractionLifecycle(item, options)`：
+
+| kind / 观测结果 | disposition | reason |
+|---|---|---|
+| `exemplar`（任意 utility） | `retain` | `event-record` |
+| claim，净翻转 < 0 | `discard` | `harmful-abstraction` |
+| claim，净翻转 > 0 且 `injected ≥ minInjections` | `retain` | `stable-help` |
+| claim，净翻转 > 0 但 `injected < minInjections` | `ephemeral` | `insufficient-outcomes` |
+| claim，净翻转 = 0 或无 utility | `ephemeral` | `no-signal` |
+
+两个决定承载论证。**伤害先于门槛检查**：一条规则即使只害了一次也能再生，所以观测次数不能赦免它——这是错误复现
+路径在源头被切断。而 exemplar 即便带伤害读数也保留：记录是"发生过什么"，不是要应用的规则，没有可复现的规则。
+`delta`/`injected`/应用的门槛只上报用于 readback，判定只用净翻转符号与门槛。守卫拒绝空 id、未知 kind、不可能的
+utility 或坏门槛，而不是默认放行——任何一项放行都会把记录误判成 claim 或伪造出稳定有用。
+
+**三读者一个读数。** fixture 十二个真实形状案例覆盖三种 disposition、五种 reason；Python reader 无共享代码从
+字节重推导每个 disposition/reason/数字，`--check` 重算清单自身阶梯并拒绝"判定与 kind/delta/门槛矛盾"的行，
+`--self-test` 驱动 66 条边界/篡改/CLI 断言；`abstraction-lifecycle-manifest.test.ts` 用产品函数推导同一读数逐字段
+比对。任一漂移失败一边、构建停止。
+
+**门禁与下一步。** 新模块四维 100%；行为+绑定 36 测试；Python reader 97.8%（self-test+check+verify），
+self-test 66/66；README core 层 51→52 模块、11,243→11,425 行；coupling 快照 268→269；bundle 不变（opt-in 不在
+渲染路径）；`--expect-files` 33→34；全量 `pnpm check` 退出码 0；两仓 CI 全绿。
+
+**注意：本轮不是准确率收益，也不是付费臂。** 它与 R246（单条是否 durable）、R244（读侧状态）、R245（成本侧 429）
+合起来，把用户的核心命题"记忆什么/怎么用错"在写侧覆盖了两个独立边界：单条稳定性（R246）与整类持久化策略
+（R247）。接线点已明确留给 R104b：proposer 写出的候选先过 `viewConsensus`，再过 `abstractionLifecycle` 决定是否
+持久化，最后才到 witness。

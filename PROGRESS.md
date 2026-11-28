@@ -31033,3 +31033,35 @@ refusal/tamper 路径提到 96.1%，而不是豁免它们。
 成本梯子先验价后付款；不以充值状态重开 R243 的受影响子集判据。
 
 **图**：`figures/r246-view-consistency.png`（展示各候选跨视图净增益与门判定）。
+
+## 249.74 R247：把"记忆负效果"的第二半钉死——累积轨迹，抽象默认临时化（¥0，未调用模型）
+
+**用户命题的落地。** 用户反复强调"记忆的东西和使用记忆的方式不正确导致负效果"。R246 关掉了写侧第一问（单条
+修正是否跨分析稳定），本轮关掉第二问（规则过了门之后该不该被存）。Anti-Persistence（arXiv 2610.27406，IU+Tencent）
+命名 *error reproduction*：错误抽象经抽象→执行→再抽象自我再生，原始规则删掉后仍被重新导出；其"保留轨迹、按需
+重建 guidance、执行后丢弃"设计在 3×3 实验上以最低 LLM 成本换得更高 held-out 成功率。
+
+**实现与行为。** `packages/core/src/apply/abstraction-lifecycle.ts` 的 `abstractionLifecycle` 把单条归约为
+disposition + reason：exemplar 永远 `retain`（event-record，即使带伤害读数）；claim 净翻转<0 → `discard`（harmful-
+abstraction，先于门槛）；净翻转>0 且 `injected≥minInjections` → `retain`（stable-help）；净翻转>0 但低于门槛 →
+`ephemeral`（insufficient-outcomes）；零信号/无 utility → `ephemeral`（no-signal）。伤害先于门槛是错误复现在源头被
+切断的关键；记录带伤害也保留是因为记录不是可应用的规则。默认关闭、字节不变。
+
+**三读者与门禁（全部根因修复，见 AUDIT 34.352）。** 新模块 TS 四维 100%；行为 22 + 绑定 14 测试；Python reader
+97.8%（self-test 66/66 + check + verify）；全量 `pnpm check` 退出码 0；README core 层 51→52 模块、11,243→11,425
+行；coupling 268→269 重生成、11 项检查；bundle 不变；`--expect-files` 33→34。TDD 抓到一条测试自身断言写错（传空
+id 却断言含 bad-id），修测试而非迁就实现；Python reader 覆盖率靠驱动每个守卫/main 分支提到 97.8%，无豁免。
+
+**同时纠正上一轮文档割裂。** COMPETITIVE.md 的 R246 段曾把"Anti-Persistence's separation of experience from
+abstraction"写成已实现并钉住，实际 R246 只做了 SPLICE。本轮改为诚实表述：SPLICE 在 R246 已实现，Anti-Persistence
+在 R247 才构建。文档不得比代码更漂亮——这是第 6 问要防的产品/测评割裂。
+
+**当前位置与剩余步骤。** 三条写/读/成本边界的判据现均齐备（写稳定性 view-consistency / 写持久化 abstraction-
+lifecycle / 读 state-role / 成本 quota-disposition）。microglia 仍在成本×一致性前沿、不在准确率榜（无外部提交，
+竞品 +pp 不可迁移）。最优剩余路径（并行、零成本优先）：① Zhipu embedding 探针在 429 可诊断后重启（¥0，离线
+fallback 仍在）；② R104b 模型 proposer（≈$0.01/候选，付费臂，接线点已明确：候选先过 viewConsensus 再过
+abstractionLifecycle 再到 witness）；③ R244 状态角色 on/off 单次 dispatch 真实净贡献量化（需付费臂、先出价）；
+④ 生成器/候选池改造（SOTA 差距大头，付费/训练臂）；⑤ provider-agnostic fallback 优化（¥0）。付费臂一律先出价、
+梯子先验价后付款；不以充值状态重开 R243 的受影响子集判据。
+
+**图**：`figures/r247-anti-persistence.png`（每条知识净翻转与门判定）。

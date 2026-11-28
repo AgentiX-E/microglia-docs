@@ -11229,11 +11229,54 @@ three-reader-pinned decision instead of an assumption. The register is:
 **Where microglia stands.** Still on the cost × consistency frontier, not on an accuracy leaderboard. No external
 benchmark submission exists, so no competitor +pp transfers. What R246 adds is verifiable at ¥0: the product ships
 the same write-admission reading that an independent Python reader re-derived from committed bytes, with a
-committed manifest binding both. The competitor mechanisms most valuable to *replicate* — SPLICE's consistency
-filter, Anti-Persistence's separation of experience from abstraction — are now present in source and pinned by
-tests. What is not replicated is claimed accuracy: that needs a submission, which is a paid, separately-priced step.
+committed manifest binding both. Of the competitor mechanisms most valuable to *replicate*, SPLICE's consistency
+filter is present in source and pinned by tests at R246; Anti-Persistence's separation of experience from
+abstraction was named here as a target but was **not yet implemented at R246** — it is built next at R247. Stating
+that distinction matters more than making the list look complete: a mechanism claimed as shipped but absent is a
+gap between the documents and the product. What is not replicated is claimed accuracy: that needs a submission,
+which is a paid, separately-priced step.
 
 **The registration R246 unlocks.** RETROSPECTION.md registers **R104b** (a model proposer writing one guideline per
 cluster, ≈ $0.01/candidate, not dispatched). A proposer can fabricate a plausible rule from a pass-derived record;
 the natural insertion point is now explicit — every candidate a proposer emits must clear `viewConsensus` before it
 reaches the witness. That is a sequencing rule, not a new claim, and it is registered rather than built.
+
+## R247 intelligence refresh (28 Nov 2026) — microglia now separates accumulation from persistence
+
+The user's standing objection — the negative effect comes from *what we memory and how we use it*, not how much — got
+its second write-side half this round. R246 gated whether a single correction is durable across re-analysis (SPLICE).
+R247 answers the adjacent question: once a rule survives that gate, should it be stored at all? No accuracy number
+was imported; the benchmark has no microglia submission.
+
+| source | authoritative finding (source grade) | mechanism taken | what microglia implemented |
+|---|---|---|---|
+| [Anti-Persistence](https://arxiv.org/abs/2610.27406) (IU + Tencent) | *error reproduction*: a wrong abstraction shapes a trajectory that feeds the next synthesis round, re-deriving the error even after the original rule is removed; retaining trajectories + rebuilding guidance on demand + discarding after use gives higher held-out success at the **lowest average LLM-call cost** across 3 benchmarks × 3 backbones (preprint, medium) | separate experience accumulation from abstraction persistence; harm is never gated by observation volume | `abstractionLifecycle`: `exemplar` → `retain` / `event-record`; claim net<0 → `discard` / `harmful-abstraction` (before the floor); claim net>0 at/above floor → `retain` / `stable-help`; otherwise `ephemeral` |
+| [SPLICE](https://arxiv.org/abs/2610.30790) (carried from R246) | keep only candidates whose utility gain is consistent across views (abstract read, medium) | single-item stability before persistence | `viewConsensus` runs first; R247 decides persistence second |
+
+**The three-write-boundary picture, now complete.** R246 and R247 are both write-side but orthogonal: R246 asks *is
+this one rule an artifact of how it was analysed*; R247 asks *should this whole class of thing be a stored object*.
+Together with R244 (read side: state role + serial-max) and R245 (spend side: 429 family), every boundary now has a
+pure, three-reader-pinned decision.
+
+| boundary | module | decision | default |
+|---|---|---|---|
+| write — stability | `view-consistency.ts` | admit only cross-view-consistent corrections | off (caller opts in) |
+| write — persistence | `abstraction-lifecycle.ts` | accumulate records; abstractions ephemeral unless proven | off (caller opts in) |
+| read | `state-role.ts` | current / historical / transition + serial-max | off (caller opts in) |
+| spend | `quota-disposition.ts` | retry / wait-until / stop from the provider's own reply | on where a rate limit is genuinely a rate limit |
+
+**A correction to the R246 record.** The previous round's table claimed Anti-Persistence' separation was "now present
+in source and pinned by tests". It was not — only SPLICE's filter existed. That overstatement is fixed in the R246
+paragraph and honestly registered here as built at R247. A mechanism claimed shipped but absent is exactly the
+product/measurement split the user's sixth question forbids.
+
+**Where microglia stands.** Still on the cost × consistency frontier, not on an accuracy leaderboard; no external
+submission means no competitor +pp transfers. What R247 adds at ¥0 is a verifiable property: the product's
+TypeScript decision, an independent Python reader's re-derivation and a committed manifest agree field by field,
+and the build stops if they diverge. The competitor *mechanisms* most valuable to replicate — SPLICE's consistency
+filter and Anti-Persistence's separation — are now both present in source and pinned by tests. What remains
+unreplicated is claimed accuracy, which needs a paid submission.
+
+**Sequencing for R104b** (model proposer, ≈ $0.01/candidate, registered not dispatched): a candidate a proposer emits
+must clear `viewConsensus` (stability), then `abstractionLifecycle` (persistence), before it reaches the witness.
+That is a wiring rule, not a new claim.

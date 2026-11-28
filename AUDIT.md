@@ -19292,3 +19292,32 @@ bundle、coupling、13 workflow 解析）；README 层表随新生产模块更�
 **ASCII 纪律的克制。** 图注与文档里出现的 arXiv 编号、函数名、verdict 字面量均为 ASCII；本轮没有把任何
 非 ASCII 标记写进 `.ts`/`.mjs` 源码，`audit:repo` 语言门保持原样通过——R245 曾因字面 CJK 触发该门，本轮
 从一开始就把所有面向用户的说明留在 Markdown，而 Markdown 不受该门约束。
+
+## 34.352 R247 — 测试抓到的测试自身缺陷，以及一次把"文档声称"对齐到"代码现实"的克制
+
+本轮把 Anti-Persistence 的经验/抽象分离实现成写侧生命周期纯函数（见 ROADMAP R247 / TECH-DESIGN 17.214）。
+以下是门禁与 TDD 抓到的、在提交前修掉的真实问题；没有一处被当作 flaky 重跑带过，也没有削弱任何门限。
+
+1. **一条测试断言写错，而不是实现写错（TDD RED 抓到）。** `names the offending id in the refusal` 最初传入
+   `id: ''` 却断言 message 含 `bad-id`——测试自相矛盾。正确做法不是放宽实现让它"兼容一个空 id 却报出另一个
+   id"，而是修正测试：传 `id: 'bad-id'` 配一个非法 utility，断言 message 含 `bad-id`。测试也是代码，它错的时候
+   要修测试，不能让实现去迁就一个错误的断言——这正是 R246 AUDIT 里"顺序无关断言过强"的同一种克制。
+2. **Python reader 覆盖率从首次读数拉到 97.8%。** fixture 覆盖五个 reason，但 `decide`/`build`/`check`/`verify`
+   的守卫分支与 `main` 的 argparse 分支需要显式驱动。按 R244/R246 的教训：self-test 接受 `argv`、驱动每个 refusal
+   守卫（未知 kind、utility 非对象、flips 越界、坏门槛、ladder 漂移、字段篡改、case-order 漂移）、用临时目录承载
+   `--build --write` 输出、`redirect_stdout/stderr` 保持输出干净；参数数量守卫返回 1 而非抛 `SystemExit`，使其可被
+   self-test 覆盖。三命令合并覆盖率 97.8%，无豁免。
+3. **上一轮 COMPETITIVE.md 的过度声称被本轮主动纠正。** R246 曾写"SPLICE's consistency filter, Anti-Persistence's
+   separation of experience from abstraction — are now present in source and pinned by tests"。但 R246 实际只实现了
+   `viewConsensus`（SPLICE），**并未实现**经验/抽象分离。一个被写成"已发布并钉住"却不存在的机制，正是用户第 6 问
+   要防止的"产品与测评割裂"。本轮把它改成诚实表述（SPLICE 已在 R246；Anti-Persistence 为 R246 的目标、R247 才构建），
+   再在 R247 章节登记真正实现。宁可承认差距，也不让文档比代码更漂亮。
+
+**门禁实测，全部根因修复。** 新模块 TS 四维 100%；行为 22 测试、绑定 14 测试全过；Python reader self-test
+66/66、check/verify 均 ok；`pnpm check` 全链路退出码 0（typecheck、全部测试、全部 eval verifiers、benchmark、
+bundle、coupling、13 workflow 解析）；README 层表随新生产模块更新（core 51→52、11,243→11,425 行）；coupling
+快照 268→269 重生成、11 项检查通过；bundle 未变（模块 opt-in 不在渲染路径）；`--expect-files` 33→34。没有任何
+门限被削弱、跳过或加 `continue-on-error`。
+
+**ASCII 纪律。** 本轮没有把任何非 ASCII 标记写进 `.ts`/`.mjs` 源码；arXiv 编号、函数名、disposition/reason
+字面量均为 ASCII，面向用户的中文说明留在 Markdown（不受语言门约束）。`audit:repo` 语言门保持原样通过。
