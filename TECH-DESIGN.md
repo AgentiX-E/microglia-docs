@@ -13573,3 +13573,48 @@ fixture `eval/fixtures/competition-domain.json`（11 个真实候选：AskData/G
 **接线点。** R104b 的模型 proposer 产出候选后，先过 `viewConsensus`（单条是否稳定）→ `abstractionLifecycle`
 （是否持久化）→ witness；而撤回/纠正动作在落库前过本门，确保 `residualSites == 0` 且 verdict 为 complete 才提交。
 这样"产品侧自动使用测评侧最优配置"由机器判据保证，而非文档承诺。
+
+## 17.217 R250 — 陈旧撤销门：从新证据与检索集到裁决的纯函数
+
+**问题定义。** 给定一条新证据与当前检索集，判定新证据所隐含的失效是否已把旧记忆从检索集清走、方法是否匹配
+证据关系。输入不含模型、时钟、网络；输出是可被两个独立读者重算的读数。它补 R249 的缺口：R249 管显式修订，
+本门管没人发撤回的隐式失效——TEPA 实测这正是 append-only 低于无记忆基线的根因。
+
+**输入模型。** `StaleRevocationInput = { id, evidence, items[] }`。`evidence = { id, key, relation, serial,
+invalidates? }`，`relation ∈ {extend, co-reference, propagation}`（闭集）；`invalidates` 只在 propagation 允许、
+非空元素不可为 evidence.key。每个 `RevocationItem = { id, key, serial, disposition }`，`disposition ∈
+{active, revoked, superseded}`（闭集）。`active` 仍暴露、`revoked` 标记撤回、`superseded` 被新值替换。
+
+**派生集合。** current = 与 evidence 同 key 且同 serial 的项。stale = 与 evidence 同 key 且 serial 更小（extend
+关系不产生 stale）+ propagation 下 key ∈ invalidates 的任意项。stale 项 disposition 为 active 即"暴露"；否则为
+"已处理"。`staleCount = activeStaleCount + handledStaleCount` 是不变量。
+
+**裁决阶梯（严格优先级）。**
+
+1. 任意 stale 项 active → `polluted`。若其中含 invalidated key 的项 → reason `propagated-still-active`（更具体），
+   否则 `stale-still-active`；`activeStaleCount` 两者都计。
+2. current 项存在但都不 active → `over-revoked` / `current-removed`（违反 TEPA key-current assumption：撤销必须
+   保留当前正确值）。
+3. 无 current 项 → `unresolved` / `no-current-evidence`。
+4. 其余 → `clean`：extend 为 `extend-safe`；co-reference 为 `co-reference-resolved`；propagation 为
+   `propagation-resolved`。
+
+**不变量与守卫。** 四种计数非负整数；stale 严格分区；verdict/reason 家族一致；propagationKeys > 0 仅当 relation
+为 propagation。守卫拒绝：空白 episode id、非对象 evidence、空白 evidence id/key、未知 relation、负或非有限
+serial、非数组 invalidates、空白 invalidated key、invalidated key 等于 evidence key、非 propagation 带 invalidates、
+非数组/空 items、非对象 item、空白/重复 item id、空白 item key、非法 item serial、未知 disposition——一律
+`MicrogliaError(MG_E_CONFIG)` 而非默认归类。函数不修改输入（冻结对象测试通过）。
+
+**依赖分层。** `apply/stale-revocation.ts` 只依赖 `kernel` 的 `MicrogliaError`，与 `view-consistency`、
+`abstraction-lifecycle`、`revision-integrity`、`state-role` 同为 core 层叶子，经 `apply/index.ts` 对宿主导出；
+不在渲染路径上，bundle 不变。它审计调用方**描述**的 episode，不编辑 store、不取数——与 microglia 作为通用记忆
+放大器、不耦合垂域的定位一致（R248 领域门机器校验）。
+
+**三读者契约。** fixture 十一条真实 episode → 产品函数与独立 Python reader 各自从字节推导 → manifest 逐字段钉住
+（`stale-revocation-manifest.test.ts` 字段比对；`stale_revocation.py --check/--verify/--self-test`）；CI 在 coverage
+下跑 Python 三模式，`--expect-files` 36→37。新模块 TS 四维 100%，Python 语句 100%/分支 99%。
+
+**接线点。** R104b 的模型 proposer 产出候选后，先过 `viewConsensus`（单条是否稳定）→ `abstractionLifecycle`
+（是否持久化）→ witness；显式撤回/纠正动作在落库前过 `revisionIntegrity`（residualSites == 0）；新证据写入后、
+检索集交给模型前过本门，确认 `activeStaleCount == 0` 且 verdict 为 clean（或接受 extend 的合法共存）才进入检索。
+这样"产品侧自动使用测评侧最优配置"由机器判据保证，而非文档承诺。

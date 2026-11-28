@@ -19373,3 +19373,26 @@ complete 非 residual 的 reason，case 数漂移用一个短一截的合法 fix
 
 **没有发生的事。** 未以充值状态重开任何付费臂；未用 mock 达成覆盖率；未让文档比代码更漂亮；未把 nl2sql/chart
 的任何指标写进 microglia 的读数。六条纯函数判据现在各自有三读者钉住，全量 `pnpm check` 退出码 0。
+
+## 34.355 R250 — 一条死守卫和两颗没走到目标的 tamper 样本，判据本身按论文读数一次通过
+
+**本审计记录本轮工具侧的克制修复；判据（陈旧撤销）的设计在 TDD 红阶段前已按 TEPA/STALE/MMA 的读数定稿，TS 模块
+四维 100% 一次通过，缺陷都在 Python reader 的自测覆盖上。**
+
+**缺陷一：一条逻辑上不可达的死守卫（工具侧）。** `check()` 里有一条"exposed stale 不能超过 stale 总数"的守卫。
+但它前一行的分区检查 `staleCount == activeStaleCount + handledStaleCount`，加上所有计数是非负整数，已经严格蕴含
+`activeStaleCount <= staleCount`——这条守卫永远不可能触发，是死代码。按 de-gamification 纪律删除它，而不是给它
+编一个能触发的 tamper 来凑覆盖率。删除后由分区检查继续保证该不变量，语义无损。
+
+**缺陷二：polluted + 非污染 reason 的 tamper 没走到目标行（测试侧）。** 补的样本把 verdict 改成 polluted、reason
+改成 clean 家族的 `extend-safe`，却没同步改 stale 计数，于是先被上一行的分区检查拦下，目标 reason-family 守卫
+反而没执行。修法是把样本补成满足分区（staleCount=1、activeStaleCount=1），让它真正走到 reason-family 判断。
+这是"样本没打到靶"，不是实现错。
+
+**缺陷三：case-count-drift 的 tamper 在 build 阶段就被拒（测试侧）。** 原样本用空 cases 的 fixture 去触发 verify
+的数量比较，但 verify 先调 build，空 cases 在 build 里就以"cases 必须非空"被拒，数量比较永远到不了。改成用一个
+合法但更短（取前 1 条）的 fixture：build 成功产出 1 条，再与含 11 条的 manifest 比较，数量漂移守卫才真正执行。
+
+**没有发生的事。** 未以充值状态重开任何付费臂；未用 mock 或 `# pragma: no cover` 达成覆盖率；未让文档比代码更
+漂亮；未把 nl2sql/chart 的任何指标写进 microglia 的读数。七条纯函数判据现在各自有三读者钉住，全量 `pnpm check`
+退出码 0。R249 的两处历史缺陷（测试断言写在优先级错误一侧、正则把注释读成类型逃逸）本轮未复现。

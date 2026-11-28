@@ -11364,3 +11364,48 @@ offline fallback intact); ② R104b model proposer (~$0.01/candidate, paid arm; 
 abstractionLifecycle → witness, retract/correct via this gate); ③ R244 state-role dispatch ablation (paid arm, price
 first); ④ generator / candidate-pool rework (paid/training arm — the large part of the SOTA gap); ⑤ provider-agnostic
 fallback optimisation (¥0). Paid arms quote first, ladder priced before payment.
+
+## R250 competitive refresh (28 Nov 2026) — the field measured stale exposure below the no-memory baseline; microglia gates it at use time
+
+**What the field found (three primary sources, 28 Nov).** TEPA (arXiv 2608.07429) is the sharpest result yet on the
+standing question 8: under a hidden-regime full reversal, append-only memory and last-write-wins both collapse to 0.210
+full-reversal success — *below* the no-memory baseline of 0.309 — for a pollution index of 0.318, while revoking the
+stale precedent holds 0.950; the paired TEPA-vs-append difference is 0.167 (CI [0.162, 0.172], Holm significant).
+Proposition 1 shows append-only retrieval incurs an extra nonnegative error term whenever a stale item is exposed
+together with the current one, and Proposition 2 bounds that excess risk by q·eta (exposure probability times the
+chance the decision follows the stale value). STALE (arXiv 2605.06527) classifies how a value becomes stale without an
+explicit retraction — co-reference conflict (a new value logically excludes an old one on the same attribute) and
+propagation conflict (a change cascades through a dependency chain), with 400 expert-validated scenarios. MMA
+(arXiv 2602.16493) shows agents treat retrieved items as uniformly trustworthy despite staleness, low credibility or
+inconsistency, and introduces per-item confidence (source / time / consensus) plus calibrated abstention. All three
+are memory-domain harms — precisely microglia's field, not NL2SQL/chart.
+
+**How this maps to microglia.** R249 handled the *explicit* revision asymmetry (augment-not-replace, tombstone/purge
+coverage). R250 handles the *implicit* one the field just quantified: a new value is written but the stale one stays
+active in the retrieval set, which is the state TEPA measured scoring below no-memory. `staleRevocation` encodes the
+three evidence relations (extend / co-reference / propagation) and TEPA's key-current assumption as a pure, ¥0 gate
+with three readers, so the claim "the product ships the revocation policy the measurement read" becomes a checked
+property. Together with R246 (single-correction stability) and R249 (explicit revision integrity), the write/use side
+now covers what we store, whether a correction sticks, whether a revision reached every copy, and whether new evidence
+actually displaced the old value.
+
+**Leaderboard position (unchanged this round).** microglia is still on the cost × consistency frontier, not on the
+accuracy leaderboard: there is no external submission this round and competitor +pp are not transferable to our
+library. The authoritative field remains LongMemEval / LoCoMo / MemoryAgentBench / BEAM / DolphinBench / AMA-Bench —
+memory-augmented task success, measured memory-on vs memory-off. R250's numbers (0.210 vs 0.309 baseline vs 0.950)
+are TEPA's published results on its controlled/executable/preference splits, read into our gate as the reason ladder —
+they are not a microglia benchmark score and are not claimed as one. NL2SQL / text2charts / data2charts stay in
+`AgentiX-E/nl2charts`; R248's `classifyCompetitionDomain` gate keeps that boundary machine-checked.
+
+**Learning value exhausted vs still open.** TEPA's stale-exposure bound, key-current assumption and revocation policy,
+STALE's two implicit-conflict types, and MMA's confidence/abstention framing are now encoded or recorded. The per-item
+confidence score (source / time / consensus) that MMA computes at retrieval time is recorded but not yet implemented
+as a microglia gate — it needs a paid arm with a calibrated-abstention benchmark and is listed in the remainder, not
+claimed here. A *quantified* poisoning-defence benchmark (poisoned-experience retrieval rate under our gate) also
+remains open from R249.
+
+**Optimal-path remainder (parallel, zero-cost first).** ① Zhipu embedding probe restart once 429 is diagnosable (¥0,
+offline fallback intact); ② R104b model proposer (~$0.01/candidate, paid arm; wiring: viewConsensus →
+abstractionLifecycle → witness, explicit revision via R249, new-evidence-into-retrieval via R250); ③ R244 state-role
+dispatch ablation (paid arm, price first); ④ generator / candidate-pool rework (paid/training arm — the large part of
+the SOTA gap); ⑤ provider-agnostic fallback optimisation (¥0). Paid arms quote first, ladder priced before payment.

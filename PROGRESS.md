@@ -31133,3 +31133,39 @@ abstractionLifecycle → witness；撤回/纠正动作过本门再落库）；�
 候选池改造（付费/训练臂）；⑤ provider fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款。
 
 **图**：`figures/r249-revision-integrity.png`（各修订形状的裁决与判定阶梯）。
+
+## 249.77 R250：新证据到达后旧记忆仍活跃在检索集——把"陈旧撤销"钉成使用侧判据（¥0）
+
+**用户命题与缺口。** 第 8 问持续追问"记忆的东西和使用记忆的方式不正确导致负面效果"。R249 钉住了显式修订
+（撤回/纠正）有没有覆盖所有派生站点；但长期 agent 里最常见的是**隐式失效**：新观察到达、旧记忆悄悄变错、没人
+发撤回。本轮把这条缺口固化为机器可校验判据，¥0、未调用模型。
+
+**联网一手证据（28 Nov）。** TEPA（arXiv 2608.07429）：full reversal 下 append-only / last-write-wins 双双 0.210，
+**低于无记忆基线 0.309**（污染指数 0.318），撤销 stale 后 0.950，paired 差异 0.167（CI [0.162,0.172]），
+Proposition 2 给额外风险下界 q·eta。STALE（arXiv 2605.06527）两类隐式冲突：共指（同属性逻辑排除）、传播（依赖链
+级联失效）。MMA（arXiv 2602.16493）：agent 把检索项一律当可信，暴露的 stale 会被据以行动。
+
+**实现。** `packages/core/src/apply/stale-revocation.ts` 的 `staleRevocation(input)`：evidence 带 relation
+（extend/co-reference/propagation）+ key + serial；items 带 key/serial/disposition（active/revoked/superseded）。
+current=同 key 同 serial；stale=同 key 更旧（extend 除外）+ propagation 的 invalidated key。裁决阶梯：污染（stale 或
+invalidated key 仍 active）→ 过度撤销（current 被撤）→ 无 current → clean（extend-safe / co-reference-resolved /
+propagation-resolved）；污染内部 propagated 优先于普通 stale 但计数都含。
+
+**三读者与门禁（全部根因修复）。** 新模块 TS 四维 100%（174/174 语句、73/73 分支、2/2 函数）；行为 41 + 绑定 15
+测试；Python reader 语句 100%/分支 99%（唯一开放弧是 `if __name__ == "__main__"` import guard）；自测 85/85；
+全量 `pnpm check` 退出码 0；README core 层 54→55 模块、11,854→12,140 行；coupling 271→272 重生成、11 项检查；
+bundle 不变；`--expect-files` 36→37。
+
+**测试/工具侧的克制修复。** Python reader 首轮 99%（3 行未覆盖）：一行是冗余守卫（partition + 非负整数已蕴含
+active ≤ stale，属死代码，删除而非保留）；两行是 tamper 样本没走到——`polluted` 配 clean reason 的样本因 stale
+partition 先失败，补成满足分区后触发；case-count-drift 的空 fixture 在 build 阶段就被拒，改成「合法但更短」的
+fixture 让 build 通过后再触发数量比较。没有加 `# pragma: no cover`，没有豁免。
+
+**当前位置与剩余步骤。** 七条纯函数判据齐备：单条稳定(R246)/整类持久化(R247)/显式修订(R249)/隐式撤销(R250)/
+读状态(R244)/成本 429(R245)/领域边界(R248)。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、
+零成本优先）：① Zhipu embedding 探针在 429 可诊断后重启（¥0）；② R104b 模型 proposer（≈$0.01/候选，付费臂，
+接线：候选过 viewConsensus → abstractionLifecycle → witness；显式撤回/纠正过 R249；新证据落库后过 R250 确认
+activeStaleCount==0 再进检索集）；③ R244 状态角色 dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练臂）；
+⑤ provider fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款。
+
+**图**：`figures/r250-stale-revocation.png`（各 episode 的裁决与撤销判定阶梯）。

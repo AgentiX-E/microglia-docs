@@ -5663,3 +5663,13 @@ instances, and by LongMemEval's augment-over-replace result. It is the concrete 
 that *how we use memory* — not only what we store — causes the negative effect. This stays inside microglia's field:
 it is a generic write-side integrity rule for a memory amplifier, coupled to no vertical; NL2SQL / chart / data-viz
 remain `AgentiX-E/nl2charts`' domain (R248). No accuracy number is claimed from it, and no paid arm was opened.
+
+**Scope note (R250).** The use-side discipline this project ships now has a second boundary beside the write-side one.
+R249 decides whether an *explicit* revision reached every derived site; R250 (`staleRevocation`, ¥0, three readers)
+decides whether an *implicit* invalidation actually retired the stale value before the retrieval set reaches a model.
+It is motivated by TEPA (arXiv 2608.07429): under full reversal, append-only memory scores 0.210 — below the no-memory
+baseline of 0.309 — while revoking the stale precedent holds 0.950, with excess risk bounded by q·eta. Together with
+STALE's two implicit-conflict types and MMA's finding that retrieved items are treated as trustworthy, this is the
+concrete mechanism behind the standing claim that *how we use memory* — not only what we store — causes the negative
+effect. No accuracy number is claimed from it, no paid arm was opened, and it stays a generic use-side integrity rule
+for a memory amplifier, coupled to no vertical; NL2SQL / chart / data-viz remain `AgentiX-E/nl2charts`' domain (R248).

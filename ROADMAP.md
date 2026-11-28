@@ -11309,3 +11309,53 @@ bundle 不变；`--expect-files` 35→36；全量 `pnpm check` 退出码 0。
 abstractionLifecycle → 到 witness；而**撤回/纠正**动作则应过本门再落库。剩余最优路径不变（零成本优先）：Zhipu
 embedding 探针重启（¥0）；R104b 模型 proposer（≈$0.01/候选，付费臂）；R244 状态角色 dispatch（付费臂先出价）；
 生成器/候选池改造（付费/训练臂）；provider fallback 优化（¥0）。
+
+## R250 (read 28 Nov, ¥0) — 新证据到达后，旧记忆仍活跃在检索集里：把"陈旧撤销"钉成使用侧判据
+
+> **状态，28 Nov：read，¥0，未调用模型。** 用户第 8 问持续追问"记忆的东西和使用记忆的方式不正确导致负面效果"。
+> R249 钉住了**显式修订**（撤回/纠正）有没有覆盖所有派生站点；但长期运行 agent 里最常发生的不是显式修订，而是
+> **隐式失效**：新观察到达、旧记忆悄悄变错、却没人发出撤回。本轮把这条缺口固化为机器可校验判据，不做准确率收益、
+> 不花钱。
+
+**联网一手证据（28 Nov）。** TEPA（arXiv 2608.07429）直接量化伤害：full reversal 下 append-only 与 last-write-wins
+双双跌到 **0.210 成功率，低于无记忆基线 0.309**（污染指数 0.318），而撤销 stale 先例保持 **0.950**，paired 差异
+0.167（CI [0.162, 0.172]）。其 Proposition 2 把 append-only 相对可撤销记忆的额外风险下界定为 q·eta（stale 暴露概率
+× 决策跟随它的概率）。STALE（arXiv 2605.06527）解释隐式失效的两类：共指冲突（新值在同一属性上逻辑排除旧值）与
+传播冲突（经依赖链使相关属性失效）。MMA（arXiv 2602.16493）补上：agent 把检索到的记忆一律当可信，暴露的 stale
+不是惰性噪音而是会据以行动的承诺。这三条合起来回答了"记忆比无记忆还差"的根因——检索找到了新值，但也返回了旧值。
+
+![R250 — 各 episode 的裁决与撤销判定阶梯](figures/r250-stale-revocation.png)
+
+**实现。** `packages/core/src/apply/stale-revocation.ts` 导出 `staleRevocation(input)`。episode 有一条 `evidence`
+（新值 + 冲突 key + serial + relation）与当前检索集 `items`（每项 key/serial/disposition）。relation ∈
+`extend`（只增信息，旧值合法共存）/ `co-reference`（新值排除同 key 旧值）/ `propagation`（还使 `invalidates` 中的
+key 失效）。current = 与 evidence 同 key 同 serial；stale = 同 key 更旧（extend 除外）+ propagation 下 invalidated
+key 的项。disposition ∈ active/revoked/superseded。
+
+| 条件（按顺序） | verdict | reason |
+|---|---|---|
+| 任意 stale 仍 active | `polluted` | `stale-still-active` |
+| invalidated key 仍 active | `polluted` | `propagated-still-active` |
+| current 被 revoked/superseded | `over-revoked` | `current-removed` |
+| 无 current 项 | `unresolved` | `no-current-evidence` |
+| extend + current 保留 | `clean` | `extend-safe` |
+| co-reference resolved | `clean` | `co-reference-resolved` |
+| propagation resolved | `clean` | `propagation-resolved` |
+
+污染优先于过度撤销、优先于无 current、最后才是 clean——暴露 stale 是可测伤害，即使 current 同时被撤或缺失也要先报。
+污染内部 invalidated key 是更具体发现，优先于普通 stale，但计数两者都含；`staleCount` 分区为 active + handled。
+
+**三读者一个读数。** fixture 十一条真实 episode（TEPA append-only、多条 stale 污染、STALE 传播级联已处理/未处理、
+过度撤销、无 current、extend 共存）；Python reader `stale_revocation.py --verify` 无共享代码从字节重推导每个
+verdict/reason/计数，`--check` 重加算术（stale 分区、reason/verdict 家族、key-current 条件、propagation keys 只在
+propagation 关系），`--self-test` 85 条；`stale-revocation-manifest.test.ts` 用产品函数推导同一读数逐字段比对。
+
+**门禁与下一步。** 新模块四维 100%（174/174 语句、73/73 分支、2/2 函数）；行为 41 + 绑定 15 = 56 测试；Python reader
+语句 100%/分支 99%（唯一开放弧是模块 import guard）；全量 `pnpm check` 退出码 0；README core 层 54→55 模块、
+11,854→12,140 行；coupling 271→272；bundle 不变；`--expect-files` 36→37；13 工作流解析通过。
+
+**注意：本轮不是准确率收益，也不是付费臂。** 它与 R249 合起来把用户"记忆什么/怎么用错"的命题在使用侧与写侧各钉
+一道：显式修订完整性（R249）+ 隐式失效撤销（R250）。加上前五条形成七条纯函数判据。接线点留给 R104b：候选过
+viewConsensus → abstractionLifecycle → witness；显式撤回/纠正过 R249；新证据落库后过本门确认 `activeStaleCount == 0`
+再进入检索集。剩余最优路径不变（零成本优先）：Zhipu embedding 探针重启（¥0）；R104b 模型 proposer（≈$0.01/候选，
+付费臂）；R244 状态角色 dispatch（付费臂先出价）；生成器/候选池改造（付费/训练臂）；provider fallback 优化（¥0）。
