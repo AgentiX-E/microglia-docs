@@ -11201,3 +11201,39 @@ benchmark submission exists, so no competitor +pp transfers. What R245 adds is v
 the same error-family reading that an independent Python reader re-derived from committed bytes, and both drivers
 act on it before spending a retry. This is the cost-side counterpart to R244's assembly-side state role — neither is
 an accuracy claim, both are mechanisms pinned by three-reader agreement.
+
+## R246 intelligence refresh (28 Nov 2026) — the field converged on "what we store", and microglia now gates it at write time
+
+The user's standing objection — the negative effect comes from *what we memory and how we use it*, not how much — was
+confirmed by three 2026 sources that arrived within one reading. This round did not import any accuracy number;
+none of these benchmarks has a microglia submission. It replicated the one mechanism all three converge on, as a
+pure function on microglia's own utility readings, and pinned it with three no-shared-code readers.
+
+| source | authoritative finding (source grade) | mechanism taken | what microglia implemented |
+|---|---|---|---|
+| [SPLICE](https://arxiv.org/abs/2610.30790) | different ways of analysing the same experience yield knowledge with substantially different utility; keep candidates whose utility gain is **consistent across views** (abstract read, medium) | sign-consistency across independent views as the admission rule | `viewConsensus`: only `consistent-help` admits; a sign-flip is `fragile` and refused |
+| [Anti-Persistence](https://academy.dair.ai/papers/more-memory-worse-agents-error-reproduction-and-anti-persistence-in-llm-agents-2610.27406) | error reproduction: a stored wrong abstraction regenerates through abstraction → execution → re-abstraction even after the original entry is removed; retaining trajectories but rebuilding guidance on demand gives highest held-out success and lowest LLM-call cost (preprint, medium) | a sign-flipping abstraction is exactly the self-regenerating error, caught before persistence | `fragile` verdict at the write boundary; opt-in, so the default store is unchanged |
+| [Faulty Memory](https://sotasync.com/reader/2026-05-12-faulty-memory-llm-self-update-degradation) | GPT-5.4 100% → 54% on ARC-AGI after consolidating a lesson; original episodes beat abstracted memory; utility is non-monotonic in updates (secondary read, low) | consolidation into an abstraction can destroy what the raw episode carried | the module reports `gains`/`spread` for a readback rather than trusting a condensed score, and admits only cross-view-stable knowledge |
+
+**What is new relative to R244/R245.** R244 was the read-side assembly step (state role, serial-max); R245 was the
+cost-side diagnosis (429 is a family, 403 is balance). R246 is the **write-side** half: the question "should this
+correction be persisted at all". With the three in place, every boundary — write, read, spend — now has a pure,
+three-reader-pinned decision instead of an assumption. The register is:
+
+| boundary | module | decision | default |
+|---|---|---|---|
+| write | `view-consistency.ts` | admit only cross-view-consistent corrections | off (caller opts in) |
+| read | `state-role.ts` | current / historical / transition + serial-max | off (caller opts in) |
+| spend | `quota-disposition.ts` | retry / wait-until / stop from the provider's own reply | on where a rate limit is genuinely a rate limit |
+
+**Where microglia stands.** Still on the cost × consistency frontier, not on an accuracy leaderboard. No external
+benchmark submission exists, so no competitor +pp transfers. What R246 adds is verifiable at ¥0: the product ships
+the same write-admission reading that an independent Python reader re-derived from committed bytes, with a
+committed manifest binding both. The competitor mechanisms most valuable to *replicate* — SPLICE's consistency
+filter, Anti-Persistence's separation of experience from abstraction — are now present in source and pinned by
+tests. What is not replicated is claimed accuracy: that needs a submission, which is a paid, separately-priced step.
+
+**The registration R246 unlocks.** RETROSPECTION.md registers **R104b** (a model proposer writing one guideline per
+cluster, ≈ $0.01/candidate, not dispatched). A proposer can fabricate a plausible rule from a pass-derived record;
+the natural insertion point is now explicit — every candidate a proposer emits must clear `viewConsensus` before it
+reaches the witness. That is a sequencing rule, not a new claim, and it is registered rather than built.

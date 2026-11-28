@@ -11123,3 +11123,48 @@ offline fallback remains available but is no longer the forced response to a mis
 `quota_disposition.py` 97.2% combined over self-test + check + verify; reader self-test 66/66; product↔manifest 2/2;
 full vitest 308 files / 6,372 tests; 13 workflows parse; coupling snapshot 266→267 regenerated; README eval layer
 198→199 modules, 59,836→60,131 lines. `--expect-files` 31→32. Both repos CI green on push.
+
+## R246 (read 28 Nov, ¥0) — 把"记忆负效果"钉在写侧：只接纳跨视图一致的修正
+
+> **状态，28 Nov：read，¥0，未调用模型。** 用户反复强调"记忆的东西和使用记忆的方式不正确导致负效果"。
+> R244 在**读侧**补上了状态角色（current/historical/transition）与确定性 serial-max，R245 在**成本侧**把 429
+> 诊断成错误家族。本轮补上**写侧**缺的那一半：一个经验用不同方式蒸馏，会得到效用不同的知识——如果一种分析
+> 说有用、另一种说有害，那不是要合并的重复项，而是一个不该被持久化的脆弱抽象。三篇一手证据收敛到同一机制：
+> **SPLICE**（arXiv 2610.30790）实测同一经验的不同分析产生效用差异显著的知识，只保留跨视图效用一致的候选；
+> **Anti-Persistence**（arXiv 2610.27406）证明错误抽象会经"抽象→执行→再抽象"自我再生，即便原始条目已删除；
+> **Faulty Memory**（UIUC）报告把正确轨迹固化成教训后，GPT-5.4 在 ARC-AGI 上从 100% 跌到 54%。本轮复刻第一篇
+> 的接纳规则为一个纯函数，读数来自 microglia 自己的 Utility。**不导入任何 +pp**——这些榜上没有 microglia 提交。
+
+![R246 — 按候选展示跨视图净增益，颜色为门的判定](figures/r246-view-consistency.png)
+
+**修的缺陷。** `admitWrite` 判断的是"新声明是不是已有记忆的重复项"：按相似度取近邻、合并或新增。它无法问另一个
+问题：这条规则本身是 durable 的，还是这次蒸馏方式的产物？同一修正的两次分析都能过接纳、都能进 pack，然后在
+prompt 里互相矛盾——一种视图说有用、另一种说有害，模型无从取舍。sign-flip 这个判据在持久化之前就抓住它。
+
+**实现。** `packages/core/src/apply/view-consistency.ts` 导出 `viewConsensus(views, options)`。每个 view 是一次
+独立分析（温度、prompt、解释器），带一个产品 `Utility` 形状的读数：`injected/flippedUp/flippedDown`。单视图净增益
+`(flippedUp - flippedDown) / injected`，其**符号**是 durable 信号；净翻转为零的视图是弃权而非反对。判定是符号计数
+与视图下限的纯函数：
+
+| verdict | 条件 | `admit` |
+|---|---|---|
+| `consistent-help` | ≥ `minViews` 个视图，所有有信息的视图都为正 | **true** |
+| `fragile` | 至少一个为正、至少一个为负 | false |
+| `consistent-harm` | 有信息的视图存在且全为负 | false |
+| `no-signal` | 视图足够，但没有任何一个净增益 | false |
+| `insufficient` | 视图少于 `minViews` | false |
+
+只有 `consistent-help` 接纳。这比"没被证明有害就留"严格得多：SPLICE 的结论是**保留**一致的候选，而没有证据
+表明有用的规则不值得保留。默认关闭、字节不变——与 `stateRole`/`shape`/`note` 相同的开关纪律。
+
+**三读者一个读数。** fixture 七个真实形状案例覆盖全部五种 verdict；Python reader 从字节重推导每个判定/计数/
+增益/spread，`--check` 重算清单自身算术并拒绝"verdict 与计数阶梯矛盾"的清单，`--self-test` 驱动 72 条边界/
+确定性/篡改断言；`view-consistency-manifest.test.ts` 用产品函数推导同一读数逐字段比对。任一漂移失败一边、构建停止。
+
+**门禁与下一步。** 新模块四维 100%；行为+绑定 31 测试；Python reader 96.7%（self-test+check+verify），
+self-test 72/72；README core 层 50→51 模块、11,044→11,243 行、adapter 占比 2.6%→2.5%；coupling 快照 267→268；
+bundle 不变（core 55,071/18,865 B，模块 opt-in 不在渲染路径）；`--expect-files` 32→33。两仓 CI 全绿。
+
+**注意：本轮不是准确率收益，也不是付费臂。** 它是写侧机制，与 R244（读侧）、R245（成本侧）合成三个边界的完整
+覆盖；它把用户的核心假设变成一个可证伪、可复核的接纳判据，并为后续的 R104b（模型 proposer）提供"proposer 写出的
+候选必须先过一致性门"的接线点。

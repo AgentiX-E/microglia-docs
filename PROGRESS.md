@@ -31004,3 +31004,32 @@ refusal/tamper 路径提到 96.1%，而不是豁免它们。
    11 项检查全过。
 
 最终 microglia CI（`a95d0530`）：success；docs CI（`ad93dbd4`）：success。无门限削弱、跳过或 `continue-on-error`。
+
+## 249.73 R246：把"记忆负效果"钉在写侧——只接纳跨视图一致的修正（¥0，未调用模型）
+
+**用户命题的落地。** 用户反复强调"记忆的东西和使用记忆的方式不正确导致负效果"。本轮没有停留在讨论：三篇
+一手证据收敛到同一机制并给出可证伪判据——SPLICE（arXiv 2610.30790）实测同一经验的不同分析产生效用差异
+显著的知识，只保留跨视图一致的候选；Anti-Persistence（arXiv 2610.27406）证明错误抽象经"抽象→执行→再抽象"
+自我再生；Faulty Memory（UIUC）报告把正确轨迹固化成教训使 GPT-5.4 在 ARC-AGI 从 100% 跌到 54%。R244 已补
+读侧状态角色、R245 已补成本侧 429 诊断，本轮补**写侧**：一条修正该不该被持久化。
+
+**实现与行为。** `packages/core/src/apply/view-consistency.ts` 的 `viewConsensus` 把同一经验的多个视图效用
+（injected/flippedUp/flippedDown）归约为一个 verdict：只有 `consistent-help`（≥minViews 且所有有信息视图净增益
+为正）设 `admit=true`；`fragile`（有正有负）、`consistent-harm`、`no-signal`、`insufficient` 全部拒绝。净翻转
+为零的视图是弃权而非反对；判定按符号、不按幅度；`gains`/`spread` 只上报不做门控。默认关闭、字节不变。
+
+**三读者与门禁（全部根因修复，见 AUDIT 34.351）。** 新模块 TS 四维 100%；行为 23 + 绑定 8 测试；Python reader
+96.7%（self-test 72/72 + check + verify）；`pnpm check` 全链路退出码 0；README core 层 50→51 模块、
+11,044→11,243 行、adapter 占比 2.6%→2.5%；coupling 267→268 重生成、11 项检查；bundle 不变；
+`--expect-files` 32→33；13 workflow 解析。TDD 抓到两处真缺陷（错误信息不含违规视图名、顺序无关断言过强）
+均在提交前修复；Python reader 覆盖率从 85.6% 通过驱动每个守卫/main 分支提到 96.7%，无豁免。
+
+**当前位置与剩余步骤。** 三边界（写 view-consistency / 读 state-role / 成本 quota-disposition）现均有纯函数、
+三读者钉住的判据。microglia 仍在成本×一致性前沿、不在准确率榜（无外部提交，竞品 +pp 不可迁移）。
+最优剩余路径（并行、零成本优先）：① R104b 模型 proposer（≈$0.01/候选，付费臂，接线点已明确：proposer 候选
+先过一致性门再到 witness）；② R244 状态角色 on/off 单次 dispatch 做真实净贡献量化（需付费臂、先出价）；
+③ Zhipu embedding 探针在 429 可诊断后重启（¥0，离线 fallback 仍在）；④ 生成器和候选池改造（SOTA 差距的大头
+在候选池，见 COMPETITIVE §2，属付费/训练臂）；⑤ provider-agnostic fallback 优化（¥0）。付费臂一律先出价、
+成本梯子先验价后付款；不以充值状态重开 R243 的受影响子集判据。
+
+**图**：`figures/r246-view-consistency.png`（展示各候选跨视图净增益与门判定）。

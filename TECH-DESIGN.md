@@ -13367,3 +13367,65 @@ the classifier never owns a timer, which is what makes it replayable.
 **Byte-identity guarantee.** A plain 429 and a 5xx behave exactly as before; no committed artefact changes. The
 terminal branches are new paths reached only by replies carrying the named codes. `readme-layers.test.ts` verified
 the new module is counted once (eval 199 modules / 60,131 lines).
+
+## 17.213 R246 — 写侧跨视图一致性门：从 Utility 读数到 verdict 的纯函数
+
+**一句话决策，先于论证。** 一个修正该不该持久化，取决于它的效用符号是否在多次独立分析下一致；只有全正才接纳，
+符号翻转（fragile）在写侧被拒。理由：SPLICE（arXiv 2610.30790）实测同一经验的不同分析产生效用差异显著的
+知识，"保留跨视图一致候选"是其接纳规则；Anti-Persistence（arXiv 2610.27406）把错误抽象的自我再生建模为
+抽象→执行→再抽象的循环；两者共同指出负效果的载体是**被持久化的脆弱抽象**，而不是检索或容量。
+
+### 模块与位置
+
+`packages/core/src/apply/view-consistency.ts`，在 `apply` 层——因为这个判据决定什么进入记忆，与 `admitWrite`
+（写侧去重）、`stateRole`（读侧状态）并列，且都从 `apply/index.ts` 导出。纯函数，无 clock、无网络、无模型；输入是
+调用方采集的多个视图读数。为什么调用方采集：产品本身不在这里跑蒸馏，工具只判定"这些读数合起来说明什么"。
+
+### 数据形状
+
+```ts
+type ViewUtility = { view: string; injected: number; flippedUp: number; flippedDown: number };
+```
+
+字段与产品 `Utility` 同义：`injected` 是看到该规则的次数，`flippedUp/flippedDown` 是其中变好/变坏的次数。
+`view` 标签只用于拒绝重复与命名违规，不进入判定。每个视图净增益 `delta = flippedUp - flippedDown`，
+`gain = injected === 0 ? 0 : delta / injected`。
+
+### 判定阶梯（顺序即论证）
+
+先按 `views.length < minViews` 判 `insufficient`（没有跨视图一致性可谈）；再按符号计数：
+`positive > 0 && negative > 0` → `fragile`（自相矛盾，正是要拒绝的载体）；否则 `negative > 0` → `consistent-harm`；
+否则 `positive > 0` → `consistent-help`；否则 `no-signal`。`admit` 仅对 `consistent-help` 为真。
+
+两条关键设计决策，都比表面重要：
+
+1. **净翻转为零的视图是弃权，不是反对。** 一个视图没观察到净变化，只是没有信息，把它算成负会凭空制造
+   fragile。因此 fragile 要求正负都存在，零视图只记入 `zero` 计数。
+2. **按符号判定，不按幅度。** `gain` 与 `spread` 只上报给 readback、从不做门控。 SPLICE 的结论是关于符号一致
+   （有用/有害），引入幅度阈值等于引入一个本语料无法标定的数；这也让三读者可以用整数符号精确复现、无浮点漂移。
+
+### 守卫（refuse rather than default）
+
+`minViews` 必须是 ≥1 的整数；视图标签非空且唯一；`injected/flippedUp/flippedDown` 必须是非负整数；
+`flippedUp + flippedDown <= injected`（否则读数不可能是真实结果的描述）。违规抛 `MG_E_CONFIG`，且违规视图名进入
+message 而不只在 details——宿主通常只记 message。重复标签被拒，因为一个视图数两次会伪造一致性。
+
+### 确定性与开关纪律
+
+判定不依赖视图到达顺序（计数与总和与顺序无关；`gains` 按输入顺序上报但不参与判定，文档已声明）。默认关闭：
+调用方显式调用 `viewConsensus` 才生效，R246 之前所有已提交工件逐字节不变。与 `stateRole` 相同：选项在调用侧，
+不在存储侧。
+
+### 三读者契约
+
+fixture `eval/fixtures/view-consistency.json`（7 案例，覆盖五种 verdict）；清单 `eval/manifests/view-consistency.json`
+由 `eval/tools/view_consistency.py --verify` 从字节重推导，`--check` 重算清单自身算术（计数和等于 views、
+`admit` 与 verdict 一致、verdict 与计数阶梯一致、gains 长度、单视图 spread 为零），`--self-test` 72 条含每个
+守卫/篡改/确定性/CLI 分支；`view-consistency-manifest.test.ts` 用产品 `viewConsensus` 推导同一读数逐字段比对，
+浮点增益用 1e-12 绝对容差（两种语言都是 IEEE-754 双精度）。任一读者漂移即失败一边、构建停止。
+
+### 门禁
+
+新模块四维 100%；行为 23 测试 + 绑定 8 测试；Python reader 96.7%（self-test+check+verify 合并，覆盖 main 的
+argparse 分支）；README core 层 50→51 模块、11,044→11,243 行、adapter 2.6%→2.5%；coupling 267→268 模块、
+11 项检查；bundle 不变（模块不在渲染路径）；`--expect-files` 32→33。

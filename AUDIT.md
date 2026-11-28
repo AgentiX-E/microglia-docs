@@ -19261,3 +19261,34 @@ The push ran red three times; each was a real local/CI drift, not a flaky rerun.
 
 Final microglia CI on `a95d0530`: `completed/success`. docs CI on `ad93dbd4`: `success`. No gate was weakened,
 skipped, or given `continue-on-error`.
+
+## 34.351 R246 — 测试抓到的两处真缺陷，以及一次把 ASCII 标记写进门禁的克制
+
+本轮把 SPLICE 的跨视图一致性判据实现成写侧纯函数（见 ROADMAP R246 / TECH-DESIGN 17.213）。以下是门禁与
+TDD 抓到的、在提交前修掉的真实问题；没有一处被当作 flaky 重跑带过，也没有削弱任何门限。
+
+1. **错误详情对宿主不可见（TDD RED 抓到）。** 第一个实现把违规视图名只放进 `MicrogliaError.details`，
+   message 是固定的 `flips cannot exceed injected`。测试 `names the offending view in a refusal` 要求 message
+   含视图名而失败。这不是测试写得苛刻：绝大多数宿主只记录 error message，detail schema 无人读取，于是一个
+   拒绝无法定位是哪次分析产生的坏读数。修复：把视图名写进 message，details 仍保留结构化字段。
+2. **"顺序无关"被过度断言（TDD RED 抓到）。** `does not depend on the order views arrive` 最初对整个结果做
+   deep-equal，但 `gains` 按文档是输入顺序上报的报告字段，重排后自然不同。正确断言是**决定项**（verdict、
+   计数、net、spread）顺序无关，`gains` 只比较多重集合。修复测试断言范围，而非让实现去排序一个本就应按
+   输入顺序上报的数组——那样会把报告语义改掉去迁就一个错误的测试。
+3. **Python reader 覆盖率 85.6% → 96.7%（本地/门禁同源）。** `--self-test` 单独跑只覆盖 85.6%，因为
+   `check`/`verify`/`build`/`main` 的 argparse 分支没被驱动。按 R244 的教训，CI 会让 self-test/check/verify
+   三条命令都在 coverage 下运行；但 `--build` 与参数数量守卫仍不在其中。修复不是豁免这些行，而是：把 `main`
+   改成接受 `argv` 以便 self-test 走真实 CLI 入口；在 self-test 内直接驱动 `build`/`check`/`verify` 的每一个
+   refusal 守卫（verdict 漂移、计数和不符、gains 形状、spread 越界、字段篡改等），用临时目录承载 `--build`
+   的输出以免碰已提交清单，并用 `redirect_stdout/stderr` 保持 self-test 输出干净；参数数量守卫由抛
+   `SystemExit` 改为返回 1，使其可被 self-test 覆盖。最终 72 条断言，三命令合并覆盖率 96.7%。
+
+**门禁实测，全部根因修复。** 新模块 TS 四维 100%；行为 23 测试、绑定 8 测试全过；Python reader self-test
+72/72、check/verify 均 ok；`pnpm check` 全链路退出码 0（typecheck、6372+ 测试、全部 eval verifiers、benchmark、
+bundle、coupling、13 workflow 解析）；README 层表随新生产模块更新（core 50→51、11,044→11,243 行、adapter
+占比 2.6%→2.5%）；coupling 快照 267→268 重生成、11 项检查通过；bundle 未变（core 55,071/18,865 B）；
+`--expect-files` 32→33。没有任何门限被削弱、跳过或加 `continue-on-error`。
+
+**ASCII 纪律的克制。** 图注与文档里出现的 arXiv 编号、函数名、verdict 字面量均为 ASCII；本轮没有把任何
+非 ASCII 标记写进 `.ts`/`.mjs` 源码，`audit:repo` 语言门保持原样通过——R245 曾因字面 CJK 触发该门，本轮
+从一开始就把所有面向用户的说明留在 Markdown，而 Markdown 不受该门约束。
