@@ -11407,3 +11407,58 @@ activeStaleCount==0；检索集交给模型前过 R251 确认 verdict 不含 rej
 脚本（`eval:cortex`，CI 中 clone+build cortex 后对账），但"本地 link 代码级引入"在本环境不具备条件，故本轮未就 Agent
 记忆打榜、未引入 cortex 代码——守住 microglia 通用放大器的设计目标；一旦 cortex 代码就绪，评估对象是它给 cortex 带来的
 记忆增益。
+
+## R252（read 28 Nov，¥0）— 检索到的记忆并非同等可信：先打分，再决定是否弃权
+
+> **状态，28 Nov：read，¥0，未调用模型。** 用户第 8 问持续追问"记忆的东西和使用记忆的方式不正确导致负面效果"。
+> R246-R251 决定了我们存什么、纠正是否生效、修订是否覆盖所有副本、新证据是否 displace 旧值、检索到的 lesson 是否该用——
+> 但它们把存活下来的每条记忆以**同等权重**交给模型。MMA（arXiv 2602.16493，github.com/AIGeeksGroup/MMA）把这种
+> "Blind Faith" 单独命名：陈旧、低可信或矛盾的记忆与新鲜、有来源的记忆被同等展示，过度自信的答案随之而来。本轮把
+> MMA 的逐条可靠性层复刻为可证伪判据，不做准确率收益、不花钱。
+
+**联网一手证据（28 Nov）。** MMA（arXiv 2602.16493，AACL-IJCNLP 2026 Oral，北大）：为每个检索项分配动态可靠性分，
+组合来源可信度、时间衰减、冲突感知共识，支持不足时弃权。FEVER 上匹配基线准确率、方差降低 **35.2%**；LoCoMo 上
+安全配置提升可操作准确率、减少错误答案；MMA-Bench 上 vision 模式 Type-B 达 **41.18%**，基线同协议崩到 **0.0%**。
+论文揭示 "Visual Placebo Effect"：RAG agent 从基础模型继承潜在视觉偏见而过度自信。源码 `confidence_module.py`
+的 `compute_v2`（tri 模式）与配置 `confidence_v2.yaml`（w_s=0.45、w_t=0.40、w_c=0.15）已完整读取并复刻。这正是
+COMPETITIVE.md 早前标记的开放项"MMA per-item confidence with calibrated abstention"。
+
+![R252 — 各 episode 的置信度与弃权判定阶梯](figures/r252-memory-confidence.png)
+
+**实现。** `packages/core/src/apply/memory-confidence.ts` 导出 `memoryConfidence(input)`。三信号忠实复刻 MMA：
+来源可信度 S（knowledge 0.95 / semantic 0.70 / procedural·resource 0.60 / episodic 0.50，来自 confidence_v2.yaml）；
+时间衰减 `T = 0.5^(ageDays/halfLifeDays)`（MMA `exp(-ln2·Δ/halfLife)` 的半衰期闭式）；冲突感知有符号共识 C
+（邻居 `confidence × support` 的加权均值，support ∈ [-1,1]，无邻居为 0）。置信度 `score = max(0, (w_s·S+w_t·T+w_c·C)/(Σw))`。
+
+| 条件（按顺序） | disposition | reason |
+|---|---|---|
+| score < abstainBelow 且有符号共识 < 0 | `abstain` | `conflict-overwhelms` |
+| score < abstainBelow | `abstain` | `below-threshold` |
+| score < reweightBelow | `reweight` | `marginal` |
+| 其余 | `admit` | `reliable` |
+
+MMA 的上界 clamp 在权重非负、信号有界时数学上不可达，按纪律删除而非留作死代码；共识加权均值恒在 [-1,1]，
+同样不 clamp。`decidingScoreMilli` 以整数千分比报告决定项置信度，产品与独立 reader 比对整数而非浮点。集合 verdict
+取最严格（abstain > reweight > admit），reason/decidingId 指向 severity 最高的项（平手取在先），三计数分区 itemCount。
+
+**三读者与门禁。** fixture 十一条真实 episode（新鲜 knowledge、被佐证的 semantic、边缘 resource、陈旧/衰减项、
+conflict-overwhelms、加权共识、中性邻居、三条聚合）；Python reader `memory_confidence.py --verify` 无共享代码从字节
+重推导每个 verdict/reason/decidingId/计数/整数分数，`--check` 重加算术（计数分区、reason/verdict 家族、阈值顺序），
+`--self-test` 覆盖边界、half-up 取整、determinism、tamper；`memory-confidence-manifest.test.ts` 用产品函数逐字段比对。
+
+**门禁与下一步。** 新模块四维 100%；行为 43 + 绑定 16 = 59 测试；Python reader 语句/分支 100%；Python 半幅取整用
+`int(x*1000+0.5)` 对齐 JS `Math.round`（避开 banker's rounding 在 .5 的分歧）；全量 `pnpm check` 退出码 0（322 测试文件、
+6678 测试）；README core 层 56→57 模块、12,442→12,778 行；coupling 273→274 重生成、11 项检查；bundle 不变；
+`--expect-files` 38→39；13 工作流解析通过。
+
+**注意：本轮不是准确率收益，也不是付费臂。** 九条纯函数判据齐备：单条稳定(R246)/整类持久化(R247)/显式修订(R249)/
+隐式撤销(R250)/检索后接纳(R251)/置信度弃权(R252)/读状态(R244)/成本 429(R245)/领域边界(R248)。接线点留给 R104b：
+候选过 viewConsensus → abstractionLifecycle → witness；显式撤回/纠正过 R249；新证据落库过 R250；检索集交模型前过
+R251 确认无 reject、再过 R252 对每条标权重、abstain 的项不注入。剩余最优路径不变（零成本优先）：Zhipu embedding
+探针（¥0，已读回 separated=false，重跑只重复已知结论并烧配额，非优先）；R104b 模型 proposer（≈$0.01/候选，付费臂，
+接线如上）；R244 状态角色 dispatch（付费臂先出价）；生成器/候选池改造（付费/训练臂，SOTA 差距的大头）；provider
+fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款。
+
+**第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 `AgentiX-E/cortex` 代码本体（无本地目录/npm link/CORTEX_DIST）。
+microglia 已有 adapter + conformance 脚本（CI clone+build 对账），但"本地 link 引入"本环境不具备；本轮未就 Agent 记忆
+打榜、未引入 cortex 代码，守住通用放大器目标。cortex 就绪后评估对象是它给 cortex 带来的记忆增益。

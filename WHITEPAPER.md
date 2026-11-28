@@ -5687,3 +5687,23 @@ amplifier coupled to no vertical; NL2SQL / chart / data-viz remain `AgentiX-E/nl
 later evaluated on Agent memory once `AgentiX-E/cortex` is available by local link (Q9), the object of evaluation is the
 gain microglia adds to cortex, not cortex's own score — and microglia keeps its target of extracting the right lesson
 and using it at the right time.
+
+## Scope note R252 — calibrated trust as part of the memory amplifier
+
+The claim that *how we use memory* — not only what we store — causes the negative effect now has a ninth concrete
+mechanism. R246 keeps a single rule only while it survives re-analysis; R247 keeps abstractions only while they
+accumulate experience; R249 checks an explicit revision reached every derived site; R250 checks new evidence retired
+the stale value; R251 (`memoryAdmission`, ¥0, three readers) decides whether a correctly retrieved lesson should be
+used. R252 (`memoryConfidence`, ¥0, three readers) goes one step further: it refuses to treat the surviving memories
+as equally trustworthy. Reproducing MMA's per-item reliability layer (arXiv 2602.16493) — source credibility,
+half-life temporal decay and conflict-aware signed consensus, with abstention when support is insufficient — it
+scores each item and admits, reweights or withholds it. On FEVER that design held accuracy while cutting variance
+35.2%, and on MMA-Bench it reached 41.18% where the baseline scored 0.0%; those are the field's published results,
+read into our scoring and reason ladder, not microglia scores.
+
+R252 does not claim an accuracy gain and opens no paid arm. It stays a generic trust rule for a memory amplifier
+coupled to no vertical; NL2SQL / chart / data-viz remain `AgentiX-E/nl2charts`' domain (R248). If microglia is later
+evaluated on Agent memory once `AgentiX-E/cortex` is available by local link (Q9), the object of evaluation is the
+gain microglia adds to cortex — including that its memories arrive with calibrated trust — not cortex's own score.
+microglia keeps its target of extracting the right lesson, using it at the right time, and trusting it by the right
+amount.

@@ -13660,3 +13660,44 @@ reachable 但未 linked——一律 `MicrogliaError(MG_E_CONFIG)` 而非默认�
 → witness；显式撤回/纠正动作在落库前过 `revisionIntegrity`（residualSites == 0）；新证据写入后过 `staleRevocation`
 确认 activeStaleCount == 0；检索集交给模型前过本门，确认集合 verdict 不含 reject（escalate 的候选先链接证据核查）。
 这样"产品侧自动使用测评侧最优配置"由机器判据保证，而非文档承诺。
+
+## 17.219 R252 技术设计 — 置信度加权可靠性与校准弃权
+
+**目标。** 把 MMA（arXiv 2602.16493）的逐项可靠性层复刻为 microglia 的第 9 条纯函数判据，编码"Blind Faith"
+负效果：检索到的每条记忆按来源/时间/共识三信号评分，支持不足则弃权，而非以同等权重注入模型。
+
+**三信号与公式。** `packages/core/src/apply/memory-confidence.ts` 的 `memoryConfidence(input)`：
+- 来源可信度 S：闭集映射 knowledge 0.95 / semantic 0.70 / procedural·resource 0.60 / episodic 0.50
+  （MMA `confidence_v2.yaml`）。
+- 时间衰减 T：`0.5 ** (ageDays / halfLifeDays)`，MMA `exp(-ln2·Δ/halfLife)` 的半衰期闭式。
+- 冲突感知有符号共识 C：邻居 `confidence × support` 的加权均值，support ∈ [-1,1]，无邻居为 0。
+- `score = max(0, (w_s·S + w_t·T + w_c·C) / (w_s+w_t+w_c))`，默认 w=(0.45,0.4,0.15)。
+
+**为何删掉上界 clamp。** MMA 写 `clamp(score, 0, 1)`。但 w 非负、S,T ≤1、C ≤1 时分子 ≤ Σw，score 恒 ≤1，上界
+不可达；C 本身是 [-1,1] 内数的加权均值，也恒在 [-1,1]。两处上界 clamp 都是死分支。按"不可达分支删除"纪律改为
+`Math.max(0, …)`（下界可达：共识主导权重可 drive 分子为负），共识不 clamp。判据读数与 MMA 等价，少一条不可达弧。
+
+**判据阶梯。** score < abstainBelow 且共识 <0 → `abstain`/`conflict-overwhelms`；score < abstainBelow →
+`abstain`/`below-threshold`；score < reweightBelow → `reweight`/`marginal`；否则 `admit`/`reliable`。集合 verdict
+取最严格（abstain > reweight > admit），reason/decidingId 指向 severity 最高项（平手取在先）。不变量
+`itemCount = admitCount + reweightCount + abstainCount`。`decidingScoreMilli` 为决定项 score 的整数千分比。
+
+**守卫。** 拒绝：空白 episode id、非对象 weights、负或非有限权重、总权重为零、非有限/非正 halfLifeDays、
+abstainBelow 越界、reweightBelow < abstainBelow 或 >1、非数组/空 items、非对象 item、空白/重复 item id、
+未知 source、负/非有限 ageDays、非数组 neighbors、非对象 neighbor、非正 neighbor weight、越界 confidence/support
+——一律 `MicrogliaError(MG_E_CONFIG)`，不默认归类。
+
+**依赖分层。** `apply/memory-confidence.ts` 只依赖 `kernel` 的 `MicrogliaError`，与 `view-consistency`、
+`abstraction-lifecycle`、`revision-integrity`、`stale-revocation`、`state-role`、`memory-admission`、`competition-domain`
+同为 core 层叶子，经 `apply/index.ts` 对宿主导出；不在渲染路径上，bundle 不变。函数审计调用方描述的检索集，
+不取数、不编辑 store——与 microglia 通用记忆放大器、不耦合垂域的定位一致（R248 领域门机器校验）。
+
+**三读者契约。** fixture 十一条真实 episode → 产品函数与独立 Python reader 各自从字节推导 → manifest 逐字段钉住
+（`memory-confidence-manifest.test.ts` 字段比对；`memory_confidence.py --check/--verify/--self-test`）。Python 的
+`milli()` 用 `int(x*1000+0.5)` 对齐 JS `Math.round`，避开 banker's rounding 在 .5 的分歧；fixture 分值均不落 .5
+边界。CI 在 coverage 下跑 Python 三模式，`--expect-files` 38→39。新模块 TS 四维 100%，Python 语句/分支 100%。
+
+**接线点。** R104b 的模型 proposer 产出候选后，先过 `viewConsensus`（单条是否稳定）→ `abstractionLifecycle`
+（是否持久化）→ witness；显式撤回/纠正过 `revisionIntegrity`；新证据落库过 `staleRevocation` 确认
+activeStaleCount==0；检索集交模型前过 `memoryAdmission` 确认集合 verdict 不含 reject，再过本门对每条标权重，
+abstain 的项不注入。这样"产品侧自动使用测评侧最优配置"由机器判据保证，而非文档承诺。

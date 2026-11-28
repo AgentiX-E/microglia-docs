@@ -19420,3 +19420,32 @@ reject=1——三者仍分区，但 verdict=escalate 与 rejectCount=1 矛盾，
 指标写进 microglia 的读数；未在没有 cortex 代码的环境里声称 link 引入成功。八条纯函数判据现在各自有三读者钉住，全量
 `pnpm check` 退出码 0。R249/R250 的历史缺陷（优先级错告、正则误读注释、死守卫、tamper 没打到靶）本轮未复现——本轮的
 两处缺陷又是同一类"样本构造没到靶"，已再次以根因方式修复。
+
+## 34.357 R252 审计 — 置信度弃权判据（¥0，九条判据齐备）
+
+**范围。** 审计 `packages/core/src/apply/memory-confidence.ts`（`memoryConfidence`）、三读者契约、六处门禁接线、
+双仓文档。复刻 MMA（arXiv 2602.16493）置信度模块，把"Blind Faith"负效果钉成可证伪判据。结论：实现正确、方向
+正确、评估方法正确；本轮无实现缺陷，两处问题都在测试断言侧，已根因修复。
+
+**实现正确性的独立核对。** score = (w_s·S+w_t·T+w_c·C)/Σw，S 取 confidence_v2.yaml 五档先验，T=0.5^(age/half)
+是 MMA 半衰期闭式，C 为邻居 confidence×support 加权均值（support ∈ [-1,1]）。逐案手算与 Python reader 独立推导
+一致：fresh-knowledge 0.8275→828、support 0.85→850、marginal 0.67→670、stale 0.225→225、conflict 0.075→75、
+weighted-consensus 0.79→790。fixture 每条分值都不落在 .5 边界，避开 JS/Python 取整分歧；reader 用 `int(x*1000+0.5)`
+对齐 JS `Math.round`。
+
+**缺陷一：两处测试断言写在阶梯错误一侧（测试侧）。** fresh-knowledge 断言 ≥900，实算 0.8275（无共识拉升）；
+confident-absorb-conflict 断言 admit，实算 0.6775→reweight。都是把期望值写在了实现规则的另一侧，修测试而非迁就
+实现——与 R249 同类纪律。修复后 43 行为测试全绿。
+
+**缺陷二：Python self-test 的 floor 样本没打到靶（测试侧）。** 默认权重下 episodic 0.5 + 极端陈旧 + 负共识算出
+0.075，非 0，触发不到 `Math.max(0, …)` 的下界。改用共识主导权重（0.1/0.1/0.8）得到负分子、floor 真正为 0。
+不是实现错，是样本没到靶。
+
+**死分支的根因处理。** 首轮 TS 分支 97.46%，唯一开放弧是 `clamp` 的上界分支。分析确认：权重非负且 S,T ≤1、
+C ≤1 时 score 恒 ≤1（上界不可达），共识加权均值恒在 [-1,1]（两端 clamp 均不可达）。按"不可达分支删除而非豁免"
+纪律，删除 `clamp`、改用 `Math.max(0, …)` 保留可达的下界并补测，而非加 `# pragma: no cover` 或降低门禁。
+修复后四维 100%。
+
+**没有发生的事。** 未以充值状态重开付费臂；未用 mock 达成覆盖率；未让文档比代码更漂亮；未把 nl2sql/chart 指标
+写进 microglia 读数；未在没有 cortex 代码的环境里声称 link 成功；未重跑已读回 separated=false 的 embedding 探针
+去烧配额。九条纯函数判据各自有三读者钉住，全量 `pnpm check` 退出码 0。

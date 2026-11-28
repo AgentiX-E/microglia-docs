@@ -11459,3 +11459,53 @@ arm — the large part of the SOTA gap); ⑤ provider-agnostic fallback optimisa
 priced before payment. Cortex note (question 9): no cortex code body is present in this sandbox (no local dir, no npm
 link, no CORTEX_DIST build); microglia ships an adapter plus a conformance script (CI clones+builds cortex to reconcile),
 so the local-link condition of Q9 is not met here and no Agent-memory leaderboard run was attempted this round.
+
+## R252 competitive refresh (28 Nov 2026) — the field scored retrieved items; microglia gates trust per item
+
+**What the field found (one primary source plus its code, 28 Nov).** MMA: Multimodal Memory Agent (arXiv 2602.16493,
+AACL-IJCNLP 2026 Oral, Peking University; github.com/AIGeeksGroup/MMA) names the failure "Blind Faith": a
+long-horizon agent treats every retrieved memory as equally trustworthy, so a stale, low-credibility or
+contradictory item drives an overconfident error. Its Confidence Module assigns each retrieved item a dynamic
+reliability score from source credibility (S), half-life temporal decay (T = exp(-ln2·delta/halfLife)) and
+conflict-aware signed consensus (C_con), then reweights evidence and abstains when support is insufficient. On FEVER
+it matches baseline accuracy while cutting variance 35.2%; on LoCoMo a safety-oriented configuration improves
+actionable accuracy and reduces wrong answers; on MMA-Bench it reaches 41.18% Type-B accuracy in vision mode where
+the baseline collapses to 0.0%. The paper also exposes the "Visual Placebo Effect" — RAG agents inherit latent
+visual bias from the foundation model and become overconfident on irrelevant visual noise. We read the shipped
+`confidence_module.py::compute_v2` (tri mode) and `confidence_v2.yaml` (w_s=0.45, w_t=0.40, w_c=0.15) rather than
+relying on the abstract.
+
+**How this maps to microglia.** R246-R251 gate what we write, whether a correction sticks, whether a revision
+reached every copy, whether new evidence displaced the old value, and whether a correctly retrieved lesson should be
+used. All stop at a categorical decision and hand survivors to the model at equal weight. R252 reproduces MMA's
+per-item reliability layer as `memoryConfidence` — a pure, ¥0 gate with three readers that scores each item on
+source/decay/consensus and admits, reweights or abstains. Together the write/use side now covers the whole arc of the
+user's standing question 8: *what we remember, whether it is still true, whether it reached every copy, whether it is
+the right lesson, and how much it should be trusted*. One deliberate divergence from MMA is documented and audited:
+the upper clamp on the score and both clamps on consensus are provably unreachable dead branches under non-negative
+weights and bounded signals, and are removed rather than left as unreachable code; the reading is identical.
+
+**Leaderboard position (unchanged this round).** microglia remains on the cost × consistency frontier, not on any
+accuracy leaderboard: there is no external submission this round. MMA's numbers (35.2% variance cut, 41.18% vs 0.0%)
+are published results read into our reason ladder and scoring, not a microglia benchmark score, and are not claimed as
+one. The authoritative field stays LongMemEval / LoCoMo / MemoryAgentBench / BEAM / DolphinBench / AMA-Bench plus the
+negative-effect diagnostics TEPA / STALE / MemTrapBench / MMA-Bench — memory-augmented task success, measured
+memory-on vs memory-off and now with calibrated abstention. NL2SQL / text2charts / data2charts stay in
+`AgentiX-E/nl2charts`; R248's `classifyCompetitionDomain` gate keeps that boundary machine-checked.
+
+**Learning value exhausted vs still open.** MMA's three confidence signals are now encoded: the five source priors,
+the half-life decay and the conflict-aware signed consensus, plus the abstention decision. The CoRe selective-utility
+scoring (Verdict / Wager / Reflection) is a benchmark grader, not a product gate, and is not replicated. Still open
+from earlier rounds: a quantified poisoning-defence benchmark (poisoned-experience retrieval rate under our gate),
+and an end-to-end accuracy run of the proposer pipeline once a paid arm is priced. All need paid arms and are listed
+in the remainder, not claimed.
+
+**Optimal-path remainder (parallel, zero-cost first).** ① Zhipu embedding probe — already read back separated=false
+(p=0.12/0.06); a re-run repeats a known result and burns ZHIPU quota, so not a priority; ② R104b model proposer
+(~$0.01/candidate, paid arm; wiring: viewConsensus → abstractionLifecycle → witness, explicit revision via R249,
+new-evidence-into-retrieval via R250, retrieval-into-model via R251, per-item trust via R252); ③ R244 state-role
+dispatch ablation (paid arm, price first); ④ generator / candidate-pool rework (paid/training arm — the large part of
+the SOTA gap); ⑤ provider-agnostic fallback optimisation (¥0). Paid arms quote first, ladder priced before payment.
+Cortex note (Q9): no cortex code body is present in this sandbox; microglia ships an adapter plus a conformance
+script (CI clones+builds cortex to reconcile), so the local-link condition of Q9 is not met here and no Agent-memory
+leaderboard run was attempted this round.

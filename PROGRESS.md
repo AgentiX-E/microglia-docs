@@ -31210,3 +31210,37 @@ microglia 已有 adapter + conformance 脚本（CI clone+build 对账），但"�
 打榜、未引入 cortex 代码，守住通用放大器目标。cortex 就绪后评估对象是它给 cortex 带来的记忆增益。
 
 **图**：`figures/r251-memory-admission.png`（各 episode 的裁决与接纳判定阶梯）。
+
+## 249.79 R252：检索到的记忆并非同等可信——把置信度弃权钉成判据（¥0）
+
+**用户命题与缺口。** 第 8 问持续追问"记忆的东西和使用记忆的方式不正确导致负面效果"。R246-R251 决定了存什么、
+纠正是否生效、修订是否覆盖、新证据是否 displace、检索到的 lesson 是否该用，但都以**同等权重**交给模型。
+MMA（arXiv 2602.16493）把"把陈旧/低可信/矛盾记忆与新鲜有源记忆同等展示"命名为 Blind Faith。本轮复刻其逐条
+可靠性层并钉住弃权规则，¥0、未调用模型。
+
+**联网一手证据（28 Nov）。** MMA（AACL-IJCNLP 2026 Oral，北大，github.com/AIGeeksGroup/MMA）：来源可信度 ×
+时间衰减 × 冲突感知共识 → 每条记忆可靠性分，支持不足时弃权。FEVER 匹配基线准确率、方差 −35.2%；MMA-Bench vision
+模式 Type-B 41.18% vs 基线 0.0%；揭示 Visual Placebo Effect。已完整读取 `confidence_module.py::compute_v2` 与
+`confidence_v2.yaml`（w_s=0.45/w_t=0.40/w_c=0.15）。
+
+**实现。** `packages/core/src/apply/memory-confidence.ts` 的 `memoryConfidence(input)`：三信号 S/T/C 忠实复刻 MMA，
+`score = max(0, (0.45·S+0.40·T+0.15·C))`；阶梯 conflict-overwhelms < 0.50 → below-threshold < 0.50 →
+marginal < 0.75 → reliable；`decidingScoreMilli` 整数千分比。集合取最严格 verdict，三计数分区 itemCount。
+
+**三读者与门禁（根因修复）。** 新模块四维 100%；行为 43 + 绑定 16 = 59 测试；Python reader 语句/分支 100%，
+half-up 取整对齐 JS `Math.round`；全量 `pnpm check` 退出码 0（322 测试文件、6678 测试）；README core 56→57 模块、
+12,442→12,778 行；coupling 273→274、11 项检查；bundle 不变；`--expect-files` 38→39。
+
+**测试/工具侧的克制修复。** 两处失败都是测试断言算错、不是实现错：① fresh-knowledge 断言 ≥900，实算
+0.45×0.95+0.40×1=0.8275→828（无共识拉升），改为 ≥820；② confident-absorb-conflict 断言 admit，实算
+0.8275−0.15=0.6775→reweight，负共识把高可信项从 admit 降到 reweight 而非 abstain，改为断言 reweight。
+Python self-test 的 floor 样本用默认权重算出 0.075 而非 0，改用共识主导权重（0.1/0.1/0.8）真正驱动到 0。
+`clamp` 的上界分支（97.46% 时的唯一开放弧）是死分支——权重非负且信号有界时 score 恒 ≤1、共识均值恒在 [-1,1]，
+按纪律删除 `clamp`、改用 `Math.max(0, …)` 并补共识主导权重的 floor 测试，而非加 `# pragma: no cover`。
+
+**当前位置与剩余步骤。** 九条纯函数判据齐备（+置信度弃权 R252）。microglia 仍在成本×一致性前沿、不在准确率榜。
+最优剩余路径（并行、零成本优先）：① Zhipu embedding 探针已读回 separated=false（p=0.12/0.06），重跑重复已知结论
+并烧配额，非优先；② R104b 模型 proposer（≈$0.01/候选，付费臂）；③ R244 dispatch（付费臂先出价）；④ 生成器/
+候选池改造（付费/训练臂，SOTA 差距大头）；⑤ provider fallback 优化（¥0）。付费臂先出价、梯子先验价后付款。
+
+**图**：`figures/r252-memory-confidence.png`（各 episode 置信度与弃权判定阶梯）。
