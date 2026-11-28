@@ -13847,3 +13847,18 @@ pack.decision 之外的新字段供宿主读取。为 R104b 铺路：proposer �
 **与编排层的关系。** R260 与前序判据分工不同：R257 对"待注入上下文组成"下组装决策，R258 对"经验接口指纹是否仍有效"下重放决策，R259 对"记忆形成范围是否适合当前任务"下注入决策，R260 对"事实是否决策关键但对检索不可见、须常驻"下写入路由决策。四者可作为 experience-gate 的不同阶段。cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253）。
 
 **三读者契约。** TS 产品 + 独立 `critical_fact_routing.py`（字节重推导，无共享代码）+ fixture/manifest 逐字段绑定；`--expect-files` 47。observer 缝接入 apply barrel，默认关闭、零字节回归。付费臂须用户最终确认后才由 workflow dispatch 触发。
+
+
+## R261 技术设计（28 Nov）— 依赖溯源撤回门（读取时前提链）
+
+**判据位置。** `packages/core/src/apply/dependency-tether.ts`，纯函数、零成本、无模型、无宿主域耦合。输入：id + candidates（每项 `{id, derivedFrom: [{object, version}]}`，version 非负整数）+ derivations（`{id, produces: {object, version}, derivedFrom}` 的 derived_from 边）+ failures（失败版本键）+ latest（每对象最高版本）+ retrievalWindow（惰性）+ 可选 ablations。输出：verdict / reason / decidingSignal / candidateCount / failedCount / supersededCount / missingCount / currentCount / closureSize / checks / verifyAll / checksSavedMilli / retrievalWindow / tetherRatesMilli / withdrawnIds / recheckedIds / trustedIds / ablations。所有数值整数。
+
+**闭包与分区读数。** 对每条判定，把 derivedFrom 经 derivations 映射（produced key → 其来源键）展开为传递闭包，visited 集防环与菱形重复。命中 failures（精确 object@version）→ failed；neutral≠superseded 且闭包某键的对象在 latest 中有更高版本（严格 `>`）→ superseded；derivedFrom 为空且 neutral≠provenance → missing；否则 current。published 比率导出为 `TETHER_RATES_MILLI`（factMemory 620、mem0 420、aMem 89、graphiti 87、tether 3、checksSaved 370、flushOverhead 320、splitLow 94、splitHigh 221、aMemChecks 860、graphitiChecks 830、mem0Checks 500），仅供 reader 绑定、从不计分。
+
+**五阶梯（severity 表裁定，非检查顺序）。** `dependency-failed`（severity 4）→ `withdraw`；`dependency-superseded`（3）→ `withdraw`；`provenance-missing`（2）→ `recheck`；`all-current`（1）→ `trust`；`no-candidates`（0）→ `trust`。集合 verdict = 所有判定 reason 的最严格者。retrievalWindow 只写入输出、不进入任何 firing rung。三处可证伪边界由读数定义保证：传递展开（2+ 跳失败仍命中）、严格 `>`（相等版本不取代）、空 derivedFrom 保守重查。
+
+**成本与消融。** checks = failed+superseded+missing（须复核的判定）；verifyAll = candidateCount；checksSavedMilli = round((verifyAll−checks)×1000/verifyAll)，空集取 0。withdrawnIds/recheckedIds/trustedIds 对判定分割（三者之和 = candidateCount）。ablations 中和 transitive（闭包只取直接依赖）/superseded（跳过版本检查）/provenance（空依赖视为 current）之一重跑阶梯，verdict 翻转即命名决定性门。
+
+**与编排层的关系。** R261 与前序判据分工不同：R257 对"待注入上下文组成"下组装决策，R258 对"经验接口指纹是否仍有效"下重放决策，R259 对"记忆形成范围是否适合当前任务"下注入决策，R260 对"事实是否决策关键但对检索不可见、须常驻"下写入路由决策，R261 对"缓存判定依赖的前提链是否仍有效"下读取撤回决策。五者可作为 experience-gate 的不同阶段。cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253）。
+
+**三读者契约。** TS 产品 + 独立 `dependency_tether.py`（字节重推导，无共享代码）+ fixture/manifest 逐字段绑定；`--expect-files` 48。observer 缝接入 apply barrel，默认关闭、零字节回归。付费臂须用户最终确认后才由 workflow dispatch 触发。

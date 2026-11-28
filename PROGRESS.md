@@ -31367,3 +31367,14 @@ disposition + reason + 整数 scoreMilli；advisory source 的 reject 降为 rew
 - **发现并修复**：实现里 `isBlindSpot` 的 necessity 守卫是永不可达死分支（readingsOf 已短路），重构成 necessity 单一处理 + isBlindSpot 只判远/桥两正交条件，四维回 100%；reader tamper 误选正确 signal，改 budget；绘图 x 标签与标题重叠，上移压缩后消除。
 - **成本**：¥0，未调用模型，未开付费臂。
 - **图**：`figures/r260-critical-fact-routing.png`（五阶梯 + 84%→14.4% 鸿沟 + 三条件 + 可证伪边界）。
+
+
+## R261（28 Nov，¥0）— 依赖溯源撤回门（Tether 非局部失效机制）
+
+- **结论**：补上十六条判据的结构性空白——读取时不问"缓存判定依赖的前提在 store 某处是否已失效、而失效通知与判定从不共享检索窗口"。复刻 Tether（arXiv 2610.25123，南昆士兰大学/南方科技大学），事实记忆发布 62% 上游失败对象、Mem0 42%、A-Mem/Graphiti 8.7–8.9%、Tether 0.3% 且少 37% 验证；关系与判定分离时回升至 9.4–22.1%。
+- **核对空白**：R250 stale-revocation（同一实体新事实覆盖）与 R258 schema-drift（接口指纹）已覆盖不同失效类型；依赖图跨节点、跨跳、无共享实体的非局部失效是新增空白；R260 常驻路由正交互补。
+- **实现**：`dependency-tether.ts` 的 `dependencyTether(input)`，derivedFrom 经 derivations 展开传递闭包（visited 防环/菱形），severity 五阶梯（dependency-failed 4 / dependency-superseded 3 / provenance-missing 2 / all-current 1 / no-candidates 0 → withdraw/withdraw/recheck/trust/trust），retrievalWindow 惰性只回显，三处可证伪边界，成本 checks/verifyAll 节省千分比，TETHER_RATES_MILLI 预注册只绑定不计分，三消融 transitive/superseded/provenance，observer 缝接入 apply barrel、默认关闭、零字节回归。
+- **测试**：25 行为 + 4 绑定 = 29 测试，TS 四维 100%（278/278、102/102、14/14、278/278）；Python reader 98.65%（480/485，开放弧为自测/CLI）；fixture 16 案（3 verdict × 5 reason × 3 边界 + 惰性窗口 + 菱形图 + 优先级 + 消融）；CI `--expect-files` 48；README core 66 模块 / 15,964 行 / 6,978 测试；coupling 283 模块 11 项通过。
+- **发现并修复**：Python reader 一处死守卫（removedSignal 已被 ABLATABLE 校验，再查 verdict reason 永假），删除而非注水覆盖；两处真实分支（共享 producer、菱形重复到达）补 fixture 而非简化实现；绘图标题重叠与底部留白调整布局。
+- **成本**：¥0，未调用模型，未开付费臂。
+- **图**：`figures/r261-dependency-tether.png`（五阶梯 + 62%→0.3% 发布率 + 成本/三边界）。

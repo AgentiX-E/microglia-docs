@@ -19570,3 +19570,14 @@ R252 98%、R253 99.1% 同类）；全量 `pnpm check` 退出码 0（326 测试�
 **发现并修复的真实错误。** ① TS 分支覆盖初次 98.91%，定位为 `isBlindSpot` 里 `neutral === 'necessity'` 守卫在 `readingsOf` 已短路、永不可达——这是实现缺陷而非测试缺口，故重构职责（necessity 单一由 readingsOf 处理、isBlindSpot 只判远与桥两正交条件），四维回 100%，不用测试去覆盖死代码。② Python self-test 首跑失败：`decidingSignal` tamper 误选了 case 0 的正确值 bridge，改用 budget 触发 disagreement。③ 绘图柱状图 x 标签（两行）与三条件标题重叠，上移压缩柱区消除。综上共 3 处，均为门禁/自测/目检实证产出。
 
 **没有做什么。** 未把 InMind published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R260 是通用写入路由判据，未耦合 nl2sql/chart 垂域。
+
+
+## R261 审计（28 Nov）
+
+**验证了什么。** 复刻 Tether（arXiv 2610.25123）的读取时依赖溯源撤回门，逐机制对照论文：derived_from 精确版本边、传递闭包撤回（写入时局部记录依赖、读取时全 store 检查）、失效非局部性（失败根与判定叶不共享检索窗口）、严格版本取代（相等安全）、空 provenance 保守重查。三处可证伪点全部钉成 fixture 案：`transitive-failure` 与 `non-local-withdrawal` 钉住 2 跳/3 跳失败仍撤回且窗口不含失败根、`version-equal-current` 钉住相等版本不取代、`version-mismatch-failure` 钉住失败版本与判定版本不同不 taint、`provenance-missing` 钉住空依赖重查。`window-inert` 钉住窗口含不含失败根 verdict 恒等。Python reader 独立从字节重推导，与 TS 产品经 manifest 逐字段比对，不共享代码。
+
+**覆盖率与门禁。** 新模块 29 测试（行为 25 + 绑定 4）、TS 四维 100%（278 语句/102 分支/14 函数/278 行）；Python reader 单段 98.65%（480/485，开放弧为自测失败断言与 argparse/exit，与 R252~R260 同类）；README core 65→66 模块、15,506→15,964 行、6,949→6,978 测试；coupling 282→283 模块、11 项检查、core 0 领域耦合；`--expect-files` 47→48。全量 `pnpm check` EXIT=0，远端 CI 待验证。
+
+**发现并修复的真实错误。** ① Python reader `check()` 中 `ablation signal cannot be a reason` 守卫不可达：`removedSignal` 已被 `in ABLATABLE` 校验，ABLATABLE 与 VERDICT reason 两集合无交集。删除该守卫及对应 tamper，覆盖率如实落在 98.65%，不为覆盖死代码注水。② TS 首次全量 check 报 `'input' is declared but never read`（classify 参数），删除未使用参数（Python reader 本就对称）。③ 覆盖率收口暴露两处真实分支——同一 produced key 多条 derivation 边、闭包经多路径重复到达同节点——补 `shared-producer-diamond` fixture 覆盖，未简化实现。④ 绘图标题/副标题重叠、底部留白过多，下移标题、压缩画布高度消除。
+
+**没有做什么。** 未把 Tether published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R261 是通用读时撤回判据，未耦合 nl2sql/chart 垂域。

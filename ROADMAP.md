@@ -11692,3 +11692,24 @@ dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练
 **当前位置与剩余步骤。** 十六判据齐备，负效果从写入侧补到写入时可见性路由。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① 付费臂 ① R104b proposer / ② R244 dispatch 须用户最终确认后走 workflow（本地无 LLM key，本轮未触发）；② 读回过 R253 净增益门再决定是否上线；③ provider fallback 优化（¥0）；④ Zhipu embedding 探针重跑（¥0 但烧配额，非优先）。未 fine-tune、未碰垂域、未声称 cortex link 成功。
 
 **第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；未就 Agent 记忆打榜、未引入 cortex 代码，守住通用放大器目标。R260 的路由门是通用写入判据，cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253 测）。
+
+
+## R261（read 28 Nov，¥0）— 依赖溯源撤回门：把"记忆负效果"补到读取时的前提链
+
+> **状态，28 Nov：read，¥0，未调用模型、未开付费臂。** 第 8 问反复追问"记忆的东西与用记忆的方式不对导致负效果"。R244–R260 的十六条判据覆盖了写入、修订、撤销、可信度、净增益、门控编排、付费出价、读时组装、重放时接口指纹、注入时适用范围与写入时可见性路由，但**没有一条在读取时问"这条缓存判定所依赖的前提，现在在 store 的某处是不是已经失效——而失效通知与这条判定从不共享同一个检索窗口"**。本轮复刻 Tether（Wang 等，南昆士兰大学/南方科技大学，arXiv 2610.25123，2026-10-18，v2 10-22；Fallout 版本化世界生成器），把"失效的非局部性"做成机器判据。
+
+![R261 — 依赖溯源撤回门：五阶梯 + 62%→0.3% 发布率 + 三处可证伪边界](figures/r261-dependency-tether.png)
+
+**联网一手证据（28 Nov）。** Tether 把记忆系统默认成立却从未言明的假设形式化为"判定成立的前提在 cached record 里看得见"。世界打破它：一条"库 grouse v2 通过验证"的判定建立在"模型 aspen v3 通过"之上，后者又建立在"签名密钥 onyx v4 有效"之上；第 1 个 session 一次性陈述两条依赖，第 23 个 session 的安全公告只点名 onyx v4 失效，第 29 个 session 请求发布 grouse v2——请求窗口里只有 grouse 的通过判定，没有任何关于 onyx 的线索。事实记忆 agent 照判定发布，把 62% 的上游失败对象推出去；Mem0 42%，A-Mem 8.9%，Graphiti 8.7%。Tether 在写入时记录每条判定精确依赖的对象版本（derived_from 边），读取时对其传递闭包中任何在 store 任意位置被记录为失败或有更高版本在案的依赖，把判定作为 null（unsettled）撤回，只发布 0.3%，且比全量核查少 37% 的验证调用；A-Mem/Graphiti 因反复复核（0.83–0.86 次/候选）节省有限。全量 flush 与 Tether 同样安全但多花 32% 调用。作者明确收益依赖"捕获依赖"：当关系与判定在不同 session 分别到达，下游不安全发布率回升到 9.4–22.1%。本轮忠实复刻"精确版本溯源 + 传递闭包撤回 + 非局部性"机制，不引入任何 published 分数当 microglia 分数。
+
+**核对空白，避免重复造轮子。** R250 stale-revocation（TEPA 撤销被新事实矛盾的记忆）处理的是"同一实体的新事实覆盖旧事实"；R258 schema-drift 处理的是"工具接口指纹漂移"。Tether 的失效发生在**依赖图的另一个节点上**：撤销通知只点名根，判定挂在叶，二者不共享实体、不共享检索窗口，且中间隔着多跳。这是十六条判据外的结构性空白；R260 的常驻路由是写入时把关键事实提升到可见状态，本轮的撤回是读取时把失效前提的判定降级为不确定，二者正交互补。
+
+**实现。** `packages/core/src/apply/dependency-tether.ts` 导出 `dependencyTether(input)`：输入 candidates（每项 `{id, derivedFrom}`，derivedFrom 为精确版本键 `{object, version}`）+ derivations（`{id, produces, derivedFrom}` 的 derived_from 边）+ failures（失败版本键）+ latest（每对象最高版本）+ 惰性 retrievalWindow + 可选 ablations。对每条判定，把 derivedFrom 经 derivations 展开为传递闭包（visited 集防环与菱形重复），命中失败 → `withdraw`，命中被更高版本取代 → `withdraw`，无 provenance → `recheck`（保守），否则 `trust`。severity 表裁定最严格 rung（4 dependency-failed / 3 dependency-superseded / 2 provenance-missing / 1 all-current / 0 no-candidates），不依赖检查顺序。三处可证伪边界：传递性（2+ 跳失败仍撤回）、严格版本 `>`（相等安全）、空 provenance 保守性。retrievalWindow 只记录并回显、永不进入 firing rung——窗口不含失败根仍撤回，证明失效非局部。published 比率导出为 `TETHER_RATES_MILLI`（factMemory 620、mem0 420、aMem 89、graphiti 87、tether 3、checksSaved 370、flushOverhead 320、splitLow 94、splitHigh 221、aMemChecks 860、graphitiChecks 830、mem0Checks 500），仅供 reader 绑定、从不计分。成本 = checks（withdraw+recheck）对 verifyAll 的节省千分比。三个消融 transitive/superseded/provenance 逐一中和信号重跑阶梯，verdict 翻转即命名决定性门。全整数运算，无模型/时钟/网络/宿主域耦合。作为 observer 缝接入 apply barrel，默认关闭、零字节回归。
+
+**门禁与三读者。** 行为测试 25 + 绑定测试 4 = 29 测试，新模块 TS 四维 100%（278/278 语句、102/102 分支、14/14 函数、278/278 行）；Python reader `dependency_tether.py` 无共享代码从字节重推导闭包/分区/每条 firing rung/verdict/decidingSignal/id 分区/成本/消融，单段 98.65%（480/485 语句，开放弧为自测失败断言与 CLI argparse/exit 路径，与 R252~R260 同类）；fixture 16 案覆盖 3 verdict × 5 reason × 3 可证伪边界 + 惰性窗口 + 共享 producer 菱形图 + 优先级 + 消融。CI `--expect-files` 47→48；README core 65→66 模块、15,506→15,964 行、测试数 6,949→6,978；coupling 282→283 模块重生成、11 项检查、core 0 领域耦合；`eval:verifiers` 加 self-test；全量 `pnpm check` EXIT=0。
+
+**发现并修复的真实问题。** ① 覆盖率收口阶段定位到 Python reader 一处死守卫：`ablation signal cannot be a reason` 检查 `VERDICT_OF.get(removedSignal)`，但 removedSignal 已被上一行 `in ABLATABLE` 校验，而 ABLATABLE 与 verdict reason 两集合无交集，故永不可达——删除该守卫与其 tamper，覆盖率不为覆盖死代码而注水。② 两个未覆盖分支（同一 produced key 多 derivation 边、闭包重复到达同节点）是软件依赖图常见的真实结构，补 `shared-producer-diamond` fixture 而非简化实现掩盖。③ 绘图标题与副标题重叠、底部留白过多，下移标题并压缩高度消除。
+
+**当前位置与剩余步骤。** 十七判据齐备，负效果从写入侧补到读取时的前提链。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① 付费臂 ① R104b proposer / ② R244 dispatch 须用户最终确认后走 workflow（本地无 LLM key，本轮未触发）；② 读回过 R253 净增益门再决定是否上线；③ provider fallback 优化（¥0）；④ Zhipu embedding 探针重跑（¥0 但烧配额，非优先）。未 fine-tune、未碰垂域、未声称 cortex link 成功。
+
+**第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；未就 Agent 记忆打榜、未引入 cortex 代码，守住通用放大器目标。R261 的撤回门是通用读时判据，cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253 测）。
