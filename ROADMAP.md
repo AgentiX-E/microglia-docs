@@ -11265,3 +11265,47 @@ README core 层 52→53 模块、11,425→11,636 行；coupling 快照 269→270
 **注意：本轮不是准确率收益，也不是付费臂。** 它是 scope 边界的机器化，与 R244/R245/R246/R247 的纯函数判据同构。
 剩余最优路径不变（零成本优先）：Zhipu embedding 探针重启（¥0）；R104b 模型 proposer（≈$0.01/候选，付费臂）；
 R244 状态角色 dispatch（付费臂先出价）；生成器/候选池改造（付费/训练臂）；provider fallback 优化（¥0）。
+
+## R249 (read 28 Nov, ¥0) — 记忆修订的残留：撤回只删原始记录，派生副本仍会浮出来
+
+> **状态，28 Nov：read，¥0，未调用模型。** 用户第 8 问持续追问"记忆的东西和使用记忆的方式不正确导致负面效果"。
+> R246（单条修正是否稳定）与 R247（整类是否该持久化）钉住了写侧的**接纳**；但**修订**（撤回/纠正）本身还有第二个
+> 不对称：写进去一条容易，撤干净一条难。本轮把这条不对称固化为机器可校验的判据，不做准确率收益、不花钱。
+
+**联网一手证据（28 Nov）。** Deploy-Time Memory（arXiv 2606.10062）定义遗忘残留分数 FRS：只删原始记录，派生摘要
+在约 20% 实例中仍可恢复；只有全管道清除或墓碑式修订（tombstone redaction）才把残留降到零。LongMemEval（ICLR
+2025，arXiv 2410.10813）测纠正方向：保留原文并附加事实（K=V+fact）Recall@5 从 0.582 升到 0.644，而用事实
+**替换**原文跌到 0.530。两条加起来说明：一条"已完成"的修订，可能仍在派生副本里活着，或以丢掉来源为代价。
+
+![R249 — 各修订形状的裁决与判定阶梯](figures/r249-revision-integrity.png)
+
+**实现。** `packages/core/src/apply/revision-integrity.ts` 导出 `revisionIntegrity(input)`。每个 site 有
+`kind`（source/summary/fact-key/embedding/citation）与 `state`（live/augmented/tombstoned/purged）。两条轴、一个
+优先级：覆盖先于方法，方法先于完成——若派生摘要还 live 却报 complete，正是本门要阻止的不对称。撤回时 augmented
+站点是更具体的发现（augment 保留了原值），优先于泛化的 live-site，但 `residualSites` 两者都计。
+
+| 条件（按顺序） | verdict | reason |
+|---|---|---|
+| retract 且有 augmented 站点 | `residual` | `augment-retains-claim` |
+| 有任意 live 站点 | `residual` | `live-site` |
+| correct 但无 source | `method-violation` | `no-source-to-augment` |
+| correct 且 source 未 augmented | `method-violation` | `replace-drops-provenance` |
+| 所有站点 purged | `complete` | `full-purge` |
+| correct + source augmented + 无 live | `complete` | `augmented-and-covered` |
+| retract + 全部 tombstoned | `complete` | `tombstone-coverage` |
+
+**三读者一个读数。** fixture 十一条真实修订形状（FRS 现场、全清除、墓碑覆盖撤回、augment 撤回、LongMemEval 式
+augment 纠正、带 stale 摘要的纠正、孤儿纠正、replace/tombstone 来源破坏）；Python reader
+`revision_integrity.py --verify` 无共享代码从字节重推导每个 verdict/reason/计数，`--check` 重加算术（计数分区、
+residual reason 带正计数、complete 带 complete reason），`--self-test` 69 条；`revision-integrity-manifest.test.ts`
+用产品函数推导同一读数逐字段比对。
+
+**门禁与下一步。** 新模块四维 100%（123/123 语句、45/45 分支）；行为+绑定 39 测试；Python reader 语句 100%、
+分支 99%（唯一开放弧是模块 import guard）；README core 层 53→54 模块、11,636→11,854 行；coupling 270→271；
+bundle 不变；`--expect-files` 35→36；全量 `pnpm check` 退出码 0。
+
+**注意：本轮不是准确率收益，也不是付费臂。** 它与 R246/R247 合起来，把用户"记忆什么/怎么用错"的命题在写侧覆盖
+三个独立边界：单条稳定性、整类持久化、修订残留。接线点留给 R104b：proposer 写出的候选过 viewConsensus →
+abstractionLifecycle → 到 witness；而**撤回/纠正**动作则应过本门再落库。剩余最优路径不变（零成本优先）：Zhipu
+embedding 探针重启（¥0）；R104b 模型 proposer（≈$0.01/候选，付费臂）；R244 状态角色 dispatch（付费臂先出价）；
+生成器/候选池改造（付费/训练臂）；provider fallback 优化（¥0）。

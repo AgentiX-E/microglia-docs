@@ -13536,3 +13536,40 @@ fixture `eval/fixtures/competition-domain.json`（11 个真实候选：AskData/G
 ### 门禁
 
 新模块四维 100%；行为 22 + 绑定 14 测试；Python reader 96.0%（self-test+check+verify 合并），self-test 59/59；README core 层 52→53 模块、11,425→11,636 行；coupling 269→270 模块、11 项检查；bundle 不变；`--expect-files` 34→35；全量 `pnpm check` 退出码 0。
+
+## 17.216 R249 — 修订完整性门：从站点状态到裁决的纯函数
+
+**问题定义。** 给定一次修订（retract 或 correct）以及每条声明所在站点的处理方式，判定这次修订是否真正覆盖所有
+副本、方法是否匹配意图。输入不含模型、不含时钟、不含网络；输出是可被两个独立读者重算的读数。
+
+**输入模型。** `RevisionInput = { id, intent, sites[] }`；`intent ∈ {retract, correct}`；每个
+`RevisionSite = { id, kind, state }`，`kind ∈ {source, summary, fact-key, embedding, citation}`（闭集），
+`state ∈ {live, augmented, tombstoned, purged}`（闭集）。`live` 未触碰、仍带旧值；`augmented` 保留原文并附加
+事实/键；`tombstoned` 标记撤回、检索时排除；`purged` 字节移除。
+
+**裁决阶梯（严格优先级）。**
+
+1. `retract` 且存在 `augmented` 站点 → `residual` / `augment-retains-claim`，`residualSites = live + augmented`。
+   附注：augment 保留原值，撤回后该声明仍会浮出；这是比泛化 live 更具体的发现，故先判。
+2. 存在任意 `live` 站点 → `residual` / `live-site`，`residualSites = live`。覆盖先于方法。
+3. `correct` 且无 `source` 站点 → `method-violation` / `no-source-to-augment`。
+4. `correct` 且 source 的 state ≠ `augmented` → `method-violation` / `replace-drops-provenance`（LongMemEval 的
+   替换损失：0.530 vs 0.644）。
+5. 其余（通过覆盖与方法）→ `complete`：`allPurged` 为 `full-purge`；`correct` 为 `augmented-and-covered`；
+   否则（撤回全 tombstoned）为 `tombstone-coverage`。
+
+**不变量与守卫。** 四种 state 计数恒等于 `siteCount`；`residualSites > 0` 当且仅当 reason 属于
+`{live-site, augment-retains-claim}`。守卫拒绝：空白修订 id、未知 intent、非数组/空 sites、空白/重复 site id、
+未知 kind/state——一律 `MicrogliaError(MG_E_CONFIG)` 而非默认归类。函数不修改输入（冻结对象测试通过）。
+
+**依赖分层。** `apply/revision-integrity.ts` 只依赖 `kernel` 的 `MicrogliaError`，与 `view-consistency`、
+`abstraction-lifecycle`、`state-role` 同为 core 层叶子，经 `apply/index.ts` 对宿主导出；不在渲染路径上，bundle 不变。
+它审计调用方**描述**的修订，不编辑 store、不取数——与 microglia 作为通用记忆放大器、不耦合垂域的定位一致。
+
+**三读者契约。** fixture 十一条真实修订形状 → 产品函数与独立 Python reader 各自从字节推导 → manifest 逐字段钉住
+（`revision-integrity-manifest.test.ts` 字段比对；`revision_integrity.py --check/--verify/--self-test`）；CI 在 coverage
+下跑 Python 三模式，`--expect-files` 35→36。新模块 TS 四维 100%，Python 语句 100%/分支 99%。
+
+**接线点。** R104b 的模型 proposer 产出候选后，先过 `viewConsensus`（单条是否稳定）→ `abstractionLifecycle`
+（是否持久化）→ witness；而撤回/纠正动作在落库前过本门，确保 `residualSites == 0` 且 verdict 为 complete 才提交。
+这样"产品侧自动使用测评侧最优配置"由机器判据保证，而非文档承诺。

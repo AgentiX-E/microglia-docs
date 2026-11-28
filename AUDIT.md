@@ -19345,3 +19345,31 @@ bundle、coupling、13 workflow 解析）；README 层表随新生产模块更�
 59/59、check/verify 均 ok、覆盖率 96.0%；`pnpm check` 全链路退出码 0；README 层表随新生产模块更新（core
 52→53、11,425→11,636 行）；coupling 快照 269→270 重生成、11 项检查通过；bundle 未变；`--expect-files` 34→35。
 没有任何门限被削弱、跳过或加 `continue-on-error`。
+
+## 34.354 R249 — 一条测试断言写在了优先级阶梯的错误一侧，和一个正则把注释读成了类型逃逸
+
+**本审计记录本轮根因修复的两处缺陷；其余门禁一次通过。** 判据本身（修订完整性）的设计在 TDD 红阶段之前已按两篇
+论文的读数定稿，两处缺陷都在"测试/工具如何看待它"这一层。
+
+**缺陷一：测试断言与文档化的优先级不一致（在测试侧，不在实现侧）。** 行为测试里有一条
+"augment + live 报 live-site、residual=2"。实现按既定优先级——撤回先查 augmented 站点（更具体的发现），再查泛化
+的 live——给出 `augment-retains-claim`，同时 `residualSites` 仍把 live 与 augmented 两站都计入，得 2。两种修法：
+改实现去迁就测试（会让"更具体的发现先报"这条规则消失），或改测试使其与已写进注释、fixture 与外部文档的优先级
+阶梯一致。选后者：`augment-live-double-residual` fixture 早已按 `augment-retains-claim`、resid=2 定稿并可被三读者
+交叉验证，测试才是那个孤立的错误读数。这是 R247 同类纪律——测试错就修测试，绝不降低实现去满足一个错的断言。
+
+**缺陷二：escape-hatch 正则把散文误判为类型逃逸（在工具侧，不在代码侧）。** `scripts/audit.mjs` 用
+`/\bas any\b|:\s*any\b|<any>/` 抓 `any` 逃逸。新模块注释里一句"Coverage first: any untouched site still carries…"
+中的 `: any` 命中了 `:\s*any\b`，被报 "untyped escape hatch"。代码没有任何 `any`，是正则跨到了注释文本。
+修法是把措辞改为"an untouched site still carries…"避免误触发，而不是给审计加豁免或放宽正则——正则对真实逃逸
+仍然严格，注释也不该因为用词撞上它而变哑。
+
+**覆盖率门禁根因。** Python reader 首轮 97%（5 行未覆盖），逐行诊断：line 160/162 是 fixture 的 case id 空/重复
+守卫（原 tamper 样本缺有效 input，守卫在重复判定前就退出）；line 188/209 是 reason/verdict 组合守卫（原 tamper
+用了一个已是合法 complete reason 的值）；line 218 是 verify 的 case 数漂移（原样本先被 build 的空 cases 守卫拦下）。
+逐一补上能真正到达该守卫的样本——重复的 case 需带合法 input 才能走到 id 去重，complete+method-reason 需要一个非
+complete 非 residual 的 reason，case 数漂移用一个短一截的合法 fixture——不靠豁免、不靠 `# pragma: no cover`，
+语句升到 100%、分支 99%（仅剩模块 import 弧）。TS 模块四维 100% 一次通过。
+
+**没有发生的事。** 未以充值状态重开任何付费臂；未用 mock 达成覆盖率；未让文档比代码更漂亮；未把 nl2sql/chart
+的任何指标写进 microglia 的读数。六条纯函数判据现在各自有三读者钉住，全量 `pnpm check` 退出码 0。

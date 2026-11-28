@@ -31097,3 +31097,39 @@ microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路�
 ③ R244 状态角色 dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练臂）；⑤ provider fallback 优化（¥0）。
 
 **图**：`figures/r248-competition-domain.png`（各候选领域判定与决策阶梯）。
+
+## 249.76 R249：撤回只删原始记录会留下派生残留——把"修订完整性"钉成写侧第三道判据（¥0）
+
+**用户命题与缺口。** 第 8 问持续追问"记忆的东西和使用记忆的方式不正确导致负面效果"。R246（单条修正是否跨视图
+稳定）与 R247（整类抽象默认临时化）已覆盖写侧的**接纳**；但**修订**（撤回/纠正）本身的不对称没人管：写进一条
+容易，撤干净一条难。本轮把这条不对称固化为机器可校验判据，¥0、未调用模型。
+
+**联网一手证据（28 Nov）。** Deploy-Time Memory（arXiv 2606.10062）的遗忘残留分数 FRS：只删原始记录，派生摘要
+约 20% 实例仍可恢复，只有全管道清除或墓碑式修订把残留降到零。LongMemEval（ICLR 2025，arXiv 2410.10813）：
+保留原文附加事实（K=V+fact）Recall@5 0.644 > 替换原文 0.530。两条证明"已完成的修订"仍可能以 stale 副本存续
+或以丢来源为代价。
+
+**实现。** `packages/core/src/apply/revision-integrity.ts` 的 `revisionIntegrity(input)` 审计每个 site 的
+kind（source/summary/fact-key/embedding/citation）与 state（live/augmented/tombstoned/purged）。两条轴、优先级
+覆盖→方法→完成：撤回遇 augmented 站点报 `augment-retains-claim`（更具体），否则任意 live 报 `live-site`；纠正无
+source 报 `no-source-to-augment`、source 未 augmented 报 `replace-drops-provenance`；全部 purged 报 `full-purge`、
+correct+source augmented 报 `augmented-and-covered`、撤回全 tombstoned 报 `tombstone-coverage`。
+
+**三读者与门禁（全部根因修复）。** 新模块 TS 四维 100%（123/123 语句、45/45 分支、1/1 函数）；行为 25 + 绑定 14
+测试；Python reader 语句 100%、分支 99%（唯一开放弧是 `if __name__ == "__main__"` import guard）；自测 69/69；
+全量 `pnpm check` 退出码 0；README core 层 53→54 模块、11,636→11,854 行；coupling 270→271 重生成、11 项检查；
+bundle 不变；`--expect-files` 35→36。
+
+**测试抓到的真缺陷（修测试而非迁就实现）。** 一条行为测试断言"augment+live 报 live-site"，但实现按优先级先报
+`augment-retains-claim`（撤回时 augmented 是更具体的发现），且 `residualSites` 仍正确计为 2。判定测试写错而非
+实现错，改测试使断言与已文档化的优先级阶梯一致。另 `audit.mjs` 的 escape-hatch 正则把注释里的 ": any" 误判为
+`as any`，改写注释措辞消除误报——没有加任何豁免。
+
+**当前位置与剩余步骤。** 写侧三道判据齐备（单条稳定 view-consistency / 整类持久化 abstraction-lifecycle /
+修订完整 revision-integrity），加读侧 state-role、成本侧 quota-disposition、领域侧 competition-domain 共六条纯函数
+判据。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① Zhipu embedding 探针
+在 429 可诊断后重启（¥0）；② R104b 模型 proposer（≈$0.01/候选，付费臂，接线：候选过 viewConsensus →
+abstractionLifecycle → witness；撤回/纠正动作过本门再落库）；③ R244 状态角色 dispatch（付费臂先出价）；④ 生成器/
+候选池改造（付费/训练臂）；⑤ provider fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款。
+
+**图**：`figures/r249-revision-integrity.png`（各修订形状的裁决与判定阶梯）。

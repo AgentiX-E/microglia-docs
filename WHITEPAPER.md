@@ -5653,3 +5653,13 @@ difference because none of them scores a memory block against the contract the c
 round tests whether the two can be separated by the one discriminator that needs no vocabulary — an ask is admitted
 from a later turn only when the assistant did not precede it with a question — with bars on recovery, noise and
 coverage, and with the honest possibility that the defect is in the benchmark's user model rather than in the block.
+
+**Scope note (R249).** The write-side discipline this project ships now covers three independent boundaries: whether a
+single correction survives being analysed again (R246), whether a whole class of claims should persist at all (R247),
+and — new this round — whether a retraction or correction actually reached every site where a claim was copied (R249,
+`revisionIntegrity`, ¥0, three readers). The third is motivated by the field's Forgetting Residual Score (Deploy-Time
+Memory, arXiv 2606.10062): deleting only the raw record leaves derived summaries recoverable in about 20% of
+instances, and by LongMemEval's augment-over-replace result. It is the concrete mechanism behind the standing claim
+that *how we use memory* — not only what we store — causes the negative effect. This stays inside microglia's field:
+it is a generic write-side integrity rule for a memory amplifier, coupled to no vertical; NL2SQL / chart / data-viz
+remain `AgentiX-E/nl2charts`' domain (R248). No accuracy number is claimed from it, and no paid arm was opened.

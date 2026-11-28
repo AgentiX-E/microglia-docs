@@ -11325,3 +11325,42 @@ leaderboard" — that framing was right; the prose that called BIRD a microglia 
 **Position.** Still on the cost × consistency frontier, not on an accuracy leaderboard; no external memory submission
 exists, so competitor +pp cannot transfer. The authority of R248 is that the scope boundary is now a checked
 property, not a promise in a summary.
+
+## R249 competitive refresh (28 Nov 2026) — the field measured the forgetting residual; microglia now gates it at write time
+
+**What the field found (two primary sources, 28 Nov).** Deploy-Time Memory (arXiv 2606.10062) reframes persistent
+agent memory as a privacy-utility boundary measured by Personalized Recall (PR), Adversarial Extraction Rate (AER) and
+a new Forgetting Residual Score (FRS). On LongMemEval, critical-fact summarisation cut canary extraction 76% on Gemma 3
+12B and 64% on GPT-4o-mini while preserving almost all recall — but the same compression broke deletion fidelity:
+deleting only the raw data left derived summary copies recoverable in about 20% of instances, and only full-pipeline
+clearing or tombstone redaction drove the deepest residual to zero. MemoryGraft (arXiv 2512.16962) and MemPoison
+(arXiv 2605.29960) show the other direction: a small number of poisoned "successful experiences" survive selective
+extraction, dominate lexically+embedding-unioned retrieval, and induce persistent behavioural drift by exploiting the
+agent's semantic-imitation heuristic. Both are memory-domain harms, exactly microglia's field — not NL2SQL/chart.
+
+**How this maps to microglia.** The field's two findings are the two halves of a single write-side asymmetry: a correction
+must be an *augment* (LongMemEval K=V+fact, Recall@5 0.644 vs replace 0.530) or it loses provenance; a retraction must
+reach *every derived site* or a stale copy surfaces (FRS ~20%). R249 encodes both as `revisionIntegrity` — a pure,
+¥0 gate with three readers — so the claim "the product ships the revision policy the measurement read" becomes a
+checked property. This complements R246 (single-correction stability) and R247 (experience-vs-abstraction persistence);
+together they cover what we store, whether a claim persists, and whether a revision actually took effect.
+
+**Leaderboard position (unchanged this round).** microglia is still on the cost × consistency frontier, not on the
+accuracy leaderboard: there is no external submission this round and competitor +pp are not transferable to our
+library. The authoritative field remains LongMemEval / LoCoMo / MemoryAgentBench / BEAM / DolphinBench / AMA-Bench —
+memory-augmented task success, where the gain is measured memory-on vs memory-off. NL2SQL / text2charts / data2charts
+(BIRD, Spider, chart accuracy) stay in `AgentiX-E/nl2charts`; a number there is a host score, not a microglia target.
+R248's `classifyCompetitionDomain` gate keeps this boundary machine-checked, so this round's memory-domain evidence
+cannot be quietly re-read as a host-domain win.
+
+**Learning value exhausted vs still open.** LongMemEval's index/retrieve/read decomposition and fact-augmented keys are
+studied and reproduced as a machine rule. The FRS/tombstone finding is now encoded. The poisoning literature
+(MemoryGraft/MemPoison) is recorded as the attack surface our augment-not-replace + tombstone-coverage policy defends
+against, but a *quantified* defence benchmark (poisoned-experience retrieval rate under our gate) is not yet built —
+that needs a paid arm and is listed in the optimal-path remainder, not claimed here.
+
+**Optimal-path remainder (parallel, zero-cost first).** ① Zhipu embedding probe restart once 429 is diagnosable (¥0,
+offline fallback intact); ② R104b model proposer (~$0.01/candidate, paid arm; wiring: viewConsensus →
+abstractionLifecycle → witness, retract/correct via this gate); ③ R244 state-role dispatch ablation (paid arm, price
+first); ④ generator / candidate-pool rework (paid/training arm — the large part of the SOTA gap); ⑤ provider-agnostic
+fallback optimisation (¥0). Paid arms quote first, ladder priced before payment.
