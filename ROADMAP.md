@@ -11462,3 +11462,62 @@ fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款�
 **第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 `AgentiX-E/cortex` 代码本体（无本地目录/npm link/CORTEX_DIST）。
 microglia 已有 adapter + conformance 脚本（CI clone+build 对账），但"本地 link 引入"本环境不具备；本轮未就 Agent 记忆
 打榜、未引入 cortex 代码，守住通用放大器目标。cortex 就绪后评估对象是它给 cortex 带来的记忆增益。
+
+## R253（read 28 Nov，¥0）— 记忆飞轮到底有没有增益：净增益分类账（安全 × 效用双轴 + 消融）
+
+> **状态，28 Nov：read，¥0，未调用模型。** 用户第 8 问持续追问"记忆的东西和使用记忆的方式不正确导致负面效果"。
+> R246-R252 决定了存什么、纠正是否生效、修订是否覆盖、新证据是否 displace、检索的 lesson 是否该用、每条记忆多可信——
+> 但它们全是**描述性审计**，没有一个回答端到端问题：记忆策略到底让任务变好还是变坏？本轮把它变成可证伪、零成本的
+> 量化测量，两条轴必须同时达标。这是 COMPETITIVE.md 早前标记的开放项"quantified poisoning-defence benchmark"。
+
+**联网一手证据（28 Nov）。** ① CAPTURE（arXiv 2609.02265，D-PREFGUARD 基准，480 留出回合/96 用户）：胜率 71.5%、
+动态遗憾 0.27、投毒成功率 11.5%、真实更新遵循率 83.5%、良性非更新错误接纳率 8.9%、拒答率 9.0%；时效性 RAG
+遵循率略高 85.7% 但投毒 51.6%（**安全/效用权衡**）。消融：移除真实性门控 +22pp 投毒、移除来源 +14pp、移除时间尺度
+分离 −5.4pp 遵循、移除固定安全边界安全攻击 ×3。自适应攻击把投毒从 11.5% 抬到 24.7%（诚实记录：优势不再稳健）。
+② A-MemGuard（arXiv 2510.02373）：ASR-r 100%→2.13%（EHRAgent/GPT-4o-mini），良性准确率 76.7% vs 未保护 63.0%。
+③ 2601.05504：过度防御的 **utility collapse**——GPT-4o-mini 拒绝全部 23 候选、信任分 ~0.28，长期记忆好处归零；
+Gemini 二元决策把 82 条里 54 条恶意给满分 1.0。④ SMSR（arXiv 2606.12703）：形式化证书，Component 1 对未签名注入 0% ASR、utility 90%。
+
+![R253 — 安全 × 效用前沿与 CAPTURE 式消融归因](figures/r253-memory-gain-ledger.png)
+
+**两种失败模式，一个分类账。** ① 投毒/错误接纳：坏记忆进库并误导（放任）；② 效用崩塌：过度防御把所有记忆都
+withhold（2601.05504 实证）。单轴准确率会同时掩盖两者。本轮复刻 CAPTURE 的联合测量与消融。
+
+**实现。** `packages/core/src/apply/memory-gain-ledger.ts` 导出 `memoryGainLedger(input)`。每条 arm 提供整数计数
+`trials/wins`、`trueUpdates/followThrough`、`benignNonUpdates/falseAccepts`、`poisonAttempts/poisonAccepts`。
+四率与净增益全部用整数千分比（half-up，产品与 reader 比对整数）：`winRateMilli`、`followMilli`、`falseAcceptMilli`、
+`poisonMilli`、`netGainMilli = winRateMilli − baselineWinMilli`。
+
+| 条件（按顺序） | disposition | reason |
+|---|---|---|
+| `poisonMilli > poisonBudgetMilli`（ζ_safe） | `reject` | `poisoning-exceeds-budget` |
+| `followMilli < followFloorMilli` | `reject` | `utility-collapse` |
+| `falseAcceptMilli > falseAcceptBudgetMilli` | `reject` | `false-accept-exceeds-budget` |
+| `netGainMilli <= 0` | `reject` | `no-net-gain` |
+| 其余 | `admit` | `net-positive` |
+
+不安全即被拒（哪怕有用）；无用即被拒（哪怕"安全"）。集合 verdict 取最严格（reject > admit），reason/decidingId
+指向 severity 最高的 arm（平手取在先），三计数分区 armCount。每个可选 `ablation` 对比 ablated 与 base arm，报告
+`poisonDeltaMilli`/`followDeltaMilli`——被移除组件的边际安全/效用贡献。
+
+**三读者与门禁。** fixture 十一条 episode（安全+有用、时效性投毒、效用崩塌、错误接纳、负/零净增益、分数取整、
+四路优先级、混合集合、消融归因、全 admit）；Python reader `memory_gain_ledger.py --verify` 无共享代码重推导每个
+verdict/reason/deciding arm/率/计数/消融 delta，`--check` 重加算术（计数分区、verdict/reason 家族、率顺序），
+`--self-test` 109 断言；`memory-gain-ledger-manifest.test.ts` 用产品函数逐字段比对。
+
+**门禁与下一步。** 新模块四维 100%；行为 21 + 绑定 12 = 33 测试；Python reader 行+分支合并 99.1%（566/571，
+开放弧为断言失败与 CLI 退出路径，与其他 reader 同类）；全量 `pnpm check` 退出码 0（324 测试文件、6711 测试）；
+README core 层 57→58 模块、12,778→13,146 行；coupling 274→275 重生成、11 项检查；bundle 不变；
+`--expect-files` 39→40；13 工作流解析通过。
+
+**十判据与接线。** 十条纯函数判据齐备：单条稳定(R246)/整类持久化(R247)/显式修订(R249)/隐式撤销(R250)/
+检索后接纳(R251)/置信度弃权(R252)/净增益账(R253)/读状态(R244)/成本 429(R245)/领域边界(R248)。接线点留给 R104b：
+候选过 viewConsensus → abstractionLifecycle → witness；显式撤回/纠正过 R249；新证据落库过 R250；检索集交模型前过
+R251 再过 R252 标权重；**配置上线前过 R253 确认 net-positive 且安全，否则不打榜**。剩余最优路径不变（零成本优先）：
+Zhipu embedding 探针（¥0，已读回 separated=false，重跑烧配额非优先）；R104b 模型 proposer（≈$0.01/候选，付费臂，
+接线如上）；R244 状态角色 dispatch（付费臂先出价）；生成器/候选池改造（付费/训练臂，SOTA 差距大头）；provider
+fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款。
+
+**第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 `AgentiX-E/cortex` 代码本体（无本地目录/npm link/CORTEX_DIST）。
+microglia 已有 adapter + conformance 脚本（CI clone+build 对账），但"本地 link 引入"本环境不具备；本轮未就 Agent 记忆
+打榜、未引入 cortex 代码，守住通用放大器目标。cortex 就绪后评估对象是它给 cortex 带来的净增益（正是 R253 要测的）。

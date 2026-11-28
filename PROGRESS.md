@@ -31244,3 +31244,36 @@ Python self-test 的 floor 样本用默认权重算出 0.075 而非 0，改用�
 候选池改造（付费/训练臂，SOTA 差距大头）；⑤ provider fallback 优化（¥0）。付费臂先出价、梯子先验价后付款。
 
 **图**：`figures/r252-memory-confidence.png`（各 episode 置信度与弃权判定阶梯）。
+
+## 249.80 R253：净增益分类账——把"记忆负效果"钉成安全×效用可证伪测量（¥0）
+
+**用户命题与缺口。** 第 8 问持续追问"记忆的东西和使用记忆的方式不正确导致负面效果"。R246-R252 全是描述性审计，
+没有回答端到端"记忆到底让任务变好还是变坏"。本轮复刻 CAPTURE 的联合测量 + 消融，新增第十条纯函数判据，
+¥0、未调用模型。
+
+**联网一手证据（28 Nov）。** CAPTURE（arXiv 2609.02265）：胜率 71.5%/遵循 83.5%/投毒 11.5%/错误接纳 8.9%/
+动态遗憾 0.27；时效性 RAG 遵循 85.7% 但投毒 51.6%；消融 +22pp/+14pp 投毒、−5.4pp 遵循；自适应攻击 24.7%
+（诚实记录优势不再稳健）。A-MemGuard（arXiv 2510.02373）ASR-r 100%→2.13% 且保良性准确率。2601.05504 的
+utility collapse：保守法官拒绝全部 23 候选（信任 0.28），长期记忆好处归零。SMSR（arXiv 2606.12703）签名写
+0% ASR、utility 90%。
+
+**实现。** `packages/core/src/apply/memory-gain-ledger.ts` 的 `memoryGainLedger(input)`：四率与净增益整数千分比；
+阶梯 poisoning-exceeds-budget < utility-collapse < false-accept-exceeds-budget < no-net-gain < net-positive；
+不安全即拒（哪怕有用）、无用即拒（哪怕安全）；集合取最严格 verdict、三计数分区；消融报 poisonDelta/followDelta。
+
+**三读者与门禁（根因修复）。** 新模块四维 100%；行为 21 + 绑定 12 = 33 测试；Python reader 行+分支合并 99.1%
+（566/571，开放弧为断言失败/CLI 退出）；全量 `pnpm check` 退出码 0（324 测试文件、6711 测试）；README core
+57→58 模块、12,778→13,146 行；coupling 274→275、11 项检查；bundle 不变；`--expect-files` 39→40。
+
+**测试/工具侧的克制修复。** 三处都在测试侧、非实现侧：① 两处 collapse 样本把 poisonAttempts 改成 100 却忘调
+默认 poisonAccepts=115，触发正确守卫——修测试数据；② Python `check()` 误用 `is_positive_count` 校验
+admit/reject 计数，全 admit 的合法 case 被拒——改用 `is_count(value, armCount)` 允许 0（这是 reader 的真实 bug）；
+③ self-test 里 `inp()` 的 ablations 误作关键字参数（应走 over 字典）、非字符串 id tamper 用整数键测不到——修正。
+`--build --write` 重生成 manifest。
+
+**当前位置与剩余步骤。** 十条纯函数判据齐备（+净增益账 R253）。microglia 仍在成本×一致性前沿、不在准确率榜。
+最优剩余路径（并行、零成本优先）：① Zhipu embedding 探针已读回 separated=false（p=0.12/0.06），重跑烧配额非优先；
+② R104b 模型 proposer（≈$0.01/候选，付费臂，配置上线前过 R253 net-positive）；③ R244 dispatch（付费臂先出价）；
+④ 生成器/候选池改造（付费/训练臂，SOTA 差距大头）；⑤ provider fallback 优化（¥0）。付费臂先出价、梯子先验价后付款。
+
+**图**：`figures/r253-memory-gain-ledger.png`（安全×效用前沿 + CAPTURE 式消融归因）。

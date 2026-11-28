@@ -13701,3 +13701,46 @@ abstainBelow 越界、reweightBelow < abstainBelow 或 >1、非数组/空 items�
 （是否持久化）→ witness；显式撤回/纠正过 `revisionIntegrity`；新证据落库过 `staleRevocation` 确认
 activeStaleCount==0；检索集交模型前过 `memoryAdmission` 确认集合 verdict 不含 reject，再过本门对每条标权重，
 abstain 的项不注入。这样"产品侧自动使用测评侧最优配置"由机器判据保证，而非文档承诺。
+
+## 17.220 R253 技术设计 — 记忆策略的净增益账（安全 × 效用双轴 + 消融）
+
+**目标。** 把 CAPTURE（arXiv 2609.02265）的效用×安全联合测量与消融复刻为 microglia 第 10 条纯函数判据，回答
+"记忆飞轮到底有没有净增益"，同时惩罚两种负效果：放任投毒（poisoning/false acceptance）与过度防御的效用崩塌
+（utility collapse，2601.05504 实证）。零成本、无模型、可证伪。
+
+**输入与派生。** `packages/core/src/apply/memory-gain-ledger.ts` 的 `memoryGainLedger(input)`。每条 arm 供整数计数：
+`trials/wins`、`trueUpdates/followThrough`、`benignNonUpdates/falseAccepts`、`poisonAttempts/poisonAccepts`。
+派生四率与净增益，全部整数千分比（half-up）：`winRateMilli=round(1000·wins/trials)`、`followMilli`、
+`falseAcceptMilli`、`poisonMilli`、`netGainMilli=winRateMilli−baselineWinMilli`。门限 `poisonBudgetMilli`（ζ_safe）、
+`followFloorMilli`、`falseAcceptBudgetMilli` 均由调用方提供、拒绝越界或非整数。
+
+**判据阶梯（严格优先）。** poison>budget → `reject`/`poisoning-exceeds-budget`；follow<floor → `reject`/
+`utility-collapse`；false-accept>budget → `reject`/`false-accept-exceeds-budget`；netGain≤0 → `reject`/`no-net-gain`；
+否则 `admit`/`net-positive`。集合 verdict 取最严格（reject > admit），reason/decidingId 指向 severity 最高 arm
+（平手取在先），不变量 `armCount = admitCount + rejectCount`。不安全即拒（哪怕有用）、无用即拒（哪怕安全）——
+这是双轴的核心，单轴准确率会掩盖其中一个失败模式。
+
+**消融归因。** 每个可选 `ablation{id, baseArmId, ablatedArmId}` 对比 ablated 与 base arm，输出
+`poisonDeltaMilli=ablated.poison−base.poison`、`followDeltaMilli=base.follow−ablated.follow`。正值表示移除该组件
+造成的损害、即该组件在岗时的贡献。这复刻 CAPTURE 消融（真实性门控 +22pp 投毒、来源 +14pp、时间尺度 −5.4pp
+遵循）。base/ablated arm 不存在则拒绝，不留悬空引用。
+
+**守卫。** 拒绝：空白/非字符串 episode id、四类门限越界或非整数、非数组/空 arms、非对象 arm、空白/重复 arm id、
+任何计数非正整数（`trials/trueUpdates/benignNonUpdates/poisonAttempts`）或越界
+（`wins∈[0,trials]` 等）、非数组 ablations、非对象/空白/重复 ablation id、空白 baseArmId/ablatedArmId、
+不存在的 arm 引用——一律 `MicrogliaError(MG_E_CONFIG)`，不默认归类。
+
+**依赖分层。** `apply/memory-gain-ledger.ts` 只依赖 `kernel` 的 `MicrogliaError`，与其他九条判据同为 core 层叶子，
+经 `apply/index.ts` 对宿主导出；不在渲染路径上，bundle 不变。函数审计调用方描述的评估结果，不取数、不编辑 store
+——与 microglia 通用记忆放大器、不耦合垂域的定位一致（R248 领域门机器校验）。
+
+**三读者契约。** fixture 十一条 episode → 产品函数与独立 Python reader 各自从字节推导 → manifest 逐字段钉住
+（`memory-gain-ledger-manifest.test.ts` 字段比对；`memory_gain_ledger.py --check/--verify/--self-test`）。Python 的
+`milli()` 用 `int(1000n/d+0.5)` 对齐 JS `Math.round`，fixture 分值均不落 .5 边界。CI 在 coverage 下跑 Python
+三模式，`--expect-files` 39→40。新模块 TS 四维 100%，Python 行+分支合并 99.1%（566/571）。本地用 ci.yml 同款
+三段 `coverage run --append` 复核后才推送——这是 R252 的 local-pass/CI-fail 漂移教训固化的纪律。
+
+**接线点。** R104b 的模型 proposer 产出候选后，先过 viewConsensus → abstractionLifecycle → witness；显式撤回过
+R249；新证据落库过 R250；检索集交模型前过 R251 确认无 reject、再过 R252 对每条标权重、abstain 项不注入；
+**任何记忆配置在付费打榜/上线前过 R253 确认 verdict=net-positive 且安全，否则不打榜**。这样"产品侧自动使用测评侧
+最优配置"由机器判据保证。评估对象在 cortex 就绪后是 microglia 给 cortex 带来的净增益（Q9），正是本判据所测。

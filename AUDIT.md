@@ -19460,3 +19460,34 @@ count/milli/partition/expected/schema 守卫与 verify 的五类 tamper，并补
 **没有发生的事。** 未以充值状态重开付费臂；未用 mock 达成覆盖率；未让文档比代码更漂亮；未把 nl2sql/chart 指标
 写进 microglia 读数；未在没有 cortex 代码的环境里声称 link 成功；未重跑已读回 separated=false 的 embedding 探针
 去烧配额。九条纯函数判据各自有三读者钉住，全量 `pnpm check` 退出码 0。
+
+## 34.358 R253 审计 — 净增益分类账（¥0，十判据齐备）
+
+**范围。** 审计 `packages/core/src/apply/memory-gain-ledger.ts`（`memoryGainLedger`）、三读者契约、六处门禁接线、
+双仓文档。复刻 CAPTURE（arXiv 2609.02265）的效用×安全联合测量 + 消融，把"记忆负效果"钉成可证伪判据。结论：
+实现正确、方向正确、评估方法正确；本轮有一处 reader 实现缺陷与三处测试侧问题，均已根因修复。
+
+**实现正确性的独立核对。** 四率 `milli(n,d)=int(1000n/d+0.5)` 对齐 JS `Math.round`；fixture 分值避开 .5 边界。
+逐案手算与 Python reader 独立推导一致：safe-useful netGain=715−661=54、poisoning 516>200、collapse follow 0<700、
+false-accept 160>150、no-net-gain 650−661=−11、zero-net 0、fractional 1/8→125。消融 335−115=220、255−115=140、
+835−781=54 与 CAPTURE 的 +22pp/+14pp/−5.4pp 模式一致。集合 verdict 取最严格、severity 平手取在先、三计数分区，
+均经行为测试与三读者对账确认。
+
+**缺陷一（reader 实现侧，真实 bug）。** `memory_gain_ledger.py` 的 `check()` 误用 `is_positive_count` 校验
+`admitCount/rejectCount`，导致合法的全 admit case（rejectCount=0）被拒。改为 `is_count(value, armCount)` 允许 0、
+仅 armCount 必须正；同步把 self-test 里"count partition drift"tamper 从 999（先被 is_count 拦下、到不了 partition
+守卫）改成合法的 `admit=reject=armCount`（真正触发分区不一致）。修复后 self-test 全绿。
+
+**缺陷二（三处测试侧问题）。** ① 两处 priority/collapse 测试把 `poisonAttempts` 改 100 却忘把默认 `poisonAccepts=115`
+调小，触发正确守卫——修测试数据而非迁就实现；② Python self-test 把 `ablations` 误作 `inp()` 关键字参数（应为 over
+字典）；③ 非字符串 id tamper 用 `{3:4}` 走 `base.update` 后 id 仍是字符串、测不到守卫——改为 `id=7`。均为测试构造错。
+
+**覆盖率的克制达成。** 首轮 Python reader 96.9%（combined），已过 95% floor 但低于既有 reader 的 98%+。低成本补
+None-ablations、build/check/verify 顶层守卫、合法 count-partition 漂移、refuses 失败臂等 tamper，提升到 99.1%
+（566/571）。剩余 3 miss + 2 partial branch 为 `ok(False)` 断言失败臂与 CLI 退出/入口分支，与其他 reader 的开放弧
+同类，未用 `# pragma: no cover`、未降门禁。
+
+**没有发生的事。** 未以充值状态重开付费臂；未用 mock 达成覆盖率；未让文档比代码更漂亮；未把 nl2sql/chart 指标
+写进 microglia 读数；未在没有 cortex 代码的环境里声称 link 成功；未重跑已读回 separated=false 的 embedding 探针
+去烧配额；未把 CAPTURE 的 published 数字（71.5% 等）当作 microglia 的 benchmark 分数。十条纯函数判据各有三读者
+钉住，全量 `pnpm check` 退出码 0（324 测试文件、6711 测试）。

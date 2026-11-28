@@ -11509,3 +11509,57 @@ the SOTA gap); ⑤ provider-agnostic fallback optimisation (¥0). Paid arms quot
 Cortex note (Q9): no cortex code body is present in this sandbox; microglia ships an adapter plus a conformance
 script (CI clones+builds cortex to reconcile), so the local-link condition of Q9 is not met here and no Agent-memory
 leaderboard run was attempted this round.
+
+## R253 competitive refresh (28 Nov 2026) — the field measures memory-on vs memory-off; microglia gates net gain
+
+**What the field found (four primary sources, 28 Nov).** CAPTURE (arXiv 2609.02265, D-PREFGUARD, 480 held-out turns
+over 96 synthetic users; Qwen3-8B / Llama-3.1-8B backbones, 3 seeds, paired tests) treats preference drift as a
+continuous-time partial-observable decision and evaluates personalisation AND safety jointly: 71.5% win rate
+(vs 69.3% supervised baseline, 66.1% heuristic), 0.27 dynamic regret, 11.5% poisoning, 83.5% follow-through of real
+updates, 8.9% false acceptance of benign non-updates, 8.0% safety-attack success, 9.0% abstention. A timeliness-only
+policy follows 85.7% of real updates but accepts 51.6% poisoning — the core safety/utility trade-off. Ablations:
+removing the authenticity gate adds 22pp poisoning, removing source adds 14pp, removing time-scale separation costs
+5.4pp follow-through, removing the fixed safety boundary triples safety-attack success. Adaptive attack lifts
+poisoning 11.5% -> 24.7% (the paper honestly notes its advantage is no longer statistically reliable there). A-MemGuard
+(arXiv 2510.02373) cuts retrieval ASR 100% -> 2.13% while raising benign accuracy 63.0% -> 76.7%. 2601.05504 exposes
+the opposite failure — a conservative judge rejected all 23 candidates (trust ~0.28), erasing the memory benefit;
+Gemini gave 54 of 82 accepted entries (all malicious) a perfect 1.0 via binary decisions. SMSR (arXiv 2606.12703)
+is the first formally certified defence: signed writes give 0% ASR for unsigned injections, utility 90%/85%.
+
+**How this maps to microglia.** R246-R252 gate what we write, whether corrections stick, whether a revision reached
+every copy, whether new evidence displaced the old, whether a retrieved lesson should be used, and how much each
+item is trusted. All are *descriptive audits*; none answers the end-to-end question the user's standing question 8
+keeps probing: does memory help at all, or is the way we use it the negative effect? R253 reproduces CAPTURE's dual
+measurement as `memoryGainLedger` — a pure, ¥0 gate scoring each policy on utility (follow-through, net win-rate gain)
+and safety (poisoning, false acceptance), refusing the unsafe AND the useless, with CAPTURE-style ablation attribution.
+Together the ten pure gates cover: what we remember, whether it is still true, whether it reached every copy, whether
+it is the right lesson, how much it is trusted, and whether the whole flywheel produces a net gain.
+
+**Leaderboard position (unchanged this round).** microglia remains on the cost x consistency frontier, not on any
+accuracy leaderboard: there is no external submission this round. CAPTURE's 71.5% / 11.5% / 83.5% and A-MemGuard's
+ASR numbers are published results read into our reason ladder and thresholds, NOT microglia scores, and are not
+claimed as one. The authoritative field stays LongMemEval / LoCoMo / BEAM / MemoryAgentBench / DolphinBench /
+AMA-Bench plus D-PREFGUARD / MMA-Bench and the negative-effect diagnostics TEPA / STALE / MemTrapBench /
+AgentPoison / MINJA / MemoryGraft / SMSR — memory-augmented task success measured memory-on vs memory-off, now with
+calibrated abstention and an explicit net-gain requirement. NL2SQL / text2charts / data2charts stay in
+`AgentiX-E/nl2charts`; R248's `classifyCompetitionDomain` gate keeps that boundary machine-checked.
+
+**Learning value exhausted vs still open.** CAPTURE's dual-axis evaluation and its four ablations are now encoded, as
+are the utility-collapse failure mode and the ζ_safe safety budget. Not replicated: CAPTURE's neural-ODE belief
+tracker and 3B LoRA extractor (a research system, not a product gate), its clarification dialogue (needs a live user),
+and its counterfactual citation audit (needs regeneration). AgentPoison's trigger optimisation is an attack, not a
+product capability. Still open from earlier rounds: a quantified poisoning-defence benchmark executed end-to-end
+(R253 is its gate, not its data run), and an accuracy run of the proposer pipeline once a paid arm is priced. Both
+need paid arms and are listed in the remainder, not claimed.
+
+**Optimal-path remainder (parallel, zero-cost first).** ① Zhipu embedding probe — already read back separated=false
+(p=0.12/0.06); a re-run repeats a known result and burns ZHIPU quota, so not a priority; ② R104b model proposer
+(~$0.01/candidate, paid arm; wiring: viewConsensus -> abstractionLifecycle -> witness, explicit revision via R249,
+new-evidence-into-retrieval via R250, retrieval-into-model via R251, per-item trust via R252, and a net-positive
+safety-checked configuration via R253 before any paid leaderboard run); ③ R244 state-role dispatch ablation (paid arm,
+price first); ④ generator / candidate-pool rework (paid/training arm — the large part of the SOTA gap); ⑤
+provider-agnostic fallback optimisation (¥0). Paid arms quote first, ladder priced before payment. Cortex note (Q9):
+no cortex code body is present in this sandbox; microglia ships an adapter plus a conformance script (CI clones+builds
+cortex to reconcile), so the local-link condition of Q9 is not met here and no Agent-memory leaderboard run was
+attempted this round. When cortex is ready, the object of evaluation is the net gain microglia adds to cortex —
+exactly what R253 is built to measure.

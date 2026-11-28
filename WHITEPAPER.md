@@ -5707,3 +5707,31 @@ evaluated on Agent memory once `AgentiX-E/cortex` is available by local link (Q9
 gain microglia adds to cortex — including that its memories arrive with calibrated trust — not cortex's own score.
 microglia keeps its target of extracting the right lesson, using it at the right time, and trusting it by the right
 amount.
+
+## Scope note R253 — a memory amplifier must prove a net gain
+
+The claim that *how we use memory* — not only what we store — causes the negative effect now has a tenth, end-to-end
+mechanism. R246 keeps a single rule only while it survives re-analysis; R247 keeps abstractions only while they
+accumulate experience; R249 checks an explicit revision reached every derived site; R250 checks new evidence retired
+the stale value; R251 decides whether a correctly retrieved lesson should be used; R252 scores how much each retrieved
+item may be trusted. R253 (`memoryGainLedger`, ¥0, three readers) asks the question none of them can: does the whole
+flywheel produce a net gain over no memory at all? It scores a policy on personalisation utility (follow-through, net
+win-rate gain) and memory safety (poisoning, false acceptance) together and refuses a policy that is unsafe OR useless.
+
+This directly reflects the field. CAPTURE (arXiv 2609.02265) reports 71.5% win rate, 83.5% follow-through, 11.5%
+poisoning and 8.9% false acceptance, and shows that a timeliness-only policy accepts 51.6% poisoning — safety and
+utility must be measured jointly. It also shows, via ablation, that the authenticity gate (+22pp poisoning), source
+signal (+14pp) and time-scale separation (−5.4pp follow-through) each earn their keep. The opposite failure — a
+defence so conservative it erases long-term memory's benefit — is documented in 2601.05504 (all 23 candidates
+rejected, trust 0.28). R253 encodes both: `poisoning-exceeds-budget` refuses the unsafe, `utility-collapse` refuses
+the useless, and `net-positive` requires every axis to clear. These are the field's published results and reason
+patterns, not microglia scores.
+
+R253 does not claim an accuracy gain and opens no paid arm; its published numbers are read into our thresholds, not
+reported as our benchmark. It stays a generic trust-and-value rule for a memory amplifier coupled to no vertical;
+NL2SQL / chart / data-viz remain `AgentiX-E/nl2charts`' domain (R248). If microglia is later evaluated on Agent memory
+once `AgentiX-E/cortex` is available by local link (Q9), the object of evaluation is the gain microglia adds to
+cortex — including that its memories arrive with calibrated trust and that the configuration is net-positive and
+safe — not cortex's own score. This is the measurement R253 exists to provide. microglia keeps its target of
+extracting the right lesson, using it at the right time, trusting it by the right amount, and proving the whole
+cycle helps.
