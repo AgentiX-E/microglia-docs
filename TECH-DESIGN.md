@@ -13769,3 +13769,12 @@ reject→hard-gate-rejected），绝不采信 stage 自报的 reason（那是 de
 **接线。** observer 模式接进 `buildPack`：默认关闭，不改变渲染字节、ids、fingerprint；开启时把门控决策附到
 pack.decision 之外的新字段供宿主读取。为 R104b 铺路：proposer 候选 → 各判据 → R254 合成 → R253 净增益与领域门
 → witness。产品与测评经三读者契约（fixture + manifest + 独立 Python reader）锁定同一读数。
+
+
+## R255 技术设计（28 Nov）— 写入时正确性门
+
+**判据位置。** `packages/core/src/apply/consistency-admission.ts`，纯函数、零成本、无模型。输入：id + threshold（fixed/adaptive）+ candidates（每个 samples 或 logprob）+ 可选 ablations。输出：verdict/reason/decidingId/decidingReason/decidingSupportMilli/thresholdMilli/candidateCount/admitCount/rejectCount/ablations。所有数值整数千分比（logprob 为唯一连续输入，边界处单次转换）。
+
+**与编排层的关系。** 新增为 `EXPERIENCE_GATE_SOURCES` 的第十一个判据源（前面十个 + cost lane）。R255 提供"这条写入事实是否成立"的裁决，R254 把它与其他判据裁决合成为单一可执行决策，R253 判断净增益，R244 处理状态角色。四者分工不重叠。
+
+**接线。** 与 R254 一致，observer 模式、默认关闭、零字节回归。为 R104b 铺路：proposer 候选 → 各判据（含 R255 正确性门）→ R254 合成 → R253 净增益与领域门 → witness。产品与测评经三读者契约锁定同一读数。

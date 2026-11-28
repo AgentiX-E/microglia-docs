@@ -11578,3 +11578,14 @@ zero-cost orchestration seam R104b's paid proposer needs before any leaderboard 
 frontier, not on the accuracy board. The accuracy SOTA holders remain Synap on LongMemEval (95.6%) and LoCoMo
 (93.2%); those are published figures, not microglia results. R254 is infrastructure for making a future paid arm
 trustworthy, not a leaderboard entry. Figure: `figures/r254-experience-gate.png`.
+
+
+## R255 competitive note (28 Nov)
+
+ConsistencyGate (arXiv 2607.22962) is reproduced as a write-time factual-support gate. It targets a failure mode no
+novelty/recency/utility admission can express: a hallucinated detail is as novel, recent and seemingly useful as a
+correct one. The paper reports 31.8% / 26.6% contamination reduction on real-conversation corpora (LoCoMo-Contam,
+MSC-Contam) across four LLM backbones; microglia reproduces the mechanism (K-sample mean >= tau, single-pass logprob
+softmax, occupancy-scaled adaptive tau), not the published score — microglia is not on the accuracy leaderboard and
+invoked no model this round. R255 joins the eleven criteria feeding R254's orchestration seam. The object of
+evaluation once cortex is ready remains the net gain microglia adds to cortex, which R253 measures.

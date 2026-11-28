@@ -19506,3 +19506,12 @@ disposition、平手取在先、reason 只由 verdict 派生、计数分区、�
 R252 98%、R253 99.1% 同类）；全量 `pnpm check` 退出码 0（326 测试文件、6747 测试）；README core 58→59 模块、
 13,146→13,464 行；coupling 276 模块、11 项检查、core 0 领域耦合；`--expect-files` 40→41。observer 接线默认关闭，
 渲染字节/ids/fingerprint 不变，零回归。未调用任何模型、未开付费臂、未就 Agent 记忆打榜。
+
+
+## R255 审计（28 Nov）
+
+**验证了什么。** 复刻 ConsistencyGate（arXiv 2607.22962）的三模式写入准入，逐字段对照论文：K-sample 均值 ≥ τ（非 >，等号放行的边界由 fixture `boundary-at-threshold` 钉死）、单遍 yes/no logprob softmax（稳定 max 减法）、自适应 τ* = τmin + (τmax−τmin)·min(1,|M|/C)（occupancy 超容量钳到 τmax）。Python reader 独立从字节重推导，与 TS 产品经 manifest 逐字段比对，不共享代码。
+
+**覆盖率与门禁。** 新模块 62 测试（46 行为 + 16 绑定）、TS 四维 100%；Python reader 98%（407 语句，开放弧为 CLI argparse/异常路径，与 R252/R253/R254 同类）；全量 `pnpm check` 退出码 0；README core 59→60 模块、13,464→13,768 行；coupling 277 模块、11 项检查、core 0 领域耦合；`--expect-files` 41→42。
+
+**没有做什么。** 未把竞品 published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R255 是通用写入判据，未耦合 nl2sql/chart 垂域。

@@ -5749,3 +5749,17 @@ The discipline is worth stating plainly: this round found a real crash — remov
 dereferenced an empty stage list — and fixed it because a 100% branch-coverage requirement refused to let the
 boundary stay untested. R254 claims no accuracy gain and opens no paid arm. Its value is that when microglia does
 run a paid leaderboard attempt, the decision the product ships is the decision the experiment validated.
+
+
+## R255 — Correctness as a first-class admission criterion
+
+A memory that remembers the wrong thing faithfully is worse than one that forgets. R244-R254 made revisions stick,
+revocations propagate, trust calibrated and gains measurable, but none of them asked whether a candidate fact was
+supported by the source context at the moment it was written. ConsistencyGate (arXiv 2607.22962) shows why this
+question has no substitute: utility-based admission scores novelty, recency and projected usefulness, and a
+hallucinated detail scores as highly as a correct one. microglia now reproduces the paper's self-consistency gate —
+K soft-support samples averaged against tau, a single-pass yes/no log-probability softmax, and an adaptive threshold
+that tightens as memory fills. The last mode captures a subtle truth: the same fact should be held to a stricter bar
+when the store is nearly full. All of it is a pure, zero-cost function whose numbers are integers, so the shipped
+product and the independent benchmark read exactly the same decision. The goal does not change: extract the right
+lesson, use it at the right time, trust it by the right amount, and prove the cycle helps.

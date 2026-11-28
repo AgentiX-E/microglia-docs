@@ -11574,3 +11574,20 @@ dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练
 **第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；microglia 已有 adapter + conformance 脚本
 （CI clone+build 对账），"本地 link 引入"本环境不具备；本轮未就 Agent 记忆打榜、未引入 cortex 代码，守住通用
 放大器目标。R254 的门控是通用的，cortex 就绪后评估对象是它给 cortex 带来的净增益。
+
+
+## R255（read 28 Nov，¥0）— 写入时的正确性门：复刻 ConsistencyGate 补上事实支持度盲点
+
+> **状态，28 Nov：read，¥0，未调用模型。** R244–R254 的十一条判据覆盖修订、撤销、可信度、合成与净增益，但**没有一条在写入时问"这条候选记忆在源上下文里到底有没有事实支持"**。这正是第 8 问反复追问的负效果的结构性来源：novelty / recency / utility 准入对幻觉细节是结构性失明的——一个错误细节与正确细节同样新颖、同样即时、同样看起来有用。本轮复刻 ConsistencyGate（arXiv 2607.22962），把"正确性"变成显式、可证伪的准入判据。
+
+![R255 — 一致性写入准入：三模式 + 占用率翻转](figures/r255-consistency-admission.png)
+
+**联网一手证据（28 Nov）。** ConsistencyGate（2607.22962）在 LoCoMo-Contam / MSC-Contam / MemContam 上证明：记忆污染是写入时准入问题，非检索或容量问题；基于效用的准入（A-MAC 等）按 novelty/recency/未来检索价值打分，对污染结构性失明。其 K-sample 软支持均值 ≥ τ（推荐 τ=0.7、K=5）、单遍 yes/no logprob softmax、占用率自适应 τ* = τmin + (τmax−τmin)·|M|/C 三模式已被四个 LLM backbone 验证，真实对话集污染降 31.8% / 26.6%。本轮忠实复刻三种模式的整数千分比版本。
+
+**实现。** `packages/core/src/apply/consistency-admission.ts` 导出 `consistencyAdmission(input)`：候选携带 samples（K 个 s_k∈[0,1000]）或 logprob（yesLog/noLog）；阈值 fixed 或 adaptive。p = round(Σs_k/K)，admit iff p ≥ τ（等号放行，忠实论文）；logprob 走稳定 softmax 单次转换；adaptive τ* = τmin + round((τmax−τmin)·min(1,|M|/C))。阶梯：全零样本 → reject/contradicted；p<τ 但有正支持 → reject/insufficient-support；p≥τ → admit/supported。集合 verdict 取最严格 reason，平手取先，计数分区；每个 ablation 移除一候选重算，报 before/after/changed。新增为 experience-gate 第十二个 source（白名单 10→11 判据 + cost lane）。
+
+**门禁与三读者。** 行为测试 46 + 绑定测试 16 = 62 测试，新模块 TS 四维 100%（语句/分支/函数/行）；Python reader `consistency_admission.py` 无共享代码从字节重推导阈值/支持度/verdict/reason/deciding/计数/消融，三段合并 98%（407 语句，开放弧为 CLI argparse/异常路径，与 R252 98%、R253 99.1%、R254 98% 同类）；fixture 十案（全支持/矛盾/等号边界/下方千分之一/歧义/混合支配/adaptive 空与满/logprob 双案）。CI `--expect-files` 41→42；README core 59→60 模块、13,464→13,768 行；coupling 277 模块重生成、11 项检查、core 仍 0 领域耦合；`eval:verifiers` 加 self-test。
+
+**当前位置与剩余步骤。** 十二判据齐备 + 编排器，正确性盲点已补。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① Zhipu embedding 探针已读回 separated=false，重跑烧配额非优先；② R104b 模型 proposer（≈$0.01/候选，付费臂，用 R254 接线：proposer 候选 → 各判据含 R255 正确性门 → R254 合成 → R253 净增益与领域门 → witness，配置上线前过 R253）；③ R244 状态角色 dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练臂，SOTA 差距大头）；⑤ provider fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款。
+
+**第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；未就 Agent 记忆打榜、未引入 cortex 代码，守住通用放大器目标。R255 的正确性门是通用写入判据，cortex 就绪后评估对象是它给 cortex 带来的净增益。

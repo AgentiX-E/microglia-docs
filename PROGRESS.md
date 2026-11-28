@@ -31303,3 +31303,13 @@ disposition + reason + 整数 scoreMilli；advisory source 的 reject 降为 rew
 改造（付费/训练臂，SOTA 差距大头）；⑤ provider fallback 优化（¥0）。付费臂先出价、梯子先验价后付款。
 
 **图**：`figures/r254-experience-gate.png`（十条判据→严格阶梯→单一决策 + 消融归因）。
+
+
+## R255（28 Nov，¥0）— ConsistencyGate 正确性准入
+
+- **结论**：补上十一条判据的真实盲点——写入时不测事实支持度。复刻 arXiv 2607.22962 三模式。
+- **实现**：`consistency-admission.ts`，K-sample 均值 ≥ τ（等号放行）/ logprob 稳定 softmax / occupancy 自适应 τ*；三模式整数千分比；阶梯 contradicted / insufficient-support / supported；集合取最严格 + 消融归因；接入 experience-gate source 白名单（第十一个判据）。
+- **测试**：46 行为 + 16 绑定 = 62 测试，TS 四维 100%；Python reader 三段合并 98%；fixture 十案；CI `--expect-files` 42；README core 60 模块 / 13,768 行；coupling 277 模块 11 项通过。
+- **发现并修复**：TDD 红阶段先锁定"等号放行"与"占用率单独翻转"两个可证伪点；TS 收窄后 union 穷举致 `threshold.mode` 成 never，改固定消息修复；Python self-test 的 verdict tamper 误选本来就是 admit 的案，改选 reject。
+- **图**：`figures/r255-consistency-admission.png`（三模式 + occupancy 翻转曲线 + 盲点说明）。
+- **成本**：¥0，未调用模型，未开付费臂。
