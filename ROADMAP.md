@@ -11671,3 +11671,24 @@ dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练
 **当前位置与剩余步骤。** 十五判据齐备，负效果从写入侧补到注入时适用范围。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① 付费臂 ① R104b proposer / ② R244 dispatch 须用户最终确认后走 workflow（本地无 LLM key，本轮未触发）；② 读回过 R253 净增益门再决定是否上线；③ provider fallback 优化（¥0）；④ Zhipu embedding 探针重跑（¥0 但烧配额，非优先）。未 fine-tune、未碰垂域、未声称 cortex link 成功。
 
 **第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；未就 Agent 记忆打榜、未引入 cortex 代码，守住通用放大器目标。R259 的注入门是通用判据，cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253 测）。
+
+
+## R260（read 28 Nov，¥0）— 关键事实路由门：把"记忆负效果"补到写入时的可见性
+
+> **状态，28 Nov：read，¥0，未调用模型、未开付费臂。** 第 8 问反复追问"记忆的东西与用记忆的方式不对导致负效果"。R244–R259 的十五条判据覆盖了写入、修订、撤销、可信度、净增益、门控编排、付费出价、读时组装、重放时接口指纹与注入时适用范围，但**没有一条在写入时问"这条事实是否必要、与它将服务的查询语义相距多远、是否只能靠世界知识搭桥——即查询条件式检索永远捞不到，因此必须升级为常驻可见"**。本轮复刻 InMind（Li、Du、Xu、Mao，中国科学技术大学/Metastone，arXiv 2607.24368，2026-07-27，125 题专家验证），把"routing: 哪些事实必须保持可见"做成机器判据。
+
+![R260 — 关键事实路由门：五阶梯 + InMind 84%→14.4% 鸿沟 + 三条件 + 可证伪边界](figures/r260-critical-fact-routing.png)
+
+**联网一手证据（28 Nov）。** InMind 把检索式记忆默认成立却从未言明的假设形式化为"检索假设"：*需要的记忆一定会长得像需要它的查询*。世界知识打破它——树坚果过敏必须经由杏仁粉改变马卡龙请求的答案，但两段文本没有任何检索器看得见的共享线索。125 道专家验证的间接查询上：把决定性事实直接放进上下文，backbone 答对 **84.0%**；同一事实必须靠检索时，六个向量/图/agentic 记忆系统最高只有 **14.4%**，而它们对该事实的即时朴素召回高达 **100%**。把 embedding 维度提高 8 倍，每个系统的 target recall 都升了，但端到端鸿沟几乎不变（HippoRAG 2 反而 8.8%→5.6%）。一个 200 行 always-in-state 诊断探针把鸿沟压回 **68.8%**，把失败定位到查询条件式接口本身，并点名开放问题：**routing——决定哪些事实必须保持可见**。作者明确 always-in-state 是诊断探针、不是可部署方案。本轮忠实复刻"隐式关联三条件 + 常驻路由"的机制，不引入任何 published 分数当 microglia 分数。
+
+**核对空白，避免重复造轮子。** R251 memory-admission（MemTrapBench/WikiTrace）、R257 context-pollution（MemoryBench）、R259 scope-boundary（Memory Trap）都是**检索后**判据——处理"已经检索到的记忆该不该注入"。InMind 的失败发生在**检索之前**：决策关键事实根本没被 query-conditioned retrieval 捞出来。这是十五条判据外的结构性空白；always-in-state 探针与 R257/R259 的 observer 缝同族但不重复，本轮只把它作为惰性记录。
+
+**实现。** `packages/core/src/apply/critical-fact-routing.ts` 导出 `criticalFactRouting(input)`：输入 `residentBudget`（非负整数）、`candidates`（每项 `{id, necessary, semanticDistanceMilli, needsBridge, risk}`，risk ∈ closed `FACT_RISKS` = low/high，distance 为 [0,1000] 整数）、惰性 `probeInContext` + 可选 ablations。隐式关联盲点 = 必要 + 语义远（`semanticDistanceMilli >= 500`）+ 需知识桥——查询条件式检索永远看不到它，必须升级常驻。整数算路由分区（blindSpotCount/retrievableCount/unnecessaryCount/overflowCount）与 `residentIds`（高风险优先、输入序打破平手），severity 阶梯裁定：盲点超预算 → `overflow`；预算内盲点 → `stay-resident`；必要但相关性可达 → `stay-retrievable`；不必要 → `drop`；空集 → `drop`。**三处可证伪边界**：distance 恰在 floor 算远、overflow 用严格 `>`、远但无桥不是盲点。`probeInContext` 只记录、永不进入 firing rung（论文明确它是诊断而非部署方案）。published 比率导出为 `INMIND_RATES_MILLI` 常量供 reader 绑定、从不计分。firing rung 全收集后由 severity 表取最严格，decidingSignal 由获胜 reason 派生；residentIds/retrievableIds/droppedIds 分割候选；ablations 逐一中和信号看 verdict 是否翻转。全整数运算，无模型/时钟/网络/宿主域耦合。作为 observer 缝接入 apply barrel，默认关闭、零字节回归。
+
+**门禁与三读者。** 行为测试 22 + 绑定测试 4 = 26 测试，新模块 TS 四维 100%（语句/分支/函数/行）；Python reader `critical_fact_routing.py` 无共享代码从字节重推导路由分区/每条 firing rung/verdict/decidingSignal/residentIds/消融，单段 99%（96 断言 / 14 案，开放弧为 argparse/exit 路径，与 R252~R259 同类）；fixture 14 案覆盖 4 verdict × 5 reason × 2 risk + 三处可证伪边界 + inert probe + 优先级 + 消融。CI `--expect-files` 46→47；README core 64→65 模块、15,152→15,506 行、测试数 6,923→6,949；coupling 282 模块重生成、11 项检查、core 仍 0 领域耦合；`eval:verifiers` 加 self-test。
+
+**发现并修复的真实错误。** ① 覆盖率收口阶段定位到实现里的死分支：`isBlindSpot` 中 `neutral === 'necessity'` 的守卫在 `readingsOf` 已提前短路，永不可达；重构为 necessity 由 readingsOf 单一处理、isBlindSpot 只判"语义远 + 需桥"两个正交条件，消除不可达弧且四维回到 100%（未用测试掩盖）。② Python reader self-test 一处 tamper 误选了 case 0 的正确 signal（bridge），改用不同 signal（budget）触发拒绝。③ 绘图 x 标签与三条件标题重叠，上移压缩柱状图后消除。
+
+**当前位置与剩余步骤。** 十六判据齐备，负效果从写入侧补到写入时可见性路由。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① 付费臂 ① R104b proposer / ② R244 dispatch 须用户最终确认后走 workflow（本地无 LLM key，本轮未触发）；② 读回过 R253 净增益门再决定是否上线；③ provider fallback 优化（¥0）；④ Zhipu embedding 探针重跑（¥0 但烧配额，非优先）。未 fine-tune、未碰垂域、未声称 cortex link 成功。
+
+**第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；未就 Agent 记忆打榜、未引入 cortex 代码，守住通用放大器目标。R260 的路由门是通用写入判据，cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253 测）。

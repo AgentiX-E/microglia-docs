@@ -13832,3 +13832,18 @@ pack.decision 之外的新字段供宿主读取。为 R104b 铺路：proposer �
 **与编排层的关系。** R259 与 R257/R258 同为读时判据但分工不同：R257 对"待注入上下文组成"下组装决策，R258 对"一条经验的接口指纹是否仍有效"下重放决策，R259 对"记忆形成范围是否适合当前任务"下注入决策。三者可作为 experience-gate 的上游步骤。cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253）。
 
 **三读者契约。** TS 产品 + 独立 `scope_boundary.py`（字节重推导，无共享代码）+ fixture/manifest 逐字段绑定；`--expect-files` 46。observer 缝接入 apply barrel，默认关闭、零字节回归。付费臂须用户最终确认后才由 workflow dispatch 触发。
+
+
+## R260 技术设计（28 Nov）— 关键事实路由门（写入时可见性）
+
+**判据位置。** `packages/core/src/apply/critical-fact-routing.ts`，纯函数、零成本、无模型、无宿主域耦合。输入：id + residentBudget（非负整数）+ candidates（每项 `{id, necessary, semanticDistanceMilli, needsBridge, risk}`，distance 为 [0,1000] 整数、risk ∈ closed `FACT_RISKS`）+ probeInContext（惰性）+ 可选 ablations。输出：verdict / reason / decidingSignal / candidateCount / blindSpotCount / retrievableCount / unnecessaryCount / overflowCount / residentBudget / probeInContext / inmindRatesMilli / residentIds / retrievableIds / droppedIds / ablations。所有数值整数。
+
+**路由分区读数。** 对每个 candidate：`effectiveNecessary = neutral==='necessity' ? false : necessary`；不必要 → unnecessary；否则 `isBlindSpot`（far = `neutral==='distance' ? false : distance>=500`，bridged = `neutral==='bridge' ? false : needsBridge`，二者与）→ blindSpots；其余 → retrievable。budget 消融时视为 blindSpots 数量。residentIds = blindSpots 按高风险优先（stable sort）取前 budget 个；overflowCount = max(0, blindSpots - budget)。published 比率导出为 `INMIND_RATES_MILLI`（inContext 840、bestRetrieval 144、naiveRecall 1000、alwaysInState 688、embeddingScale 8），仅供 reader 绑定、从不计分。
+
+**五阶梯（severity 表裁定，非检查顺序）。** `resident-overflow`（severity 4）→ `overflow`；`implicit-association`（3）→ `stay-resident`；`retrievable`（2）→ `stay-retrievable`；`unnecessary`（1）→ `drop`；`no-candidates`（0）→ `drop`。空候选集直接返回 no-candidates（不收集其余 rung）。probeInContext 只写入输出、不进入任何 firing rung。三处可证伪边界由读数定义保证：distance>=500（等号即远）、overflowCount>0 用严格 `>`（budget 恰好装满不溢出）、needsBridge 必须与 far 同时成立才算盲点。
+
+**职责划分与消融。** necessity 由 readingsOf 单一处理，`isBlindSpot` 只判"语义远 + 需知识桥"两个正交条件——消除实测发现的不可达死分支。residentIds/retrievableIds/droppedIds 对候选分割（三者之和 = candidateCount）。ablations 中和 bridge/distance/necessity/budget 之一重跑阶梯，verdict 翻转即命名决定性门（`ablation-decisive` 中 bridge/distance/necessity 均决定性；`ablation-budget` 中预算消融暴露底层 implicit-association）。
+
+**与编排层的关系。** R260 与前序判据分工不同：R257 对"待注入上下文组成"下组装决策，R258 对"经验接口指纹是否仍有效"下重放决策，R259 对"记忆形成范围是否适合当前任务"下注入决策，R260 对"事实是否决策关键但对检索不可见、须常驻"下写入路由决策。四者可作为 experience-gate 的不同阶段。cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253）。
+
+**三读者契约。** TS 产品 + 独立 `critical_fact_routing.py`（字节重推导，无共享代码）+ fixture/manifest 逐字段绑定；`--expect-files` 47。observer 缝接入 apply barrel，默认关闭、零字节回归。付费臂须用户最终确认后才由 workflow dispatch 触发。

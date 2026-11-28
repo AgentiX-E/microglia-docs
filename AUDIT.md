@@ -19559,3 +19559,14 @@ R252 98%、R253 99.1% 同类）；全量 `pnpm check` 退出码 0（326 测试�
 **发现并修复的真实错误。** reader 单段覆盖率初次 97%（低于 98% 惯例），定位为 check() 中 4 个 ablation tamper 守卫未被 self-test 触发，补 4 条 mutated 断言后回到 99%。其余未覆盖行为 ok 失败分支、SystemExit 捕获、return 1 均为不可达 CLI 路径，与既有 reader 同类。绘图一次成型（沿用 R258 双栏布局，右侧改前后对比柱 + 四信号 + 可证伪边界），无文字重叠返工。
 
 **没有做什么。** 未把 Memory Trap published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R259 是通用注入判据，未耦合 nl2sql/chart 垂域。
+
+
+## R260 审计（28 Nov）
+
+**验证了什么。** 复刻 InMind（arXiv 2607.24368）的写入时关键事实路由门，逐机制对照论文：检索假设被世界知识打破、84.0% in-context vs 最多 14.4% 检索（朴素召回 100%）、8× embedding 几乎不动鸿沟、always-in-state 探针 68.8%。三处可证伪点全部钉成 fixture 案：`distance-threshold-hit/miss`（500 算远、499 算近）、`budget-exact`（盲点数恰等于预算不溢出，严格 `>`）、`no-bridge-far`（远但无桥不是盲点）。`resident-overflow` 钉住高风险优先（`[f-high, f-low]`）。`probe-in-context-inert` 钉住 probe 不改变 verdict。`priority-mixed` 钉住四信号同发取 resident-overflow（severity 4）。Python reader 独立从字节重推导，与 TS 产品经 manifest 逐字段比对，不共享代码。
+
+**覆盖率与门禁。** 新模块 26 测试（行为 22 + 绑定 4）、TS 四维 100%（RED→GREEN 后经一次死分支重构收口）；Python reader 单段 99%（96 断言 / 14 案，开放弧为 argparse/exit，与 R252~R259 同类）；README core 64→65 模块、15,152→15,506 行、6,923→6,949 测试；coupling 281→282 模块、11 项检查、core 0 领域耦合；`--expect-files` 46→47。全量 `pnpm check` EXIT=0，远端 CI 待验证。
+
+**发现并修复的真实错误。** ① TS 分支覆盖初次 98.91%，定位为 `isBlindSpot` 里 `neutral === 'necessity'` 守卫在 `readingsOf` 已短路、永不可达——这是实现缺陷而非测试缺口，故重构职责（necessity 单一由 readingsOf 处理、isBlindSpot 只判远与桥两正交条件），四维回 100%，不用测试去覆盖死代码。② Python self-test 首跑失败：`decidingSignal` tamper 误选了 case 0 的正确值 bridge，改用 budget 触发 disagreement。③ 绘图柱状图 x 标签（两行）与三条件标题重叠，上移压缩柱区消除。综上共 3 处，均为门禁/自测/目检实证产出。
+
+**没有做什么。** 未把 InMind published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R260 是通用写入路由判据，未耦合 nl2sql/chart 垂域。

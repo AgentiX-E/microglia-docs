@@ -31356,3 +31356,14 @@ disposition + reason + 整数 scoreMilli；advisory source 的 reject 降为 rew
 - **发现并修复**：本轮 RED 先钉住四处可证伪边界与 inert raw；reader 补 4 条 ablation tamper 守卫把覆盖率从 97% 推到 99%；绘图一次成型无需返工（沿用 R258 布局并改为前后对比柱）。
 - **成本**：¥0，未调用模型，未开付费臂。
 - **图**：`figures/r259-scope-boundary.png`（五阶梯 + 记忆陷阱前后对比 + 四信号 + 可证伪边界）。
+
+
+## R260（28 Nov，¥0）— 关键事实路由门（InMind 隐式关联盲点机制）
+
+- **结论**：补上十五条判据的结构性空白——写入时不问"这条事实是否必要 + 语义远 + 需知识桥，因而检索永远捞不到、必须常驻可见"。复刻 InMind（arXiv 2607.24368，中科大/Metastone），84% in-context vs 最高 14.4% 检索（朴素召回却 100%），8× embedding 无效，always-in-state 探针 68.8%，开放问题是 routing。
+- **核对空白**：R251/R257/R259 均为检索后判据；InMind 失败在检索之前（关键事实没被捞出），是新增空白；always-in-state 只作惰性记录。
+- **实现**：`critical-fact-routing.ts` 的 `criticalFactRouting(input)`，整数路由分区，severity 阶梯（resident-overflow → overflow；implicit-association → stay-resident；retrievable → stay-retrievable；unnecessary/no-candidates → drop），高风险优先占常驻槽位，三处可证伪边界，probe 惰性，INMIND_RATES_MILLI 预注册只绑定不计分，消融归因；observer 缝接入 apply barrel、默认关闭、零字节回归。
+- **测试**：22 行为 + 4 绑定 = 26 测试，TS 四维 100%；Python reader 单段 99%；fixture 14 案（4 verdict × 5 reason × 2 risk + 三边界 + inert probe + 优先级 + 消融）；CI `--expect-files` 47；README core 65 模块 / 15,506 行 / 6,949 测试；coupling 282 模块 11 项通过。
+- **发现并修复**：实现里 `isBlindSpot` 的 necessity 守卫是永不可达死分支（readingsOf 已短路），重构成 necessity 单一处理 + isBlindSpot 只判远/桥两正交条件，四维回 100%；reader tamper 误选正确 signal，改 budget；绘图 x 标签与标题重叠，上移压缩后消除。
+- **成本**：¥0，未调用模型，未开付费臂。
+- **图**：`figures/r260-critical-fact-routing.png`（五阶梯 + 84%→14.4% 鸿沟 + 三条件 + 可证伪边界）。
