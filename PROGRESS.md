@@ -31324,3 +31324,13 @@ disposition + reason + 整数 scoreMilli；advisory source 的 reject 降为 rew
 - **发现并修复**：图的 Step 3 行与底部小字 y 仅差 0.1 导致重叠（放大裁剪定位后重排间距）；未成对 `$` 触发 mathtext 异常，改纯文本。
 - **图**：`figures/r256-proposer-value.png`（六阶梯 + 成本对比 + 证据条）。
 - **成本**：¥0，未调用模型，未开付费臂。
+
+
+## R257（28 Nov，¥0）— 上下文污染门（MemoryBench 负效果机制）
+
+- **结论**：补上十二条判据的结构性空白——组装时不问"注入的上下文有多少是历史日志、在这种格式下是否有害"。复刻 MemoryBench（ICML 2025，arXiv 2510.17281）的格式敏感性 + 日志稀释机制。
+- **实现**：`context-pollution.ts` 的 `contextPollution(input)`，600-token 阈值四格式（LiSo/SiLo/LiLo/SiSo），整数千分比 log/feedback share，severity 阶梯（no-items / siLo-log-dominant → memoryless；over-budget / feedback-dominant / log-present → trim；clean-context → admit），三边界可证伪（share ≥500、budget 严格 >、阈值 ≥600），消融归因；observer 缝接入 apply barrel、默认关闭、零字节回归。
+- **测试**：19 行为 + 4 绑定 = 23 测试，TS 四维 100%；Python reader 单段 99%；fixture 12 案（3 verdict × 6 reason × 4 format + 三边界 + 优先级 + 消融）；CI `--expect-files` 44；README core 62 模块 / 14,417 行 / 6,870 测试；coupling 279 模块 11 项通过。
+- **发现并修复**：全量 check 暴露 `ABLATABLE_SIGNALS` 与 proposer-value 重复导出（TS2300），改别名导出；README 模块表/占比/测试数三处漂移、committed coupling 快照陈旧，逐一同步至 walker 实测值。
+- **成本**：¥0，未调用模型，未开付费臂。
+- **图**：`figures/r257-context-pollution.png`（六阶梯 + SiLo 翻转曲线 + 三读者覆盖）。

@@ -13789,3 +13789,16 @@ pack.decision 之外的新字段供宿主读取。为 R104b 铺路：proposer �
 **三处接线点一次覆盖。** ① R104b：本门是付费臂前的零成本出价门，`admit` 才值得付 $0.01/候选；② R244：状态角色已在 experience-gate source 白名单，本轮提供离线骨架；③ 第三步：把"生成器/候选池改造"重定义为通用 proposer + 十二判据离线筛选，¥0、不 fine-tune、不碰垂域。
 
 **接线。** 与 R254/R255 一致，observer 模式、默认关闭、零字节回归。为付费臂铺路：proposer 候选 → 各判据（含 R255 正确性门）→ R254 合成 → R253 净增益与领域门 → witness。产品与测评经三读者契约锁定同一读数。付费臂须用户最终确认后才由 workflow dispatch 触发。
+
+
+## R257 技术设计（28 Nov）— 上下文污染门（读时组装）
+
+**判据位置。** `packages/core/src/apply/context-pollution.ts`，纯函数、零成本、无模型。输入：id + inputTokens + outputTokens + budgetTokens + items（每个 `{id, kind, tokens}`，kind ∈ closed `ITEM_KINDS`）+ 可选 ablations。输出：verdict / reason / decidingSignal / format / totalTokens / logTokens / feedbackTokens / logShareMilli / feedbackShareMilli / overBudgetByTokens / itemCount / logShareFloorMilli / tokenThreshold / keptIds / ablations。所有数值整数千分比或 token 计数。
+
+**格式分类。** `inputLong = inputTokens >= 600`、`outputLong = outputTokens >= 600`，组合成 LiSo/SiLo/LiLo/SiSo。SiLo（短输入长输出）是 MemoryBench 中 memoryless backbone 反超所有记忆系统的格式，故 `siLo-log-dominant` 是唯一直接给 `memoryless` 的内容 rung（另一条 `no-items` 是空集边界）。
+
+**六阶梯（severity 表裁定，非检查顺序）。** `no-items`（空集非免费成功）→ `memoryless`；`siLo-log-dominant`（SiLo 且 logShare ≥ 500）→ `memoryless`；`over-budget`（total > budget，严格 >）→ `trim`；`feedback-dominant`（logShare ≥ 500 且 feedbackShare ≥ 500 且 feedback > log − feedback）→ `trim`；`log-present`（0 < logShare < 500）→ `trim`；`clean-context`（仅 current-context + lesson）→ `admit`。trim 的 keptIds 只留 current-context/lesson；memoryless 留空。
+
+**与编排层的关系。** R257 与 R254 experience-gate 同为读时判据，但分工不同：R254 把多条判据裁决合成为单一可执行决策，R257 直接对"待注入上下文的组成"下一个组装决策（全部/裁剪/不注入）。R257 提供 keptIds 供宿主消费，可作为 experience-gate 的上游组装步骤。cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253）。
+
+**三读者契约。** TS 产品 + 独立 `context_pollution.py`（字节重推导，无共享代码）+ fixture/manifest 逐字段绑定；`--expect-files` 44。observer 缝接入 apply barrel，默认关闭、零字节回归。付费臂须用户最终确认后才由 workflow dispatch 触发。

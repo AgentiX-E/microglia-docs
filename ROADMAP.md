@@ -11616,3 +11616,20 @@ dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练
 **门禁与三读者。** 行为测试 27 + 绑定测试 4 = 31 测试，新模块 TS 四维 100%（语句/分支 52/52/函数/行）；Python reader `proposer_value.py` 无共享代码从字节重推导成本/超额/触发 rung/verdict/deciding signal/消融，三段合并 98%（345 语句，开放弧为 CLI argparse/异常，与 R252~R255 同类）；fixture 11 案覆盖全部 4 verdict × 6 reason + 三边界 + 优先级 + 消融。CI `--expect-files` 42→43；README core 60→61 模块、13,768→14,073 行；coupling 278 模块重生成、11 项检查、core 仍 0 领域耦合；`eval:verifiers` 加 self-test。
 
 **当前位置与剩余步骤。** 十二判据 + 编排器 + 提议价值门齐备，成本最小化路径已机器化。microglia 仍在成本×一致性前沿、不在准确率榜。剩余：① 用户确认出价后触发 ①② 付费 dispatch（走 workflow）；② 读回结果，过 R253 净增益门再决定是否上线；③ provider fallback 优化（¥0）；④ Zhipu embedding 探针重跑（¥0 但烧配额，非优先）。未 fine-tune、未碰垂域、未声称 cortex link 成功。
+
+
+## R257（read 28 Nov，¥0）— 上下文污染门：把"记忆负效果"从写入侧补到组装侧
+
+> **状态，28 Nov：read，¥0，未调用模型、未开付费臂。** 第 8 问反复追问"记忆的东西与用记忆的方式不对导致负效果"。R244–R256 的十二条判据覆盖了写入、修订、撤销、可信度、净增益、门控编排与付费出价，但**没有一条在组装时问"即将注入的上下文里有多少是历史日志、在这种任务格式下历史是否已知有害"**。本轮复刻 MemoryBench（清华，ICML 2025，arXiv 2510.17281）的洞见，把这个问题做成机器判据。
+
+![R257 — 上下文污染门：六阶梯 + SiLo 翻转机制](figures/r257-context-pollution.png)
+
+**联网一手证据（28 Nov）。** MemoryBench 用 LLM-as-user 模拟服务时的显式/隐式反馈，覆盖 11 个数据集（约 20k 案例）、声明式/程序式记忆、LiSo/SiLo/LiLo/SiSo 四种格式（600-token 阈值）。核心发现：A-Mem、Mem0、MemoryOS **都不能稳定超越在同一语料上做朴素 BM25/embedding RAG**，且其收益局限在长输入短输出（如 LoCoMo）的阅读理解任务；在短输入长输出（SiLo）分区，**无记忆 backbone 打败所有记忆系统**。根因是记忆系统不区分历史 task/feedback log 与当前任务上下文，累积日志变成噪声而非学习信号。本轮忠实复刻"格式敏感性 + 日志稀释"的机制，不引入任何 published 分数当 microglia 分数。
+
+**实现。** `packages/core/src/apply/context-pollution.ts` 导出 `contextPollution(input)`：输入活任务的 inputTokens/outputTokens、整数预算 budgetTokens、检索 items（`{id, kind, tokens}`，kind ∈ closed `ITEM_KINDS` = current-context/task-log/feedback-log/lesson）+ 可选 ablations。按 600-token 阈值（`>=` 为长）分类 format（LiSo/SiLo/LiLo/SiSo），整数千分比算 log/feedback 占比，severity 阶梯裁定：`no-items` 与 `siLo-log-dominant` → `memoryless`（不注入）；`over-budget`/`feedback-dominant`/`log-present` → `trim`（只留 current-context + lesson）；`clean-context` → `admit`（全注入）。三处边界可证伪：log share `>= 500`（等号即主导）、budget 严格 `>`、阈值 `>= 600`（599 为短）。firing rung 全收集后由 severity 表取最严格，decidingSignal 由获胜 reason 派生；ablations 逐一中和一个 rung 看 verdict 是否翻转。全整数运算，无模型/时钟/网络。作为 observer 缝接入 apply barrel，默认关闭、零字节回归。
+
+**门禁与三读者。** 行为测试 19 + 绑定测试 4 = 23 测试，新模块 TS 四维 100%（语句/分支/函数/行）；Python reader `context_pollution.py` 无共享代码从字节重推导 format/占比/每条 firing rung/verdict/decidingSignal/keptIds/消融，单段 99%（开放弧为 argparse/exit 路径，与 R252~R256 99% 同类）；fixture 12 案覆盖 3 verdict × 6 reason × 4 format + 三边界 + 优先级 + 消融。CI `--expect-files` 43→44；README core 61→62 模块、14,073→14,417 行、测试数 6,211→6,870、分支覆盖 99.91→99.89；coupling 279 模块重生成、11 项检查、core 仍 0 领域耦合；`eval:verifiers` 加 self-test。
+
+**当前位置与剩余步骤。** 十三判据齐备，负效果从写入侧补到组装侧。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① 付费臂 ① R104b proposer / ② R244 dispatch 须用户最终确认后走 workflow（本地无 LLM key，本轮未触发）；② 读回过 R253 净增益门再决定是否上线；③ provider fallback 优化（¥0）；④ Zhipu embedding 探针重跑（¥0 但烧配额，非优先）。未 fine-tune、未碰垂域、未声称 cortex link 成功。
+
+**第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；未就 Agent 记忆打榜、未引入 cortex 代码，守住通用放大器目标。R257 的组装门是通用读时判据，cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253 测）。

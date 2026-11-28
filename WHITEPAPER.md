@@ -5778,3 +5778,8 @@ by the caller, so the same decision survives a change of model provider. The rej
 generator and a pool of heterogeneous candidates — belongs to a different product in a different domain. microglia
 keeps its own target: extract the right lesson, use it at the right time, trust it by the right amount, and prove the
 whole cycle is worth what it costs.
+
+
+## R257 — Knowing what reaches the prompt
+
+A memory system can write the right lesson, trust it by the right amount, prove the cycle gains, and still harm the task by injecting accumulated history where the live task needed only its own context. MemoryBench (ICML 2025) put a number on this: the most celebrated memory systems do not consistently beat a plain retrieval baseline over the same corpus, and on short-input/long-output tasks a model with no memory at all wins. The reason is an assembly mistake — history is injected as if it were the present. microglia's R257 closes it with a free, deterministic read-time gate that asks how much of the pending context is history, classifies the task format at a fixed threshold, and decides to inject everything, trim to live turns and lessons, or inject nothing. The decision is a strict severity ladder over integer shares with pre-registered, falsifiable boundaries, and the same integers are re-derived by an independent reader so the product and the benchmark cannot drift. The goal does not change: extract the right lesson, use it at the right time, trust it by the right amount, and prove the whole cycle is worth what it costs. R257 adds the last missing verb — present only what belongs to now.

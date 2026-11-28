@@ -19526,3 +19526,14 @@ R252 98%、R253 99.1% 同类）；全量 `pnpm check` 退出码 0（326 测试�
 **成本核对。** ③ 的"数百块"经核实是 text-to-SQL fine-tune 训练臂的报价，既不属 microglia 赛道（第 7/8 问）也在 S3 frozen 的 non-goal 之列，故拒绝执行、改为 ¥0 通用门。①② 为极小付费臂（合计≈¥2.5~9），本地无 LLM key，须走 workflow dispatch 且用户最终确认后才触发——本轮未触发、未花任何真钱。
 
 **没有做什么。** 未把竞品 published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未就 Agent 记忆打榜。R256 是通用提议判据，未耦合 nl2sql/chart 垂域。
+
+
+## R257 审计（28 Nov）
+
+**验证了什么。** 复刻 MemoryBench（arXiv 2510.17281）的读时组装门，逐机制对照论文：600-token 阈值四格式（`>=` 为长，599 短 / 600 长由 fixture `boundary-silo`/`boundary-lilo` 钉死）、历史日志占比千分比、SiLo + log-dominant → memoryless（论文"memoryless backbone beats every memory system"的机制，非其分数）。三处不等式方向可证伪：share `>=`（等号即主导）、budget 严格 `>`（花满预算允许）、threshold `>=`（600 为长）。severity 表裁定最严格 rung，不依赖检查顺序；`priority-format` 钉住 format rung 胜过 over-budget。Python reader 独立从字节重推导，与 TS 产品经 manifest 逐字段比对，不共享代码。
+
+**覆盖率与门禁。** 新模块 23 测试（19 行为 + 4 绑定）、TS 四维 100%（RED→GREEN→补 null/array item+ablation 守卫→补 SiSo 格式分支收口）；Python reader 单段 99%（开放弧为 argparse/exit，与 R252~R256 同类）；README core 61→62 模块、14,073→14,417 行、6,211→6,870 测试、分支 99.91→99.89%；coupling 278→279 模块、11 项检查、core 0 领域耦合；`--expect-files` 43→44。
+
+**发现并修复的真实错误。** ① index barrel 中 `ABLATABLE_SIGNALS`/`AblatableSignal` 与 R256 重复导出，全量 typecheck 报 TS2300，改别名导出（`POLLUTION_ABLATABLE_SIGNALS`/`PollutionAblatableSignal`）。② README 三处数字漂移与 committed coupling 快照陈旧，被 `readme-layers.test.ts` 与 `check-coupling-ledger.mjs` 抓出，按 walker 实测值同步。均为门禁实证产出，非事后补丁。
+
+**没有做什么。** 未把 MemoryBench published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R257 是通用组装判据，未耦合 nl2sql/chart 垂域。
