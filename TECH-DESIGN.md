@@ -13778,3 +13778,14 @@ pack.decision 之外的新字段供宿主读取。为 R104b 铺路：proposer �
 **与编排层的关系。** 新增为 `EXPERIENCE_GATE_SOURCES` 的第十一个判据源（前面十个 + cost lane）。R255 提供"这条写入事实是否成立"的裁决，R254 把它与其他判据裁决合成为单一可执行决策，R253 判断净增益，R244 处理状态角色。四者分工不重叠。
 
 **接线。** 与 R254 一致，observer 模式、默认关闭、零字节回归。为 R104b 铺路：proposer 候选 → 各判据（含 R255 正确性门）→ R254 合成 → R253 净增益与领域门 → witness。产品与测评经三读者契约锁定同一读数。
+
+
+## R256 技术设计（28 Nov）— 提议价值门（付费臂出价机器化）
+
+**判据位置。** `packages/core/src/apply/proposer-value.ts`，纯函数、零成本、无模型。输入：id + 三个千分比信号（fragmentationMilli / witnessMilli / chainedShareMilli）+ 候选数 + 注入的单位成本 unitCostMicros（整数微美元）+ 预算 budgetMicros + 可选 ablations。输出：verdict / reason / decidingSignal / estimatedCostMicros / overBudgetByMicros / candidateCount / 三门槛常数 / ablations。所有数值整数，成本单位注入故 provider-agnostic（DeepSeek 今日报价与其他 provider 明日报价共用同一阶梯）。
+
+**六阶梯。** 严格优先级：no-candidates（空集是空泛非免费成功）→ over-budget（严格 >）→ prose-not-the-problem（碎片化 < 300，确定性 fold 已赢）→ weak-witness（witness < 500，证据不可信，abstain 非 reject）→ grouping-first（chain > 300，更便宜的 split 臂 R104c 先行，reweight）→ worth-proposing（三值信号一致才付费）。所有触发 rung 先收集再由 severity 表取最严格，故"最严格获胜"由表保证而非检查顺序。
+
+**三处接线点一次覆盖。** ① R104b：本门是付费臂前的零成本出价门，`admit` 才值得付 $0.01/候选；② R244：状态角色已在 experience-gate source 白名单，本轮提供离线骨架；③ 第三步：把"生成器/候选池改造"重定义为通用 proposer + 十二判据离线筛选，¥0、不 fine-tune、不碰垂域。
+
+**接线。** 与 R254/R255 一致，observer 模式、默认关闭、零字节回归。为付费臂铺路：proposer 候选 → 各判据（含 R255 正确性门）→ R254 合成 → R253 净增益与领域门 → witness。产品与测评经三读者契约锁定同一读数。付费臂须用户最终确认后才由 workflow dispatch 触发。

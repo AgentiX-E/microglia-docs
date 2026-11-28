@@ -11589,3 +11589,16 @@ MSC-Contam) across four LLM backbones; microglia reproduces the mechanism (K-sam
 softmax, occupancy-scaled adaptive tau), not the published score — microglia is not on the accuracy leaderboard and
 invoked no model this round. R255 joins the eleven criteria feeding R254's orchestration seam. The object of
 evaluation once cortex is ready remains the net gain microglia adds to cortex, which R253 measures.
+
+
+## R256 competitive note (28 Nov)
+
+The "hundreds-of-yuan generator/candidate-pool" cost was verified to be a domain mismatch: it is the CHASE-SQL-style
+text-to-SQL technique (fine-tuned generator + 5-21 heterogeneous candidates + trained selector), which belongs to
+`AgentiX-E/nl2charts` (Q7/Q8) and is an explicit non-goal in the frozen S3 (2026-11-08). It is rejected, not repriced.
+The replacement is R256 `proposer-value`: a zero-cost deterministic gate that makes R104b's registered prediction
+("no gain unless fragmentation is high") executable — pay only when fragmentation and witness are both high, the
+defect is prose rather than a chain, and the call fits the budget. Costs injected by the caller keep it
+provider-agnostic. All three paid arms together are ~¥2.5-9, not hundreds; none was triggered this round (no LLM
+key locally, workflow dispatch requires the user's final go-ahead). microglia is not on the accuracy leaderboard and
+invoked no model. The evaluation object once cortex is ready remains the net gain microglia adds to cortex.

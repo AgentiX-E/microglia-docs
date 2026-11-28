@@ -11591,3 +11591,28 @@ dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练
 **当前位置与剩余步骤。** 十二判据齐备 + 编排器，正确性盲点已补。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① Zhipu embedding 探针已读回 separated=false，重跑烧配额非优先；② R104b 模型 proposer（≈$0.01/候选，付费臂，用 R254 接线：proposer 候选 → 各判据含 R255 正确性门 → R254 合成 → R253 净增益与领域门 → witness，配置上线前过 R253）；③ R244 状态角色 dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练臂，SOTA 差距大头）；⑤ provider fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款。
 
 **第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；未就 Agent 记忆打榜、未引入 cortex 代码，守住通用放大器目标。R255 的正确性门是通用写入判据，cortex 就绪后评估对象是它给 cortex 带来的净增益。
+
+
+## R256（read 28 Nov，¥0）— 提议价值门：把付费臂的出价变成机器判据
+
+> **状态，28 Nov：read，¥0，未调用模型、未开付费臂。** 用户质疑"第三步生成器/候选池改造要数百块"，并要求从第三步起给成本最小化方案。核实结论：**那"数百块"是领域错配**——所谓生成器/候选池是 BIRD/text2sql 的 CHASE-SQL 式打榜（fine-tuned generator + 5~21 异构候选 + trained selector），属 `AgentiX-E/nl2charts`（第 7/8 问），且在 ROADMAP S3（2026-11-08 frozen）里是明确 non-goal。本轮把它**重定义为 microglia 本位的通用经验候选 proposer**，并用 R104b 自己的注册预测把"是否付费"机器化。
+
+![R256 — 提议价值门：六阶梯 + 成本最小化出价](figures/r256-proposer-value.png)
+
+**一手依据（R104b 注册预测原文）。** "no gain unless `fragmentation` is high — a proposer fixes prose, and `census.fragmentation` is the number that says whether prose is the problem"。此前所有计划都把它当散文、直接跳到价格；本轮把它变成零成本确定性门：碎片化低（确定性 fold 已覆盖 repair）就不付钱，只有 fragmentation 与 witness 双高、缺陷是 prose 而非 chain、且不超预算才 `admit` 付费。
+
+**实现。** `packages/core/src/apply/proposer-value.ts` 导出 `proposerValue(input)`：六阶梯严格优先级（no-candidates → over-budget → prose-not-the-problem → weak-witness → grouping-first → worth-proposing），最严格触发 rung 由 severity 表裁定而非 if 顺序；成本 `candidateCount × unitCostMicros` 整数微美元、`unitCostMicros` 由调用方注入故 provider-agnostic；三处边界可证伪（碎片化 `>=`、预算严格 `>`、chain 严格 `>`）；消融逐一中和信号看 verdict 是否翻转，命名真正决定结果的门。
+
+**成本最小化出价清单（$1≈¥7.2；付费臂一律用户最终确认后才触发）。**
+
+| 步骤 | 原估 | 最小化方案 | 出价 | 依赖 |
+|---|---|---|---|---|
+| ① R104b proposer | ≈$0.01/候选 | 15 候选共享 control | **$0.15 ≈ ¥1.1** | workflow dispatch + Org secrets |
+| ② R244 状态角色 dispatch | 付费臂先出价 | 单臂 single dispatch | **≈$0.19~1.1 ≈ ¥1.4~7.9** | workflow dispatch |
+| ③ 生成器/候选池 | **¥数百 / 1-2 天** | **重定义为通用 proposer + 十二判据离线筛选（本模块 ¥0）** | **¥0~¥1** | 复用现有基础设施 |
+
+三步合计 ≈ ¥2.5~9，不是数百块。本地 `env.sh` 只有 `GH_TOKEN`，`DEEPSEEK_API_KEY`/`ZHIPU_API_KEY` 均为空——付费臂无法本地执行，必须走 `sota.yml` 的 `workflow_dispatch`（Org secrets 注入，已确认 workflow 已配置）。
+
+**门禁与三读者。** 行为测试 27 + 绑定测试 4 = 31 测试，新模块 TS 四维 100%（语句/分支 52/52/函数/行）；Python reader `proposer_value.py` 无共享代码从字节重推导成本/超额/触发 rung/verdict/deciding signal/消融，三段合并 98%（345 语句，开放弧为 CLI argparse/异常，与 R252~R255 同类）；fixture 11 案覆盖全部 4 verdict × 6 reason + 三边界 + 优先级 + 消融。CI `--expect-files` 42→43；README core 60→61 模块、13,768→14,073 行；coupling 278 模块重生成、11 项检查、core 仍 0 领域耦合；`eval:verifiers` 加 self-test。
+
+**当前位置与剩余步骤。** 十二判据 + 编排器 + 提议价值门齐备，成本最小化路径已机器化。microglia 仍在成本×一致性前沿、不在准确率榜。剩余：① 用户确认出价后触发 ①② 付费 dispatch（走 workflow）；② 读回结果，过 R253 净增益门再决定是否上线；③ provider fallback 优化（¥0）；④ Zhipu embedding 探针重跑（¥0 但烧配额，非优先）。未 fine-tune、未碰垂域、未声称 cortex link 成功。

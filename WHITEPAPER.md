@@ -5763,3 +5763,18 @@ that tightens as memory fills. The last mode captures a subtle truth: the same f
 when the store is nearly full. All of it is a pure, zero-cost function whose numbers are integers, so the shipped
 product and the independent benchmark read exactly the same decision. The goal does not change: extract the right
 lesson, use it at the right time, trust it by the right amount, and prove the cycle helps.
+
+
+## R256 — Knowing when to pay
+
+A memory amplifier that spends a hundred yuan to fix prose the deterministic fold already handled is not ambitious;
+it is wasteful. R256 asks the cheaper question first: is the paid arm worth calling at all? The answer is a pure
+function of the corpus the product already holds — how many repairs the deterministic fold missed, how trustworthy
+the evidence is, whether the defect is a chain needing a cheaper split, and whether the call fits the budget. Only
+when all three value signals agree does the gate admit the expense; otherwise the product pays nothing and moves on.
+This is the machine form of a registered prediction, not a heuristic: the thresholds are written before the readback,
+the inequality boundaries are falsifiable, and every ablation names the gate that actually decided. Cost is injected
+by the caller, so the same decision survives a change of model provider. The rejected alternative — a fine-tuned
+generator and a pool of heterogeneous candidates — belongs to a different product in a different domain. microglia
+keeps its own target: extract the right lesson, use it at the right time, trust it by the right amount, and prove the
+whole cycle is worth what it costs.

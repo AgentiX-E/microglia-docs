@@ -19515,3 +19515,14 @@ R252 98%、R253 99.1% 同类）；全量 `pnpm check` 退出码 0（326 测试�
 **覆盖率与门禁。** 新模块 62 测试（46 行为 + 16 绑定）、TS 四维 100%；Python reader 98%（407 语句，开放弧为 CLI argparse/异常路径，与 R252/R253/R254 同类）；全量 `pnpm check` 退出码 0；README core 59→60 模块、13,464→13,768 行；coupling 277 模块、11 项检查、core 0 领域耦合；`--expect-files` 41→42。
 
 **没有做什么。** 未把竞品 published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R255 是通用写入判据，未耦合 nl2sql/chart 垂域。
+
+
+## R256 审计（28 Nov）
+
+**验证了什么。** 提议价值门的六阶梯逐条对照 R104b 注册预测：碎片化门槛 300、witness 门槛 500、chain 上限 300 均为预设常数（写在前、导出供 reader 绑定）；三处不等式方向可证伪——碎片化 `>=`（等号放行）、预算严格 `>`（花满预算允许）、chain 严格 `>`（等号不触发 grouping-first）；成本 `candidateCount × unitCostMicros` 整数运算无浮点；severity 表裁定最严格 rung，不依赖 if 顺序。Python reader 独立从字节重推导，与 TS 产品经 manifest 逐字段比对，不共享代码。
+
+**覆盖率与门禁。** 新模块 31 测试（27 行为 + 4 绑定）、TS 四维 100%；Python reader 98%（345 语句，开放弧为 CLI argparse/异常路径，与 R252~R255 同类）；全量 `pnpm check` 退出码 0；README core 60→61 模块、13,768→14,073 行；coupling 278 模块、11 项检查、core 0 领域耦合；`--expect-files` 42→43。
+
+**成本核对。** ③ 的"数百块"经核实是 text-to-SQL fine-tune 训练臂的报价，既不属 microglia 赛道（第 7/8 问）也在 S3 frozen 的 non-goal 之列，故拒绝执行、改为 ¥0 通用门。①② 为极小付费臂（合计≈¥2.5~9），本地无 LLM key，须走 workflow dispatch 且用户最终确认后才触发——本轮未触发、未花任何真钱。
+
+**没有做什么。** 未把竞品 published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未就 Agent 记忆打榜。R256 是通用提议判据，未耦合 nl2sql/chart 垂域。

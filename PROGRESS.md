@@ -31313,3 +31313,14 @@ disposition + reason + 整数 scoreMilli；advisory source 的 reject 降为 rew
 - **发现并修复**：TDD 红阶段先锁定"等号放行"与"占用率单独翻转"两个可证伪点；TS 收窄后 union 穷举致 `threshold.mode` 成 never，改固定消息修复；Python self-test 的 verdict tamper 误选本来就是 admit 的案，改选 reject。
 - **图**：`figures/r255-consistency-admission.png`（三模式 + occupancy 翻转曲线 + 盲点说明）。
 - **成本**：¥0，未调用模型，未开付费臂。
+
+
+## R256（28 Nov，¥0）— 通用经验候选 proposer 提议价值门
+
+- **结论**：核实"第三步数百块"系领域错配（CHASE-SQL/BIRD 属 nl2charts、S3 已 frozen）；重定义为通用 proposer，用 R104b 注册预测把出价机器化。
+- **实现**：`proposer-value.ts`，六阶梯（no-candidates/over-budget/prose-not-the-problem/weak-witness/grouping-first/worth-proposing），severity 表裁定最严格 rung，整数微美元成本由调用方注入（provider-agnostic），三边界可证伪 + 消融归因。
+- **测试**：27 行为 + 4 绑定 = 31 测试，TS 四维 100%；Python reader 三段合并 98%；fixture 11 案；CI `--expect-files` 43；README core 61 模块 / 14,073 行；coupling 278 模块 11 项通过。
+- **成本出价**：① R104b $0.15≈¥1.1；② R244 $0.19~1.1≈¥1.4~7.9；③ proposer 门 ¥0。合计≈¥2.5~9，非数百块。付费臂须用户最终确认后才触发，走 workflow（本地无 LLM key）。
+- **发现并修复**：图的 Step 3 行与底部小字 y 仅差 0.1 导致重叠（放大裁剪定位后重排间距）；未成对 `$` 触发 mathtext 异常，改纯文本。
+- **图**：`figures/r256-proposer-value.png`（六阶梯 + 成本对比 + 证据条）。
+- **成本**：¥0，未调用模型，未开付费臂。
