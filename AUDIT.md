@@ -19537,3 +19537,14 @@ R252 98%、R253 99.1% 同类）；全量 `pnpm check` 退出码 0（326 测试�
 **发现并修复的真实错误。** ① index barrel 中 `ABLATABLE_SIGNALS`/`AblatableSignal` 与 R256 重复导出，全量 typecheck 报 TS2300，改别名导出（`POLLUTION_ABLATABLE_SIGNALS`/`PollutionAblatableSignal`）。② README 三处数字漂移与 committed coupling 快照陈旧，被 `readme-layers.test.ts` 与 `check-coupling-ledger.mjs` 抓出，按 walker 实测值同步。均为门禁实证产出，非事后补丁。
 
 **没有做什么。** 未把 MemoryBench published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R257 是通用组装判据，未耦合 nl2sql/chart 垂域。
+
+
+## R258 审计（28 Nov）
+
+**验证了什么。** 复刻 Experience Rot（arXiv 2611.20922）的重放时接口指纹门，逐机制对照论文：字段/值指纹漂移（attendees→guests、urgent→p0）、载体 stale 成功率表（conversation 47 / skill 61 / memory-file 72 / retrieval 76，ROT_FLOOR=500 使 conversation 唯一低于 floor）、补救措施的 verdict 映射（silent-rot 与 system-prompt-rot → withhold；read-back / docs-in-task → reweight；announce 惰性）。三处可证伪点：`announce-does-not-help` 钉住 announcedUpdate 翻转不改变 verdict；`readback-beats-system` 钉住 read-back 胜过有害的 system placement；`priority-mixed` 钉住 system-prompt-rot（severity 3）胜过 stale-carrier（severity 1）。Python reader 独立从字节重推导，与 TS 产品经 manifest 逐字段比对，不共享代码。
+
+**覆盖率与门禁。** 新模块模块级 27 测试（行为 19 + 绑定 4 + 边界补充）、TS 四维 100%（RED→GREEN→补 blank token 守卫收口）；Python reader 单段 99%（100 断言/13 案，开放弧为 argparse/exit，与 R252~R257 同类）；README core 62→63 模块、14,417→14,783 行、6,870→6,897 测试；coupling 279→280 模块、11 项检查、core 0 领域耦合；`--expect-files` 44→45。全量 `pnpm check` EXIT=0，远端 CI 待验证。
+
+**发现并修复的真实错误。** ① 行为测试 `announce-does-not-help` 断言误读 `remedies.announcedUpdate`（嵌套），而输出契约是扁平 `announcedUpdate` 字段——修正断言路径，契约本身正确。② 绘图三处：matplotlib 版本不接受字符串类别（改数值 x + set_xticklabels）、右侧 inset 外框 0-1 刻度露出（补 `right.axis("off")`）、柱状图 x 标签与 remedy 标题重叠（下移 remedy 区块 0.575→0.548）。均为门禁/目检实证产出。
+
+**没有做什么。** 未把 Experience Rot published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R258 是通用重放判据，未耦合 nl2sql/chart 垂域。

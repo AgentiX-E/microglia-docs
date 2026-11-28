@@ -13802,3 +13802,18 @@ pack.decision 之外的新字段供宿主读取。为 R104b 铺路：proposer �
 **与编排层的关系。** R257 与 R254 experience-gate 同为读时判据，但分工不同：R254 把多条判据裁决合成为单一可执行决策，R257 直接对"待注入上下文的组成"下一个组装决策（全部/裁剪/不注入）。R257 提供 keptIds 供宿主消费，可作为 experience-gate 的上游组装步骤。cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253）。
 
 **三读者契约。** TS 产品 + 独立 `context_pollution.py`（字节重推导，无共享代码）+ fixture/manifest 逐字段绑定；`--expect-files` 44。observer 缝接入 apply barrel，默认关闭、零字节回归。付费臂须用户最终确认后才由 workflow dispatch 触发。
+
+
+## R258 技术设计（28 Nov）— 经验腐烂门（重放时接口指纹）
+
+**判据位置。** `packages/core/src/apply/schema-drift.ts`，纯函数、零成本、无模型。输入：id + liveSchema（`{fields, values}`）+ experience（每项 `{id, carrier, fields, values}`，carrier ∈ closed `CARRIERS`）+ remedies（`announcedUpdate` / `readBack` / `docsPlacement` ∈ closed `DOCS_PLACEMENTS`）+ 可选 ablations。输出：verdict / reason / decidingSignal / experienceCount / driftCount / staleCarrierCount / hasReadBack / docsPlacement / announcedUpdate / rotFloorMilli / keptIds / ablations。所有数值整数。
+
+**漂移与载体读数。** `driftCount` = 字段或值指纹不再出现在 liveSchema 的 item 数（逐 token 集合比对，任一 field 或 value 不在 live 即 drift）；`staleCarrierCount` = `CARRIER_ROT_MILLI[carrier] < ROT_FLOOR(500)` 的 item 数，故仅 conversation（470）计入。两张表 `CARRIER_ROT_MILLI`（470/720/760/610）与 `CARRIER_COST_MICROS`（530/270/200/300）按论文 section 6 预注册并导出供独立 reader 绑定。
+
+**五阶梯（severity 表裁定，非检查顺序）。** `silent-rot`（drift 且 !readBack 且 docsPlacement≠task，severity 4）→ `withhold`；`system-prompt-rot`（drift 且 !readBack 且 docsPlacement=system，severity 3）→ `withhold`；`drift-reweighted`（drift 且 (readBack 或 docsPlacement=task)，severity 2）→ `reweight`；`stale-carrier`（无 drift 但 staleCarrierCount>0，severity 1）→ `reweight`；`current`（无上述，severity 0）→ `admit`。`announcedUpdate` 只写入输出、不进入任何 firing rung（忠实论文 50%≈基线）。drift 的三种 remedy 分支互斥：readBack 或 docs-in-task 先得 reweight，否则 system 得 withhold，其余得 silent-rot；这是 read-back 胜过 system placement 的关键。`priority-mixed` 钉住多 rung 同发时取最严格。
+
+**keptIds 与消融。** withhold → 空；否则保留所有非 drift item（stale-carrier 只降权不删除，忠实"内容可能对、只是载体易腐烂"）。ablations 中和 drift / verification / docs-placement / carrier 之一重跑阶梯，verdict 翻转即命名决定性门（`priority-mixed` 中 drift 决定性、carrier/docs 非决定性；`verification-decisive` 中 verification 决定性）。
+
+**与编排层的关系。** R258 与 R257 同为读时判据但分工不同：R257 对"待注入上下文组成"下组装决策，R258 对"一条经验的接口指纹是否仍有效"下重放决策。二者可作为 experience-gate 的上游步骤。cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253）。
+
+**三读者契约。** TS 产品 + 独立 `schema_drift.py`（字节重推导，无共享代码）+ fixture/manifest 逐字段绑定；`--expect-files` 45。observer 缝接入 apply barrel，默认关闭、零字节回归。付费臂须用户最终确认后才由 workflow dispatch 触发。

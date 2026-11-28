@@ -11633,3 +11633,22 @@ dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练
 **当前位置与剩余步骤。** 十三判据齐备，负效果从写入侧补到组装侧。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① 付费臂 ① R104b proposer / ② R244 dispatch 须用户最终确认后走 workflow（本地无 LLM key，本轮未触发）；② 读回过 R253 净增益门再决定是否上线；③ provider fallback 优化（¥0）；④ Zhipu embedding 探针重跑（¥0 但烧配额，非优先）。未 fine-tune、未碰垂域、未声称 cortex link 成功。
 
 **第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；未就 Agent 记忆打榜、未引入 cortex 代码，守住通用放大器目标。R257 的组装门是通用读时判据，cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253 测）。
+
+
+## R258（read 28 Nov，¥0）— 经验腐烂门：把"记忆负效果"补到重放时接口指纹
+
+> **状态，28 Nov：read，¥0，未调用模型、未开付费臂。** 第 8 问反复追问"记忆的东西与用记忆的方式不对导致负效果"。R244–R257 的十三条判据覆盖了写入、修订、撤销、可信度、净增益、门控编排、付费出价与读时组装，但**没有一条在重放一条经验前问"这条经验写入时依赖的工具接口，现在还是不是那个接口；若不是，有没有已验证的恢复路径"**。本轮复刻 Experience Rot（Xu 等，芝加哥大学/eBay，arXiv 2611.20922，2026-11-16，12,624 episodes / 6 模型 / 7 类静默变更），把这个问题做成机器判据。
+
+![R258 — 经验腐烂门：五阶梯 + 三臂翻转 + 补救措施 + 载体抗 rot 排序](figures/r258-schema-drift.png)
+
+**联网一手证据（28 Nov）。** Experience Rot 用 MCP 风格工具定义 3 个模拟服务（日历/任务/邮件），7 类**完全静默**变更（字段重命名 attendees→guests、结构 end_time→duration_minutes、值集合 urgent→p0、优先级方向反转、星期起点、月份偏移、时长单位分钟→秒）；服务端对未知字段忽略并返回 `{"ok": true}`，agent 收不到任何错误信号。文档不完整时：无经验 63%、有效经验 100%、**过期经验 23%**（比无经验低 40 个百分点），348 个失败运行里 347 个（99.7%）自称完成。经验从 1→3→10 条，过期成功率 46%→33%→26%，查文档率 4%→0%。补救实测：宣布更新 50%、文档放系统提示 29%（反而低于 46% 基线）、文档放任务消息 99%、**read-back 91%（最强）**。四种载体过期成功率：检索式 76% > 记忆文件 72% > 技能 61% > **对话历史 47%**（成本分别 0.20/0.27/0.30/0.53）。本轮忠实复刻"接口指纹漂移 + 恢复路径 + 载体风险"机制，不引入任何 published 分数当 microglia 分数。
+
+**核对空白，避免重复造轮子。** TEPA（arXiv 2608.07429，full reversal 下 append-only/last-write-wins 0.210 < 无记忆 0.309、TEPA 0.950）已在 R250 stale-revocation 复刻；Anti-Persistence（arXiv 2610.27406，错误再现）已在 R247 abstraction-lifecycle 复刻。Experience Rot 的"接口快照漂移 + 重放前比对"确属十三条判据外的结构性空白。
+
+**实现。** `packages/core/src/apply/schema-drift.ts` 导出 `schemaDrift(input)`：输入 liveSchema（`{fields, values}`）、检索经验 items（每个 `{id, carrier, fields, values}`，carrier ∈ closed `CARRIERS` = conversation/memory-file/retrieval/skill）、remedies（`announcedUpdate`、`readBack`、`docsPlacement` ∈ none/system/task）+ 可选 ablations。整数算 driftCount（字段或值指纹不再匹配 live 的 item 数）与 staleCarrierCount（载体 stale 成功率 < ROT_FLOOR=500 的 item 数），severity 阶梯裁定：`silent-rot`（drift 且无 read-back 且 docs 不在 task）与 `system-prompt-rot`（drift 且 docs 仅在 system）→ `withhold`；`drift-reweighted`（drift 但有 read-back 或 docs-in-task）与 `stale-carrier`（无 drift 但载体低于 rot floor）→ `reweight`；`current` → `admit`。`announcedUpdate` 只记录、永不进入 firing rung（论文 50%≈基线）。两张预注册表 `CARRIER_ROT_MILLI`/`CARRIER_COST_MICROS` 导出供 reader 绑定。firing rung 全收集后由 severity 表取最严格，decidingSignal 由获胜 reason 派生；keptIds 保留所有非 drift item（withhold 留空）；ablations 逐一中和信号看 verdict 是否翻转。全整数运算，无模型/时钟/网络。作为 observer 缝接入 apply barrel，默认关闭、零字节回归。
+
+**门禁与三读者。** 行为测试 19 + 绑定测试 4 = 23 测试（模块级 27 含额外边界），新模块 TS 四维 100%（语句/分支/函数/行）；Python reader `schema_drift.py` 无共享代码从字节重推导 drift/carrier 风险/每条 firing rung/verdict/decidingSignal/keptIds/消融，单段 99%（开放弧为 argparse/exit 路径，与 R252~R257 同类）；fixture 13 案覆盖 3 verdict × 5 reason + 4 载体 + inert announcement + 三处 remedy + 优先级 + 消融。CI `--expect-files` 44→45；README core 62→63 模块、14,417→14,783 行、测试数 6,870→6,897；coupling 280 模块重生成、11 项检查、core 仍 0 领域耦合；`eval:verifiers` 加 self-test。
+
+**当前位置与剩余步骤。** 十四判据齐备，负效果从写入侧补到重放时接口指纹。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① 付费臂 ① R104b proposer / ② R244 dispatch 须用户最终确认后走 workflow（本地无 LLM key，本轮未触发）；② 读回过 R253 净增益门再决定是否上线；③ provider fallback 优化（¥0）；④ Zhipu embedding 探针重跑（¥0 但烧配额，非优先）。未 fine-tune、未碰垂域、未声称 cortex link 成功。
+
+**第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；未就 Agent 记忆打榜、未引入 cortex 代码，守住通用放大器目标。R258 的重放门是通用判据，cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253 测）。

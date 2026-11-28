@@ -31334,3 +31334,14 @@ disposition + reason + 整数 scoreMilli；advisory source 的 reject 降为 rew
 - **发现并修复**：全量 check 暴露 `ABLATABLE_SIGNALS` 与 proposer-value 重复导出（TS2300），改别名导出；README 模块表/占比/测试数三处漂移、committed coupling 快照陈旧，逐一同步至 walker 实测值。
 - **成本**：¥0，未调用模型，未开付费臂。
 - **图**：`figures/r257-context-pollution.png`（六阶梯 + SiLo 翻转曲线 + 三读者覆盖）。
+
+
+## R258（28 Nov，¥0）— 经验腐烂门（Experience Rot 接口指纹机制）
+
+- **结论**：补上十三条判据的结构性空白——重放前不问"经验写入时依赖的工具接口现在是否仍有效"。复刻 Experience Rot（arXiv 2611.20922，芝加哥大学/eBay），过期经验 23% < 无经验 63%，read-back 91% 最强、宣布更新 50% 几乎无效、docs 放系统提示 29% 有害。
+- **核对空白**：TEPA（R250）、Anti-Persistence（R247）已复刻；接口快照漂移是新增空白。
+- **实现**：`schema-drift.ts` 的 `schemaDrift(input)`，整数 driftCount/staleCarrierCount，severity 阶梯（silent-rot / system-prompt-rot → withhold；drift-reweighted / stale-carrier → reweight；current → admit），announcedUpdate 惰性只记录，两载体表预注册，三边界可证伪（ROT_FLOOR=500、drift 定义、docs 位置优先级），消融归因；observer 缝接入 apply barrel、默认关闭、零字节回归。
+- **测试**：19 行为 + 4 绑定 = 23 测试（模块级 27），TS 四维 100%；Python reader 单段 99%；fixture 13 案（3 verdict × 5 reason × 4 carrier + inert announcement + remedy + 优先级 + 消融）；CI `--expect-files` 45；README core 63 模块 / 14,783 行 / 6,897 测试；coupling 280 模块 11 项通过。
+- **发现并修复**：行为测试期望误读 `announcedUpdate` 为嵌套 `remedies.announcedUpdate`（契约实为扁平字段），改断言路径；绘图层出现 matplotlib 不接受字符串类别、右侧外框刻度露出、x 标签与 remedy 标题重叠三处，逐一修复（数值 x + set_xticks、right.axis("off")、下移 remedy 区块）。
+- **成本**：¥0，未调用模型，未开付费臂。
+- **图**：`figures/r258-schema-drift.png`（五阶梯 + 三臂翻转 + 补救措施 + 载体抗 rot 排序）。
