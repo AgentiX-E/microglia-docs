@@ -11409,3 +11409,53 @@ offline fallback intact); ② R104b model proposer (~$0.01/candidate, paid arm; 
 abstractionLifecycle → witness, explicit revision via R249, new-evidence-into-retrieval via R250); ③ R244 state-role
 dispatch ablation (paid arm, price first); ④ generator / candidate-pool rework (paid/training arm — the large part of
 the SOTA gap); ⑤ provider-agnostic fallback optimisation (¥0). Paid arms quote first, ladder priced before payment.
+
+## R251 competitive refresh (28 Nov 2026) — the field measured the post-retrieval decision; microglia gates admission at use time
+
+**What the field found (three primary sources, 28 Nov).** MemTrapBench (arXiv 2608.20202) isolates a failure boundary
+after retrieval. On 1,050 synthetic histories with 18–40 turns, every final query is independently solvable while prior
+dialogue plants a reasoning-fixation or belief-distortion trap. In the matched Task Boundary control the same query
+scores 92.29 with no memory, 94.39 with trap-free history, and 31.05 with trap-inducing history — a causal effect of
+trap *semantics*, not retrieval failure. On Gemini the no-memory arm averages 85.16 against 71.17 for the strongest
+memory arm (EverMemOS); on Qwen no-memory is 81.83 against 70.99 (FullText) and 70.13 (LightMem). The paper's own
+conclusion is the design target: retrieval correctness is not enough; the consumer needs an admission decision that
+preserves helpful evidence and declines misleading prior context. The honest caveat is recorded too — it is an
+adversarial diagnostic where every query is built to need no history, so the large no-memory advantage measures
+conditional susceptibility, not memory's net real-world utility; AdaptiveMem is a benchmark-aligned prompt, not a
+validated general policy. Memory Trust Gap (arXiv 2609.01852) adds that over-trust is capability-gated and grows when
+stale values are dressed as the newest. WikiTrace (arXiv 2611.14320) supplies the mechanism: link each insight to a
+success/failure diagnosis and the raw trajectory, and descend through those links when detail is missing, rules
+conflict, or the source task failed; across five agentic benchmarks it beats the same insights without evidence and
+cuts regression 6.5% → 4.5%.
+
+**How this maps to microglia.** R249 handled the explicit revision asymmetry; R250 handled implicit invalidation;
+neither touched the decision after retrieval. R251 encodes the post-retrieval admission decision as `memoryAdmission`
+— a pure, ¥0 gate with three readers that withholds task-boundary traps and checks any lesson that is thin,
+contradictory, or from a failed task, rejecting it when the evidence link cannot be walked. Together the write/use side
+now covers what we store, whether a correction sticks, whether a revision reached every copy, whether new evidence
+displaced the old value, and whether a correctly retrieved lesson is the right one to use. This is the full arc of the
+user's standing question 8 — *what we remember and how we use it*.
+
+**Leaderboard position (unchanged this round).** microglia is still on the cost × consistency frontier, not on the
+accuracy leaderboard: there is no external submission this round. The authoritative field remains LongMemEval /
+LoCoMo / MemoryAgentBench / BEAM / DolphinBench / AMA-Bench — memory-augmented task success, measured memory-on vs
+memory-off. R251's numbers (92.29 / 94.39 / 31.05, 85.16 vs 71.17) are MemTrapBench's published results, read into our
+gate as the reason ladder — they are not a microglia benchmark score and are not claimed as one. NL2SQL /
+text2charts / data2charts stay in `AgentiX-E/nl2charts`; R248's `classifyCompetitionDomain` gate keeps that boundary
+machine-checked.
+
+**Learning value exhausted vs still open.** MemTrapBench's four trap types are partially encoded: Task Boundary as the
+`boundary` conflict (the hard causal number), Cognitive Bias as the `rule` conflict; Safety and Trauma are recorded as
+content-layer surfaces not covered by an admission predicate and would need a labelled safety set (paid arm). WikiTrace's
+three descent triggers and evidence-link structure are encoded. Still open from earlier rounds: MMA's per-item
+confidence score (source / time / consensus) with calibrated abstention, and a quantified poisoning-defence benchmark
+(poisoned-experience retrieval rate under our gate). All need paid arms and are listed in the remainder, not claimed.
+
+**Optimal-path remainder (parallel, zero-cost first).** ① Zhipu embedding probe restart once 429 is diagnosable (¥0,
+offline fallback intact); ② R104b model proposer (~$0.01/candidate, paid arm; wiring: viewConsensus →
+abstractionLifecycle → witness, explicit revision via R249, new-evidence-into-retrieval via R250, retrieval-into-model
+via R251); ③ R244 state-role dispatch ablation (paid arm, price first); ④ generator / candidate-pool rework (paid/training
+arm — the large part of the SOTA gap); ⑤ provider-agnostic fallback optimisation (¥0). Paid arms quote first, ladder
+priced before payment. Cortex note (question 9): no cortex code body is present in this sandbox (no local dir, no npm
+link, no CORTEX_DIST build); microglia ships an adapter plus a conformance script (CI clones+builds cortex to reconcile),
+so the local-link condition of Q9 is not met here and no Agent-memory leaderboard run was attempted this round.

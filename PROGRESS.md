@@ -31169,3 +31169,44 @@ activeStaleCount==0 再进检索集）；③ R244 状态角色 dispatch（付费
 ⑤ provider fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款。
 
 **图**：`figures/r250-stale-revocation.png`（各 episode 的裁决与撤销判定阶梯）。
+
+## 249.78 R251：检索对了但答案是错的——把"检索后接纳"钉成消费侧判据（¥0）
+
+**用户命题与缺口。** 第 8 问持续追问"记忆的东西和使用记忆的方式不正确导致负面效果"。R249（显式修订完整性）与 R250
+（隐式失效撤销）都停在检索集交给模型**之前**；MemTrapBench 揭示检索**之后**还有独立失败边界：历史被正确检索，答案却
+错。本轮固化为机器可校验判据，¥0、未调用模型。
+
+**联网一手证据（28 Nov）。** MemTrapBench（arXiv 2608.20202）：matched Task Boundary 同一道独立可解题，无记忆 92.29 /
+trap-free 历史 94.39 / trap 历史 **31.05**；Gemini 无记忆 85.16 > 最强记忆臂 EverMemOS 71.17。Memory Trust Gap
+（arXiv 2609.01852）：过度信任是能力门控的，stale 伪装成最新时更严重。WikiTrace（arXiv 2611.14320）：insight 链接
+成功/失败诊断 + 原始轨迹，缺细节/规则冲突/来自失败任务时下钻核查；五 benchmark 上 regression 6.5%→4.5%。
+
+**实现。** `packages/core/src/apply/memory-admission.ts` 的 `memoryAdmission(input)`：query 带 id/key/boundary；candidate
+带 id/key/outcome/detail/conflict/evidence(linked,reachable)。阶梯：boundary→reject（task-boundary-violation）；detail
+insufficient→escalate(verify-details)/reject(unverifiable-detail)；rule conflict→escalate(verify-conflict)/reject
+(unverifiable-conflict)；failure→escalate(verify-failed-source)/reject(unverifiable-failed-source)；其余 admit
+(valid-lesson)。查不了的 insight 不该跟：unreachable 把 escalate 变 reject。集合取最严格 verdict；reason/decidingId
+指向最严重候选；三计数分区 candidateCount。
+
+**三读者与门禁（全部根因修复）。** 新模块 TS 四维 100%（169/169 语句、64/64 分支、2/2 函数）；行为 34 + 绑定 15 测试；
+Python reader 语句 100%/分支 99%（唯一开放弧是 `if __name__ == "__main__"` import guard）；self-test 90/90；全量
+`pnpm check` 退出码 0；README core 层 55→56 模块、12,140→12,442 行；coupling 272→273 重生成、11 项检查；bundle 不变；
+`--expect-files` 37→38。
+
+**测试/工具侧的克制修复。** Python reader 首轮 99%（1 行 + 2 分支未覆盖）：一行是 escalate-with-rejection 的 tamper
+把 admitCount 设成负数、先被 int 守卫拦下，改成 candidateCount=3 的合法计数（admit=1/escalate=1/reject=1）；一分支是
+severity 未提升（fixture 里 severity 都递增），补一条"trap 在前、good 在后"的降序样本，确认 decider 保留更严格的在先候选；
+另一分支是 import guard（与同类 reader 一致，不豁免）。没有 `# pragma: no cover`。判据本身按两篇论文读数一次通过。
+
+**当前位置与剩余步骤。** 八条纯函数判据齐备：单条稳定(R246)/整类持久化(R247)/显式修订(R249)/隐式撤销(R250)/检索后
+接纳(R251)/读状态(R244)/成本 429(R245)/领域边界(R248)。microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径
+（并行、零成本优先）：① Zhipu embedding 探针在 429 可诊断后重启（¥0）；② R104b 模型 proposer（≈$0.01/候选，付费臂，
+接线：候选过 viewConsensus → abstractionLifecycle → witness；显式撤回/纠正过 R249；新证据落库过 R250；检索集交模型前
+过 R251 确认无 reject）；③ R244 状态角色 dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练臂）；⑤ provider
+fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款。
+
+**第 9 问（cortex）状态。** 本轮全面搜索确认当前 sandbox 无 cortex 代码本体（无本地目录/npm link/CORTEX_DIST 构建）。
+microglia 已有 adapter + conformance 脚本（CI clone+build 对账），但"本地 link 引入"本环境不具备；本轮未就 Agent 记忆
+打榜、未引入 cortex 代码，守住通用放大器目标。cortex 就绪后评估对象是它给 cortex 带来的记忆增益。
+
+**图**：`figures/r251-memory-admission.png`（各 episode 的裁决与接纳判定阶梯）。

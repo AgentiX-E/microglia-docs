@@ -11359,3 +11359,51 @@ propagation 关系），`--self-test` 85 条；`stale-revocation-manifest.test.t
 viewConsensus → abstractionLifecycle → witness；显式撤回/纠正过 R249；新证据落库后过本门确认 `activeStaleCount == 0`
 再进入检索集。剩余最优路径不变（零成本优先）：Zhipu embedding 探针重启（¥0）；R104b 模型 proposer（≈$0.01/候选，
 付费臂）；R244 状态角色 dispatch（付费臂先出价）；生成器/候选池改造（付费/训练臂）；provider fallback 优化（¥0）。
+
+## R251 (read 28 Nov, ¥0) — 检索对了但答案是错的：把"检索后接纳"钉成消费侧判据
+
+> **状态，28 Nov：read，¥0，未调用模型。** 用户第 8 问持续追问"记忆的东西和使用记忆的方式不正确导致负面效果"。
+> R249（显式修订是否覆盖所有派生站点）与 R250（新证据是否真的把陈旧值从检索集撤走）都停在检索集交给模型**之前**。
+> 但 MemTrapBench 揭示了检索**之后**还有一道独立的失败边界：历史被正确检索出来，答案却错了。本轮把它固化为机器
+> 可校验判据，不做准确率收益、不花钱。
+
+**联网一手证据（28 Nov）。** MemTrapBench（arXiv 2608.20202）在 matched Task Boundary 对照里给出因果读数：同一道
+独立可解的题，无记忆 **92.29**、trap-free 历史 **94.39**、trap 历史 **31.05**——语义相关但不适用的历史把答案带崩；
+Gemini 上无记忆 85.16 > 最强记忆臂 EverMemOS 71.17。Memory Trust Gap（arXiv 2609.01852）补上过度信任是能力门控的、
+且 stale 被伪装成最新时更严重。WikiTrace（arXiv 2611.14320）给出机制：每条 insight 链接成功/失败诊断与原始轨迹，
+当 insight 缺细节、与另一条冲突、或来自失败任务时，用 terminal tools 顺链接下钻核查再行动；五个 benchmark 上降低
+memory-induced degradation，regression 6.5%→4.5%。
+
+![R251 — 各 episode 的裁决与接纳判定阶梯](figures/r251-memory-admission.png)
+
+**实现。** `packages/core/src/apply/memory-admission.ts` 导出 `memoryAdmission(input)`。query 带 id/key/boundary（当前
+活跃任务）；每个 candidate 带 id/key/outcome（来源任务成功/失败）/detail（sufficient/insufficient）/conflict
+（none/rule/boundary）/evidence（linked, reachable）。逐条处置阶梯（严格优先级）：boundary → reject
+（`task-boundary-violation`，先于任何检查，直接命中 MemTrapBench 31.05）；detail insufficient → reachable 则 escalate
+（`verify-details`）否则 reject（`unverifiable-detail`）；rule conflict → escalate（`verify-conflict`）/reject
+（`unverifiable-conflict`）；outcome failure → escalate（`verify-failed-source`）/reject（`unverifiable-failed-source`）；
+其余 admit（`valid-lesson`）。三条 WikiTrace 检查按 detail→rule→failed-source 排序；link 不可达把本该 escalate 的变成
+reject——查不了的 insight 就不该跟。集合 verdict 取最严格：reject > escalate > admit；reason/decidingId 指向最严重
+候选；三个处置计数分区 candidateCount。
+
+**三读者一个读数。** fixture 十一条真实 episode（sound/unlinked-sound/task-boundary trap / 三种 WikiTrace 检查的
+可达与不可达形态 / 两条聚合）；Python reader `memory_admission.py --verify` 无共享代码从字节重推导每个
+verdict/reason/decider/计数，`--check` 重加算术（处置分区、reason/verdict 家族、最严格候选一致性），`--self-test` 90 条；
+`memory-admission-manifest.test.ts` 用产品函数推导同一读数逐字段比对。
+
+**门禁与下一步。** 新模块四维 100%（169/169 语句、64/64 分支、2/2 函数）；行为 34 + 绑定 15 = 49 测试；Python reader
+语句 100%/分支 99%（唯一开放弧是模块 import guard）；全量 `pnpm check` 退出码 0；README core 层 55→56 模块、
+12,140→12,442 行；coupling 272→273；bundle 不变；`--expect-files` 37→38；13 工作流解析通过。
+
+**注意：本轮不是准确率收益，也不是付费臂。** 它与 R249/R250 合起来把用户"记忆什么/怎么用错"的命题在消费侧再钉一道：
+显式修订完整性（R249）→ 隐式失效撤销（R250）→ 检索后接纳（R251）。加上前五条形成八条纯函数判据。接线点留给 R104b：
+候选过 viewConsensus → abstractionLifecycle → witness；显式撤回/纠正过 R249；新证据落库后过 R250 确认
+activeStaleCount==0；检索集交给模型前过 R251 确认 verdict 不含 reject。剩余最优路径不变（零成本优先）：Zhipu embedding
+探针重启（¥0）；R104b 模型 proposer（≈$0.01/候选，付费臂）；R244 状态角色 dispatch（付费臂先出价）；生成器/候选池
+改造（付费/训练臂）；provider fallback 优化（¥0）。
+
+**第 9 问（cortex）状态说明。** 本轮全面搜索确认：当前 sandbox 内**没有** `AgentiX-E/cortex` 代码本体（无本地目录、
+无 npm link、无 CORTEX_DIST 指向的构建）。microglia 已有 adapter（`packages/node/dist/store/cortex.js`）与 conformance
+脚本（`eval:cortex`，CI 中 clone+build cortex 后对账），但"本地 link 代码级引入"在本环境不具备条件，故本轮未就 Agent
+记忆打榜、未引入 cortex 代码——守住 microglia 通用放大器的设计目标；一旦 cortex 代码就绪，评估对象是它给 cortex 带来的
+记忆增益。

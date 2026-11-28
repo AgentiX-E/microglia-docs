@@ -13618,3 +13618,45 @@ serial、非数组 invalidates、空白 invalidated key、invalidated key 等于
 （是否持久化）→ witness；显式撤回/纠正动作在落库前过 `revisionIntegrity`（residualSites == 0）；新证据写入后、
 检索集交给模型前过本门，确认 `activeStaleCount == 0` 且 verdict 为 clean（或接受 extend 的合法共存）才进入检索。
 这样"产品侧自动使用测评侧最优配置"由机器判据保证，而非文档承诺。
+
+## 17.218 R251 — 检索后接纳门：从检索集到用哪条记忆的纯函数
+
+**问题定义。** 给定当前查询与一组检索回来的候选记忆，判定每条记忆在交给模型前应当 admit / escalate / reject，并给出
+集合 verdict。输入不含模型、时钟、网络；输出是可被两个独立读者重算的读数。它补 R249/R250 的缺口：那两道门停在检索集
+交给模型之前，本门管检索**之后**的决策——MemTrapBench 实测这正是"历史被正确检索、答案仍错"的失败边界。
+
+**输入模型。** `MemoryAdmissionInput = { id, query, candidates[] }`。`query = { id, key, boundary }`，boundary 是检索必须
+服务的当前活跃任务。每个 `AdmissionCandidate = { id, key, outcome, detail, conflict, evidence }`：`outcome ∈
+{success, failure}`（来源任务成败），`detail ∈ {sufficient, insufficient}`（行动细节是否充分），`conflict ∈
+{none, rule, boundary}`（boundary 属于另一活跃任务），`evidence = { linked, reachable }`（linked 指向原始轨迹，
+reachable 表示 terminal tool 可走到）。约束：reachable ⇒ linked。
+
+**逐条处置阶梯（严格优先级）。**
+
+1. `conflict === 'boundary'` → `reject` / `task-boundary-violation`（先于任何检查；MemTrapBench Task Boundary 31.05）。
+2. `detail === 'insufficient'` → reachable 则 `escalate` / `verify-details`，否则 `reject` / `unverifiable-detail`。
+3. `conflict === 'rule'` → reachable 则 `escalate` / `verify-conflict`，否则 `reject` / `unverifiable-conflict`。
+4. `outcome === 'failure'` → reachable 则 `escalate` / `verify-failed-source`，否则 `reject` / `unverifiable-failed-source`。
+5. 其余 → `admit` / `valid-lesson`。
+
+三条 WikiTrace 检查顺序 detail → rule → failed-source，与 WikiTrace 论文描述一致。unreachable 把 would-be escalation
+变 rejection：查不了的 insight 不该跟。集合 verdict 取最严格：reject > escalate > admit；reason / decidingId 指向
+severity 最高的候选（平手取在先）。`candidateCount = admitCount + escalateCount + rejectCount` 是不变量。
+
+**守卫。** 拒绝：空白 episode id、非对象 query、空白 query id/key/boundary、非数组/空 candidates、非对象 candidate、
+空白/重复 candidate id、空白 candidate key、未知 outcome/detail/conflict、非对象 evidence、非布尔 evidence 标志、
+reachable 但未 linked——一律 `MicrogliaError(MG_E_CONFIG)` 而非默认归类。函数不修改输入（冻结对象测试通过）。
+
+**依赖分层。** `apply/memory-admission.ts` 只依赖 `kernel` 的 `MicrogliaError`，与 `view-consistency`、
+`abstraction-lifecycle`、`revision-integrity`、`stale-revocation`、`state-role` 同为 core 层叶子，经 `apply/index.ts`
+对宿主导出；不在渲染路径上，bundle 不变。它审计调用方**描述**的检索集，不取数、不编辑 store——与 microglia 作为通用
+记忆放大器、不耦合垂域的定位一致（R248 领域门机器校验）。
+
+**三读者契约。** fixture 十一条真实 episode → 产品函数与独立 Python reader 各自从字节推导 → manifest 逐字段钉住
+（`memory-admission-manifest.test.ts` 字段比对；`memory_admission.py --check/--verify/--self-test` 90 条）；CI 在 coverage
+下跑 Python 三模式，`--expect-files` 37→38。新模块 TS 四维 100%，Python 语句 100%/分支 99%。
+
+**接线点。** R104b 的模型 proposer 产出候选后，先过 `viewConsensus`（单条是否稳定）→ `abstractionLifecycle`（是否持久化）
+→ witness；显式撤回/纠正动作在落库前过 `revisionIntegrity`（residualSites == 0）；新证据写入后过 `staleRevocation`
+确认 activeStaleCount == 0；检索集交给模型前过本门，确认集合 verdict 不含 reject（escalate 的候选先链接证据核查）。
+这样"产品侧自动使用测评侧最优配置"由机器判据保证，而非文档承诺。

@@ -19396,3 +19396,27 @@ complete 非 residual 的 reason，case 数漂移用一个短一截的合法 fix
 **没有发生的事。** 未以充值状态重开任何付费臂；未用 mock 或 `# pragma: no cover` 达成覆盖率；未让文档比代码更
 漂亮；未把 nl2sql/chart 的任何指标写进 microglia 的读数。七条纯函数判据现在各自有三读者钉住，全量 `pnpm check`
 退出码 0。R249 的两处历史缺陷（测试断言写在优先级错误一侧、正则把注释读成类型逃逸）本轮未复现。
+
+## 34.356 R251 — 一颗先被整数守卫拦下的 tamper、一条没走到的降序分支，判据按论文读数一次通过
+
+**本审计记录本轮工具侧的克制修复；判据（检索后接纳）的设计在 TDD 红阶段前已按 MemTrapBench/WikiTrace 的读数定稿，TS
+模块四维 100% 一次通过，缺陷都在 Python reader 的自测覆盖上。**
+
+**缺陷一：escalate-with-rejection 的 tamper 先被整数守卫拦下（测试侧）。** 为触发 check() 里"escalate 阵容却含 reject"
+的守卫，tamper 从 good（candidateCount=1）派生，设 escalateCount=1、rejectCount=1、admitCount=candidateCount-2=-1。
+负数先被非负整数守卫拒绝，目标守卫反而没执行。修法是把样本补成合法计数：candidateCount=3、admit=1/escalate=1/
+reject=1——三者仍分区，但 verdict=escalate 与 rejectCount=1 矛盾，才真正走到目标。这又是"样本没打到靶"，不是实现错。
+
+**缺陷二：severity 未提升的分支没覆盖（测试侧）。** 聚合逻辑里"后一候选 severity 不高于当前 decider 就不替换"的 false
+分支，在 fixture 里没走到——两条聚合样本的 severity 都是递增的（good→check→trap 是 0→1→3）。补一条降序样本
+（trap=3 在前、good=0 在后），断言 verdict 仍是 reject、decider 仍是 trap。这让"最严格候选胜出、平手取在先"这条规则
+被独立 reader 真正执行，而不是靠阅读代码相信它。
+
+**开放弧（不修）。** Python reader 唯一未覆盖分支是 `if __name__ == "__main__"` 的 import-vs-run 弧，与所有同类 reader
+一致；语句 100%、分支 99%，高于 95% 门禁。没有为它加豁免，也没有 `# pragma: no cover`——它无法通过正常 CLI 调用覆盖，
+且覆盖它没有任何判据语义价值。
+
+**没有发生的事。** 未以充值状态重开任何付费臂；未用 mock 达成覆盖率；未让文档比代码更漂亮；未把 nl2sql/chart 的任何
+指标写进 microglia 的读数；未在没有 cortex 代码的环境里声称 link 引入成功。八条纯函数判据现在各自有三读者钉住，全量
+`pnpm check` 退出码 0。R249/R250 的历史缺陷（优先级错告、正则误读注释、死守卫、tamper 没打到靶）本轮未复现——本轮的
+两处缺陷又是同一类"样本构造没到靶"，已再次以根因方式修复。

@@ -5673,3 +5673,17 @@ STALE's two implicit-conflict types and MMA's finding that retrieved items are t
 concrete mechanism behind the standing claim that *how we use memory* — not only what we store — causes the negative
 effect. No accuracy number is claimed from it, no paid arm was opened, and it stays a generic use-side integrity rule
 for a memory amplifier, coupled to no vertical; NL2SQL / chart / data-viz remain `AgentiX-E/nl2charts`' domain (R248).
+
+**Scope note (R251).** The consumer-side discipline this project ships now closes the arc that the standing question 8
+kept pointing at. R249 decides whether an explicit revision reached every derived site; R250 decides whether an
+implicit invalidation retired the stale value; R251 (`memoryAdmission`, ¥0, three readers) decides whether a lesson that
+was retrieved *correctly* should be used at all. It is motivated by MemTrapBench (arXiv 2608.20202): the same
+independently solvable query scores 94.39 with trap-free history but 31.05 with a task-boundary trap, so the harm is in
+the decision after retrieval, not in retrieval — and by WikiTrace (arXiv 2611.14320), which lets an agent descend from
+an insight to its trajectory when detail is missing, rules conflict, or the source task failed. Together these are the
+concrete mechanism behind the claim that *how we use memory* — not only what we store — causes the negative effect.
+No accuracy number is claimed from it, no paid arm was opened, and it stays a generic admission rule for a memory
+amplifier coupled to no vertical; NL2SQL / chart / data-viz remain `AgentiX-E/nl2charts`' domain (R248). If microglia is
+later evaluated on Agent memory once `AgentiX-E/cortex` is available by local link (Q9), the object of evaluation is the
+gain microglia adds to cortex, not cortex's own score — and microglia keeps its target of extracting the right lesson
+and using it at the right time.
