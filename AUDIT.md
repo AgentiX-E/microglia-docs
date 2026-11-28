@@ -19321,3 +19321,27 @@ bundle、coupling、13 workflow 解析）；README 层表随新生产模块更�
 
 **ASCII 纪律。** 本轮没有把任何非 ASCII 标记写进 `.ts`/`.mjs` 源码；arXiv 编号、函数名、disposition/reason
 字面量均为 ASCII，面向用户的中文说明留在 Markdown（不受语言门约束）。`audit:repo` 语言门保持原样通过。
+
+## 34.353 R248 — 一个注释里的 CJK 字符、一处 reason 优先级缺陷，以及一段被自己推翻的 check 设计
+
+本轮把"竞品领域归属"实现成机器可校验的纯函数（见 ROADMAP R248 / TECH-DESIGN 17.215）。以下是门禁与 TDD 抓到、
+在提交前修掉的真实问题；没有削弱任何门限。
+
+1. **注释里的字面 CJK 触发语言门（写码时即抓到）。** 初稿注释里写了 `host's垂 task`，一个字面汉字。R245 的教训
+   是仓库审计禁止 `.ts`/`.mjs` 出现 CJK。改为 `vertical task`，源码全 ASCII、语义不变，没有加任何豁免。em-dash
+   （—）不是问题，R246 注释已用过并通过审计——区分"真 CJK"与"排版标点"是这次的判断。
+2. **reason 优先级缺陷（TDD RED 抓到）。** 两个测试期望 `host-task-score`，实现却给 `host-artifact`：因为最初把
+   artifact 与测量信号合并成一个 `hostSignals`，artifact 一存在就抢先命中。正确做法不是放宽测试，而是拆分
+   `hostMeasureSignals` 与 `hostArtifact`：有 host 测量信号就报 `host-task-score`，只有产物形态是 host 才报
+   `host-artifact`。报告总数仍合并，但理由精确。修复后 22 测试全过、四维 100%。
+3. **check() 里一段被自己推翻的重建逻辑（自检时抓到）。** 初稿试图从清单反推 artifact 来重算 reason，但清单根本
+   不携带 artifact 字段，还留下一个拼写残留 `artifactnuance`——这是从不存在的信息里做推断。改成诚实设计：
+   `check()` 只重加可由 unit + 信号计数判定的 **verdict 阶梯**；reason 的 host-artifact/host-task-score 细分由
+   `verify()` 对 fixture 字节逐字段负责。放弃"看起来更全"的检查，保留"真正可判定"的检查。
+4. **覆盖率 94.59% → 100%（真实缺口，补测试而非降门槛）。** 首轮分支覆盖率 94.59% 未达 95%，未覆盖的是
+   `absolute-task-score` 下"仅 artifact 无测量信号"与"无任何信号"两条分支。补两条针对性测试，不豁免任何行。
+
+**门禁实测，全部根因修复。** 新模块 TS 四维 100%；行为 22 测试、绑定 14 测试全过；Python reader self-test
+59/59、check/verify 均 ok、覆盖率 96.0%；`pnpm check` 全链路退出码 0；README 层表随新生产模块更新（core
+52→53、11,425→11,636 行）；coupling 快照 269→270 重生成、11 项检查通过；bundle 未变；`--expect-files` 34→35。
+没有任何门限被削弱、跳过或加 `continue-on-error`。

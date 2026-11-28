@@ -13491,3 +13491,48 @@ fixture `eval/fixtures/abstraction-lifecycle.json`（12 案例，覆盖三种 di
 新模块四维 100%；行为 22 + 绑定 14 测试；Python reader 97.8%（self-test+check+verify 合并，覆盖 main 的 argparse
 分支），self-test 66/66；README core 层 51→52 模块、11,243→11,425 行；coupling 268→269 模块、11 项检查；bundle
 不变；`--expect-files` 33→34；全量 `pnpm check` 退出码 0。
+
+## 17.215 R248 — 竞品领域门：以"测量单位"而非系统名判定归属
+
+**一句话决策，先于论证。** 一个系统/榜单属于哪个领域，取决于它的数字是"记忆开/关的增益"还是"某垂域任务的绝对成绩"；前者是 microglia 的战场，后者归 nl2charts。理由：用户第 7、8 问确立 scope——microglia 通用地专注于"通过记忆与经验提高任务成功率"，是 nl2charts 的能力放大器，绝不耦合 NL2SQL/chart/data-viz。
+
+### 模块与位置
+
+`packages/core/src/apply/competition-domain.ts`，在 `apply` 层——与 `viewConsensus`/`abstractionLifecycle`/`stateRole` 并列，从 `apply/index.ts` 导出。纯函数，无 clock/网络/模型；它分类一个"描述"，不抓取、不打分任何系统。为什么调用方提供描述：领域判据依赖数字的测量单位，这个信息在榜单表格里没有，必须随读数一起声明。
+
+### 数据形状
+
+```ts
+type DomainCandidate = {
+  name: string;
+  measures: readonly string[];   // 闭集 ASCII 信号标签，大小写不敏感
+  artifact: 'memory-pack' | 'sql-query' | 'chart' | 'visualization' | 'report' | 'other';
+  unit: 'memory-gain' | 'absolute-task-score' | 'unknown';
+};
+```
+
+判定先看 `unit`，信号计数仅在 `unknown` 时兜底；报告 `verdict`/`reason`/`amplifierRole`/`memorySignals`/`hostSignals`/`name`/`unit`，全整数或字符串/布尔，无浮点——三读者可用整数精确复现。
+
+### 判定阶梯（顺序即论证）
+
+1. `unit === 'memory-gain'` → `memory` / `measured-memory-gain`。记忆开/关增益是 microglia 的单位，无论在哪测的。`amplifierRole = hostArtifact || hostMeasureSignals > 0`：在宿主场景内测的，microglia 是放大器。
+2. `unit === 'absolute-task-score'`：host 测量信号 → `host`/`host-task-score`；否则仅 host 产物 → `host`/`host-artifact`；否则记忆信号 → `memory`/`memory-benchmark`；否则 `other`/`no-signal`。
+3. `unit === 'unknown'`：两类信号都有 → `ambiguous`/`mixed-signals`（拒绝猜测）；仅记忆 → `memory`；仅 host → `host`；都无 → `other`。
+
+**关键设计决策，比表面重要：** **平局判 ambiguous，不自动归类。** 自动归类会用"哪个标签先命中"决定领域，那正是把 BIRD 成绩偷偷提升成 microglia 竞品的机制。拒绝猜测让边界成为一个可证伪的命题，而不是一句声明。第二个决策：`hostSignals` 报告值包含 artifact（host 产物算一个 host 信号），但 `reason` 区分"测到的 host 成绩"与"host 形态产物"——清单不携带 artifact，所以这一细分由 `verify()` 对 fixture 字节负责，`check()` 只重加可由 unit+计数判定的 verdict 阶梯。
+
+### 守卫（refuse rather than default）
+
+name 非空；measures 是数组且元素均为字符串；artifact/unit 属闭集。违规抛 `MG_E_CONFIG`，违规候选名进入 message 而不只在 details。任一守卫默认放行都会把候选悄悄归到 `other`，看起来像一次诚实分类——这是最危险的失败模式，所以全部拒绝。
+
+### 确定性与开关纪律
+
+判定不依赖外部状态；同名输入恒等；不修改输入（`Object.freeze` 验证）。本模块是库辅助判据，不在渲染路径，bundle 不变。它不 declaring 任何存储变更，所有已提交工件逐字节不变。
+
+### 三读者契约
+
+fixture `eval/fixtures/competition-domain.json`（11 个真实候选：AskData/GrainSQL on BIRD、Mem0/Mastra on LongMemEval、microglia 在 SQL 宿主内、混合信号、无标签系统）；清单 `eval/manifests/competition-domain.json` 由 `eval/tools/competition_domain.py --verify` 从字节重推导；`--check` 重加 verdict 阶梯；`--self-test` 59 条含每个守卫/篡改/CLI 分支；`competition-domain-manifest.test.ts` 用产品函数推导同一读数逐字段比对。任一读者漂移即失败一边、构建停止。
+
+### 门禁
+
+新模块四维 100%；行为 22 + 绑定 14 测试；Python reader 96.0%（self-test+check+verify 合并），self-test 59/59；README core 层 52→53 模块、11,425→11,636 行；coupling 269→270 模块、11 项检查；bundle 不变；`--expect-files` 34→35；全量 `pnpm check` 退出码 0。

@@ -12,6 +12,17 @@ reproduced is a hypothesis with a citation, not evidence.
 
 ## 0. Three roles, and the one that was being read as the wrong one
 
+> **R248 correction (28 Nov), read this first.** The role table below was written when this project was still being
+> framed against a text-to-SQL host. The user has since made the scope explicit (questions 7–8): **NL2SQL /
+> text2charts / data2charts are `AgentiX-E/nl2charts`' field, not microglia's.** microglia competes only in
+> *memory-augmented task success* and is nl2charts' **memory capability amplifier**, with no coupling to the
+> vertical. Consequently the "Product competitor" row below (XiYan-SQL, CHASE-SQL, GrainSQL, …) names competitors
+> of **nl2charts**, not of this project — they are hosts that could embed microglia. The authoritative competitor
+> set for microglia is the memory systems on LongMemEval / LoCoMo / BEAM / MemoryAgentBench (Mem0, Zep/Graphiti,
+> Hindsight, Mastra, OMEGA, Letta). The new `classifyCompetitionDomain` gate (R248) enforces this: an absolute
+> host-task score is `host`, a measured memory gain is `memory`, and a tie is `ambiguous`. The table is retained for
+> the historical record of *why each number was read*, not as a current competitor claim.
+
 This document is titled *competitive anatomy* and every system it names arrives through that door, which
 produced a category error worth correcting before anything else: **a system appears here for one of three
 reasons that have nothing to do with each other, and only the first is a competitor.**
@@ -11280,3 +11291,37 @@ unreplicated is claimed accuracy, which needs a paid submission.
 **Sequencing for R104b** (model proposer, ≈ $0.01/candidate, registered not dispatched): a candidate a proposer emits
 must clear `viewConsensus` (stability), then `abstractionLifecycle` (persistence), before it reaches the witness.
 That is a wiring rule, not a new claim.
+
+## R248 scope correction (28 Nov 2026) — the competition field is now a checked contract
+
+The user's new standing instructions (questions 7 and 8) drew a hard boundary this project had stated in prose but
+kept violating in summaries: NL2SQL / text2charts / data2charts are `AgentiX-E/nl2charts`' field; microglia competes
+only in **memory-augmented task success** and is nl2charts' **memory capability amplifier**, never a competitor in
+that vertical. Rounds R239–R247 repeatedly quoted BIRD execution accuracy as if AskData / GrainSQL were microglia's
+product competitors. That was a category error: a BIRD row measures the host's SQL task, not the value of a memory
+layer. R248 turns the boundary into a pure, three-reader-pinned decision (`classifyCompetitionDomain`).
+
+| source | authoritative finding (source grade) | what it means for the field |
+|---|---|---|
+| [Agent memory benchmark selection](https://curvesoft.net/posts/ai/2026-09-26-agent-memory-benchmark-selection) | same task, swap full-context for a memory layer: LongMemEval 39.0% → 83.6% (+44.6pp); Hindsight scaled to 91.4%, Agent Zero 95.6% / LoCoMo 93.6% (secondary round-up, low–medium) | the memory layer, not the model, is the lever — this is microglia's field |
+| [Cross-provider memory benchmark](https://cheesecat.net/blog/cross-provider-agent-memory-benchmarking-standardized-benchmarks-2026-zh-tw) | standardized stack: LoCoMo (1,540 q), LongMemEval (500 q, 6 classes), BEAM (2,000 q, 10M tokens), DolphinBench (600 tasks); MemoryAgentBench's four dimensions (AR/TTL/LRU/CR) (round-up of Mem0's 2026 report, medium) | these are the authoritative sets microglia should be measured on |
+| [Agent Memory Benchmarks 2026](https://memnode.dev/articles/agent-memory-benchmarks-2026-real-numbers) | OMEGA 95.4% / Mastra 94.87% LongMemEval; Mem0 66.9% LOCOMO; benchmarks miss cost, lineage, poisoning, per-tenant isolation (vendor-adjacent analysis, low–medium) | no published number is a microglia target; the gaps are the ones this project already studies |
+| [Memory architecture > model scale](https://graphastra.com/zh/summaries/73af9040-5c49-4e4a-9868-05af11dc2bfc) | 8B→32B model scale +0.038; switching memory architecture swings 0.45; six papers share a benchmark only twice — no agreed primary arena (summary, low) | confirms both the lever and the missing common ruler noted in this project's own 16.4pp baseline spread |
+
+**The corrected leaderboard framing (answers questions 1–3).** microglia's competitors are the memory systems on
+LongMemEval / LoCoMo / BEAM / MemoryAgentBench (Mem0, Zep/Graphiti, Hindsight, Mastra, OMEGA, Mem0-graph, Letta),
+not the NL2SQL systems on BIRD. AskData / GrainSQL / Gemini-SQL2 / CHASE-SQL / XiYan-SQL are `nl2charts` competitors;
+microglia is the amplifier a host like nl2charts embeds, and its value there is measured as a memory-on/off gain on
+the host's task, not as the host's absolute score. `classifyCompetitionDomain` encodes exactly this: a measured
+memory gain is `memory` (with `amplifierRole: true` inside a host), an absolute host-task score is `host`, and a tie
+is `ambiguous` — never auto-assigned.
+
+**What stays true from R239–R247.** Every mechanism replicated (SPLICE consistency, Anti-Persistence separation,
+state role, serial-max, 429 taxonomy) and every three-reader binding is unaffected. Only the *field* in which those
+mechanisms are compared is corrected: toward memory benchmarks, away from BIRD. The accuracy×cost figure
+(`r239-leaderboard.png`) already plots LongMemEval and LoCoMo with microglia marked as "not on any published
+leaderboard" — that framing was right; the prose that called BIRD a microglia target was not.
+
+**Position.** Still on the cost × consistency frontier, not on an accuracy leaderboard; no external memory submission
+exists, so competitor +pp cannot transfer. The authority of R248 is that the scope boundary is now a checked
+property, not a promise in a summary.

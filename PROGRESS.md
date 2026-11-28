@@ -31065,3 +31065,35 @@ abstractionLifecycle 再到 witness）；③ R244 状态角色 on/off 单次 dis
 梯子先验价后付款；不以充值状态重开 R243 的受影响子集判据。
 
 **图**：`figures/r247-anti-persistence.png`（每条知识净翻转与门判定）。
+
+## 249.75 R248：竞品领域是契约的一部分——microglia 只竞争记忆增益，NL2SQL/Chart 归 nl2charts（¥0）
+
+**用户新增 scope.** 第 7、8 问明确：nl2sql/text2charts/data2charts 是 `AgentiX-E/nl2charts` 的领域；microglia 是
+其基于经验记忆的能力放大器，绝不可耦合垂域，能力必须通用地专注"通过提取总结记忆和经验提高任务成功率"。
+前几轮把 BIRD execution accuracy 当 microglia 竞品榜、把 AskData/GrainSQL 当产品竞品汇报——领域错位，本轮纠正。
+
+**架构审计结论（实证，非假设）。** `core` 零依赖、公开签名无 scenario type、`task` 自由字符串；`packages/sql` 是
+独立 adapter（零依赖），宿主可选嵌入。README 早已写明 text-to-SQL 是"hostile case, not the product"。内部文档
+早已正确记录记忆领域榜（LongMemEval/LoCoMo/MemoryAgentBench/BEAM/DolphinBench/AMA-Bench，60+ 处）。
+**代码层没违反 scope，错的是汇报的竞品框架。**
+
+**实现。** `packages/core/src/apply/competition-domain.ts` 的 `classifyCompetitionDomain` 以**测量单位**判定领域：
+memory-gain（记忆开/关）→ `memory`（宿主内测则 `amplifierRole=true`）；绝对分+host 信号→ `host`；记忆榜绝对分→
+`memory`；unit 未知且两类信号都有→ `ambiguous`（拒绝猜测）；无信号→ `other`。信号闭集 ASCII、大小写不敏感。
+三读者：11 个真实候选 fixture + Python reader（self-test 59/59 + check + verify，覆盖率 96.0%）+ manifest 绑定
+测试逐字段比对。新模块四维 100%；行为 22 + 绑定 14 测试；README core 52→53 模块、11,425→11,636 行；
+coupling 269→270；bundle 不变；`--expect-files` 34→35；全量 `pnpm check` 退出码 0。
+
+**联网一手证据（领域价值）。** 同题把全上下文换成记忆层，LongMemEval 39.0%→83.6%（+44.6pp）；模型 8B→32B
+只涨 0.038，换记忆架构波动 0.45——记忆层差距已大于模型差距。领域缺口：六篇记忆论文只两篇共用 LoCoMo，无公认
+主评测场，与本项目"同一 baseline 四来源跨度 16.4pp"一致。这些都属于记忆领域，不是 NL2SQL。
+
+**文档纠偏。** COMPETITIVE.md §0 加 R248 纠偏注记：原"Product competitor"行（XiYan-SQL 等）是 nl2charts 的竞品，
+不是本项目的；microglia 的竞品是记忆系统。WHITEPAPER 保持 nl2charts 为 reference host 的定位不变。
+
+**当前位置与剩余步骤。** 五条纯函数判据齐备：写稳定性(R246)/写持久化(R247)/读状态(R244)/成本(R245)/领域(R248)。
+microglia 仍在成本×一致性前沿、不在准确率榜。最优剩余路径（零成本优先）：① Zhipu embedding 探针重启（¥0）；
+② R104b 模型 proposer（≈$0.01/候选，付费臂，接线点：候选先过 viewConsensus→abstractionLifecycle→witness）；
+③ R244 状态角色 dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练臂）；⑤ provider fallback 优化（¥0）。
+
+**图**：`figures/r248-competition-domain.png`（各候选领域判定与决策阶梯）。

@@ -11212,3 +11212,56 @@ self-test 66/66；README core 层 51→52 模块、11,243→11,425 行；couplin
 合起来，把用户的核心命题"记忆什么/怎么用错"在写侧覆盖了两个独立边界：单条稳定性（R246）与整类持久化策略
 （R247）。接线点已明确留给 R104b：proposer 写出的候选先过 `viewConsensus`，再过 `abstractionLifecycle` 决定是否
 持久化，最后才到 witness。
+
+## R248 (read 28 Nov, ¥0) — 竞品领域是契约的一部分：microglia 只竞争记忆增益，NL2SQL/Chart 归 nl2charts
+
+> **状态，28 Nov：read，¥0，未调用模型。** 用户新增第 7、8 问，明确 scope：nl2sql/text2charts/data2charts 是
+> `AgentiX-E/nl2charts` 竞争的领域，不是 microglia 的；microglia 是 nl2charts 的**基于经验记忆的能力放大器**，
+> 绝不可耦合到垂域，其能力必须通用地专注于"通过提取总结记忆和经验提高任务成功率"。此前多轮把 BIRD execution
+> accuracy 当作 microglia 竞品榜、把 AskData/GrainSQL 当产品竞品来汇报——这是领域错位，本轮纠正并把边界固化为
+> 机器可校验的判据。
+
+![R248 — 各候选系统的领域判定与决策阶梯](figures/r248-competition-domain.png)
+
+**代码本已守界，读数没有。** `core` 零依赖、公开签名无 scenario type、`task` 是自由字符串；`packages/sql` 是独立
+adapter（零依赖），宿主可选嵌入。README §"What this is" 早就写明 text-to-SQL 是"hostile case, not the product"，
+BIRD 系统是"hosts whose pipeline could embed it"。内部文档也早已正确记录记忆领域榜（LongMemEval/LoCoMo/
+MemoryAgentBench/BEAM/DolphinBench/AMA-Bench）。缺的是一条**机器可校验的规则**，把系统/榜单归到其领域，使汇报
+不能把宿主任务成绩悄悄提升成 microglia 竞品。
+
+**实现。** `packages/core/src/apply/competition-domain.ts` 导出 `classifyCompetitionDomain(candidate)`。决定输入是
+**数字的测量单位**，不是系统名字：
+
+| unit / 信号 | verdict | reason |
+|---|---|---|
+| `memory-gain`（记忆开/关对比） | `memory` | `measured-memory-gain` |
+| 在 SQL/chart 宿主内测的 memory-gain | `memory`，`amplifierRole: true` | `measured-memory-gain` |
+| 绝对分 + host 测量标签 | `host` | `host-task-score` |
+| 绝对分 + 仅 host 产物 | `host` | `host-artifact` |
+| 记忆榜上的绝对分 | `memory` | `memory-benchmark` |
+| unit 未知 + 仅记忆信号 | `memory` | `memory-benchmark` |
+| unit 未知 + 仅 host 信号 | `host` | `host-task-score`/`host-artifact` |
+| unit 未知 + 两类信号都有 | `ambiguous` | `mixed-signals` |
+| 无信号 | `other` | `no-signal` |
+
+平局判 `ambiguous` 而非自动归类——自动归类正是本门要阻止的错位。信号标签是闭集 ASCII、大小写不敏感；未列出的
+标签不携带证据。`amplifierRole` 仅在"宿主场景内测记忆增益"时为真：nl2charts 拥有核心垂域功能，microglia 提供
+通用记忆层，是放大器不是竞争者。
+
+**三读者一个读数。** fixture 十一个真实候选：AskData/GrainSQL on BIRD（host）、Mem0/Mastra on LongMemEval
+（memory）、microglia 在 SQL 宿主内（memory + amplifier）、混合信号厂商（ambiguous）、无标签系统（other）。Python
+reader 无共享代码从字节重推导每个判定/理由/计数/放大器标志，`--check` 从清单的 unit 与计数重加判定阶梯，
+`--self-test` 59 条；`competition-domain-manifest.test.ts` 用产品函数推导同一读数逐字段比对。
+
+**领域价值（联网一手证据，28 Nov）。** 同一 LongMemEval 题，把"全塞上下文"换成专门记忆层，39.0%→83.6%
+（+44.6pp）；模型 8B→32B 只涨 0.038 分，换记忆架构波动 0.45——"记忆层差距已大于模型差距"，正是数据飞轮价值。
+领域缺口：六篇记忆论文只有两篇共用 LoCoMo，长时程记忆"无公认主评测场"，与本项目"同一 baseline 四来源跨度
+16.4pp"一致。这些都属于 microglia 领域，不是 NL2SQL。
+
+**门禁与下一步。** 新模块四维 100%；行为+绑定 36 测试；Python reader 96.0%（self-test 59/59 + check + verify）；
+README core 层 52→53 模块、11,425→11,636 行；coupling 快照 269→270；bundle 不变；`--expect-files` 34→35；全量
+`pnpm check` 退出码 0。
+
+**注意：本轮不是准确率收益，也不是付费臂。** 它是 scope 边界的机器化，与 R244/R245/R246/R247 的纯函数判据同构。
+剩余最优路径不变（零成本优先）：Zhipu embedding 探针重启（¥0）；R104b 模型 proposer（≈$0.01/候选，付费臂）；
+R244 状态角色 dispatch（付费臂先出价）；生成器/候选池改造（付费/训练臂）；provider fallback 优化（¥0）。

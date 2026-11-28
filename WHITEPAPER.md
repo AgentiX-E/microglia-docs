@@ -4,6 +4,14 @@
 
 Version 1.0 · 2026-10-20 · Author: Lambertyan · Status: decision document, pending approval
 
+> **Scope note (R248, 28 Nov).** This whitepaper uses `nl2charts` as the reference host, consistent with the
+> standing scope: microglia is a **generic memory capability amplifier** that a host embeds; it competes only in
+> *memory-augmented task success* (LongMemEval / LoCoMo / BEAM / MemoryAgentBench and memory-on/off ablations).
+> NL2SQL / text2charts / data2charts are `AgentiX-E/nl2charts`' competitive field — microglia owns no core vertical
+> function there and is decoupled from them. Benchmarks in this document that are NL2SQL (BIRD, Spider) are read as
+> *host task scores*, never as microglia targets; their value to this project is as a hostile test bed for a memory
+> pack and as same-unit ablation controls. `classifyCompetitionDomain` (R248) enforces this reading in code.
+
 ---
 
 ## 0. Document contract
