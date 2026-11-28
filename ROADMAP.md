@@ -11446,7 +11446,7 @@ conflict-overwhelms、加权共识、中性邻居、三条聚合）；Python rea
 重推导每个 verdict/reason/decidingId/计数/整数分数，`--check` 重加算术（计数分区、reason/verdict 家族、阈值顺序），
 `--self-test` 覆盖边界、half-up 取整、determinism、tamper；`memory-confidence-manifest.test.ts` 用产品函数逐字段比对。
 
-**门禁与下一步。** 新模块四维 100%；行为 43 + 绑定 16 = 59 测试；Python reader 语句/分支 100%；Python 半幅取整用
+**门禁与下一步。** 新模块四维 100%；行为 43 + 绑定 16 = 59 测试；Python reader 行+分支合并 98%（464/473，开放弧为断言失败与 CLI 退出路径）；Python 半幅取整用
 `int(x*1000+0.5)` 对齐 JS `Math.round`（避开 banker's rounding 在 .5 的分歧）；全量 `pnpm check` 退出码 0（322 测试文件、
 6678 测试）；README core 层 56→57 模块、12,442→12,778 行；coupling 273→274 重生成、11 项检查；bundle 不变；
 `--expect-files` 38→39；13 工作流解析通过。

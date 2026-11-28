@@ -13695,7 +13695,7 @@ abstainBelow 越界、reweightBelow < abstainBelow 或 >1、非数组/空 items�
 **三读者契约。** fixture 十一条真实 episode → 产品函数与独立 Python reader 各自从字节推导 → manifest 逐字段钉住
 （`memory-confidence-manifest.test.ts` 字段比对；`memory_confidence.py --check/--verify/--self-test`）。Python 的
 `milli()` 用 `int(x*1000+0.5)` 对齐 JS `Math.round`，避开 banker's rounding 在 .5 的分歧；fixture 分值均不落 .5
-边界。CI 在 coverage 下跑 Python 三模式，`--expect-files` 38→39。新模块 TS 四维 100%，Python 语句/分支 100%。
+边界。CI 在 coverage 下跑 Python 三模式，`--expect-files` 38→39。新模块 TS 四维 100%，Python 行+分支合并 98%（464/473，开放弧为断言失败与 CLI 退出路径）。
 
 **接线点。** R104b 的模型 proposer 产出候选后，先过 `viewConsensus`（单条是否稳定）→ `abstractionLifecycle`
 （是否持久化）→ witness；显式撤回/纠正过 `revisionIntegrity`；新证据落库过 `staleRevocation` 确认

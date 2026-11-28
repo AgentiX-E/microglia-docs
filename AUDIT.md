@@ -19446,6 +19446,17 @@ C ≤1 时 score 恒 ≤1（上界不可达），共识加权均值恒在 [-1,1]
 纪律，删除 `clamp`、改用 `Math.max(0, …)` 保留可达的下界并补测，而非加 `# pragma: no cover` 或降低门禁。
 修复后四维 100%。
 
+**缺陷三：本地绿、CI 红的覆盖率漂移（真实门禁缺陷）。** 提交后 CI 在
+`build, test, audit, study` job 失败：`eval/tools/memory_confidence.py is at 89.0%, below the 95% floor`。根因是本地
+`pnpm check` 的 `eval:verifiers` 只跑 self-test 且不进 coverage append，而 CI 在 ci.yml 里用三段 `coverage run --append`
+（self-test + check + verify）后统一 `check-python-coverage.py`，按行+分支合并计 floor。我的 self-test 用
+`failures.append` + 末尾统一报告模式，产生大量"断言成功时不走"的失败分支，且未覆盖 check/build/verify 的守卫拒绝
+路径。本地用同款三段命令复现出 89%，确认为真实缺陷而非 CI 偶发。修复：self-test 改为与既有 reader 一致的
+`ok()` raise 模式，统一 `refuses()` helper 收敛失败断言弧，补齐 sha256、非对象 weights、check 的 verdict/reason/
+count/milli/partition/expected/schema 守卫与 verify 的五类 tamper，并补 `--build --write` 路径。修复后 464/473 =
+98%，超过 95% floor（既有 reader 同口径 99.8%）。教训：`pnpm check` 绿不等于 CI 绿，新增 Python reader 必须在
+本地用 ci.yml 的**同款三段 coverage 命令**复核后才可推送。
+
 **没有发生的事。** 未以充值状态重开付费臂；未用 mock 达成覆盖率；未让文档比代码更漂亮；未把 nl2sql/chart 指标
 写进 microglia 读数；未在没有 cortex 代码的环境里声称 link 成功；未重跑已读回 separated=false 的 embedding 探针
 去烧配额。九条纯函数判据各自有三读者钉住，全量 `pnpm check` 退出码 0。

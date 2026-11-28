@@ -31227,7 +31227,7 @@ MMA（arXiv 2602.16493）把"把陈旧/低可信/矛盾记忆与新鲜有源记�
 `score = max(0, (0.45·S+0.40·T+0.15·C))`；阶梯 conflict-overwhelms < 0.50 → below-threshold < 0.50 →
 marginal < 0.75 → reliable；`decidingScoreMilli` 整数千分比。集合取最严格 verdict，三计数分区 itemCount。
 
-**三读者与门禁（根因修复）。** 新模块四维 100%；行为 43 + 绑定 16 = 59 测试；Python reader 语句/分支 100%，
+**三读者与门禁（根因修复）。** 新模块四维 100%；行为 43 + 绑定 16 = 59 测试；Python reader 行+分支合并 98%（464/473，开放弧为断言失败/CLI 退出），
 half-up 取整对齐 JS `Math.round`；全量 `pnpm check` 退出码 0（322 测试文件、6678 测试）；README core 56→57 模块、
 12,442→12,778 行；coupling 273→274、11 项检查；bundle 不变；`--expect-files` 38→39。
 
