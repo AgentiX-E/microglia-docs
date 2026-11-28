@@ -11521,3 +11521,56 @@ fallback 优化（¥0）。付费臂一律先出价、梯子先验价后付款�
 **第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 `AgentiX-E/cortex` 代码本体（无本地目录/npm link/CORTEX_DIST）。
 microglia 已有 adapter + conformance 脚本（CI clone+build 对账），但"本地 link 引入"本环境不具备；本轮未就 Agent 记忆
 打榜、未引入 cortex 代码，守住通用放大器目标。cortex 就绪后评估对象是它给 cortex 带来的净增益（正是 R253 要测的）。
+
+## R254（read 28 Nov，¥0）— 产品与测评的接线缝：把十条判据编排成一条可执行门控
+
+> **状态，28 Nov：read，¥0，未调用模型。** 审计发现一个结构性缺口：R244–R253 十条纯函数判据**全部只被测试与
+> eval fixture 调用**，产品侧 `Microglia.recall`/`distill` 真实路径一条都没接。这是第 6 问反复追问的"产品与测评
+> 割裂"，也是第 8 问"记忆负效果在真实运行路径里未被约束"的根源——一个没人调用的判据拦不住任何东西。所有判据
+> 文档都写着"接线点留给 R104b"，而 R104b 是付费臂需先出价。本轮做它的**零成本前置**：编排层本身。
+
+![R254 — 十条判据经严格阶梯合成为单一决策 + 消融归因](figures/r254-experience-gate.png)
+
+**联网一手证据（28 Nov，延续 R246–R253）。** MemoryAgentBench / LongMemEval / LoCoMo 的一致性结论：判定型组件
+只有进入检索/注入路径才产生增益；CAPTURE（2609.02265）与 MMA（2602.16493）的安全-效用双轴、Anti-Persistence
+（2610.27406）的"记录 vs 规则"分界都需要一个把多判据结论落到单一动作的合成器。本轮不引入新文献结论、只做编排。
+
+**实现。** `packages/core/src/apply/experience-gate.ts` 导出 `experienceGate(input)`：每个 stage 携带一条判据已算出的
+`disposition`（admit/reweight/abstain/reject）+ 自己的 reason + 整数千分比 score；声明为 advisory 的 source 其 reject
+降级为 reweight（领域边界/成本作为强警告而非硬否决）。集合 verdict 取最严格的有效 disposition，平手取在先 stage
+（确定性），reason 只由 verdict 派生。计数按有效 disposition 分区 stageCount。每个 ablation 移除一 stage 重跑阶梯，
+报 before/after/changed——与 R253 同风格的边际贡献。
+
+| 条件（严格优先） | verdict | reason |
+|---|---|---|
+| 任一硬 reject | `reject` | `hard-gate-rejected` |
+| 否则任一 abstain | `abstain` | `abstention-required` |
+| 否则任一 reweight | `reweight` | `reweight-required` |
+| 全部 admit | `admit` | `all-admitted` |
+
+**发现并修复的真实 BUG。** 覆盖率驱动补测时发现：ablation 移除唯一 stage 后 `compose([])` 访问 `stages[0]` 得
+undefined 而崩溃（`Cannot read properties of undefined`）。修复为显式空集边界——移除唯一的门等于"没有门反对"，
+verdict=admit、无 deciding stage，TS 与 Python reader 同步。这是本轮"以发现和修复 BUG 为目标"的实证产出，
+由 100% 分支覆盖要求逼出，非事后补丁。
+
+**三读者与门禁。** fixture 八案（全 admit/硬 reject 支配/advisory 降级/abstain 胜 reweight/平手取先/消融归因/
+四分区混合/单 stage）；Python reader `experience_gate.py` 无共享代码从字节重推导 verdict/reason/deciding stage/
+整数 score/计数/消融 before-after-changed，`--check` 重算自身算术，`--self-test` 驱动全部守卫+确定性+tamper；
+`experience-gate-manifest.test.ts` 用产品函数逐字段比对。
+
+**门禁与下一步。** 新模块**四维 100%**（语句/分支/函数/行，43 测试：行为+绑定）；Python reader 行+分支合并 98%
+（302→307 语句，开放弧为 CLI argparse/异常路径，与 R252 98%/R253 99.1% 同类）；全量 `pnpm check` 退出码 0
+（326 测试文件、6747 测试）；README core 58→59 模块、13,146→13,464 行；coupling 276 模块重生成、11 项检查、
+core 仍 0 领域耦合；`--expect-files` 40→41；13 工作流解析通过。`eval:verifiers` 增 self-test。接线为 observer、
+默认关闭，零字节回归。
+
+**当前位置与剩余步骤。** 十一条判据齐备（+经验门控编排器 R254），且首次有了"产品可调用"的接线缝。microglia 仍
+在成本×一致性前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① Zhipu embedding 探针已读回
+separated=false（p=0.12/0.06），重跑烧配额非优先；② R104b 模型 proposer（≈$0.01/候选，付费臂，用 R254 接线：
+proposer 候选 → 各判据 → R254 合成 → R253 净增益与领域门 → witness，配置上线前过 R253）；③ R244 状态角色
+dispatch（付费臂先出价）；④ 生成器/候选池改造（付费/训练臂，SOTA 差距大头）；⑤ provider fallback 优化（¥0）。
+付费臂一律先出价、梯子先验价后付款。
+
+**第 9 问（cortex）状态。** 本轮再次确认 sandbox 无 cortex 代码本体；microglia 已有 adapter + conformance 脚本
+（CI clone+build 对账），"本地 link 引入"本环境不具备；本轮未就 Agent 记忆打榜、未引入 cortex 代码，守住通用
+放大器目标。R254 的门控是通用的，cortex 就绪后评估对象是它给 cortex 带来的净增益。

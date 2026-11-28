@@ -31277,3 +31277,29 @@ admit/reject 计数，全 admit 的合法 case 被拒——改用 `is_count(valu
 ④ 生成器/候选池改造（付费/训练臂，SOTA 差距大头）；⑤ provider fallback 优化（¥0）。付费臂先出价、梯子先验价后付款。
 
 **图**：`figures/r253-memory-gain-ledger.png`（安全×效用前沿 + CAPTURE 式消融归因）。
+
+## 249.81 R254：产品与测评的接线缝——把十条判据编排成一条可执行门控（¥0）
+
+**审计发现的结构性缺口。** R244–R253 十条判据全是孤立纯函数，产品 `recall`/`distill` 真实路径一条都不调用
+（Grep 全仓确认：`apply/index.ts` 只导出、capture 层零引用），只在测试与 eval fixture 清单里出现。这是第 6 问
+"产品与测评割裂"、第 8 问"记忆负效果未被真实路径约束"的根源。判据文档全写"接线点留给 R104b"（付费臂需先
+出价），本轮做它的零成本前置——编排层。
+
+**实现。** `packages/core/src/apply/experience-gate.ts` 的 `experienceGate(input)`：每个 stage 携带一条判据已算出的
+disposition + reason + 整数 scoreMilli；advisory source 的 reject 降为 reweight；集合 verdict 取最严格有效 disposition，
+平手取在先；reason 只由 verdict 派生；计数分区 stageCount；每个 ablation 移除一 stage 重跑阶梯报 changed。
+
+**发现并修复的真实 BUG。** 覆盖率补测逼出：ablation 移除唯一 stage 时 `compose([])` 崩溃（访问 undefined）。
+修复为空集边界 verdict=admit，TS 与 Python 同步，并加两条边界测试。这是本轮实证产出、非事后补丁。
+
+**三读者与门禁（根因修复）。** 新模块四维 100%（43 测试）；Python reader 98%（307 语句，开放弧为 CLI argparse/
+异常路径，与 R252/R253 同类）；全量 `pnpm check` 退出码 0（326 文件、6747 测试）；README core 58→59 模块、
+13,146→13,464 行；coupling 276 模块重生成、11 项检查、core 0 耦合；`--expect-files` 40→41。observer 接线、
+默认关闭、零字节回归。
+
+**当前位置与剩余步骤。** 十一条判据齐备（+门控编排器），首次有产品可调用的接线缝。microglia 仍在成本×一致性
+前沿、不在准确率榜。最优剩余路径（并行、零成本优先）：① Zhipu 探针已读回 separated=false，重跑烧配额非优先；
+② R104b 模型 proposer（≈$0.01/候选，付费臂，用 R254 接线）；③ R244 dispatch（付费臂先出价）；④ 生成器/候选池
+改造（付费/训练臂，SOTA 差距大头）；⑤ provider fallback 优化（¥0）。付费臂先出价、梯子先验价后付款。
+
+**图**：`figures/r254-experience-gate.png`（十条判据→严格阶梯→单一决策 + 消融归因）。

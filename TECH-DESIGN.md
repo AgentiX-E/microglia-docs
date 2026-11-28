@@ -13744,3 +13744,28 @@ abstain 的项不注入。这样"产品侧自动使用测评侧最优配置"由�
 R249；新证据落库过 R250；检索集交模型前过 R251 确认无 reject、再过 R252 对每条标权重、abstain 项不注入；
 **任何记忆配置在付费打榜/上线前过 R253 确认 verdict=net-positive 且安全，否则不打榜**。这样"产品侧自动使用测评侧
 最优配置"由机器判据保证。评估对象在 cortex 就绪后是 microglia 给 cortex 带来的净增益（Q9），正是本判据所测。
+
+## 17.221 R254 技术设计 — 经验门控编排器（把判据裁决合成单一可执行决策）
+
+**问题。** R244–R253 十条判据各自可证伪，但没有任何一层规定"当它们同时给出裁决时，产品到底做什么"。它们也
+从未被产品 `recall`/`distill` 调用——只活在测试和 eval fixture 里。缺的是一个编排缝：接收各判据已算出的裁决，
+按确定的优先级合成为单一决策，且产品与测评读到同一结果。
+
+**数据契约。** 输入 `{ id, stages[], advisorySources?, ablations? }`。每个 stage 是 `{ id, source, disposition,
+reason, scoreMilli }`，其中 source ∈ 十条判据 + cost-429 的封闭词汇表，disposition ∈ {admit, reweight, abstain,
+reject}，scoreMilli 是 [0,1000] 整数千分比（只用于 readback、不参与阶梯）。输出 `{ verdict, reason, decidingStageId,
+decidingReason, decidingScoreMilli, 四计数, ablations[] }`。
+
+**决策规则。** 有效 disposition = stage.disposition，唯 advisory source 的 reject 降为 reweight（领域边界/成本作
+强警告而非硬否决）。verdict = 最严格有效 disposition，严重度 admit<reweight<abstain<reject；平手取在先 stage
+（确定性）；reason = verdict 的函数（admit→all-admitted、reweight→reweight-required、abstain→abstention-required、
+reject→hard-gate-rejected），绝不采信 stage 自报的 reason（那是 decidingReason）。计数按有效 disposition 分区。
+消融：移除一 stage 重跑阶梯，报 before/after/changed——该门的边际贡献。
+
+**边界与守卫。** 空 stage 列表拒绝；stage 非对象/重复 id/未知 source/未知 disposition/空白 reason/非整数 score
+全部拒绝；advisorySources 非数组或含未知源拒绝；ablation 非对象/重复 id/指向不存在 stage 拒绝。特别地，ablation
+移除唯一 stage 后的空集 compose 定义为 verdict=admit、无 deciding stage——这是本轮由覆盖率逼出的真实 BUG 修复点。
+
+**接线。** observer 模式接进 `buildPack`：默认关闭，不改变渲染字节、ids、fingerprint；开启时把门控决策附到
+pack.decision 之外的新字段供宿主读取。为 R104b 铺路：proposer 候选 → 各判据 → R254 合成 → R253 净增益与领域门
+→ witness。产品与测评经三读者契约（fixture + manifest + 独立 Python reader）锁定同一读数。

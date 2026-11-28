@@ -5735,3 +5735,17 @@ cortex — including that its memories arrive with calibrated trust and that the
 safe — not cortex's own score. This is the measurement R253 exists to provide. microglia keeps its target of
 extracting the right lesson, using it at the right time, trusting it by the right amount, and proving the whole
 cycle helps.
+
+## R254 — from measured criteria to a decision the product actually executes
+
+A memory layer that can measure failure modes but never acts on the measurements is a laboratory, not a product.
+R254 closes that gap. `experienceGate` composes the ten independent criteria into one executable decision: the
+strictest effective disposition wins, advisory criteria warn rather than veto, and each ablation reports the
+marginal contribution of its gate. It is wired into the product as an off-by-default observer, so the rendered
+bytes are unchanged while hosts can opt into a decision that is provably the same one the evaluation measured —
+the product and the benchmark read from one three-reader contract, not from two drifting implementations.
+
+The discipline is worth stating plainly: this round found a real crash — removing the single gate in an ablation
+dereferenced an empty stage list — and fixed it because a 100% branch-coverage requirement refused to let the
+boundary stay untested. R254 claims no accuracy gain and opens no paid arm. Its value is that when microglia does
+run a paid leaderboard attempt, the decision the product ships is the decision the experiment validated.

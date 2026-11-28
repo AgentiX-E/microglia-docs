@@ -19491,3 +19491,18 @@ None-ablations、build/check/verify 顶层守卫、合法 count-partition 漂移
 写进 microglia 读数；未在没有 cortex 代码的环境里声称 link 成功；未重跑已读回 separated=false 的 embedding 探针
 去烧配额；未把 CAPTURE 的 published 数字（71.5% 等）当作 microglia 的 benchmark 分数。十条纯函数判据各有三读者
 钉住，全量 `pnpm check` 退出码 0（324 测试文件、6711 测试）。
+
+## 34.359 R254 审计 — 经验门控编排器（¥0，发现并修复真实 BUG）
+
+**审计对象。** `experience-gate.ts` 把十条判据裁决按严格阶梯合成为单一可执行决策。核心断言：verdict 取最严格有效
+disposition、平手取在先、reason 只由 verdict 派生、计数分区、消融报边际贡献、advisory reject 降为 reweight。
+
+**发现并修复的真实 BUG。** 覆盖率补测（分支要求 100%）逼出：ablation 移除唯一 stage 后 `compose([])` 访问
+`stages[0]` 得 undefined 而抛 `Cannot read properties of undefined`——这是隐藏在边界里的真实崩溃，不是测试写错。
+修复：显式空集边界 verdict=admit、无 deciding stage，TS 与 Python reader 同步，并加两条边界测试（移除唯一门、
+重复 id 检测独立于 removed-stage 有效性）。修复前该分支 count=0、语句覆盖 97.34%/分支 98.53%；修复后四维 100%。
+
+**门禁读数。** 新模块 43 测试、TS 四维 100%；Python reader 98%（307 语句，开放弧为 CLI argparse/异常路径，与
+R252 98%、R253 99.1% 同类）；全量 `pnpm check` 退出码 0（326 测试文件、6747 测试）；README core 58→59 模块、
+13,146→13,464 行；coupling 276 模块、11 项检查、core 0 领域耦合；`--expect-files` 40→41。observer 接线默认关闭，
+渲染字节/ids/fingerprint 不变，零回归。未调用任何模型、未开付费臂、未就 Agent 记忆打榜。

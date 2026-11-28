@@ -11563,3 +11563,18 @@ no cortex code body is present in this sandbox; microglia ships an adapter plus 
 cortex to reconcile), so the local-link condition of Q9 is not met here and no Agent-memory leaderboard run was
 attempted this round. When cortex is ready, the object of evaluation is the net gain microglia adds to cortex —
 exactly what R253 is built to measure.
+
+## R254 — the product/eval seam, and why it matters for the SOTA chase (read 28 Nov, ¥0)
+
+An audit this round found that all ten criteria (R244-R253) are pure functions called only by tests and eval
+fixtures — none is invoked on the product's real `recall`/`distill` path. A criterion that nothing calls cannot
+constrain the negative effect (Q8) and cannot make the shipped product use the measured configuration (Q6). R254
+adds `experienceGate`: it composes the ten criteria's verdicts into one executable decision under a strict ladder
+(strictest effective disposition wins; advisory rejects downgrade to reweight; ablation reports each gate's
+marginal contribution), wired as an off-by-default observer in `buildPack` with zero byte regression. This is the
+zero-cost orchestration seam R104b's paid proposer needs before any leaderboard run.
+
+**Leaderboard is unchanged this round.** No accuracy number moved: microglia stays on the cost x consistency
+frontier, not on the accuracy board. The accuracy SOTA holders remain Synap on LongMemEval (95.6%) and LoCoMo
+(93.2%); those are published figures, not microglia results. R254 is infrastructure for making a future paid arm
+trustworthy, not a leaderboard entry. Figure: `figures/r254-experience-gate.png`.
