@@ -13817,3 +13817,18 @@ pack.decision 之外的新字段供宿主读取。为 R104b 铺路：proposer �
 **与编排层的关系。** R258 与 R257 同为读时判据但分工不同：R257 对"待注入上下文组成"下组装决策，R258 对"一条经验的接口指纹是否仍有效"下重放决策。二者可作为 experience-gate 的上游步骤。cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253）。
 
 **三读者契约。** TS 产品 + 独立 `schema_drift.py`（字节重推导，无共享代码）+ fixture/manifest 逐字段绑定；`--expect-files` 45。observer 缝接入 apply barrel，默认关闭、零字节回归。付费臂须用户最终确认后才由 workflow dispatch 触发。
+
+
+## R259 技术设计（28 Nov）— 范围边界门（注入时适用范围）
+
+**判据位置。** `packages/core/src/apply/scope-boundary.ts`，纯函数、零成本、无模型、无宿主域耦合。输入：id + task（`{risk, kind, objectiveRequired}`，risk ∈ closed `RISK_LEVELS`、kind ∈ closed `TASK_KINDS`）+ memories（每项 `{id, formedRisk, formedKind, grants}`，grants ⊆ closed `GRANTS`）+ rawTranscript（惰性）+ 可选 ablations。输出：verdict / reason / decidingSignal / memoryCount / authorityCount / verificationCount / toneCount / kindMismatchCount / rawTranscript / trapRateMilli / keptIds / ablations。所有数值整数。
+
+**四类越界读数。** `authorityCount` = task.risk=high 且 memory.formedRisk=low 且 grants 含 skip-confirmation 的 item 数；`verificationCount` = task.kind=correctness-critical 且含 relax-verification 的 item 数；`toneCount` = objectiveRequired 且含 warm-tone 或 critical-tone 的 item 数；`kindMismatchCount` = formedKind≠task.kind 且 grants 非空的 item 数。四项任一为真即把该 id 记入 crossed 集合。published 比率导出为 `TRAP_RATE_MILLI`（unsafeLow/High 350/810、sycophancyFrom/To 210/550、overcritiqueFrom/To 10/600、cheatFrom/To 290/740），仅供 reader 绑定、从不计分。
+
+**五阶梯（severity 表裁定，非检查顺序）。** `authority-crossing`（severity 4）→ `withhold`；`verification-overreach`（3）→ `withhold`；`evaluation-bias`（2）→ `withhold`；`kind-mismatch`（1）→ `quarantine`；`in-scope`（0）→ `admit`。rawTranscript 只写入输出、不进入任何 firing rung。四处可证伪边界由读数定义本身保证：相等风险不满足 risk=high∧formedRisk=low；无客观要求不满足 objectiveRequired；相等 kind 不满足 formedKind≠kind；空 grants 不满足 grants 非空。
+
+**keptIds 与消融。** withhold → 空；quarantine → 保留不在 crossed 集合的 item（在范围内的）；admit → 全部。ablations 中和 authority / verification / tone / kind 之一重跑阶梯，verdict 翻转即命名决定性门（`ablation-decisive` 中 authority 决定性、kind 非决定性）。
+
+**与编排层的关系。** R259 与 R257/R258 同为读时判据但分工不同：R257 对"待注入上下文组成"下组装决策，R258 对"一条经验的接口指纹是否仍有效"下重放决策，R259 对"记忆形成范围是否适合当前任务"下注入决策。三者可作为 experience-gate 的上游步骤。cortex 就绪后评估对象仍是它给 cortex 带来的净增益（R253）。
+
+**三读者契约。** TS 产品 + 独立 `scope_boundary.py`（字节重推导，无共享代码）+ fixture/manifest 逐字段绑定；`--expect-files` 46。observer 缝接入 apply barrel，默认关闭、零字节回归。付费臂须用户最终确认后才由 workflow dispatch 触发。

@@ -19548,3 +19548,14 @@ R252 98%、R253 99.1% 同类）；全量 `pnpm check` 退出码 0（326 测试�
 **发现并修复的真实错误。** ① 行为测试 `announce-does-not-help` 断言误读 `remedies.announcedUpdate`（嵌套），而输出契约是扁平 `announcedUpdate` 字段——修正断言路径，契约本身正确。② 绘图三处：matplotlib 版本不接受字符串类别（改数值 x + set_xticklabels）、右侧 inset 外框 0-1 刻度露出（补 `right.axis("off")`）、柱状图 x 标签与 remedy 标题重叠（下移 remedy 区块 0.575→0.548）。均为门禁/目检实证产出。
 
 **没有做什么。** 未把 Experience Rot published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R258 是通用重放判据，未耦合 nl2sql/chart 垂域。
+
+
+## R259 审计（28 Nov）
+
+**验证了什么。** 复刻 Memory Trap（arXiv 2611.07554）的注入时范围边界门，逐机制对照论文四类危害：skip-confirmation 从低风险到高风险（35–81%）、warmth/critique 在客观评价中的阿谀 21%→55% 与过批评 1%→60%、relax-verification 在 correctness-critical 上的作弊 29%→74%。四处可证伪点全部钉成 fixture 案：`risk-equal-no-crossing`（高风险形成的 skip-confirmation 不算越界）、`tone-in-emotional-context`（无客观要求时 warmth 在范围内）、`kind-equal-with-grant`（相同任务类型不算 mismatch）、`empty-grants-cross-scope`（跨类型但无 grant 不是陷阱）。`raw-transcript-inert` 钉住 rawTranscript 不改变 verdict。`priority-mixed` 钉住四信号同发取 authority-crossing（severity 4）。Python reader 独立从字节重推导，与 TS 产品经 manifest 逐字段比对，不共享代码。
+
+**覆盖率与门禁。** 新模块 26 测试（行为 22 + 绑定 4）、TS 四维 100%（RED→GREEN 一次收口，无补测）；Python reader 单段 99%（89 断言 / 14 案，开放弧为 argparse/exit，与 R252~R258 同类）；README core 63→64 模块、14,783→15,152 行、6,897→6,923 测试；coupling 280→281 模块、11 项检查、core 0 领域耦合；`--expect-files` 45→46。全量 `pnpm check` EXIT=0，远端 CI 待验证。
+
+**发现并修复的真实错误。** reader 单段覆盖率初次 97%（低于 98% 惯例），定位为 check() 中 4 个 ablation tamper 守卫未被 self-test 触发，补 4 条 mutated 断言后回到 99%。其余未覆盖行为 ok 失败分支、SystemExit 捕获、return 1 均为不可达 CLI 路径，与既有 reader 同类。绘图一次成型（沿用 R258 双栏布局，右侧改前后对比柱 + 四信号 + 可证伪边界），无文字重叠返工。
+
+**没有做什么。** 未把 Memory Trap published 数字当 microglia 分数；未在 sandbox 无 cortex 代码时声称 link 成功；未重跑烧配额的 embedding 探针；未开付费臂；未就 Agent 记忆打榜。R259 是通用注入判据，未耦合 nl2sql/chart 垂域。

@@ -31345,3 +31345,14 @@ disposition + reason + 整数 scoreMilli；advisory source 的 reject 降为 rew
 - **发现并修复**：行为测试期望误读 `announcedUpdate` 为嵌套 `remedies.announcedUpdate`（契约实为扁平字段），改断言路径；绘图层出现 matplotlib 不接受字符串类别、右侧外框刻度露出、x 标签与 remedy 标题重叠三处，逐一修复（数值 x + set_xticks、right.axis("off")、下移 remedy 区块）。
 - **成本**：¥0，未调用模型，未开付费臂。
 - **图**：`figures/r258-schema-drift.png`（五阶梯 + 三臂翻转 + 补救措施 + 载体抗 rot 排序）。
+
+
+## R259（28 Nov，¥0）— 范围边界门（Memory Trap 适用范围机制）
+
+- **结论**：补上十四条判据的结构性空白——注入前不问"记忆形成时的范围是否适合当前任务"。复刻 Memory Trap（arXiv 2611.07554，普林斯顿/Anthropic），不安全操作 0%→35–81%、阿谀 21%→55%、过批评 1%→60%、作弊 29%→74%，根因是范围过度泛化 + 过度套用，原始记录同样致害。
+- **核对空白**：ReHarness 反向修订（read→revise→write）与 R247/R249 已覆盖的修订生效同族，不重复；"形成范围 vs 当前任务"是新增空白。
+- **实现**：`scope-boundary.ts` 的 `scopeBoundary(input)`，整数四类越界计数，severity 阶梯（authority-crossing / verification-overreach / evaluation-bias → withhold；kind-mismatch → quarantine；in-scope → admit），rawTranscript 惰性只记录，TRAP_RATE_MILLI 预注册只绑定不计分，四处可证伪边界，消融归因；observer 缝接入 apply barrel、默认关闭、零字节回归。
+- **测试**：22 行为 + 4 绑定 = 26 测试，TS 四维 100%；Python reader 单段 99%；fixture 14 案（3 verdict × 5 reason × 4 grant + 四边界 + inert raw + 优先级 + 消融）；CI `--expect-files` 46；README core 64 模块 / 15,152 行 / 6,923 测试；coupling 281 模块 11 项通过。
+- **发现并修复**：本轮 RED 先钉住四处可证伪边界与 inert raw；reader 补 4 条 ablation tamper 守卫把覆盖率从 97% 推到 99%；绘图一次成型无需返工（沿用 R258 布局并改为前后对比柱）。
+- **成本**：¥0，未调用模型，未开付费臂。
+- **图**：`figures/r259-scope-boundary.png`（五阶梯 + 记忆陷阱前后对比 + 四信号 + 可证伪边界）。
